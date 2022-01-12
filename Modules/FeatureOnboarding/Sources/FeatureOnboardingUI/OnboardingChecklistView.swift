@@ -74,58 +74,9 @@ struct OnboardingChecklistView: View {
                 .padding(.horizontal, Spacing.padding3)
             }
         )
-    }
-}
-
-struct OnboardingRow: View {
-
-    let item: OnboardingChecklist.Item
-    let completed: Bool
-
-    var body: some View {
-        HStack(spacing: Spacing.padding2) {
-            Icon.identification
-                .accentColor(item.accentColor)
-                .background(
-                    RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
-                        .fill(item.backgroundColor)
-                )
-                .frame(width: 32, height: 32)
-                .clipped()
-
-            VStack(alignment: .leading, spacing: Spacing.textSpacing) {
-                Text(item.detail)
-                    .typography(.caption1)
-                    .foregroundColor(.semantic.body)
-
-                Text(item.title)
-                    .typography(.paragraph2)
-                    .foregroundColor(.semantic.title)
-            }
-
-            Spacer()
-
-            if completed {
-                Icon.checkCircle
-                    .frame(width: 24, height: 24)
-                    .accentColor(.semantic.success)
-            } else {
-                Icon.chevronRight
-                    .frame(width: 24, height: 24)
-                    .accentColor(item.accentColor)
-            }
+        .onAppear {
+            viewStore.send(.startObservingUserState)
         }
-        .padding(Spacing.padding2)
-        .background(
-            RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
-                .fill(Color.semantic.background)
-                .shadow(
-                    color: .black.opacity(0.12),
-                    radius: 2,
-                    x: 1,
-                    y: 1
-                )
-        )
     }
 }
 
