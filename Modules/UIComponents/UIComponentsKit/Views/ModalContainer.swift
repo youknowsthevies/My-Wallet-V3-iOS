@@ -43,7 +43,6 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
     public var body: some View {
         VStack(spacing: Spacing.padding3) {
             header()
-                .padding(.horizontal, Spacing.padding3)
 
             content()
                 .frame(maxWidth: .infinity)
@@ -71,11 +70,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     if let title = title {
                         Text(title)
                             .typography(.title3)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .padding(.top, 12) // pad to half the close button
@@ -84,6 +85,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
                 closeButton
             }
+            .padding(.horizontal, Spacing.padding3)
         }
     }
 
@@ -97,6 +99,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     closeButton
                 }
             }
+            .padding(.horizontal, Spacing.padding3)
 
             topAccessory()
 
@@ -105,13 +108,16 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     if let title = title {
                         Text(title)
                             .typography(.title3)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                .padding(.horizontal, Spacing.padding3)
             }
         }
         .multilineTextAlignment(.center)
@@ -127,6 +133,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     closeButton
                 }
             }
+            .padding(.horizontal, Spacing.padding3)
 
             topAccessory()
 
@@ -135,13 +142,16 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     if let title = title {
                         Text(title)
                             .typography(.title2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                .padding(.horizontal, Spacing.padding3)
             }
         }
         .multilineTextAlignment(.center)

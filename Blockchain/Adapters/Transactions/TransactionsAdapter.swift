@@ -15,6 +15,8 @@ enum TransactionType: Equatable {
     case sell(CryptoAccount?)
     /// Performs a swap. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case swap(CryptoAccount?)
+    /// Shows details to receive crypto.
+    case receive(CryptoAccount?)
     /// Performs an interest transfer.
     case interestTransfer(CryptoInterestAccount)
     /// Performs an interest withdraw.
@@ -29,6 +31,8 @@ enum TransactionType: Equatable {
         case (.sell(let lhsAccount), .sell(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         case (.swap(let lhsAccount), .swap(let rhsAccount)):
+            return lhsAccount?.identifier == rhsAccount?.identifier
+        case (.receive(let lhsAccount), .receive(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
@@ -87,6 +91,8 @@ extension TransactionType {
             return .sell(cryptoAccount)
         case .swap(let cryptoAccount):
             return .swap(cryptoAccount)
+        case .receive(let cryptoAccount):
+            return .receive(cryptoAccount)
         case .interestTransfer(let cryptoInterestAccount):
             return .interestTransfer(cryptoInterestAccount)
         case .interestWithdraw(let cryptoInterestAccount):

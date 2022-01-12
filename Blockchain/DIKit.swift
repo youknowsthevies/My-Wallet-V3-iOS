@@ -395,8 +395,11 @@ extension DependencyContainer {
 
         // MARK: - UserInformationServiceProvider
 
-        factory { () -> UserAdapterAPI in
+        // user state can be observed by multiple objects and the state is made up of multiple components
+        // so, better have a single instance of this object.
+        single { () -> UserAdapterAPI in
             UserAdapter(
+                coincore: DIKit.resolve(),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
                 ordersService: DIKit.resolve()
@@ -501,7 +504,7 @@ extension DependencyContainer {
             FeatureOnboardingUI.OnboardingRouter()
         }
 
-        factory { () -> FeatureOnboardingUI.BuyCryptoRouterAPI in
+        factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
             TransactionsAdapter()
         }
 

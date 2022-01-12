@@ -7,6 +7,7 @@ import ComposableNavigation
 import Foundation
 import Localization
 import SwiftUI
+import ToolKit
 
 public enum OnboardingChecklist {
 
@@ -16,12 +17,13 @@ public enum OnboardingChecklist {
             case verifyIdentity
             case linkPaymentMethods
             case buyCrypto
+            case requestCrypto
         }
 
         public let id: Identifier
         public let icon: Icon
         public let title: String
-        public let detail: String
+        public let detail: String?
         public let actionColor: Color
         public let accentColor: Color
         public let backgroundColor: Color
@@ -117,12 +119,17 @@ public enum OnboardingChecklist {
             return .enter(into: .fullScreenChecklist, context: .none)
 
         case .startObservingUserState:
-            return environment
-                .userState
-                .receive(on: environment.mainQueue)
-                .map(OnboardingChecklist.Action.userStateDidChange)
-                .eraseToEffect()
-                .cancellable(id: UserStateObservableIdentifier())
+            return .concatenate(
+                // cancel any active observation of state to avoid duplicates
+                .cancel(id: UserStateObservableIdentifier()),
+                // start observing the user state
+                environment
+                    .userState
+                    .receive(on: environment.mainQueue)
+                    .map(OnboardingChecklist.Action.userStateDidChange)
+                    .eraseToEffect()
+                    .cancellable(id: UserStateObservableIdentifier())
+            )
 
         case .stopObservingUserState:
             return .cancel(id: UserStateObservableIdentifier())
@@ -136,6 +143,7 @@ public enum OnboardingChecklist {
 
 extension OnboardingChecklist.Environment {
 
+    // swiftlint:disable:next cyclomatic_complexity
     fileprivate func presentOnboaringFlow(
         upTo item: OnboardingChecklist.Item.Identifier,
         completedItems: Set<OnboardingChecklist.Item>
@@ -183,6 +191,9 @@ extension OnboardingChecklist.Environment {
                     }
                 }
             }
+
+        default:
+            unimplemented()
         }
     }
 }
@@ -212,11 +223,31 @@ extension OnboardingChecklist.Item {
     static let buyCrypto = OnboardingChecklist.Item(
         id: .buyCrypto,
         icon: Icon.cart,
-        title: LocalizationConstants.Onboarding.Checklist.butCryptoTitle,
-        detail: LocalizationConstants.Onboarding.Checklist.butCryptoSubtitle,
+        title: LocalizationConstants.Onboarding.Checklist.buyCryptoTitle,
+        detail: LocalizationConstants.Onboarding.Checklist.buyCryptoSubtitle,
         actionColor: .semantic.success,
         accentColor: .semantic.success,
         backgroundColor: .semantic.greenBG
+    )
+
+    static let buyCryptoAlternative = OnboardingChecklist.Item(
+        id: .buyCrypto,
+        icon: Icon.cart,
+        title: LocalizationConstants.Onboarding.Checklist.buyCryptoTitle,
+        detail: nil,
+        actionColor: .semantic.primary,
+        accentColor: .semantic.primary,
+        backgroundColor: .semantic.blueBG
+    )
+
+    static let requestCrypto = OnboardingChecklist.Item(
+        id: .requestCrypto,
+        icon: Icon.qrCode,
+        title: LocalizationConstants.Onboarding.Checklist.requestCryptoTitle,
+        detail: LocalizationConstants.Onboarding.Checklist.requestCryptoSubtitle,
+        actionColor: .teal500,
+        accentColor: .teal500,
+        backgroundColor: .teal000
     )
 }
 
@@ -247,6 +278,18 @@ extension Color {
         red: 83 / 255,
         green: 34 / 255,
         blue: 229 / 255
+    )
+
+    fileprivate static let teal000 = Color(
+        red: 230 / 255,
+        green: 248 / 255,
+        blue: 250 / 255
+    )
+
+    fileprivate static let teal500 = Color(
+        red: 18 / 255,
+        green: 165 / 255,
+        blue: 178 / 255
     )
 }
 

@@ -8,17 +8,17 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct OnboardingChecklistView: View {
+public struct OnboardingChecklistView: View {
 
     private let store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>
     @ObservedObject private var viewStore: ViewStore<OnboardingChecklist.State, OnboardingChecklist.Action>
 
-    init(store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>) {
+    public init(store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>) {
         self.store = store
         viewStore = ViewStore(store)
     }
 
-    var body: some View {
+    public var body: some View {
         ModalContainer(
             title: LocalizationConstants.Onboarding.Checklist.screenTitle,
             subtitle: LocalizationConstants.Onboarding.Checklist.screenSubtitle,

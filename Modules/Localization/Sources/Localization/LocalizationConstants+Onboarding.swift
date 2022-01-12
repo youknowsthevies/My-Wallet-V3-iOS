@@ -60,14 +60,34 @@ extension LocalizationConstants.Onboarding {
             comment: "Onboarding checklist item subtitle - link payment methods"
         )
 
-        public static let butCryptoTitle = NSLocalizedString(
+        public static let buyCryptoTitle = NSLocalizedString(
             "Buy Crypto",
             comment: "Onboarding checklist item title - buy crypto"
         )
 
-        public static let butCryptoSubtitle = NSLocalizedString(
+        public static let buyCryptoSubtitle = NSLocalizedString(
             "10 Seconds",
             comment: "Onboarding checklist item subtitle - buy crypto"
+        )
+
+        public static let requestCryptoTitle = NSLocalizedString(
+            "Receive Crypto",
+            comment: ""
+        )
+
+        public static let requestCryptoSubtitle: String? = nil
+    }
+
+    public enum CryptoBalanceRequired {
+
+        public static let title = NSLocalizedString(
+            "You’ll need some crypto first!",
+            comment: ""
+        )
+
+        public static let subtitle = NSLocalizedString(
+            "Link a bank or card and buy now or receive from a friend. Once you hold a balance, you can swap crypto at anytime.",
+            comment: ""
         )
     }
 }
