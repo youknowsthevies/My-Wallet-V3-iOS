@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable line_length
 
+#if canImport(UIKit)
+
 import Combine
 import Foundation
 import UIKit
@@ -53,7 +55,7 @@ extension SystemEventAnalytics {
     }
 }
 
-public class SystemEventAnalytics {
+public final class SystemEventAnalytics {
 
     let app = App()
     let userDefaults: UserDefaults
@@ -62,7 +64,7 @@ public class SystemEventAnalytics {
     var bundle: Bundle = .main
     var bag: Set<AnyCancellable> = []
 
-    public init(
+    init(
         notificationCenter: NotificationCenter = .default,
         userDefaults: UserDefaults = .standard,
         recordingOn recorder: AnalyticsEventRecorderAPI,
@@ -252,3 +254,5 @@ extension Publisher where Failure == Never {
         }
     }
 }
+
+#endif

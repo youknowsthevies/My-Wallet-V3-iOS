@@ -44,6 +44,7 @@ final class NabuAnalyticsProviderTests: XCTestCase {
         try super.tearDownWithError()
     }
 
+    #if canImport(UIKit)
     func test_nabuAnalyticsProvider_sendsWhenBatchIsFull() {
         let batchSize = 5
         nabuAnalyticsProvider = createNabuAnalyticsProvider(batchSize: batchSize)
@@ -111,7 +112,7 @@ final class NabuAnalyticsProviderTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 1.0)
     }
-
+    #endif
     func test_nabuAnalyticsProvider_backoffAfterServerError() throws {
         try XCTSkipIf(true) // disable temporarily as test has random failures on CI
         given(nabuAnalyticsEventsRepositoryMock.publish(events: any(EventsWrapper.self)))
