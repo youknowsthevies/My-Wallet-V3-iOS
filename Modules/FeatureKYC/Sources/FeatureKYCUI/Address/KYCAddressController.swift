@@ -429,7 +429,7 @@ extension KYCAddressController: LocationSuggestionInterface {
         // but they search for an address in California, when the data comes back we need to make sure that the
         // newly selected country and state match the data we already had about the user.
         // This is because our BE APIs don't currently allow editing those fields.
-        let canEditState = userAddress?.state == nil || address.state == userAddress?.state
+        let canEditState = userAddress?.state == nil || userAddress?.state?.contains(address.state ?? "") == true
         let canEditCountry = userAddress?.countryCode == nil || address.countryCode == userAddress?.countryCode
         let canEditCountryAndState = canEditState && canEditCountry
         guard regionTextField.isEnabled || canEditCountryAndState else {
