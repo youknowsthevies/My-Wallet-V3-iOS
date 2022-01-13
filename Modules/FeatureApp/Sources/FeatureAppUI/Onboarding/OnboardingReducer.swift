@@ -8,6 +8,7 @@ import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import WalletPayloadKit
 
 public enum Onboarding {
     public enum Alert: Equatable {
@@ -23,7 +24,9 @@ public enum Onboarding {
         case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequired.Action)
         case welcomeScreen(WelcomeAction)
+        case handleMetadataRecoveryAfterAuthentication
         case informSecondPasswordDetected
+        case informForWalletInitialization
         case forgetWallet
     }
 
@@ -79,7 +82,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
-                    buildVersionProvider: $0.buildVersionProvider
+                    buildVersionProvider: $0.buildVersionProvider,
+                    nativeWalletEnabled: { nativeWalletFlagEnabled() }
                 )
             }
         ),
@@ -142,6 +146,20 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .welcomeScreen(.enter(into: .restoreWallet)):
             state.walletCreationContext = .recovery
             return .none
+        case .welcomeScreen(.requestedToRestoreWallet(let walletRecovery)):
+            switch walletRecovery {
+            case .metadataRecovery(let seedPhrase):
+                state.walletRecoveryContext = .metadataRecovery
+                return .none
+            case .importRecovery(let email, let newPassword, let seedPhrase):
+                state.walletRecoveryContext = .importRecovery
+                return .none
+            case .resetAccountRecovery(let email, let newPassword, let nabuInfo):
+                state.nabuInfoForResetAccount = nabuInfo
+                return .none
+            }
+        case .welcomeScreen(.informForWalletInitialization):
+            return Effect(value: .informForWalletInitialization)
         case .welcomeScreen:
             return .none
         case .walletUpgrade(.begin):
@@ -161,6 +179,32 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 return .none
             }
             return Effect(value: .welcomeScreen(.informSecondPasswordDetected))
+        case .informForWalletInitialization:
+            return .none
+        case .handleMetadataRecoveryAfterAuthentication:
+            // if it is from the restore wallet screen
+            if state.welcomeState?.restoreWalletState != nil {
+                return .merge(
+                    Effect(value: .welcomeScreen(.restoreWallet(.setResetPasswordScreenVisible(true))))
+                )
+                // if it is from the trouble logging in screen
+            } else if state.welcomeState?.emailLoginState != nil {
+                return .merge(
+                    Effect(
+                        value: .welcomeScreen(
+                            .emailLogin(
+                                .verifyDevice(
+                                    .credentials(
+                                        .seedPhrase(
+                                            .setResetPasswordScreenVisible(true))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            return .none
         }
     }
 )

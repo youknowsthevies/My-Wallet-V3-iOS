@@ -79,12 +79,15 @@ public enum WalletInitializationError: LocalizedError, Equatable {
 public enum WalletRecoverError: LocalizedError, Equatable {
     case unknown
     case invalidMnemonic
+    case failedToRecoverWallet
 
     public var errorDescription: String? {
         switch self {
         case .unknown:
             return ""
         case .invalidMnemonic:
+            return ""
+        case .failedToRecoverWallet:
             return ""
         }
     }

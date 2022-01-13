@@ -2,6 +2,7 @@
 
 import JavaScriptCore
 import PlatformKit
+import WalletPayloadKit
 
 protocol WalletSecondPasswordDelegate: AnyObject {
     /// Method invoked when second password is required for JS function to complete.

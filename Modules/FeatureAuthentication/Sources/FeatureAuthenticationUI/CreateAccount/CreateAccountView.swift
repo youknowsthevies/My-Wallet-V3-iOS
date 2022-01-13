@@ -56,6 +56,7 @@ struct CreateAccountView: View {
             viewStore.send(.onWillDisappear)
         }
         .navigationRoute(in: store)
+        .alert(self.store.scope(state: \.failureAlert), dismiss: .alert(.dismiss))
     }
 }
 
@@ -291,7 +292,8 @@ struct CreateAccountView_Previews: PreviewProvider {
                     mainQueue: .main,
                     passwordValidator: PasswordValidator(),
                     externalAppOpener: ToLogAppOpener(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

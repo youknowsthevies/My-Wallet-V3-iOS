@@ -6,6 +6,7 @@ import MoneyKit
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 

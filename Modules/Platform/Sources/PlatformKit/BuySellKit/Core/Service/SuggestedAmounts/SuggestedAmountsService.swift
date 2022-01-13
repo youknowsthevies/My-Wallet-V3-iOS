@@ -5,6 +5,7 @@ import MoneyKit
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 // TODO: Handle `CryptoValue`
 /// The calculation state of Simple Buy suggested fiat amounts to buy

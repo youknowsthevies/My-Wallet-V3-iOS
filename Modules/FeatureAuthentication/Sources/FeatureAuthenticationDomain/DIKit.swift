@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -29,6 +30,14 @@ extension DependencyContainer {
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
 
         single { NabuAuthenticationErrorBroadcaster() }
+
+        factory { () -> WalletRecoveryService in
+            WalletRecoveryService.live(
+                walletManager: DIKit.resolve(),
+                walletRecovery: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
 
         factory { () -> NabuAuthenticationErrorReceiverAPI in
             let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()

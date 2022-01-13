@@ -105,6 +105,7 @@ public struct CreateAccountState: Equatable, NavigationState {
     public var validatingInput: Bool = false
     public var passwordStrength: PasswordValidationScore
     public var inputValidationState: InputValidationState
+    public var failureAlert: AlertState<CreateAccountAction>?
 
     public init(
         context: CreateAccountContext,
@@ -119,10 +120,17 @@ public struct CreateAccountState: Equatable, NavigationState {
         inputValidationState = .unknown
         country = countries.first(where: { String(describing: $0.id) == locale.regionCode }) ?? countries[0]
         countryState = country.id == "US" ? states[0] : nil
+        failureAlert = nil
     }
 }
 
 public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
+    public enum AlertAction: Equatable {
+        case show(title: String, message: String)
+        case dismiss
+    }
+
+    case alert(AlertAction)
     case binding(BindingAction<CreateAccountState>)
     case closeButtonTapped
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
@@ -134,6 +142,7 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case onWillDisappear
     case route(RouteIntent<CreateAccountRoute>?)
     case validatePasswordStrength
+    case accountRecoveryFailed(WalletRecoveryError)
 }
 
 struct CreateAccountEnvironment {
@@ -141,7 +150,10 @@ struct CreateAccountEnvironment {
     let passwordValidator: PasswordValidatorAPI
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
 }
+
+private typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
 
 let createAccountReducer = Reducer<
     CreateAccountState,
@@ -248,6 +260,26 @@ let createAccountReducer = Reducer<
             .map(CreateAccountAction.didUpdatePasswordStrenght)
             .receive(on: environment.mainQueue)
             .eraseToEffect()
+
+    case .accountRecoveryFailed(let error):
+        let title = LocalizationConstants.Errors.error
+        let message = error.localizedDescription
+        return Effect(value: .alert(.show(title: title, message: message)))
+
+    case .alert(.show(let title, let message)):
+        state.failureAlert = AlertState(
+            title: TextState(verbatim: title),
+            message: TextState(verbatim: message),
+            dismissButton: .default(
+                TextState(LocalizationConstants.okString),
+                action: .send(.alert(.dismiss))
+            )
+        )
+        return .none
+
+    case .alert(.dismiss):
+        state.failureAlert = nil
+        return .none
 
     case .binding:
         return .none

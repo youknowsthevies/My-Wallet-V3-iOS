@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import PlatformKit
 import RxCocoa
 import RxSwift
+import WalletPayloadKit
 
 class MockReactiveWallet: ReactiveWalletAPI {
 

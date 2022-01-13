@@ -8,6 +8,7 @@ import RxRelay
 import RxSwift
 import RxToolKit
 import ToolKit
+import WalletPayloadKit
 
 final class EligibilityService: EligibilityServiceAPI {
 

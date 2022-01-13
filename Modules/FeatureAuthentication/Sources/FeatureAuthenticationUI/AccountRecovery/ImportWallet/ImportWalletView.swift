@@ -106,7 +106,8 @@ struct ImportWalletView_Previews: PreviewProvider {
                     mainQueue: .main,
                     passwordValidator: PasswordValidator(),
                     externalAppOpener: ToLogAppOpener(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

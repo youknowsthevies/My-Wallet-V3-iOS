@@ -239,7 +239,8 @@ struct WelcomeView_Previews: PreviewProvider {
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    buildVersionProvider: { "Test version" }
+                    buildVersionProvider: { "Test version" },
+                    nativeWalletEnabled: { .just(false) }
                 )
             )
         )

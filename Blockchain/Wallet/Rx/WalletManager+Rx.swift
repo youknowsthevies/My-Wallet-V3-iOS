@@ -5,6 +5,7 @@ import FeatureAuthenticationDomain
 import PlatformKit
 import RxCocoa
 import RxSwift
+import WalletPayloadKit
 
 extension Reactive where Base: WalletManager {
 

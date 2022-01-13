@@ -3,6 +3,7 @@
 import Combine
 import FeatureAuthenticationDomain
 import PlatformKit
+import WalletPayloadKit
 
 extension WalletManager: WalletManagerReactiveAPI {
 

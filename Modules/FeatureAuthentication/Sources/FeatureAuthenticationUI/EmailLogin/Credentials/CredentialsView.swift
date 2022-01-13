@@ -389,7 +389,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecorder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

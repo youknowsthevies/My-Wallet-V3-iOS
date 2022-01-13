@@ -6,6 +6,7 @@ import FeatureCardsDomain
 import MoneyKit
 import NetworkKit
 import ToolKit
+import WalletPayloadKit
 
 public protocol ERC20AssetFactoryAPI {
     func erc20Asset(erc20AssetModel: AssetModel) -> CryptoAsset

@@ -5,6 +5,7 @@ import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 

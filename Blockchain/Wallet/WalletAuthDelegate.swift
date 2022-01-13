@@ -2,6 +2,7 @@
 
 import Foundation
 import PlatformKit
+import WalletPayloadKit
 
 /// Protocol definition for a delegate for authentication-related wallet callbacks
 protocol WalletAuthDelegate: AnyObject {

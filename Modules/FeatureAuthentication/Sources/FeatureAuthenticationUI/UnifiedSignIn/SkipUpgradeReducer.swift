@@ -48,19 +48,22 @@ struct SkipUpgradeEnvironment {
     let errorRecorder: ErrorRecording
     let featureFlagsService: FeatureFlagsServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
         errorRecorder: ErrorRecording,
         featureFlagsService: FeatureFlagsServiceAPI,
-        analyticsRecorder: AnalyticsEventRecorderAPI
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        walletRecoveryService: WalletRecoveryService
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.errorRecorder = errorRecorder
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
     }
 }
 
@@ -76,7 +79,8 @@ let skipUpgradeReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     featureFlagsService: $0.featureFlagsService,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),

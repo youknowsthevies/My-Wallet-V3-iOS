@@ -281,7 +281,8 @@ struct SeedPhraseView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     externalAppOpener: ToLogAppOpener(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

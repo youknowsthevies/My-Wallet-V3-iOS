@@ -34,7 +34,6 @@ enum WalletCancelations {
 public enum WalletAction: Equatable {
     case walletFetched(Result<EmptyValue, WalletError>)
     case fetchWithSecondPassword(password: String, secondPassword: String)
-    case recover(mnemonic: String)
 }
 
 extension Reducer where State == CoreAppState, Action == CoreAppAction, Environment == CoreAppEnvironment {
@@ -73,13 +72,6 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                         .receive(on: environment.mainQueue)
                         .catchToEffect()
                         .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
-                        .map { CoreAppAction.wallet(.walletFetched($0)) }
-                case .wallet(.recover(let mnemonic)):
-                    return environment.walletService
-                        .recoverFromMetadata(mnemonic)
-                        .receive(on: environment.mainQueue)
-                        .catchToEffect()
-                        .cancellable(id: WalletCancelations.RestoreId(), cancelInFlight: true)
                         .map { CoreAppAction.wallet(.walletFetched($0)) }
                 default:
                     return .none

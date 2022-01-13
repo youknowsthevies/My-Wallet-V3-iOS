@@ -42,7 +42,8 @@ final class CredentialsReducerTests: XCTestCase {
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
                 featureFlagsService: MockFeatureFlagsService(),
-                analyticsRecorder: MockAnalyticsRecorder()
+                analyticsRecorder: MockAnalyticsRecorder(),
+                walletRecoveryService: .mock()
             )
         )
     }
