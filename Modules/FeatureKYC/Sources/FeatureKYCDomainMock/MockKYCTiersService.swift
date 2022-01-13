@@ -29,6 +29,10 @@ final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
         fetchTiers()
     }
 
+    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+        fetchTiers()
+    }
+
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         recordedInvocations.fetchTiers.append(())
         return stubbedResponses.fetchTiers
@@ -48,7 +52,10 @@ final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
         return stubbedResponses.checkSimplifiedDueDiligenceEligibility
     }
 
-    func checkSimplifiedDueDiligenceVerification(for tier: KYC.Tier, pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
+    func checkSimplifiedDueDiligenceVerification(
+        for tier: KYC.Tier,
+        pollUntilComplete: Bool
+    ) -> AnyPublisher<Bool, Never> {
         recordedInvocations.checkSimplifiedDueDiligenceVerification.append(tier)
         return stubbedResponses.checkSimplifiedDueDiligenceVerification
     }
