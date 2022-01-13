@@ -59,11 +59,11 @@ extension UserState.KYCStatus {
 extension KYCTiersServiceAPI {
 
     fileprivate var kycStatusStream: AnyPublisher<UserState.KYCStatus, Never> {
-        tiers
-            .flatMap { [checkSimplifiedDueDiligenceVerification] userTiers -> AnyPublisher<(KYC.UserTiers, Bool), Never> in
-                Just(userTiers)
+        tiersStream
+            .flatMap { [checkSimplifiedDueDiligenceVerification] tiers -> AnyPublisher<(KYC.UserTiers, Bool), Never> in
+                Just(tiers)
                     .zip(
-                        checkSimplifiedDueDiligenceVerification(userTiers.latestApprovedTier, false)
+                        checkSimplifiedDueDiligenceVerification(tiers.latestApprovedTier, false)
                     )
                     .eraseToAnyPublisher()
             }
