@@ -10,12 +10,12 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -27,7 +27,8 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.sessionToken
                 }
-                return walletRepo.map(\.credentials.sessionToken)
+                return walletRepo.publisher
+                    .map(\.credentials.sessionToken)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
             }
@@ -41,6 +42,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                     return walletRepository.set(sessionToken: sessionToken)
                 }
                 return walletRepo.set(keyPath: \.credentials.sessionToken, value: sessionToken)
+                    .publisher
                     .mapToVoid()
             }
             .mapToVoid()
@@ -54,6 +56,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                     return walletRepository.cleanSessionToken()
                 }
                 return walletRepo.set(keyPath: \.credentials.sessionToken, value: "")
+                    .publisher
                     .mapToVoid()
             }
             .mapToVoid()

@@ -9,12 +9,12 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -26,7 +26,8 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.authenticatorType
                 }
-                return walletRepo.map(\.properties.authenticatorType)
+                return walletRepo.publisher
+                    .map(\.properties.authenticatorType)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -39,6 +40,7 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
                     return walletRepository.set(authenticatorType: authenticatorType)
                 }
                 return walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+                    .publisher
                     .mapToVoid()
             }
             .mapToVoid()

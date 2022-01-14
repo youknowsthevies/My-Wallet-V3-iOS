@@ -2,12 +2,7 @@
 
 import DIKit
 import Foundation
-import KeychainKit
 import MetadataKit
-
-enum WalletRepoKeychain {
-    static let repoTag = "repo.tag"
-}
 
 enum WalletRepoOperationsQueue {
     static let queueTag = "op.queue.tag"
@@ -21,24 +16,6 @@ extension DependencyContainer {
 
         single(tag: WalletRepoOperationsQueue.queueTag) { () -> DispatchQueue in
             DispatchQueue(label: "wallet.payload.operations.queue")
-        }
-
-        single { () -> WalletRepo in
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
-            let initialStateOrEmpty = retrieveWalletRepoState(keychainAccess: keychainAccess) ?? .empty
-            return WalletRepo(initialState: initialStateOrEmpty)
-        }
-
-        single { () -> WalletRepoPersistenceAPI in
-            let repo: WalletRepo = DIKit.resolve()
-            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
-            let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default, target: targetQueue)
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
-            return WalletRepoPersistence(
-                repo: repo,
-                keychainAccess: keychainAccess,
-                queue: queue
-            )
         }
 
         factory { () -> WalletFetcherAPI in
@@ -66,7 +43,7 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryServiceAPI in
             let walletLogic: WalletLogic = DIKit.resolve()
             let payloadCrypto: PayloadCryptoAPI = DIKit.resolve()
-            let repo: WalletRepo = DIKit.resolve()
+            let repo: WalletRepoAPI = DIKit.resolve()
             let payloadRepository: WalletPayloadRepositoryAPI = DIKit.resolve()
             let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
             let queue = DispatchQueue(label: "wallet.recovery.op.queue", qos: .userInitiated, target: targetQueue)
@@ -118,10 +95,6 @@ extension DependencyContainer {
         }
 
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
-
-        single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
-            KeychainAccess(service: "com.blockchain.wallet-repo")
-        }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
 

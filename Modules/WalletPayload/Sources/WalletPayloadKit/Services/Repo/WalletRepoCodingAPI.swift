@@ -2,8 +2,8 @@
 
 import Foundation
 
-typealias WalletRepoStateEncoding = (_ value: WalletRepoState) -> Result<Data, WalletRepoStateCodingError>
-typealias WalletRepoStateDecoding = (_ data: Data) -> Result<WalletRepoState, WalletRepoStateCodingError>
+public typealias WalletRepoStateEncoding = (_ value: WalletRepoState) -> Result<Data, WalletRepoStateCodingError>
+public typealias WalletRepoStateDecoding = (_ data: Data) -> Result<WalletRepoState, WalletRepoStateCodingError>
 
 public enum WalletRepoStateCodingError: LocalizedError, Equatable {
     case encodingFailed(Error)
@@ -28,22 +28,4 @@ public enum WalletRepoStateCodingError: LocalizedError, Equatable {
             return false
         }
     }
-}
-
-func walletRepoStateEncoder(
-    _ value: WalletRepoState
-) -> Result<Data, WalletRepoStateCodingError> {
-    Result {
-        try JSONEncoder().encode(value)
-    }
-    .mapError(WalletRepoStateCodingError.encodingFailed)
-}
-
-func walletRepoStateDecoder(
-    _ data: Data
-) -> Result<WalletRepoState, WalletRepoStateCodingError> {
-    Result {
-        try JSONDecoder().decode(WalletRepoState.self, from: data)
-    }
-    .mapError(WalletRepoStateCodingError.decodingFailed)
 }

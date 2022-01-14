@@ -4,21 +4,7 @@ import Combine
 import Foundation
 import KeychainKit
 import ToolKit
-
-public protocol WalletRepoPersistenceAPI {
-    /// Begins the internal persist operation by monitor changes in the `WalletRepo`
-    /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
-    func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError>
-
-    /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
-    /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
-    func retrieve() -> AnyPublisher<WalletRepoState, WalletRepoPersistenceError>
-}
-
-public enum WalletRepoPersistenceError: Error, Equatable {
-    case keychainFailure(KeychainAccessError)
-    case decodingFailed(WalletRepoStateCodingError)
-}
+import WalletPayloadKit
 
 /// An object responsible for observing changes from `WalletStorage` and persisting them.
 final class WalletRepoPersistence: WalletRepoPersistenceAPI {
@@ -27,14 +13,14 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
         static let walletState = "wallet-repo-state"
     }
 
-    private let repo: WalletRepo
+    private let repo: WalletRepoAPI
     private let keychainAccess: KeychainAccessAPI
     private let persistenceQueue: DispatchQueue
     private let encoder: WalletRepoStateEncoding
     private let decoder: WalletRepoStateDecoding
 
     init(
-        repo: WalletRepo,
+        repo: WalletRepoAPI,
         keychainAccess: KeychainAccessAPI,
         queue: DispatchQueue,
         encoder: @escaping WalletRepoStateEncoding = walletRepoStateEncoder,
@@ -49,6 +35,7 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
 
     func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
         repo
+            .publisher
             .removeDuplicates()
             .setFailureType(to: WalletRepoPersistenceError.self)
             .receive(on: persistenceQueue)
@@ -98,4 +85,22 @@ func retrieveWalletRepoState(
         return nil
     }
     return state
+}
+
+func walletRepoStateEncoder(
+    _ value: WalletRepoState
+) -> Result<Data, WalletRepoStateCodingError> {
+    Result {
+        try JSONEncoder().encode(value)
+    }
+    .mapError(WalletRepoStateCodingError.encodingFailed)
+}
+
+func walletRepoStateDecoder(
+    _ data: Data
+) -> Result<WalletRepoState, WalletRepoStateCodingError> {
+    Result {
+        try JSONDecoder().decode(WalletRepoState.self, from: data)
+    }
+    .mapError(WalletRepoStateCodingError.decodingFailed)
 }

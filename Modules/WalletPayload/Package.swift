@@ -51,6 +51,7 @@ let package = Package(
             dependencies: [
                 .target(name: "WalletPayloadKit"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network")

@@ -10,12 +10,12 @@ final class PasswordRepository: PasswordRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -27,7 +27,9 @@ final class PasswordRepository: PasswordRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.password
                 }
-                return walletRepo.map(\.credentials.password)
+                return walletRepo
+                    .publisher
+                    .map(\.credentials.password)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
             }
@@ -38,7 +40,9 @@ final class PasswordRepository: PasswordRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.hasPassword
                 }
-                return walletRepo.map(\.credentials.password)
+                return walletRepo
+                    .publisher
+                    .map(\.credentials.password)
                     .map { key in !key.isEmpty }
                     .eraseToAnyPublisher()
             }
@@ -53,6 +57,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
                 }
                 return walletRepo
                     .set(keyPath: \.credentials.password, value: password)
+                    .publisher
                     .mapToVoid()
                     .mapError()
             }

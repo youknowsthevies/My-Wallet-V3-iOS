@@ -29,7 +29,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
 
     private let walletLogic: WalletLogicAPI
     private let payloadCrypto: PayloadCryptoAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let walletPayloadRepository: WalletPayloadRepositoryAPI
 
     private let operationsQueue: DispatchQueue
@@ -37,7 +37,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
     init(
         walletLogic: WalletLogicAPI,
         payloadCrypto: PayloadCryptoAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         walletPayloadRepository: WalletPayloadRepositoryAPI,
         operationsQueue: DispatchQueue
     ) {
@@ -116,6 +116,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             .set(keyPath: \.credentials.guid, value: model.guid)
             .set(keyPath: \.credentials.sharedKey, value: model.sharedKey)
             .set(keyPath: \.credentials.password, value: model.password)
+            .publisher
             .map { _ in model }
             .eraseToAnyPublisher()
     }
@@ -128,6 +129,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             .set(keyPath: \.properties.language, value: walletPayload.language)
             .set(keyPath: \.properties.syncPubKeys, value: walletPayload.shouldSyncPubKeys)
             .set(keyPath: \.properties.authenticatorType, value: walletPayload.authenticatorType)
+            .publisher
             .map { _ in context }
             .eraseToAnyPublisher()
     }
