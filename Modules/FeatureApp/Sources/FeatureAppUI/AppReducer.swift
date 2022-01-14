@@ -69,10 +69,12 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             environment: {
                 CoreAppEnvironment(
                     loadingViewPresenter: $0.loadingViewPresenter,
+                    externalAppOpener: $0.externalAppOpener,
                     deeplinkHandler: $0.deeplinkHandler,
                     deeplinkRouter: $0.deeplinkRouter,
                     walletManager: $0.walletManager,
                     mobileAuthSyncService: $0.mobileAuthSyncService,
+                    pushNotificationsRepository: $0.pushNotificationsRepository,
                     resetPasswordService: $0.resetPasswordService,
                     accountRecoveryService: $0.accountRecoveryService,
                     userService: $0.userService,
@@ -94,6 +96,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     onboardingSettings: $0.onboardingSettings,
                     mainQueue: $0.mainQueue,
                     appStoreOpener: $0.appStoreOpener,
+                    walletPayloadService: $0.walletPayloadService,
                     walletService: $0.walletService,
                     secondPasswordPrompter: $0.secondPasswordPrompter,
                     buildVersionProvider: $0.buildVersionProvider

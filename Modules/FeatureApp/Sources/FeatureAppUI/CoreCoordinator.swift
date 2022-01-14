@@ -95,10 +95,12 @@ public enum CoreAppAction: Equatable {
 
 struct CoreAppEnvironment {
     var loadingViewPresenter: LoadingViewPresenting
+    var externalAppOpener: ExternalAppOpener
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
     var walletManager: WalletManagerAPI
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
     var userService: NabuUserServiceAPI
@@ -120,6 +122,7 @@ struct CoreAppEnvironment {
     var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
+    var walletPayloadService: WalletPayloadServiceAPI
     var walletService: WalletService
     var secondPasswordPrompter: SecondPasswordPromptable
     var buildVersionProvider: () -> String
@@ -134,10 +137,16 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             environment: { environment -> Onboarding.Environment in
                 Onboarding.Environment(
                     appSettings: environment.blockchainSettings,
+                    credentialsStore: environment.credentialsStore,
                     alertPresenter: environment.alertPresenter,
                     mainQueue: environment.mainQueue,
                     deviceVerificationService: environment.deviceVerificationService,
+                    walletManager: environment.walletManager,
+                    mobileAuthSyncService: environment.mobileAuthSyncService,
+                    pushNotificationsRepository: environment.pushNotificationsRepository,
+                    walletPayloadService: environment.walletPayloadService,
                     featureFlagsService: environment.featureFlagsService,
+                    externalAppOpener: environment.externalAppOpener,
                     buildVersionProvider: environment.buildVersionProvider
                 )
             }
@@ -482,7 +491,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .setupPin:
         environment.loadingViewPresenter.hide()
         state.onboarding?.pinState = .init()
-        state.onboarding?.passwordScreen = nil
+        state.onboarding?.passwordRequiredState = nil
         return Effect(value: CoreAppAction.onboarding(.pin(.create)))
 
     case .initializeWallet:
@@ -803,7 +812,13 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
         // update state
         state.loggedIn = nil
-        state.onboarding = .init(pinState: nil, walletUpgradeState: nil, passwordScreen: .init())
+        state.onboarding = .init(
+            pinState: nil,
+            walletUpgradeState: nil,
+            passwordRequiredState: .init(
+                walletIdentifier: environment.blockchainSettings.guid ?? ""
+            )
+        )
         // show password screen
         return Effect(value: .onboarding(.passwordScreen(.start)))
 

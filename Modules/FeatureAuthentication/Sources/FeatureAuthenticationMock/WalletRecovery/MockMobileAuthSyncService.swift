@@ -13,3 +13,10 @@ final class MockMobileAuthSyncService: MobileAuthSyncServiceAPI {
         .just(())
     }
 }
+
+final class MockPushNotificationsRepository: PushNotificationsRepositoryAPI {
+
+    func revokeToken() -> AnyPublisher<Void, PushNotificationsRepositoryError> {
+        .just(())
+    }
+}

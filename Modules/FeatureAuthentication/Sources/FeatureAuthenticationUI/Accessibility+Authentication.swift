@@ -194,4 +194,17 @@ final class AccessibilityIdentifiers: NSObject {
         static let message = "\(prefix)message"
         static let button = "\(prefix)button"
     }
+
+    // MARK: - Password Required Screen
+
+    enum PasswordRequiredScreen {
+        static let prefix = "PasswordRequiredScreen."
+
+        static let header = "\(prefix)header"
+        static let walletIdGroup = "\(prefix)walletIdGroup"
+        static let description = "\(prefix)description"
+        static let passwordGroup = "\(prefix)passwordGroup"
+        static let forgotWalletDesription = "\(prefix)forgotWalletDescription"
+        static let forgotWalletButton = "\(prefix)forgotWalletButton"
+    }
 }

@@ -33,6 +33,7 @@ public struct AppEnvironment {
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
     var userService: NabuUserServiceAPI
@@ -51,6 +52,7 @@ public struct AppEnvironment {
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
 
     var walletService: WalletService
+    var walletPayloadService: WalletPayloadServiceAPI
     var secondPasswordPrompter: SecondPasswordPromptable
 
     var walletManager: WalletManagerAPI
@@ -65,6 +67,7 @@ public struct AppEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
     var buildVersionProvider: () -> String
+    var externalAppOpener: ExternalAppOpener
 
     @available(*, deprecated, message: "Use featureFlagsService instead")
     var internalFeatureService: InternalFeatureFlagServiceAPI
@@ -86,6 +89,7 @@ public struct AppEnvironment {
         backgroundAppHandler: BackgroundAppHandlerAPI,
         portfolioSyncingService: BalanceSharingSettingsServiceAPI,
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
+        pushNotificationsRepository: PushNotificationsRepositoryAPI,
         resetPasswordService: ResetPasswordServiceAPI,
         accountRecoveryService: AccountRecoveryServiceAPI,
         userService: NabuUserServiceAPI,
@@ -103,6 +107,7 @@ public struct AppEnvironment {
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletService: WalletService,
+        walletPayloadService: WalletPayloadServiceAPI,
         walletManager: WalletManagerAPI,
         walletUpgradeService: WalletUpgradeServicing,
         walletRepoPersistence: WalletRepoPersistenceAPI,
@@ -114,7 +119,8 @@ public struct AppEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         appStoreOpener: AppStoreOpening,
         secondPasswordPrompter: SecondPasswordPromptable,
-        buildVersionProvider: @escaping () -> String
+        buildVersionProvider: @escaping () -> String,
+        externalAppOpener: ExternalAppOpener
     ) {
         self.loadingViewPresenter = loadingViewPresenter
         self.onboardingSettings = onboardingSettings
@@ -130,6 +136,7 @@ public struct AppEnvironment {
         self.backgroundAppHandler = backgroundAppHandler
         self.portfolioSyncingService = portfolioSyncingService
         self.mobileAuthSyncService = mobileAuthSyncService
+        self.pushNotificationsRepository = pushNotificationsRepository
         self.resetPasswordService = resetPasswordService
         self.accountRecoveryService = accountRecoveryService
         self.userService = userService
@@ -146,6 +153,7 @@ public struct AppEnvironment {
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletService = walletService
+        self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
         self.exchangeRepository = exchangeRepository
@@ -159,5 +167,6 @@ public struct AppEnvironment {
         self.walletRepoPersistence = walletRepoPersistence
         self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
+        self.externalAppOpener = externalAppOpener
     }
 }

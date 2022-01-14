@@ -29,6 +29,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockResetPasswordService: MockResetPasswordService!
     var mockAccountRecoveryService: MockAccountRecoveryService!
     var mockDeviceVerificationService: MockDeviceVerificationService!
+    var mockExternalAppOpener: MockExternalAppOpener!
     var mockWallet: MockWallet! = MockWallet()
     var mockReactiveWallet = MockReactiveWallet()
     var mockSettingsApp: MockBlockchainSettingsApp!
@@ -52,6 +53,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
 
     var mockWalletService: WalletService!
+    var mockWalletPayloadService: MockWalletPayloadService!
 
     var testStore: TestStore<
         CoreAppState,
@@ -71,6 +73,7 @@ final class MainAppReducerTests: XCTestCase {
             appSettings: mockSettingsApp,
             reactiveWallet: mockReactiveWallet
         )
+        mockExternalAppOpener = MockExternalAppOpener()
         mockMobileAuthSyncService = MockMobileAuthSyncService()
         mockResetPasswordService = MockResetPasswordService()
         mockAccountRecoveryService = MockAccountRecoveryService()
@@ -104,16 +107,19 @@ final class MainAppReducerTests: XCTestCase {
             fetchUsingSecPassword: { _, _ in .empty() },
             recoverFromMetadata: { _ in .empty() }
         )
+        mockWalletPayloadService = MockWalletPayloadService()
 
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
                 loadingViewPresenter: LoadingViewPresenter(),
+                externalAppOpener: mockExternalAppOpener,
                 deeplinkHandler: mockDeepLinkHandler,
                 deeplinkRouter: mockDeepLinkRouter,
                 walletManager: mockWalletManager,
                 mobileAuthSyncService: mockMobileAuthSyncService,
+                pushNotificationsRepository: MockPushNotificationsRepository(),
                 resetPasswordService: mockResetPasswordService,
                 accountRecoveryService: mockAccountRecoveryService,
                 userService: MockNabuUserService(),
@@ -135,6 +141,7 @@ final class MainAppReducerTests: XCTestCase {
                 onboardingSettings: onboardingSettings,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 appStoreOpener: mockAppStoreOpener,
+                walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
                 buildVersionProvider: { "" }
@@ -144,6 +151,7 @@ final class MainAppReducerTests: XCTestCase {
 
     override func tearDownWithError() throws {
         mockSettingsApp = nil
+        mockExternalAppOpener = nil
         mockWalletManager = nil
         mockMobileAuthSyncService = nil
         mockResetPasswordService = nil
@@ -166,6 +174,7 @@ final class MainAppReducerTests: XCTestCase {
         mockFeatureFlagsService = nil
         mockFiatCurrencySettingsService = nil
         mockWalletService = nil
+        mockWalletPayloadService = nil
         testStore = nil
 
         try super.tearDownWithError()
@@ -330,7 +339,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.passwordScreen = .init()
+            state.onboarding?.passwordRequiredState = .init(
+                walletIdentifier: self.mockSettingsApp.guid ?? ""
+            )
         }
 
         // password screen should start
@@ -361,7 +372,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.authenticated(.success(true)))
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
         testStore.receive(.onboarding(.pin(.create))) { state in
             state.onboarding?.pinState?.creating = true
@@ -376,7 +387,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
             state.onboarding?.pinState = .init()
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
 
         // password screen should start
@@ -430,7 +441,9 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = nil
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.passwordScreen = .init()
+            state.onboarding?.passwordRequiredState = .init(
+                walletIdentifier: self.mockSettingsApp.guid ?? ""
+            )
         }
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
@@ -497,7 +510,7 @@ final class MainAppReducerTests: XCTestCase {
         }
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
         testStore.receive(.onboarding(.pin(.create))) { state in
             state.onboarding?.pinState?.creating = true
@@ -647,7 +660,7 @@ final class MainAppReducerTests: XCTestCase {
         }
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
         testStore.receive(.onboarding(.pin(.create))) { state in
             state.onboarding?.pinState?.creating = true
@@ -668,7 +681,13 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.send(.loggedIn(.logout)) { state in
             state.loggedIn = nil
-            state.onboarding = .init(pinState: nil, walletUpgradeState: nil, passwordScreen: .init())
+            state.onboarding = .init(
+                pinState: nil,
+                walletUpgradeState: nil,
+                passwordRequiredState: .init(
+                    walletIdentifier: self.mockSettingsApp.guid ?? ""
+                )
+            )
         }
 
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
@@ -692,17 +711,23 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.isPinSet = true
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
 
         testStore.receive(.onboarding(.pin(.authenticate))) { state in
             state.onboarding?.pinState?.authenticate = true
-            state.onboarding?.passwordScreen = nil
+            state.onboarding?.passwordRequiredState = nil
         }
 
         testStore.send(.onboarding(.pin(.logout))) { state in
             state.loggedIn = nil
-            state.onboarding = .init(pinState: nil, walletUpgradeState: nil, passwordScreen: .init())
+            state.onboarding = .init(
+                pinState: nil,
+                walletUpgradeState: nil,
+                passwordRequiredState: .init(
+                    walletIdentifier: self.mockSettingsApp.guid ?? ""
+                )
+            )
         }
 
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
@@ -746,7 +771,9 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = nil
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.passwordScreen = .init()
+            state.onboarding?.passwordRequiredState = .init(
+                walletIdentifier: self.mockSettingsApp.guid ?? ""
+            )
         }
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
@@ -769,7 +796,9 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = nil
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.passwordScreen = .init()
+            state.onboarding?.passwordRequiredState = .init(
+                walletIdentifier: self.mockSettingsApp.guid ?? ""
+            )
         }
 
         testStore.receive(.onboarding(.passwordScreen(.start)))

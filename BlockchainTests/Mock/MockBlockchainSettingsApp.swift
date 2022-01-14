@@ -23,6 +23,7 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
         pinKey: String? = nil,
         sharedKey: String? = nil,
         symbolLocal: Bool = false,
+        clearCalled: Bool = false,
         clearPinCalled: Bool = false,
         resetCalled: Bool = false
     ) {
@@ -43,6 +44,7 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
         self.pinKey = pinKey
         self.sharedKey = sharedKey
         self.symbolLocal = symbolLocal
+        self.clearCalled = clearCalled
         self.clearPinCalled = clearPinCalled
         self.resetCalled = resetCalled
     }
@@ -73,6 +75,10 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
         }
     }
 
+    func clear() {
+        clearCalled = true
+    }
+
     func clearPin() {
         clearPinCalled = true
     }
@@ -83,6 +89,7 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
 
     // MARK: Mock Supporting
 
+    var clearCalled: Bool = false
     var clearPinCalled: Bool = false
     var resetCalled: Bool = false
 }

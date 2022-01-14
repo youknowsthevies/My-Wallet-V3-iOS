@@ -12,6 +12,7 @@ public protocol AppSettingsAuthenticating: AnyObject {
     var isPairedWithWallet: Bool { get }
     var isPinSet: Bool { get }
     func clearPin()
+    func clear()
 }
 
 // TICKET: IOS-2738
