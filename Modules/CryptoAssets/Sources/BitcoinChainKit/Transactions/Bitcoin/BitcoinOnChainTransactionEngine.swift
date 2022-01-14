@@ -35,6 +35,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
     private let bridge: BitcoinChainSendBridgeAPI
+    private let recorder: Recording
     private var target: BitcoinChainReceiveAddress<Token> {
         switch transactionTarget {
         case let target as BitPayInvoiceTarget:
@@ -58,13 +59,15 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
-        feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)
+        feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
+        recorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.bridge = bridge
         self.feeService = feeService
+        self.recorder = recorder
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 90,
@@ -241,8 +244,16 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
+    // didExecuteFlag will be used to log/check if there is an issue
+    // with duplicated txs in the engine.
+    private var didExecuteFlag: Bool = false
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        fee(pendingTransaction: pendingTransaction)
+        guard !didExecuteFlag else {
+            recorder.error(BitcoinEngineError.alreadySent)
+            fatalError("BitcoinEngineError.alreadySent")
+        }
+        didExecuteFlag = true
+        return fee(pendingTransaction: pendingTransaction)
             .flatMap(weak: self) { (self, fees) -> Single<BitcoinChainTransactionProposal<Token>> in
                 self.bridge.buildProposal(
                     with: self.target,
@@ -394,4 +405,8 @@ extension BitcoinOnChainTransactionEngine {
             }
             .asSingle()
     }
+}
+
+private enum BitcoinEngineError: Error {
+    case alreadySent
 }
