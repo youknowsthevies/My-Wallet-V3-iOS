@@ -164,7 +164,7 @@ extension CoincoreAPI {
                         sourceAccount: account,
                         transactionTarget: target,
                         engine: NonCustodialSellTransactionEngine(
-                            quotesEngine: SwapQuotesEngine(),
+                            quotesEngine: SellQuotesEngine(),
                             requireSecondPassword: requiresSecondPassword,
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
                         )
@@ -358,7 +358,7 @@ extension CoincoreAPI {
             TransactionProcessor(
                 sourceAccount: account,
                 transactionTarget: target as! FiatAccount,
-                engine: TradingSellTransactionEngine(quotesEngine: SwapQuotesEngine())
+                engine: TradingSellTransactionEngine(quotesEngine: SellQuotesEngine())
             )
         )
     }
