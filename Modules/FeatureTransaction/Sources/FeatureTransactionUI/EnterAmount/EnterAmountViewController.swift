@@ -35,10 +35,20 @@ final class EnterAmountViewController: BaseScreenViewController,
             initialState: .init(),
             reducer: withdrawalLocksReducer,
             environment: WithdrawalLocksEnvironment { [weak self] isVisible in
-                self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+                    self?.withdrawalLocksHeightConstraint.constant = isVisible ? 44 : 1
+                    self?.view.layoutIfNeeded()
+                }
             }
         )
         return UIHostingController(rootView: WithdrawalLocksView(store: store))
+    }()
+
+    private lazy var withdrawalLocksHeightConstraint: NSLayoutConstraint = {
+        let constraint = withdrawalLocksHostingController.view.heightAnchor.constraint(equalToConstant: 1)
+        constraint.isActive = true
+        return constraint
     }()
 
     private let withdrawalLocksSeparatorView = TitledSeparatorView()
@@ -268,8 +278,6 @@ final class EnterAmountViewController: BaseScreenViewController,
         stateDriver
             .map(\.showWithdrawalLocks)
             .drive(onNext: { [weak self] showWithdrawalLocks in
-                let heightAnchor = self?.withdrawalLocksHostingController.view.heightAnchor
-                heightAnchor?.constraint(equalToConstant: 1).isActive = !showWithdrawalLocks
                 self?.withdrawalLocksSeparatorView.isHidden = !showWithdrawalLocks
                 self?.withdrawalLocksHostingController.view.isHidden = !showWithdrawalLocks
             })
