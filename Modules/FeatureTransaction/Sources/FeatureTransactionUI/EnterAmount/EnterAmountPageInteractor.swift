@@ -156,12 +156,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             )
             .map { state, input in
                 (
-                    min: state.minSpendable.displayableRounding(roundingMode: .up),
-                    max: state.maxSpendable.displayableRounding(roundingMode: .down),
-                    errorState: state.errorState,
-                    exchangeRate: state.sourceToFiatPair,
-                    activeInput: input,
-                    amount: state.amount
+                    min: state.minSpendableWithActiveAmountInputType(input),
+                    max: state.maxSpendableWithActiveAmountInputType(input)
                 )
             }
             .share(scope: .whileConnected)
@@ -310,16 +306,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
 
-        spendable
-            .map { [weak listener] spendable in
-                spendable.errorState.toAmountInteractorState(
-                    min: spendable.min,
-                    max: spendable.max,
-                    exchangeRate: spendable.exchangeRate,
-                    activeInput: spendable.activeInput,
-                    stateAmount: spendable.amount,
-                    listener: listener
-                )
+        Observable
+            .combineLatest(
+                transactionState,
+                amountViewInteractor.activeInput
+            )
+            .map { state, input in
+                state.toAmountInteractorStateWithActiveInput(input)
             }
             .bindAndCatch(to: amountViewInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
@@ -572,40 +565,29 @@ extension EnterAmountPageInteractor.State {
     }
 }
 
-extension TransactionErrorState {
+extension TransactionState {
 
     private typealias LocalizedString = LocalizationConstants.Transaction
 
-    func toAmountInteractorState(
-        min: MoneyValue,
-        max: MoneyValue,
-        exchangeRate: MoneyValuePair?,
-        activeInput: ActiveAmountInput,
-        stateAmount: MoneyValue,
-        listener: EnterAmountPageListener?
+    func toAmountInteractorStateWithActiveInput(
+        _ activeInput: ActiveAmountInput
     ) -> AmountInteractorState {
-        switch self {
+        switch errorState {
         case .none:
             return .inBounds
-
         case .belowFees:
             return .error(
                 message: LocalizedString.Confirmation.Error.insufficientGas
             )
-
         case .overMaximumSourceLimit,
              .overMaximumPersonalLimit,
              .insufficientFunds:
-            let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)
-            return .maxLimitExceeded(result)
-
+            return .maxLimitExceeded(maxSpendableWithActiveAmountInputType(activeInput))
         case .belowMinimumLimit:
-            guard !stateAmount.isZero else {
+            guard !amount.isZero else {
                 return .inBounds
             }
-            let result = convertToInputCurrency(min, exchangeRate: exchangeRate, input: activeInput)
-            return .underMinLimit(result)
-
+            return .underMinLimit(minSpendableWithActiveAmountInputType(activeInput))
         case .addressIsContract,
              .invalidAddress,
              .invalidPassword,
@@ -616,33 +598,6 @@ extension TransactionErrorState {
              .nabuError,
              .fatalError:
             return .empty
-        }
-    }
-
-    private func convertToInputCurrency(
-        _ source: MoneyValue,
-        exchangeRate: MoneyValuePair?,
-        input: ActiveAmountInput
-    ) -> MoneyValue {
-        switch (source.currency, input) {
-        case (.crypto, .crypto),
-             (.fiat, .fiat):
-            return source
-        case (.crypto, .fiat):
-            // Convert crypto max amount into fiat amount.
-            guard let exchangeRate = exchangeRate else {
-                // No exchange rate yet, use original value for error message.
-                return source
-            }
-            // Convert crypto max amount into fiat amount.
-            return source.convert(using: exchangeRate.quote)
-        case (.fiat, .crypto):
-            guard let exchangeRate = exchangeRate else {
-                // No exchange rate yet, use original value for error message.
-                return source
-            }
-            // Convert fiat max amount into crypto amount.
-            return source.convert(usingInverse: exchangeRate.quote, currency: source.currency)
         }
     }
 }
