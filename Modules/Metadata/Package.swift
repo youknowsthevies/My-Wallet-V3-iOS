@@ -15,6 +15,10 @@ let package = Package(
         .library(
             name: "MetadataDataKit",
             targets: ["MetadataDataKit"]
+        ),
+        .library(
+            name: "MetadataKitMock",
+            targets: ["MetadataKitMock"]
         )
     ],
     dependencies: [
@@ -69,6 +73,7 @@ let package = Package(
             resources: [
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry.json"),
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry_response.json"),
+                .copy("Fixtures/Entries/WalletCredentials/wallet_credentials_entry_response.json"),
                 // swiftlint:disable line_length
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU.json"),
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81.json"),
@@ -81,6 +86,12 @@ let package = Package(
                 "MetadataKit",
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "NetworkKit", package: "Network")
+            ]
+        ),
+        .target(
+            name: "MetadataKitMock",
+            dependencies: [
+                "MetadataKit"
             ]
         )
     ]

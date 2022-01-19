@@ -52,9 +52,7 @@ private func initializeAndRecoverCredentials(
                     )
                     return RecoveryContext(
                         metadataState: metadataState,
-                        guid: credentials.guid,
-                        sharedKey: credentials.sharedKey,
-                        password: credentials.password
+                        credentials: credentials
                     )
                 }
                 .eraseToAnyPublisher()

@@ -16,6 +16,26 @@ struct TestEnvironment {
         static let sharedKey = "858dc73f-4877-483a-a10e-54a97e1197ea"
         static let password = "P5E5LZjwmzsv4rZJhd8mVMdVhYfKUHUn"
 
+        static let mnemonicWords = [
+            "clump",
+            "clump",
+            "slim",
+            "swap",
+            "town",
+            "hood",
+            "congress",
+            "craft",
+            "girl",
+            "thing",
+            "wreck",
+            "civil"
+        ]
+
+        static let mnemonicString = mnemonicWords.joined(separator: " ")
+
+        // swiftlint:disable:next force_try
+        static let mnemonic = try! Mnemonic.from(mnemonicString: mnemonicString).get()
+
         static let credentials = Credentials(
             guid: guid,
             sharedKey: sharedKey,
@@ -101,6 +121,8 @@ struct TestEnvironment {
     var metadataNodeXPriv = Default.metadataNodeXPriv
 
     var sharedMetadataNodeXPriv = Default.sharedMetadataNodeXPriv
+
+    var mnemonic = Default.mnemonic
 
     var credentials = Default.credentials
 
