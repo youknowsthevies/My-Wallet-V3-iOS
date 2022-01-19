@@ -30,12 +30,7 @@ public func PrefetchingReducer<GlobalState, GlobalAction, GlobalEnvironment>(
         switch action {
 
         case .onAppear(index: let index):
-            state.visibleElements.insert(index)
-            return Effect(value: .fetchIfNeeded)
-                .debounce(id: FetchId(), for: state.debounce, scheduler: environment.mainQueue)
-
-        case .onDisappear(index: let index):
-            state.visibleElements.remove(index)
+            state.seen.insert(index)
             return Effect(value: .fetchIfNeeded)
                 .debounce(id: FetchId(), for: state.debounce, scheduler: environment.mainQueue)
 
@@ -45,7 +40,7 @@ public func PrefetchingReducer<GlobalState, GlobalAction, GlobalEnvironment>(
                 .debounce(id: FetchId(), for: state.debounce, scheduler: environment.mainQueue)
 
         case .fetchIfNeeded:
-            guard let (min, max) = state.visibleElements.minAndMax() else {
+            guard let (min, max) = state.seen.minAndMax() else {
                 return .none
             }
 
