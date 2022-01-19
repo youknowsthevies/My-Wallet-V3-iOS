@@ -39,6 +39,11 @@ let package = Package(
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
             .exact("2.0.2")
         ),
+        .package(
+            name: "WalletCore",
+            url: "https://github.com/oliveratkinson-bc/wallet-core.git",
+            .exact("2.6.36-blockchain")
+        ),
         .package(path: "../Metadata"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
@@ -58,8 +63,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
@@ -71,7 +75,7 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletCore", package: "WalletCore")
             ]
         ),
         .target(
@@ -82,7 +86,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletCore", package: "WalletCore")
             ]
         ),
         .target(
@@ -111,11 +115,12 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
+                .product(name: "MetadataKit", package: "Metadata"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "MetadataKit", package: "Metadata")
+                .product(name: "WalletCore", package: "WalletCore"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(
@@ -127,9 +132,7 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "stellarsdk", package: "stellarsdk"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "MetadataKit", package: "Metadata")
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(

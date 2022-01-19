@@ -153,8 +153,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: false)
-                                    .asObservable()
-                                    .ignoreElements()
                                     .asCompletable()
                                     .catch { _ in .empty() }
                                     .andThen(.error(error))
@@ -162,8 +160,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: true)
-                                    .asObservable()
-                                    .ignoreElements()
                                     .asCompletable()
                                     .catch { _ in .empty() }
                                     .andThen(.just(result))

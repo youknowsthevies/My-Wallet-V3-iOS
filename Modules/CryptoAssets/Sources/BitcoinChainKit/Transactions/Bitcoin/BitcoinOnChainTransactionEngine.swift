@@ -36,19 +36,27 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
     private let bridge: BitcoinChainSendBridgeAPI
     private let recorder: Recording
-    private var target: BitcoinChainReceiveAddress<Token> {
+    private var receiveAddress: Single<BitcoinChainReceiveAddress<Token>> {
         switch transactionTarget {
         case let target as BitPayInvoiceTarget:
-            return .init(
+            let address = BitcoinChainReceiveAddress<Token>(
                 address: target.address,
                 label: target.label,
                 onTxCompleted: target.onTxCompleted
             )
+            return .just(address)
+        case let target as BitcoinChainReceiveAddress<Token>:
+            return .just(target)
+        case let target as CryptoAccount:
+            return target.receiveAddress
+                .map { receiveAddress in
+                    guard let receiveAddress = receiveAddress as? BitcoinChainReceiveAddress<Token> else {
+                        fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress.")
+                    }
+                    return receiveAddress
+                }
         default:
-            guard let receiveAddress = transactionTarget as? BitcoinChainReceiveAddress<Token> else {
-                fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress")
-            }
-            return receiveAddress
+            fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress.")
         }
     }
 
@@ -147,7 +155,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 [
                     .sendDestinationValue(.init(value: pendingTransaction.amount)),
                     .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label)),
+                    .destination(.init(value: self.transactionTarget.label)),
                     .feeSelection(payload.feeSelectionOption),
                     .feedTotal(
                         .init(
@@ -176,11 +184,16 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         // For BTC, JS does some internal validation of the proposal. We need to do this in order
         // to run coin selection and get the fee. However, if we pass in a zero value, this is technically
         // incorrect in JS land.
-        return fee(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, fees) -> Single<BitcoinChainTransactionProposal<Token>> in
-                self.bridge
+        return Single
+            .zip(
+                fee(pendingTransaction: pendingTransaction),
+                receiveAddress
+            )
+            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
+                let (fees, receiveAddress) = values
+                return self.bridge
                     .buildProposal(
-                        with: self.target,
+                        with: receiveAddress,
                         amount: amount,
                         fees: fees,
                         source: self.sourceCryptoAccount
@@ -253,10 +266,15 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             fatalError("BitcoinEngineError.alreadySent")
         }
         didExecuteFlag = true
-        return fee(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, fees) -> Single<BitcoinChainTransactionProposal<Token>> in
-                self.bridge.buildProposal(
-                    with: self.target,
+        return Single
+            .zip(
+                fee(pendingTransaction: pendingTransaction),
+                receiveAddress
+            )
+            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
+                let (fees, receiveAddress) = values
+                return self.bridge.buildProposal(
+                    with: receiveAddress,
                     amount: pendingTransaction.amount,
                     fees: fees,
                     source: self.sourceCryptoAccount

@@ -4,6 +4,7 @@ import FeatureTransactionDomain
 import PlatformKit
 import ToolKit
 
+/// Transaction Engine Factory for Interest Deposit or Withdraw from/to a Trading Account.
 final class InterestTradingTransactionEngineFactory: InterestTradingTransactionEngineFactoryAPI {
     func build(
         requiresSecondPassword: Bool,
@@ -11,11 +12,11 @@ final class InterestTradingTransactionEngineFactory: InterestTradingTransactionE
     ) -> InterestTransactionEngine {
         switch action {
         case .interestTransfer:
-            return InterestDepositTradingTransationEngine(
+            return InterestDepositTradingTransactionEngine(
                 requireSecondPassword: requiresSecondPassword
             )
         case .interestWithdraw:
-            return InterestWithdrawTradingTransationEngine(
+            return InterestWithdrawTradingTransactionEngine(
                 requireSecondPassword: requiresSecondPassword
             )
         default:

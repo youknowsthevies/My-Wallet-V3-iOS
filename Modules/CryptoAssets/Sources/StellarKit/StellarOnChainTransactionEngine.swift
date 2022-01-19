@@ -36,8 +36,15 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Private properties
 
-    private var receiveAddress: ReceiveAddress {
-        transactionTarget as! ReceiveAddress
+    private var receiveAddress: Single<ReceiveAddress> {
+        switch transactionTarget {
+        case let target as ReceiveAddress:
+            return .just(target)
+        case let target as CryptoAccount:
+            return target.receiveAddress
+        default:
+            fatalError("Engine requires transactionTarget to be a ReceiveAddress or CryptoAccount.")
+        }
     }
 
     private var userFiatCurrency: Single<FiatCurrency> {
@@ -56,7 +63,12 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var isMemoRequired: Single<Bool> {
-        transactionDispatcher.isExchangeAddresses(address: receiveAddress.address)
+        receiveAddress
+            .flatMap { [transactionDispatcher] receiveAddress in
+                transactionDispatcher.isExchangeAddresses(
+                    address: receiveAddress.address
+                )
+            }
     }
 
     private var absoluteFee: Single<CryptoValue> {
@@ -90,33 +102,32 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         transactionTarget: TransactionTarget,
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        Single
-            .zip(
-                defaultRestart(
-                    transactionTarget: transactionTarget,
-                    pendingTransaction: pendingTransaction
-                ),
-                isMemoRequired
-            )
-            .map { [receiveAddress] pendingTransaction, isMemoRequired -> PendingTransaction in
-                guard let stellarReceive = receiveAddress as? StellarReceiveAddress else {
+        defaultRestart(
+            transactionTarget: transactionTarget,
+            pendingTransaction: pendingTransaction
+        )
+        .flatMap(weak: self) { (self, pendingTransaction) in
+            Single.zip(self.receiveAddress, self.isMemoRequired)
+                .map { receiveAddress, isMemoRequired in
+                    guard let stellarReceive = receiveAddress as? StellarReceiveAddress else {
+                        return pendingTransaction
+                    }
+                    var pendingTransaction = pendingTransaction
+                    let memoModel = TransactionConfirmation.Model.Memo(
+                        textMemo: stellarReceive.memo,
+                        required: isMemoRequired
+                    )
+                    pendingTransaction.setMemo(memo: memoModel)
                     return pendingTransaction
                 }
-                var pendingTransaction = pendingTransaction
-                let memoModel = TransactionConfirmation.Model.Memo(
-                    textMemo: stellarReceive.memo,
-                    required: isMemoRequired
-                )
-                pendingTransaction.setMemo(memo: memoModel)
-                return pendingTransaction
-            }
+        }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceExchangeRatePair
             .map(weak: self) { (self, exchangeRate) -> [TransactionConfirmation] in
                 let from = TransactionConfirmation.Model.Source(value: self.sourceAccount.label)
-                let to = TransactionConfirmation.Model.Destination(value: self.receiveAddress.label)
+                let to = TransactionConfirmation.Model.Destination(value: self.transactionTarget.label)
                 let feesFiat = pendingTransaction.feeAmount.convert(using: exchangeRate.quote)
                 let fee = self.makeFeeSelectionOption(
                     pendingTransaction: pendingTransaction,
@@ -147,11 +158,12 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
+            receiveAddress,
             userFiatCurrency,
             isMemoRequired,
             availableBalance
         )
-        .map { [receiveAddress] fiatCurrency, isMemoRequired, availableBalance -> PendingTransaction in
+        .map { receiveAddress, fiatCurrency, isMemoRequired, availableBalance -> PendingTransaction in
             var memo: String?
             if let stellarReceive = receiveAddress as? StellarReceiveAddress {
                 memo = stellarReceive.memo
@@ -258,10 +270,14 @@ extension StellarOnChainTransactionEngine {
 
     private func createTransaction(pendingTransaction: PendingTransaction) -> Single<SendDetails> {
         let label = sourceAccount.label
-        return sourceAccount.receiveAddress
-            .map { [receiveAddress] sourceAccountReceiveAddress -> SendDetails in
+        return Single
+            .zip(
+                sourceAccount.receiveAddress,
+                receiveAddress
+            )
+            .map { fromAddress, receiveAddress -> SendDetails in
                 SendDetails(
-                    fromAddress: sourceAccountReceiveAddress.address,
+                    fromAddress: fromAddress.address,
                     fromLabel: label,
                     toAddress: receiveAddress.address,
                     toLabel: "",
@@ -316,11 +332,13 @@ extension StellarOnChainTransactionEngine {
     }
 
     private func validateTargetAddress() -> Completable {
-        Completable.fromCallable(weak: self) { (self) in
-            guard self.transactionDispatcher.isAddressValid(address: self.receiveAddress.address) else {
-                throw TransactionValidationFailure(state: .invalidAddress)
+        receiveAddress
+            .map { [transactionDispatcher] receiveAddress in
+                guard transactionDispatcher.isAddressValid(address: receiveAddress.address) else {
+                    throw TransactionValidationFailure(state: .invalidAddress)
+                }
             }
-        }
+            .asCompletable()
     }
 
     private func makeFeeSelectionOption(

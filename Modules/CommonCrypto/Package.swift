@@ -18,8 +18,8 @@ let package = Package(
         ),
         .package(
             name: "WalletCore",
-            url: "https://github.com/trustwallet/wallet-core",
-            from: "2.6.35"
+            url: "https://github.com/oliveratkinson-bc/wallet-core.git",
+            .exact("2.6.36-blockchain")
         ),
         .package(path: "../Test")
     ],
@@ -28,6 +28,7 @@ let package = Package(
             name: "CommonCryptoKit",
             dependencies: [
                 .product(name: "WalletCore", package: "WalletCore"),
+                .product(name: "SwiftProtobuf", package: "WalletCore"),
                 .product(name: "CryptoSwift", package: "CryptoSwift")
             ],
             linkerSettings: [

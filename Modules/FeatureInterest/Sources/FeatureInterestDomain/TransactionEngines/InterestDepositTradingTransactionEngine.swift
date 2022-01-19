@@ -7,7 +7,8 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-public final class InterestDepositTradingTransationEngine: InterestTransactionEngine {
+/// Transaction Engine for Interest Deposit from a Trading Account.
+public final class InterestDepositTradingTransactionEngine: InterestTransactionEngine {
 
     // MARK: - InterestTransactionEngine
 

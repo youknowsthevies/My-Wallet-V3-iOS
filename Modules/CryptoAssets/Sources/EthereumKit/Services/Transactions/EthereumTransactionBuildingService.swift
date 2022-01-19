@@ -12,6 +12,7 @@ public protocol EthereumTransactionBuildingServiceAPI {
     func buildTransaction(
         amount: MoneyValue,
         to address: EthereumAddress,
+        addressReference: EthereumAddress?,
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
         contractAddress: EthereumAddress?
@@ -31,6 +32,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
     func buildTransaction(
         amount: MoneyValue,
         to address: EthereumAddress,
+        addressReference: EthereumAddress?,
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
         contractAddress: EthereumAddress?
@@ -42,15 +44,16 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         let gasLimit = BigUInt(
             isContract ? fee.gasLimitContract : fee.gasLimit
         )
-        let transferType: EthereumTransactionCandidate.TransferType = contractAddress
-            .flatMap { .erc20Transfer(contract: $0) }
-            ?? .transfer()
+        let extraGasLimit: BigUInt = addressReference != nil ? 600 : 0
         return buildTransaction(
             amount: amount,
             to: address,
             gasPrice: gasPrice,
-            gasLimit: gasLimit,
-            transferType: transferType
+            gasLimit: gasLimit + extraGasLimit,
+            transferType: transferType(
+                addressReference: addressReference,
+                contractAddress: contractAddress
+            )
         )
     }
 
@@ -70,6 +73,25 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 transferType: transferType
             )
         )
+    }
+
+    /// Creates a EthereumTransactionCandidate.TransferType based on the presence of address reference and contract address.
+    /// - Parameter addressReference: EthereumAddress of the reference address if it exists. If there is no reference address
+    /// in this transaction, then this will be nil.
+    /// - Parameter contractAddress: EthereumAddress of the contract address if it exists. If there is no contract address
+    /// (non-ERC20 transaction) in this transaction, then this will be nil.
+    private func transferType(
+        addressReference: EthereumAddress?,
+        contractAddress: EthereumAddress?
+    ) -> EthereumTransactionCandidate.TransferType {
+        if let contractAddress = contractAddress {
+            return .erc20Transfer(contract: contractAddress, addressReference: addressReference)
+        } else {
+            let data: Data? = addressReference.flatMap { address in
+                Data(hex: address.publicKey)
+            }
+            return .transfer(data: data)
+        }
     }
 }
 

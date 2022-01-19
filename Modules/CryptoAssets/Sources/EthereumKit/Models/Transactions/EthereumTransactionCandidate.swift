@@ -6,7 +6,7 @@ import Foundation
 public struct EthereumTransactionCandidate: Equatable {
     public enum TransferType: Equatable {
         case transfer(data: Data? = nil)
-        case erc20Transfer(contract: EthereumAddress)
+        case erc20Transfer(contract: EthereumAddress, addressReference: EthereumAddress? = nil)
     }
 
     let to: EthereumAddress

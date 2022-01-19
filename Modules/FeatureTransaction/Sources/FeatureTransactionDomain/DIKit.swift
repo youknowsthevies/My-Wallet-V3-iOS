@@ -23,6 +23,7 @@ extension DependencyContainer {
         }
 
         factory { PaymentAccountsService() as FeatureTransactionDomain.PaymentAccountsServiceAPI }
+
         factory { () -> TransactionLimitsServiceAPI in
             TransactionLimitsService(
                 repository: DIKit.resolve(),
@@ -38,5 +39,7 @@ extension DependencyContainer {
                 transactionLimitsService: DIKit.resolve()
             )
         }
+
+        factory { HotWalletAddressService() as HotWalletAddressServiceAPI }
     }
 }

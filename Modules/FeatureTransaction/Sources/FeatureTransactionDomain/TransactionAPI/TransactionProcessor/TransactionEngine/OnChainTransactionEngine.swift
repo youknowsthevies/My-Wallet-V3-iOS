@@ -21,11 +21,17 @@ extension OnChainTransactionEngine {
     /// is a `CryptoReceiveAddress` and that its address isn't empty, and that the source account and
     /// target account have the same asset.
     public func defaultAssertInputsValid() {
-        guard let target = transactionTarget as? CryptoReceiveAddress else {
-            preconditionFailure("\(String(describing: transactionTarget)) is not CryptoReceiveAddress")
+        switch transactionTarget {
+        case let target as CryptoReceiveAddress:
+            precondition(!target.address.isEmpty)
+            precondition(sourceCryptoAccount.asset == target.asset)
+        case let target as CryptoAccount:
+            precondition(sourceCryptoAccount.asset == target.asset)
+        default:
+            preconditionFailure(
+                "\(String(describing: transactionTarget)) is not CryptoReceiveAddress nor SingleAccount."
+            )
         }
-        precondition(!target.address.isEmpty)
-        precondition(sourceCryptoAccount.asset == target.asset)
     }
 
     public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {

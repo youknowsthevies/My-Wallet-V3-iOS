@@ -23,7 +23,7 @@ public struct ERC20ContractGasActivityModel {
                 hexAmount: hexAmount,
                 cryptoCurrency: cryptoCurrency
             )
-            to = EthereumAddress(address: address)!
+            to = EthereumAddress(address: address)
         case nil:
             cryptoValue = nil
             to = nil

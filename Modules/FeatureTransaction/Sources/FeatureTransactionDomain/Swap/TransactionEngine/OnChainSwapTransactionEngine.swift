@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -21,6 +22,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
     let quotesEngine: SwapQuotesEngine
+    let hotWalletAddressService: HotWalletAddressServiceAPI
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -37,7 +39,8 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
+        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
+        hotWalletAddressService: HotWalletAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword
@@ -49,6 +52,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         self.currencyConversionService = currencyConversionService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
+        self.hotWalletAddressService = hotWalletAddressService
     }
 
     func assertInputsValid() {
@@ -64,23 +68,15 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         )
         switch value {
         case .failure(let error):
-            return .just(event: .error(error))
+            return .error(error)
         case .success(let receiveAddress):
             onChainEngine.start(
                 sourceAccount: sourceAccount,
                 transactionTarget: receiveAddress,
                 askForRefreshConfirmation: { _ in .empty() }
             )
-            return .just(event: .completed)
+            return .empty()
         }
-    }
-
-    private func startOnChainEngine(with transactionTarget: CryptoReceiveAddress) {
-        onChainEngine.start(
-            sourceAccount: sourceAccount,
-            transactionTarget: transactionTarget,
-            askForRefreshConfirmation: { _ in .empty() }
-        )
     }
 
     private func defaultFeeLevel(pendingTransaction: PendingTransaction) -> FeeLevel {
@@ -143,43 +139,109 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, swapOrder) -> Single<TransactionResult> in
+            .map { swapOrder -> (identifier: String, depositAddress: String) in
                 guard let depositAddress = swapOrder.depositAddress else {
                     throw PlatformKitError.illegalStateException(message: "Missing deposit address")
                 }
-                return self.receiveAddressFactory
-                    .makeExternalAssetAddress(
-                        asset: self.sourceAsset,
-                        address: depositAddress,
-                        label: depositAddress,
-                        onTxCompleted: { _ in .empty() }
-                    )
-                    .single
-                    .flatMap(weak: self) { (self, transactionTarget) -> Single<PendingTransaction> in
-                        self.onChainEngine
-                            .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
+                return (swapOrder.identifier, depositAddress)
+            }
+            .flatMap(weak: self) { (self, swapOrder) -> Single<TransactionResult> in
+                self.createTransactionTarget(depositAddress: swapOrder.depositAddress)
+                    .flatMap(weak: self) { (self, transactionTarget) -> Single<TransactionResult> in
+                        self.executeOnChain(
+                            swapOrderIdentifier: swapOrder.identifier,
+                            transactionTarget: transactionTarget,
+                            pendingTransaction: pendingTransaction,
+                            secondPassword: secondPassword
+                        )
                     }
-                    .flatMap(weak: self) { (self, pendingTransaction) -> Single<TransactionResult> in
-                        self.onChainEngine
-                            .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
-                            .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
-                                self.orderUpdateRepository
-                                    .updateOrder(identifier: swapOrder.identifier, success: false)
-                                    .asObservable()
-                                    .ignoreElements()
-                                    .asCompletable()
-                                    .catch { _ in .empty() }
-                                    .andThen(.error(error))
-                            }
-                            .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
-                                self.orderUpdateRepository
-                                    .updateOrder(identifier: swapOrder.identifier, success: true)
-                                    .asObservable()
-                                    .ignoreElements()
-                                    .asCompletable()
-                                    .catch { _ in .empty() }
-                                    .andThen(.just(result))
-                            }
+            }
+    }
+
+    /**
+     Creates TransactionTarget for executing the on chain transaction.
+
+     - Returns: Single that emits a TransactionTarget. If there is no hot wallet address for 'swap' associated with the current currency,
+     then the emitted value will be the order deposit address. Else, if there is a hot wallet address, it will emit a HotWalletTransactionTarget.
+
+     When sending a transaction to one of Blockchain's custodial products, we check if a hot wallet address for that product
+     is available. If that is not available, reference address is null and the transaction happens as it normally would. If it is available,
+     we will send the fund directly to the hot wallet address, and pass along the original address (real address) as the
+     reference address, that will be added to the transaction data field or as a the third parameter of the overloaded transfer method.
+     You can check how this works and the reasons for its implementation here:
+     https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
+     */
+    private func createTransactionTarget(
+        depositAddress: String
+    ) -> Single<TransactionTarget> {
+        let depositAddress = receiveAddressFactory.makeExternalAssetAddress(
+            asset: sourceAsset,
+            address: depositAddress,
+            label: depositAddress,
+            onTxCompleted: { _ in .empty() }
+        )
+        return Single
+            .zip(
+                depositAddress.single,
+                hotWalletReceiveAddress
+            )
+            .map { depositAddress, hotWalletAddress -> TransactionTarget in
+                guard let hotWalletAddress = hotWalletAddress else {
+                    return depositAddress
+                }
+                return HotWalletTransactionTarget(
+                    realAddress: depositAddress,
+                    hotWalletAddress: hotWalletAddress
+                )
+            }
+    }
+
+    /// Returns the Hot Wallet receive address for the current cryptocurrency.
+    private var hotWalletReceiveAddress: Single<CryptoReceiveAddress?> {
+        hotWalletAddressService
+            .hotWalletAddress(for: sourceAsset, product: .swap)
+            .asSingle()
+            .flatMap { [sourceAsset, receiveAddressFactory] hotWalletAddress -> Single<CryptoReceiveAddress?> in
+                guard let hotWalletAddress = hotWalletAddress else {
+                    return .just(nil)
+                }
+                return receiveAddressFactory.makeExternalAssetAddress(
+                    asset: sourceAsset,
+                    address: hotWalletAddress,
+                    label: hotWalletAddress,
+                    onTxCompleted: { _ in .empty() }
+                )
+                .single
+                .optional()
+            }
+            .catchAndReturn(nil)
+    }
+
+    /// Restart and executes the order in the On Chain Engine
+    private func executeOnChain(
+        swapOrderIdentifier: String,
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
+        onChainEngine
+            .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
+            .flatMap(weak: self) { [orderUpdateRepository] (self, pendingTransaction) in
+                self.onChainEngine
+                    .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+                    .catch { [orderUpdateRepository] error -> Single<TransactionResult> in
+                        orderUpdateRepository
+                            .updateOrder(identifier: swapOrderIdentifier, success: false)
+                            .asCompletable()
+                            .catch { _ in .empty() }
+                            .andThen(.error(error))
+                    }
+                    .flatMap { [orderUpdateRepository] result -> Single<TransactionResult> in
+                        orderUpdateRepository
+                            .updateOrder(identifier: swapOrderIdentifier, success: true)
+                            .asCompletable()
+                            .catch { _ in .empty() }
+                            .andThen(.just(result))
                     }
             }
     }
