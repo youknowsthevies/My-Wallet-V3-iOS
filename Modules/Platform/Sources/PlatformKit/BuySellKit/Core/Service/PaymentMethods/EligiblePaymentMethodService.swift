@@ -54,8 +54,8 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
-                        sddEligibleTier: ( // get SDD limits for eligible users
-                            (tiersResult.isTier0 || tiersResult.isTier1Approved) && sddEligility.eligible
+                        sddEligibleTier: tiersResult.canRequestSDDPaymentMethods(
+                            isSDDEligible: sddEligility.eligible
                         ) ? sddEligility.tier : nil
                     )
                     .map { ($0, sddEligility.eligible) }
