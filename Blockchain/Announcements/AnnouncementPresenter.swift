@@ -418,7 +418,7 @@ extension AnnouncementPresenter {
                     return
                 }
                 webViewServiceAPI.openSafari(
-                    url: "https://why.blockchain.com/celo",
+                    url: "https://www.blockchain.com/getceur",
                     from: topMostViewController
                 )
             }

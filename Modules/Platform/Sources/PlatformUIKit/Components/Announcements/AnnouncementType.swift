@@ -25,7 +25,7 @@ public enum AnnouncementType: String, Codable {
     case interestFunds = "interest_funds"
     case newAsset = "new_asset"
     case assetRename = "asset_rename"
-    case celoEUR = "celo_eur"
+    case celoEUR = "celo_eur_jan22"
 
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
