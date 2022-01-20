@@ -44,19 +44,18 @@ final class ApproveTests: OpenBankingTestCase {
     }
 
     func test_onAppear() throws {
-        store.assert(
-            .send(.onAppear) { [self] state in
-                state.ui = .model(
-                    for: .init(
-                        account: createAccount,
-                        action: .link(
-                            institution: institution
-                        )
-                    ),
-                    in: environment
-                )
-            }
-        )
+
+        store.send(.onAppear) { [self] state in
+            state.ui = .model(
+                for: .init(
+                    account: createAccount,
+                    action: .link(
+                        institution: institution
+                    )
+                ),
+                in: environment
+            )
+        }
     }
 
     func test_onAppear_pay() throws {
@@ -74,34 +73,30 @@ final class ApproveTests: OpenBankingTestCase {
             environment: environment
         )
 
-        store.assert(
-            .send(.onAppear) { [self] state in
-                state.ui = .model(
-                    for: .init(
-                        account: createAccount,
-                        action: .deposit(amountMinor: "1000", product: "SIMPLEBUY")
-                    ),
-                    in: environment
-                )
-            }
-        )
+        store.send(.onAppear) { [self] state in
+            state.ui = .model(
+                for: .init(
+                    account: createAccount,
+                    action: .deposit(amountMinor: "1000", product: "SIMPLEBUY")
+                ),
+                in: environment
+            )
+        }
     }
 
     func test_approve() throws {
-        store.assert(
-            .send(.approve),
-            .receive(.navigate(to: .bank)) { state in
-                state.route = .init(route: .bank, action: .navigateTo)
-            }
-        )
+        store.send(.approve)
+        store.receive(.navigate(to: .bank)) { state in
+            state.route = .init(route: .bank, action: .navigateTo)
+        }
     }
 
     func test_dismiss() throws {
-        store.assert(.send(.dismiss))
+        store.send(.dismiss)
         XCTAssertTrue(dismiss)
     }
 
     func test_deny() throws {
-        store.assert(.send(.deny))
+        store.send(.deny)
     }
 }

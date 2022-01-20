@@ -35,87 +35,77 @@ final class InstitutionListTests: OpenBankingTestCase {
 
     func test_route() throws {
 
-        store.assert(
-            .send(.navigate(to: .approve)) { state in
-                state.route = .init(route: .approve, action: .navigateTo)
-            }
-        )
+        store.send(.navigate(to: .approve)) { state in
+            state.route = .init(route: .approve, action: .navigateTo)
+        }
 
-        store.assert(
-            .send(.enter(into: .approve)) { state in
-                state.route = .init(route: .approve, action: .enterInto(.default))
-            }
-        )
+        store.send(.enter(into: .approve)) { state in
+            state.route = .init(route: .approve, action: .enterInto(.default))
+        }
     }
 
     func test_fetch() throws {
-
-        store.assert(
-            .send(.fetch),
-            .do { [self] in scheduler.run() },
-            .receive(.fetched(createAccount)) { [self] state in
-                state.result = .success(createAccount)
-            }
-        )
+        store.send(.fetch)
+        scheduler.run()
+        store.receive(.fetched(createAccount)) { [self] state in
+            state.result = .success(createAccount)
+        }
     }
 
     func test_show_transfer_details() throws {
-        store.assert(.send(.showTransferDetails))
+        store.send(.showTransferDetails)
         XCTAssertTrue(showTransferDetails)
     }
 
     func test_dismiss() throws {
-        store.assert(.send(.dismiss))
+        store.send(.dismiss)
         XCTAssertTrue(dismiss)
     }
 
-    var approve: [Store.Step] {
-        [
-            .send(.fetched(createAccount)) { [self] state in
-                state.result = .success(createAccount)
-            },
-            .send(.select(createAccount, institution)) { [self] state in
-                state.selection = .init(
-                    bank: .init(data: .init(
-                        account: createAccount,
-                        action: .link(
-                            institution: institution
-                        )
-                    ))
-                )
-            },
-            .receive(.navigate(to: .approve)) { state in
-                state.route = .init(route: .approve, action: .navigateTo)
-            }
-        ]
+    func approve() {
+        store.send(.fetched(createAccount)) { [self] state in
+            state.result = .success(createAccount)
+        }
+        store.send(.select(createAccount, institution)) { [self] state in
+            state.selection = .init(
+                bank: .init(data: .init(
+                    account: createAccount,
+                    action: .link(
+                        institution: institution
+                    )
+                ))
+            )
+        }
+        store.receive(.navigate(to: .approve)) { state in
+            state.route = .init(route: .approve, action: .navigateTo)
+        }
     }
 
-    func test_select() throws {
-        store.assert(approve)
+    func test_select_institution() throws {
+        approve()
     }
 
     func test_approve_deny() throws {
-        store.assert(
-            approve,
-            .send(.approve(.deny)) { state in
-                state.route = nil
-            }
-        )
+        store.send(.approve(.deny)) { state in
+            state.route = nil
+        }
     }
 
     func test_approve_bank_cancel() throws {
-        store.assert(
-            approve,
-            .do { [self] in scheduler.advance() },
-            .send(.approve(.bank(.cancel))) { state in
-                state.route = nil
-                state.result = nil
-            },
-            .receive(.fetch),
-            .do { [self] in scheduler.advance() },
-            .receive(.fetched(createAccount)) { [self] state in
-                state.result = .success(createAccount)
-            }
-        )
+        approve()
+
+        scheduler.advance()
+
+        store.send(.approve(.bank(.cancel))) { state in
+            state.route = nil
+            state.result = nil
+        }
+        store.receive(.fetch)
+
+        scheduler.advance()
+
+        store.receive(.fetched(createAccount)) { [self] state in
+            state.result = .success(createAccount)
+        }
     }
 }

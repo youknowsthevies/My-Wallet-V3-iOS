@@ -44,7 +44,6 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
         .package(path: "../Session"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -75,6 +74,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingData"),
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
