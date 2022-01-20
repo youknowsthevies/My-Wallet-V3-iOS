@@ -189,6 +189,7 @@ let createAccountReducer = Reducer<
         guard let selection = state.pickerSelection else {
             return Effect(value: .dismiss())
         }
+        state.selectedInputField = nil
         switch selection {
         case .country:
             return .enter(into: .countryPicker, context: .none)

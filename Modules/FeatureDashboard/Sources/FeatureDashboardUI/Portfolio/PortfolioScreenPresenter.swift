@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitectureExtensions
 import DIKit
+import Foundation
 import Localization
 import MoneyKit
 import PlatformKit
@@ -16,6 +17,7 @@ public final class PortfolioScreenPresenter {
 
     // MARK: - Types
 
+    var notificationCenter: NotificationCenter = .default
     private typealias CurrencyBalance = (currency: CryptoCurrency, hasBalance: Bool)
 
     struct Model {
@@ -305,5 +307,6 @@ public final class PortfolioScreenPresenter {
         announcementPresenter.refresh()
         fiatBalancePresenter.refresh()
         model.totalBalancePresenter.refresh()
+        notificationCenter.post(name: .dashboardPullToRefresh, object: nil)
     }
 }

@@ -55,14 +55,8 @@ final class OnboardingViewsFactory {
                         to: .buy(nil),
                         from: viewController
                     ) { result in
-                        if viewController.presentedViewController != nil {
-                            viewController.dismiss(animated: true) {
-                                completion(result == .completed)
-                            }
-                        } else {
-                            // view is dismissed automatically, so, no need to do that
-                            completion(result == .completed)
-                        }
+                        // view is dismissed automatically, so, no need to do that
+                        completion(result == .completed)
                     }
                 }
             },
@@ -73,14 +67,8 @@ final class OnboardingViewsFactory {
                         requireEmailVerification: true,
                         requiredTier: .tier2
                     ) { result in
-                        if viewController.presentedViewController != nil {
-                            viewController.dismiss(animated: true) {
-                                completion(result == .completed)
-                            }
-                        } else {
-                            // view is dismissed automatically, so, no need to do that
-                            completion(result == .completed)
-                        }
+                        // view is dismissed automatically, so, no need to do that
+                        completion(result == .completed)
                     }
                 }
             },
@@ -89,14 +77,8 @@ final class OnboardingViewsFactory {
                     paymentMethodLinkingAdapter.routeToPaymentMethodLinkingFlow(
                         from: viewController,
                         completion: { result in
-                            if viewController.presentedViewController != nil {
-                                viewController.dismiss(animated: true) {
-                                    completion(result == .completed)
-                                }
-                            } else {
-                                // view is dismissed automatically, so, no need to do that
-                                completion(result == .completed)
-                            }
+                            // view is dismissed automatically, so, no need to do that
+                            completion(result == .completed)
                         }
                     )
                 }

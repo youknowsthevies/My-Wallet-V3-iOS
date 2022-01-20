@@ -97,7 +97,7 @@ final class OrdersService: OrdersServiceAPI {
         }
 
         let accumulatedTrades: AnyCache<CacheKey, [AccumulatedTradeDetails]> = InMemoryCache(
-            configuration: .onLoginLogoutTransaction(),
+            configuration: .onLoginLogoutTransactionAndDashboardRefresh(),
             refreshControl: PerpetualCacheRefreshControl()
         )
         .eraseToAnyCache()
