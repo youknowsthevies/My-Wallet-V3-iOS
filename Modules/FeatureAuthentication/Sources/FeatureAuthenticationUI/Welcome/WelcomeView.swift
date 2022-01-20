@@ -60,9 +60,6 @@ public enum WelcomeRoute: NavigationRoute {
                         context: .manualPairing,
                         store: store
                     )
-                    .navigationTitle(
-                        LocalizedString.Button.manualPairing
-                    )
                 }
             )
         case .secondPassword:
@@ -71,9 +68,7 @@ public enum WelcomeRoute: NavigationRoute {
                     state: \.secondPasswordNoticeState,
                     action: WelcomeAction.secondPasswordNotice
                 ),
-                then: { store in
-                    SecondPasswordNoticeView(store: store)
-                }
+                then: SecondPasswordNoticeView.init(store:)
             )
         }
     }

@@ -118,7 +118,7 @@ extension LocalizationConstants.FeatureAuthentication {
                 comment: "Login screen: authenticator text field title"
             )
             public static let hardwareKeyCode = NSLocalizedString(
-                "Verify with your |HARDWARE KEY|",
+                "Verify with your hardware key",
                 comment: "Login screen: verify with hardware key title prefix"
             )
         }
@@ -140,7 +140,7 @@ extension LocalizationConstants.FeatureAuthentication {
                 comment: "Login screen: prefix for wallet identifier footnote"
             )
             public static let hardwareKeyInstruction = NSLocalizedString(
-                "Tap |HARDWARE KEY| to verify",
+                "Tap hardware key to verify",
                 comment: "Login screen: hardware key usage instruction"
             )
             public static let lostTwoFACodePrompt = NSLocalizedString(
@@ -169,10 +169,6 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let incorrectTwoFACode = NSLocalizedString(
                 "Incorrect 2FA code. %d attempts left",
                 comment: "Login screen: wrong 2FA code error"
-            )
-            public static let incorrectHardwareKeyCode = NSLocalizedString(
-                "Incorrect |HARDWARE KEY| code",
-                comment: "Login screen: wrong hardware key error"
             )
             public static let accountLocked = NSLocalizedString(
                 "This account has been locked due to too many failed authentications",

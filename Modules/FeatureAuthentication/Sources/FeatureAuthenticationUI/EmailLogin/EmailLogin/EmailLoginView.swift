@@ -40,7 +40,7 @@ public struct EmailLoginView: View {
 
     private let store: Store<EmailLoginState, EmailLoginAction>
 
-    @State private var isEmailFieldFirstResponder: Bool = true
+    @State private var isEmailFieldFirstResponder: Bool = false
 
     public init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
@@ -108,7 +108,7 @@ public struct EmailLoginView: View {
                 onReturnTapped: {
                     self.isEmailFieldFirstResponder = false
                     if viewStore.isEmailValid {
-                        viewStore.send(.sendDeviceVerificationEmail)
+                        viewStore.send(.continueButtonTapped)
                     }
                 }
             )

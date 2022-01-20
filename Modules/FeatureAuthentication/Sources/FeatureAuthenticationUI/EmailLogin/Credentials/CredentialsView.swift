@@ -34,6 +34,19 @@ public struct CredentialsView: View {
     private let store: Store<CredentialsState, CredentialsAction>
     @ObservedObject private var viewStore: ViewStore<CredentialsState, CredentialsAction>
 
+    private var twoFATitle: String {
+        switch viewStore.twoFAState?.twoFAType {
+        case nil, .standard, .email:
+            return ""
+        case .sms:
+            return LocalizedString.TextFieldTitle.smsCode
+        case .google:
+            return LocalizedString.TextFieldTitle.authenticatorCode
+        case .yubiKey, .yubikeyMtGox:
+            return LocalizedString.TextFieldTitle.hardwareKeyCode
+        }
+    }
+
     private var twoFAErrorMessage: String {
         guard !viewStore.isAccountLocked else {
             return LocalizedString.TextFieldError.accountLocked
@@ -59,9 +72,8 @@ public struct CredentialsView: View {
     @State private var isWalletIdentifierFirstResponder: Bool = false
     @State private var isPasswordFieldFirstResponder: Bool = false
     @State private var isTwoFAFieldFirstResponder: Bool = false
-    @State private var isHardwareKeyCodeFieldFirstResponder: Bool = false
     @State private var isPasswordVisible: Bool = false
-    @State private var isHardwareKeyCodeVisible: Bool = false
+    @State private var isHardwareKeyVisible: Bool = false
 
     public init(context: CredentialsContext, store: Store<CredentialsState, CredentialsAction>) {
         self.context = context
@@ -111,6 +123,11 @@ public struct CredentialsView: View {
                     .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.resendSMSButton)
                 }
 
+                if viewStore.twoFAState?.twoFAType == .yubiKey || viewStore.twoFAState?.twoFAType == .yubikeyMtGox {
+                    Text(LocalizedString.TextFieldFootnote.hardwareKeyInstruction)
+                        .textStyle(.subheading)
+                }
+
                 HStack(spacing: Layout.resetTwoFATextSpacing) {
                     Text(LocalizedString.TextFieldFootnote.lostTwoFACodePrompt)
                         .textStyle(.subheading)
@@ -126,16 +143,8 @@ public struct CredentialsView: View {
                         }
                     )
                 }
-                .padding(.bottom, Layout.textFieldBottomPadding)
+                .padding(.top, 0.5)
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.resetTwoFAButton)
-            }
-
-            if let state = viewStore.hardwareKeyState, state.isHardwareKeyCodeFieldVisible {
-
-                hardwareKeyField
-                    .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.hardwareKeyGroup)
-                Text(LocalizedString.TextFieldFootnote.hardwareKeyInstruction)
-                    .textStyle(.subheading)
             }
 
             Spacer()
@@ -144,13 +153,9 @@ public struct CredentialsView: View {
                 title: LocalizedString.Button._continue,
                 isLoading: viewStore.isLoading
             ) {
-                if viewStore.isTwoFactorOTPVerified {
-                    viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
-                } else {
-                    viewStore.send(.continueButtonTapped)
-                }
+                viewStore.send(.continueButtonTapped)
             }
-            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
+            .disabled(viewStore.isLoading || viewStore.walletPairingState.walletGuid.isEmpty)
 
             PrimaryNavigationLink(
                 destination: IfLetStore(
@@ -179,11 +184,7 @@ public struct CredentialsView: View {
         )
         .primaryNavigation(title: LocalizedString.navigationTitle) {
             Button {
-                if viewStore.isTwoFactorOTPVerified {
-                    viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
-                } else {
-                    viewStore.send(.continueButtonTapped)
-                }
+                viewStore.send(.continueButtonTapped)
             } label: {
                 Text(LocalizedString.Button.next)
                     .typography(.paragraph2)
@@ -196,6 +197,9 @@ public struct CredentialsView: View {
         }
         .onAppear {
             viewStore.send(.didAppear(context: context))
+        }
+        .onWillDisappear {
+            viewStore.send(.onWillDisappear)
         }
         .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .alert(.dismiss))
     }
@@ -249,13 +253,11 @@ public struct CredentialsView: View {
                 self.isWalletIdentifierFirstResponder = true
                 self.isPasswordFieldFirstResponder = false
                 self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = false
             },
             onReturnTapped: {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = true
                 self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = false
             }
         )
         .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.guidGroup)
@@ -286,13 +288,15 @@ public struct CredentialsView: View {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = true
                 self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = false
             },
             onReturnTapped: {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = false
-                self.isTwoFAFieldFirstResponder = true
-                self.isHardwareKeyCodeFieldFirstResponder = true
+                if viewStore.twoFAState != nil {
+                    viewStore.send(.continueButtonTapped)
+                } else {
+                    self.isTwoFAFieldFirstResponder = true
+                }
             },
             trailingAccessoryView: {
                 PasswordEyeSymbolButton(isPasswordVisible: $isPasswordVisible)
@@ -311,13 +315,14 @@ public struct CredentialsView: View {
                 get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false || $0.isAccountLocked },
                 send: .none
             ),
-            title: viewStore.twoFAState?.twoFAType == .sms ?
-                LocalizedString.TextFieldTitle.smsCode :
-                LocalizedString.TextFieldTitle.authenticatorCode,
+            title: twoFATitle,
             configuration: {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.textContentType = .oneTimeCode
+                $0.isSecureTextEntry = !isHardwareKeyVisible &&
+                    viewStore.twoFAState?.twoFAType == .yubiKey ||
+                    viewStore.twoFAState?.twoFAType == .yubikeyMtGox
                 $0.returnKeyType = .done
             },
             errorMessage: twoFAErrorMessage,
@@ -325,52 +330,21 @@ public struct CredentialsView: View {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = false
                 self.isTwoFAFieldFirstResponder = true
-                self.isHardwareKeyCodeFieldFirstResponder = false
             },
             onReturnTapped: {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = false
                 self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = false
-            }
-        )
-    }
-
-    private var hardwareKeyField: some View {
-        FormTextFieldGroup(
-            text: viewStore.binding(
-                get: { $0.hardwareKeyState?.hardwareKeyCode ?? "" },
-                send: { .hardwareKey(.didChangeHardwareKeyCode($0)) }
-            ),
-            isFirstResponder: $isHardwareKeyCodeFieldFirstResponder,
-            isError: viewStore.binding(
-                get: { $0.hardwareKeyState?.isHardwareKeyCodeIncorrect ?? false || $0.isAccountLocked },
-                send: .none
-            ),
-            title: LocalizedString.TextFieldTitle.hardwareKeyCode,
-            configuration: {
-                $0.autocorrectionType = .no
-                $0.autocapitalizationType = .none
-                $0.isSecureTextEntry = !isHardwareKeyCodeVisible
-                $0.textContentType = .password
-            },
-            errorMessage: viewStore.isAccountLocked ?
-                LocalizedString.TextFieldError.accountLocked :
-                LocalizedString.TextFieldError.incorrectHardwareKeyCode,
-            onPaddingTapped: {
-                self.isWalletIdentifierFirstResponder = false
-                self.isPasswordFieldFirstResponder = false
-                self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = true
-            },
-            onReturnTapped: {
-                self.isWalletIdentifierFirstResponder = false
-                self.isPasswordFieldFirstResponder = false
-                self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeFieldFirstResponder = false
+                viewStore.send(.continueButtonTapped)
             },
             trailingAccessoryView: {
-                PasswordEyeSymbolButton(isPasswordVisible: $isHardwareKeyCodeVisible)
+                if viewStore.twoFAState?.twoFAType == .yubiKey ||
+                    viewStore.twoFAState?.twoFAType == .yubikeyMtGox
+                {
+                    PasswordEyeSymbolButton(isPasswordVisible: $isHardwareKeyVisible)
+                } else {
+                    EmptyView()
+                }
             }
         )
     }
