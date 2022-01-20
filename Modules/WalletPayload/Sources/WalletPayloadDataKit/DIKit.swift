@@ -3,10 +3,12 @@
 import DIKit
 import Foundation
 import KeychainKit
+import NetworkKit
 import WalletPayloadKit
 
 enum WalletRepoKeychain {
     static let repoTag = "repo.tag"
+    static let walletServer = "wallet.server"
 }
 
 extension DependencyContainer {
@@ -18,6 +20,30 @@ extension DependencyContainer {
         factory { WalletPayloadClient() as WalletPayloadClientAPI }
 
         factory { WalletPayloadRepository() as WalletPayloadRepositoryAPI }
+
+        factory(tag: WalletRepoKeychain.walletServer) {
+            RequestBuilder(
+                config: Network.Config(
+                    scheme: "https",
+                    host: "api.blockchain.info",
+                    code: "35e77459-723f-48b0-8c9e-6e9e8f54fbd3",
+                    components: []
+                )
+            )
+        }
+
+        factory { () -> ServerEntropyClientAPI in
+            ServerEntropyClient(
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve(tag: WalletRepoKeychain.walletServer)
+            )
+        }
+
+        factory { () -> ServerEntropyRepositoryAPI in
+            ServerEntropyRepository(
+                client: DIKit.resolve()
+            )
+        }
 
         factory { () -> WalletCreatorAPI in
             WalletCreator() as WalletCreatorAPI
