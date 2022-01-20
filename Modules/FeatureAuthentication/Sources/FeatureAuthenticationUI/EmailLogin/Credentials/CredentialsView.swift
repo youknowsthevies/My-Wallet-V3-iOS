@@ -182,19 +182,8 @@ public struct CredentialsView: View {
                 trailing: Layout.trailingPadding
             )
         )
-        .primaryNavigation(title: LocalizedString.navigationTitle) {
-            Button {
-                viewStore.send(.continueButtonTapped)
-            } label: {
-                Text(LocalizedString.Button.next)
-                    .typography(.paragraph2)
-                    .foregroundColor(
-                        viewStore.walletPairingState.walletGuid.isEmpty ? .semantic.muted : .semantic.primary
-                    )
-            }
-            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
-            .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.nextButton)
-        }
+        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
+        .hideBackButtonTitle()
         .onAppear {
             viewStore.send(.didAppear(context: context))
         }

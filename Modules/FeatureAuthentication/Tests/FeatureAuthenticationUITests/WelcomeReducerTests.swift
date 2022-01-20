@@ -117,6 +117,30 @@ final class WelcomeReducerTests: XCTestCase {
         }
     }
 
+    func test_close_email_login_should_reset_state() {
+        testStore.send(.enter(into: .emailLogin)) { state in
+            state.route = RouteIntent(route: .emailLogin, action: .enterInto())
+            state.emailLoginState = .init()
+        }
+        testStore.send(.emailLogin(.closeButtonTapped))
+        testStore.receive(.dismiss()) { state in
+            state.route = nil
+            state.emailLoginState = nil
+        }
+    }
+
+    func test_close_create_wallet_should_reset_state() {
+        testStore.send(.enter(into: .createWallet)) { state in
+            state.route = RouteIntent(route: .createWallet, action: .enterInto())
+            state.createWalletState = .init(context: .createWallet)
+        }
+        testStore.send(.createWallet(.closeButtonTapped))
+        testStore.receive(.dismiss()) { state in
+            state.route = nil
+            state.createWalletState = nil
+        }
+    }
+
     func test_secondPassword_modal_can_be_presented() {
         // given (we're in a flow)
         BuildFlag.isInternal = true

@@ -22,6 +22,7 @@ public enum SeedPhraseAction: Equatable {
         }
     }
 
+    case closeButtonTapped
     case didChangeSeedPhrase(String)
     case didChangeSeedPhraseScore(MnemonicValidationScore)
     case validateSeedPhrase
@@ -155,6 +156,9 @@ let seedPhraseReducer = Reducer.combine(
         SeedPhraseEnvironment
     > { state, action, environment in
         switch action {
+
+        case .closeButtonTapped:
+            return .none
 
         case .didChangeSeedPhrase(let seedPhrase):
             state.seedPhrase = seedPhrase

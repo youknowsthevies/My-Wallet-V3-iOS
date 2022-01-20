@@ -248,7 +248,11 @@ public let welcomeReducer = Reducer.combine(
             }
             return Effect(value: .requestedToCreateWallet(email, password))
 
-        case .secondPasswordNotice(.closeButtonTapped):
+        case .createWallet(.closeButtonTapped),
+             .emailLogin(.closeButtonTapped),
+             .restoreWallet(.closeButtonTapped),
+             .manualPairing(.closeButtonTapped),
+             .secondPasswordNotice(.closeButtonTapped):
             return Effect(value: .dismiss())
 
         // TODO: refactor this by not relying on access lower level reducers

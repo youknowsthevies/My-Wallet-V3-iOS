@@ -77,6 +77,13 @@ public enum WelcomeRoute: NavigationRoute {
                         context: .manualPairing,
                         store: store
                     )
+                    .trailingNavigationButton(.close) {
+                        viewStore.send(.manualPairing(.closeButtonTapped))
+                    }
+                    .whiteNavigationBarStyle()
+                    .navigationTitle(
+                        LocalizedString.Button.manualPairing
+                    )
                 }
             )
         case .secondPassword:

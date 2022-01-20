@@ -20,6 +20,7 @@ public enum EmailLoginAction: Equatable, NavigationAction {
     }
 
     case alert(AlertAction)
+    case closeButtonTapped
 
     // MARK: - Transitions and Navigations
 
@@ -158,6 +159,10 @@ let emailLoginReducer = Reducer.combine(
             environment.analyticsRecorder.record(
                 event: .loginViewed
             )
+            return .none
+
+        case .closeButtonTapped:
+            // handled in welcome reducer
             return .none
 
         case .route(let route):

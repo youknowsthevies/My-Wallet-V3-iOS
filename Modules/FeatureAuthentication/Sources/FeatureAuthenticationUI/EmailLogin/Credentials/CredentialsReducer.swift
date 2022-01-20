@@ -16,6 +16,7 @@ public enum CredentialsAction: Equatable {
     }
 
     case alert(AlertAction)
+    case closeButtonTapped
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
     case onWillDisappear
@@ -198,7 +199,8 @@ let credentialsReducer = Reducer.combine(
             state.credentialsFailureAlert = nil
             return .none
 
-        case .onWillDisappear:
+        case .onWillDisappear,
+             .closeButtonTapped:
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):
