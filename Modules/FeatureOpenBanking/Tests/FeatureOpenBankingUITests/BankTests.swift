@@ -64,8 +64,8 @@ final class BankLinkTests: OpenBankingTestCase {
 
         scheduler.advance(by: .seconds(1))
 
-        store.send(.failure(.timeout)) { state in
-            state.ui = .error(.timeout)
+        store.send(.failure(.timeout)) { [self] state in
+            state.ui = .error(.timeout, in: environment)
         }
         store.send(.cancel)
     }
@@ -91,8 +91,8 @@ final class BankLinkTests: OpenBankingTestCase {
     }
 
     func test_fail() throws {
-        store.send(.failure(.bankTransferAccountAlreadyLinked)) { state in
-            state.ui = .error(.bankTransferAccountAlreadyLinked)
+        store.send(.failure(.bankTransferAccountAlreadyLinked)) { [self] state in
+            state.ui = .error(.bankTransferAccountAlreadyLinked, in: environment)
         }
     }
 

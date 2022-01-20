@@ -174,6 +174,7 @@ public enum OrderPayload {
 
             public let everypay: EveryPay?
             public let cardProvider: CardProvider?
+            public let error: String?
         }
 
         let state: String
@@ -193,6 +194,8 @@ public enum OrderPayload {
         let fee: String?
 
         let paymentType: String
+        let paymentError: String?
+
         public let paymentMethodId: String?
         let side: Side
         public let attributes: Attributes?

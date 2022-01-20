@@ -151,7 +151,7 @@ public final class OpenBanking {
             .flatMap { [banking] payment in
                 banking.poll(payment: payment)
                     .flatMap { payment -> AnyPublisher<OpenBanking.Payment.Details, OpenBanking.Error> in
-                        if let error = payment.extraAttributes?.error {
+                        if let error = payment.error {
                             return Fail(error: error).eraseToAnyPublisher()
                         } else {
                             return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
@@ -168,6 +168,13 @@ public final class OpenBanking {
 
         func poll(_ order: OpenBanking.Order) -> AnyPublisher<Action, Never> {
             banking.poll(order: order)
+                .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
+                    if let error = order.paymentError {
+                        return .failure(error)
+                    } else {
+                        return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
+                    }
+                }
                 .map(Action.waitingForConsent(.confirmed(order)))
                 .catch(Action.failure)
                 .eraseToAnyPublisher()

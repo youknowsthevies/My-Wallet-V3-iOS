@@ -212,6 +212,15 @@ public struct OrderDetails {
         }
     }
 
+    public var error: String? {
+        switch _value {
+        case .buy(let details):
+            return details.error
+        case .sell(let details):
+            return details.error
+        }
+    }
+
     // MARK: - Private Properties
 
     private var _value: OrderDetailsValue

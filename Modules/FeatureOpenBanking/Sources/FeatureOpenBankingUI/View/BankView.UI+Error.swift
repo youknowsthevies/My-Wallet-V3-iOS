@@ -3,18 +3,46 @@
 import ToolKit
 import UIComponentsKit
 
+extension ImageResource {
+
+    var media: Media {
+        switch self {
+        case .local(name: let name, bundle: _):
+            return .image(named: name)
+        case .systemName(let name):
+            return .image(systemName: name)
+        case .remote(url: let url):
+            return .image(at: url, placeholder: nil)
+        }
+    }
+}
+
 extension BankState.UI {
 
-    static func error(_ error: OpenBanking.Error) -> Self {
+    static func error(
+        _ error: OpenBanking.Error,
+        currency: String? = nil,
+        in environment: OpenBankingEnvironment
+    ) -> Self {
         switch error {
         case .message(let message):
             return .errorMessage(message)
         default:
-            return errors[error, default: defaultError]
+            var ui = errors[error, default: defaultError]
+            if ui.info.media == .inherited {
+                if let currency = currency {
+                    ui.info.media = environment.cryptoCurrencyFormatter.displayImage(currency: currency).map(\.media)
+                        ?? environment.fiatCurrencyFormatter.displayImage(currency: currency).map(\.media)
+                        ?? .bankIcon
+                } else {
+                    ui.info.media = .bankIcon
+                }
+            }
+            return ui
         }
     }
 
-    static var errors: [OpenBanking.Error: Self] = [
+    public static var errors: [OpenBanking.Error: Self] = [
         .bankTransferAccountNameMismatch: .init(
             info: .init(
                 media: .bankIcon,
@@ -122,10 +150,130 @@ extension BankState.UI {
                 .retry(label: Localization.Bank.Error.bankTransferAccountRejectedFraud.action, action: .request),
                 .cancel
             ]
+        ),
+        .bankTransferAccountInfoNotFound: .init(
+            info: .init(
+                media: .bankIcon,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.bankTransferAccountRejectedFraud.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountRejectedFraud.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferAccountRejectedFraud.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentInvalid: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.bankTransferPaymentInvalid.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentInvalid.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentInvalid.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentFailed: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.bankTransferPaymentFailed.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentFailed.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentFailed.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentDeclined: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.bankTransferPaymentDeclined.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentDeclined.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentDeclined.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentRejected: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.bankTransferPaymentRejected.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentRejected.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentRejected.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentExpired: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .clock),
+                title: Localization.Bank.Error.bankTransferPaymentExpired.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentExpired.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentExpired.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentLimitExceeded: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.bankTransferPaymentLimitExceeded.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentLimitExceeded.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentLimitExceeded.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentUserAccountInvalid: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.bankTransferPaymentUserAccountInvalid.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentUserAccountInvalid.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentUserAccountInvalid.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentFailedInternal: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.bankTransferPaymentFailedInternal.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentFailedInternal.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentFailedInternal.action, action: .request),
+                .cancel
+            ]
+        ),
+        .bankTransferPaymentInsufficientFunds: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.bankTransferPaymentInsufficientFunds.title,
+                subtitle: Localization.Bank.Error.bankTransferPaymentInsufficientFunds.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.bankTransferPaymentInsufficientFunds.action, action: .request),
+                .cancel
+            ]
         )
     ]
 
-    static var defaultError: Self {
+    public static var defaultError: Self {
         .init(
             info: .init(
                 media: .bankIcon,

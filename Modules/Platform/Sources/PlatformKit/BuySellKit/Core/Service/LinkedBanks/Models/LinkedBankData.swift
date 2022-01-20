@@ -30,13 +30,7 @@ public struct LinkedBankData {
         }
     }
 
-    public enum LinkageError {
-        case alreadyLinked
-        case unsuportedAccount
-        case namesMismatched
-        case timeout
-        case unknown
-    }
+    public typealias LinkageError = LinkedBankResponse.Error
 
     public let currency: FiatCurrency
     public let identifier: String
@@ -84,16 +78,7 @@ public struct LinkedBankData {
 extension LinkedBankData.LinkageError {
     init?(from error: LinkedBankResponse.Error?) {
         guard let error = error else { return nil }
-        switch error {
-        case .alreadyLinked:
-            self = .alreadyLinked
-        case .namesMissmatched:
-            self = .namesMismatched
-        case .unsuportedAccount:
-            self = .unsuportedAccount
-        default:
-            self = .unknown
-        }
+        self = error
     }
 }
 

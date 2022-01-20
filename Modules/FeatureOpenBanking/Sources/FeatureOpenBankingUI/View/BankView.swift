@@ -21,7 +21,7 @@ public struct BankState: Equatable {
             case cancel
         }
 
-        public let info: InfoView.Model
+        public var info: InfoView.Model
         public internal(set) var action: [Action]?
     }
 
@@ -36,6 +36,15 @@ public struct BankState: Equatable {
             return institution.fullName
         case .deposit, .confirm:
             return account.details?.bankName ?? Localization.Bank.yourBank
+        }
+    }
+
+    var currency: String? {
+        switch data.action {
+        case .link, .deposit:
+            return account.currency
+        case .confirm(order: let order):
+            return order.outputCurrency
         }
     }
 }
@@ -139,7 +148,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         )
 
     case .failure(let error):
-        state.ui = .error(error)
+        state.ui = .error(error, currency: state.currency, in: environment)
         return .cancel(id: ID.ConsentError())
     }
 }
