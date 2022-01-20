@@ -74,41 +74,6 @@ final class PrefetchingTests: XCTestCase {
         }
     }
 
-    func testDisappear() {
-        let store = TestStore(
-            initialState: TestState(),
-            reducer: testReducer,
-            environment: TestEnvironment(mainQueue: scheduler.eraseToAnyScheduler())
-        )
-
-        store.send(.prefetching(.onAppear(index: 0))) {
-            $0.prefetching.seen = [0]
-        }
-
-        store.send(.prefetching(.onAppear(index: 1))) {
-            $0.prefetching.seen = [0, 1]
-        }
-
-        // Shorter than the debounce
-        scheduler.advance(by: 0.25)
-
-        store.send(.prefetching(.onDisappear(index: 0))) {
-            $0.prefetching.seen = [1]
-        }
-
-        // To the debounce
-        scheduler.advance(by: 5)
-
-        store.receive(.prefetching(.fetchIfNeeded)) {
-            $0.prefetching.seen = [1]
-        }
-
-        store.receive(.prefetching(.fetch(indices: [1]))) {
-            $0.prefetching.seen = [1]
-            $0.prefetching.fetchedIndices = [1]
-        }
-    }
-
     func testMarginsOverValidIndices() {
         let allIndices = 0..<10
         let visible = 2
