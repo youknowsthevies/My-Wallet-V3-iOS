@@ -10,7 +10,7 @@ public struct PrefetchingState: Equatable {
     let debounce: DispatchQueue.SchedulerTimeType.Stride
     let fetchMargin: Int
 
-    var visibleElements: Set<Int> = []
+    var seen: Set<Int> = []
     var fetchedIndices: Set<Int> = []
 
     // Public properties

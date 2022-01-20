@@ -8,9 +8,6 @@ public enum PrefetchingAction: Equatable {
     /// Send this action when your list item appears
     case onAppear(index: Int)
 
-    /// Send this action when your list item disappears
-    case onDisappear(index: Int)
-
     /// Send this action if you encounter an error fetching, and wish to re-queue a set of indices.
     case requeue(indices: Set<Int>)
 

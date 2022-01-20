@@ -52,11 +52,11 @@ final class PrefetchingTests: XCTestCase {
         )
 
         store.send(.prefetching(.onAppear(index: 0))) {
-            $0.prefetching.visibleElements = [0]
+            $0.prefetching.seen = [0]
         }
 
         store.send(.prefetching(.onAppear(index: 1))) {
-            $0.prefetching.visibleElements = [0, 1]
+            $0.prefetching.seen = [0, 1]
         }
 
         // Shorter than the debounce
@@ -65,47 +65,12 @@ final class PrefetchingTests: XCTestCase {
         scheduler.advance(by: 0.25)
 
         store.receive(.prefetching(.fetchIfNeeded)) {
-            $0.prefetching.visibleElements = [0, 1]
+            $0.prefetching.seen = [0, 1]
         }
 
         store.receive(.prefetching(.fetch(indices: [0, 1]))) {
-            $0.prefetching.visibleElements = [0, 1]
+            $0.prefetching.seen = [0, 1]
             $0.prefetching.fetchedIndices = [0, 1]
-        }
-    }
-
-    func testDisappear() {
-        let store = TestStore(
-            initialState: TestState(),
-            reducer: testReducer,
-            environment: TestEnvironment(mainQueue: scheduler.eraseToAnyScheduler())
-        )
-
-        store.send(.prefetching(.onAppear(index: 0))) {
-            $0.prefetching.visibleElements = [0]
-        }
-
-        store.send(.prefetching(.onAppear(index: 1))) {
-            $0.prefetching.visibleElements = [0, 1]
-        }
-
-        // Shorter than the debounce
-        scheduler.advance(by: 0.25)
-
-        store.send(.prefetching(.onDisappear(index: 0))) {
-            $0.prefetching.visibleElements = [1]
-        }
-
-        // To the debounce
-        scheduler.advance(by: 5)
-
-        store.receive(.prefetching(.fetchIfNeeded)) {
-            $0.prefetching.visibleElements = [1]
-        }
-
-        store.receive(.prefetching(.fetch(indices: [1]))) {
-            $0.prefetching.visibleElements = [1]
-            $0.prefetching.fetchedIndices = [1]
         }
     }
 
@@ -125,7 +90,7 @@ final class PrefetchingTests: XCTestCase {
         }
 
         store.send(.prefetching(.onAppear(index: visible))) {
-            $0.prefetching.visibleElements = [visible]
+            $0.prefetching.seen = [visible]
         }
 
         scheduler.advance(by: 0.5)
@@ -153,7 +118,7 @@ final class PrefetchingTests: XCTestCase {
         }
 
         store.send(.prefetching(.onAppear(index: visible))) {
-            $0.prefetching.visibleElements = [visible]
+            $0.prefetching.seen = [visible]
         }
 
         scheduler.advance(by: 0.5)
@@ -184,7 +149,7 @@ final class PrefetchingTests: XCTestCase {
         )
 
         store.send(.prefetching(.onAppear(index: visible))) {
-            $0.prefetching.visibleElements = [visible]
+            $0.prefetching.seen = [visible]
         }
 
         scheduler.advance(by: debounce)
