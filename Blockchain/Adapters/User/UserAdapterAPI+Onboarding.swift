@@ -10,11 +10,25 @@ extension UserAdapterAPI {
         userState
             .map { userState -> FeatureOnboardingUI.UserState in
                 FeatureOnboardingUI.UserState(
-                    hasCompletedKYC: userState.kycStatus.canPurchaseCrypto,
+                    kycStatus: .init(userState.kycStatus),
                     hasLinkedPaymentMethods: !userState.linkedPaymentMethods.isEmpty,
                     hasEverPurchasedCrypto: userState.hasEverPurchasedCrypto
                 )
             }
             .eraseToAnyPublisher()
+    }
+}
+
+extension FeatureOnboardingUI.UserState.KYCStatus {
+
+    init(_ kycStatus: UserState.KYCStatus) {
+        switch kycStatus {
+        case .unverified, .silver:
+            self = .incomplete
+        case .gold, .silverPlus:
+            self = .complete
+        case .inReview:
+            self = .pending
+        }
     }
 }

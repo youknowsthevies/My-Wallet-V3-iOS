@@ -40,6 +40,11 @@ extension LocalizationConstants.Onboarding {
             comment: "Onboarding checklist title"
         )
 
+        public static let pendingPlaceholder = NSLocalizedString(
+            "Processing...",
+            comment: "Onboarding checklist item subtitle displaying that the item's status is being actioned upon"
+        )
+
         public static let verifyIdentityTitle = NSLocalizedString(
             "Verify Your ID",
             comment: "Onboarding checklist item title - verify identity"
@@ -51,7 +56,7 @@ extension LocalizationConstants.Onboarding {
         )
 
         public static let linkPaymentMethodsTitle = NSLocalizedString(
-            "Link a Bank or Card",
+            "Link a Payment Method",
             comment: "Onboarding checklist item title - link payment methods"
         )
 

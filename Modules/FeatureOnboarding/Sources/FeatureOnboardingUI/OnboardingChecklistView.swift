@@ -42,12 +42,11 @@ public struct OnboardingChecklistView: View {
                 VStack(spacing: Spacing.padding3) {
                     VStack(alignment: .leading, spacing: Spacing.baseline) {
                         ForEach(viewStore.items) { item in
-                            let completed = viewStore
-                                .completedItems
-                                .contains(item)
+                            let completed = viewStore.completedItems.contains(item)
+                            let pending = viewStore.pendingItems.contains(item)
                             OnboardingRow(
                                 item: item,
-                                completed: completed
+                                status: rowStatusForState(completed: completed, pending: pending)
                             )
                             .onTapGesture {
                                 if !completed {
@@ -77,6 +76,16 @@ public struct OnboardingChecklistView: View {
         .onAppear {
             viewStore.send(.startObservingUserState)
         }
+    }
+
+    private func rowStatusForState(completed: Bool, pending: Bool) -> OnboardingRow.Status {
+        guard completed else {
+            guard pending else {
+                return .incomplete
+            }
+            return .pending
+        }
+        return .complete
     }
 }
 
@@ -113,7 +122,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            hasCompletedKYC: false,
+                            kycStatus: .incomplete,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -132,7 +141,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            hasCompletedKYC: true,
+                            kycStatus: .pending,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -151,7 +160,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            hasCompletedKYC: true,
+                            kycStatus: .complete,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: false
                         )
@@ -170,7 +179,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            hasCompletedKYC: true,
+                            kycStatus: .complete,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: true
                         )

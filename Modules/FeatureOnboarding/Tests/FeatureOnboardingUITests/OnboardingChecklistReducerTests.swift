@@ -27,37 +27,19 @@ final class OnboardingChecklistReducerTests: XCTestCase {
             environment: OnboardingChecklist.Environment(
                 userState: userStateSubject.eraseToAnyPublisher(),
                 presentBuyFlow: { [userStateSubject, testMainScheduler] completion in
-                    userStateSubject?.send(
-                        UserState(
-                            hasCompletedKYC: true,
-                            hasLinkedPaymentMethods: true,
-                            hasEverPurchasedCrypto: true
-                        )
-                    )
+                    userStateSubject?.send(.complete)
                     testMainScheduler?.schedule {
                         completion(true)
                     }
                 },
                 presentKYCFlow: { [userStateSubject, testMainScheduler] completion in
-                    userStateSubject?.send(
-                        UserState(
-                            hasCompletedKYC: true,
-                            hasLinkedPaymentMethods: false,
-                            hasEverPurchasedCrypto: false
-                        )
-                    )
+                    userStateSubject?.send(.kycComplete)
                     testMainScheduler?.schedule {
                         completion(true)
                     }
                 },
                 presentPaymentMethodLinkingFlow: { [userStateSubject, testMainScheduler] completion in
-                    userStateSubject?.send(
-                        UserState(
-                            hasCompletedKYC: true,
-                            hasLinkedPaymentMethods: true,
-                            hasEverPurchasedCrypto: false
-                        )
-                    )
+                    userStateSubject?.send(.paymentMethodsLinked)
                     testMainScheduler?.schedule {
                         completion(true)
                     }
@@ -76,263 +58,133 @@ final class OnboardingChecklistReducerTests: XCTestCase {
 
     func test_action_didSelectItem_kycCompleted_no_items_completed() throws {
         resetUserStateToClean()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.verifyIdentity)),
-            // kyc is done
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // then they go through kyc
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.verifyIdentity))
+        // kyc is done
+        testMainScheduler.advance()
+        // then they go through kyc
+        testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.completedItems = [.verifyIdentity]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_didSelectItem_linkPaymentMethod_no_items_completed() throws {
         resetUserStateToClean()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.linkPaymentMethods)),
-            // then they go through kyc
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // kyc is done
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity]
-            },
-            // then they go through linking a payment method
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.linkPaymentMethods))
+        // then they go through kyc
+        testMainScheduler.advance()
+        // kyc is done
+        testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.completedItems = [.verifyIdentity]
+        }
+        // then they go through linking a payment method
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_didSelectItem_linkPaymentMethod_kyc_completed() throws {
         resetUserStateToKYCCompleted()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.linkPaymentMethods)),
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // then they go through linking a payment method
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.linkPaymentMethods))
+        testMainScheduler.advance()
+        // then they go through linking a payment method
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_didSelectItem_buyCrypto_no_items_completed() throws {
         resetUserStateToClean()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.buyCrypto)),
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // then they go through kyc
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity]
-            },
-            // then they go through linking a payment method
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
-            },
-            // then they go through buy
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: true
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.buyCrypto))
+        testMainScheduler.advance()
+        // then they go through kyc
+        testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.completedItems = [.verifyIdentity]
+        }
+        // then they go through linking a payment method
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        }
+        // then they go through buy
+        testStore.receive(.userStateDidChange(.complete)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_didSelectItem_buyCrypto_kyc_completed() throws {
         resetUserStateToKYCCompleted()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.buyCrypto)),
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // then they go through linking a payment method
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
-            },
-            // then they go through buy
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: true
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.buyCrypto))
+        testMainScheduler.advance()
+        // then they go through linking a payment method
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        }
+        // then they go through buy
+        testStore.receive(.userStateDidChange(.complete)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_didSelectItem_buyCrypto_kyc_and_payment_completed() throws {
         resetUserStateToKYCAndPaymentsCompleted()
-        testStore.assert(
-            .send(.startObservingUserState),
-            // user taps on verify identity item
-            .send(.didSelectItem(.buyCrypto)),
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            // then they go through buy
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: true
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        // user taps on verify identity item
+        testStore.send(.didSelectItem(.buyCrypto))
+        testMainScheduler.advance()
+        // then they go through buy
+        testStore.receive(.userStateDidChange(.complete)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     func test_action_dismissFullScreenChecklist() throws {
-        testStore.assert(
-            // user taps on close
-            .send(.dismissFullScreenChecklist),
-            // then the full screen checklist gets dismissed
-            .receive(.dismiss()) {
-                $0.route = nil
-            }
-        )
+        // user taps on close
+        testStore.send(.dismissFullScreenChecklist)
+        // then the full screen checklist gets dismissed
+        testStore.receive(.dismiss()) {
+            $0.route = nil
+        }
     }
 
     func test_action_presentFullScreenChecklist() throws {
-        testStore.assert(
-            // user taps on overview
-            .send(.presentFullScreenChecklist),
-            // then the full screen checklist gets presented
-            .receive(.enter(into: .fullScreenChecklist, context: .none)) {
-                $0.route = .enter(into: .fullScreenChecklist, context: .none)
-            }
-        )
+        // user taps on overview
+        testStore.send(.presentFullScreenChecklist)
+        // then the full screen checklist gets presented
+        testStore.receive(.enter(into: .fullScreenChecklist, context: .none)) {
+            $0.route = .enter(into: .fullScreenChecklist, context: .none)
+        }
     }
 
     func test_action_startAndStopObservingUserState() throws {
-        testStore.assert(
-            // view is displayed and starts listening to changes
-            .send(.startObservingUserState),
-            // a new value is sent
-            .do { [weak self] in
-                self?.resetUserState(
-                    to: UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            },
-            // that new value is received
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity]
-            },
-            // the view is dimissed and the values stream subscription is cancelled
-            .send(.stopObservingUserState),
-            // the next do block serves to ensure no further changes are listened to
-            .do { [weak self] in
-                self?.resetUserStateToKYCAndPaymentsCompleted()
-                self?.testMainScheduler.advance()
-            }
-        )
+        // view is displayed and starts listening to changes
+        testStore.send(.startObservingUserState)
+        // a new value is sent
+        resetUserState(to: .kycComplete)
+        // that new value is received
+        testMainScheduler.advance()
+        testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.completedItems = [.verifyIdentity]
+        }
+        // the view is dimissed and the values stream subscription is cancelled
+        testStore.send(.stopObservingUserState)
+        // the next do block serves to ensure no further changes are listened to
+        resetUserStateToKYCAndPaymentsCompleted()
+        testMainScheduler.advance()
     }
 }
 
@@ -341,96 +193,71 @@ final class OnboardingChecklistReducerTests: XCTestCase {
 extension OnboardingChecklistReducerTests {
 
     private func resetUserStateToClean() {
-        testStore.assert(
-            .send(.startObservingUserState),
-            .do { [weak self] in
-                self?.resetUserState(
-                    to: UserState(
-                        hasCompletedKYC: false,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            },
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: false,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = []
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        resetUserState(to: .initialState)
+        testMainScheduler.advance()
+        testStore.receive(.userStateDidChange(.initialState)) {
+            $0.completedItems = []
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     private func resetUserStateToKYCCompleted() {
-        testStore.assert(
-            .send(.startObservingUserState),
-            .do { [weak self] in
-                self?.resetUserState(
-                    to: UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            },
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: false,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        resetUserState(to: .kycComplete)
+        testMainScheduler.advance()
+        testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.completedItems = [.verifyIdentity]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     private func resetUserStateToKYCAndPaymentsCompleted() {
-        testStore.assert(
-            .send(.startObservingUserState),
-            .do { [weak self] in
-                self?.resetUserState(
-                    to: UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            },
-            .do { [weak self] in
-                self?.testMainScheduler.advance()
-            },
-            .receive(
-                .userStateDidChange(
-                    UserState(
-                        hasCompletedKYC: true,
-                        hasLinkedPaymentMethods: true,
-                        hasEverPurchasedCrypto: false
-                    )
-                )
-            ) {
-                $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
-            },
-            .send(.stopObservingUserState)
-        )
+        testStore.send(.startObservingUserState)
+        resetUserState(to: .paymentMethodsLinked)
+        testMainScheduler.advance()
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        }
+        testStore.send(.stopObservingUserState)
     }
 
     private func resetUserState(to userState: UserState) {
         userStateSubject.send(userState)
+    }
+}
+
+extension UserState {
+
+    static var initialState: UserState {
+        UserState(
+            kycStatus: .incomplete,
+            hasLinkedPaymentMethods: false,
+            hasEverPurchasedCrypto: false
+        )
+    }
+
+    static var kycComplete: UserState {
+        UserState(
+            kycStatus: .complete,
+            hasLinkedPaymentMethods: false,
+            hasEverPurchasedCrypto: false
+        )
+    }
+
+    static var paymentMethodsLinked: UserState {
+        UserState(
+            kycStatus: .complete,
+            hasLinkedPaymentMethods: true,
+            hasEverPurchasedCrypto: false
+        )
+    }
+
+    static var complete: UserState {
+        UserState(
+            kycStatus: .complete,
+            hasLinkedPaymentMethods: true,
+            hasEverPurchasedCrypto: true
+        )
     }
 }

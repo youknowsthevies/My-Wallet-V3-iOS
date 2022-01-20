@@ -44,11 +44,13 @@ public enum OnboardingChecklist {
     public struct State: Equatable, NavigationState {
 
         var items: [Item]
+        var pendingItems: Set<Item>
         var completedItems: Set<Item>
         public var route: RouteIntent<Route>?
 
         public init() {
             items = OnboardingChecklist.allItems
+            pendingItems = []
             completedItems = []
         }
     }
@@ -136,6 +138,7 @@ public enum OnboardingChecklist {
 
         case .userStateDidChange(let userState):
             state.completedItems = userState.completedOnboardingChecklistItems
+            state.pendingItems = userState.kycStatus == .pending ? [.verifyIdentity] : []
             return .none
         }
     }
@@ -195,6 +198,13 @@ extension OnboardingChecklist.Environment {
         default:
             unimplemented()
         }
+    }
+}
+
+extension OnboardingChecklist.Item {
+
+    var pendingDetail: String {
+        LocalizationConstants.Onboarding.Checklist.pendingPlaceholder
     }
 }
 
@@ -297,7 +307,7 @@ extension UserState {
 
     fileprivate var completedOnboardingChecklistItems: Set<OnboardingChecklist.Item> {
         var result = Set<OnboardingChecklist.Item>()
-        if hasCompletedKYC {
+        if kycStatus == .complete {
             result.insert(.verifyIdentity)
         }
         if hasLinkedPaymentMethods {

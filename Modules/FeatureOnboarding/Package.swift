@@ -22,6 +22,7 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
+        .package(path: "../Localization"),
         .package(path: "../Platform"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -35,6 +36,7 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "Localization", package: "Localization"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]

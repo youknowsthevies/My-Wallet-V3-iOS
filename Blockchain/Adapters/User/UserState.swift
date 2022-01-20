@@ -13,6 +13,7 @@ struct UserState: Equatable {
     /// A data structure that represents the KYC status of the user
     enum KYCStatus: Equatable {
         case unverified
+        case inReview
         case silver
         case silverPlus
         case gold
@@ -21,7 +22,7 @@ struct UserState: Equatable {
             switch self {
             case .unverified, .silver:
                 return false
-            case .silverPlus, .gold:
+            case .silverPlus, .gold, .inReview:
                 return true
             }
         }

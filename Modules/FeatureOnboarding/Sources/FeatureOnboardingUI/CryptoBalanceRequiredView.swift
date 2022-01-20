@@ -80,12 +80,12 @@ public struct CryptoBalanceRequiredView: View {
                 content: {
                     VStack(spacing: Spacing.padding3) {
                         VStack(alignment: .leading, spacing: Spacing.baseline) {
-                            OnboardingRow(item: .buyCryptoAlternative, completed: false)
+                            OnboardingRow(item: .buyCryptoAlternative, status: .incomplete)
                                 .onTapGesture {
                                     viewStore.send(.buyCrypto)
                                 }
 
-                            OnboardingRow(item: .requestCrypto, completed: false)
+                            OnboardingRow(item: .requestCrypto, status: .incomplete)
                                 .onTapGesture {
                                     viewStore.send(.requestCrypto)
                                 }

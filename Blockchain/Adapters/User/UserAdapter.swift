@@ -49,6 +49,8 @@ extension UserState.KYCStatus {
     fileprivate init(userTiers: KYC.UserTiers, isSDDVerified: Bool) {
         if userTiers.isTier2Approved {
             self = .gold
+        } else if userTiers.isTier2Pending {
+            self = .inReview
         } else if userTiers.isTier1Approved, isSDDVerified {
             self = .silverPlus
         } else if userTiers.isTier1Approved {

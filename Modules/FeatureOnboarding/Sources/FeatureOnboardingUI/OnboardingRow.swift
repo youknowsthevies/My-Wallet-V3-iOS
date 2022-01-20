@@ -3,16 +3,23 @@
 import ComponentLibrary
 import ComposableArchitecture
 import SwiftUI
+import UIComponentsKit
 
 struct OnboardingRow: View {
 
+    enum Status {
+        case incomplete
+        case pending
+        case complete
+    }
+
     let item: OnboardingChecklist.Item
-    let completed: Bool
+    let status: Status
 
     var body: some View {
         PrimaryRow(
             title: item.title,
-            caption: item.detail,
+            caption: status == .pending ? item.pendingDetail : item.detail,
             leading: {
                 item.icon
                     .frame(width: 28, height: 28)
@@ -25,10 +32,14 @@ struct OnboardingRow: View {
                     .clipped()
             },
             trailing: {
-                if completed {
+                if status == .complete {
                     Icon.checkCircle
                         .frame(width: 24, height: 24)
                         .accentColor(.semantic.success)
+                } else if status == .pending {
+                    ProgressView(value: 0.25)
+                        .progressViewStyle(IndeterminateProgressStyle())
+                        .frame(width: 24, height: 24)
                 } else {
                     Icon.chevronRight
                         .frame(width: 24, height: 24)
@@ -47,5 +58,17 @@ struct OnboardingRow: View {
                     y: 1
                 )
         )
+    }
+}
+
+struct OnboardingRow_Previews: PreviewProvider {
+
+    static var previews: some View {
+        VStack(spacing: Spacing.padding1) {
+            OnboardingRow(item: .verifyIdentity, status: .incomplete)
+            OnboardingRow(item: .linkPaymentMethod, status: .pending)
+            OnboardingRow(item: .buyCrypto, status: .complete)
+        }
+        .padding()
     }
 }
