@@ -124,7 +124,6 @@ public struct CreateAccountState: Equatable, NavigationState {
 
 public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case binding(BindingAction<CreateAccountState>)
-    case closeButtonTapped
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
     case createAccount
     case createButtonTapped
@@ -183,9 +182,6 @@ let createAccountReducer = Reducer<
         case .state:
             return .enter(into: .statePicker, context: .none)
         }
-
-    case .closeButtonTapped:
-        return .none // handled by parent
 
     case .createAccount:
         return .none // handled by parent

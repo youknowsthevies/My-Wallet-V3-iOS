@@ -8,15 +8,14 @@ import ToolKit
 // MARK: - Type
 
 public enum WalletPairingAction: Equatable {
-    case approveEmailAuthorization(_ has2FAEnabled: Bool)
-    case authenticate(String)
+    case approveEmailAuthorization
+    case authenticate(String, autoTrigger: Bool = false)
     case authenticateDidFail(LoginServiceError)
     case authenticateWithTwoFactorOTP(String)
     case authenticateWithTwoFactorOTPDidFail(LoginServiceError)
     case decryptWalletWithPassword(String)
     case didResendSMSCode(Result<EmptyValue, SMSServiceError>)
     case didSetupSessionToken(Result<EmptyValue, SessionTokenServiceError>)
-    case didApproveEmailAuthorization(Result<EmptyValue, DeviceVerificationServiceError>, has2FAEnabled: Bool)
     case handleSMS
     case needsEmailAuthorization
     case pollWalletIdentifier
@@ -28,10 +27,6 @@ public enum WalletPairingAction: Equatable {
 }
 
 enum WalletPairingCancelations {
-    struct AuthorizeApproveId: Hashable {}
-    struct AuthenticateId: Hashable {}
-    struct ResendSMSId: Hashable {}
-    struct SessionTokenId: Hashable {}
     struct WalletIdentifierPollingTimerId: Hashable {}
     struct WalletIdentifierPollingId: Hashable {}
 }
@@ -95,22 +90,19 @@ let walletPairingReducer = Reducer<
 > { state, action, environment in
     switch action {
 
-    case .approveEmailAuthorization(let has2FAEnabled):
-        return approveEmailAuthorization(state, has2FAEnabled, environment)
+    case .approveEmailAuthorization:
+        return approveEmailAuthorization(state, environment)
 
-    case .authenticate(let password):
+    case .authenticate(let password, let autoTrigger):
         // credentials reducer will set password here
         state.password = password
-        return authenticate(password, state, environment)
+        return authenticate(password, state, environment, isAutoTrigger: autoTrigger)
 
     case .authenticateWithTwoFactorOTP(let code):
         return authenticateWithTwoFactorOTP(code, state, environment)
 
     case .needsEmailAuthorization:
-        return .merge(
-            .cancel(id: WalletPairingCancelations.AuthorizeApproveId()),
-            needsEmailAuthorization()
-        )
+        return needsEmailAuthorization()
 
     case .pollWalletIdentifier:
         return pollWalletIdentifier(state, environment)
@@ -122,41 +114,15 @@ let walletPairingReducer = Reducer<
         return setupSessionToken(environment)
 
     case .startPolling:
-        return .merge(
-            .cancel(id: WalletPairingCancelations.AuthorizeApproveId()),
-            startPolling(environment)
-        )
+        return startPolling(environment)
 
-    case .didApproveEmailAuthorization(let result, let has2FAEnabled):
-        if case .failure(let error) = result {
-            // If failed, an `Authorize Log In` will be sent to user for manual authorization
-            environment.errorRecorder.error(error)
-            // we only want to handle `.expiredEmailCode` case, other errors are ignored...
-            switch error {
-            case .expiredEmailCode:
-                return Effect(value: .needsEmailAuthorization)
-            case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
-                break
-            }
-        }
-        guard has2FAEnabled else {
-            return .cancel(id: WalletPairingCancelations.AuthorizeApproveId())
-        }
-        return Effect(value: .startPolling)
-
-    case .decryptWalletWithPassword,
-         .authenticateDidFail,
+    case .authenticateDidFail,
+         .authenticateWithTwoFactorOTPDidFail,
+         .decryptWalletWithPassword,
+         .didResendSMSCode,
+         .didSetupSessionToken,
+         .handleSMS,
          .twoFactorOTPDidVerified,
-         .authenticateWithTwoFactorOTPDidFail:
-        return .cancel(id: WalletPairingCancelations.AuthenticateId())
-
-    case .didResendSMSCode:
-        return .cancel(id: WalletPairingCancelations.ResendSMSId())
-
-    case .didSetupSessionToken:
-        return .cancel(id: WalletPairingCancelations.SessionTokenId())
-
-    case .handleSMS,
          .none:
         // handled in credentials reducer
         return .none
@@ -167,7 +133,6 @@ let walletPairingReducer = Reducer<
 
 private func approveEmailAuthorization(
     _ state: WalletPairingState,
-    _ has2FAEnabled: Bool,
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     guard let emailCode = state.emailCode else {
@@ -180,19 +145,27 @@ private func approveEmailAuthorization(
         .authorizeLogin(emailCode: emailCode)
         .receive(on: environment.mainQueue)
         .catchToEffect()
-        .map { result in
-            result.map { _ in EmptyValue.noValue }
-        }
-        .cancellable(id: WalletPairingCancelations.AuthorizeApproveId(), cancelInFlight: true)
-        .map { result in
-            .didApproveEmailAuthorization(result, has2FAEnabled: has2FAEnabled)
+        .map { result -> WalletPairingAction in
+            if case .failure(let error) = result {
+                // If failed, an `Authorize Log In` will be sent to user for manual authorization
+                environment.errorRecorder.error(error)
+                // we only want to handle `.expiredEmailCode` case, silent other errors...
+                switch error {
+                case .expiredEmailCode:
+                    return .needsEmailAuthorization
+                case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
+                    break
+                }
+            }
+            return .startPolling
         }
 }
 
 private func authenticate(
     _ password: String,
     _ state: WalletPairingState,
-    _ environment: WalletPairingEnvironment
+    _ environment: WalletPairingEnvironment,
+    isAutoTrigger: Bool
 ) -> Effect<WalletPairingAction, Never> {
     guard !state.walletGuid.isEmpty else {
         fatalError("GUID should not be empty")
@@ -204,10 +177,13 @@ private func authenticate(
             .login(walletIdentifier: state.walletGuid)
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .cancellable(id: WalletPairingCancelations.AuthenticateId(), cancelInFlight: true)
             .map { result -> WalletPairingAction in
                 switch result {
                 case .success:
+                    if isAutoTrigger {
+                        // edge case handling: if auto triggered, we don't want to decrypt wallet
+                        return .none
+                    }
                     return .decryptWalletWithPassword(password)
                 case .failure(let error):
                     return .authenticateDidFail(error)
@@ -232,7 +208,6 @@ private func authenticateWithTwoFactorOTP(
         )
         .receive(on: environment.mainQueue)
         .catchToEffect()
-        .cancellable(id: WalletPairingCancelations.AuthenticateId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:
@@ -277,7 +252,6 @@ private func resendSMSCode(
         .request()
         .receive(on: environment.mainQueue)
         .catchToEffect()
-        .cancellable(id: WalletPairingCancelations.ResendSMSId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:
@@ -296,7 +270,6 @@ private func setupSessionToken(
         .setupSessionToken()
         .receive(on: environment.mainQueue)
         .catchToEffect()
-        .cancellable(id: WalletPairingCancelations.SessionTokenId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:
@@ -311,18 +284,15 @@ private func startPolling(
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     // Poll the Guid every 2 seconds
-    .concatenate(
-        Effect(value: .pollWalletIdentifier),
-        Effect
-            .timer(
-                id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
-                every: 2,
-                on: environment.pollingQueue
-            )
-            .map { _ in
-                .pollWalletIdentifier
-            }
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
-    )
+    Effect
+        .timer(
+            id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
+            every: 2,
+            on: environment.pollingQueue
+        )
+        .map { _ in
+            .pollWalletIdentifier
+        }
+        .receive(on: environment.mainQueue)
+        .eraseToEffect()
 }
