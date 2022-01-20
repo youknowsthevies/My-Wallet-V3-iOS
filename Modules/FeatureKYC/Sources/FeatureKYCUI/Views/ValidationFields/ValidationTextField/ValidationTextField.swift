@@ -153,6 +153,7 @@ class ValidationTextField: NibBasedView {
         }
         set {
             textField.isEnabled = newValue
+            updateBackgroundColor()
         }
     }
 
@@ -229,6 +230,11 @@ class ValidationTextField: NibBasedView {
     }
 
     // MARK: Private Functions
+
+    private func updateBackgroundColor() {
+        backgroundColor = isEnabled ? .white : .disabled
+        textField.backgroundColor = backgroundColor
+    }
 
     fileprivate func applyValidity(animated: Bool) {
         switch validity {

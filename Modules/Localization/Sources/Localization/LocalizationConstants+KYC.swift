@@ -562,6 +562,15 @@ extension LocalizationConstants {
         public static let postalCode = NSLocalizedString("Postal Code", comment: "postal code")
 
         public enum Errors {
+            public static let cannotEditCountryOrStateTitle = NSLocalizedString(
+                "You cannot change your Country or State",
+                comment: "Title for an alert warning users that they can't change their Country or State if we already have that data"
+            )
+            public static let cannotEditCountryOrStateMessage = NSLocalizedString(
+                "If you need to change your Country or State, please contact our customer support.",
+                comment: "Longer explanation in an alert warning users that they can't change their Country or State if we already have that data. If they need that, they should conact the customer support."
+            )
+
             public static let genericErrorMessage = NSLocalizedString("Please check the information you provided and try again.", comment: "A message shown when something goes wrong on the backend, normally address validation.")
             public static let cannotFetchUserAlertTitle = NSLocalizedString(
                 "Failed to get user",
