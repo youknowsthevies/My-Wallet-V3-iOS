@@ -64,4 +64,10 @@ final class BigIntExtensionTests: XCTestCase {
         XCTAssertEqual(result.quotient, BigInt(60))
         XCTAssertEqual(result.remainder, BigInt(0))
     }
+
+    func testDecimal() {
+        XCTAssertEqual(BigInt(Int64.min).decimal, Decimal(Int64.min))
+        XCTAssertEqual(BigInt(0).decimal, 0)
+        XCTAssertEqual(BigInt(Int64.max).decimal, Decimal(Int64.max))
+    }
 }

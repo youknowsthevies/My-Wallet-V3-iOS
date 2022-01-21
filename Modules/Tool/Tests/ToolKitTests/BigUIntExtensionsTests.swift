@@ -4,7 +4,7 @@ import BigInt
 import ToolKit
 import XCTest
 
-class BigUIntTests: XCTestCase {
+final class BigUIntExtensionsTests: XCTestCase {
 
     func test_hex_string_biguint() {
         XCTAssertEqual(BigUInt(0).hexString, "00")
@@ -20,5 +20,10 @@ class BigUIntTests: XCTestCase {
         XCTAssertEqual(BigUInt(18445000000000000000).hexString, "fff9cdc632148000")
         XCTAssertEqual(BigUInt("23000000000000000000").hexString, "013f306a2409fc0000")
         XCTAssertEqual(BigUInt("99999999000000000000000000").hexString, "52b7d2cee7561f3c9c0000")
+    }
+
+    func testDecimal() {
+        XCTAssertEqual(BigUInt(UInt64.min).decimal, Decimal(UInt64.min))
+        XCTAssertEqual(BigUInt(UInt64.max).decimal, Decimal(UInt64.max))
     }
 }

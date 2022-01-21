@@ -60,6 +60,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     private func fetchAllUnspentOutputs() -> Single<UnspentOutputs> {
         bridge.wallets
             .map { wallets -> [XPub] in
+                // This may be not what we need, as it will fetch utxos from all wallets, and not just from the one we want to send from.
                 wallets
                     .map(\.publicKeys.xpubs)
                     .flatMap { $0 }

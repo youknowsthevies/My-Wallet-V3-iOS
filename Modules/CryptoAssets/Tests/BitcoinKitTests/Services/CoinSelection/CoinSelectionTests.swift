@@ -10,133 +10,220 @@ class CoinSelectionTests: XCTestCase {
 
     private static let feePerByte = BigUInt(55)
 
-    var fee: Fee!
+    var feePerByte: BigUInt!
     var calculator: TransactionSizeCalculating!
     var subject: CoinSelection!
 
     override func setUp() {
         super.setUp()
-
-        fee = Fee(feePerByte: CoinSelectionTests.feePerByte)
+        feePerByte = CoinSelectionTests.feePerByte
         calculator = TransactionSizeCalculator()
         subject = CoinSelection(calculator: calculator)
     }
 
     override func tearDown() {
-        fee = nil
+        feePerByte = nil
         calculator = nil
         subject = nil
-
         super.tearDown()
     }
 
-    func test_ascent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .coin(.bitcoin)))
-        let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
+    func test_ascent_draw_selection_with_no_unspent() throws {
+        let coins = unspents([])
         let strategy = AscentDrawSortingStrategy()
-        let result = subject.select(inputs:
-            CoinSelectionInputs(
-                value: outputAmount,
-                fee: fee,
-                unspentOutputs: coins,
-                sortingStrategy: strategy
-            )
+        let inputs = CoinSelectionInputs(
+            target: .init(value: 0, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: coins,
+            sortingStrategy: strategy,
+            changeOutputType: .P2PKH
         )
+        let result = subject.select(inputs: inputs)
+        XCTAssertThrowsError(try result.get()) { error in
+            XCTAssertEqual(error as? CoinSelectionError, .noCoinsToSelect)
+        }
+    }
 
+    func test_ascent_draw_selection_with_no_fee() throws {
+        let coins = unspents([1, 2, 3])
+        let strategy = AscentDrawSortingStrategy()
+        let inputs = CoinSelectionInputs(
+            target: .init(value: 0, scriptType: .P2PKH),
+            feePerByte: 0,
+            unspentOutputs: coins,
+            sortingStrategy: strategy,
+            changeOutputType: .P2PKH
+        )
+        let result = subject.select(inputs: inputs)
+        XCTAssertThrowsError(try result.get()) { error in
+            XCTAssertEqual(error as? CoinSelectionError, .noSelectedCoins)
+        }
+    }
+
+    func test_ascent_draw_selection_with_fee() throws {
+        let inputs = CoinSelectionInputs(
+            target: .init(value: 10000, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: unspents([1, 20000, 300000]),
+            sortingStrategy: AscentDrawSortingStrategy(),
+            changeOutputType: .P2PKH
+        )
+        let result = subject.select(inputs: inputs)
+        let selected = unspents([20000, 300000])
+        let expectedOutputs = SpendableUnspentOutputs(
+            spendableOutputs: selected,
+            absoluteFee: 20570,
+            amount: 10000,
+            change: 289430
+        )
+        let outputs = try result.get()
+        XCTAssertEqual(outputs.spendableOutputs, expectedOutputs.spendableOutputs)
+        XCTAssertEqual(outputs.absoluteFee, expectedOutputs.absoluteFee)
+        XCTAssertEqual(outputs.amount, expectedOutputs.amount)
+        XCTAssertEqual(outputs.change, expectedOutputs.change)
+    }
+
+    func test_ascent_draw_selection_with_change_output() throws {
+        let inputs = CoinSelectionInputs(
+            target: .init(value: 100000, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: unspents([1, 20000, 0, 0, 300000, 50000, 30000]),
+            sortingStrategy: AscentDrawSortingStrategy(),
+            changeOutputType: .P2PKH
+        )
+        let result = subject.select(inputs: inputs)
+
+        let absoluteFee: Int64 = 36850 // (10 + (4 * 148) + (2 * 34)) * 55
         let selected = unspents([20000, 30000, 50000, 300000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
-            absoluteFee: BigUInt(37070),
-            consumedAmount: BigUInt.zero
+            absoluteFee: BigUInt(absoluteFee),
+            amount: 100000,
+            change: 263150
         )
         let outputs = try result.get()
-        XCTAssertEqual(outputs, expectedOutputs)
+        XCTAssertEqual(outputs.spendableOutputs, expectedOutputs.spendableOutputs)
+        XCTAssertEqual(outputs.absoluteFee, expectedOutputs.absoluteFee)
+        XCTAssertEqual(outputs.amount, expectedOutputs.amount)
+        XCTAssertEqual(outputs.change, expectedOutputs.change)
     }
 
     func test_ascent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 472000, currency: .coin(.bitcoin)))
-        let coins = unspents([200000, 300000, 500000])
-        let strategy = AscentDrawSortingStrategy()
-        let result = subject.select(inputs:
-            CoinSelectionInputs(
-                value: outputAmount,
-                fee: fee,
-                unspentOutputs: coins,
-                sortingStrategy: strategy
-            )
+        let amount: BigUInt = 480000
+        let inputs = CoinSelectionInputs(
+            target: .init(value: amount, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: unspents([200000, 300000, 500000]),
+            sortingStrategy: AscentDrawSortingStrategy(),
+            changeOutputType: .P2PKH
         )
-        let selected = unspents([200000, 300000])
+        let result = subject.select(inputs: inputs)
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: selected,
-            absoluteFee: selected.sum() - outputAmount.amount.magnitude,
-            consumedAmount: BigUInt(9190)
+            spendableOutputs: unspents([200000, 300000]),
+            absoluteFee: (200000 + 300000) - amount,
+            amount: amount,
+            change: .zero
         )
         let outputs = try result.get()
-        XCTAssertEqual(outputs, expectedOutputs)
+        XCTAssertEqual(outputs.spendableOutputs, expectedOutputs.spendableOutputs)
+        XCTAssertEqual(outputs.absoluteFee, expectedOutputs.absoluteFee)
+        XCTAssertEqual(outputs.amount, expectedOutputs.amount)
+        XCTAssertEqual(outputs.change, expectedOutputs.change)
     }
 
     func test_descent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .coin(.bitcoin)))
-        let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
-        let strategy = DescentDrawSortingStrategy()
-        let result = subject.select(inputs:
-            CoinSelectionInputs(
-                value: outputAmount,
-                fee: fee,
-                unspentOutputs: coins,
-                sortingStrategy: strategy
-            )
+        let inputs = CoinSelectionInputs(
+            target: .init(value: 100000, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: unspents([1, 20000, 0, 0, 300000, 50000, 30000]),
+            sortingStrategy: DescentDrawSortingStrategy(),
+            changeOutputType: .P2PKH
         )
+        let result = subject.select(inputs: inputs)
+
+        let absoluteFee: Int64 = 12430 // (10 + (1 * 148) + (2 * 34)) * 55
+        let selected = unspents([300000])
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: unspents([300000]),
-            absoluteFee: BigUInt(12485),
-            consumedAmount: BigUInt.zero
+            spendableOutputs: selected,
+            absoluteFee: BigUInt(absoluteFee),
+            amount: 100000,
+            change: 187570 // 300000 - 100000 - absoluteFee
         )
         let outputs = try result.get()
-        XCTAssertEqual(outputs, expectedOutputs)
+        XCTAssertEqual(outputs.spendableOutputs, expectedOutputs.spendableOutputs)
+        XCTAssertEqual(outputs.absoluteFee, expectedOutputs.absoluteFee)
+        XCTAssertEqual(outputs.amount, expectedOutputs.amount)
+        XCTAssertEqual(outputs.change, expectedOutputs.change)
     }
 
     func test_descent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 485000, currency: .coin(.bitcoin)))
-        let coins = unspents([200000, 300000, 500000])
-        let strategy = DescentDrawSortingStrategy()
-        let result = subject.select(inputs:
-            CoinSelectionInputs(
-                value: outputAmount,
-                fee: fee,
-                unspentOutputs: coins,
-                sortingStrategy: strategy
-            )
+        let amount: BigUInt = 482000
+        let inputs = CoinSelectionInputs(
+            target: .init(value: amount, scriptType: .P2PKH),
+            feePerByte: feePerByte,
+            unspentOutputs: unspents([200000, 300000, 500000]),
+            sortingStrategy: DescentDrawSortingStrategy(),
+            changeOutputType: .P2PKH
         )
-        let selected = unspents([500000])
+        let result = subject.select(inputs: inputs)
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: selected,
-            absoluteFee: selected.sum() - outputAmount.amount.magnitude,
-            consumedAmount: BigUInt(4385)
+            spendableOutputs: unspents([500000]),
+            absoluteFee: 500000 - amount,
+            amount: amount,
+            change: .zero
+        )
+        let outputs = try result.get()
+        XCTAssertEqual(outputs.spendableOutputs, expectedOutputs.spendableOutputs)
+        XCTAssertEqual(outputs.absoluteFee, expectedOutputs.absoluteFee)
+        XCTAssertEqual(outputs.amount, expectedOutputs.amount)
+        XCTAssertEqual(outputs.change, expectedOutputs.change)
+    }
+
+    func test_select_all_selection_with_effective_inputs_P2PKH() throws {
+        let coins = unspents([1, 20000, 0, 0, 300000])
+        let result = subject.select(
+            all: coins,
+            feePerByte: feePerByte,
+            singleOutputType: .P2PKH
+        )
+        let expectedOutputs = SpendableUnspentOutputs(
+            spendableOutputs: unspents([20000, 300000]),
+            absoluteFee: BigUInt(18700),
+            amount: 301300,
+            change: .zero
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
 
-    func test_select_all_selection_with_effective_inputs() throws {
+    func test_select_all_selection_with_effective_inputs_P2WPKH() throws {
         let coins = unspents([1, 20000, 0, 0, 300000])
-        let result = subject.select(all: coins, fee: fee)
+        let result = subject.select(
+            all: coins,
+            feePerByte: feePerByte,
+            singleOutputType: .P2WPKH
+        )
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: unspents([20000, 300000]),
-            absoluteFee: BigUInt(18810),
-            consumedAmount: BigUInt.zero
+            absoluteFee: BigUInt(18535),
+            amount: 301465,
+            change: .zero
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
 
     func test_select_all_selection_with_no_inputs() throws {
-        let coins = unspents([])
-        let result = subject.select(all: coins, fee: fee)
+        let result = subject.select(
+            all: [],
+            feePerByte: feePerByte,
+            singleOutputType: .P2PKH
+        )
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: unspents([]),
-            absoluteFee: BigUInt.zero,
-            consumedAmount: BigUInt.zero
+            spendableOutputs: [],
+            absoluteFee: .zero,
+            amount: .zero,
+            change: .zero
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
@@ -144,11 +231,16 @@ class CoinSelectionTests: XCTestCase {
 
     func test_select_all_selection_with_no_effective_inputs() throws {
         let coins = unspents([1, 10, 100])
-        let result = subject.select(all: coins, fee: fee)
+        let result = subject.select(
+            all: coins,
+            feePerByte: feePerByte,
+            singleOutputType: .P2PKH
+        )
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: unspents([]),
-            absoluteFee: BigUInt.zero,
-            consumedAmount: BigUInt.zero
+            spendableOutputs: [],
+            absoluteFee: .zero,
+            amount: .zero,
+            change: .zero
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
@@ -162,20 +254,19 @@ private func unspents(_ values: [Int]) -> [UnspentOutput] {
         guard let bitcoinValue = try? BitcoinValue(crypto: cryptoValue) else {
             return nil
         }
-        return UnspentOutput.create(with: bitcoinValue)
+        return UnspentOutput.createP2PKH(with: bitcoinValue)
     }
 }
 
 extension UnspentOutput {
+
     static func create(
         with value: BitcoinValue,
         hash: String = "hash",
-        script: String = "script",
+        script: String,
         confirmations: UInt = 0,
         transactionIndex: Int = 0,
-        xpub: XPub = XPub(m: "m", path: "path"),
-        isReplayable: Bool = true,
-        isForceInclude: Bool = false
+        xpub: XPub = XPub(m: "m", path: "path")
     ) -> UnspentOutput {
         UnspentOutput(
             hash: hash,
@@ -183,9 +274,41 @@ extension UnspentOutput {
             value: value,
             confirmations: confirmations,
             transactionIndex: transactionIndex,
-            xpub: xpub,
-            isReplayable: isReplayable,
-            isForceInclude: isForceInclude
+            xpub: xpub
+        )
+    }
+
+    static func createP2PKH(
+        with value: BitcoinValue,
+        hash: String = "hash",
+        confirmations: UInt = 0,
+        transactionIndex: Int = 0,
+        xpub: XPub = XPub(m: "m", path: "path")
+    ) -> UnspentOutput {
+        UnspentOutput(
+            hash: hash,
+            script: "76a914641ad5051edd97029a003fe9efb29359fcee409d88ac",
+            value: value,
+            confirmations: confirmations,
+            transactionIndex: transactionIndex,
+            xpub: xpub
+        )
+    }
+
+    static func createP2WPKH(
+        with value: BitcoinValue,
+        hash: String = "hash",
+        confirmations: UInt = 0,
+        transactionIndex: Int = 0,
+        xpub: XPub = XPub(m: "m", path: "path")
+    ) -> UnspentOutput {
+        UnspentOutput(
+            hash: hash,
+            script: "0014326e987644fa2d8ddf813ad40aa09b9b1229b71f",
+            value: value,
+            confirmations: confirmations,
+            transactionIndex: transactionIndex,
+            xpub: xpub
         )
     }
 }

@@ -18,7 +18,7 @@ public struct BitcoinValue: CryptoMoney {
         crypto.amount
     }
 
-    public static let zero = BitcoinValue(satoshis: 0)
+    public static let zero = BitcoinValue(minor: 0)
 
     private let crypto: CryptoMoney
 
@@ -29,8 +29,16 @@ public struct BitcoinValue: CryptoMoney {
         self.crypto = crypto
     }
 
-    public init(satoshis: Decimal) {
-        crypto = CryptoValue.create(minor: satoshis, currency: .coin(.bitcoin))
+    public init(minor value: Decimal) {
+        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
+    }
+
+    public init(minor value: Int) {
+        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
+    }
+
+    public init(minor value: BigInt) {
+        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
     }
 }
 
