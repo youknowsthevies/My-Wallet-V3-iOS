@@ -28,14 +28,6 @@ protocol PaymentMethodsLinkingAdapterAPI {
     /// Presents the flow to link a bank account to the user's account via Open Banking or ACH.
     /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
     func routeToBankLinkingFlow(
-        from viewController: UIViewController,
-        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
-    )
-
-    /// Presents a screen showing bank wiring instructions to the user so that they can manually send funds to their Blockchain account.
-    /// The bank account from which the user sends the funds will be linked to the user's Blockchain account available for withdrawals.
-    /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
-    func routeToWiringInstructionsFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
@@ -71,13 +63,6 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         router.routeToPaymentMethodLinkingFlow(from: viewController, filter: filter, completion: completion)
     }
 
-    func routeToBankLinkingFlow(
-        from viewController: UIViewController,
-        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
-    ) {
-        router.routeToBankLinkingFlow(from: viewController, completion: completion)
-    }
-
     func routeToCardLinkingFlow(
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
@@ -85,12 +70,12 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         router.routeToCardLinkingFlow(from: viewController, completion: completion)
     }
 
-    func routeToWiringInstructionsFlow(
+    func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        router.routeToWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
+        router.routeToBankLinkingFlow(for: currency, from: viewController, completion: completion)
     }
 }
 
@@ -98,34 +83,25 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
 
 extension PaymentMethodsLinkingAdapter: FeatureSettingsUI.PaymentMethodsLinkerAPI {
 
-    func presentAccountLinkingFlow(
-        from viewController: UIViewController,
-        filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping () -> Void
-    ) {
-        routeToPaymentMethodLinkingFlow(from: viewController, filter: filter) { _ in
-            completion()
-        }
-    }
-
-    func routeToBankWiringIntructions(
+    func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping () -> Void
     ) {
-        routeToWiringInstructionsFlow(for: currency, from: viewController) { _ in
-            completion()
-        }
+        // Linking a bank from settings should give options to wire funds or link a bank directly
+        routeToPaymentMethodLinkingFlow(
+            from: viewController,
+            filter: { type in
+                type.method.isFunds || type.method.isBankTransfer
+            },
+            completion: { _ in
+                completion()
+            }
+        )
     }
 
     func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void) {
         routeToCardLinkingFlow(from: viewController) { _ in
-            completion()
-        }
-    }
-
-    func routeToBankLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void) {
-        routeToBankLinkingFlow(from: viewController) { _ in
             completion()
         }
     }

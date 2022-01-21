@@ -30,18 +30,12 @@ public protocol ExchangeCoordinating: AnyObject {
 
 public protocol PaymentMethodsLinkerAPI {
 
-    func presentAccountLinkingFlow(
-        from viewController: UIViewController,
-        filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping () -> Void
-    )
-    func routeToBankWiringIntructions(
+    func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping () -> Void
     )
     func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
-    func routeToBankLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
 }
 
 public protocol KYCRouterAPI {
@@ -215,33 +209,9 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.modalPresentationStyle = .custom
             topViewController.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            let presenter = topViewController
-            paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
-                presenter.dismiss(animated: true) {
-                    addCardCompletionRelay.accept(())
-                }
-            }
+            showCardLinkingFlow()
         case .showAddBankScreen(let fiatCurrency):
-            switch fiatCurrency {
-            case .USD:
-                showLinkBankFlow()
-            case .GBP, .EUR:
-                featureFlagsService
-                    .isEnabled(.remote(.openBanking))
-                    .if(
-                        then: { [weak self] in
-                            guard let self = self else { return }
-                            self.showLinkOpenBankingFlow(currency: fiatCurrency)
-                        },
-                        else: { [weak self] in
-                            guard let self = self else { return }
-                            self.showFundTransferDetails(currency: fiatCurrency)
-                        }
-                    )
-                    .store(in: &cancellables)
-            default:
-                showFundTransferDetails(currency: fiatCurrency)
-            }
+            showBankLinkingFlow(currency: fiatCurrency)
         case .showAppStore:
             appStoreOpener.openAppStore()
         case .showBackupScreen:
@@ -362,30 +332,19 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
-    private func showFundTransferDetails(currency: FiatCurrency) {
-        let viewController = topViewController
-        paymentMethodLinker.routeToBankWiringIntructions(for: currency, from: viewController) {
-            viewController.dismiss(animated: true, completion: nil)
+    private func showCardLinkingFlow() {
+        let presenter = topViewController
+        paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
+            presenter.dismiss(animated: true) {
+                addCardCompletionRelay.accept(())
+            }
         }
     }
 
-    private func showLinkOpenBankingFlow(currency: FiatCurrency) {
-        let viewController = topViewController
-        paymentMethodLinker.presentAccountLinkingFlow(
-            from: viewController,
-            filter: { type in
-                type.method.isFunds || type.method.isBankTransfer
-            },
-            completion: {
-                viewController.dismiss(animated: true, completion: nil)
-            }
-        )
-    }
-
-    private func showLinkBankFlow() {
+    private func showBankLinkingFlow(currency: FiatCurrency) {
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
         let viewController = topViewController
-        paymentMethodLinker.routeToBankLinkingFlow(from: viewController) {
+        paymentMethodLinker.routeToBankLinkingFlow(for: currency, from: viewController) {
             viewController.dismiss(animated: true, completion: nil)
         }
     }

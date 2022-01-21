@@ -21,7 +21,7 @@ protocol BankWireLinkerAPI {
 
     /// Presents a view controller with bank transfer instructions so the user can send funds to Blockchain's custodial services and thus link their bank account
     /// with their wallet account. That account can then be used to deposit and withdraw funds.
-    func present(from presenter: UIViewController, completion: @escaping () -> Void)
+    func presentBankWireInstructions(from presenter: UIViewController, completion: @escaping () -> Void)
 }
 
 final class BankWireLinker: BankWireLinkerAPI {
@@ -38,7 +38,7 @@ final class BankWireLinker: BankWireLinkerAPI {
         self.analytics = analytics
     }
 
-    func present(from presenter: UIViewController, completion: @escaping () -> Void) {
+    func presentBankWireInstructions(from presenter: UIViewController, completion: @escaping () -> Void) {
         disposeBag = DisposeBag() // avoid memory leak when binding completion
         fundsTransferDetailsViewController(completion: completion)
             .subscribe(on: MainScheduler.instance)

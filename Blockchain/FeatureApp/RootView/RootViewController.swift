@@ -59,8 +59,8 @@ final class RootViewController: UIHostingController<RootView> {
             .store(in: &bag)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewStore.send(.ready)
     }
 

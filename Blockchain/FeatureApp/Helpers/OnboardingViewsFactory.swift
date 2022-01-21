@@ -77,8 +77,9 @@ final class OnboardingViewsFactory {
                     paymentMethodLinkingAdapter.routeToPaymentMethodLinkingFlow(
                         from: viewController,
                         completion: { result in
-                            // view is dismissed automatically, so, no need to do that
-                            completion(result == .completed)
+                            viewController.dismiss(animated: true) {
+                                completion(result == .completed)
+                            }
                         }
                     )
                 }

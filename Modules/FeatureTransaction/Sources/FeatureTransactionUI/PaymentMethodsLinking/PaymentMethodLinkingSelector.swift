@@ -5,7 +5,7 @@ import PlatformKit
 import PlatformUIKit
 import UIKit
 
-enum PaymentMethodLinkingFlowResult {
+enum PaymentMethodLinkingSelectionResult {
     case abandoned
     case completed(PlatformKit.PaymentMethod)
 }
@@ -15,7 +15,7 @@ enum PaymentMethodLinkingFlowResult {
 /// This stand-alone piece is wrapping the logic for loading and presenting a list of payment method types the user is eligible to link to their account.
 ///
 /// - IMPORTANT: Do NOT use this protocol directly. Use `PaymentMethodLinkingRouterAPI` instead!
-protocol PaymentMethodLinkerAPI {
+protocol PaymentMethodLinkingSelectorAPI {
 
     init(selectPaymentMethodService: SelectPaymentMethodService)
 
@@ -27,21 +27,21 @@ protocol PaymentMethodLinkerAPI {
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
         filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
+        completion: @escaping (PaymentMethodLinkingSelectionResult) -> Void
     )
 }
 
-extension PaymentMethodLinkerAPI {
+extension PaymentMethodLinkingSelectorAPI {
 
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
-        completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
+        completion: @escaping (PaymentMethodLinkingSelectionResult) -> Void
     ) {
         presentAccountLinkingFlow(from: presenter, filter: { _ in true }, completion: completion)
     }
 }
 
-final class PaymentMethodLinker: PaymentMethodLinkerAPI {
+final class PaymentMethodLinkingSelector: PaymentMethodLinkingSelectorAPI {
 
     private let selectPaymentMethodService: SelectPaymentMethodService
 
@@ -56,7 +56,7 @@ final class PaymentMethodLinker: PaymentMethodLinkerAPI {
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
         filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
+        completion: @escaping (PaymentMethodLinkingSelectionResult) -> Void
     ) {
         precondition(
             addMethodsRouter == nil,
@@ -90,8 +90,8 @@ final class PaymentMethodLinker: PaymentMethodLinkerAPI {
 
 private class AccountLinkerListener: AddNewPaymentMethodListener {
 
-    private let subject = PassthroughSubject<PaymentMethodLinkingFlowResult, Never>()
-    var publisher: AnyPublisher<PaymentMethodLinkingFlowResult, Never> {
+    private let subject = PassthroughSubject<PaymentMethodLinkingSelectionResult, Never>()
+    var publisher: AnyPublisher<PaymentMethodLinkingSelectionResult, Never> {
         subject.eraseToAnyPublisher()
     }
 

@@ -47,7 +47,7 @@ typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable
 // swiftlint:disable type_body_length
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
-    private var paymentMethodLinker: PaymentMethodLinkerAPI
+    private var paymentMethodLinker: PaymentMethodLinkingSelectorAPI
     private var bankWireLinker: BankWireLinkerAPI
     private var cardLinker: CardLinkerAPI
     private let alertViewPresenter: AlertViewPresenterAPI
@@ -72,7 +72,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     init(
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
-        paymentMethodLinker: PaymentMethodLinkerAPI = resolve(),
+        paymentMethodLinker: PaymentMethodLinkingSelectorAPI = resolve(),
         bankWireLinker: BankWireLinkerAPI = resolve(),
         cardLinker: CardLinkerAPI = resolve(),
         kycRouter: PlatformUIKit.KYCRouting = resolve(),
@@ -321,7 +321,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     func presentBankWiringInstructions(transactionModel: TransactionModel) {
         let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
         // NOTE: using [weak presenter] to avoid a memory leak
-        bankWireLinker.present(from: presenter) { [weak presenter] in
+        bankWireLinker.presentBankWireInstructions(from: presenter) { [weak presenter] in
             presenter?.dismiss(animated: true) {
                 transactionModel.process(action: .returnToPreviousStep)
             }

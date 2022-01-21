@@ -34,14 +34,6 @@ public protocol PaymentMethodLinkingRouterAPI {
     /// Presents the flow to link a bank account to the user's account via Open Banking or ACH.
     /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
     func routeToBankLinkingFlow(
-        from viewController: UIViewController,
-        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
-    )
-
-    /// Presents a screen showing bank wiring instructions to the user so that they can manually send funds to their Blockchain account.
-    /// The bank account from which the user sends the funds will be linked to the user's Blockchain account available for withdrawals.
-    /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
-    func routeToWiringInstructionsFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
@@ -64,7 +56,7 @@ extension PaymentMethodLinkingRouterAPI {
 final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
 
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let paymentMethodsLinker: PaymentMethodLinkerAPI
+    private let paymentMethodsLinker: PaymentMethodLinkingSelectorAPI
     private let bankAccountLinker: BankAccountLinkerAPI
     private let bankWireLinker: BankWireLinkerAPI
     private let cardLinker: CardLinkerAPI
@@ -73,7 +65,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
 
     init(
         featureFlagsService: FeatureFlagsServiceAPI,
-        paymentMethodsLinker: PaymentMethodLinkerAPI = PaymentMethodLinker(),
+        paymentMethodsLinker: PaymentMethodLinkingSelectorAPI = PaymentMethodLinkingSelector(),
         bankAccountLinker: BankAccountLinkerAPI = BankAccountLinker(),
         bankWireLinker: BankWireLinkerAPI = BankWireLinker(),
         cardLinker: CardLinkerAPI = CardLinker()
@@ -91,47 +83,28 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
         paymentMethodsLinker.presentAccountLinkingFlow(from: viewController, filter: filter) { [weak self] result in
-            viewController.dismiss(animated: true) {
-                guard let self = self else { return }
-                switch result {
-                case .abandoned:
-                    completion(.abandoned)
+            guard let self = self else { return }
+            switch result {
+            case .abandoned:
+                completion(.abandoned)
 
-                case .completed(let paymentMethod):
+            case .completed(let paymentMethod):
+                // we have to dismiss here otherwise the implementation of present account linking flow
+                // crashes on internal builds due to a RIB's memory leak.
+                viewController.dismiss(animated: true) {
                     switch paymentMethod.type {
                     case .card:
                         self.routeToCardLinkingFlow(from: viewController, completion: completion)
 
                     case .bankTransfer:
-                        self.routeToBankLinkingFlow(from: viewController, completion: completion)
+                        self.routeToDirectBankLinkingFlow(from: viewController, completion: completion)
 
                     case .bankAccount:
-                        switch paymentMethod.fiatCurrency {
-                        case .USD:
-                            self.routeToBankLinkingFlow(from: viewController, completion: completion)
-                        case .GBP, .EUR:
-                            self.featureFlagsService
-                                .isEnabled(.remote(.openBanking))
-                                .if(
-                                    then: {
-                                        self.routeToBankLinkingFlow(from: viewController, completion: completion)
-                                    },
-                                    else: {
-                                        self.routeToWiringInstructionsFlow(
-                                            for: paymentMethod.fiatCurrency,
-                                            from: viewController,
-                                            completion: completion
-                                        )
-                                    }
-                                )
-                                .store(in: &self.cancellables)
-                        default:
-                            self.routeToWiringInstructionsFlow(
-                                for: paymentMethod.fiatCurrency,
-                                from: viewController,
-                                completion: completion
-                            )
-                        }
+                        self.routeToBankLinkingFlow(
+                            for: paymentMethod.fiatCurrency,
+                            from: viewController,
+                            completion: completion
+                        )
 
                     case .funds(let data):
                         self.routeToWiringInstructionsFlow(
@@ -145,16 +118,6 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         }
     }
 
-    func routeToBankLinkingFlow(
-        from viewController: UIViewController,
-        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
-    ) {
-        bankAccountLinker.presentBankLinkingFlow(from: viewController) { result in
-            let flowResult: PaymentMethodsLinkingFlowResult = result == .abandoned ? .abandoned : .completed
-            completion(flowResult)
-        }
-    }
-
     func routeToCardLinkingFlow(
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
@@ -165,12 +128,54 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         }
     }
 
-    func routeToWiringInstructionsFlow(
+    func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        bankWireLinker.present(from: viewController) {
+        switch currency {
+        case .USD:
+            routeToDirectBankLinkingFlow(from: viewController, completion: completion)
+        case .GBP, .EUR:
+            featureFlagsService
+                .isEnabled(.remote(.openBanking))
+                .if(
+                    then: { [weak self] in
+                        self?.routeToDirectBankLinkingFlow(from: viewController, completion: completion)
+                    },
+                    else: { [weak self] in
+                        self?.routeToWiringInstructionsFlow(
+                            for: currency,
+                            from: viewController,
+                            completion: completion
+                        )
+                    }
+                )
+                .store(in: &cancellables)
+        default:
+            routeToWiringInstructionsFlow(
+                for: currency,
+                from: viewController,
+                completion: completion
+            )
+        }
+    }
+
+    private func routeToDirectBankLinkingFlow(
+        from viewController: UIViewController,
+        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
+    ) {
+        bankAccountLinker.presentBankLinkingFlow(from: viewController) { result in
+            completion(result == .abandoned ? .abandoned : .completed)
+        }
+    }
+
+    private func routeToWiringInstructionsFlow(
+        for currency: FiatCurrency,
+        from viewController: UIViewController,
+        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
+    ) {
+        bankWireLinker.presentBankWireInstructions(from: viewController) {
             completion(.abandoned) // cannot end any other way
         }
     }
