@@ -47,7 +47,6 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     var tiersService: KYCTiersServiceAPI
     var simpleBuyEligiblityService: EligibilityServiceAPI
     var settingsRouterAPI: SettingsRouterAPI?
-    var buyRouter: PlatformUIKit.RouterAPI?
     var backupRouter: FeatureDashboardUI.BackupRouterAPI?
     var pinRouter: PinRouter?
 

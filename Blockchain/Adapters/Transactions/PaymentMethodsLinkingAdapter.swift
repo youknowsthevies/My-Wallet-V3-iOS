@@ -32,6 +32,14 @@ protocol PaymentMethodsLinkingAdapterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     )
+
+    /// Presents the flow to link a bank account to the user's account via Open Banking or ACH.
+    /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
+    func routeToBankWiringInstructionsFlow(
+        for currency: FiatCurrency,
+        from viewController: UIViewController,
+        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
+    )
 }
 
 extension PaymentMethodsLinkingAdapterAPI {
@@ -76,6 +84,16 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
         router.routeToBankLinkingFlow(for: currency, from: viewController, completion: completion)
+    }
+
+    /// Presents the flow to link a bank account to the user's account via Open Banking or ACH.
+    /// - NOTE: It's your responsability to dismiss the presented flow upon completion!
+    func routeToBankWiringInstructionsFlow(
+        for currency: FiatCurrency,
+        from viewController: UIViewController,
+        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
+    ) {
+        router.routeToBankWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
     }
 }
 

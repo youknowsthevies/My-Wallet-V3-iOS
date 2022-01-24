@@ -526,10 +526,6 @@ extension DependencyContainer {
             KYCAdapter()
         }
 
-        factory { () -> FeatureTransactionUI.KYCSDDServiceAPI in
-            TransactionsKYCAdapter()
-        }
-
         factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
             PaymentMethodsLinkingAdapter()
         }

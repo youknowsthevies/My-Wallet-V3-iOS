@@ -6,6 +6,8 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+// TODO: DELETE THIS FILE: code is deprecated, but there are still a few usages lingering. May require refactoring.
+
 /// A passive state receiver API for Simple-Buy flow.
 public protocol StateReceiverServiceAPI: AnyObject {
 
