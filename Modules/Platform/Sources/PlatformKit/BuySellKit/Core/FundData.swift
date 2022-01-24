@@ -9,7 +9,7 @@ public struct FundData: Equatable {
     public let balance: FiatValue
 
     public var label: String {
-        LocalizationConstants.Account.fiatAccount(topLimit.currency.name)
+        topLimit.currency.name
     }
 
     init(balance: CustodialAccountBalance, max: FiatValue) {

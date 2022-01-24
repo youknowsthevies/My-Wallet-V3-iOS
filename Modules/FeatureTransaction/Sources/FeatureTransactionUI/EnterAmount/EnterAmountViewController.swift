@@ -30,6 +30,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let topAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
 
+    private var showWithdrawalLocks: Bool?
     private lazy var withdrawalLocksHostingController: UIHostingController<WithdrawalLocksView> = {
         let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
             initialState: .init(),
@@ -37,7 +38,7 @@ final class EnterAmountViewController: BaseScreenViewController,
             environment: WithdrawalLocksEnvironment { [weak self] isVisible in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self?.withdrawalLocksSeparatorView.isHidden = !isVisible
-                    self?.withdrawalLocksHeightConstraint.constant = isVisible ? 44 : 1
+                    self?.withdrawalLocksHeightConstraint.constant = (isVisible && self?.showWithdrawalLocks == true) ? 44 : 1
                     self?.view.layoutIfNeeded()
                 }
             }
@@ -278,6 +279,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         stateDriver
             .map(\.showWithdrawalLocks)
             .drive(onNext: { [weak self] showWithdrawalLocks in
+                self?.showWithdrawalLocks = showWithdrawalLocks
                 self?.withdrawalLocksSeparatorView.isHidden = !showWithdrawalLocks
                 self?.withdrawalLocksHostingController.view.isHidden = !showWithdrawalLocks
             })

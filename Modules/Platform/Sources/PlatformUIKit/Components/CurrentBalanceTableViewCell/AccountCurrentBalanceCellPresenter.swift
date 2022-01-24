@@ -172,7 +172,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         model.marginOffsetRelay.accept(1)
         iconImageViewContentRelay.accept(model)
         titleRelay.accept(account.label)
-        descriptionRelay.accept(account.currencyType.name)
+        descriptionRelay.accept(account.currencyType.displayCode)
     }
 }
 

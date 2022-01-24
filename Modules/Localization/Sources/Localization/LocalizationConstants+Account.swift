@@ -26,15 +26,6 @@ extension LocalizationConstants {
             "Exchange Account",
             comment: "Used for naming exchange accounts."
         )
-
-        public static func fiatAccount(_ fiatName: String) -> String {
-            let format = NSLocalizedString(
-                "%@ Account",
-                comment: "Must contain %@. Used for naming fiat accounts. eg USD Account."
-            )
-            return String(format: format, fiatName)
-        }
-
         public static let lowFees = NSLocalizedString(
             "Low Fees",
             comment: "Low Fees"
