@@ -167,9 +167,23 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        updateLeftBarButtonItem()
 
         guard let code = countryCode else { return }
         presenter.presentDocumentTypeOptions(code)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateLeftBarButtonItem()
+    }
+
+    override func navControllerCTAType() -> NavigationCTA {
+        .dismiss
+    }
+
+    private func updateLeftBarButtonItem() {
+        navigationItem.hidesBackButton = true
     }
 
     private func dependenciesSetup() {
@@ -301,6 +315,7 @@ extension KYCVerifyIdentityController: VeriffController {
         }
     }
 
+    @objc
     func onVeriffCancelled() {
         loadingViewPresenter.hide()
         dismiss(animated: true, completion: { [weak self] in

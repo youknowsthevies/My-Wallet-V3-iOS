@@ -30,6 +30,7 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.enterEmail,
             KYCPageType.startingPage(
                 forUser: createNabuUser(),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -39,6 +40,7 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.country,
             KYCPageType.startingPage(
                 forUser: createNabuUser(isEmailVerified: true),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -48,6 +50,7 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.states,
             KYCPageType.startingPage(
                 forUser: createNabuUser(isEmailVerified: true, hasCountry: true, requireState: true),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -57,6 +60,7 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile,
             KYCPageType.startingPage(
                 forUser: createNabuUser(isEmailVerified: true, hasCountry: true, requireState: false),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -70,6 +74,7 @@ class KYCPageTypeTests: XCTestCase {
                     hasCountry: true,
                     hasState: true
                 ),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -84,6 +89,7 @@ class KYCPageTypeTests: XCTestCase {
                     hasCountry: true,
                     hasState: true
                 ),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -97,6 +103,7 @@ class KYCPageTypeTests: XCTestCase {
                     hasPersonalDetails: true,
                     hasAddress: true
                 ),
+                requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -111,6 +118,7 @@ class KYCPageTypeTests: XCTestCase {
                     hasPersonalDetails: true,
                     hasAddress: true
                 ),
+                requiredTier: .tier2,
                 tiersResponse: noTiersResponse,
                 isSDDEligible: false,
                 isSDDVerified: false

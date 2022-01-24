@@ -37,25 +37,13 @@ final class KYCSDDVerificationController: KYCBaseViewController {
         )
         embed(loadingView)
         performVerificationCheck()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        hideNavigationBarItems() // required as super resets the navigation bar items
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        hideNavigationBarItems() // required as super resets the navigation bar items
+        navigationItem.hidesBackButton = true
     }
 
     // MARK: - UI Configuration
 
-    private func hideNavigationBarItems() {
-        // the user should not be able to leave this screen
-        navigationItem.rightBarButtonItem = nil
-        navigationItem.leftBarButtonItem = nil
-        isModalInPresentation = true
+    override func navControllerCTAType() -> NavigationCTA {
+        .none
     }
 
     // MARK: - SDD Verification
