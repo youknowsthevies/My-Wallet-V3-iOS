@@ -133,7 +133,13 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         transactionModel: TransactionModel,
         handleCalloutTapped: @escaping (ErrorRecoveryState.Callout) -> Void
     ) {
-        // NOTE: this will be fixed in IOS-5576
+        guard errorState != .none else {
+            // The transaction is valid, there's no error to show.
+            if BuildFlag.isInternal {
+                fatalError("Developer error: calling `showErrorRecoverySuggestion` with an `errorState` of `none`.")
+            }
+            return
+        }
         let view = ErrorRecoveryView(
             store: .init(
                 initialState: ErrorRecoveryState(
