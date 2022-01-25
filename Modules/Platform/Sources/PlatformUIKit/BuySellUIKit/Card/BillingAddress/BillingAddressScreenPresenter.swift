@@ -81,13 +81,13 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         textFieldViewModelsMapRelay.value
     }
 
-    var errorTrigger: Signal<Void> {
+    var errorTrigger: Signal<Error> {
         errorTriggerRelay.asSignal()
     }
 
     let textFieldViewModelsMapRelay = BehaviorRelay<[TextFieldType: TextFieldViewModel]>(value: [:])
 
-    private let errorTriggerRelay = PublishRelay<Void>()
+    private let errorTriggerRelay = PublishRelay<Error>()
     private let isValidRelay = BehaviorRelay(value: false)
     private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -279,8 +279,8 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                 text: LocalizedString.linkingYourCard
             )
             .subscribe(
-                onError: { [weak errorTriggerRelay] _ in
-                    errorTriggerRelay?.accept(())
+                onError: { [weak errorTriggerRelay] error in
+                    errorTriggerRelay?.accept(error)
                 }
             )
             .disposed(by: disposeBag)

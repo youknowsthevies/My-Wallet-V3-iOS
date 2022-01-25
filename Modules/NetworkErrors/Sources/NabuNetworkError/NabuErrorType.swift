@@ -11,7 +11,9 @@ public enum NabuErrorType: String, Codable, Equatable {
     case internalServerError = "INTERNAL_SERVER_ERROR"
     case notFound = "NOT_FOUND"
     case badMethod = "BAD_METHOD"
+    case badRequest = "BAD_REQUEST"
     case conflict = "CONFLICT"
+    case notAcceptable = "NOT_ACCEPTABLE"
 
     // Generic user input errors
     case missingBody = "MISSING_BODY"

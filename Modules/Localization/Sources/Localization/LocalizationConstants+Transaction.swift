@@ -1500,6 +1500,16 @@ extension LocalizationConstants.Transaction.Error {
         comment: "You have too many pending %@ transactions. Once those complete you can create a new one."
     )
 
+    public static let cardInsufficientFunds = NSLocalizedString(
+        "Your bank tells us you don't have enough funds in your account, check and try again.",
+        comment: "Your bank tells us you don't have enough funds in your account, check and try again."
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "Your bank has declined this transaction, please try another bank or payment method.",
+        comment: "Your bank has declined this transaction, please try another bank or payment method."
+    )
+
     public static let orderNotCancellable = NSLocalizedString(
         "Oops! This %@ order is not cancellable.",
         comment: "Oops! This %@ order is not cancellable."

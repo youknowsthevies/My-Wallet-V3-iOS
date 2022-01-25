@@ -334,6 +334,7 @@ extension TransactionState {
 
     private typealias LocalizationIds = LocalizationConstants.Transaction.Error
 
+    // swiftlint:disable cyclomatic_complexity
     var transactionErrorDescription: String {
         switch errorState {
         case .none:
@@ -429,6 +430,10 @@ extension TransactionState {
             return LocalizationIds.tradingAlbertError
         case .orderInProgress:
             return String(format: LocalizationIds.tooManyTransaction, action.name)
+        case .cardInsufficientFunds:
+            return LocalizationIds.cardInsufficientFunds
+        case .cardBankDecline:
+            return LocalizationIds.cardBankDecline
         default:
             return LocalizationIds.unknownError
         }
