@@ -256,6 +256,7 @@ extension LocalizationConstants.Transaction {
 
     public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
     public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let add = NSLocalizedString("Add", comment: "Add")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
     public static let sell = NSLocalizedString("Sell", comment: "Sell")
     public static let send = NSLocalizedString("Send", comment: "Send")
@@ -334,15 +335,15 @@ extension LocalizationConstants.Transaction.Withdraw {
 }
 
 extension LocalizationConstants.Transaction.Transfer {
-    public static let transferFrom = NSLocalizedString(
-        "Transfer from...",
+    public static let addFrom = NSLocalizedString(
+        "Add from...",
         comment: "Transfer from..."
     )
     public static let transferNow = NSLocalizedString(
         "Transfer Now",
         comment: "Transfer Now"
     )
-    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let add = NSLocalizedString("Add", comment: "Add")
 }
 
 extension LocalizationConstants.Transaction.Deposit {

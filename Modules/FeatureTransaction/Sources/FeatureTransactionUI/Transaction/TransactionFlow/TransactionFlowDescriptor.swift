@@ -122,7 +122,7 @@ enum TransactionFlowDescriptor {
             case .interestWithdraw:
                 return LocalizedString.Withdraw.withdrawTo
             case .interestTransfer:
-                return LocalizedString.Transfer.transferFrom
+                return LocalizedString.Transfer.addFrom
             case .sign,
                  .receive,
                  .send,
@@ -163,7 +163,7 @@ enum TransactionFlowDescriptor {
             case .sell:
                 return LocalizedString.Sell.title
             case .interestTransfer:
-                return LocalizedString.Transfer.transferFrom
+                return LocalizedString.Transfer.addFrom
             case .sign,
                  .deposit,
                  .receive,
@@ -221,7 +221,15 @@ enum TransactionFlowDescriptor {
     static let maxButtonTitle = LocalizedString.Swap.swapMax
 
     static func maxButtonTitle(action: AssetAction) -> String {
-        action.name + " \(LocalizedString.max)"
+        // Somtimes a `transfer` is referred to as `Add`.
+        // This is to avoid confusion as a transfer and a withdraw
+        // can sometimes sound the same to users. We do not always
+        // call a transfer `Add` though so that's why we have
+        // this if-statement.
+        if action == .interestTransfer {
+            return LocalizedString.add + " \(LocalizedString.max)"
+        }
+        return action.name + " \(LocalizedString.max)"
     }
 
     static func confirmDisclaimerVisibility(action: AssetAction) -> Bool {
