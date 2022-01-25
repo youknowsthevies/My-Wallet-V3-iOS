@@ -18,7 +18,8 @@ typealias FeatureTransactionDomainClientAPI = CustodialQuoteAPI &
     CustodialTransferClientAPI &
     BitPayClientAPI &
     BlockchainNameResolutionClientAPI &
-    BankTransferClientAPI
+    BankTransferClientAPI &
+    WithdrawalLocksCheckClientAPI
 
 /// FeatureTransactionDomain network client
 final class APIClient: FeatureTransactionDomainClientAPI {
@@ -52,6 +53,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let bankTransfer = ["payments", "banktransfer"]
         static let transferFees = ["payments", "withdrawals", "fees"]
         static let domainResolution = ["resolve"]
+        static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
 
         static func updateOrder(transactionID: String) -> [String] {
             createOrder + [transactionID]
@@ -466,5 +468,26 @@ extension APIClient {
             body: try? JSONEncoder().encode(payload)
         )!
         return defaultNetworkAdapter.perform(request: request)
+    }
+}
+
+// MARK: - TransactionLimitsClientAPI
+
+extension APIClient {
+
+    func fetchWithdrawalLocksCheck(
+        paymentMethod: String,
+        currencyCode: String
+    ) -> AnyPublisher<WithdrawalLocksCheckResponse, NabuNetworkError> {
+        let body = [
+            "paymentMethod": paymentMethod,
+            "currency": currencyCode
+        ]
+        let request = retailRequestBuilder.post(
+            path: Path.withdrawalLocksCheck,
+            body: try? body.data(),
+            authenticated: true
+        )!
+        return retailNetworkAdapter.perform(request: request)
     }
 }

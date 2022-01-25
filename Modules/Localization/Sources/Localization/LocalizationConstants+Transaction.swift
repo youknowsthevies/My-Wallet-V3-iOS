@@ -437,7 +437,23 @@ extension LocalizationConstants.Transaction.Buy {
         comment: "Title of screen to select the Crypto Currency to Buy"
     )
     public static let confirmationDisclaimer = NSLocalizedString(
-        "Your final amount might change due to market activity. Your funds will be available to Sell, Swap or Withdraw instantly.",
+        "Your final amount might change due to market activity.",
+        comment: ""
+    )
+    public static let lockInfo = NSLocalizedString(
+        "For security purposes, buy orders with a %@ are subject to a %@ holding period. You can Swap or Sell during this time. We will notify you once the funds are available to be withdrawn.",
+        comment: ""
+    )
+    public static let noLockInfo = NSLocalizedString(
+        "Your funds will be available to Sell, Swap or Withdraw instantly.",
+        comment: ""
+    )
+    public static let day = NSLocalizedString(
+        "day",
+        comment: ""
+    )
+    public static let days = NSLocalizedString(
+        "days",
         comment: ""
     )
 }

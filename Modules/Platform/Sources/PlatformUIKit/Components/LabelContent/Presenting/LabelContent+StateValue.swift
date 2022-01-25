@@ -3,6 +3,7 @@
 import ComposableArchitectureExtensions
 import PlatformKit
 import RxSwift
+import UIKit
 
 extension LabelContent {
     public enum State {
@@ -51,6 +52,7 @@ extension LabelContent.Value.Presentation {
             let contentColor: UIColor
             let fontSize: CGFloat
             let lineSpacing: CGFloat
+            let lineBreakMode: NSLineBreakMode
             let accessibility: Accessibility
 
             public init(
@@ -58,12 +60,14 @@ extension LabelContent.Value.Presentation {
                 contentColor: UIColor = .titleText,
                 fontSize: CGFloat,
                 lineSpacing: CGFloat = 1,
+                lineBreakMode: NSLineBreakMode = .byTruncatingTail,
                 accessibility: Accessibility
             ) {
                 self.fontWeight = fontWeight
                 self.contentColor = contentColor
                 self.fontSize = fontSize
                 self.lineSpacing = lineSpacing
+                self.lineBreakMode = lineBreakMode
                 self.accessibility = accessibility
             }
         }
@@ -75,6 +79,7 @@ extension LabelContent.Value.Presentation {
                 text: value.text,
                 font: .main(descriptors.fontWeight, descriptors.fontSize),
                 color: descriptors.contentColor,
+                lineBreakMode: descriptors.lineBreakMode,
                 accessibility: descriptors.accessibility
             )
         }

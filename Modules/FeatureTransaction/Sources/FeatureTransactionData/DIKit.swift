@@ -29,6 +29,12 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WithdrawalLocksCheckRepositoryAPI in
+            WithdrawalLocksCheckRepository(
+                client: DIKit.resolve()
+            )
+        }
+
         factory { BitPayRepository() as BitPayRepositoryAPI }
 
         factory { AvailablePairsRepository() as AvailablePairsRepositoryAPI }
@@ -59,6 +65,11 @@ extension DependencyContainer {
         factory { () -> TransactionLimitsClientAPI in
             let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
             return client as TransactionLimitsClientAPI
+        }
+
+        factory { () -> WithdrawalLocksCheckClientAPI in
+            let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
+            return client as WithdrawalLocksCheckClientAPI
         }
 
         factory { () -> AvailablePairsClientAPI in

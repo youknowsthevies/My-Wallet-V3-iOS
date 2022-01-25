@@ -266,9 +266,23 @@ enum TransactionFlowDescriptor {
              .sell,
              .send,
              .viewActivity,
-             .interestWithdraw,
              .interestTransfer:
             return ""
+        }
+    }
+
+    static func confirmDisclaimerForBuy(paymentMethod: PaymentMethod?, lockDays: Int) -> String {
+        let paymentMethodName = paymentMethod?.label ?? ""
+        let lockDaysString = ["\(lockDays)", lockDays > 1 ? LocalizedString.Buy.days : LocalizedString.Buy.day].joined(separator: " ")
+        switch lockDays {
+        case 0:
+            return LocalizedString.Buy.noLockInfo
+        default:
+            return String(
+                format: LocalizedString.Buy.lockInfo,
+                paymentMethodName,
+                lockDaysString
+            )
         }
     }
 }

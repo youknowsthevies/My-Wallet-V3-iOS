@@ -2,6 +2,7 @@
 
 import RxCocoa
 import RxSwift
+import UIKit
 
 public final class LabelTableViewCell: UITableViewCell {
 
@@ -88,8 +89,12 @@ extension Reactive where Base: LabelTableViewCell {
                     delay: 0.0,
                     options: .transitionCrossDissolve,
                     animations: {
+                        // Makes sure parent tableView reflects the size change
+                        let tableView = (view.superview as? UITableView)
+                        tableView?.beginUpdates()
                         view.titleLabel.content = value.labelContent
                         view.titleShimmeringView.stop()
+                        tableView?.endUpdates()
                     }
                 )
             }
