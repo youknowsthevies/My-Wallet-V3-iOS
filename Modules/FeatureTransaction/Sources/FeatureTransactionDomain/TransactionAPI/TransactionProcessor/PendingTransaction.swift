@@ -29,7 +29,6 @@ public struct PendingTransaction: Equatable {
     public var validationState: TransactionValidationState = .uninitialized
     public var engineState: [EngineStateKey: Any] = [:]
 
-    private var _limits: Reference<TransactionLimits?> // this struct has become too big for Swift to handle :(
     public var limits: TransactionLimits? {
         get {
             _limits.value
@@ -39,6 +38,12 @@ public struct PendingTransaction: Equatable {
         }
     }
 
+    /// store/cache the feature flag
+    @available(*, deprecated, message: "Don't use this, this is for native bitcoin work and will be removed once the feature is shipped")
+    public var nativeBitcoinTransactionEnabled: Bool
+
+    // this struct has become too big for Swift to handle :(
+    private var _limits: Reference<TransactionLimits?>
     // TODO: remove limits below in favour of limits struct above
     private var minimumLimit: MoneyValue?
     private var maximumLimit: MoneyValue?
@@ -56,7 +61,8 @@ public struct PendingTransaction: Equatable {
         minimumLimit: MoneyValue? = nil,
         maximumLimit: MoneyValue? = nil,
         maximumDailyLimit: MoneyValue? = nil,
-        maximumAnnualLimit: MoneyValue? = nil
+        maximumAnnualLimit: MoneyValue? = nil,
+        nativeBitcoinTransactionEnabled: Bool = false
     ) {
         self.amount = amount
         self.available = available
@@ -69,6 +75,7 @@ public struct PendingTransaction: Equatable {
         self.maximumLimit = maximumLimit
         self.maximumDailyLimit = maximumDailyLimit
         self.maximumAnnualLimit = maximumAnnualLimit
+        self.nativeBitcoinTransactionEnabled = nativeBitcoinTransactionEnabled
     }
 
     public func update(validationState: TransactionValidationState) -> PendingTransaction {
