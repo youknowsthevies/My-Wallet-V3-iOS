@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "FeatureOnboardingUI", targets: ["FeatureOnboardingUI"])
     ],
     dependencies: [
+        .package(path: "../Analytics"),
         .package(path: "../ComponentLibrary"),
         .package(
             name: "swift-composable-architecture",
@@ -32,6 +33,7 @@ let package = Package(
         .target(
             name: "FeatureOnboardingUI",
             dependencies: [
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
@@ -45,6 +47,7 @@ let package = Package(
             name: "FeatureOnboardingUITests",
             dependencies: [
                 .target(name: "FeatureOnboardingUI"),
+                .product(name: "AnalyticsKitMock", package: "Analytics"),
                 .product(name: "PlatformUIKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKitMock", package: "Tool")
