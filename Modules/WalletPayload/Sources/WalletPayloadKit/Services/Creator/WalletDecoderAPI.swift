@@ -3,10 +3,10 @@
 import Combine
 import Foundation
 
-public typealias WalletCreating = (Data) -> AnyPublisher<NativeWallet, WalletError>
+public typealias WalletDecoding = (Data) -> AnyPublisher<NativeWallet, WalletError>
 
-/// Types implementing `WalletCreatorAPI` should be able to create a `Wallet` model.
-public protocol WalletCreatorAPI {
+/// Types implementing `WalletDecoderAPI` should be able to create a `Wallet` model.
+public protocol WalletDecoderAPI {
     /// Creates a new `Wallet` object
     /// - Parameter data: A value of `Data`
     /// - Returns: A function that provides a new `Wallet` object

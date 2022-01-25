@@ -32,6 +32,19 @@ public final class Account: Equatable {
     }
 }
 
+func createAccount(
+    label: String,
+    derivations: [Derivation]
+) -> Account {
+    Account(
+        index: 0,
+        label: label,
+        archived: false,
+        defaultDerivation: .segwit,
+        derivations: derivations
+    )
+}
+
 extension Account {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         lhs.index == rhs.index

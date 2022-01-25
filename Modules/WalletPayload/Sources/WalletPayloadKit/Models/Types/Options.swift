@@ -8,6 +8,13 @@ public final class Options: Equatable {
     var html5Notifications: Bool
     var logoutTime: Int
 
+    static var `default` = Options(
+        pbkdf2Iterations: 5000,
+        feePerKB: 10000,
+        html5Notifications: false,
+        logoutTime: 600000
+    )
+
     public init(
         pbkdf2Iterations: Int,
         feePerKB: Int,

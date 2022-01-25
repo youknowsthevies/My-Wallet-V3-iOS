@@ -45,8 +45,8 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> WalletCreatorAPI in
-            WalletCreator() as WalletCreatorAPI
+        factory { () -> WalletDecoderAPI in
+            WalletDecoder() as WalletDecoderAPI
         }
 
         factory { () -> ReleasableWalletAPI in

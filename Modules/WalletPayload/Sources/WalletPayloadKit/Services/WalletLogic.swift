@@ -44,7 +44,7 @@ protocol WalletLogicAPI {
 final class WalletLogic: WalletLogicAPI {
 
     private let holder: WalletHolderAPI
-    private let creator: WalletCreating
+    private let decoder: WalletDecoding
     private let metadata: MetadataServiceAPI
     private let notificationCenter: NotificationCenter
 
@@ -53,12 +53,12 @@ final class WalletLogic: WalletLogicAPI {
 
     init(
         holder: WalletHolderAPI,
-        creator: @escaping WalletCreating,
+        decoder: @escaping WalletDecoding,
         metadata: MetadataServiceAPI,
         notificationCenter: NotificationCenter
     ) {
         self.holder = holder
-        self.creator = creator
+        self.decoder = decoder
         self.metadata = metadata
         self.notificationCenter = notificationCenter
     }
@@ -94,7 +94,7 @@ final class WalletLogic: WalletLogicAPI {
         with password: String,
         payload: Data
     ) -> AnyPublisher<WalletState, WalletError> {
-        creator(payload)
+        decoder(payload)
             .flatMap { [holder] wallet -> AnyPublisher<NativeWallet?, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justWallet(wallet)))
                     .map(\.wallet)
@@ -125,8 +125,8 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [creator] metadataState -> AnyPublisher<(NativeWallet, MetadataState), WalletError> in
-                creator(payload)
+            .flatMap { [decoder] metadataState -> AnyPublisher<(NativeWallet, MetadataState), WalletError> in
+                decoder(payload)
                     .map { ($0, metadataState) }
                     .eraseToAnyPublisher()
             }

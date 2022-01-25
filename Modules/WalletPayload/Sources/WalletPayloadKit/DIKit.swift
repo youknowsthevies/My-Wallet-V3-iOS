@@ -30,11 +30,11 @@ extension DependencyContainer {
         }
 
         factory { () -> WalletLogic in
-            let walletCreator: WalletCreatorAPI = DIKit.resolve()
-            let creator = walletCreator.createWallet(from:)
+            let walletCreator: WalletDecoderAPI = DIKit.resolve()
+            let decoder = walletCreator.createWallet(from:)
             return WalletLogic(
                 holder: DIKit.resolve(),
-                creator: creator,
+                decoder: decoder,
                 metadata: DIKit.resolve(),
                 notificationCenter: .default
             )

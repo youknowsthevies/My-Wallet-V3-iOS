@@ -4,7 +4,7 @@ import Combine
 import Foundation
 import WalletPayloadKit
 
-final class WalletCreator: WalletCreatorAPI {
+final class WalletDecoder: WalletDecoderAPI {
 
     func createWallet(from data: Data) -> AnyPublisher<NativeWallet, WalletError> {
         decode(data: data)

@@ -7,7 +7,7 @@ import TestKit
 import XCTest
 
 // swiftlint:disable line_length
-class HDWalletTests: XCTestCase {
+class HDWalletResponseTests: XCTestCase {
 
     let jsonV3 = Fixtures.loadJSONData(filename: "hdwallet.v3", in: .module)!
     let jsonV4 = Fixtures.loadJSONData(filename: "hdwallet.v4", in: .module)!

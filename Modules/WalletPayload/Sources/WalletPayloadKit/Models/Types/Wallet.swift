@@ -62,6 +62,41 @@ extension NativeWallet {
     }
 }
 
+// MARK: - Wallet Creation
+
+/// Generates a new `Wallet` from the given context
+/// - Parameter context: A `WalletCreationContext`
+/// - Returns: A `Result<NativeWallet, WalletCreateError>`
+func generateWallet(context: WalletCreationContext) -> Result<NativeWallet, WalletCreateError> {
+    generateHDWallet(mnemonic: context.mnemonic, accountName: context.accountName, totalAccounts: 1)
+        .map { hdWallet in
+            NativeWallet(
+                guid: context.guid,
+                sharedKey: context.sharedKey,
+                doubleEncrypted: false,
+                doublePasswordHash: nil,
+                metadataHDNode: nil,
+                options: Options.default,
+                hdWallets: [hdWallet],
+                addresses: []
+            )
+        }
+}
+
+/// Calculates the seed from the given mnemonic
+/// - Parameter mnemonic: A `String` to be used as the mnemonic phrase
+/// - Returns: A `Result<String, WalletCreateError>` that contains either the seed in hexadecimal format or failure
+func getSeedHex(
+    from mnemonic: String
+) -> Result<String, WalletCreateError> {
+    guard let wallet = WalletCore.HDWallet(mnemonic: mnemonic, passphrase: "") else {
+        return .failure(.mnemonicFailure(.unableToProvide))
+    }
+    return .success(wallet.seed.toHexString)
+}
+
+// MARK: - Wallet Methods
+
 /// Gets a mnemonic phrase from the given wallet
 /// - Parameters:
 ///   - wallet: A `Wallet` value to retrieve the mnemonic from

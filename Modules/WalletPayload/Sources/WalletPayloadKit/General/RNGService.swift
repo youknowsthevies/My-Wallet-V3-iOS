@@ -4,14 +4,14 @@ import Combine
 import Foundation
 import ToolKit
 
-enum RNGEntropyError: Error, Equatable {
+public enum RNGEntropyError: Error, Equatable {
     case invalid
     case unableToGenerate
     case networkFailure(ServerEntropyError)
     case parsingFailed(EntropyParsing)
 }
 
-enum EntropyParsing: Error, Equatable {
+public enum EntropyParsing: Error, Equatable {
     case serverEntropyEmpty
     case localEntropyEmpty
     case serverEntropyInvalid
@@ -20,7 +20,17 @@ enum EntropyParsing: Error, Equatable {
     case parsingFailed
 }
 
+typealias EntropyProvider = (_ count: Int) -> AnyPublisher<Data, RNGEntropyError>
+
 protocol RNGServiceAPI {
+    /// Generates a new entropy for the requested bytes with a default format of `hex`
+    /// - Returns: `AnyPublisher<Data, RNGEntropyError>`
+    func generateEntropy(
+        count: Int
+    ) -> AnyPublisher<Data, RNGEntropyError>
+
+    /// Generates a new entropy for the requested bytes and format
+    /// - Returns: `AnyPublisher<Data, RNGEntropyError>`
     func generateEntropy(
         bytes: EntropyBytes,
         format: EntropyFormat
@@ -57,8 +67,17 @@ final class RNGService: RNGServiceAPI {
     }
 
     func generateEntropy(
-        bytes: EntropyBytes = .default,
-        format: EntropyFormat = .hex
+        count: Int
+    ) -> AnyPublisher<Data, RNGEntropyError> {
+        generateEntropy(
+            bytes: .custom(count),
+            format: .hex
+        )
+    }
+
+    func generateEntropy(
+        bytes: EntropyBytes,
+        format: EntropyFormat
     ) -> AnyPublisher<Data, RNGEntropyError> {
         serverEntropyRepository.getServerEntropy(bytes: bytes, format: format)
             .mapError(RNGEntropyError.networkFailure)

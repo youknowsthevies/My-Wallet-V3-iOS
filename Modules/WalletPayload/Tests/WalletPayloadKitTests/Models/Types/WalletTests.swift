@@ -24,6 +24,83 @@ class WalletTests: XCTestCase {
         try super.setUpWithError()
     }
 
+    func test_generate_new_wallet_successfully() {
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+        let guid = UUID().uuidString
+        let sharedKey = UUID().uuidString
+
+        let context = WalletCreationContext(
+            mnemonic: mnemonic,
+            guid: guid,
+            sharedKey: sharedKey,
+            accountName: "Private Key Wallet"
+        )
+
+        let result = generateWallet(context: context)
+        switch result {
+        case .success(let wallet):
+            XCTAssertEqual(wallet.guid, guid)
+            XCTAssertEqual(wallet.sharedKey, sharedKey)
+            XCTAssertEqual(wallet.options, Options.default)
+            XCTAssertFalse(wallet.doubleEncrypted)
+            XCTAssertNil(wallet.doublePasswordHash)
+            XCTAssertFalse(wallet.hdWallets.isEmpty)
+            XCTAssertTrue(wallet.addresses.isEmpty)
+            return
+        case .failure(let error):
+            XCTFail("should private a wallet - \(error)")
+        }
+    }
+
+    func test_generate_new_wallet_returns_failure_on_invalid_mnemonic() {
+        let mnemonic = "abandon abandon"
+        let guid = UUID().uuidString
+        let sharedKey = UUID().uuidString
+
+        let context = WalletCreationContext(
+            mnemonic: mnemonic,
+            guid: guid,
+            sharedKey: sharedKey,
+            accountName: "Private Key Wallet"
+        )
+
+        let result = generateWallet(context: context)
+        switch result {
+        case .success:
+            XCTFail("should not private a wallet")
+        case .failure(let error):
+            XCTAssertEqual(error, WalletCreateError.mnemonicFailure(.unableToProvide))
+        }
+    }
+
+    // swiftlint:disable line_length
+    func test_can_get_seedHex_from_mnemonic() {
+        // given a valid mnemonic
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+        // returns a seed hex
+        switch getSeedHex(from: mnemonic) {
+        case .success(let seedHex):
+            XCTAssertEqual(
+                seedHex,
+                "5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4"
+            )
+        case .failure:
+            XCTFail("should provide a seedHex on valid mnemonic")
+        }
+
+        let invalidMnemonic = "abandon abandon"
+
+        // returns a seed hex
+        switch getSeedHex(from: invalidMnemonic) {
+        case .success:
+            XCTFail("should fail on invalid mnemonic")
+        case .failure(let error):
+            XCTAssertEqual(error, WalletCreateError.mnemonicFailure(.unableToProvide))
+        }
+    }
+
+    // swiftlint:enable line_length
+
     func test_getMnemonic_method_works() throws {
         let wallet = NativeWallet(from: blockchainWalletV4)
 

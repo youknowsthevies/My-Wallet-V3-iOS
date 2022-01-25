@@ -25,18 +25,18 @@ class WalletRecoveryServiceTests: XCTestCase {
 
     func test_wallet_recovery_returns_an_error_on_invalid_seed_phrase() throws {
         let walletHolder = WalletHolder()
-        var walletCreatorCalled = false
-        let walletCreator: WalletCreatorAPI = WalletCreator()
-        let creator: WalletCreating = { [walletCreator] blockchainWallet in
-            walletCreatorCalled = true
-            return walletCreator.createWallet(from: blockchainWallet)
+        var walletDecoderCalled = false
+        let walletDecoder: WalletDecoderAPI = WalletDecoder()
+        let decoder: WalletDecoding = { [walletDecoder] blockchainWallet in
+            walletDecoderCalled = true
+            return walletDecoder.createWallet(from: blockchainWallet)
         }
 
         let mockMetadata = MockMetadataService()
 
         let walletLogic = WalletLogic(
             holder: walletHolder,
-            creator: creator,
+            decoder: decoder,
             metadata: mockMetadata,
             notificationCenter: .default
         )
@@ -66,24 +66,24 @@ class WalletRecoveryServiceTests: XCTestCase {
 
         wait(for: [expectation], timeout: 2)
 
-        XCTAssertFalse(walletCreatorCalled)
+        XCTAssertFalse(walletDecoderCalled)
     }
 
     func test_wallet_recovery_returns_correct_value_on_success() throws {
         try XCTSkipIf(true, "not yet finalised")
         let walletHolder = WalletHolder()
-        var walletCreatorCalled = false
-        let walletCreator: WalletCreatorAPI = WalletCreator()
-        let creator: WalletCreating = { [walletCreator] blockchainWallet in
-            walletCreatorCalled = true
-            return walletCreator.createWallet(from: blockchainWallet)
+        var walletDecoderCalled = false
+        let walletDecoder: WalletDecoderAPI = WalletDecoder()
+        let decoder: WalletDecoding = { [walletDecoder] blockchainWallet in
+            walletDecoderCalled = true
+            return walletDecoder.createWallet(from: blockchainWallet)
         }
 
         let mockMetadata = MockMetadataService()
 
         let walletLogic = WalletLogic(
             holder: walletHolder,
-            creator: creator,
+            decoder: decoder,
             metadata: mockMetadata,
             notificationCenter: .default
         )
