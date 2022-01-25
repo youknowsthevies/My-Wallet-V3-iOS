@@ -292,10 +292,10 @@ public struct CredentialsView: View {
             onReturnTapped: {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = false
-                if viewStore.twoFAState != nil {
-                    viewStore.send(.continueButtonTapped)
-                } else {
+                if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                     self.isTwoFAFieldFirstResponder = true
+                } else {
+                    viewStore.send(.continueButtonTapped)
                 }
             },
             trailingAccessoryView: {

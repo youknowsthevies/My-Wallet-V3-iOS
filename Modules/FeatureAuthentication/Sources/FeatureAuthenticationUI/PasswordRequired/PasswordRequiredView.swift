@@ -20,19 +20,14 @@ public struct PasswordRequiredView: View {
     }
 
     public var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: Spacing.padding3) {
-                    passwordRequiredHeader
-                    passwordRequiredForm
-                    Spacer()
-                    forgetWalletSection
-                }
-                .padding(Spacing.padding3)
-            }
-            .frame(height: geometry.size.height)
-            .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
+        VStack(spacing: Spacing.padding3) {
+            passwordRequiredHeader
+            passwordRequiredForm
+            Spacer()
+            forgetWalletSection
         }
+        .padding(Spacing.padding3)
+        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
     }
 
     private var passwordRequiredHeader: some View {
@@ -75,6 +70,8 @@ public struct PasswordRequiredView: View {
                 Text(LocalizedString.description)
                     .typography(.caption1)
                     .foregroundColor(.textDetail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
                     .accessibility(identifier: AccessibilityIdentifiers.PasswordRequiredScreen.description)
             }
         }
@@ -119,6 +116,8 @@ public struct PasswordRequiredView: View {
                 Text(LocalizedString.forgetWalletDescription)
                     .typography(.caption1)
                     .foregroundColor(.textDetail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
                     .accessibility(identifier: AccessibilityIdentifiers.PasswordRequiredScreen.forgotWalletDesription)
                 DestructiveMinimalButton(title: LocalizedString.forgetWalletButton) {
                     viewStore.send(.forgetWalletTapped)
