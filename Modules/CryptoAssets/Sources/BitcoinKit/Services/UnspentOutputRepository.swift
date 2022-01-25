@@ -1,78 +1,55 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
+import NetworkError
 import PlatformKit
-import RxSwift
-import RxToolKit
 import ToolKit
 
 protocol UnspentOutputRepositoryAPI {
-    var unspentOutputs: Single<UnspentOutputs> { get }
-    var fetchUnspentOutputs: Single<UnspentOutputs> { get }
+
+    /// Emits unspent outputs of the provided addresses (extended public key)
+    func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputs, NetworkError>
 }
 
 final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
 
-    // MARK: - Properties
-
-    var unspentOutputs: Single<UnspentOutputs> {
-        cachedUnspentOutputs.valueSingle
-    }
-
-    var fetchUnspentOutputs: Single<UnspentOutputs> {
-        cachedUnspentOutputs.fetchValue
-    }
-
     // MARK: - Private properties
 
-    private let bridge: BitcoinWalletBridgeAPI
     private let client: APIClientAPI
-    private let cachedUnspentOutputs: CachedValue<UnspentOutputs>
+    private let cachedValue: CachedValueNew<
+        Set<XPub>, UnspentOutputs, NetworkError
+    >
 
     // MARK: - Init
 
     init(
-        with bridge: BitcoinWalletBridgeAPI = resolve(),
-        client: APIClientAPI = resolve(),
-        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler(identifier: "UnspentOutputRepository")
+        client: APIClientAPI = resolve()
     ) {
-        self.bridge = bridge
         self.client = client
-
-        cachedUnspentOutputs = CachedValue(
-            configuration: .periodic(
-                seconds: 10,
-                scheduler: scheduler
-            )
+        let cache: AnyCache<Set<XPub>, UnspentOutputs> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client] xPubs in
+                client
+                    .unspentOutputs(for: Array(xPubs))
+                    .map(UnspentOutputs.init(networkResponse:))
+                    .eraseToAnyPublisher()
+            }
         )
-
-        cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in
-            guard let self = self else {
-                return Single.error(ToolKitError.nullReference(Self.self))
-            }
-            return self.fetchAllUnspentOutputs()
-        }
     }
 
-    // MARK: - Private methods
+    // MARK: - Methods
 
-    private func fetchAllUnspentOutputs() -> Single<UnspentOutputs> {
-        bridge.wallets
-            .map { wallets -> [XPub] in
-                // This may be not what we need, as it will fetch utxos from all wallets, and not just from the one we want to send from.
-                wallets
-                    .map(\.publicKeys.xpubs)
-                    .flatMap { $0 }
-            }
-            .flatMap(weak: self) { (self, addresses) -> Single<UnspentOutputs> in
-                self.fetchUnspentOutputs(for: addresses)
-            }
-    }
-
-    private func fetchUnspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputs> {
-        client.unspentOutputs(for: addresses)
-            .map(UnspentOutputs.init(networkResponse:))
-            .asSingle()
+    func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputs, NetworkError> {
+        cachedValue.get(key: Set(addresses))
     }
 }
