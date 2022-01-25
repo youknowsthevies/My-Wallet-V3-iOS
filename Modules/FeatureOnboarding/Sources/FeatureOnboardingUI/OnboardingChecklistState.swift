@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComponentLibrary
 import ComposableArchitecture
@@ -55,9 +56,14 @@ public enum OnboardingChecklist {
         }
     }
 
+    public enum ItemSelectionSource {
+        case item
+        case callToActionButton
+    }
+
     public enum Action: Equatable, NavigationAction {
         case route(RouteIntent<Route>?)
-        case didSelectItem(Item.Identifier)
+        case didSelectItem(Item.Identifier, ItemSelectionSource)
         case dismissFullScreenChecklist
         case presentFullScreenChecklist
         case startObservingUserState
@@ -84,17 +90,21 @@ public enum OnboardingChecklist {
         /// A `DispatchQueue` running on the main thread.
         let mainQueue: AnySchedulerOf<DispatchQueue>
 
+        let analyticsRecorder: AnalyticsEventRecorderAPI
+
         public init(
             userState: AnyPublisher<UserState, Never>,
             presentBuyFlow: @escaping (@escaping (Bool) -> Void) -> Void,
             presentKYCFlow: @escaping (@escaping (Bool) -> Void) -> Void,
             presentPaymentMethodLinkingFlow: @escaping (@escaping (Bool) -> Void) -> Void,
+            analyticsRecorder: AnalyticsEventRecorderAPI,
             mainQueue: AnySchedulerOf<DispatchQueue> = .main
         ) {
             self.userState = userState
             self.presentBuyFlow = presentBuyFlow
             self.presentKYCFlow = presentKYCFlow
             self.presentPaymentMethodLinkingFlow = presentPaymentMethodLinkingFlow
+            self.analyticsRecorder = analyticsRecorder
             self.mainQueue = mainQueue
         }
     }
@@ -108,7 +118,7 @@ public enum OnboardingChecklist {
             state.route = route
             return .none
 
-        case .didSelectItem(let item):
+        case .didSelectItem(let item, _):
             let completedItems = state.completedItems
             return .fireAndForget {
                 environment.presentOnboaringFlow(upTo: item, completedItems: completedItems)
@@ -142,6 +152,7 @@ public enum OnboardingChecklist {
             return .none
         }
     }
+    .analytics()
 }
 
 extension OnboardingChecklist.Environment {

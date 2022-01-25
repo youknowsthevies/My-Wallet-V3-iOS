@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
@@ -78,7 +79,8 @@ struct SwiftUIView_Previews: PreviewProvider {
                     userState: .empty(),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
-                    presentPaymentMethodLinkingFlow: { _ in }
+                    presentPaymentMethodLinkingFlow: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

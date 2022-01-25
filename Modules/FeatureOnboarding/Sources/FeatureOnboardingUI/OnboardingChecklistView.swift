@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
@@ -50,7 +51,9 @@ public struct OnboardingChecklistView: View {
                             )
                             .onTapGesture {
                                 if !completed {
-                                    viewStore.send(.didSelectItem(item.id))
+                                    viewStore.send(
+                                        .didSelectItem(item.id, .item)
+                                    )
                                 }
                             }
                         }
@@ -62,7 +65,9 @@ public struct OnboardingChecklistView: View {
 
                     if let item = firstIncompleteItem {
                         Button(item.title) {
-                            viewStore.send(.didSelectItem(item.id))
+                            viewStore.send(
+                                .didSelectItem(item.id, .callToActionButton)
+                            )
                         }
                         .buttonStyle(
                             OnboardingChecklistButtonStyle(item: item)
@@ -129,7 +134,8 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                     ),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
-                    presentPaymentMethodLinkingFlow: { _ in }
+                    presentPaymentMethodLinkingFlow: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )
@@ -148,7 +154,8 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                     ),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
-                    presentPaymentMethodLinkingFlow: { _ in }
+                    presentPaymentMethodLinkingFlow: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )
@@ -167,7 +174,8 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                     ),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
-                    presentPaymentMethodLinkingFlow: { _ in }
+                    presentPaymentMethodLinkingFlow: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )
@@ -186,7 +194,8 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                     ),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
-                    presentPaymentMethodLinkingFlow: { _ in }
+                    presentPaymentMethodLinkingFlow: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

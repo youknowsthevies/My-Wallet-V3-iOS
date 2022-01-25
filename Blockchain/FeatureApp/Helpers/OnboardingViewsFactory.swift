@@ -1,5 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import FeatureDashboardUI
 import FeatureOnboardingUI
@@ -13,17 +14,20 @@ final class OnboardingViewsFactory {
     private let userAdapter: UserAdapterAPI
     private let transactionsAdapter: TransactionsAdapterAPI
     private let paymentMethodLinkingAdapter: PaymentMethodsLinkingAdapterAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         kycAdapter: KYCAdapter = KYCAdapter(),
         userAdapter: UserAdapterAPI = resolve(),
         transactionsAdapter: TransactionsAdapterAPI = resolve(),
-        paymentMethodLinkingAdapter: PaymentMethodsLinkingAdapterAPI = resolve()
+        paymentMethodLinkingAdapter: PaymentMethodsLinkingAdapterAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.kycAdapter = kycAdapter
         self.userAdapter = userAdapter
         self.transactionsAdapter = transactionsAdapter
         self.paymentMethodLinkingAdapter = paymentMethodLinkingAdapter
+        self.analyticsRecorder = analyticsRecorder
     }
 
     func makeOnboardingChecklistOverview() -> some View {
@@ -83,7 +87,8 @@ final class OnboardingViewsFactory {
                         }
                     )
                 }
-            }
+            },
+            analyticsRecorder: analyticsRecorder
         )
     }
 }

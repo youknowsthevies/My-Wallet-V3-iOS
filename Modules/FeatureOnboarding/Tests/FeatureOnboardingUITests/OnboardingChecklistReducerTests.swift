@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import Combine
 import ComposableArchitecture
 @testable import FeatureOnboardingUI
@@ -44,6 +45,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
                         completion(true)
                     }
                 },
+                analyticsRecorder: MockAnalyticsRecorder(),
                 mainQueue: testMainScheduler.eraseToAnyScheduler()
             )
         )
@@ -60,7 +62,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToClean()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.verifyIdentity))
+        testStore.send(.didSelectItem(.verifyIdentity, .item))
         // kyc is done
         testMainScheduler.advance()
         // then they go through kyc
@@ -74,7 +76,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToClean()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.linkPaymentMethods))
+        testStore.send(.didSelectItem(.linkPaymentMethods, .item))
         // then they go through kyc
         testMainScheduler.advance()
         // kyc is done
@@ -92,7 +94,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToKYCCompleted()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.linkPaymentMethods))
+        testStore.send(.didSelectItem(.linkPaymentMethods, .item))
         testMainScheduler.advance()
         // then they go through linking a payment method
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
@@ -105,7 +107,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToClean()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto))
+        testStore.send(.didSelectItem(.buyCrypto, .item))
         testMainScheduler.advance()
         // then they go through kyc
         testStore.receive(.userStateDidChange(.kycComplete)) {
@@ -126,7 +128,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToKYCCompleted()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto))
+        testStore.send(.didSelectItem(.buyCrypto, .item))
         testMainScheduler.advance()
         // then they go through linking a payment method
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
@@ -143,7 +145,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         resetUserStateToKYCAndPaymentsCompleted()
         testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto))
+        testStore.send(.didSelectItem(.buyCrypto, .item))
         testMainScheduler.advance()
         // then they go through buy
         testStore.receive(.userStateDidChange(.complete)) {
