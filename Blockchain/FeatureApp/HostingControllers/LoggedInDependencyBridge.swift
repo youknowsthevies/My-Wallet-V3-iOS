@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureAppUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureSettingsUI

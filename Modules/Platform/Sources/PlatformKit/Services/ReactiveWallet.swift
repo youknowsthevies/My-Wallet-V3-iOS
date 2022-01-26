@@ -4,6 +4,7 @@ import Combine
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 /// An extension to `Wallet` which makes wallet functionality Rx friendly.
 public final class ReactiveWallet: ReactiveWalletAPI {

@@ -2,8 +2,10 @@
 
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
+@testable import WalletPayloadDataKit
+@testable import WalletPayloadKit
+
 import Foundation
-import WalletPayloadKit
 
 extension WalletPayloadClient.Response {
     static func fake(

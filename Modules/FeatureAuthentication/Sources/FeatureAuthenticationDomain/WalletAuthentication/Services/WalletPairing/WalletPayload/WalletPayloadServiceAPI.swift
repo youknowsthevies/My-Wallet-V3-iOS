@@ -3,39 +3,6 @@
 import Combine
 import WalletPayloadKit
 
-public enum WalletPayloadIdentifier {
-
-    /// Session token (e.g pairing)
-    case sessionToken(String)
-
-    /// Shared key (e.g PIN auth)
-    case sharedKey(String)
-}
-
-public enum WalletPayloadServiceError: Error, Equatable {
-
-    /// The payload returned from the backend is empty
-    case missingPayload
-
-    /// Credentials are missing
-    case missingCredentials(MissingCredentialsError)
-
-    /// Email Authorization is required
-    case emailAuthorizationRequired
-
-    /// Unsupported 2FA Type
-    case unsupported2FAType
-
-    /// The account is locked due to many failed authentication
-    case accountLocked
-
-    /// Error with a custom message
-    case message(String)
-
-    /// Unknown error
-    case unknown
-}
-
 public protocol WalletPayloadServiceAPI: AnyObject {
 
     /// Using the GUID and Session Token stored in the wallet repository, it sends a request to the wallet payload client and the response will include a required authenticator type (e.g., email/google authenticator) or errors depending on different scenario

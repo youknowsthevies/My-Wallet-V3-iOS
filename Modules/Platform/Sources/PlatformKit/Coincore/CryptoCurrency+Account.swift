@@ -27,6 +27,6 @@ extension FiatCurrency {
     private typealias LocalizedString = LocalizationConstants.Account
 
     public var defaultWalletName: String {
-        LocalizedString.fiatAccount(displayCode)
+        name
     }
 }

@@ -91,8 +91,15 @@ extension LinkedBankResponse {
 
     public enum Error: String, Codable {
         case alreadyLinked = "BANK_TRANSFER_ACCOUNT_ALREADY_LINKED"
-        case unsuportedAccount = "BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND"
-        case namesMissmatched = "BANK_TRANSFER_ACCOUNT_NAME_MISMATCH"
+        case infoNotFound = "BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND"
+        case nameMismatch = "BANK_TRANSFER_ACCOUNT_NAME_MISMATCH"
+        case expired = "BANK_TRANSFER_ACCOUNT_EXPIRED"
+        case rejected = "BANK_TRANSFER_ACCOUNT_REJECTED"
+        case failed = "BANK_TRANSFER_ACCOUNT_FAILED"
+        case invalid = "BANK_TRANSFER_ACCOUNT_INVALID"
+        case notSupported = "BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED"
+        case failedInternal = "BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL"
+        case rejectedFraud = "BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD"
         case unknown = ""
     }
 }

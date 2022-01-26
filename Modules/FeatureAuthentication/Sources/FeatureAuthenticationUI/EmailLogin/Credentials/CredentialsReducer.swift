@@ -16,7 +16,6 @@ public enum CredentialsAction: Equatable {
     }
 
     case alert(AlertAction)
-    case closeButtonTapped
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
     case onWillDisappear
@@ -99,6 +98,7 @@ struct CredentialsEnvironment {
     let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: (String) -> Bool
+    let walletRecoveryService: WalletRecoveryService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -115,7 +115,8 @@ struct CredentialsEnvironment {
         externalAppOpener: ExternalAppOpener = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
-        walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
+        walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator,
+        walletRecoveryService: WalletRecoveryService
     ) {
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
@@ -129,6 +130,7 @@ struct CredentialsEnvironment {
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.walletIdentifierValidator = walletIdentifierValidator
+        self.walletRecoveryService = walletRecoveryService
     }
 }
 
@@ -172,7 +174,8 @@ let credentialsReducer = Reducer.combine(
                 SeedPhraseEnvironment(
                     mainQueue: $0.mainQueue,
                     externalAppOpener: $0.externalAppOpener,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -199,8 +202,7 @@ let credentialsReducer = Reducer.combine(
             state.credentialsFailureAlert = nil
             return .none
 
-        case .onWillDisappear,
-             .closeButtonTapped:
+        case .onWillDisappear:
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):

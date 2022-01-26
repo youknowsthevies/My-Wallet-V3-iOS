@@ -256,6 +256,7 @@ extension LocalizationConstants.Transaction {
 
     public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
     public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let add = NSLocalizedString("Add", comment: "Add")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
     public static let sell = NSLocalizedString("Sell", comment: "Sell")
     public static let send = NSLocalizedString("Send", comment: "Send")
@@ -334,15 +335,15 @@ extension LocalizationConstants.Transaction.Withdraw {
 }
 
 extension LocalizationConstants.Transaction.Transfer {
-    public static let transferFrom = NSLocalizedString(
-        "Transfer from...",
+    public static let addFrom = NSLocalizedString(
+        "Add from...",
         comment: "Transfer from..."
     )
     public static let transferNow = NSLocalizedString(
         "Transfer Now",
         comment: "Transfer Now"
     )
-    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let add = NSLocalizedString("Add", comment: "Add")
 }
 
 extension LocalizationConstants.Transaction.Deposit {
@@ -437,7 +438,23 @@ extension LocalizationConstants.Transaction.Buy {
         comment: "Title of screen to select the Crypto Currency to Buy"
     )
     public static let confirmationDisclaimer = NSLocalizedString(
-        "Your final amount might change due to market activity. Your funds will be available to Sell, Swap or Withdraw instantly.",
+        "Your final amount might change due to market activity.",
+        comment: ""
+    )
+    public static let lockInfo = NSLocalizedString(
+        "For security purposes, buy orders with a %@ are subject to a %@ holding period. You can Swap or Sell during this time. We will notify you once the funds are available to be withdrawn.",
+        comment: ""
+    )
+    public static let noLockInfo = NSLocalizedString(
+        "Your funds will be available to Sell, Swap or Withdraw instantly.",
+        comment: ""
+    )
+    public static let day = NSLocalizedString(
+        "day",
+        comment: ""
+    )
+    public static let days = NSLocalizedString(
+        "days",
         comment: ""
     )
 }
@@ -1482,6 +1499,16 @@ extension LocalizationConstants.Transaction.Error {
     public static let tooManyTransaction = NSLocalizedString(
         "You have too many pending %@ transactions. Once those complete you can create a new one.",
         comment: "You have too many pending %@ transactions. Once those complete you can create a new one."
+    )
+
+    public static let cardInsufficientFunds = NSLocalizedString(
+        "Your bank tells us you don't have enough funds in your account, check and try again.",
+        comment: "Your bank tells us you don't have enough funds in your account, check and try again."
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "Your bank has declined this transaction, please try another bank or payment method.",
+        comment: "Your bank has declined this transaction, please try another bank or payment method."
     )
 
     public static let orderNotCancellable = NSLocalizedString(

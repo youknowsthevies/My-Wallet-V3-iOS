@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import ComposableArchitecture
 import SwiftUI
 
@@ -174,7 +175,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
         )
         switch intent.value.action {
         case .navigateTo:
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: intent.value.route.destination(in: store),
                 isActive: Binding(binding, to: intent, isReady: $isReady),
                 label: EmptyView.init

@@ -6,6 +6,11 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+public protocol PaymentMethodDeletionServiceAPI: AnyObject {
+    /// Deletes a payment-method with a given removal data
+    func delete(by data: PaymentMethodRemovalData) -> Completable
+}
+
 public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
 
     /// Streams the beneficiaries

@@ -47,7 +47,5 @@ extension DependencyContainer {
         single { SecureChannelRouter() as SecureChannelRouting }
 
         factory { SecureChannelNotificationRelay() as SecureChannelNotificationRelaying }
-
-        factory { StripeUIClient() as StripeUIClientAPI }
     }
 }

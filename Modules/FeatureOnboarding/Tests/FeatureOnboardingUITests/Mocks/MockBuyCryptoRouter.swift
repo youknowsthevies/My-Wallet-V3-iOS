@@ -5,10 +5,12 @@ import FeatureOnboardingUI
 import ToolKit
 import UIKit
 
-final class MockBuyCryptoRouter: BuyCryptoRouterAPI {
+final class MockBuyCryptoRouter: OnboardingTransactionsRouterAPI {
 
     struct RecordedInvocations {
         var presentBuyFlow: [UIViewController] = []
+        var navigateToBuyCryptoFlow: [UIViewController] = []
+        var navigateToReceiveCryptoFlow: [UIViewController] = []
     }
 
     struct StubbedResults {
@@ -21,5 +23,13 @@ final class MockBuyCryptoRouter: BuyCryptoRouterAPI {
     func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         recordedInvocations.presentBuyFlow.append(presenter)
         return stubbedResults.presentBuyFlow
+    }
+
+    func navigateToBuyCryptoFlow(from presenter: UIViewController) {
+        recordedInvocations.navigateToBuyCryptoFlow.append(presenter)
+    }
+
+    func navigateToReceiveCryptoFlow(from presenter: UIViewController) {
+        recordedInvocations.navigateToReceiveCryptoFlow.append(presenter)
     }
 }

@@ -10,6 +10,7 @@ public enum ImportWalletAction: Equatable {
     case goBackButtonTapped
     case setCreateAccountScreenVisible(Bool)
     case createAccount(CreateAccountAction)
+    case importWalletFailed(WalletRecoveryError)
 }
 
 struct ImportWalletState: Equatable {
@@ -26,6 +27,7 @@ struct ImportWalletEnvironment {
     let passwordValidator: PasswordValidatorAPI
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
 }
 
 let importWalletReducer = Reducer.combine(
@@ -39,7 +41,8 @@ let importWalletReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -67,6 +70,11 @@ let importWalletReducer = Reducer.combine(
                 event: .importWalletCancelled
             )
             return .none
+        case .importWalletFailed(let error):
+            guard state.createAccountState != nil else {
+                return .none
+            }
+            return Effect(value: .createAccount(.accountRecoveryFailed(error)))
         case .createAccount:
             return .none
         }

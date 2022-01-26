@@ -38,12 +38,13 @@ enum ERC20Function: Equatable {
 
     private static func buildTransfer(data: String) -> ERC20Function {
         func extractData() -> (to: String, amount: String) {
-            guard data.count == 128 else { return ("", "") }
+            guard data.count >= 128 else { return ("", "") }
             let addressStart = data.index(data.startIndex, offsetBy: 24)
             let addressEnd = data.index(data.startIndex, offsetBy: 64)
+            let amountEnd = data.index(data.startIndex, offsetBy: 128)
             return (
                 to: String(data[addressStart..<addressEnd]),
-                amount: String(data[addressEnd..<data.endIndex])
+                amount: String(data[addressEnd..<amountEnd])
             )
         }
         let result = extractData()

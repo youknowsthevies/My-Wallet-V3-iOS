@@ -3,39 +3,24 @@
 @testable import BitcoinChainKit
 @testable import BitcoinKit
 @testable import BitcoinKitMock
-import RxSwift
-import RxTest
+import Combine
+import ToolKit
 import XCTest
 
 class UnspentOutputRepositoryTests: XCTestCase {
 
-    var scheduler: TestScheduler!
-    var disposeBag: DisposeBag!
-
-    var bridge: BitcoinWalletBridgeMock!
     var client: APIClientMock!
     var subject: UnspentOutputRepository!
 
     override func setUp() {
         super.setUp()
-
-        scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
-        disposeBag = DisposeBag()
-
-        bridge = BitcoinWalletBridgeMock()
         client = APIClientMock()
-        subject = UnspentOutputRepository(with: bridge, client: client, scheduler: scheduler)
+        subject = UnspentOutputRepository(client: client)
     }
 
     override func tearDown() {
-
-        scheduler = nil
-        disposeBag = nil
-
         subject = nil
         client = nil
-        bridge = nil
-
         super.tearDown()
     }
 
@@ -46,23 +31,10 @@ class UnspentOutputRepositoryTests: XCTestCase {
         client.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
 
         // Arrange
-        let unspentOutputsObservable = subject
-            .fetchUnspentOutputs
-            .asObservable()
+        let unspentOutputsPublisher = subject
+            .unspentOutputs(for: [])
 
-        // Act
-        let result: TestableObserver<UnspentOutputs> = scheduler
-            .start { unspentOutputsObservable }
-
-        // Assert
-        let expectedEvents: [Recorded<Event<UnspentOutputs>>] = Recorded.events(
-            .next(
-                200,
-                expectedUnspents
-            ),
-            .completed(200)
-        )
-
-        XCTAssertEqual(result.events, expectedEvents)
+        // Act and Assert
+        XCTAssertPublisherValues(unspentOutputsPublisher, expectedUnspents)
     }
 }

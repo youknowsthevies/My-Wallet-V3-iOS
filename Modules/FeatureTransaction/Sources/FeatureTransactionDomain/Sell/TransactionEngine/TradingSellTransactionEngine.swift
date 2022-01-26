@@ -12,7 +12,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     let canTransactFiat: Bool = true
     var requireSecondPassword: Bool = false
-    let quotesEngine: SwapQuotesEngine
+    let quotesEngine: SellQuotesEngine
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -20,8 +20,20 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
 
+    lazy var quote: Observable<PricedQuote> = {
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+            .asObservable()
+    }()
+
     init(
-        quotesEngine: SwapQuotesEngine,
+        quotesEngine: SellQuotesEngine,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
@@ -58,7 +70,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     func initializeTransaction() -> Single<PendingTransaction> {
         Single
             .zip(
-                quotesEngine.getRate(direction: orderDirection, pair: pair).take(1).asSingle(),
+                quote.take(1).asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
                 sourceAccount.actionableBalance
             )
@@ -110,7 +122,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             pendingTransaction.update(amount: normalized, available: balance)
         }
         .do(onSuccess: { [weak self] transaction in
-            self?.quotesEngine.updateAmount(transaction.amount.amount)
+            self?.quotesEngine.update(amount: transaction.amount.amount)
         })
         .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
             self.clearConfirmations(pendingTransaction: pendingTransaction)
@@ -118,9 +130,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let quote = quotesEngine.getRate(direction: orderDirection, pair: pair)
-            .take(1)
-            .asSingle()
+        let quote = quote.take(1).asSingle()
         let amountInSourceCurrency = currencyConversionService
             .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
             .asSingle()

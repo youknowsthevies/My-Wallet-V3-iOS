@@ -72,6 +72,11 @@ final class WalletActionScreenViewController: UIViewController {
             cell.selectionStyle = .none
             return cell
         })
+        dataSource.animationConfiguration = AnimationConfiguration(
+            insertAnimation: .none,
+            reloadAnimation: .none,
+            deleteAnimation: .none
+        )
 
         presenter.sections
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
@@ -88,13 +93,19 @@ extension WalletActionScreenViewController {
 
     // MARK: - Accessors
 
-    private func currentBalanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenter) -> UITableViewCell {
+    private func currentBalanceCell(
+        for indexPath: IndexPath,
+        presenter: CurrentBalanceCellPresenter
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func defaultActionCell(for indexPath: IndexPath, presenter: WalletActionCellPresenter) -> UITableViewCell {
+    private func defaultActionCell(
+        for indexPath: IndexPath,
+        presenter: WalletActionCellPresenter
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(WalletActionTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

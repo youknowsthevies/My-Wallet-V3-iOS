@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import FeatureCardsDomain
 import RIBs
 import RxRelay
 import RxSwift

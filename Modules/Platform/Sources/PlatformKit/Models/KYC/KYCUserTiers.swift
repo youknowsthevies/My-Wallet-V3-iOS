@@ -10,6 +10,11 @@ extension KYC {
             latestApprovedTier == .tier0
         }
 
+        /// `true` if tier 2 is in manual review or pending
+        public var isTier2Pending: Bool {
+            tierAccountStatus(for: .tier2) == .underReview || tierAccountStatus(for: .tier2) == .pending
+        }
+
         /// `true` in case the user has a verified GOLD tier.
         public var isTier2Approved: Bool {
             tierAccountStatus(for: .tier2) == .approved

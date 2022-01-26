@@ -9,6 +9,7 @@ final class MetadataService: MetadataServiceAPI {
     // MARK: - Private properties
 
     private let initialize: Initialize
+    private let initializeAndRecoverCredentials: InitializeAndRecoverCredentials
     private let fetchEntry: FetchEntry
     private let saveEntry: SaveNodeToMetadata
 
@@ -16,10 +17,12 @@ final class MetadataService: MetadataServiceAPI {
 
     init(
         initialize: @escaping Initialize,
+        initializeAndRecoverCredentials: @escaping InitializeAndRecoverCredentials,
         fetchEntry: @escaping FetchEntry,
         saveEntry: @escaping SaveNodeToMetadata
     ) {
         self.initialize = initialize
+        self.initializeAndRecoverCredentials = initializeAndRecoverCredentials
         self.fetchEntry = fetchEntry
         self.saveEntry = saveEntry
     }
@@ -34,10 +37,17 @@ final class MetadataService: MetadataServiceAPI {
         initialize(credentials, masterKey, payloadIsDoubleEncrypted)
     }
 
-    func initialize(
-        mnemonic: String
-    ) -> AnyPublisher<MetadataState, MetadataInitialisationError> {
-        unimplemented("should provide implementation for wallet recovery")
+    func initializeAndRecoverCredentials(
+        from mnemonic: String
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
+        Mnemonic.from(mnemonicString: mnemonic)
+            .mapError(MetadataInitialisationAndRecoveryError.invalidMnemonic)
+            .publisher
+            .flatMap { [initializeAndRecoverCredentials] mnemonic
+                -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> in
+                initializeAndRecoverCredentials(mnemonic)
+            }
+            .eraseToAnyPublisher()
     }
 
     func fetch(

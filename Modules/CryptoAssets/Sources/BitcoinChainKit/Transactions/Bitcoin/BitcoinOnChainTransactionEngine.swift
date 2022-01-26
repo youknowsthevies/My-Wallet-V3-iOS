@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -8,10 +9,19 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
+// MARK: - Type
+
+private enum BitcoinEngineError: Error {
+    case alreadySent
+}
+
+final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
+
+    // MARK: Internal Properties
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
+    let requireSecondPassword: Bool
 
     var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -28,43 +38,66 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .asObservable()
     }
 
-    let requireSecondPassword: Bool
-
     // MARK: - Private Properties
 
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
+    private let sendingService: BitcoinTransactionSendingServiceAPI
+    private let buildingService: BitcoinTransactionBuildingServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
-    private var target: BitcoinChainReceiveAddress<Token> {
+    private let recorder: Recording
+
+    /// didExecuteFlag will be used to log/check if there is an issue
+    /// with duplicated txs in the engine.
+    private var didExecuteFlag: Bool = false
+
+    private var receiveAddress: Single<BitcoinChainReceiveAddress<Token>> {
         switch transactionTarget {
         case let target as BitPayInvoiceTarget:
-            return .init(
+            let address = BitcoinChainReceiveAddress<Token>(
                 address: target.address,
                 label: target.label,
                 onTxCompleted: target.onTxCompleted
             )
+            return .just(address)
+        case let target as BitcoinChainReceiveAddress<Token>:
+            return .just(target)
+        case let target as CryptoAccount:
+            return target.receiveAddress
+                .map { receiveAddress in
+                    guard let receiveAddress = receiveAddress as? BitcoinChainReceiveAddress<Token> else {
+                        fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress.")
+                    }
+                    return receiveAddress
+                }
         default:
-            guard let receiveAddress = transactionTarget as? BitcoinChainReceiveAddress<Token> else {
-                fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress")
-            }
-            return receiveAddress
+            fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress.")
         }
     }
 
     // MARK: - Init
 
     init(
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        sendingService: BitcoinTransactionSendingServiceAPI = resolve(),
+        buildingService: BitcoinTransactionBuildingServiceAPI = resolve(),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
-        feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)
+        feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
+        recorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
+        self.featureFlagsService = featureFlagsService
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
+        self.sendingService = sendingService
+        self.buildingService = buildingService
         self.bridge = bridge
         self.feeService = feeService
+        self.recorder = recorder
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 90,
@@ -75,8 +108,11 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             self.feeService.fees
         }
     }
+}
 
-    // MARK: - OnChainTransactionEngine
+// MARK: - OnChainTransactionEngine
+
+extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
@@ -108,10 +144,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             walletCurrencyService
                 .displayCurrency
                 .asSingle(),
-            availableBalance
+            availableBalance,
+            featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
         )
-        .map { fiatCurrency, availableBalance -> PendingTransaction in
-            .init(
+        .map(weak: self) { _, values -> PendingTransaction in
+            let (fiatCurrency, availableBalance, _) = values
+            return .init(
                 amount: .zero(currency: Token.coin.cryptoCurrency),
                 available: availableBalance,
                 feeAmount: .zero(currency: Token.coin.cryptoCurrency),
@@ -121,7 +159,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     availableLevels: [.regular, .priority],
                     asset: Token.coin.cryptoCurrency.currencyType
                 ),
-                selectedFiatCurrency: fiatCurrency
+                selectedFiatCurrency: fiatCurrency,
+                // TODO: update feature flag logic when the feature is complete
+                nativeBitcoinTransactionEnabled: false
             )
         }
     }
@@ -144,7 +184,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 [
                     .sendDestinationValue(.init(value: pendingTransaction.amount)),
                     .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label)),
+                    .destination(.init(value: self.transactionTarget.label)),
                     .feeSelection(payload.feeSelectionOption),
                     .feedTotal(
                         .init(
@@ -161,63 +201,78 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        guard sourceAccount != nil else {
-            return .just(pendingTransaction)
+        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
+            return legacyUpdate(amount: amount, pendingTransaction: pendingTransaction)
         }
-        guard let crypto = amount.cryptoValue else {
-            preconditionFailure("We should always be passing in `CryptoCurrency` amounts")
+        return nativeUpdate(amount: amount, pendingTransaction: pendingTransaction)
+    }
+
+    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmounts(pendingTransaction: pendingTransaction)
+            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
+            .andThen(validateOptions(pendingTransaction: pendingTransaction))
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+    }
+
+    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
+            return legacyExecute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
         }
-        guard crypto.currencyType == Token.coin.cryptoCurrency else {
-            preconditionFailure("We should always be passing in BTC amounts's here")
+        return nativeExecute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+    }
+}
+
+// MARK: - BitPayClientEngine
+
+extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
+
+    func doPrepareTransaction(
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<EngineTransaction> {
+        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
+            return bridge.sign(with: secondPassword)
         }
-        // For BTC, JS does some internal validation of the proposal. We need to do this in order
-        // to run coin selection and get the fee. However, if we pass in a zero value, this is technically
-        // incorrect in JS land.
-        return fee(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, fees) -> Single<BitcoinChainTransactionProposal<Token>> in
-                self.bridge
-                    .buildProposal(
-                        with: self.target,
-                        amount: amount,
-                        fees: fees,
-                        source: self.sourceCryptoAccount
-                    )
+        return sendingService.sign(with: secondPassword).asSingle()
+    }
+
+    func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {
+        // This matches Androids API though may not be necessary for iOS
+    }
+
+    func doOnTransactionFailed(pendingTransaction: PendingTransaction, error: Error) {
+        // This matches Androids API though may not be necessary for iOS
+        Logger.shared.error("BitPay transaction failed: \(error)")
+    }
+}
+
+// MARK: - Helper variables and functions
+
+extension BitcoinOnChainTransactionEngine {
+
+    private var priorityFees: Single<MoneyValue> {
+        feeCache
+            .valueSingle
+            .map(\.priority)
+            .map(\.moneyValue)
+    }
+
+    private var regularFees: Single<MoneyValue> {
+        feeCache
+            .valueSingle
+            .map(\.regular)
+            .map(\.moneyValue)
+    }
+
+    private var sourceExchangeRatePair: Single<MoneyValuePair> {
+        walletCurrencyService
+            .displayCurrency
+            .flatMap { [currencyConversionService, sourceCryptoAccount] fiatCurrency in
+                currencyConversionService
+                    .conversionRate(from: sourceCryptoAccount.currencyType, to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: sourceCryptoAccount.currencyType), quote: $0) }
             }
-            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
-                self.bridge
-                    .buildCandidate(with: proposal)
-                    .catch { error -> Single<BitcoinChainTransactionCandidate<Token>> in
-                        let candidate: BitcoinChainTransactionCandidate<Token>
-                        switch error {
-                        case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.belowDustThreshold(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.feeTooLow(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.unknown(let finalFee, let sweepAmount, let sweepFee):
-                            candidate = .init(
-                                proposal: proposal,
-                                fees: finalFee,
-                                sweepAmount: sweepAmount,
-                                sweepFee: sweepFee
-                            )
-                        default:
-                            candidate = .init(
-                                proposal: proposal,
-                                fees: .zero(currency: Token.coin.cryptoCurrency),
-                                sweepAmount: .zero(currency: Token.coin.cryptoCurrency),
-                                sweepFee: .zero(currency: Token.coin.cryptoCurrency)
-                            )
-                        }
-                        return .just(candidate)
-                    }
-            }
-            .map { candidate -> PendingTransaction in
-                pendingTransaction.update(
-                    amount: amount,
-                    available: candidate.sweepAmount,
-                    fee: candidate.fees,
-                    feeForFullAvailable: candidate.sweepFee
-                )
-            }
+            .asSingle()
     }
 
     /// Returns the sat/byte fee for the given PendingTransaction.feeLevel.
@@ -233,55 +288,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             return regularFees
         }
     }
-
-    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
-            .andThen(validateOptions(pendingTransaction: pendingTransaction))
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        fee(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, fees) -> Single<BitcoinChainTransactionProposal<Token>> in
-                self.bridge.buildProposal(
-                    with: self.target,
-                    amount: pendingTransaction.amount,
-                    fees: fees,
-                    source: self.sourceCryptoAccount
-                )
-            }
-            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
-                self.bridge.buildCandidate(with: proposal)
-            }
-            .flatMap(weak: self) { (self, _) -> Single<String> in
-                self.bridge.send(coin: Token.coin, with: secondPassword)
-            }
-            .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
-    }
-
-    // MARK: - BitPayClientEngine
-
-    func doPrepareTransaction(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
-    ) -> Single<EngineTransaction> {
-        bridge.sign(with: secondPassword)
-    }
-
-    func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {
-        // TODO: This matches Androids API
-        // though may not be necessary for iOS
-    }
-
-    func doOnTransactionFailed(pendingTransaction: PendingTransaction, error: Error) {
-        // TODO: This matches Androids API
-        // though may not be necessary for iOS
-        Logger.shared.error("BitPay transaction failed: \(error)")
-    }
-}
-
-extension BitcoinOnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         guard transactionTarget != nil else {
@@ -369,29 +375,127 @@ extension BitcoinOnChainTransactionEngine {
         }
         .map { (amount: $0.0, fees: $0.1) }
     }
+}
 
-    private var priorityFees: Single<MoneyValue> {
-        feeCache
-            .valueSingle
-            .map(\.priority)
-            .map(\.moneyValue)
+// MARK: - Native Methods
+
+extension BitcoinOnChainTransactionEngine {
+
+    private func nativeUpdate(
+        amount: MoneyValue,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        unimplemented()
     }
 
-    private var regularFees: Single<MoneyValue> {
-        feeCache
-            .valueSingle
-            .map(\.regular)
-            .map(\.moneyValue)
+    private func nativeExecute(
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
+        unimplemented()
     }
+}
 
-    private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        walletCurrencyService
-            .displayCurrency
-            .flatMap { [currencyConversionService, sourceCryptoAccount] fiatCurrency in
-                currencyConversionService
-                    .conversionRate(from: sourceCryptoAccount.currencyType, to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: sourceCryptoAccount.currencyType), quote: $0) }
+// MARK: - Legacy Methods
+
+extension BitcoinOnChainTransactionEngine {
+
+    private func legacyUpdate(
+        amount: MoneyValue,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        guard sourceAccount != nil else {
+            return .just(pendingTransaction)
+        }
+        guard let crypto = amount.cryptoValue else {
+            preconditionFailure("We should always be passing in `CryptoCurrency` amounts")
+        }
+        guard crypto.currencyType == Token.coin.cryptoCurrency else {
+            preconditionFailure("We should always be passing in BTC amounts's here")
+        }
+        // For BTC, JS does some internal validation of the proposal. We need to do this in order
+        // to run coin selection and get the fee. However, if we pass in a zero value, this is technically
+        // incorrect in JS land.
+        return Single
+            .zip(
+                fee(pendingTransaction: pendingTransaction),
+                receiveAddress
+            )
+            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
+                let (fees, receiveAddress) = values
+                return self.bridge.buildProposal(
+                    with: receiveAddress,
+                    amount: amount,
+                    fees: fees,
+                    source: self.sourceCryptoAccount
+                )
             }
-            .asSingle()
+            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
+                self.bridge
+                    .buildCandidate(with: proposal)
+                    .catch { error -> Single<BitcoinChainTransactionCandidate<Token>> in
+                        let candidate: BitcoinChainTransactionCandidate<Token>
+                        switch error {
+                        case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.belowDustThreshold(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.feeTooLow(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.unknown(let finalFee, let sweepAmount, let sweepFee):
+                            candidate = .init(
+                                proposal: proposal,
+                                fees: finalFee,
+                                sweepAmount: sweepAmount,
+                                sweepFee: sweepFee
+                            )
+                        default:
+                            candidate = .init(
+                                proposal: proposal,
+                                fees: .zero(currency: Token.coin.cryptoCurrency),
+                                sweepAmount: .zero(currency: Token.coin.cryptoCurrency),
+                                sweepFee: .zero(currency: Token.coin.cryptoCurrency)
+                            )
+                        }
+                        return .just(candidate)
+                    }
+            }
+            .map { candidate -> PendingTransaction in
+                pendingTransaction.update(
+                    amount: amount,
+                    available: candidate.sweepAmount,
+                    fee: candidate.fees,
+                    feeForFullAvailable: candidate.sweepFee
+                )
+            }
+    }
+
+    private func legacyExecute(
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
+        guard !didExecuteFlag else {
+            recorder.error(BitcoinEngineError.alreadySent)
+            fatalError("BitcoinEngineError.alreadySent")
+        }
+        didExecuteFlag = true
+        return Single
+            .zip(
+                fee(pendingTransaction: pendingTransaction),
+                receiveAddress
+            )
+            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
+                let (fees, receiveAddress) = values
+                return self.bridge.buildProposal(
+                    with: receiveAddress,
+                    amount: pendingTransaction.amount,
+                    fees: fees,
+                    source: self.sourceCryptoAccount
+                )
+            }
+            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
+                self.bridge.buildCandidate(with: proposal)
+            }
+            .flatMap(weak: self) { (self, _) -> Single<String> in
+                self.bridge.send(coin: Token.coin, with: secondPassword)
+            }
+            .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
 }

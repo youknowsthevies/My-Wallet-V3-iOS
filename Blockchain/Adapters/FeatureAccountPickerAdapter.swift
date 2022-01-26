@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComponentLibrary
 import ComposableArchitecture
 import DIKit
 import FeatureAccountPickerUI
@@ -303,6 +304,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
             BadgeImageViewRepresentable(viewModel: presenter.badgeRelay.value, size: 32)
         case .accountGroup(let presenter):
             BadgeImageViewRepresentable(viewModel: presenter.badgeImageViewModel, size: 32)
+        case .linkedBankAccount:
+            Icon.bank
         default:
             EmptyView()
         }
@@ -343,7 +346,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
 extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable {
 
-    // swiftlint:disable:next function_body_length
+    // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects> {
         disposeBag = DisposeBag()
 
@@ -453,7 +457,9 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                 .init(
                                     id: item.identity,
                                     title: presenter.account.currencyType.name,
-                                    description: presenter.account.label
+                                    description: presenter.account.currencyType.isFiatCurrency
+                                        ? presenter.account.currencyType.displayCode
+                                        : presenter.account.label
                                 )
                             )
                         case .withdrawalLocks:

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import WalletPayloadKit
 
 public protocol NabuOfflineTokenRepositoryAPI: AnyObject {
     /// The lifetime token object (userId, token) for the nabu account. It will be used for generating session token for accessing various nabu related services

@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationDomain
 import NetworkError
+import WalletPayloadKit
 
 public enum RecoveryPhraseRepositoryError: Error {
     case networkError(NetworkError)

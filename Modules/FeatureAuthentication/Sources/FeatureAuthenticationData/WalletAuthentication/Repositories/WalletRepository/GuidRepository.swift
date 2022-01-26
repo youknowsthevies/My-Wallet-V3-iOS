@@ -10,12 +10,12 @@ final class GuidRepository: GuidRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -27,7 +27,9 @@ final class GuidRepository: GuidRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.guid
                 }
-                return walletRepo.map(\.credentials.guid)
+                return walletRepo
+                    .publisher
+                    .map(\.credentials.guid)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
             }
@@ -41,6 +43,7 @@ final class GuidRepository: GuidRepositoryAPI {
                     return walletRepository.set(guid: guid)
                 }
                 return walletRepo.set(keyPath: \.credentials.guid, value: guid)
+                    .publisher
                     .mapToVoid()
             }
             .mapToVoid()

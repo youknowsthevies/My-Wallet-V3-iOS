@@ -8,13 +8,17 @@ import RxSwift
 import ToolKit
 import UIKit
 
-public enum CardLinkingFlowResult {
+enum CardLinkingFlowResult {
     case abandoned
     case completed
 }
 
-/// Use this protocol to present the flow to link a credit or debit card to a user's account.
-public protocol CardLinkerAPI {
+/// This protocol provides an interface to present the flow to link a credit or debit card to a user's account.
+///
+/// This stand-alone piece is wrapping the entire flow required to link a credit or debit card to the user's account.
+///
+/// - IMPORTANT: Do NOT use this protocol directly. Use `PaymentMethodLinkingRouterAPI` instead!
+protocol CardLinkerAPI {
 
     /// Presents the card linking flow modally on top of the passed-in `presenter`.
     /// - Parameters:
@@ -41,14 +45,11 @@ final class CardLinker: CardLinkerAPI {
         from presenter: UIViewController,
         completion: @escaping (CardLinkingFlowResult) -> Void
     ) {
-        assert(
-            cardRouter == nil,
-            "Attempting to present \(type(of: self)) when an instance is already in use."
-        )
         if cardRouter != nil {
             ProbabilisticRunner.run(for: .onePercent) {
                 fatalError("Attempting to present \(type(of: self)) when an instance is already in use.")
             }
+            cardRouter = nil
             return
         }
         // NOTE: the presenter is currently unused because of how the `CardRouter` is implemented but it should be refactored

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import KeychainKit
+@testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 
 import Combine

@@ -28,7 +28,8 @@ public final class KYCPager: KYCPagerAPI {
             case .countrySelected(let country):
                 kycCountry = country
             case .sddVerification(let isVerified):
-                return isVerified ? .empty() : .just(.verifyIdentity)
+                let shouldCompleteKYC = isVerified && tier < .tier2
+                return shouldCompleteKYC ? .empty() : .just(.verifyIdentity)
             case .stateSelected:
                 // no-op: handled in coordinator
                 break
@@ -96,6 +97,7 @@ extension KYCPageType {
 
     public static func startingPage(
         forUser user: NabuUser,
+        requiredTier: KYC.Tier,
         tiersResponse: KYC.UserTiers,
         isSDDEligible: Bool,
         isSDDVerified: Bool
@@ -122,13 +124,15 @@ extension KYCPageType {
 
         if let mobile = user.mobile, mobile.verified {
             if tiersResponse.canCompleteTier2 {
-                if isSDDVerified {
-                    // if they are SDD verified we should move on to buy but since this method doesn't allow returning nil, go to the SDD check first
-                    // from there you should get redirected to buy
-                    return .sddVerificationCheck // this
-                } else if isSDDEligible {
-                    // if they are SDD eligible, perform the SDD check and decide
-                    return .sddVerificationCheck
+                if requiredTier < .tier2 {
+                    if isSDDVerified {
+                        // if they are SDD verified we should move on to buy but since this method doesn't allow returning nil, go to the SDD check first
+                        // from there you should get redirected to buy
+                        return .sddVerificationCheck
+                    } else if isSDDEligible {
+                        // if they are SDD eligible, perform the SDD check and decide
+                        return .sddVerificationCheck
+                    }
                 }
 
                 // If the user can complete tier2 than they
@@ -161,19 +165,25 @@ extension KYCPageType {
         switch tier {
         case .tier0,
              .tier1:
-            return nextPageTier1(user: user, country: country, tiersResponse: tiersResponse)
+            return nextPageTier1(user: user, country: country, requiredTier: tier, tiersResponse: tiersResponse)
         case .tier2:
             return nextPageTier2(user: user, country: country, tiersResponse: tiersResponse)
         }
     }
 
-    private func nextPageTier1(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
+    private func nextPageTier1(
+        user: NabuUser?,
+        country: CountryData?,
+        requiredTier: KYC.Tier,
+        tiersResponse: KYC.UserTiers
+    ) -> KYCPageType? {
         switch self {
         case .welcome:
             if let user = user {
                 // We can pass true here, as non-eligible users would get send to the Tier 2 upgrade path anyway
                 return KYCPageType.startingPage(
                     forUser: user,
+                    requiredTier: requiredTier,
                     tiersResponse: tiersResponse,
                     isSDDEligible: true,
                     isSDDVerified: false
@@ -205,6 +215,12 @@ extension KYCPageType {
         case .address:
             return .sddVerificationCheck
         case .sddVerificationCheck:
+            // This check could be also in `case .address` but I'm putting this here to ensure that
+            // when the KYC flow is closed the backend has already promoted the user to Tier 3.
+            // This way, if we check for for KYC status afterwards, the info for Tier 3 should be guaranteed.
+            guard requiredTier < .tier2 else {
+                return .tier1ForcedTier2
+            }
             // END
             return nil
         case .tier1ForcedTier2,
@@ -252,7 +268,7 @@ extension KYCPageType {
              .country,
              .states,
              .profile:
-            return nextPageTier1(user: user, country: country, tiersResponse: tiersResponse)
+            return nextPageTier1(user: user, country: country, requiredTier: .tier2, tiersResponse: tiersResponse)
         }
     }
 }

@@ -215,6 +215,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Continue with Google",
                 comment: "Login screen: sign in with Google CTA button"
             )
+            public static let next = NSLocalizedString(
+                "Next",
+                comment: "Login screen: next button"
+            )
             public static let _continue = NSLocalizedString(
                 "Continue",
                 comment: "Login screen: continue CTA button"
@@ -568,6 +572,10 @@ extension LocalizationConstants.FeatureAuthentication {
             "Log In",
             comment: "Seed phrase screen: login CTA button"
         )
+        public static let next = NSLocalizedString(
+            "Next",
+            comment: "Seed phrase screen: next button"
+        )
     }
 
     // MARK: - Reset Account Warning
@@ -685,6 +693,10 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let learnMore = NSLocalizedString(
                 "Learn more",
                 comment: "Reset password screen: learn more: identity verification."
+            )
+            public static let next = NSLocalizedString(
+                "Next",
+                comment: "Reset password screen: next button"
             )
         }
     }
@@ -814,5 +826,64 @@ extension LocalizationConstants.FeatureAuthentication {
             "I’ll Do This Later",
             comment: "Skip Upgrade CTA button"
         )
+    }
+
+    // MARK: - Password Required Screen
+
+    public enum PasswordRequired {
+        public static let title = NSLocalizedString(
+            "Password Required",
+            comment: "Password required screen title"
+        )
+        public static let emailField = NSLocalizedString(
+            "Email",
+            comment: "Email field title"
+        )
+        public static let walletIdentifier = NSLocalizedString(
+            "Wallet ID",
+            comment: "Wallet ID subtext"
+        )
+        public static let passwordField = NSLocalizedString(
+            "Password",
+            comment: "Password field title"
+        )
+        public static let passwordFieldPlaceholder = NSLocalizedString(
+            "Enter your password",
+            comment: "Password field placeholder"
+        )
+        public static let continueButton = NSLocalizedString(
+            "Continue",
+            comment: "Password required CTA"
+        )
+        public static let forgotButton = NSLocalizedString(
+            "Forgot Password?",
+            comment: "Forgot password CTA"
+        )
+        public static let forgetWalletButton = NSLocalizedString(
+            "Forget Wallet",
+            comment: "Forget wallet CTA"
+        )
+        public static let description = NSLocalizedString(
+            "Not your account? If you would like to sign into a different account, press ‘Forget Wallet’ below.",
+            comment: "Password required description"
+        )
+        public static let forgetWalletDescription = NSLocalizedString(
+            "Forgetting this wallet account will erase all wallet data on this device. Ensure that you have your password and secret private key recovery phrase saved in a safe place before doing so.",
+            comment: "Forget Wallet description"
+        )
+        public enum ForgetWalletAlert {
+            public static let title = NSLocalizedString(
+                "Warning",
+                comment: "forget wallet alert title"
+            )
+            public static let message = NSLocalizedString(
+                "This will erase all wallet data on this device. Please confirm you have your wallet information saved elsewhere, otherwise any bitcoin in this wallet will be inaccessible!",
+                comment: "forget wallet alert body"
+            )
+            public static let forgetButton = NSLocalizedString(
+                "Forget wallet",
+                comment: "forget wallet alert button"
+            )
+        }
     }
 }

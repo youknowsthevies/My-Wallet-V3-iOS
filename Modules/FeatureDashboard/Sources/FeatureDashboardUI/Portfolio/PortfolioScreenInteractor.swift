@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 public final class PortfolioScreenInteractor {
 

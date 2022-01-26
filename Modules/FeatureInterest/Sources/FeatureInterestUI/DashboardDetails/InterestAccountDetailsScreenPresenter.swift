@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 public final class InterestAccountDetailsScreenPresenter {
 
@@ -95,7 +96,7 @@ public final class InterestAccountDetailsScreenPresenter {
         }
     }
 
-    private let primaryButtonViewModel: ButtonViewModel = .primary(with: LocalizationId.transfer)
+    private let primaryButtonViewModel: ButtonViewModel = .primary(with: LocalizationId.add)
     private let secondaryButtonViewModel: ButtonViewModel = .secondary(with: LocalizationId.withdraw)
     private let interactor: InterestAccountDetailsScreenInteractor
     private let topMostViewControllerProvider: TopMostViewControllerProviding

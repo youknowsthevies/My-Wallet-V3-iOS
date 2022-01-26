@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinChainKit
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -13,6 +14,8 @@ extension DependencyContainer {
         single { APIClient() as APIClientAPI }
 
         factory { BitcoinWalletAccountRepository() }
+
+        single { UnspentOutputRepository() }
 
         factory(tag: CryptoCurrency.coin(.bitcoin)) { BitcoinAsset() as CryptoAsset }
 

@@ -4,6 +4,7 @@ import Combine
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 class ReactiveWalletMock: ReactiveWalletAPI {
 

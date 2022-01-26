@@ -8,6 +8,7 @@ import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import WalletPayloadKit
 
 public enum Onboarding {
     public enum Alert: Equatable {
@@ -21,16 +22,18 @@ public enum Onboarding {
         case start
         case pin(PinCore.Action)
         case walletUpgrade(WalletUpgrade.Action)
-        case passwordScreen(PasswordRequired.Action)
+        case passwordScreen(PasswordRequiredAction)
         case welcomeScreen(WelcomeAction)
+        case handleMetadataRecoveryAfterAuthentication
         case informSecondPasswordDetected
+        case informForWalletInitialization
         case forgetWallet
     }
 
     public struct State: Equatable {
         public var pinState: PinCore.State? = .init()
         public var walletUpgradeState: WalletUpgrade.State?
-        public var passwordScreen: PasswordRequired.State?
+        public var passwordRequiredState: PasswordRequiredState?
         public var welcomeState: WelcomeState?
         public var displayAlert: Alert?
         public var deeplinkContent: URIContent?
@@ -41,7 +44,7 @@ public enum Onboarding {
         public init(
             pinState: PinCore.State? = .init(),
             walletUpgradeState: WalletUpgrade.State? = nil,
-            passwordScreen: PasswordRequired.State? = nil,
+            passwordRequiredState: PasswordRequiredState? = nil,
             welcomeState: WelcomeState? = nil,
             displayAlert: Alert? = nil,
             deeplinkContent: URIContent? = nil,
@@ -49,7 +52,7 @@ public enum Onboarding {
         ) {
             self.pinState = pinState
             self.walletUpgradeState = walletUpgradeState
-            self.passwordScreen = passwordScreen
+            self.passwordRequiredState = passwordRequiredState
             self.welcomeState = welcomeState
             self.displayAlert = displayAlert
             self.deeplinkContent = deeplinkContent
@@ -59,10 +62,16 @@ public enum Onboarding {
 
     public struct Environment {
         var appSettings: BlockchainSettingsAppAPI
+        var credentialsStore: CredentialsStoreAPI
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
         let deviceVerificationService: DeviceVerificationServiceAPI
+        let walletManager: WalletManagerAPI
+        let mobileAuthSyncService: MobileAuthSyncServiceAPI
+        let pushNotificationsRepository: PushNotificationsRepositoryAPI
+        let walletPayloadService: WalletPayloadServiceAPI
         let featureFlagsService: FeatureFlagsServiceAPI
+        let externalAppOpener: ExternalAppOpener
         var buildVersionProvider: () -> String
     }
 }
@@ -79,7 +88,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
-                    buildVersionProvider: $0.buildVersionProvider
+                    buildVersionProvider: $0.buildVersionProvider,
+                    nativeWalletEnabled: { nativeWalletFlagEnabled() }
                 )
             }
         ),
@@ -98,10 +108,17 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
     passwordRequiredReducer
         .optional()
         .pullback(
-            state: \.passwordScreen,
+            state: \.passwordRequiredState,
             action: /Onboarding.Action.passwordScreen,
-            environment: { _ in
-                PasswordRequired.Environment()
+            environment: {
+                PasswordRequiredEnvironment(
+                    mainQueue: $0.mainQueue,
+                    externalAppOpener: $0.externalAppOpener,
+                    walletPayloadService: $0.walletPayloadService,
+                    walletManager: $0.walletManager,
+                    pushNotificationsRepository: $0.pushNotificationsRepository,
+                    mobileAuthSyncService: $0.mobileAuthSyncService
+                )
             }
         ),
     walletUpgradeReducer
@@ -113,7 +130,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 WalletUpgrade.Environment()
             }
         ),
-    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
+    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> {
+        state, action, environment in
         switch action {
         case .start:
             return decideFlow(
@@ -142,6 +160,20 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .welcomeScreen(.enter(into: .restoreWallet)):
             state.walletCreationContext = .recovery
             return .none
+        case .welcomeScreen(.requestedToRestoreWallet(let walletRecovery)):
+            switch walletRecovery {
+            case .metadataRecovery(let seedPhrase):
+                state.walletRecoveryContext = .metadataRecovery
+                return .none
+            case .importRecovery(let email, let newPassword, let seedPhrase):
+                state.walletRecoveryContext = .importRecovery
+                return .none
+            case .resetAccountRecovery(let email, let newPassword, let nabuInfo):
+                state.nabuInfoForResetAccount = nabuInfo
+                return .none
+            }
+        case .welcomeScreen(.informForWalletInitialization):
+            return Effect(value: .informForWalletInitialization)
         case .welcomeScreen:
             return .none
         case .walletUpgrade(.begin):
@@ -150,9 +182,11 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         case .passwordScreen(.forgetWallet),
              .forgetWallet:
-            state.passwordScreen = nil
+            state.passwordRequiredState = nil
             state.pinState = nil
             state.welcomeState = .init()
+            environment.appSettings.clear()
+            environment.credentialsStore.erase()
             return Effect(value: .welcomeScreen(.start))
         case .passwordScreen:
             return .none
@@ -161,6 +195,32 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 return .none
             }
             return Effect(value: .welcomeScreen(.informSecondPasswordDetected))
+        case .informForWalletInitialization:
+            return .none
+        case .handleMetadataRecoveryAfterAuthentication:
+            // if it is from the restore wallet screen
+            if state.welcomeState?.restoreWalletState != nil {
+                return .merge(
+                    Effect(value: .welcomeScreen(.restoreWallet(.setResetPasswordScreenVisible(true))))
+                )
+                // if it is from the trouble logging in screen
+            } else if state.welcomeState?.emailLoginState != nil {
+                return .merge(
+                    Effect(
+                        value: .welcomeScreen(
+                            .emailLogin(
+                                .verifyDevice(
+                                    .credentials(
+                                        .seedPhrase(
+                                            .setResetPasswordScreenVisible(true))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            return .none
         }
     }
 )
@@ -175,27 +235,31 @@ func decideFlow(
         // Original flow
         if appSettings.isPinSet {
             state.pinState = .init()
-            state.passwordScreen = nil
+            state.passwordRequiredState = nil
             return Effect(value: .pin(.authenticate))
         } else {
             state.pinState = nil
-            state.passwordScreen = .init()
+            state.passwordRequiredState = .init(
+                walletIdentifier: appSettings.guid ?? ""
+            )
             return Effect(value: .passwordScreen(.start))
         }
     } else if appSettings.pinKey != nil, appSettings.encryptedPinPassword != nil {
         // iCloud restoration flow
         if appSettings.isPinSet {
             state.pinState = .init()
-            state.passwordScreen = nil
+            state.passwordRequiredState = nil
             return Effect(value: .pin(.authenticate))
         } else {
             state.pinState = nil
-            state.passwordScreen = .init()
+            state.passwordRequiredState = .init(
+                walletIdentifier: appSettings.guid ?? ""
+            )
             return Effect(value: .passwordScreen(.start))
         }
     } else {
         state.pinState = nil
-        state.passwordScreen = nil
+        state.passwordRequiredState = nil
         state.welcomeState = .init()
         return Effect(value: .welcomeScreen(.start))
     }

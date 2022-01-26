@@ -119,15 +119,15 @@ extension LocalizationConstants.SimpleBuy {
         )
         public enum LinkABank {
             public static let title = NSLocalizedString(
-                "Link a Bank",
+                "Easy Bank Transfer",
                 comment: "Simple Buy: Add Payment method selection screen: link a bank title"
             )
             public static let descriptionLimit = NSLocalizedString(
-                "Instantly Available",
-                comment: "Simple Buy: Add Payment method selection screen: description of funds availability"
+                "Buy large amounts",
+                comment: "Simple Buy: Add Payment method selection screen description"
             )
             public static let descriptionInfo = NSLocalizedString(
-                "Link your bank and instantly buy crypto at anytime.",
+                "Link once and instantly buy crypto anytime.",
                 comment: "Simple Buy: Add Payment method selection screen: description of bank account"
             )
         }
@@ -138,8 +138,8 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy: Add Payment method selection screen: card title"
             )
             public static let descriptionLimit = NSLocalizedString(
-                "Instantly Available",
-                comment: "Simple Buy: Add Payment method selection screen: description of card payment max limit"
+                "Buy small amounts",
+                comment: "Simple Buy: Add Payment method selection screen: description of card payment"
             )
             public static let descriptionInfo = NSLocalizedString(
                 "Instantly buy crypto with any Visa or Mastercard.",
@@ -153,7 +153,7 @@ extension LocalizationConstants.SimpleBuy {
 
         public enum DepositCash {
             public static let title = NSLocalizedString(
-                "Deposit Cash",
+                "Wire Transfer",
                 comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
             )
             public static let description = NSLocalizedString(

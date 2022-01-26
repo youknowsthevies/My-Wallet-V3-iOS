@@ -7,6 +7,7 @@ import FeatureKYCUI
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RxAnalyticsKit
 import RxCocoa
 import RxRelay
 import RxSwift

@@ -10,13 +10,13 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
     // MARK: - Properties
 
     private let repository: WalletPayloadRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
 
     // MARK: - Setup
 
     init(
         repository: WalletPayloadRepositoryAPI,
-        walletRepo: WalletRepo
+        walletRepo: WalletRepoAPI
     ) {
         self.repository = repository
         self.walletRepo = walletRepo
@@ -118,6 +118,7 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
             .set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
             .set(keyPath: \.encryptedPayload, value: rawPayload)
             .set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+            .publisher
             .map { _ in payload }
             .first()
             .mapError()

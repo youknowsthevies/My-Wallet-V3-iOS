@@ -38,7 +38,8 @@ let package = Package(
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
         .package(path: "../RemoteNotifications"),
-        .package(path: "../FeatureWithdrawalLocks")
+        .package(path: "../FeatureWithdrawalLocks"),
+        .package(path: "../FeatureCards")
     ],
     targets: [
         .target(
@@ -64,7 +65,8 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ]
         ),
         .target(

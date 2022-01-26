@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComponentLibrary
 import ComposableArchitecture
 import Localization
@@ -22,6 +23,7 @@ enum TradingCurrency {
     struct Environment {
         let closeHandler: () -> Void
         let selectionHandler: (FiatCurrency) -> Void
+        let analyticsRecorder: AnalyticsEventRecorderAPI
     }
 
     static let reducer = Reducer<State, Action, Environment> { _, action, env in
@@ -37,6 +39,7 @@ enum TradingCurrency {
             }
         }
     }
+    .analytics()
 }
 
 struct TradingCurrencySelector: View {
@@ -106,7 +109,8 @@ struct TradingCurrencySelector_Previews: PreviewProvider {
                 reducer: TradingCurrency.reducer,
                 environment: .init(
                     closeHandler: {},
-                    selectionHandler: { _ in }
+                    selectionHandler: { _ in },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

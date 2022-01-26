@@ -10,4 +10,5 @@ public enum OnboardingResult {
 
 public protocol OnboardingRouterAPI {
     func presentOnboarding(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
+    func presentRequiredCryptoBalanceView(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
 }

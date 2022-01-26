@@ -74,7 +74,7 @@ extension LocalizationConstants.Interest.Screen.Announcement {
 // MARK: - Screen.EnterAmount
 
 extension LocalizationConstants.Interest.Screen.EnterAmount.Transfer {
-    public static let title = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let title = NSLocalizedString("Add", comment: "Add")
     public static let useMin = NSLocalizedString("Minimum transfer of %@ required", comment: "Minimum transfer of %@ required")
     public static let useMax = NSLocalizedString("You can transfer up to %@", comment: "You can transfer up to %@")
 }
@@ -180,7 +180,7 @@ extension LocalizationConstants.Interest.Screen.AccountDetails {
     public static let annually = NSLocalizedString("Annually", comment: "Annually")
     public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
-    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let add = NSLocalizedString("Add", comment: "Add")
     public static let rewardsSummary = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
     public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public enum Cell {

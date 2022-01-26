@@ -28,7 +28,7 @@ public struct BitcoinEntry: Equatable {
 
     public let accounts: [BitcoinEntry.Account]
 
-    init(payload: BitcoinEntryPayload, wallet: Wallet) {
+    init(payload: BitcoinEntryPayload, wallet: NativeWallet) {
         self.payload = payload
         defaultAccountIndex = wallet.defaultHDWallet?.defaultAccountIndex ?? 0
         let hdWalletAccounts = wallet.defaultHDWallet?.accounts ?? []

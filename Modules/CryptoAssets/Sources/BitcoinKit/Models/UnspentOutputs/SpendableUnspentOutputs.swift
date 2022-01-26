@@ -4,30 +4,20 @@ import BigInt
 
 struct SpendableUnspentOutputs: Equatable {
 
-    // FIXME: Should this be a BitcoinValue?
-    var spendableBalance: BigUInt {
-        spendableOutputs.sum() - absoluteFee
-    }
-
+    let absoluteFee: BigUInt
+    let amount: BigUInt
+    let change: BigUInt
     let spendableOutputs: [UnspentOutput]
 
-    // FIXME: Should this be a BitcoinValue?
-    let absoluteFee: BigUInt
-
-    // FIXME: Should this be a BitcoinValue?
-    let consumedAmount: BigUInt
-
-    let isReplayProtected: Bool
-
     init(
-        spendableOutputs: [UnspentOutput] = [],
-        absoluteFee: BigUInt = BigUInt.zero,
-        consumedAmount: BigUInt = BigUInt.zero,
-        isReplayProtected: Bool = false
+        spendableOutputs: [UnspentOutput],
+        absoluteFee: BigUInt,
+        amount: BigUInt,
+        change: BigUInt
     ) {
         self.spendableOutputs = spendableOutputs
         self.absoluteFee = absoluteFee
-        self.consumedAmount = consumedAmount
-        self.isReplayProtected = isReplayProtected
+        self.amount = amount
+        self.change = change
     }
 }

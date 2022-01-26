@@ -21,6 +21,9 @@ let tourReducer = Reducer<TourState, TourAction, TourEnvironment>.combine(
         case .logIn:
             environment.logInAction()
             return .none
+        case .manualLogin:
+            environment.manualLoginAction()
+            return .none
         case .price(id: let id, action: let action):
             return .none
         case .priceListDidScroll(let offset):

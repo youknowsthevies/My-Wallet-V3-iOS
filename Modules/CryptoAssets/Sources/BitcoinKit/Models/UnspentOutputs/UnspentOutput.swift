@@ -3,6 +3,8 @@
 import BigInt
 import BitcoinChainKit
 import PlatformKit
+import ToolKit
+import WalletCore
 
 struct UnspentOutput: Equatable {
 
@@ -27,19 +29,13 @@ struct UnspentOutput: Equatable {
 
     let xpub: XPub
 
-    let isReplayable: Bool
-
-    let isForceInclude: Bool
-
     init(
         hash: String,
         script: String,
         value: BitcoinValue,
         confirmations: UInt,
         transactionIndex: Int,
-        xpub: XPub,
-        isReplayable: Bool,
-        isForceInclude: Bool = false
+        xpub: XPub
     ) {
         self.hash = hash
         self.script = script
@@ -47,22 +43,44 @@ struct UnspentOutput: Equatable {
         self.confirmations = confirmations
         self.transactionIndex = transactionIndex
         self.xpub = xpub
-        self.isReplayable = isReplayable
-        self.isForceInclude = isForceInclude
+    }
+}
+
+extension UnspentOutput {
+    enum Script: String {
+        case P2PKH
+        case P2SH
+        case P2WPKH
+        case P2WSH
+    }
+
+    var scriptType: Script {
+        guard let hexString = Data(hexString: script) else {
+            fatalError("Misconfigured")
+        }
+        let script = BitcoinScript(data: hexString)
+        if script.isPayToWitnessPublicKeyHash {
+            return .P2WPKH
+        } else if script.isPayToWitnessScriptHash {
+            return .P2WSH
+        } else if script.isPayToScriptHash {
+            return .P2SH
+        } else if script.matchPayToPubkeyHash() != nil {
+            return .P2PKH
+        }
+        fatalError("Misconfigured")
     }
 }
 
 extension UnspentOutput {
     init(response: UnspentOutputResponse) {
-        let value = BitcoinValue(satoshis: response.value)
+        let value = BitcoinValue(minor: response.value)
         hash = response.tx_hash
         script = response.script
         self.value = value
         confirmations = response.confirmations
         transactionIndex = response.tx_index
         xpub = XPub(responseXPub: response.xpub)
-        isReplayable = response.replayable ?? false
-        isForceInclude = false
     }
 }
 
@@ -74,13 +92,18 @@ extension UnspentOutput.XPub {
 }
 
 extension UnspentOutput {
-    func effectiveValue(for fee: Fee) -> BigUInt {
-        let multipliedFee = fee.feePerByte.multiplied(by: CoinSelection.Constants.costPerInput)
-        let fee = max(multipliedFee, BigUInt.zero)
-        guard magnitude > fee else {
-            return BigUInt.zero
+
+    /// Calculate the effective value of the coin, that is the value minus the fee that takes to add this coin as input.
+    /// ceil(value - cost(type) * fee)
+    func effectiveValue(fee feePerByte: BigUInt) -> BigUInt {
+        let feePerByte = feePerByte.decimal
+        let cost = feePerByte * TransactionCost.PerInput.for(scriptType)
+        let value = magnitude.decimal
+        let effectiveValue = (value - cost).roundTo(places: 0, roundingMode: .up)
+        guard effectiveValue > 0 else {
+            return .zero
         }
-        return magnitude - fee
+        return BigUInt((effectiveValue as NSDecimalNumber).stringValue)!
     }
 }
 
@@ -95,22 +118,7 @@ extension Array where Element == UnspentOutput {
             }
     }
 
-    func effective(for fee: Fee) -> [UnspentOutput] {
-        filter { $0.isForceInclude || $0.effectiveValue(for: fee) > BigUInt.zero }
-    }
-
-    func balance(for fee: Fee, outputs: Int, calculator: TransactionSizeCalculating) -> BigUInt {
-        let balance = BigInt(sum()) - BigInt(calculator.transactionBytes(inputs: count, outputs: outputs)) * BigInt(fee.feePerByte)
-        guard balance > BigInt.zero else {
-            return BigUInt.zero
-        }
-        return balance.magnitude
-    }
-
-    var replayProtected: Bool {
-        guard let firstElement = first else {
-            return false
-        }
-        return firstElement.isReplayable != true
+    func effective(fee feePerByte: BigUInt) -> [UnspentOutput] {
+        filter { $0.effectiveValue(fee: feePerByte) > BigUInt.zero }
     }
 }

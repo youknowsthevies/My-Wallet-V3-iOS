@@ -19,28 +19,7 @@ protocol NetworkCredentialProviderAPI {
 
 /// This implementation of a `NetworkCredentialProviderAPI`will fetch the
 /// credential values from the main Bundle info dictionary.
-class NetworkCredentialProvider: NetworkCredentialProviderAPI {
-
-    enum InfoDictionaryHelper {
-        enum Key: String {
-            case apiURL = "API_URL"
-            case exchangeURL = "EXCHANGE_URL"
-            case explorerServer = "EXPLORER_SERVER"
-            case retailCoreURL = "RETAIL_CORE_URL"
-            case walletServer = "WALLET_SERVER"
-            case certificatePinning = "PIN_CERTIFICATE"
-            case everyPayURL = "EVERYPAY_API_URL"
-            case swiftyBeaverAppId = "SWIFTY_BEAVER_APP_ID"
-            case swiftyBeaverAppSecret = "SWIFTY_BEAVER_APP_SECRET"
-            case swiftyBeaverAppKey = "SWIFTY_BEAVER_APP_KEY"
-        }
-
-        private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
-
-        static func value(for key: Key) -> String! {
-            infoDictionary?[key.rawValue] as? String
-        }
-    }
+final class NetworkCredentialProvider: NetworkCredentialProviderAPI {
 
     var apiURL: String {
         InfoDictionaryHelper.value(for: .apiURL)

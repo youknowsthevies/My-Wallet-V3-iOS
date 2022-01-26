@@ -7,12 +7,12 @@ import WalletPayloadKit
 final class SyncPubKeysRepository: SyncPubKeysRepositoryAPI {
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -28,6 +28,7 @@ final class SyncPubKeysRepository: SyncPubKeysRepositoryAPI {
                 }
                 return walletRepo
                     .set(keyPath: \.properties.syncPubKeys, value: syncPubKeys)
+                    .publisher
                     .mapToVoid()
             }
             .eraseToAnyPublisher()

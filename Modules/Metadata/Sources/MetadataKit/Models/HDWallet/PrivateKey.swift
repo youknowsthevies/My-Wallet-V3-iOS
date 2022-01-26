@@ -17,12 +17,16 @@ public enum PrivateKeyError: Error {
 
 public struct PrivateKey {
 
-    var xpriv: String {
+    public var xpriv: String {
         _hdWalletKey.extended()
     }
 
-    var address: String {
+    public var address: String {
         _hdWalletKey.publicKey.address
+    }
+
+    public var xpub: String {
+        _hdWalletKey.extendedPublic()
     }
 
     var raw: Data {
@@ -80,7 +84,7 @@ extension PrivateKey: CustomDebugStringConvertible {
 
 extension PrivateKey {
 
-    public static func bitcoinKeyFrom(seedHex: String) -> Result<Self, PrivateKeyError> {
+    public static func bitcoinKeyFrom(seedHex: String) -> Self {
         let seed = Data(hex: seedHex)
         let _hdWalletKey = MetadataHDWalletKit.PrivateKey(
             seed: seed,
@@ -89,7 +93,7 @@ extension PrivateKey {
         let privateKey = Self(
             _hdWalletKey: _hdWalletKey
         )
-        return .success(privateKey)
+        return privateKey
     }
 
     public static func bitcoinKeyFrom(privateKeyHex: String) -> Self? {

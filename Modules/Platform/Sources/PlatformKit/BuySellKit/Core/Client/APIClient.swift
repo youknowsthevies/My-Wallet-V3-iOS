@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureCardsDomain
 import MoneyKit
 import NabuNetworkError
 import NetworkKit

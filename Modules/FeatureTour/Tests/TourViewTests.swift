@@ -22,8 +22,10 @@ class TourViewTests: XCTestCase {
             environment: TourEnvironment(
                 createAccountAction: {},
                 restoreAction: {},
-                logInAction: {}
-            )
+                logInAction: {},
+                manualLoginAction: {}
+            ),
+            manualLoginEnabled: false
         )
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
 
@@ -50,7 +52,12 @@ class TourViewTests: XCTestCase {
         let tourStore = Store(
             initialState: tourState,
             reducer: mockTourReducer,
-            environment: TourEnvironment(createAccountAction: {}, restoreAction: {}, logInAction: {})
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {},
+                manualLoginAction: {}
+            )
         )
         let livePricesView = LivePricesView(
             store: tourStore,

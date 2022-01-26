@@ -21,7 +21,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
 
     private let repository: WalletPayloadRepositoryAPI
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI>
     private let oldImpl: WalletPayloadServiceOld
     private let newImpl: WalletPayloadServiceNew
@@ -31,7 +31,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     public init(
         repository: WalletPayloadRepositoryAPI,
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabledUse: @escaping NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI>
     ) {
         self.repository = repository

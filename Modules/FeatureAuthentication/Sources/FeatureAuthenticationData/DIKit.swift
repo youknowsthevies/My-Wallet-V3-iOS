@@ -26,8 +26,6 @@ extension DependencyContainer {
 
         factory { DeviceVerificationClient() as DeviceVerificationClientAPI }
 
-        factory { WalletPayloadClient() as WalletPayloadClientAPI }
-
         factory { PushNotificationsClient() as PushNotificationsClientAPI }
 
         factory { MobileAuthSyncClient() as MobileAuthSyncClientAPI }
@@ -59,8 +57,6 @@ extension DependencyContainer {
         factory { AutoWalletPairingRepository() as AutoWalletPairingRepositoryAPI }
 
         factory { TwoFAWalletRepository() as TwoFAWalletRepositoryAPI }
-
-        factory { WalletPayloadRepository() as WalletPayloadRepositoryAPI }
 
         factory { SMSRepository() as SMSRepositoryAPI }
 

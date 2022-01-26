@@ -14,6 +14,12 @@ swiftlint.lint_all_files = false
 
 swiftformat.check_format(fail_on_error: true)
 
+ios_ticket_referenced = github.pr_title.include? "IOS-"
+
+if !ios_ticket_referenced
+	warn "All PRs should include a JIRA ticket in the title."
+end
+
 failure "Please add labels to this PR" if github.pr_labels.empty?
 
 # Warn when there is a big PR

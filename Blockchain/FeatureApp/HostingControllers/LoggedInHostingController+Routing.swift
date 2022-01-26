@@ -16,6 +16,7 @@ import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 // Provides necessary methods for several protocols and tab swapping
 // most, if not all, is copied over from `AppCoordinator`, which was deprecated and removed
@@ -193,17 +194,13 @@ extension LoggedInHostingController {
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        let stateService = PlatformUIKit.StateService()
-        let builder = PlatformUIKit.Builder(
-            stateService: stateService
-        )
-
-        buyRouter = PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin))
-        buyRouter?.setup(startImmediately: false)
-        stateService.showFundsTransferDetails(
-            for: fiatCurrency,
-            isOriginDeposit: isOriginDeposit
-        )
+        let paymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI = PaymentMethodsLinkingAdapter()
+        guard let presenter = topMostViewController else {
+            return
+        }
+        paymentMethodsLinkingAdapter.routeToBankWiringInstructionsFlow(for: fiatCurrency, from: presenter) { _ in
+            presenter.dismiss(animated: true, completion: nil)
+        }
     }
 
     func showNabuUserConflictErrorIfNeeded(walletIdHint: String) {

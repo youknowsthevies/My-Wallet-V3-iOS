@@ -11,6 +11,8 @@ import RxCocoa
 import RxSwift
 import RxToolKit
 import ToolKit
+import UIComponentsKit
+import WalletPayloadKit
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
@@ -416,7 +418,7 @@ extension AnnouncementPresenter {
                     return
                 }
                 webViewServiceAPI.openSafari(
-                    url: "https://why.blockchain.com/celo",
+                    url: "https://www.blockchain.com/getceur",
                     from: topMostViewController
                 )
             }

@@ -7,9 +7,9 @@ import ToolKit
 
 public enum WalletCryptoPBKDF2Iterations {
     /// Used for Auto Pair QR code decryption/encryption
-    public static let autoPair: Int = 10
+    public static let autoPair = 10
     /// This does not need to be large because the key is already 256 bits
-    public static let pinLogin: Int = 1
+    public static let pinLogin = 1
 }
 
 public protocol WalletCryptoServiceAPI: AnyObject {
@@ -66,7 +66,9 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
                             self.recorder.error(payloadDecryptionError)
                             // Crash for internal builds if JS decryption succeeds but native decryption fails
                             if BuildFlag.isInternal {
-                                fatalError("Native decryption failed. Error: \(String(describing: payloadDecryptionError))")
+                                fatalError(
+                                    "Native decryption failed. Error: \(String(describing: payloadDecryptionError))"
+                                )
                             }
                         })
                 }

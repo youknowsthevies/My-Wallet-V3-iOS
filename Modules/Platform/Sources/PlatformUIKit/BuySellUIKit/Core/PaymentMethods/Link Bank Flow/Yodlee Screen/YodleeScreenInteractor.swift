@@ -90,6 +90,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         super.init(presenter: presenter)
     }
 
+    // swiftlint:disable function_body_length
+    // swiftlint:disable line_length
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -132,6 +134,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         activationResult
             .map(\.isActive)
+            .filter { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe { [weak listener] _ in
                 listener?.updateBankLinked()
             }
@@ -263,13 +267,11 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         switch error {
         case .alreadyLinked:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAlreadyLinkedError(partner: .ach))
-        case .unsuportedAccount:
+        case .infoNotFound:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbIncorrectAccountError(partner: .ach))
-        case .namesMismatched:
+        case .nameMismatch:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAccountMismatchedError(partner: .ach))
-        case .timeout:
-            break
-        case .unknown:
+        default:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkGenericError(partner: .ach))
         }
     }

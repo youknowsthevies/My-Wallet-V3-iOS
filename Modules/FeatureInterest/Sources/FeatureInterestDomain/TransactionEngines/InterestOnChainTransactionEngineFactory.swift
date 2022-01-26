@@ -4,6 +4,7 @@ import FeatureTransactionDomain
 import PlatformKit
 import ToolKit
 
+/// Transaction Engine Factory for Interest Deposit or Withdraw from/to a Non Custodial Account.
 final class InterestOnChainTransactionEngineFactory: InterestOnChainTransactionEngineFactoryAPI {
     func build(
         requiresSecondPassword: Bool,

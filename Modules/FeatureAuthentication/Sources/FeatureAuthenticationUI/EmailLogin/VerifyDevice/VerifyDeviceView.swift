@@ -110,7 +110,6 @@ struct VerifyDeviceView: View {
                     Spacer()
                 }
                 .multilineTextAlignment(.center)
-
                 buttonSection
             }
             .onAppear {
@@ -127,9 +126,8 @@ struct VerifyDeviceView: View {
                     trailing: Layout.trailingPadding
                 )
             )
-            .navigationBarTitleDisplayMode(.inline)
+            .primaryNavigation(title: LocalizedString.navigationTitle)
             .navigationRoute(in: store)
-            .hideBackButtonTitle()
             .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
         }
     }
@@ -170,7 +168,8 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     errorRecorder: NoOpErrorRecorder(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

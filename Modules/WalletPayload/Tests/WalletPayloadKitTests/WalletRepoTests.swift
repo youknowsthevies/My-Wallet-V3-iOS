@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+@testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 import XCTest
 
@@ -38,13 +39,14 @@ class WalletRepoTests: XCTestCase {
     }
 
     func test_wallet_storage_can_provide_publisher() {
-        let walletStorage = WalletRepo(
+        let walletRepo = WalletRepo(
             initialState: initialState
         )
 
         var receivedState: WalletRepoState?
         let expectation = expectation(description: "wallet.storage.publisher.expectation")
-        walletStorage
+        walletRepo
+            .publisher
             .sink(receiveValue: { state in
                 receivedState = state
                 expectation.fulfill()

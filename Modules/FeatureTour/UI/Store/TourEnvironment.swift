@@ -13,18 +13,21 @@ public struct TourEnvironment {
     var createAccountAction: () -> Void
     var restoreAction: () -> Void
     var logInAction: () -> Void
+    var manualLoginAction: () -> Void
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         createAccountAction: @escaping () -> Void,
         restoreAction: @escaping () -> Void,
-        logInAction: @escaping () -> Void
+        logInAction: @escaping () -> Void,
+        manualLoginAction: @escaping () -> Void
     ) {
         self.mainQueue = mainQueue
         self.enabledCurrenciesService = enabledCurrenciesService
         self.createAccountAction = createAccountAction
         self.restoreAction = restoreAction
         self.logInAction = logInAction
+        self.manualLoginAction = manualLoginAction
     }
 }

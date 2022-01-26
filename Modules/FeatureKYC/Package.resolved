@@ -156,11 +156,11 @@
       },
       {
         "package": "WalletCore",
-        "repositoryURL": "https://github.com/trustwallet/wallet-core",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "e29ec9324dc03ec4eed39dd6126a8b0d8ef2f209",
-          "version": "2.6.36"
+          "revision": "5b4f031f62ad9acea38da1da30aa5678e001aa96",
+          "version": "2.6.36-blockchain"
         }
       },
       {

@@ -2,25 +2,7 @@
 
 extension Accessibility.Identifier {
 
-    enum SimpleBuy {
-
-        enum IntroScreen {
-            private static let prefix = "Intro."
-            static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
-        }
-
-        enum KYCInvalidScreen {
-            private static let prefix = "KYCInvalidScreen."
-            static let contactSupportButton = "\(prefix)contactSupportButton"
-            static let disclaimerLabel = "\(prefix)disclaimerLabel"
-        }
-
-        enum IneligibleScreen {
-            private static let prefix = "IneligibleScreen."
-            static let title = "\(prefix)title"
-            static let subtitle = "\(prefix)subtitle"
-            static let learnMoreButton = "\(prefix)learnMoreButton"
-        }
+    public enum SimpleBuy {
 
         enum BuyScreen {
             private static let prefix = "Buy."
@@ -57,37 +39,21 @@ extension Accessibility.Identifier {
             }
         }
 
-        enum TransferDetails {
+        public enum TransferDetails {
             private static let prefix = "TransferDetails."
-            static let lineItemPrefix = prefix
-            static let titleLabel = "\(prefix)titleLabel"
-            static let descriptionLabel = "\(prefix)descriptionLabel"
-            static let disclaimerLabel = "\(prefix)disclaimerLabel"
-            static let disclaimerImage = "\(prefix)disclaimerImage"
-        }
-
-        enum Cancellation {
-            private static let prefix = "Cancellation."
-            static let titleLabel = "\(prefix)titleLabel"
-            static let descriptionLabel = "\(prefix)descriptionLabel"
-            static let yesButton = "\(prefix)yesButton"
-            static let noButton = "\(prefix)noButton"
-        }
-
-        enum IneligibleCurrency {
-            private static let prefix = "IneligibleCurrency."
-            static let titleLabel = "\(prefix)titleLabel"
-            static let descriptionLabel = "\(prefix)descriptionLabel"
-            static let changeCurrency = "\(prefix)changeCurrency"
-            static let viewHome = "\(prefix)viewHome"
+            public static let lineItemPrefix = prefix
+            public static let titleLabel = "\(prefix)titleLabel"
+            public static let descriptionLabel = "\(prefix)descriptionLabel"
+            public static let disclaimerLabel = "\(prefix)disclaimerLabel"
+            public static let disclaimerImage = "\(prefix)disclaimerImage"
         }
     }
 }
 
 extension Accessibility.Identifier.SimpleBuy {
-    enum KYCScreen {
-        static let titleLabel = "titleLabel"
-        static let subtitleLabel = "subtitleLabel"
-        static let goToWalletButton = "goToWalletButton"
+    public enum KYCScreen {
+        public static let titleLabel = "titleLabel"
+        public static let subtitleLabel = "subtitleLabel"
+        public static let goToWalletButton = "goToWalletButton"
     }
 }

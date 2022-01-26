@@ -60,29 +60,21 @@ extension CoincoreAPI {
         let interestOnChainFactory: InterestOnChainTransactionEngineFactoryAPI = resolve()
         switch (target, action) {
         case (is CryptoInterestAccount, .interestTransfer):
-            guard let target = target as? CryptoInterestAccount else {
-                impossible()
-            }
-
-            return target
-                .receiveAddress
-                .flatMap { receiveAddress in
-                    account
-                        .requireSecondPassword
-                        .map { requiresSecondPassword -> TransactionProcessor in
-                            .init(
-                                sourceAccount: account,
-                                transactionTarget: receiveAddress,
-                                engine: interestOnChainFactory
-                                    .build(
-                                        requiresSecondPassword: requiresSecondPassword,
-                                        action: .interestTransfer,
-                                        onChainEngine: factory.build(
-                                            requiresSecondPassword: requiresSecondPassword
-                                        )
-                                    )
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    TransactionProcessor(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: interestOnChainFactory
+                            .build(
+                                requiresSecondPassword: requiresSecondPassword,
+                                action: .interestTransfer,
+                                onChainEngine: factory.build(
+                                    requiresSecondPassword: requiresSecondPassword
+                                )
                             )
-                        }
+                    )
                 }
         case (is WalletConnectTarget, _):
             return account
@@ -123,36 +115,25 @@ extension CoincoreAPI {
                         )
                     )
                 }
-        case (is CryptoReceiveAddress, .send):
-            // `Target` must be a `CryptoReceiveAddress`
-            guard let receiveAddress = target as? CryptoReceiveAddress else {
-                fatalError("Expected a receiveAddress: \(target)")
-            }
+        case (let target as CryptoReceiveAddress, .send):
+            // `Target` must be a `CryptoReceiveAddress` or CryptoAccount.
             return account
                 .requireSecondPassword
                 .map { requiresSecondPassword -> TransactionProcessor in
                     .init(
                         sourceAccount: account,
-                        transactionTarget: receiveAddress,
+                        transactionTarget: target,
                         engine: factory.build(requiresSecondPassword: requiresSecondPassword)
                     )
                 }
 
-        case (is CryptoAccount, .send):
-            // `Target` must be a `CryptoReceiveAddress`
-            guard let destination = target as? SingleAccount else {
-                fatalError("Expected a SingleAccount: \(target)")
-            }
-            let data = Single.zip(
-                destination.receiveAddress,
-                account.requireSecondPassword
-            )
-            return data
-                .map { values -> TransactionProcessor in
-                    let (receiveAddress, requiresSecondPassword) = values
-                    return .init(
+        case (let target as CryptoAccount, .send):
+            // `Target` must be a `CryptoReceiveAddress` or CryptoAccount.
+            return account.requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    TransactionProcessor(
                         sourceAccount: account,
-                        transactionTarget: receiveAddress,
+                        transactionTarget: target,
                         engine: factory.build(requiresSecondPassword: requiresSecondPassword)
                     )
                 }
@@ -164,7 +145,7 @@ extension CoincoreAPI {
                         sourceAccount: account,
                         transactionTarget: target,
                         engine: NonCustodialSellTransactionEngine(
-                            quotesEngine: SwapQuotesEngine(),
+                            quotesEngine: SellQuotesEngine(),
                             requireSecondPassword: requiresSecondPassword,
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
                         )
@@ -358,7 +339,7 @@ extension CoincoreAPI {
             TransactionProcessor(
                 sourceAccount: account,
                 transactionTarget: target as! FiatAccount,
-                engine: TradingSellTransactionEngine(quotesEngine: SwapQuotesEngine())
+                engine: TradingSellTransactionEngine(quotesEngine: SellQuotesEngine())
             )
         )
     }

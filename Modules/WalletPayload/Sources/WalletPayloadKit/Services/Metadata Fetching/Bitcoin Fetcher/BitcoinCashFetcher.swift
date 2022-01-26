@@ -27,18 +27,17 @@ final class BitcoinCashEntryFetcher: BitcoinCashEntryFetcherAPI {
 
     func fetchBitcoinCash() -> AnyPublisher<BitcoinCashEntry, WalletAssetFetchError> {
         metadataEntryService.fetchEntry(type: BitcoinCashEntryPayload.self)
-            .flatMap { [fetchWallet] payload -> AnyPublisher<(BitcoinCashEntryPayload, Wallet), WalletAssetFetchError> in
+            .flatMap { [fetchWallet] payload -> AnyPublisher<BitcoinCashEntry, WalletAssetFetchError> in
                 fetchWallet()
-                    .map { (payload, $0) }
+                    .map { BitcoinCashEntry(payload: payload, wallet: $0) }
                     .eraseToAnyPublisher()
             }
-            .map(BitcoinCashEntry.init(payload:wallet:))
             .eraseToAnyPublisher()
     }
 
-    private func fetchWallet() -> AnyPublisher<Wallet, WalletAssetFetchError> {
+    private func fetchWallet() -> AnyPublisher<NativeWallet, WalletAssetFetchError> {
         walletHolder.walletStatePublisher
-            .flatMap { state -> AnyPublisher<Wallet, WalletAssetFetchError> in
+            .flatMap { state -> AnyPublisher<NativeWallet, WalletAssetFetchError> in
                 guard let wallet = state?.wallet else {
                     return .failure(.notInitialized)
                 }

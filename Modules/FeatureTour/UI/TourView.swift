@@ -15,18 +15,22 @@ public struct TourView: View {
 
     private let list: LivePricesList
 
-    init(store: Store<TourState, TourAction>) {
+    @State var manualLoginEnabled: Bool
+
+    init(store: Store<TourState, TourAction>, manualLoginEnabled: Bool) {
         self.store = store
+        self.manualLoginEnabled = manualLoginEnabled
         list = LivePricesList(store: store)
     }
 
-    public init(environment: TourEnvironment) {
+    public init(environment: TourEnvironment, manualLoginEnabled: Bool) {
         self.init(
             store: Store(
                 initialState: TourState(),
                 reducer: tourReducer,
                 environment: environment
-            )
+            ),
+            manualLoginEnabled: manualLoginEnabled
         )
     }
 
@@ -116,6 +120,11 @@ extension TourView {
             PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
                 viewStore.send(.createAccount)
             }
+            if manualLoginEnabled {
+                SecondaryButton(title: LocalizationConstants.Tour.manualLoginButtonTitle) {
+                    viewStore.send(.manualLogin)
+                }
+            }
             MinimalDoubleButton(
                 leadingTitle: LocalizationConstants.Tour.restoreButtonTitle,
                 leadingAction: { viewStore.send(.restore) },
@@ -135,8 +144,10 @@ struct TourView_Previews: PreviewProvider {
             environment: TourEnvironment(
                 createAccountAction: {},
                 restoreAction: {},
-                logInAction: {}
-            )
+                logInAction: {},
+                manualLoginAction: {}
+            ),
+            manualLoginEnabled: false
         )
     }
 }

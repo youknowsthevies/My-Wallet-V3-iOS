@@ -9,6 +9,7 @@ import FeatureAuthenticationUI
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 protocol LoggedInViewController: UIViewController, LoggedInBridge {

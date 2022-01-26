@@ -99,6 +99,7 @@ extension OpenBanking {
 
         public struct Attributes: Codable, Hashable {
             public var callbackPath: String
+            public var error: OpenBanking.Error?
         }
 
         public var id: Identity<Self> { paymentId }
@@ -161,13 +162,15 @@ extension OpenBanking {
                 qrCodeUrl: URL? = nil,
                 authorisationUrl: URL? = nil,
                 consentId: String? = nil,
-                expiresAt: String? = nil
+                expiresAt: String? = nil,
+                error: OpenBanking.Error? = nil
             ) {
                 self.callbackPath = callbackPath
                 self.qrCodeUrl = qrCodeUrl
                 self.authorisationUrl = authorisationUrl
                 self.consentId = consentId
                 self.expiresAt = expiresAt
+                self.error = error
             }
 
             public var callbackPath: String?
@@ -175,6 +178,7 @@ extension OpenBanking {
             public var authorisationUrl: URL?
             public var consentId: String?
             public var expiresAt: String?
+            public var error: OpenBanking.Error?
         }
 
         public var id: Identity<Self>
@@ -186,6 +190,7 @@ extension OpenBanking {
         public var price: String?
         public var paymentMethodId: String
         public var paymentType: String
+        public var paymentError: OpenBanking.Error?
         public var attributes: Attributes? = .init()
     }
 }
@@ -247,6 +252,7 @@ extension OpenBanking.Payment {
         public var createdAt: String?
         public var txHash: String?
         public var beneficiaryId: String
+        public var error: OpenBanking.Error?
     }
 }
 
@@ -292,6 +298,7 @@ extension OpenBanking.Payment.Details {
 }
 
 extension OpenBanking.Error {
+
     public static let bankTransferAccountAlreadyLinked: Self = .code("BANK_TRANSFER_ACCOUNT_ALREADY_LINKED")
     public static let bankTransferAccountInfoNotFound: Self = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
     public static let bankTransferAccountNameMismatch: Self = .code("BANK_TRANSFER_ACCOUNT_NAME_MISMATCH")
@@ -302,4 +309,14 @@ extension OpenBanking.Error {
     public static let bankTransferAccountNotSupported: Self = .code("BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED")
     public static let bankTransferAccountFailedInternal: Self = .code("BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL")
     public static let bankTransferAccountRejectedFraud: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD")
+
+    public static let bankTransferPaymentInvalid: Self = .code("BANK_TRANSFER_PAYMENT_INVALID")
+    public static let bankTransferPaymentFailed: Self = .code("BANK_TRANSFER_PAYMENT_FAILED")
+    public static let bankTransferPaymentDeclined: Self = .code("BANK_TRANSFER_PAYMENT_DECLINED")
+    public static let bankTransferPaymentRejected: Self = .code("BANK_TRANSFER_PAYMENT_REJECTED")
+    public static let bankTransferPaymentExpired: Self = .code("BANK_TRANSFER_PAYMENT_EXPIRED")
+    public static let bankTransferPaymentLimitExceeded: Self = .code("BANK_TRANSFER_PAYMENT_LIMITED_EXCEEDED")
+    public static let bankTransferPaymentUserAccountInvalid: Self = .code("BANK_TRANSFER_PAYMENT_USER_ACCOUNT_INVALID")
+    public static let bankTransferPaymentFailedInternal: Self = .code("BANK_TRANSFER_PAYMENT_FAILED_INTERNAL")
+    public static let bankTransferPaymentInsufficientFunds: Self = .code("BANK_TRANSFER_PAYMENT_INSUFFICIENT_FUNDS")
 }

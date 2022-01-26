@@ -49,7 +49,8 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
-        .package(path: "../ComposableArchitectureExtensions")
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../FeatureCards")
     ],
     targets: [
         .target(
@@ -81,7 +82,9 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureSettingsDomain"),
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
-                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions")
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "FeatureCardsUI", package: "FeatureCards"),
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ]
         ),
         .target(

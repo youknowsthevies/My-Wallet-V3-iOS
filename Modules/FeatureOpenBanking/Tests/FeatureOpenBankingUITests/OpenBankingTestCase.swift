@@ -49,19 +49,6 @@ class OpenBankingTestCase: XCTestCase {
     }
 }
 
-extension TestStore where LocalState: Equatable, Action: Equatable {
-
-    /// Asserts against a script of actions.
-    public func assert(
-        _ first: [Step],
-        _ rest: Step...,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        assert(first + rest, file: file, line: line)
-    }
-}
-
 struct OpenURL: URLOpener {
 
     var yield: (URL) -> Void

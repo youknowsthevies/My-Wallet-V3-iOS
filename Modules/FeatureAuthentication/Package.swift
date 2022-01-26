@@ -87,7 +87,10 @@ let package = Package(
             name: "FeatureAuthenticationMock",
             dependencies: [
                 .target(name: "FeatureAuthenticationData"),
-                .target(name: "FeatureAuthenticationDomain")
+                .target(name: "FeatureAuthenticationDomain"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadDataKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadKitMock", package: "WalletPayload")
             ]
         ),
         .testTarget(
@@ -95,6 +98,9 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureAuthenticationData"),
                 .target(name: "FeatureAuthenticationMock"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadDataKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadKitMock", package: "WalletPayload"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),

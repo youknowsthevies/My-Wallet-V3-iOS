@@ -2,10 +2,13 @@
 
 import Combine
 import FeatureInterestUI
+import FeatureOnboardingUI
+import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import UIComponentsKit
 
 extension RootViewController: LoggedInBridge {
 
@@ -58,7 +61,9 @@ extension RootViewController: LoggedInBridge {
     }
 
     func receive(into account: BlockchainAccount) {
-        receiveCoordinator.routeToReceive(sourceAccount: account)
+        transactionsRouter.presentTransactionFlow(to: .receive(account as? CryptoAccount))
+            .sink { result in "\(result)".peek("🧾") }
+            .store(in: &bag)
     }
 
     func withdraw(from account: BlockchainAccount) {
@@ -176,7 +181,27 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {
-        transactionsRouter.presentTransactionFlow(to: .swap(account))
+        let transactionsRouter = transactionsRouter
+        let onboardingRouter = onboardingRouter
+        userStateService
+            .userState
+            .first()
+            .map(\.balanceData?.hasAnyCryptoBalance)
+            .receive(on: DispatchQueue.main)
+            .flatMap { hasCryptoBalance -> AnyPublisher<TransactionFlowResult, Never> in
+                // if we don't know what the user cyrpto balance is, assume the user has some crypto.
+                // this won't interfere with the swap flow.
+                guard hasCryptoBalance != false else {
+                    guard let viewController = UIApplication.shared.topMostViewController else {
+                        fatalError("Top most view controller cannot be nil")
+                    }
+                    return onboardingRouter
+                        .presentRequiredCryptoBalanceView(from: viewController)
+                        .map(TransactionFlowResult.init)
+                        .eraseToAnyPublisher()
+                }
+                return transactionsRouter.presentTransactionFlow(to: .swap(account))
+            }
             .sink { result in
                 "\(result)".peek("🧾 \(#function)")
             }

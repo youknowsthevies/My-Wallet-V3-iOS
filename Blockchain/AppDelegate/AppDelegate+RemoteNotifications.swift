@@ -9,6 +9,7 @@ extension AppDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
+        NotificationCenter.default.post(name: UIApplication.pushNotificationReceivedNotification, object: userInfo)
         viewStore.send(
             .appDelegate(
                 .didReceiveRemoteNotification(

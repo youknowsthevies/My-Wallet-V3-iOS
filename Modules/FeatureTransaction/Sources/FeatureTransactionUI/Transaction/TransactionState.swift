@@ -5,6 +5,7 @@ import Localization
 import MoneyKit
 import NabuNetworkError
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 struct TransactionState: StateType {
@@ -155,6 +156,52 @@ extension TransactionState {
         normalizedValue(for: pendingTransaction?.available)
     }
 
+    func maxSpendableWithActiveAmountInputType(
+        _ input: ActiveAmountInput
+    ) -> MoneyValue {
+        let amount = normalizedValue(for: pendingTransaction?.maxSpendable)
+        return convertMoneyValueToInputCurrency(
+            amount.displayableRounding(roundingMode: .down),
+            activeInput: input
+        )
+    }
+
+    func minSpendableWithActiveAmountInputType(
+        _ input: ActiveAmountInput
+    ) -> MoneyValue {
+        let amount = normalizedValue(for: pendingTransaction?.minSpendable)
+        return convertMoneyValueToInputCurrency(
+            amount.displayableRounding(roundingMode: .up),
+            activeInput: input
+        )
+    }
+
+    private func convertMoneyValueToInputCurrency(
+        _ moneyValue: MoneyValue,
+        activeInput: ActiveAmountInput
+    ) -> MoneyValue {
+        switch (moneyValue.currency, activeInput) {
+        case (.crypto, .crypto),
+             (.fiat, .fiat):
+            return moneyValue
+        case (.crypto, .fiat):
+            // Convert crypto max amount into fiat amount.
+            guard let exchangeRate = sourceToFiatPair else {
+                // No exchange rate yet, use original value for error message.
+                return moneyValue
+            }
+            // Convert crypto max amount into fiat amount.
+            return moneyValue.convert(using: exchangeRate.quote)
+        case (.fiat, .crypto):
+            guard let exchangeRate = sourceToFiatPair else {
+                // No exchange rate yet, use original value for error message.
+                return moneyValue
+            }
+            // Convert fiat max amount into crypto amount.
+            return moneyValue.convert(usingInverse: exchangeRate.quote, currency: moneyValue.currency)
+        }
+    }
+
     private func normalizedValue(for originalValue: MoneyValue?) -> MoneyValue {
         let zero: MoneyValue = .zero(currency: asset)
         let value = originalValue ?? zero
@@ -287,6 +334,7 @@ extension TransactionState {
 
     private typealias LocalizationIds = LocalizationConstants.Transaction.Error
 
+    // swiftlint:disable cyclomatic_complexity
     var transactionErrorDescription: String {
         switch errorState {
         case .none:
@@ -382,6 +430,10 @@ extension TransactionState {
             return LocalizationIds.tradingAlbertError
         case .orderInProgress:
             return String(format: LocalizationIds.tooManyTransaction, action.name)
+        case .cardInsufficientFunds:
+            return LocalizationIds.cardInsufficientFunds
+        case .cardBankDecline:
+            return LocalizationIds.cardBankDecline
         default:
             return LocalizationIds.unknownError
         }

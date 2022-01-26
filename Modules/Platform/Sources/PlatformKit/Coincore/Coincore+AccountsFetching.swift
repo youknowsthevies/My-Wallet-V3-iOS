@@ -213,7 +213,7 @@ extension Publisher where Output == AccountGroup, Failure == Error {
 extension CoincoreAPI {
 
     public func cryptoAccounts(
-        supporting action: AssetAction,
+        supporting action: AssetAction? = nil,
         filter: AssetFilter = .all
     ) -> AnyPublisher<[CryptoAccount], Error> {
         allAssets
@@ -254,5 +254,68 @@ extension CoincoreAPI {
                     }
             }
             .eraseToAnyPublisher()
+    }
+}
+
+public enum AssetType {
+    case all
+    case fiat
+    case crypto
+}
+
+extension CoincoreAPI {
+
+    public func hasFundedAccounts(for assetType: AssetType) -> AnyPublisher<Bool, Never> {
+        let accountsPublisher: AnyPublisher<[SingleAccount], Error>
+        switch assetType {
+        case .all:
+            accountsPublisher = allAccounts
+                .map(\.accounts)
+                .eraseError()
+                .eraseToAnyPublisher()
+        case .fiat:
+            accountsPublisher = fiatAsset
+                .accountGroup(filter: .all)
+                .map(\.accounts)
+                .eraseError()
+                .eraseToAnyPublisher()
+        case .crypto:
+            accountsPublisher = cryptoAccounts()
+                .map { accounts in
+                    accounts.map { $0 as SingleAccount }
+                }
+                .eraseToAnyPublisher()
+        }
+        return accountsPublisher
+            .hasAnyFundedAccounts()
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+}
+
+extension Sequence where Element == SingleAccount {
+
+    public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Error> {
+        map { account -> AnyPublisher<Bool, Error> in
+            account
+                .isFunded
+                .asPublisher()
+                .eraseToAnyPublisher()
+        }
+        .zip()
+        .map { results -> Bool in
+            results.contains(true)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher where Output: Sequence, Output.Element == SingleAccount, Failure == Error {
+
+    public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Failure> {
+        flatMap { accounts -> AnyPublisher<Bool, Failure> in
+            accounts.hasAnyFundedAccounts()
+        }
+        .eraseToAnyPublisher()
     }
 }

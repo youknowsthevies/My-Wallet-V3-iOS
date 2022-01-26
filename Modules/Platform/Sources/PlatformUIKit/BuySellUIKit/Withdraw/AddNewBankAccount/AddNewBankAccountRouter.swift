@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RIBs
+import UIComponentsKit
 
 public protocol AddNewBankAccountInteractable: Interactable {
     var router: AddNewBankAccountRouting? { get set }

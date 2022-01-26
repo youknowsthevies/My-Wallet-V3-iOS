@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureOpenBankingDomain
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -235,6 +236,9 @@ final class BuyTransactionEngine: TransactionEngine {
         guard let order = pendingOrder as? OrderDetails else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
         }
+        if let error = order.error {
+            return .error(OpenBanking.Error.code(error))
+        }
         // Execute the order
         return orderConfirmationService.confirm(checkoutData: CheckoutData(order: order))
             // Map order to Transaction Result
@@ -311,7 +315,7 @@ extension BuyTransactionEngine {
         let paymentMethod = (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method
         let paymentMethodId = (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
         return convertAmountIntoTradingCurrency(amount)
-            .flatMap { [sourceAccount, orderQuoteService] fiatValue in
+            .flatMap { [orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
                     query: QuoteQuery(
                         profile: .simpleBuy,
@@ -351,6 +355,7 @@ extension BuyTransactionEngine {
             .eraseToAnyPublisher()
     }
 
+    // swiftlint:disable line_length
     private func transactionLimits(
         for paymentMethod: PaymentMethod,
         inputCurrency: CurrencyType

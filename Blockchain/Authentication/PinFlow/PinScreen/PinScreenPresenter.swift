@@ -38,14 +38,7 @@ final class PinScreenPresenter {
     // MARK: - Properties
 
     var trailingButton: Screen.Style.TrailingButton {
-        var hash = ""
-        if let info = MainBundleProvider.mainBundle.infoDictionary {
-            hash = (info[Constants.commitHash] as? String ?? "")
-        }
-        var title = "v\(Bundle.applicationVersion ?? "")"
-        #if INTERNAL_BUILD
-        title = "\(title) (\(hash))"
-        #endif
+        let title = Bundle.versionAndBuildNumber()
         switch flow {
         case .create,
              .createPin:

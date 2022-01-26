@@ -21,6 +21,7 @@ public struct SellOrderDetails {
     public let creationDate: Date?
 
     public let state: State
+    public let error: String?
 
     // MARK: - Setup
 
@@ -65,5 +66,7 @@ public struct SellOrderDetails {
         if creationDate == nil {
             recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }
+
+        error = response.paymentError ?? response.attributes?.error
     }
 }

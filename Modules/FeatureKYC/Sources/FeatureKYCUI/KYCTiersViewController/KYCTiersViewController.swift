@@ -11,6 +11,7 @@ import PlatformUIKit
 import RxSwift
 import SafariServices
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 protocol KYCTiersInterface: AnyObject {

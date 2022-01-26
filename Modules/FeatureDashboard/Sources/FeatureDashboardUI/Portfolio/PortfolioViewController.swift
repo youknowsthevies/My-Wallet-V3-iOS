@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import ComponentLibrary
 import ComposableArchitecture
 import DIKit
 import FeatureWithdrawalLocksUI
@@ -9,11 +11,12 @@ import RxCocoa
 import RxDataSources
 import RxRelay
 import RxSwift
+import SwiftUI
 import ToolKit
 import UIComponentsKit
 
 /// A view controller that displays the dashboard
-public final class PortfolioViewController: BaseScreenViewController {
+public final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewController {
 
     // MARK: - Private Types
 
@@ -25,21 +28,44 @@ public final class PortfolioViewController: BaseScreenViewController {
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let presenter: PortfolioScreenPresenter
     private let tableView = UITableView()
-    private var buyButton: BuyButtonView
+    private let onboardingChecklistViewBuilder: () -> OnboardingChecklist
+
+    private let floatingViewContainer = UIView()
+    private var onboardingChecklistViewController: UIViewController? {
+        willSet {
+            onboardingChecklistViewController?.view.removeFromSuperview()
+            onboardingChecklistViewController?.removeFromParent()
+        }
+        didSet {
+            guard onboardingChecklistViewController != oldValue else {
+                return
+            }
+            if let onboardingChecklistViewController = onboardingChecklistViewController {
+                add(child: onboardingChecklistViewController)
+                onboardingChecklistViewController.view.backgroundColor = .clear
+                floatingViewContainer.addSubview(onboardingChecklistViewController.view)
+                onboardingChecklistViewController.view.constraint(edgesTo: floatingViewContainer)
+                showFloatingViewContent()
+            } else {
+                hideFloatingViewContent()
+            }
+        }
+    }
+
+    private var userHasCompletedOnboarding: AnyPublisher<Bool, Never>
 
     // MARK: - Setup
 
     public init(
         fiatBalanceCellProvider: FiatBalanceCellProviding,
+        userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
+        @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
         presenter: PortfolioScreenPresenter
     ) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
+        self.userHasCompletedOnboarding = userHasCompletedOnboarding
+        self.onboardingChecklistViewBuilder = onboardingChecklistViewBuilder
         self.presenter = presenter
-        buyButton = BuyButtonView(store: Store<BuyButtonState, BuyButtonAction>(
-            initialState: .init(),
-            reducer: buyButtonReducer,
-            environment: .init()
-        ))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -55,6 +81,7 @@ public final class PortfolioViewController: BaseScreenViewController {
         view.backgroundColor = .white
         setupNavigationBar()
         setupTableView()
+        setUpFloatingView()
         presenter.setup()
         tableView.reloadData()
         presenter.refreshRelay.accept(())
@@ -155,13 +182,50 @@ public final class PortfolioViewController: BaseScreenViewController {
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
-        presenter.isEmptyState
+        userHasCompletedOnboarding
+            .asObservable()
+            .map { userHasCompletedOnboarding -> Bool in
+                // if the user has completed onboarding, nothing to show
+                !userHasCompletedOnboarding
+            }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)
-            .bind { [weak parent] isEmptyState in
-                guard let buyButtonRenderer = parent as? BuyButtonViewRenderer else { return }
-                buyButtonRenderer.render(buyButton: self.buyButton, isVisible: !isEmptyState)
+            .bind { [weak self] shouldShowOnboardingChecklistOverview in
+                if shouldShowOnboardingChecklistOverview {
+                    if self?.onboardingChecklistViewController == nil {
+                        self?.presentOnboardingChecklistView()
+                    }
+                } else {
+                    // hide, don't remove, otherwise the close button on the modal won't work as only the checklist overview has a NavigationView
+                    self?.hideFloatingViewContent()
+                }
             }
             .disposed(by: disposeBag)
+    }
+
+    private func setUpFloatingView() {
+        view.addSubview(floatingViewContainer)
+        floatingViewContainer.layout(dimension: .height, to: BuyButtonView.height)
+        floatingViewContainer.layoutToSuperview(.trailing, offset: -Spacing.padding3)
+        floatingViewContainer.layoutToSuperview(.leading, offset: Spacing.padding3)
+        floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding3)
+    }
+
+    private func showFloatingViewContent() {
+        floatingViewContainer.isHidden = false
+        // pad the table view in order to let the last cell scroll past the floating view with some padding
+        tableView.contentInset.bottom = Spacing.padding3 + BuyButtonView.height + Spacing.padding1
+    }
+
+    private func hideFloatingViewContent() {
+        floatingViewContainer.isHidden = true
+        // reset the table view inset
+        tableView.contentInset.bottom = 0
+    }
+
+    private func presentOnboardingChecklistView() {
+        let viewController = UIHostingController(rootView: onboardingChecklistViewBuilder())
+        onboardingChecklistViewController = viewController
     }
 
     // MARK: - Navigation

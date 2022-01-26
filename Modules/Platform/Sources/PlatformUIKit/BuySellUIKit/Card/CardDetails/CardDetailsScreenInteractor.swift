@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import RIBs
 import RxSwift
@@ -34,7 +35,9 @@ final class CardDetailsScreenInteractor: Interactor {
     }
 
     func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {
-        cardListService.doesCardExist(number: number, expiryMonth: expiryMonth, expiryYear: expiryYear)
+        cardListService
+            .doesCardExist(number: number, expiryMonth: expiryMonth, expiryYear: expiryYear)
+            .asSingle()
     }
 
     func addBillingAddress(to cardData: CardData) {

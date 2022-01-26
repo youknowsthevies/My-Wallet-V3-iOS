@@ -2,35 +2,18 @@
 
 import BigInt
 import PlatformKit
-
-struct Fee {
-    // FIXME: Should this be a BitcoinValue?
-    let feePerByte: BigUInt
-}
-
-struct CoinSelectionInputs {
-    let value: BitcoinValue
-    let fee: Fee
-    let unspentOutputs: [UnspentOutput]
-    let sortingStrategy: CoinSortingStrategy
-}
-
-enum CoinSelectionError: Error {
-    case noEffectiveCoins
-}
+import ToolKit
 
 protocol CoinSelector {
     func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError>
-    func select(all coins: [UnspentOutput], fee: Fee, sortingStrategy: CoinSortingStrategy?) -> Result<SpendableUnspentOutputs, CoinSelectionError>
+    func select(
+        all coins: [UnspentOutput],
+        feePerByte: BigUInt,
+        singleOutputType: UnspentOutput.Script
+    ) -> Result<SpendableUnspentOutputs, CoinSelectionError>
 }
 
-class CoinSelection: CoinSelector {
-
-    enum Constants {
-        static let costBase = BigUInt(10)
-        static let costPerInput = BigUInt(149)
-        static let costPerOutput = BigUInt(34)
-    }
+struct CoinSelection: CoinSelector {
 
     private let calculator: TransactionSizeCalculating
 
@@ -39,80 +22,113 @@ class CoinSelection: CoinSelector {
     }
 
     func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
-        let outputAmount = inputs.value.amount.magnitude
-        let fee = inputs.fee
+        let outputAmount = inputs.target.value
         let sortingStrategy = inputs.sortingStrategy
         let unspentOutputs = inputs.unspentOutputs
-        let feePerByte = fee.feePerByte
+        let feePerByte = inputs.feePerByte.decimal
+
+        guard !unspentOutputs.isEmpty else {
+            return .failure(.noCoinsToSelect)
+        }
+
+        /// Sort and filter effective coins.
         let effectiveCoins = sortingStrategy
             .sort(coins: unspentOutputs)
-            .effective(for: fee)
+            .effective(fee: inputs.feePerByte)
 
         guard !effectiveCoins.isEmpty else {
             return .failure(.noEffectiveCoins)
         }
 
-        var selected = [UnspentOutput]()
-        var accumulatedValue = BigUInt.zero
-        var accumulatedFee = BigUInt.zero
+        // The selected utxos to be added to the transaction.
+        var selected: [UnspentOutput] = []
+        // Iteratively, the value of all currently selected coins.
+        var accumulatedValue: BigUInt = .zero
+        let outputQuantity = TransactionSizeCalculatorQuantities(
+            p2pkh: inputs.target.scriptType == .P2PKH ? 1 : 0,
+            p2wpkh: inputs.target.scriptType == .P2WPKH ? 1 : 0
+        )
+        // The base fee is the transactionBytes of just adding the outputs.
+        let baseFee: Decimal = calculator.transactionBytes(
+            inputs: .zero,
+            outputs: outputQuantity
+        ) * feePerByte
+        // Iteratively, the fee of using all currently selected coins plus the base fee.
+        var accumulatedFee = BigUInt(
+            (baseFee.roundTo(places: 0, roundingMode: .up) as NSDecimalNumber).stringValue
+        )!
 
         for coin in effectiveCoins {
-            if !coin.isForceInclude, accumulatedValue >= outputAmount + accumulatedFee {
+            // Check if the currently selected coins are enough.
+            if accumulatedValue >= outputAmount + accumulatedFee {
                 continue
             }
 
-            selected += [coin]
-            accumulatedValue = selected.sum()
-            accumulatedFee = calculator.transactionBytes(inputs: selected.count, outputs: 1) * feePerByte
+            // Add coin.
+            selected.append(coin)
+            accumulatedValue += coin.magnitude
+            // Add cost of adding coin as input to the accumulated fee.
+            let coinFee: Decimal = TransactionCost.PerInput.for(coin.scriptType) * feePerByte
+            accumulatedFee += BigUInt(
+                (coinFee.roundTo(places: 0, roundingMode: .up) as NSDecimalNumber).stringValue
+            )!
         }
 
-        let dust = calculator.dustThreshold(for: fee)
-
-        let remainingValueSigned = BigInt(accumulatedValue) - BigInt(outputAmount + accumulatedFee)
-        let isReplayProtected = selected.replayProtected
-
-        // Either there were no effective coins or we were not able to meet the target value
-        if selected.isEmpty || remainingValueSigned < BigUInt.zero {
-            let outputs = SpendableUnspentOutputs(isReplayProtected: isReplayProtected)
-            return .success(outputs)
+        guard !selected.isEmpty else {
+            return .failure(.noSelectedCoins)
         }
 
-        let remainingValue = remainingValueSigned.magnitude
+        guard accumulatedValue >= outputAmount + accumulatedFee else {
+            return .failure(.insufficientFunds)
+        }
 
-        // Remaining value is worth keeping, add change output
-        if remainingValue >= dust {
-            accumulatedFee = calculator.transactionBytes(inputs: selected.count, outputs: 2) * feePerByte
-            let outputs = SpendableUnspentOutputs(
+        let remainingValue: BigUInt = accumulatedValue - (outputAmount + accumulatedFee)
+        let dustThreshold = calculator.dustThreshold(for: inputs.feePerByte, type: inputs.changeOutputType)
+        let remainingValueDecimal = remainingValue.decimal
+        let outputs: SpendableUnspentOutputs
+        if remainingValueDecimal >= dustThreshold {
+            // Change is worth keeping
+            let feeForAdditionalChangeOutput = TransactionCost.PerOutput.for(inputs.changeOutputType)
+                * feePerByte
+            let feeForAdditionalChangeOutputString = (
+                feeForAdditionalChangeOutput.roundTo(places: 0, roundingMode: .up) as NSDecimalNumber
+            ).stringValue
+            outputs = SpendableUnspentOutputs(
                 spendableOutputs: selected,
-                absoluteFee: accumulatedFee,
-                isReplayProtected: isReplayProtected
+                absoluteFee: accumulatedFee + BigUInt(feeForAdditionalChangeOutputString)!,
+                amount: outputAmount,
+                change: remainingValue - BigUInt(feeForAdditionalChangeOutputString)!
             )
-            return .success(outputs)
+        } else {
+            // Change is not worth keeping
+            outputs = SpendableUnspentOutputs(
+                spendableOutputs: selected,
+                absoluteFee: accumulatedFee + remainingValue,
+                amount: outputAmount,
+                change: 0
+            )
         }
-
-        // Remaining value is not worth keeping, consume it as part of the fee
-        let outputs = SpendableUnspentOutputs(
-            spendableOutputs: selected,
-            absoluteFee: accumulatedFee + remainingValue,
-            consumedAmount: remainingValue,
-            isReplayProtected: isReplayProtected
-        )
         return .success(outputs)
     }
 
     func select(
         all coins: [UnspentOutput],
-        fee: Fee,
-        sortingStrategy: CoinSortingStrategy? = nil
+        feePerByte: BigUInt,
+        singleOutputType: UnspentOutput.Script
     ) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
-        let effectiveCoins = (sortingStrategy?.sort(coins: coins) ?? coins)
-            .effective(for: fee)
-        let effectiveValue = effectiveCoins.sum()
-        let effectiveBalance = max(effectiveCoins.balance(for: fee, outputs: 1, calculator: calculator), BigUInt.zero)
+        let effectiveCoins = coins.effective(fee: feePerByte)
+        let effectiveBalance = calculator.effectiveBalance(
+            fee: feePerByte,
+            inputs: effectiveCoins,
+            singleOutputType: singleOutputType
+        )
+        let balance = effectiveCoins.sum()
+
         let outputs = SpendableUnspentOutputs(
             spendableOutputs: effectiveCoins,
-            absoluteFee: effectiveValue - effectiveBalance,
-            isReplayProtected: effectiveCoins.replayProtected
+            absoluteFee: balance - effectiveBalance,
+            amount: effectiveBalance,
+            change: 0
         )
         return .success(outputs)
     }

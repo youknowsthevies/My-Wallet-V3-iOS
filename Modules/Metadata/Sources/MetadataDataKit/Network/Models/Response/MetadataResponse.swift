@@ -16,14 +16,14 @@ struct MetadataResponse: Decodable {
         case address
     }
 
-    var version: Int = 0
-    var payload: String = ""
-    var signature: String = ""
+    var version = 0
+    var payload = ""
+    var signature = ""
     var prevMagicHash: String?
-    var typeId: Int = 0
-    var createdAt: Int = 0
-    var updatedAt: Int = 0
-    var address: String = ""
+    var typeId = 0
+    var createdAt = 0
+    var updatedAt = 0
+    var address = ""
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)

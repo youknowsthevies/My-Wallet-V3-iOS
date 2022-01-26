@@ -16,7 +16,7 @@ final class MetadataClient: MetadataClientAPI {
 
     private enum Path {
 
-        static var basePath: [String] = ["metadata"]
+        static var basePath = ["metadata"]
 
         static func get(at address: String) -> [String] {
             basePath + [address]

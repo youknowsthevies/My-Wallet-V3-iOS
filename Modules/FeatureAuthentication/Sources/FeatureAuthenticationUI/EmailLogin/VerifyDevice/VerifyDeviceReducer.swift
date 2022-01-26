@@ -101,6 +101,7 @@ struct VerifyDeviceEnvironment {
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletInfoBase64Encoder: (WalletInfo) throws -> String
+    let walletRecoveryService: WalletRecoveryService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -109,6 +110,7 @@ struct VerifyDeviceEnvironment {
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI,
+        walletRecoveryService: WalletRecoveryService,
         walletInfoBase64Encoder: @escaping (WalletInfo) throws -> String = {
             try JSONEncoder().encode($0).base64EncodedString()
         }
@@ -119,6 +121,7 @@ struct VerifyDeviceEnvironment {
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
         self.walletInfoBase64Encoder = walletInfoBase64Encoder
     }
 }
@@ -136,7 +139,8 @@ let verifyDeviceReducer = Reducer.combine(
                     errorRecorder: $0.errorRecorder,
                     externalAppOpener: $0.externalAppOpener,
                     featureFlagsService: $0.featureFlagsService,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -151,7 +155,8 @@ let verifyDeviceReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     featureFlagsService: $0.featureFlagsService,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),

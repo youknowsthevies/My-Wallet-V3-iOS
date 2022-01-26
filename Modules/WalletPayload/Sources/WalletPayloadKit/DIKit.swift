@@ -2,11 +2,10 @@
 
 import DIKit
 import Foundation
-import KeychainKit
 import MetadataKit
 
-struct WalletRepoKeychain {
-    static let repoTag: String = "repo.tag"
+enum WalletRepoOperationsQueue {
+    static let queueTag = "op.queue.tag"
 }
 
 extension DependencyContainer {
@@ -15,25 +14,13 @@ extension DependencyContainer {
 
     public static var walletPayloadKit = module {
 
-        single { () -> WalletRepo in
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
-            let initialStateOrEmpty = retrieveWalletRepoState(keychainAccess: keychainAccess) ?? .empty
-            return WalletRepo(initialState: initialStateOrEmpty)
-        }
-
-        single { () -> WalletRepoPersistenceAPI in
-            let repo: WalletRepo = DIKit.resolve()
-            let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default)
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
-            return WalletRepoPersistence(
-                repo: repo,
-                keychainAccess: keychainAccess,
-                queue: queue
-            )
+        single(tag: WalletRepoOperationsQueue.queueTag) { () -> DispatchQueue in
+            DispatchQueue(label: "wallet.payload.operations.queue")
         }
 
         factory { () -> WalletFetcherAPI in
-            let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated)
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated, target: targetQueue)
             return WalletFetcher(
                 walletRepo: DIKit.resolve(),
                 payloadCrypto: DIKit.resolve(),
@@ -42,24 +29,35 @@ extension DependencyContainer {
             )
         }
 
-        factory {
-            WalletLogic(
-                holder: DIKit.resolve()
+        factory { () -> WalletLogic in
+            let walletCreator: WalletDecoderAPI = DIKit.resolve()
+            let decoder = walletCreator.createWallet(from:)
+            return WalletLogic(
+                holder: DIKit.resolve(),
+                decoder: decoder,
+                metadata: DIKit.resolve(),
+                notificationCenter: .default
+            )
+        }
+
+        factory { () -> WalletRecoveryServiceAPI in
+            let walletLogic: WalletLogic = DIKit.resolve()
+            let payloadCrypto: PayloadCryptoAPI = DIKit.resolve()
+            let repo: WalletRepoAPI = DIKit.resolve()
+            let payloadRepository: WalletPayloadRepositoryAPI = DIKit.resolve()
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.recovery.op.queue", qos: .userInitiated, target: targetQueue)
+            return WalletRecoveryService(
+                walletLogic: walletLogic,
+                payloadCrypto: payloadCrypto,
+                walletRepo: repo,
+                walletPayloadRepository: payloadRepository,
+                operationsQueue: queue
             )
         }
 
         factory { () -> SecondPasswordServiceAPI in
             SecondPasswordService(walletHolder: DIKit.resolve())
-        }
-
-        factory { () -> ReleasableWalletAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as ReleasableWalletAPI
-        }
-
-        factory { () -> WalletHolderAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as WalletHolderAPI
         }
 
         factory { () -> WalletMetadataEntryServiceAPI in
@@ -96,13 +94,7 @@ extension DependencyContainer {
             )
         }
 
-        single { WalletHolder() }
-
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
-
-        single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
-            KeychainAccess(service: "com.blockchain.wallet-repo")
-        }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
 

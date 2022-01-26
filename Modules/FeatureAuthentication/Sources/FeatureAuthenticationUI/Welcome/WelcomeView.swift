@@ -24,7 +24,6 @@ public enum WelcomeRoute: NavigationRoute {
     public func destination(
         in store: Store<WelcomeState, WelcomeAction>
     ) -> some View {
-        let viewStore = ViewStore(store)
         switch self {
         case .createWallet:
             IfLetStore(
@@ -32,16 +31,7 @@ public enum WelcomeRoute: NavigationRoute {
                     state: \.createWalletState,
                     action: WelcomeAction.createWallet
                 ),
-                then: { store in
-                    if viewStore.route?.action == .navigateTo {
-                        CreateAccountView(store: store)
-                    } else {
-                        CreateAccountView(store: store)
-                            .trailingNavigationButton(.close) {
-                                viewStore.send(.createWallet(.closeButtonTapped))
-                            }
-                    }
-                }
+                then: CreateAccountView.init(store:)
             )
         case .emailLogin:
             IfLetStore(
@@ -57,14 +47,7 @@ public enum WelcomeRoute: NavigationRoute {
                     state: \.restoreWalletState,
                     action: WelcomeAction.restoreWallet
                 ),
-                then: { store in
-                    SeedPhraseView(store: store)
-                        .trailingNavigationButton(.close) {
-                            viewStore.send(.restoreWallet(.closeButtonTapped))
-                        }
-                        .whiteNavigationBarStyle()
-                        .hideBackButtonTitle()
-                }
+                then: SeedPhraseView.init(store:)
             )
         case .manualLogin:
             IfLetStore(
@@ -76,13 +59,6 @@ public enum WelcomeRoute: NavigationRoute {
                     CredentialsView(
                         context: .manualPairing,
                         store: store
-                    )
-                    .trailingNavigationButton(.close) {
-                        viewStore.send(.manualPairing(.closeButtonTapped))
-                    }
-                    .whiteNavigationBarStyle()
-                    .navigationTitle(
-                        LocalizedString.Button.manualPairing
                     )
                 }
             )
@@ -197,7 +173,7 @@ public struct WelcomeView: View {
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
             MinimalButton(title: LocalizedString.Button.login) {
-                viewStore.send(.enter(into: .emailLogin))
+                viewStore.send(.navigate(to: .emailLogin))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)
             if viewStore.manualPairingEnabled {
@@ -214,7 +190,7 @@ public struct WelcomeView: View {
     private var supplementarySection: some View {
         HStack {
             Button(LocalizedString.Button.restoreWallet) {
-                viewStore.send(.enter(into: .restoreWallet))
+                viewStore.send(.navigate(to: .restoreWallet))
             }
             .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
             .foregroundColor(.buttonLinkText)
@@ -229,7 +205,7 @@ public struct WelcomeView: View {
 
     private func manualPairingButton() -> some View {
         Button(LocalizedString.Button.manualPairing) {
-            viewStore.send(.enter(into: .manualLogin))
+            viewStore.send(.navigate(to: .manualLogin))
         }
         .font(Font(weight: .semibold, size: Layout.buttonFontSize))
         .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
@@ -258,7 +234,8 @@ struct WelcomeView_Previews: PreviewProvider {
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    buildVersionProvider: { "Test version" }
+                    buildVersionProvider: { "Test version" },
+                    nativeWalletEnabled: { .just(false) }
                 )
             )
         )

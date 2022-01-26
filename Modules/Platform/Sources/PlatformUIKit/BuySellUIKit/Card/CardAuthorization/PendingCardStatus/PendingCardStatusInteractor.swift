@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import RIBs
 import RxSwift
+import RxToolKit
 
 final class PendingCardStatusInteractor: Interactor {
 
@@ -39,9 +41,10 @@ final class PendingCardStatusInteractor: Interactor {
     func startPolling() -> Single<State> {
         activationService
             .waitForActivation(of: cardId)
+            .asSingle()
             .flatMap(weak: self) { (self, result) -> Single<State> in
                 switch result {
-                case .final(let state):
+                case .success(let state):
                     switch state {
                     case .active(let data):
                         return self.paymentMethodTypesService
@@ -50,9 +53,10 @@ final class PendingCardStatusInteractor: Interactor {
                     case .pending, .inactive:
                         return .just(.inactive)
                     }
-                case .cancel:
-                    return .just(.inactive)
-                case .timeout:
+                case .failure(let error):
+                    guard case .timeout = error else {
+                        return .just(.inactive)
+                    }
                     return .just(.timeout)
                 }
             }

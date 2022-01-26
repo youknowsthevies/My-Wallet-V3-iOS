@@ -397,8 +397,8 @@ extension Localization {
 
             public static let bankTransferAccountFailedInternal = (
                 title: NSLocalizedString(
-                    "There was a problem linking your checking account ending in %@. Please try again.",
-                    comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."
+                    "There was a problem linking your account. Please try again.",
+                    comment: "There was a problem linking your account. Please try again."
                 ),
                 subtitle: NSLocalizedString(
                     "Please try again or select a different payment method.",
@@ -409,12 +409,132 @@ extension Localization {
 
             public static let bankTransferAccountRejectedFraud = (
                 title: NSLocalizedString(
-                    "There was a problem linking your checking account ending in %@. Please try again.",
-                    comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."
+                    "There was a problem linking your account. Please try again.",
+                    comment: "There was a problem linking your account. Please try again."
                 ),
                 subtitle: NSLocalizedString(
                     "Please try again or select a different payment method.",
                     comment: "Please try again or select a different payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferAccountInfoNotFound = (
+                title: NSLocalizedString(
+                    "Invalid Account",
+                    comment: "Invalid Account"
+                ),
+                subtitle: NSLocalizedString(
+                    "The account you selected isn't active. Please try another account or payment method. If this isn't correct, please contact support.",
+                    comment: "The account you selected isn't active. Please try another account or payment method. If this isn't correct, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentInvalid = (
+                title: NSLocalizedString(
+                    "There was a problem with your order",
+                    comment: "There was a problem with your order"
+                ),
+                subtitle: NSLocalizedString(
+                    "Payments can be declined by your bank or card issuer. Please try again with a different bank or card.",
+                    comment: "Payments can be declined by your bank or card issuer. Please try again with a different bank or card."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentFailed = (
+                title: NSLocalizedString(
+                    "Payment Failed",
+                    comment: "Title shown when a bank transfer payment failed"
+                ),
+                subtitle: NSLocalizedString(
+                    "There was an issue with your bank. Please try again or use a different payment method. If this keeps happening, please contact support.",
+                    comment: "There was an issue with your bank. Please try again or use a different payment method. If this keeps happening, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentDeclined = (
+                title: NSLocalizedString(
+                    "Payment Declined",
+                    comment: "Payment Declined"
+                ),
+                subtitle: NSLocalizedString(
+                    "We believe your bank has declined this payment. Please contact your bank for support",
+                    comment: "We believe your bank has declined this payment. Please contact your bank for support"
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentRejected = (
+                title: NSLocalizedString(
+                    "Payment Rejected",
+                    comment: "Payment Rejected"
+                ),
+                subtitle: NSLocalizedString(
+                    "We believe you have declined the payment from your bank account. If this isn't correct, please contact support.",
+                    comment: "We believe you have declined the payment from your bank account. If this isn't correct, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentExpired = (
+                title: NSLocalizedString(
+                    "Payment Request Expired",
+                    comment: "Payment Request Expired"
+                ),
+                subtitle: NSLocalizedString(
+                    "We haven't heard from your bank. The payment request has expired. Please try to submit the order again. If this keeps happening, please contact support.",
+                    comment: "We haven't heard from your bank. The payment request has expired. Please try to submit the order again. If this keeps happening, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentLimitExceeded = (
+                title: NSLocalizedString(
+                    "Incomplete Charges",
+                    comment: "Incomplete Charges"
+                ),
+                subtitle: NSLocalizedString(
+                    "This payment method has incomplete charges against it. To use this payment method again, place contact support.",
+                    comment: "This payment method has incomplete charges against it. To use this payment method again, place contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentUserAccountInvalid = (
+                title: NSLocalizedString(
+                    "Invalid Account",
+                    comment: "Invalid Account"
+                ),
+                subtitle: NSLocalizedString(
+                    "The account you selected isn't active. Please try another account or payment method. If this isn't correct, please contact support.",
+                    comment: "The account you selected isn't active. Please try another account or payment method. If this isn't correct, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentFailedInternal = (
+                title: NSLocalizedString(
+                    "There was a problem with your order",
+                    comment: "There was a problem with your order"
+                ),
+                subtitle: NSLocalizedString(
+                    "Payments can be declined by your bank or card issuer. Please try again with a different bank or card.",
+                    comment: "Payments can be declined by your bank or card issuer. Please try again with a different bank or card."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let bankTransferPaymentInsufficientFunds = (
+                title: NSLocalizedString(
+                    "Insufficient Funds",
+                    comment: "Insufficient Funds"
+                ),
+                subtitle: NSLocalizedString(
+                    "Payment failed due to insufficient funds in your account. Try another payment method. If this keep happening, please contact support.",
+                    comment: "Payment failed due to insufficient funds in your account. Try another payment method. If this keep happening, please contact support."
                 ),
                 action: Bank.Action.tryAgain
             )

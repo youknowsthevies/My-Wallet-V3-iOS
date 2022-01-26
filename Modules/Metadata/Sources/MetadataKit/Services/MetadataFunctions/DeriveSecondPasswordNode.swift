@@ -35,10 +35,9 @@ private func deriveSecondPasswordNode(
     .flatMap { entropyHex -> Result<PrivateKey, DeriveSecondPasswordNodeError> in
         privateKeyFromEntropyHex(entropyHex: entropyHex)
     }
-    .flatMap { privateKey -> Result<MetadataNode, DeriveSecondPasswordNodeError> in
+    .flatMap { privateKey -> Result<SecondPasswordNode, DeriveSecondPasswordNodeError> in
         secondPasswordNodeFrom(privateKey: privateKey)
     }
-    .map(SecondPasswordNode.init(metadataNode:))
 }
 
 private func secondPasswordNodeEntropyHex(
@@ -67,12 +66,13 @@ private func privateKeyFromEntropyHex(
 
 private func secondPasswordNodeFrom(
     privateKey: PrivateKey
-) -> Result<MetadataNode, DeriveSecondPasswordNodeError> {
+) -> Result<SecondPasswordNode, DeriveSecondPasswordNodeError> {
     let node = MetadataNode(
         address: privateKey.address,
         node: privateKey,
         encryptionKey: privateKey.raw,
         type: .root
     )
-    return .success(node)
+    return Result<MetadataNode, DeriveSecondPasswordNodeError>.success(node)
+        .map(SecondPasswordNode.init(metadataNode:))
 }

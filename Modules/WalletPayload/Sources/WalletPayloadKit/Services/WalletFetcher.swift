@@ -18,13 +18,13 @@ public protocol WalletFetcherAPI {
 
 final class WalletFetcher: WalletFetcherAPI {
 
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let payloadCrypto: PayloadCryptoAPI
     private let walletLogic: WalletLogic
     private let operationsQueue: DispatchQueue
 
     init(
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         payloadCrypto: PayloadCryptoAPI,
         walletLogic: WalletLogic,
         operationsQueue: DispatchQueue
@@ -36,16 +36,14 @@ final class WalletFetcher: WalletFetcherAPI {
     }
 
     func fetch(using password: String) -> AnyPublisher<EmptyValue, WalletError> {
-        // 0. load the payload
         walletRepo
-            .map(\.encryptedPayload)
+            .encryptedPayload
             .first()
             .receive(on: operationsQueue)
             .flatMap { [payloadCrypto] payloadWrapper -> AnyPublisher<String, WalletError> in
                 guard !payloadWrapper.payload.isEmpty else {
                     return .failure(WalletError.payloadNotFound)
                 }
-                // 1. decrypt the payload
                 return payloadCrypto.decryptWallet(
                     walletWrapper: payloadWrapper,
                     password: password
@@ -61,7 +59,7 @@ final class WalletFetcher: WalletFetcherAPI {
                 return walletLogic
                     .initialize(with: password, payload: data)
             }
-            .flatMap { [walletRepo] walletState -> AnyPublisher<Wallet, WalletError> in
+            .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
                 storeSharedKey(from: walletState, on: walletRepo)
             }
             .map { _ in .noValue }
@@ -73,7 +71,7 @@ final class WalletFetcher: WalletFetcherAPI {
             with: password,
             secondPassword: secondPassword
         )
-        .flatMap { [walletRepo] walletState -> AnyPublisher<Wallet, WalletError> in
+        .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
             storeSharedKey(from: walletState, on: walletRepo)
         }
         .map { _ in .noValue }
@@ -88,12 +86,16 @@ final class WalletFetcher: WalletFetcherAPI {
 ///   - walletState: A `WalletState` that contains a decrypted wallet to get the shared key from
 ///   - walletRepo: A `WalletRepo` which the sharedKey will be stored
 /// - Returns: An `AnyPublisher<Wallet, WalletError>`
-func storeSharedKey(from walletState: WalletState, on walletRepo: WalletRepo) -> AnyPublisher<Wallet, WalletError> {
+func storeSharedKey(
+    from walletState: WalletState,
+    on walletRepo: WalletRepoAPI
+) -> AnyPublisher<NativeWallet, WalletError> {
     guard let wallet = walletState.wallet else {
         return .failure(.initialization(.missingWallet))
     }
     return walletRepo
         .set(keyPath: \.credentials.sharedKey, value: wallet.sharedKey)
+        .publisher
         .mapError()
         .map { _ in wallet }
         .eraseToAnyPublisher()

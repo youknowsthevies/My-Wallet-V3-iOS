@@ -8,19 +8,9 @@ extension BigInt {
     public static let zero = BigInt(0)
 }
 
-extension BigUInt {
-    public static let zero = BigUInt(0)
-}
-
-extension BigUInt {
-    /// Even-length hexadecimal string representation of this element.
-    public var hexString: String {
-        let string = String(self, radix: 16)
-        // Check odd length hex string
-        if string.count % 2 != 0 {
-            return "0" + string
-        }
-        return string
+extension BigInt {
+    public var decimal: Decimal {
+        Decimal(string: String(self))!
     }
 }
 
@@ -61,8 +51,8 @@ extension BigInt {
     /// - Parameter divisor: A value to divide by.
     public func decimalDivision(by divisor: BigInt) -> Decimal {
         let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
-        return Decimal(string: String(quotient))!
-            + (Decimal(string: String(remainder))! / Decimal(string: String(divisor))!)
+        return quotient.decimal
+            + (remainder.decimal / divisor.decimal)
     }
 
     /// Returns a major value from the current (minor) value.

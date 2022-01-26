@@ -33,7 +33,5 @@ extension DependencyContainer {
         }
 
         factory { LaunchOpenBankingFlow() as StartOpenBanking }
-
-        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }

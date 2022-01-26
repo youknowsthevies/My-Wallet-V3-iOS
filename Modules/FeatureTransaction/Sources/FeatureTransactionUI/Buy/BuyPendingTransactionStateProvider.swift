@@ -140,7 +140,10 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     }
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
-        .init(
+        if let details = state.order as? OrderDetails, let code = details.error {
+            return bankingError(error: .code(code), icon: coreBuyIcon)
+        }
+        return .init(
             title: state.transactionErrorDescription,
             subtitle: LocalizationIds.Failure.description,
             compositeViewType: .composite(

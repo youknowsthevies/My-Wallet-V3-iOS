@@ -29,6 +29,8 @@ extension Media {
         public var placeholder: Placeholder?
     }
 
+    public static let empty: Media = .init()
+
     public static func image(at url: URL, placeholder: Media.Image.Placeholder? = nil) -> Self {
         Media(image: Media.Image(url: url, placeholder: placeholder))
     }

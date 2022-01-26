@@ -74,6 +74,15 @@
         }
       },
       {
+        "package": "MetadataHDWalletKit",
+        "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
+        "state": {
+          "branch": null,
+          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "version": null
+        }
+      },
+      {
         "package": "Nuke",
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
@@ -125,6 +134,15 @@
           "branch": null,
           "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/Boilertalk/secp256k1.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "823281fe9def21b384099b72a9a53ca988317b20",
+          "version": "0.1.4"
         }
       },
       {
@@ -246,11 +264,11 @@
       },
       {
         "package": "WalletCore",
-        "repositoryURL": "https://github.com/trustwallet/wallet-core",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "e29ec9324dc03ec4eed39dd6126a8b0d8ef2f209",
-          "version": "2.6.36"
+          "revision": "5b4f031f62ad9acea38da1da30aa5678e001aa96",
+          "version": "2.6.36-blockchain"
         }
       },
       {

@@ -102,6 +102,8 @@ extension ActivityScreenInteractor.State {
         let interactors: [ActivityItemInteractor] = items
             .filter { item in
                 switch item {
+                case .buySell(let item) where item.status == .expired:
+                    return false
                 case .buySell(let item):
                     return item.status != .pendingConfirmation && !item.paymentProcessorErrorOccurred
                 case .interest(let item):

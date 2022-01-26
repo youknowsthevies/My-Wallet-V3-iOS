@@ -12,6 +12,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 enum KYCEvent {
@@ -220,6 +221,7 @@ final class KYCRouter: KYCRouterAPI {
                     KYCPageType.welcome :
                     KYCPageType.startingPage(
                         forUser: user,
+                        requiredTier: tier,
                         tiersResponse: tiersResponse,
                         isSDDEligible: shouldCheckForSDDEligibility,
                         isSDDVerified: shouldCheckForSDDVerification
@@ -281,6 +283,7 @@ final class KYCRouter: KYCRouterAPI {
                 name: Constants.NotificationKeys.kycStopped,
                 object: nil
             )
+            NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
         }
     }
 
@@ -397,6 +400,7 @@ final class KYCRouter: KYCRouterAPI {
 
         let startingPage = KYCPageType.startingPage(
             forUser: currentUser,
+            requiredTier: tier,
             tiersResponse: response,
             isSDDEligible: isSDDEligible,
             isSDDVerified: isSDDVerified
@@ -480,6 +484,7 @@ final class KYCRouter: KYCRouterAPI {
             KYCPageType.welcome :
             KYCPageType.startingPage(
                 forUser: user,
+                requiredTier: tier,
                 tiersResponse: response,
                 isSDDEligible: isSDDEligible,
                 isSDDVerified: isSDDVerified

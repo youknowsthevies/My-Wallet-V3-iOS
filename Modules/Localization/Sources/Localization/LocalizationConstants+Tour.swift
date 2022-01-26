@@ -46,5 +46,10 @@ extension LocalizationConstants {
             "Log In ->",
             comment: "Title of the button the user can tap when they want to login into an account"
         )
+
+        public static let manualLoginButtonTitle = NSLocalizedString(
+            "Manual Pairing",
+            comment: "Title of the button the user can tap when they want to manual pair the wallet"
+        )
     }
 }

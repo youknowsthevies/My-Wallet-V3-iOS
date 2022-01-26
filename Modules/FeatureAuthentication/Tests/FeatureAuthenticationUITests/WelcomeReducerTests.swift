@@ -45,7 +45,9 @@ final class WelcomeReducerTests: XCTestCase {
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
-                analyticsRecorder: MockAnalyticsRecorder()
+                analyticsRecorder: MockAnalyticsRecorder(),
+                walletRecoveryService: .mock(),
+                nativeWalletEnabled: { .just(false) }
             )
         )
     }
@@ -114,30 +116,6 @@ final class WelcomeReducerTests: XCTestCase {
                 }
                 state.route = RouteIntent(route: routeValue, action: .enterInto())
             }
-        }
-    }
-
-    func test_close_email_login_should_reset_state() {
-        testStore.send(.enter(into: .emailLogin)) { state in
-            state.route = RouteIntent(route: .emailLogin, action: .enterInto())
-            state.emailLoginState = .init()
-        }
-        testStore.send(.emailLogin(.closeButtonTapped))
-        testStore.receive(.dismiss()) { state in
-            state.route = nil
-            state.emailLoginState = nil
-        }
-    }
-
-    func test_close_create_wallet_should_reset_state() {
-        testStore.send(.enter(into: .createWallet)) { state in
-            state.route = RouteIntent(route: .createWallet, action: .enterInto())
-            state.createWalletState = .init(context: .createWallet)
-        }
-        testStore.send(.createWallet(.closeButtonTapped))
-        testStore.receive(.dismiss()) { state in
-            state.route = nil
-            state.createWalletState = nil
         }
     }
 

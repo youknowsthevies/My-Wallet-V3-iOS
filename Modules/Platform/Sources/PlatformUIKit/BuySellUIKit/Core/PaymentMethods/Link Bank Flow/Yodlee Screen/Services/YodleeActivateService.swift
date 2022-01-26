@@ -50,6 +50,9 @@ final class YodleeActivateService {
                 case .final(let state):
                     switch state {
                     case .active(let data):
+                        if let error = data.error {
+                            return .just(.inactive(error))
+                        }
                         return self.paymentMethodTypesService
                             .fetchLinkBanks(andPrefer: bankId)
                             .andThen(Single.just(.active(data)))
@@ -88,7 +91,7 @@ extension YodleeActivateService.State {
             )
         case .timeout:
             return .failure(
-                content: reducer.linkingBankFailureContent(error: .timeout)
+                content: reducer.linkingBankFailureContent(error: .failed)
             )
         }
     }

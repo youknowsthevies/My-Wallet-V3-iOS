@@ -4,7 +4,7 @@ import Combine
 import Foundation
 
 /// Types adopting the `WalletHolderAPI` protocol provide in-memory `Wallet` object.
-protocol WalletHolderAPI {
+public protocol WalletHolderAPI {
 
     var walletStatePublisher: AnyPublisher<WalletState?, Never> { get }
 
