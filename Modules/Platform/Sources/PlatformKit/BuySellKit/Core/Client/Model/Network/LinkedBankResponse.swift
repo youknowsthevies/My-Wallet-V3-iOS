@@ -57,7 +57,7 @@ public struct LinkedBankResponse: Decodable {
         isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
         name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
         attributes = try container.decodeIfPresent(Attributes.self, forKey: .attributes)
-        error = try? container.decodeIfPresent(Error.self, forKey: .error) ?? .unknown
+        error = try? container.decodeIfPresent(Error.self, forKey: .error)
         errorCode = try container.decodeIfPresent(String.self, forKey: .error)
         let accountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
         bankAccountType = accountType ?? .none
