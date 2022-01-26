@@ -24,7 +24,7 @@ final class StellarAccountDetailsService: StellarAccountDetailsServiceAPI {
                 let minBalance = horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 return response.toAssetAccountDetails(minimumBalance: minBalance)
             }
-            .catchError { error in
+            .catch { error in
                 // If the network call to Horizon fails due to there not being a default account (i.e. account is not yet
                 // funded), catch that error and return a StellarAccount with 0 balance
                 switch error {

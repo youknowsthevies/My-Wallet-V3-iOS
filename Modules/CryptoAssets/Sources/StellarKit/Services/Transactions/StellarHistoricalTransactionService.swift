@@ -43,7 +43,7 @@ final class StellarHistoricalTransactionService: StellarHistoricalTransactionSer
                     .records
                     .compactMap { $0.buildOperation(accountID: accountID) }
             }
-            .catchError { error in
+            .catch { error in
                 switch error {
                 case stellarsdk.HorizonRequestError.notFound:
                     return .just([])

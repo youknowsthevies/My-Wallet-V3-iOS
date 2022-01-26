@@ -120,7 +120,7 @@ public struct AccountPickerView<
                     successStore,
                     removeDuplicates: { $0.identifier == $1.identifier },
                     content: { viewStore in
-                        ForEach(Array(zip(viewStore.content.indices, viewStore.content)), id: \.1.id) { index, row in
+                        ForEach(viewStore.content.indexed(), id: \.element.id) { index, row in
                             WithViewStore(self.store.scope { $0.balances(for: row.id) }) { balancesStore in
                                 AccountPickerRowView(
                                     model: row,
@@ -133,13 +133,10 @@ public struct AccountPickerView<
                                     cryptoBalance: balancesStore.crypto,
                                     currencyCode: balancesStore.currencyCode
                                 )
+                                .id(row.id)
                                 .onAppear {
                                     ViewStore(store)
                                         .send(.prefetching(.onAppear(index: index)))
-                                }
-                                .onDisappear {
-                                    ViewStore(store)
-                                        .send(.prefetching(.onDisappear(index: index)))
                                 }
                             }
                         }

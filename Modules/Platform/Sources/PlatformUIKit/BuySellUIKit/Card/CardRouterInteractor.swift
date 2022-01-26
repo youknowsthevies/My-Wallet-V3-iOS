@@ -111,7 +111,7 @@ public final class CardRouterInteractor: Interactor {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private let cancellationRelay = PublishRelay<Void>()
@@ -128,7 +128,7 @@ public final class CardRouterInteractor: Interactor {
         super.didBecomeActive()
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
 

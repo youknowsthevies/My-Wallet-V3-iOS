@@ -10,21 +10,12 @@ public struct FloatingActionButton: View {
     }
 
     public var body: some View {
-        Toggle(isOn: $isOn) {
-            EmptyView()
-        }
-        .toggleStyle(FloatingActionToggleStyle())
-    }
-}
-
-struct FloatingActionToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
         Button(
             action: {
-                configuration.isOn.toggle()
+                isOn.toggle()
             },
             label: {
-                if configuration.isOn {
+                if isOn {
                     Image("FAB Selected", bundle: .componentLibrary)
                 } else {
                     Image("FAB Default", bundle: .componentLibrary)

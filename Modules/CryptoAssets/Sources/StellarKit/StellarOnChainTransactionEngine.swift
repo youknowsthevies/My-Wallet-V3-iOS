@@ -363,7 +363,7 @@ extension TransactionConfirmation.Model.Memo {
 extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
 
     fileprivate func mapErrorToTransactionValidationFailure() -> Completable {
-        catchError { error -> Completable in
+        `catch` { error -> Completable in
             switch error {
             case SendFailureReason.unknown:
                 throw TransactionValidationFailure(state: .unknownError)

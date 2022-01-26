@@ -7,7 +7,8 @@ struct SectionHeadersExamples: View {
 
     private let data: NavigationLinkProviderList = [
         "Section Headers": [
-            NavigationLinkProvider(view: SectionHeaderExamplesView(), title: "SectionHeader")
+            NavigationLinkProvider(view: SectionHeaderExamplesView(), title: "SectionHeader"),
+            NavigationLinkProvider(view: BalanceSectionHeaderExamples(), title: "BalanceSectionHeader")
         ]
     ]
 

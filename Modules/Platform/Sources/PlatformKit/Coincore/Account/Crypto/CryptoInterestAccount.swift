@@ -70,7 +70,14 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        balance
+        // `withdrawable` is the accounts total balance
+        // minus the locked funds amount. Only these funds are
+        // available for withdraws (which is all you can do with
+        // your interest account funds)
+        balances
+            .map(\.balance)
+            .map(\.?.withdrawable)
+            .onNilJustReturn(.zero(currency: currencyType))
     }
 
     public var actions: Single<AvailableActions> {
@@ -173,7 +180,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .zip(
                 isInterestWithdrawAndDepositEnabled
                     .asSingle(),
-                balance.map(\.isPositive)
+                actionableBalance.map(\.isPositive)
             )
             .map { $0.0 && $0.1 }
             .flatMap(weak: self) { (self, isAvailable) -> Single<Bool> in
@@ -185,7 +192,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                     .map(\.isEligible)
                     .asSingle()
             }
-            .catchError { [label, asset] error in
+            .catch { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
                     label: label,
@@ -194,7 +201,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     public func invalidateAccountBalance() {

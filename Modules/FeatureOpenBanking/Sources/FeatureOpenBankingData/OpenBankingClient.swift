@@ -22,6 +22,9 @@ public class OpenBankingClient {
     public var scheduler: AnySchedulerOf<DispatchQueue>
     private var bag: Set<AnyCancellable> = []
 
+    public var callbackBaseURL: URL = Bundle.main.plist?.BLOCKCHAIN_WALLET_PAGE_LINK[]
+        .flatMap(URL.https) ?? "https://blockchainwallet.page.link"
+
     let requestBuilder: RequestBuilder
     let network: Network
 
@@ -151,7 +154,7 @@ public class OpenBankingClient {
                 "action": "confirm",
                 "paymentMethodId": paymentMethod,
                 "attributes": [
-                    "callback": "https://blockchainwallet.page.link/obapproval"
+                    "callback": callbackBaseURL.appendingPathComponent("obapproval").absoluteString
                 ]
             ].json(options: .sortedKeys),
             authenticated: true
@@ -179,7 +182,7 @@ extension OpenBanking.BankAccount {
             body: [
                 "attributes": [
                     "institutionId": institution.value,
-                    "callback": "https://blockchainwallet.page.link/oblinking"
+                    "callback": banking.callbackBaseURL.appendingPathComponent("oblinking").absoluteString
                 ]
             ].json(),
             authenticated: true
@@ -268,7 +271,7 @@ extension OpenBanking.BankAccount {
                     "amountMinor": amountMinor,
                     "product": product,
                     "attributes": [
-                        "callback": "https://blockchainwallet.page.link/obapproval"
+                        "callback": banking.callbackBaseURL.appendingPathComponent("obapproval").absoluteString
                     ]
                 ].json(options: .sortedKeys),
                 authenticated: true

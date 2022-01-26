@@ -186,7 +186,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
                 self.bridge
                     .buildCandidate(with: proposal)
-                    .catchError { error -> Single<BitcoinChainTransactionCandidate<Token>> in
+                    .catch { error -> Single<BitcoinChainTransactionCandidate<Token>> in
                         let candidate: BitcoinChainTransactionCandidate<Token>
                         switch error {
                         case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),
@@ -363,8 +363,8 @@ extension BitcoinOnChainTransactionEngine {
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
-            let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
-            let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+            let fiatAmount = amount.convert(using: quote)
+            let fiatFees = fees.convert(using: quote)
             return (fiatAmount, fiatFees)
         }
         .map { (amount: $0.0, fees: $0.1) }

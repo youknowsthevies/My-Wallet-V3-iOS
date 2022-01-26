@@ -137,13 +137,13 @@ public final class LegacySellRouter: RIBs.Router<SellRouterInteractor> {
         kycDisposeBag = DisposeBag()
         kycRouter.kycStopped
             .take(1)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: kycDisposeBag)
 
         let finished = kycRouter.kycFinished
             .take(1)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .share()
 
         finished

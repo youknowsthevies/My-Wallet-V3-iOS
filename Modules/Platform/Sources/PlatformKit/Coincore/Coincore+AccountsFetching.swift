@@ -12,7 +12,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [Blockcha
     public func flatMapFilter(
         action: AssetAction,
         failSequence: Bool,
-        onError: ((BlockchainAccount, Error) -> Void)? = nil
+        onFailure: ((BlockchainAccount, Error) -> Void)? = nil
     ) -> PrimitiveSequence<SingleTrait, Element> {
         flatMap { accounts -> Single<Element> in
             let elements: [Single<BlockchainAccount?>] = accounts.map { account in
@@ -20,8 +20,8 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [Blockcha
                 account.can(perform: action)
                     // If account can perform, return itself, else return nil
                     .map { $0 ? account : nil }
-                    .catchError { error -> Single<BlockchainAccount?> in
-                        onError?(account, error)
+                    .catch { error -> Single<BlockchainAccount?> in
+                        onFailure?(account, error)
                         if failSequence {
                             throw error
                         }
@@ -44,7 +44,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
     public func flatMapFilter(
         action: AssetAction,
         failSequence: Bool,
-        onError: ((SingleAccount, Error) -> Void)? = nil
+        onFailure: ((SingleAccount, Error) -> Void)? = nil
     ) -> PrimitiveSequence<SingleTrait, Element> {
         flatMap { accounts -> Single<Element> in
             let elements: [Single<SingleAccount?>] = accounts.map { account in
@@ -52,8 +52,8 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
                 account.can(perform: action)
                     // If account can perform, return itself, else return nil
                     .map { $0 ? account : nil }
-                    .catchError { error -> Single<SingleAccount?> in
-                        onError?(account, error)
+                    .catch { error -> Single<SingleAccount?> in
+                        onFailure?(account, error)
                         if failSequence {
                             throw error
                         }
@@ -81,12 +81,12 @@ extension AccountGroup {
     public func accounts(
         supporting action: AssetAction,
         failSequence: Bool = false,
-        onError: ((SingleAccount, Error) -> Void)? = nil
+        onFailure: ((SingleAccount, Error) -> Void)? = nil
     ) -> Single<[SingleAccount]> {
         accountsPublisher(
             supporting: action,
             failSequence: failSequence,
-            onError: onError
+            onFailure: onFailure
         )
         .asObservable()
         .asSingle()
@@ -95,13 +95,13 @@ extension AccountGroup {
     public func accountsPublisher(
         supporting action: AssetAction,
         failSequence: Bool = false,
-        onError: ((SingleAccount, Error) -> Void)? = nil
+        onFailure: ((SingleAccount, Error) -> Void)? = nil
     ) -> AnyPublisher<[SingleAccount], Error> {
         .just(accounts)
             .flatMapFilter(
                 action: action,
                 failSequence: failSequence,
-                onError: onError
+                onFailure: onFailure
             )
     }
 }
@@ -110,7 +110,7 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
 
     public func flatMapFilter(
         address: String,
-        onError: ((Failure) -> Void)? = nil
+        onFailure: ((Failure) -> Void)? = nil
     ) -> AnyPublisher<SingleAccount, Failure> {
         flatMap { accounts -> AnyPublisher<SingleAccount, Failure> in
             accounts
@@ -123,7 +123,7 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
                             receiveAddress == address ? account : nil
                         }
                         .tryCatch { error -> AnyPublisher<SingleAccount?, Failure> in
-                            onError?(error)
+                            onFailure?(error)
                             return .just(nil)
                         }
                         .eraseToAnyPublisher()
@@ -146,7 +146,7 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
     public func flatMapFilter(
         action: AssetAction? = nil,
         failSequence: Bool = false,
-        onError: ((SingleAccount, Failure) -> Void)? = nil
+        onFailure: ((SingleAccount, Failure) -> Void)? = nil
     ) -> AnyPublisher<[SingleAccount], Failure> {
         flatMap { accounts -> AnyPublisher<[SingleAccount], Failure> in
             guard let action = action else {
@@ -161,7 +161,7 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
                         Logger.shared.error(
                             "[Coincore] Error checking if account can perform '\(action)' => \(error)"
                         )
-                        onError?(account, error)
+                        onFailure?(account, error)
                         if failSequence {
                             throw error
                         }
@@ -185,13 +185,13 @@ extension Publisher where Output == AccountGroup, Failure == Error {
     public func flatMapFilter(
         action: AssetAction? = nil,
         failSequence: Bool = false,
-        onError: ((SingleAccount, Failure) -> Void)? = nil
+        onFailure: ((SingleAccount, Failure) -> Void)? = nil
     ) -> AnyPublisher<[SingleAccount], Failure> {
         map(\.accounts)
             .flatMapFilter(
                 action: action,
                 failSequence: failSequence,
-                onError: onError
+                onFailure: onFailure
             )
     }
 

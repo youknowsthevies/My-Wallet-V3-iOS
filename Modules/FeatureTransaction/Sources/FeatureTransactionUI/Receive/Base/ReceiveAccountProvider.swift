@@ -52,7 +52,7 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
             .flatMapFilter(
                 action: .receive,
                 failSequence: false,
-                onError: { [errorRecorder] account, error in
+                onFailure: { [errorRecorder] account, error in
                     let error: Error = .loadingFailed(
                         account: account,
                         action: .receive,

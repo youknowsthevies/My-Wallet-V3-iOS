@@ -98,7 +98,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
             [
                 "attributes": [
                     "institutionId": "monzo_ob",
-                    "callback": "https://blockchainwallet.page.link/oblinking"
+                    "callback": banking.callbackBaseURL.appendingPathComponent("oblinking").absoluteString
                 ]
             ]
         )

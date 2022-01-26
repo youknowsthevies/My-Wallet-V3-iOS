@@ -15,8 +15,9 @@ public final class AssetPriceViewHistoricalInteractor: AssetPriceViewInteracting
 
     public var state: Observable<InteractionState> {
         _ = setup
-        return stateRelay.asObservable()
-            .observeOn(MainScheduler.instance)
+        return stateRelay
+            .asObservable()
+            .observe(on: MainScheduler.instance)
     }
 
     public func refresh() {}
@@ -34,21 +35,21 @@ public final class AssetPriceViewHistoricalInteractor: AssetPriceViewInteracting
                     let currency = result.historicalPrices.currency
                     let window = result.priceWindow
                     let currentPrice = result.currentFiatValue
-                    let priceChange: FiatValue = .create(
-                        major: result.historicalPrices.fiatChange,
+                    let priceChange = FiatValue(
+                        amount: result.historicalPrices.fiatChange,
                         currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
                             currentPrice: currentPrice.moneyValue,
                             time: window.time(for: currency),
-                            changePercentage: delta,
+                            changePercentage: delta.doubleValue,
                             priceChange: priceChange.moneyValue
                         )
                     )
                 }
             }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()

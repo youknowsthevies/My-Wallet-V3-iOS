@@ -17,7 +17,8 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -31,7 +32,8 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -45,7 +47,8 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -59,7 +62,8 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -85,7 +89,8 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 }

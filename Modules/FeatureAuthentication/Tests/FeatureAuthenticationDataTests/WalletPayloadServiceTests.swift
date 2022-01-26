@@ -20,13 +20,14 @@ class WalletPayloadServiceTests: XCTestCase {
             authenticatorType: expectedAuthType,
             payload: nil
         )
-        let repository = MockWalletRepository()
+        let walletRepository = MockWalletRepository()
 
-        let sessionTokenSetPublisher = repository.set(sessionToken: "1234-abcd-5678-efgh")
-        let guidSetPublisher = repository.set(guid: "fake-guid")
+        let sessionTokenSetPublisher = walletRepository.set(sessionToken: "1234-abcd-5678-efgh")
+        let guidSetPublisher = walletRepository.set(guid: "fake-guid")
         XCTAssertPublisherCompletion([sessionTokenSetPublisher, guidSetPublisher])
 
         let client = MockWalletPayloadClient(result: .success(serverResponse))
+        let repository = WalletPayloadRepository(apiClient: client)
         let walletRepo = WalletRepo(initialState: .empty)
         let nativeWalletEnabled = false
         let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI> =
@@ -37,15 +38,15 @@ class WalletPayloadServiceTests: XCTestCase {
                 return .just(Either.right(new))
             }
         let service = WalletPayloadService(
-            client: client,
             repository: repository,
+            walletRepository: walletRepository,
             walletRepo: walletRepo,
             nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         let serviceAuthTypePublisher = service.requestUsingSessionToken()
         XCTAssertPublisherValues(serviceAuthTypePublisher, expectedAuthType, timeout: 5.0)
 
-        let repositoryAuthTypePublisher = repository.authenticatorType
+        let repositoryAuthTypePublisher = walletRepository.authenticatorType
         XCTAssertPublisherValues(repositoryAuthTypePublisher, expectedAuthType, timeout: 5.0)
     }
 
@@ -56,13 +57,14 @@ class WalletPayloadServiceTests: XCTestCase {
             authenticatorType: expectedAuthType,
             payload: "{\"pbkdf2_iterations\":1,\"version\":3,\"payload\":\"payload-for-wallet\"}"
         )
-        let repository = MockWalletRepository()
+        let walletRepository = MockWalletRepository()
 
-        let sessionTokenSetPublisher = repository.set(sessionToken: "1234-abcd-5678-efgh")
-        let guidSetPublisher = repository.set(guid: "fake-guid")
+        let sessionTokenSetPublisher = walletRepository.set(sessionToken: "1234-abcd-5678-efgh")
+        let guidSetPublisher = walletRepository.set(guid: "fake-guid")
         XCTAssertPublisherCompletion([sessionTokenSetPublisher, guidSetPublisher])
 
         let client = MockWalletPayloadClient(result: .success(serverResponse))
+        let repository = WalletPayloadRepository(apiClient: client)
         let walletRepo = WalletRepo(initialState: .empty)
         let nativeWalletEnabled = false
         let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI> =
@@ -73,16 +75,16 @@ class WalletPayloadServiceTests: XCTestCase {
                 return .just(Either.right(new))
             }
         let service = WalletPayloadService(
-            client: client,
             repository: repository,
+            walletRepository: walletRepository,
             walletRepo: walletRepo,
             nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         let serviceAuthTypePublisher = service.requestUsingSessionToken()
         XCTAssertPublisherValues(serviceAuthTypePublisher, expectedAuthType, timeout: 5.0)
 
-        let repositoryAuthTypePublisher = repository.authenticatorType
+        let repositoryAuthTypePublisher = walletRepository.authenticatorType
         XCTAssertPublisherValues(repositoryAuthTypePublisher, expectedAuthType, timeout: 5.0)
-        XCTAssertPublisherValues(repository.payload, repository.expectedPayload, timeout: 5.0)
+        XCTAssertPublisherValues(walletRepository.payload, walletRepository.expectedPayload, timeout: 5.0)
     }
 }

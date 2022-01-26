@@ -16,7 +16,7 @@ final class AddCardInteractor: AddSpecificPaymentMethodInteractorAPI {
     private var activeCards: Observable<[CardData]> {
         paymentMethodTypesService.cards
             .map { $0.filter { $0.state == .active || $0.state == .expired } }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     init(paymentMethodTypesService: PaymentMethodTypesServiceAPI) {

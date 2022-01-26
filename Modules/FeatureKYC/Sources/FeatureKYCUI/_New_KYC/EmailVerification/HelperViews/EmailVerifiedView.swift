@@ -1,8 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Localization
 import SwiftUI
 import UIComponentsKit
+
+private typealias L10n = LocalizationConstants.NewKYC
 
 struct EmailVerifiedState: Equatable {}
 

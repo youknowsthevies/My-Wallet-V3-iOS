@@ -248,7 +248,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
         buttonTapped
             .compactMap(\.successData)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {
                     self.errorRelay.accept(.cardAlreadySaved)
@@ -264,7 +264,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
                 onSuccess: { [weak cardNumberValidator] cardTypes in
                     cardNumberValidator?.supportedCardTypesRelay.accept(cardTypes)
                 },
-                onError: { [weak errorRelay] _ in
+                onFailure: { [weak errorRelay] _ in
                     errorRelay?.accept(.generic)
                 }
             )

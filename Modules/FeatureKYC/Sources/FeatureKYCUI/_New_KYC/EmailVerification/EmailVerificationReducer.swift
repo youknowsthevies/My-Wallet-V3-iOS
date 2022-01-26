@@ -4,6 +4,9 @@ import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureKYCDomain
+import Localization
+
+private typealias L10n = LocalizationConstants.NewKYC
 
 /// The `master` `State` for the Email Verification Flow
 struct EmailVerificationState: Equatable {
@@ -122,7 +125,9 @@ let emailVerificationReducer = Reducer.combine(
         switch action {
         case .closeButtonTapped:
             environment.flowCompletionCallback?(.abandoned)
-            environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationSkipped(origin: .signUp))
+            environment.analyticsRecorder.record(
+                event: AnalyticsEvents.New.Onboarding.emailVerificationSkipped(origin: .signUp)
+            )
             return .none
 
         case .didAppear:
@@ -150,7 +155,9 @@ let emailVerificationReducer = Reducer.combine(
                 guard state.flowStep != .editEmailAddress else {
                     return .none
                 }
-                return Effect(value: .presentStep(object.status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt))
+                return Effect(
+                    value: .presentStep(object.status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt)
+                )
 
             case .failure(let error):
                 state.emailVerificationFailedAlert = .init(
@@ -160,7 +167,7 @@ let emailVerificationReducer = Reducer.combine(
                         TextState(L10n.GenericError.retryButtonTitle),
                         action: .send(.loadVerificationState)
                     ),
-                    secondaryButton: .cancel()
+                    secondaryButton: .cancel(TextState(L10n.GenericError.cancelButtonTitle))
                 )
                 return Effect(value: .presentStep(.verificationCheckFailed))
             }

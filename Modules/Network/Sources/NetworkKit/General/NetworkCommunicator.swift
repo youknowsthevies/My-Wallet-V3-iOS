@@ -16,6 +16,17 @@ public protocol NetworkCommunicatorAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
+public protocol NetworkDebugLogger {
+    func storeRequest(
+        _ request: URLRequest,
+        response: URLResponse?,
+        error: Error?,
+        data: Data?,
+        metrics: URLSessionTaskMetrics?,
+        session: URLSession?
+    )
+}
+
 final class NetworkCommunicator: NetworkCommunicatorAPI {
 
     // MARK: - Private properties
@@ -23,6 +34,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private let session: NetworkSession
     private let authenticator: AuthenticatorAPI?
     private let eventRecorder: AnalyticsEventRecorderAPI?
+    private let networkDebugLogger: NetworkDebugLogger
 
     // MARK: - Setup
 
@@ -31,11 +43,13 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         sessionDelegate: SessionDelegateAPI = resolve(),
         sessionHandler: NetworkSessionDelegateAPI = resolve(),
         authenticator: AuthenticatorAPI? = nil,
-        eventRecorder: AnalyticsEventRecorderAPI? = nil
+        eventRecorder: AnalyticsEventRecorderAPI? = nil,
+        networkDebugLogger: NetworkDebugLogger = resolve()
     ) {
         self.session = session
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
+        self.networkDebugLogger = networkDebugLogger
 
         sessionDelegate.delegate = sessionHandler
     }
@@ -65,6 +79,31 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         session.erasedDataTaskPublisher(
             for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
+        )
+        .handleEvents(
+            receiveOutput: { [networkDebugLogger, session] data, response in
+                networkDebugLogger.storeRequest(
+                    request.urlRequest,
+                    response: response,
+                    error: nil,
+                    data: data,
+                    metrics: nil,
+                    session: session as? URLSession
+                )
+            },
+            receiveCompletion: { [networkDebugLogger, session] completion in
+                guard case .failure(let error) = completion else {
+                    return
+                }
+                networkDebugLogger.storeRequest(
+                    request.urlRequest,
+                    response: nil,
+                    error: error,
+                    data: nil,
+                    metrics: nil,
+                    session: session as? URLSession
+                )
+            }
         )
         .mapError(NetworkError.urlError)
         .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in

@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureOpenBankingDomain
@@ -115,6 +120,7 @@ public struct ApproveView: View {
             .navigationTitle(viewStore.bank.account.attributes.entity)
             .navigationRoute(in: store)
             .whiteNavigationBarStyle()
+            .background(Color.semantic.background)
             .trailingNavigationButton(.close) {
                 viewStore.send(.dismiss)
             }
@@ -127,18 +133,20 @@ public struct ApproveView: View {
     @ViewBuilder var actionArea: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 12.pt.in(.screen)) {
-                Button(Localization.Approve.Action.approve) {
+                PrimaryButton(title: Localization.Approve.Action.approve) {
                     viewStore.send(.approve)
                 }
-                .buttonStyle(PrimaryButtonStyle())
-                Button(Localization.Approve.Action.deny) {
+
+                MinimalButton(
+                    title: Localization.Approve.Action.deny,
+                    foregroundColor: .semantic.error
+                ) {
                     viewStore.send(.deny)
                 }
-                .buttonStyle(SecondaryButtonStyle(foregroundColor: Color.red))
             }
             .padding()
             .background(
-                Color.white
+                Color.semantic.background
                     .ignoresSafeArea(edges: [.bottom])
                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 0)
             )

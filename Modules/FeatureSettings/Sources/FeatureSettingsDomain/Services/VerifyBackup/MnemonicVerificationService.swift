@@ -26,7 +26,7 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
     var isVerified: Single<Bool> {
         Single
             .just(walletRecoveryVerifier.isRecoveryPhraseVerified())
-            .subscribeOn(jsScheduler)
+            .subscribe(on: jsScheduler)
     }
 
     func verifyMnemonicAndSync() -> Completable {
@@ -47,6 +47,6 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
                 )
                 return Disposables.create()
             }
-            .subscribeOn(jsScheduler)
+            .subscribe(on: jsScheduler)
     }
 }

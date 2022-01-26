@@ -66,7 +66,7 @@ final class ExchangeCoordinator {
             case false:
                 self.showExchangeConnectScreen()
             }
-        }, onError: { error in
+        }, onFailure: { error in
             Logger.shared.error(error)
         })
         .disposed(by: bag)
@@ -89,7 +89,7 @@ final class ExchangeCoordinator {
             .flatMap(weak: self) { (self, _) -> Observable<Bool> in
                 self.userRequiresEmailVerification()
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] showEmailVerification in
                 if showEmailVerification {
                     self?.showEmailConfirmationScreen()
@@ -205,14 +205,14 @@ final class ExchangeCoordinator {
             .flatMap(weak: self) { (self, hasLinkedExchangeAccount) -> Single<URL> in
                 hasLinkedExchangeAccount ? Single.just(exchangeURL) : self.authenticator.exchangeURL
             }
-            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+            .observe(on: MainScheduler.instance)
             .showSheetOnSubscription(bottomAlertSheet: syncingBottomAlertSheet)
             .hideBottomSheetOnSuccessOrError(bottomAlertSheet: syncingBottomAlertSheet)
             .showSheetAfterFailure(bottomAlertSheet: failureLinkingBottomSheet)
             .subscribe(onSuccess: { url in
                 UIApplication.shared.open(url)
-            }, onError: { error in
+            }, onFailure: { error in
                 Logger.shared.error(error)
             })
             .disposed(by: bag)
@@ -224,8 +224,8 @@ final class ExchangeCoordinator {
                 self.authenticator.linkToExistingExchangeUser(linkID: linkID)
             }
             .andThen(repository.syncDepositAddresses().asCompletable())
-            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+            .observe(on: MainScheduler.instance)
             .showSheetOnSubscription(bottomAlertSheet: syncingBottomAlertSheet)
             .hideBottomSheetOnCompletionOrError(bottomAlertSheet: syncingBottomAlertSheet)
             .showSheetAfterCompletion(bottomAlertSheet: successfulLinkingBottomSheet)
@@ -243,7 +243,7 @@ final class ExchangeCoordinator {
     private func hasLinkedExchangeAccount() -> Single<Bool> {
         repository.hasLinkedExchangeAccount
             .asSingle()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private func isLinkingToExistingExchangeUser() -> Bool {

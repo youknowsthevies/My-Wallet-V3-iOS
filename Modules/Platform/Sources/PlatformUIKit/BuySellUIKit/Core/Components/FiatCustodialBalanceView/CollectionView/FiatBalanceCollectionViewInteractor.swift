@@ -76,7 +76,7 @@ public final class FiatBalanceCollectionViewInteractor {
             }
             .map { .value($0) }
             .startWith(.calculating)
-            .catchErrorJustReturn(.invalid(.empty))
+            .catchAndReturn(.invalid(.empty))
             .bindAndCatch(to: interactorsStateRelay)
             .disposed(by: disposeBag)
     }()
@@ -111,7 +111,7 @@ extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
         interactorsState
             .compactMap(\.value)
             .map { $0.count > 0 }
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     public func reloadBalances() {

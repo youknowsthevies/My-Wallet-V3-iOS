@@ -15,7 +15,7 @@ final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
             .map { currencies -> Bool in
                 currencies.contains(fiatCurrency)
             }
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
             .share(replay: 1)
     }
 

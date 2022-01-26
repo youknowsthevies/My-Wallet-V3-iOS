@@ -4,7 +4,10 @@ import SwiftUI
 
 extension Binding where Value: Equatable {
 
-    @inlinable public func equals(_ value: Value, default defaultValue: Value) -> Binding<Bool> {
+    @inlinable public func equals(
+        _ value: Value,
+        default defaultValue: Value
+    ) -> Binding<Bool> {
         .init(
             get: { wrappedValue == value },
             set: { newValue in transaction(transaction).wrappedValue = newValue ? value : defaultValue }
@@ -14,14 +17,20 @@ extension Binding where Value: Equatable {
 
 extension Binding where Value: Equatable, Value: OptionalProtocol {
 
-    @inlinable public func equals(_ value: Value, default defaultValue: Value = nil) -> Binding<Bool> {
+    @inlinable public func equals(
+        _ value: Value,
+        default defaultValue: Value = nil
+    ) -> Binding<Bool> {
         .init(
             get: { wrappedValue == value },
             set: { newValue in transaction(transaction).wrappedValue = newValue ? value : defaultValue }
         )
     }
 
-    @inlinable public func `if`(_ condition: @escaping (Value.Wrapped) -> Bool, default defaultValue: Bool = false) -> Binding<Bool> {
+    @inlinable public func `if`(
+        _ condition: @escaping (Value.Wrapped) -> Bool,
+        default defaultValue: Bool = false
+    ) -> Binding<Bool> {
         Binding<Bool>(
             get: { wrappedValue.wrapped.map(condition) ?? defaultValue },
             set: { newValue in
@@ -67,10 +76,25 @@ extension Binding {
             _binding = binding
         }
 
-        @inlinable public subscript<T>(dynamicMember keyPath: WritableKeyPath<Value, T>) -> Binding<T>.DynamicMemberLookup {
+        @inlinable public subscript<T>(
+            dynamicMember keyPath: WritableKeyPath<Value, T>
+        ) -> Binding<T>.DynamicMemberLookup {
             .init(_binding[keyPath])
         }
 
         @inlinable public func binding() -> Binding { _binding }
+    }
+}
+
+extension Binding {
+
+    public func didSet(_ perform: @escaping (Value) -> Void) -> Self {
+        .init(
+            get: { wrappedValue },
+            set: { newValue, transaction in
+                self.transaction(transaction).wrappedValue = newValue
+                perform(newValue)
+            }
+        )
     }
 }

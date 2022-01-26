@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureAppUI
+
 /// Provides a prompt mechanism for second password
 protocol SecondPasswordHelperAPI: AnyObject {
     ///   - type: The type of the screen

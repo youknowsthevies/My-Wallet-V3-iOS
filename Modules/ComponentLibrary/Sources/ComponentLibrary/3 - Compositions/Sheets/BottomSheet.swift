@@ -73,7 +73,7 @@ public struct BottomSheetView<Content: View>: View {
             let maximumHeight = maximumHeight.in(geometry)
             VStack(spacing: 0) {
                 indicator
-                    .padding()
+                    .padding(.vertical, 10.pt)
                 content()
             }
             .padding(.bottom, 20.pt)

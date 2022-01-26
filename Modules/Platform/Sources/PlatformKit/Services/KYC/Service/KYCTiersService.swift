@@ -28,8 +28,13 @@ public protocol KYCVerificationServiceAPI: AnyObject {
 
 public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
 
-    /// Returns the cached tiers. Fetches them if they are not already cached
+    /// Returns the current cached value for the KYC Tiers. Fetches them if they are not already cached.
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
+
+    /// Returns a stream of KYC Tiers.
+    ///
+    /// Tiers are taken from cache or fetched if the cache is empty. When the cache is invalidated, tiers are re-fetched from source.
+    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
 
     /// Fetches the tiers from remote
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError>
@@ -97,7 +102,22 @@ final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Exposed Properties
 
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
-        cachedTiers.get(key: Key())
+        tiersStream
+            .first()
+            .eraseToAnyPublisher()
+    }
+
+    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+        cachedTiers
+            .stream(key: Key())
+            .setFailureType(to: KYCTierServiceError.self)
+            .compactMap { result -> KYC.UserTiers? in
+                guard case .success(let tiers) = result else {
+                    return nil
+                }
+                return tiers
+            }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Properties
@@ -124,7 +144,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
         self.analyticsRecorder = analyticsRecorder
 
         let cache: AnyCache<Key, KYC.UserTiers> = InMemoryCache(
-            configuration: .onLoginLogout(),
+            configuration: .onLoginLogoutKYCChanged(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
         cachedTiers = CachedValueNew(

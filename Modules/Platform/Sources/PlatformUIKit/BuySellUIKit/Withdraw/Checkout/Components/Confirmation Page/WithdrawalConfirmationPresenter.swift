@@ -65,7 +65,7 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
                     cornerRadiusRatio: 0.2
                 )
             ),
-            title: String(format: LocalizedString.Loading.titlePrefix, amount.toDisplayString(includeSymbol: true)),
+            title: String(format: LocalizedString.Loading.titlePrefix, amount.displayString),
             subtitle: LocalizedString.Loading.subtitle
         )
     }
@@ -83,7 +83,7 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
                     cornerRadiusRatio: 0.2
                 )
             ),
-            title: String(format: LocalizedString.Success.titleSuffix, amount.toDisplayString(includeSymbol: true)),
+            title: String(format: LocalizedString.Success.titleSuffix, amount.displayString),
             subtitle: LocalizedString.Success.subtitle,
             button: buttonModel
         )

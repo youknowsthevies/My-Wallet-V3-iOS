@@ -43,6 +43,10 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     @IBOutlet var scrollView: UIScrollView!
 
+    // MARK: - Private ivars
+
+    private var userAddress: UserAddress?
+
     // MARK: Factory
 
     override class func make(with coordinator: KYCRouter) -> KYCAddressController {
@@ -76,9 +80,6 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     fileprivate var locationCoordinator: LocationSuggestionCoordinator!
     fileprivate var dataProvider: LocationDataProvider!
-    private var user: NabuUser?
-    private var country: CountryData?
-    private var states: [KYCState] = []
 
     private static let restrictedCountryIdentifiers: Set<String> = ["CU", "IR", "KP", "SY"]
     private static let countries: [ValidationPickerField.PickerItem] = {
@@ -101,10 +102,24 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     // MARK: KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case .address(let user, let country, let states) = model else { return }
-        self.user = user
-        self.country = country
-        self.states = states
+        guard case .address(let user, let country, _) = model else { return }
+        let countryCode: String? = user.address?.countryCode ?? country?.code
+        let state: String? = user.address?.state
+
+        // Disable state and country fields if we already know that information
+        // The reason for disabling the fields is that the our APIs don't allow users to change their country and state
+        // once initially set. This will change in the future, but not soon.
+        userAddress = user.address
+        if userAddress?.countryCode != nil {
+            regionTextField.isEnabled = false
+
+            if userAddress?.state != nil {
+                stateTextField.isEnabled = false
+            }
+        }
+
+        validationFieldsPlaceholderSetup(countryCode)
+        updateStateAndRegionFieldsVisibility()
 
         regionTextField.options = KYCAddressController.countries
         regionTextField.onSelection = { [weak self] country in
@@ -112,12 +127,17 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             self?.validationFieldsPlaceholderSetup(country?.id)
         }
 
+        if let countryCode = countryCode {
+            regionTextField.selectedOption = regionTextField.options.first { $0.id == countryCode }
+        }
+
         stateTextField.options = UnitedStates.states
             .map(ValidationPickerField.PickerItem.init)
             .sorted(by: { $0.title.localizedCompare($1.title) == .orderedAscending })
 
-        validationFieldsPlaceholderSetup(country?.code)
-        updateStateAndRegionFieldsVisibility()
+        if let state = state {
+            stateTextField.selectedOption = stateTextField.options.first { $0.id == state }
+        }
 
         // NOTE: address is not prefilled. Bug?
         guard let address = user.address else { return }
@@ -125,8 +145,6 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         apartmentTextField.text = address.lineTwo
         postalCodeTextField.text = address.postalCode
         cityTextField.text = address.city
-        stateTextField.text = address.state
-        regionTextField.text = address.state
     }
 
     // MARK: Lifecycle
@@ -406,6 +424,25 @@ extension KYCAddressController: LocationSuggestionInterface {
     }
 
     func populateAddressEntryView(_ address: PostalAddress) {
+        // this function is called when the user searches an address via the search bar
+        // and they can search for any address. So, if they're initially selected country is the UK,
+        // but they search for an address in California, when the data comes back we need to make sure that the
+        // newly selected country and state match the data we already had about the user.
+        // This is because our BE APIs don't currently allow editing those fields.
+        let canEditState = userAddress?.state == nil || userAddress?.state?.contains(address.state ?? "") == true
+        let canEditCountry = userAddress?.countryCode == nil || address.countryCode == userAddress?.countryCode
+        let canEditCountryAndState = canEditState && canEditCountry
+        guard regionTextField.isEnabled || canEditCountryAndState else {
+            let alert = UIAlertController(
+                title: LocalizationConstants.KYC.Errors.cannotEditCountryOrStateTitle,
+                message: LocalizationConstants.KYC.Errors.cannotEditCountryOrStateMessage,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
         if let number = address.streetNumber, let street = address.street {
             addressTextField.text = "\(number) \(street)"
         } else {

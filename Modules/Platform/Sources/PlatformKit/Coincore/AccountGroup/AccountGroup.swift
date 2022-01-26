@@ -35,7 +35,7 @@ extension AccountGroup {
                     .map(\.activity)
                     .map { $0.asObservable()
                         .startWith([])
-                        .catchErrorJustReturn([])
+                        .catchAndReturn([])
                     }
             )
             .map { $0.flatMap { $0 } }
@@ -46,7 +46,7 @@ extension AccountGroup {
         Single
             .zip(accounts
                 .map(\.activity)
-                .map { $0.catchErrorJustReturn([]) })
+                .map { $0.catchAndReturn([]) })
             .map { $0.flatMap { $0 } }
             .map { $0.unique.sorted(by: >) }
     }

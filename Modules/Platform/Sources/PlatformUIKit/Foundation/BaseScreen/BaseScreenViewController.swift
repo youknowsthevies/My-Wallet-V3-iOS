@@ -16,10 +16,9 @@ open class BaseScreenViewController: UIViewController {
      The style of the navigation bar.
      Defines the background, and the content colors.
      */
-    public var barStyle: Screen.Style.Bar = .lightContent() {
+    public var barStyle: Screen.Style.Bar = .darkContent() {
         didSet {
             baseNavigationController?.navigationBar.titleTextAttributes = barStyle.titleTextAttributes
-            baseNavigationController?.navigationBar.isTranslucent = barStyle.isTranslucent
             setBackground(by: barStyle)
         }
     }
@@ -200,16 +199,8 @@ open class BaseScreenViewController: UIViewController {
     }
 
     private func setBackground(by style: Screen.Style.Bar) {
-        let animation = CATransition()
-        animation.duration = 0.25
-        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        animation.type = .fade
-        baseNavigationController?.navigationBar.layer.add(animation, forKey: nil)
-        baseNavigationController?.navigationBar.setBackgroundImage(
-            .image(color: style.backgroundColor, size: view.bounds.size),
-            for: .default
-        )
         baseNavigationController?.navigationBar.shadowImage = UIImage()
+        baseNavigationController?.navigationBar.barTintColor = style.backgroundColor
     }
 
     private func set(titleViewStyle: Screen.Style.TitleView) {

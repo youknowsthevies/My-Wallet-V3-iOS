@@ -10,6 +10,9 @@ final class PrimaryNavigationTests: XCTestCase {
     private struct TestContainer: View {
         let backButtonColor: Color
         @State var secondViewActive: Bool
+        let icon: Icon?
+        let byline: String?
+        let isLargeTitle: Bool
 
         var body: some View {
             PrimaryNavigationView {
@@ -19,20 +22,31 @@ final class PrimaryNavigationTests: XCTestCase {
                 ) {
                     Text("First")
                 }
-                .primaryNavigation(title: "First") {
-                    IconButton(icon: .qrCode) {}
+                .primaryNavigation(
+                    icon: { icon?.accentColor(.semantic.muted) },
+                    title: "First",
+                    isLargeTitle: isLargeTitle,
+                    byline: byline,
+                    trailing: {
+                        IconButton(icon: .qrCode) {}
 
-                    IconButton(icon: .user) {}
-                }
+                        IconButton(icon: .user) {}
+                    }
+                )
             }
             .environment(\.navigationBackButtonColor, backButtonColor)
         }
 
         @ViewBuilder private var secondView: some View {
             Text("Second")
-                .primaryNavigation(title: "Second") {
-                    IconButton(icon: .qrCode) {}
-                }
+                .primaryNavigation(
+                    icon: { icon?.accentColor(.semantic.muted) },
+                    title: "Second",
+                    byline: byline,
+                    trailing: {
+                        IconButton(icon: .qrCode) {}
+                    }
+                )
         }
     }
 
@@ -40,23 +54,31 @@ final class PrimaryNavigationTests: XCTestCase {
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: .semantic.primary,
-                secondViewActive: false
+                secondViewActive: false,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: true
             ),
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: Color(light: .palette.dark400, dark: .palette.white),
-                secondViewActive: false
+                secondViewActive: false,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: true
             ),
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -64,23 +86,31 @@ final class PrimaryNavigationTests: XCTestCase {
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: .semantic.primary,
-                secondViewActive: false
+                secondViewActive: false,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: true
             ),
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: Color(light: .palette.dark400, dark: .palette.white),
-                secondViewActive: false
+                secondViewActive: false,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: true
             ),
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -88,23 +118,31 @@ final class PrimaryNavigationTests: XCTestCase {
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: .semantic.primary,
-                secondViewActive: true
+                secondViewActive: true,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: false
             ),
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: Color(light: .palette.dark400, dark: .palette.white),
-                secondViewActive: true
+                secondViewActive: true,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: false
             ),
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -112,23 +150,95 @@ final class PrimaryNavigationTests: XCTestCase {
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: .semantic.primary,
-                secondViewActive: true
+                secondViewActive: true,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: false
             ),
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
             matching: TestContainer(
                 backButtonColor: Color(light: .palette.dark400, dark: .palette.white),
-                secondViewActive: true
+                secondViewActive: true,
+                icon: nil,
+                byline: nil,
+                isLargeTitle: false
             ),
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
+        )
+    }
+
+    func testIcon_iPhoneX() {
+        assertSnapshots(
+            matching: TestContainer(
+                backButtonColor: .semantic.primary,
+                secondViewActive: false,
+                icon: Icon.placeholder,
+                byline: nil,
+                isLargeTitle: false
+            ),
+            as: [
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
+            ],
+            record: false
+        )
+
+        assertSnapshots(
+            matching: TestContainer(
+                backButtonColor: .semantic.primary,
+                secondViewActive: true,
+                icon: Icon.placeholder,
+                byline: nil,
+                isLargeTitle: false
+            ),
+            as: [
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
+            ],
+            record: false
+        )
+    }
+
+    func testByline_iPhoneX() {
+        assertSnapshots(
+            matching: TestContainer(
+                backButtonColor: .semantic.primary,
+                secondViewActive: false,
+                icon: nil,
+                byline: "Byline",
+                isLargeTitle: false
+            ),
+            as: [
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
+            ],
+            record: false
+        )
+
+        assertSnapshots(
+            matching: TestContainer(
+                backButtonColor: .semantic.primary,
+                secondViewActive: true,
+                icon: nil,
+                byline: "Byline",
+                isLargeTitle: false
+            ),
+            as: [
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
+            ],
+            record: false
         )
     }
 }

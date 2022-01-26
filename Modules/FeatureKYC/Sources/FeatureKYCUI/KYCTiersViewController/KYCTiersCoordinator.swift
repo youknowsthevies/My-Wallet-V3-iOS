@@ -23,7 +23,7 @@ final class KYCTiersCoordinator {
         interface?.loadingIndicator(.visible)
 
         disposable = pageModelFactory.tiersPageModel(suppressCTA: suppressCTA)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onSuccess: { [weak self] page in
                     guard let self = self else { return }
@@ -31,7 +31,7 @@ final class KYCTiersCoordinator {
                     self.interface?.loadingIndicator(.hidden)
                     self.interface?.collectionViewVisibility(.visible)
                 },
-                onError: { [weak self] _ in
+                onFailure: { [weak self] _ in
                     guard let self = self else { return }
                     self.interface?.loadingIndicator(.hidden)
                     self.interface?.collectionViewVisibility(.visible)

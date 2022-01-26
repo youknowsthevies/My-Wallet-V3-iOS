@@ -5,6 +5,7 @@ import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
+import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
@@ -33,6 +34,11 @@ import RxToolKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
+
+#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+import PulseCore
+import PulseUI
+#endif
 
 // MARK: - Settings Dependencies
 
@@ -64,8 +70,6 @@ extension DependencyContainer {
         factory { NavigationRouter() as NavigationRouterAPI }
 
         single { OnboardingSettings() }
-
-        single { InternetReachability() as InternetReachabilityAPI }
 
         factory { () -> OnboardingSettingsAPI in
             let settings: OnboardingSettings = DIKit.resolve()
@@ -126,7 +130,14 @@ extension DependencyContainer {
 
         factory { CustomerSupportChatRouter() as CustomerSupportChatRouterAPI }
 
-        single { SecondPasswordPrompter() as SecondPasswordPromptable }
+        single { () -> SecondPasswordPromptable in
+            SecondPasswordPrompter(
+                secondPasswordStore: DIKit.resolve(),
+                secondPasswordPrompterHelper: DIKit.resolve(),
+                secondPasswordService: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
 
         single { SecondPasswordStore() as SecondPasswordStorable }
 
@@ -282,6 +293,18 @@ extension DependencyContainer {
         }
 
         factory { () -> MnemonicAccessAPI in
+            let internalFeatureFlags: InternalFeatureFlagServiceAPI = DIKit.resolve()
+            if internalFeatureFlags.isEnabled(.nativeWalletPayload) {
+                let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
+                let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
+                    secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+                        .mapError { _ in MnemonicAccessError.wrongSecondPassword }
+                        .eraseToAnyPublisher()
+                }
+                return MnemonicAccessService(
+                    secondPasswordPrompter: secondPasswordIfNeeded
+                )
+            }
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as MnemonicAccessAPI
         }
@@ -371,6 +394,14 @@ extension DependencyContainer {
         }
 
         // MARK: - UserInformationServiceProvider
+
+        factory { () -> UserAdapterAPI in
+            UserAdapter(
+                kycTiersService: DIKit.resolve(),
+                paymentMethodsService: DIKit.resolve(),
+                ordersService: DIKit.resolve()
+            )
+        }
 
         factory { () -> SettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
@@ -500,13 +531,18 @@ extension DependencyContainer {
 
         factory { () -> AutoWalletPairingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return AutoWalletPairingService(repository: manager.repository) as AutoWalletPairingServiceAPI
+            return AutoWalletPairingService(
+                walletPayloadService: DIKit.resolve(),
+                walletPairingRepository: DIKit.resolve(),
+                walletCryptoService: DIKit.resolve(),
+                parsingService: DIKit.resolve()
+            ) as AutoWalletPairingServiceAPI
         }
 
         factory { () -> GuidServiceAPI in
             GuidService(
                 sessionTokenRepository: DIKit.resolve(),
-                client: DIKit.resolve()
+                guidRepository: DIKit.resolve()
             )
         }
 
@@ -518,7 +554,7 @@ extension DependencyContainer {
 
         factory { () -> SMSServiceAPI in
             SMSService(
-                client: DIKit.resolve(),
+                smsRepository: DIKit.resolve(),
                 credentialsRepository: DIKit.resolve(),
                 sessionTokenRepository: DIKit.resolve()
             )
@@ -527,8 +563,8 @@ extension DependencyContainer {
         factory { () -> TwoFAWalletServiceAPI in
             let manager: WalletManager = DIKit.resolve()
             return TwoFAWalletService(
-                client: DIKit.resolve(),
-                repository: manager.repository,
+                repository: DIKit.resolve(),
+                walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
                 nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
             )
@@ -537,8 +573,8 @@ extension DependencyContainer {
         factory { () -> WalletPayloadServiceAPI in
             let manager: WalletManager = DIKit.resolve()
             return WalletPayloadService(
-                client: DIKit.resolve(),
-                repository: manager.repository,
+                repository: DIKit.resolve(),
+                walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
                 nativeWalletEnabledUse: nativeWalletEnabledUseImpl
             )
@@ -608,5 +644,48 @@ extension DependencyContainer {
             )
             return OpenBanking(banking: client)
         }
+
+        // MARK: Pulse Network Debugging
+
+        single {
+            PulseNetworkDebugLogger() as NetworkDebugLogger
+        }
+
+        single {
+            PulseNetworkDebugScreenProvider() as NetworkDebugScreenProvider
+        }
+    }
+}
+
+class PulseNetworkDebugLogger: NetworkDebugLogger {
+    func storeRequest(
+        _ request: URLRequest,
+        response: URLResponse?,
+        error: Error?,
+        data: Data?,
+        metrics: URLSessionTaskMetrics?,
+        session: URLSession?
+    ) {
+        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+        LoggerStore.default.storeRequest(
+            request,
+            response: response,
+            error: error,
+            data: data,
+            metrics: metrics,
+            session: session
+        )
+        #endif
+    }
+}
+
+class PulseNetworkDebugScreenProvider: NetworkDebugScreenProvider {
+    var viewController: UIViewController {
+        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+        UITabBar.appearance(whenContainedInInstancesOf: [MainViewController.self]).backgroundColor = .white
+        return MainViewController()
+        #else
+        return UIViewController()
+        #endif
     }
 }

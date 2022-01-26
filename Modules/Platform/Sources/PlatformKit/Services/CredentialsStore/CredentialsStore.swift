@@ -58,7 +58,7 @@ final class CredentialsStore: CredentialsStoreAPI {
         let pinData = Single.just(pinData())
         let walletData = walletData(pinDecryptionKey: pinDecryptionKey)
             .optional()
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
         return Single
             .zip(
                 appSettingsAuthenticating.pinKey,
@@ -101,7 +101,7 @@ final class CredentialsStore: CredentialsStoreAPI {
                     sharedKey: data.sharedKey
                 )
             }
-            .catchError { error in
+            .catch { error in
                 switch error {
                 case CredentialsStoreError.backupNotNeeded:
                     return .empty()

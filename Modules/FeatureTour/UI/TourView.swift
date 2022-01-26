@@ -1,9 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import Localization
 import SwiftUI
-import UIComponentsKit
 
 public struct TourView: View {
 
@@ -113,10 +117,10 @@ extension TourView {
                 viewStore.send(.createAccount)
             }
             MinimalDoubleButton(
-                leftTitle: LocalizationConstants.Tour.restoreButtonTitle,
-                leftAction: { viewStore.send(.restore) },
-                rightTitle: LocalizationConstants.Tour.loginButtonTitle,
-                rightAction: { viewStore.send(.logIn) }
+                leadingTitle: LocalizationConstants.Tour.restoreButtonTitle,
+                leadingAction: { viewStore.send(.restore) },
+                trailingTitle: LocalizationConstants.Tour.loginButtonTitle,
+                trailingAction: { viewStore.send(.logIn) }
             )
         }
         .padding(.top)

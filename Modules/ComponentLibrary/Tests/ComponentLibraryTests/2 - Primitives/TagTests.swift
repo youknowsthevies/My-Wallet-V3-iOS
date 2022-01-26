@@ -10,6 +10,6 @@ final class TagTests: XCTestCase {
     func testTags() {
         let view = HStack { Tag_Previews.previews.fixedSize() }
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }

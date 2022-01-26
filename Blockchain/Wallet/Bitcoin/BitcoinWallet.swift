@@ -2,13 +2,16 @@
 
 import BitcoinChainKit
 import BitcoinKit
+import Combine
 import DIKit
+import FeatureAppUI
 import FeatureTransactionDomain
 import JavaScriptCore
 import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class BitcoinWallet: NSObject {
 
@@ -193,7 +196,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             fees: proposal.fees.toDisplayString(includeSymbol: false)
         )
         return Single.just(())
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMap { _ -> Single<BitcoinChainTransactionCandidate<Token>> in
                 buildCandidate(with: legacyOrderCandidate)
             }
@@ -367,8 +370,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
@@ -443,23 +446,23 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 }
 
 extension BitcoinWallet: MnemonicAccessAPI {
-    var mnemonic: Maybe<Mnemonic> {
+    var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
-            return Maybe.empty()
+            return .failure(.generic)
         }
         return wallet.mnemonic
     }
 
-    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
+    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
-            return Maybe.empty()
+            return .failure(.generic)
         }
         return wallet.mnemonicPromptingIfNeeded
     }
 
-    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
-            return .error(PlatformKitError.default)
+            return .failure(.generic)
         }
         return wallet.mnemonic(with: secondPassword)
     }

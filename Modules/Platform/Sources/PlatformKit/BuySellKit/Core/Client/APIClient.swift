@@ -46,6 +46,7 @@ final class APIClient: SimpleBuyClientAPI {
     }
 
     private enum Path {
+        static let accumulatedTrades = ["trades", "accumulated"]
         static let transactions = ["payments", "transactions"]
         static let paymentMethods = ["payments", "methods"]
         static let eligiblePaymentMethods = ["eligible", "payment-methods"]
@@ -214,6 +215,66 @@ final class APIClient: SimpleBuyClientAPI {
     }
 
     // MARK: - OrderDetailsClientAPI
+
+    func fetchAccumulatedTradeAmounts() -> AnyPublisher<[AccumulatedTradeDetails], NabuNetworkError> {
+
+        struct Response: Decodable {
+
+            struct RawDetails: Decodable {
+
+                struct Amount: Decodable {
+                    let symbol: String
+                    let value: String
+                }
+
+                let amount: MoneyValue
+                let period: AccumulatedTradeDetails.TimePeriod
+
+                enum CodingKeys: String, CodingKey {
+                    case amount
+                    case period = "termType"
+                }
+
+                init(from decoder: Decoder) throws {
+                    let values = try decoder.container(keyedBy: CodingKeys.self)
+                    let rawAmount = try values.decode(Amount.self, forKey: .amount)
+                    amount = try (
+                        MoneyValue.create(
+                            major: rawAmount.value,
+                            currency: CurrencyType(code: rawAmount.symbol)
+                        )
+                    ) ?? .zero(currency: CurrencyType(code: rawAmount.symbol))
+                    period = try values.decode(AccumulatedTradeDetails.TimePeriod.self, forKey: .period)
+                }
+            }
+
+            let tradesAccumulated: [RawDetails]
+        }
+
+        let parameters = [
+            URLQueryItem(
+                name: "products",
+                value: "SIMPLEBUY"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.accumulatedTrades,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return networkAdapter
+            .perform(request: request, responseType: Response.self)
+            .map(\.tradesAccumulated)
+            .map { rawTradeDetailsList -> [AccumulatedTradeDetails] in
+                rawTradeDetailsList.map {
+                    AccumulatedTradeDetails(
+                        amount: $0.amount,
+                        period: $0.period
+                    )
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 
     func orderDetails(
         pendingOnly: Bool

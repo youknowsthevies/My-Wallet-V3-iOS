@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import Localization
 import SwiftUI
-import UIComponentsKit
 
 struct ResetAccountWarningView: View {
 
@@ -48,7 +52,9 @@ struct ResetAccountWarningView: View {
                     .font(Font(weight: .medium, size: Layout.messageFontSize))
                     .foregroundColor(.textSubheading)
                     .lineSpacing(Layout.messageLineSpacing)
-                    .accessibility(identifier: AccessibilityIdentifiers.ResetAccountWarningScreen.resetAccountMessageText)
+                    .accessibility(
+                        identifier: AccessibilityIdentifiers.ResetAccountWarningScreen.resetAccountMessageText
+                    )
                 Spacer()
 
                 PrimaryButton(title: LocalizedString.Button.continueReset) {
@@ -57,7 +63,7 @@ struct ResetAccountWarningView: View {
                 .padding(.bottom, Layout.buttonBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.ResetAccountWarningScreen.continueToResetButton)
 
-                SecondaryButton(title: LocalizedString.Button.retryRecoveryPhrase) {
+                MinimalButton(title: LocalizedString.Button.retryRecoveryPhrase) {
                     viewStore.send(.retryButtonTapped)
                 }
                 .accessibility(identifier: AccessibilityIdentifiers.ResetAccountWarningScreen.retryRecoveryPhraseButton)

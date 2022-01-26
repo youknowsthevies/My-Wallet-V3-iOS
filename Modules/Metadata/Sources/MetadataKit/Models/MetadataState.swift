@@ -2,4 +2,9 @@
 
 import Foundation
 
-public struct MetadataState: Equatable {}
+public struct MetadataState: Equatable {
+
+    let metadataNodes: RemoteMetadataNodes
+
+    let secondPasswordNode: SecondPasswordNode
+}

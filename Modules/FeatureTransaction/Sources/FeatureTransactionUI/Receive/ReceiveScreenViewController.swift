@@ -81,7 +81,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
         presenter.addressLabelContentPresenting
             .state
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
@@ -94,7 +94,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
         presenter.memoLabelContentPresenting
             .state
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
@@ -108,7 +108,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
         presenter.balanceLabelContentPresenting
             .state
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
@@ -121,7 +121,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
         presenter.nameLabelContentPresenting
             .state
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):

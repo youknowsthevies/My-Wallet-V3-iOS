@@ -117,7 +117,7 @@ public struct InfoView: View {
                 ZStack {
                     if model.overlay != nil {
                         Circle()
-                            .foregroundColor(.white)
+                            .foregroundColor(.semantic.background)
                             .scaleEffect(1.3)
                         overlayView
                     }

@@ -59,6 +59,11 @@ final class RootViewController: UIHostingController<RootView> {
             .store(in: &bag)
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        viewStore.send(.ready)
+    }
+
     @objc dynamic required init?(coder aDecoder: NSCoder) {
         unimplemented()
     }

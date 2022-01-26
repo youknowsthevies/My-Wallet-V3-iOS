@@ -93,8 +93,8 @@ extension InterestTransactionEngine {
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
-            let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
-            let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+            let fiatAmount = amount.convert(using: quote)
+            let fiatFees = fees.convert(using: quote)
             return (fiatAmount, fiatFees)
         }
         .map { (amount: $0.0, fees: $0.1) }

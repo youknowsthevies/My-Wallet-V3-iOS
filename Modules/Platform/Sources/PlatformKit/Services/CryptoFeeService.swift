@@ -13,7 +13,7 @@ public final class CryptoFeeService<FeeType: TransactionFee & Decodable>: Crypto
             .do(onError: { error in
                 Logger.shared.error(error)
             })
-            .catchErrorJustReturn(FeeType.default)
+            .catchAndReturn(FeeType.default)
     }
 
     // MARK: - Private Properties

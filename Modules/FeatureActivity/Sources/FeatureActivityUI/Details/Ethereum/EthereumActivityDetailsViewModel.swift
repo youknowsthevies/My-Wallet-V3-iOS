@@ -77,7 +77,7 @@ struct EthereumActivityDetailsViewModel: Equatable {
             let cryptoAmount = cryptoValue.displayString
             let value: String
             if let price = price {
-                value = cryptoValue.convertToFiatValue(exchangeRate: price).displayString
+                value = cryptoValue.convert(using: price).displayString
             } else {
                 value = ""
             }

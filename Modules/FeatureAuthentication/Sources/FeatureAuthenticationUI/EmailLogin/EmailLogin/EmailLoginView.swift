@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -45,7 +50,7 @@ public struct EmailLoginView: View {
 
     private let store: Store<EmailLoginState, EmailLoginAction>
 
-    @State private var isEmailFieldFirstResponder: Bool = true
+    @State private var isEmailFieldFirstResponder: Bool = false
 
     public init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
@@ -61,11 +66,10 @@ public struct EmailLoginView: View {
 
                 PrimaryButton(
                     title: LocalizedString.Button._continue,
-                    action: {
-                        viewStore.send(.continueButtonTapped)
-                    },
-                    loading: .constant(viewStore.isLoading)
-                )
+                    isLoading: viewStore.isLoading
+                ) {
+                    viewStore.send(.continueButtonTapped)
+                }
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
             }
@@ -124,7 +128,7 @@ public struct EmailLoginView: View {
                 onReturnTapped: {
                     self.isEmailFieldFirstResponder = false
                     if viewStore.isEmailValid {
-                        viewStore.send(.sendDeviceVerificationEmail)
+                        viewStore.send(.continueButtonTapped)
                     }
                 }
             )

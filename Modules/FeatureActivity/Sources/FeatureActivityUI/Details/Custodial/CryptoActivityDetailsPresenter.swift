@@ -102,13 +102,13 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        let total = event.amount.convertToFiatValue(exchangeRate: event.price).displayString
+        let total = event.amount.convert(using: event.price).displayString
         totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let fee = """
-        \(event.fee.displayString) / \(event.fee.convertToFiatValue(exchangeRate: event.price).displayString)
+        \(event.fee.displayString) / \(event.fee.convert(using: event.price).displayString)
         """
         networkFeePresenter = TransactionalLineItem.networkFee(fee).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix

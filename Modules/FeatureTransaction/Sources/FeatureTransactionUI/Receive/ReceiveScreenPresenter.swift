@@ -131,7 +131,7 @@ final class ReceiveScreenPresenter {
                 QRCode(metadata: metadata)
             }
             .map { $0?.image }
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
             .bindAndCatch(to: qrCodeRelay)
             .disposed(by: disposeBag)
 
@@ -147,7 +147,7 @@ final class ReceiveScreenPresenter {
             .map { $0.toDisplayString(includeSymbol: true) }
             .asObservable()
             .mapToLabelContentStateInteraction()
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: balanceLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
 

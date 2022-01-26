@@ -76,7 +76,12 @@ final class InstitutionListTests: OpenBankingTestCase {
             },
             .send(.select(createAccount, institution)) { [self] state in
                 state.selection = .init(
-                    bank: .init(data: .init(account: createAccount, action: .link(institution: institution)))
+                    bank: .init(data: .init(
+                        account: createAccount,
+                        action: .link(
+                            institution: institution
+                        )
+                    ))
                 )
             },
             .receive(.navigate(to: .approve)) { state in

@@ -8,15 +8,19 @@ struct SearchBarExamples: View {
     @State var isFirstResponder: Bool = false
 
     var body: some View {
-        SearchBar(
-            text: $text,
-            isFirstResponder: $isFirstResponder,
-            cancelButtonText: "Cancel",
-            placeholder: "Search Coin"
-        ) {
-            print("Return tapped")
+        VStack {
+            SearchBar(
+                text: $text,
+                isFirstResponder: $isFirstResponder,
+                cancelButtonText: "Cancel",
+                placeholder: "Search Coin"
+            ) {
+                print("Return tapped")
+            }
+            .padding(Spacing.padding())
+
+            Spacer()
         }
-        .padding(Spacing.padding())
     }
 }
 

@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import FeatureKYCDomain
+import Localization
 import SwiftUI
 import UIComponentsKit
 
@@ -28,7 +29,13 @@ struct EmailVerificationHelpEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-typealias EmailVerificationHelpReducer = Reducer<EmailVerificationHelpState, EmailVerificationHelpAction, EmailVerificationHelpEnvironment>
+private typealias L10n = LocalizationConstants.NewKYC
+
+typealias EmailVerificationHelpReducer = Reducer<
+    EmailVerificationHelpState,
+    EmailVerificationHelpAction,
+    EmailVerificationHelpEnvironment
+>
 
 let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action, environment in
     switch action {

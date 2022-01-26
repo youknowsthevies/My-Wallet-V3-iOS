@@ -333,8 +333,8 @@ extension ERC20OnChainTransactionEngine {
         .map { sourceExchange, ethereumExchange, amount, feeAmount -> (FiatValue, FiatValue) in
             let erc20Quote = sourceExchange.quote.fiatValue!
             let ethereumQuote = ethereumExchange.quote.fiatValue!
-            let fiatAmount = amount.convertToFiatValue(exchangeRate: erc20Quote)
-            let fiatFees = feeAmount.convertToFiatValue(exchangeRate: ethereumQuote)
+            let fiatAmount = amount.convert(using: erc20Quote)
+            let fiatFees = feeAmount.convert(using: ethereumQuote)
             return (fiatAmount, fiatFees)
         }
     }

@@ -32,7 +32,7 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
                 let tradeLimits = self.limitsAPI
                     .getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)
                     .optional()
-                    .catchErrorJustReturn(nil)
+                    .catchAndReturn(nil)
 
                 return Single
                     .zip(

@@ -18,6 +18,7 @@ public struct PrimaryButton<LeadingView: View>: View {
 
     private let title: String
     private let isLoading: Bool
+    private let colorCombination: PillButtonStyle.ColorCombination
     private let leadingView: LeadingView
     private let action: () -> Void
 
@@ -30,8 +31,25 @@ public struct PrimaryButton<LeadingView: View>: View {
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
+        self.init(
+            title: title,
+            isLoading: isLoading,
+            colorCombination: primaryButtonColorCombination,
+            leadingView: leadingView,
+            action: action
+        )
+    }
+
+    init(
+        title: String,
+        isLoading: Bool = false,
+        colorCombination: PillButtonStyle.ColorCombination,
+        @ViewBuilder leadingView: () -> LeadingView,
+        action: @escaping () -> Void
+    ) {
         self.title = title
         self.isLoading = isLoading
+        self.colorCombination = colorCombination
         self.leadingView = leadingView()
         self.action = action
     }
@@ -52,7 +70,7 @@ public struct PrimaryButton<LeadingView: View>: View {
                 isLoading: isLoading,
                 isEnabled: isEnabled,
                 size: size,
-                colorCombination: primaryButtonColorCombination
+                colorCombination: colorCombination
             )
         )
     }

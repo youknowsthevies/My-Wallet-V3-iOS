@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -56,7 +61,7 @@ struct LostFundsWarningView: View {
             .padding(.bottom, Layout.buttonBottomPadding)
             .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.resetAccountButton)
 
-            SecondaryButton(title: LocalizedStrings.Button.goBack) {
+            MinimalButton(title: LocalizedStrings.Button.goBack) {
                 viewStore.send(.goBackButtonTapped)
             }
             .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.goBackButton)

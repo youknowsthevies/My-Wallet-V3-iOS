@@ -15,7 +15,7 @@ public protocol PortfolioBalanceChangeProviding {
 
 public struct PortfolioBalanceChange {
     public let balance: MoneyValue
-    public let changePercentage: Double
+    public let changePercentage: Decimal
     public let change: MoneyValue
 }
 
@@ -75,7 +75,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                 }
                 return PortfolioBalanceChange(
                     balance: currentBalance,
-                    changePercentage: percentage.doubleValue,
+                    changePercentage: percentage,
                     change: change
                 )
             }

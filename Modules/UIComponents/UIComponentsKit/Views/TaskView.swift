@@ -168,7 +168,7 @@ extension TaskView {
                             HStack {
                                 RichText(section.header)
                                     .typography(.paragraph2)
-                                    .foregroundColor(.textTitle)
+                                    .foregroundColor(.semantic.title)
                                 if isExpandable {
                                     Spacer()
                                     Image(systemName: "chevron.down")

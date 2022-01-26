@@ -252,7 +252,7 @@ class AccountPickerRowViewTests: XCTestCase {
             currencyCode: "USD"
         )
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testAccountGroupLoading() {
@@ -260,7 +260,7 @@ class AccountPickerRowViewTests: XCTestCase {
             accountGroup
         )
 
-        assertSnapshot(matching: view(row: accountGroupRow), as: .image)
+        assertSnapshot(matching: view(row: accountGroupRow), as: .image, record: false)
     }
 
     func testSingleAccount() {
@@ -275,11 +275,11 @@ class AccountPickerRowViewTests: XCTestCase {
             currencyCode: nil
         )
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
 
         isShowingMultiBadge = true
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testSingleAccountLoading() {
@@ -287,7 +287,7 @@ class AccountPickerRowViewTests: XCTestCase {
             singleAccount
         )
 
-        assertSnapshot(matching: view(row: singleAccountRow), as: .image)
+        assertSnapshot(matching: view(row: singleAccountRow), as: .image, record: false)
     }
 
     func testButton() {
@@ -298,7 +298,7 @@ class AccountPickerRowViewTests: XCTestCase {
             )
         )
 
-        assertSnapshot(matching: view(row: buttonRow), as: .image)
+        assertSnapshot(matching: view(row: buttonRow), as: .image, record: false)
     }
 
     func testLinkedAccount() {
@@ -306,28 +306,26 @@ class AccountPickerRowViewTests: XCTestCase {
             linkedBankAccountModel
         )
 
-        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image, record: false)
 
         isShowingMultiBadge = true
 
-        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image, record: false)
     }
 
-//    func testPaymentMethod_funds() {
-//        try? XCTSkipIf(true)
-//        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
-//            paymentMethodRowModel(for: paymentMethodFunds)
-//        )
-//        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
-//    }
-//
-//    func testPaymentMethod_card() {
-//        try? XCTSkipIf(true)
-//        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
-//            paymentMethodRowModel(for: paymentMethodCard)
-//        )
-//        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
-//    }
+    func testPaymentMethod_funds() {
+        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
+            paymentMethodRowModel(for: paymentMethodFunds)
+        )
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image, record: false)
+    }
+
+    func testPaymentMethod_card() {
+        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
+            paymentMethodRowModel(for: paymentMethodCard)
+        )
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image, record: false)
+    }
 }
 
 struct MockWithdrawalServiceAPI: WithdrawalServiceAPI {

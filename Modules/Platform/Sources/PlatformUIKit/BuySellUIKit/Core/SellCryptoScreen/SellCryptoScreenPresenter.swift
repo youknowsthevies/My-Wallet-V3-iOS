@@ -127,7 +127,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .share()
 
         ctaObservable
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { [loader, routerInteractor] (self, result) in
                 switch result {
                 case .success(let data):
@@ -161,10 +161,10 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     ) {
 
         interactor.createOrder(from: candidateOrderDetails)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     self?.handle(error)
                 }
             )

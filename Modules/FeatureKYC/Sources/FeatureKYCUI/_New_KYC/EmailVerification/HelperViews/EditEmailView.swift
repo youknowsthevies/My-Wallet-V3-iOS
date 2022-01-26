@@ -3,8 +3,11 @@
 import Combine
 import ComposableArchitecture
 import FeatureKYCDomain
+import Localization
 import SwiftUI
 import UIComponentsKit
+
+private typealias L10n = LocalizationConstants.NewKYC
 
 struct EditEmailState: Equatable {
     var emailAddress: String
@@ -74,7 +77,9 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
                     TextState(L10n.GenericError.retryButtonTitle),
                     action: .send(.save)
                 ),
-                secondaryButton: .cancel()
+                secondaryButton: .cancel(
+                    TextState(L10n.GenericError.cancelButtonTitle)
+                )
             )
             return .none
         }

@@ -389,8 +389,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             )
         }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
-            let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
-            let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+            let fiatAmount = amount.convert(using: quote)
+            let fiatFees = fees.convert(using: quote)
             return (
                 amount: fiatAmount,
                 fees: fiatFees

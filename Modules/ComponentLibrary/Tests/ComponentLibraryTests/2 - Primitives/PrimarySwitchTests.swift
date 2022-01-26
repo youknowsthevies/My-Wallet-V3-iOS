@@ -8,6 +8,6 @@ final class PrimarySwitchTests: XCTestCase {
     func testPrimarySwitch() {
         let view = PrimarySwitch_Previews.previews
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }

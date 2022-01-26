@@ -8,7 +8,7 @@ final class ErrorStateViewTests: XCTestCase {
 
     func testErrorStateView() {
         let view = ErrorStateView(title: "An error has occurred.")
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
     }
 
     func testRetryButton() {
@@ -17,6 +17,6 @@ final class ErrorStateViewTests: XCTestCase {
             button: ("Retry", {})
         )
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
     }
 }

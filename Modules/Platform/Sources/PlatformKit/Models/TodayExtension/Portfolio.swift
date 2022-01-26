@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import MoneyKit
 
 public struct Portfolio: Codable {
@@ -15,14 +16,14 @@ public struct Portfolio: Codable {
     }
 
     public struct BalanceChange: Codable {
-        let balance: Decimal
-        public let changePercentage: Double
-        let change: Decimal
+        let balance: BigInt
+        public let changePercentage: Decimal
+        let change: BigInt
 
         static let zero: BalanceChange = .init(
-            balance: 0.0,
+            balance: 0,
             changePercentage: 0.0,
-            change: 0.0
+            change: 0
         )
     }
 
@@ -31,15 +32,15 @@ public struct Portfolio: Codable {
     public let balanceChange: BalanceChange
     let fiatCurrency: FiatCurrency
     public var balanceFiatValue: FiatValue {
-        FiatValue.create(
-            major: balanceChange.balance,
+        FiatValue(
+            amount: balanceChange.balance,
             currency: fiatCurrency
         )
     }
 
     public var changeFiatValue: FiatValue {
-        FiatValue.create(
-            major: balanceChange.change,
+        FiatValue(
+            amount: balanceChange.change,
             currency: fiatCurrency
         )
     }

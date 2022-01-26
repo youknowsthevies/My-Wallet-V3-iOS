@@ -3,7 +3,7 @@
 import BitcoinChainKit
 import PlatformKit
 
-public struct BitcoinCashWalletAccount {
+public struct BitcoinCashWalletAccount: Equatable {
 
     public let archived: Bool
     public let index: Int

@@ -115,7 +115,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
                     }
                     return upgrades
                 }
-                .catchError { _ -> PrimitiveSequence<SingleTrait, [PayloadVersion]> in
+                .catch { _ -> PrimitiveSequence<SingleTrait, [PayloadVersion]> in
                     .just(upgrades)
                 }
         }
@@ -136,7 +136,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
                     self.workflow(for: version)
                         .asObservable()
                         .startWith(version.rawValue)
-                        .catchError { _ -> Observable<String> in
+                        .catch { _ -> Observable<String> in
                             .error(WalletUpgradeError.errorUpgrading(version: version.rawValue))
                         }
                 }

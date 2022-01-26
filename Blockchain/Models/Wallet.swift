@@ -7,7 +7,6 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
-import WalletPayloadKit
 
 enum WalletJavaScriptError: Error {
     case typeError(message: String, stack: String)
@@ -38,7 +37,7 @@ extension Wallet {
             observer(.completed)
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribe(on: MainScheduler.asyncInstance)
     }
 
     /// Updates an account label.

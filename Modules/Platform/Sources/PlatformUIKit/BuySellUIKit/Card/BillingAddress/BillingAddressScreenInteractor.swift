@@ -85,7 +85,7 @@ final class BillingAddressScreenInteractor: Interactor {
                             self?.routingInteractor.authorizeCardAddition(with: data)
                             observer(.completed)
                         },
-                        onError: { error in
+                        onFailure: { error in
                             observer(.error(error))
                         }
                     )

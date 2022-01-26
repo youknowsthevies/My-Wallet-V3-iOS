@@ -19,11 +19,11 @@ public enum CredentialsAction: Equatable {
     case closeButtonTapped
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
+    case onWillDisappear
     case didChangeWalletIdentifier(String)
     case walletPairing(WalletPairingAction)
     case password(PasswordAction)
     case twoFA(TwoFAAction)
-    case hardwareKey(HardwareKeyAction)
     case seedPhrase(SeedPhraseAction)
     case setTroubleLoggingInScreenVisible(Bool)
     case showAccountLockedError(Bool)
@@ -47,7 +47,6 @@ public struct CredentialsState: Equatable {
     var walletPairingState: WalletPairingState
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
-    var hardwareKeyState: HardwareKeyState?
     var seedPhraseState: SeedPhraseState?
     var nabuInfo: WalletInfo.NabuInfo?
     var isManualPairing: Bool
@@ -62,7 +61,6 @@ public struct CredentialsState: Equatable {
         walletPairingState: WalletPairingState = .init(),
         passwordState: PasswordState = .init(),
         twoFAState: TwoFAState? = nil,
-        hardwareKeyState: HardwareKeyState? = nil,
         seedPhraseState: SeedPhraseState? = nil,
         nabuInfo: WalletInfo.NabuInfo? = nil,
         isManualPairing: Bool = false,
@@ -76,7 +74,6 @@ public struct CredentialsState: Equatable {
         self.walletPairingState = walletPairingState
         self.passwordState = passwordState
         self.twoFAState = twoFAState
-        self.hardwareKeyState = hardwareKeyState
         self.seedPhraseState = seedPhraseState
         self.nabuInfo = nabuInfo
         self.isManualPairing = isManualPairing
@@ -149,13 +146,6 @@ let credentialsReducer = Reducer.combine(
             action: /CredentialsAction.twoFA,
             environment: { $0 }
         ),
-    hardwareKeyReducer
-        .optional()
-        .pullback(
-            state: \CredentialsState.hardwareKeyState,
-            action: /CredentialsAction.hardwareKey,
-            environment: { $0 }
-        ),
     walletPairingReducer
         .pullback(
             state: \CredentialsState.walletPairingState,
@@ -209,7 +199,8 @@ let credentialsReducer = Reducer.combine(
             state.credentialsFailureAlert = nil
             return .none
 
-        case .closeButtonTapped:
+        case .onWillDisappear,
+             .closeButtonTapped:
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):
@@ -220,17 +211,24 @@ let credentialsReducer = Reducer.combine(
                 state.nabuInfo = nabuInfo
             }
             if let type = info.twoFAType, type.isTwoFactor {
-                // authenticate with empty password to set GUID and send SMS if needed
-                return Effect(value: .walletPairing(.approveEmailAuthorization(true)))
+                // if we want to send SMS when the view appears we would need to trigger approve authorization and sms error in order to send SMS when appeared
+                // also, if we want to show 2FA field when view appears, we need to do the above
+                return Effect(
+                    value: .walletPairing(
+                        .authenticate(
+                            state.passwordState.password,
+                            autoTrigger: true
+                        )
+                    )
+                )
             }
-            return Effect(value: .walletPairing(.approveEmailAuthorization(false)))
+            return .none
 
         case .didAppear(.walletIdentifier(let guid)):
             state.walletPairingState.walletGuid = guid ?? ""
             return .none
 
         case .didAppear(.manualPairing):
-            state.walletPairingState.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
             return Effect(value: .walletPairing(.setupSessionToken))
 
@@ -247,18 +245,11 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .continueButtonTapped:
-            if let twoFAState = state.twoFAState,
-               twoFAState.isTwoFACodeFieldVisible
-            {
-                return Effect(
-                    value: .walletPairing(.authenticateWithTwoFactorOTP(twoFAState.twoFACode))
-                )
-            } else if let hardwareKeyState = state.hardwareKeyState,
-                      hardwareKeyState.isHardwareKeyCodeFieldVisible
-            {
-                return Effect(
-                    value: .walletPairing(.authenticateWithTwoFactorOTP(hardwareKeyState.hardwareKeyCode))
-                )
+            if state.isTwoFactorOTPVerified {
+                return Effect(value: .walletPairing(.decryptWalletWithPassword(state.passwordState.password)))
+            }
+            if let twoFAState = state.twoFAState, twoFAState.isTwoFACodeFieldVisible {
+                return Effect(value: .walletPairing(.authenticateWithTwoFactorOTP(twoFAState.twoFACode)))
             }
             return Effect(value: .walletPairing(.authenticate(state.passwordState.password)))
 
@@ -328,16 +319,10 @@ let credentialsReducer = Reducer.combine(
             state.isLoading = context.hasError ? false : state.isLoading
             return .none
 
-        case .hardwareKey(.showHardwareKeyCodeField(let visible)),
-             .hardwareKey(.showIncorrectHardwareKeyCodeError(let visible)):
-            state.isLoading = visible ? false : state.isLoading
-            return .none
-
         case .password(.showIncorrectPasswordError(true)):
             state.isLoading = false
             // reset state
             state.twoFAState = .init()
-            state.hardwareKeyState = .init()
             return .none
 
         case .password(.showIncorrectPasswordError(false)):
@@ -356,7 +341,6 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .twoFA,
-             .hardwareKey,
              .password,
              .seedPhrase,
              .none:
@@ -378,13 +362,9 @@ private func clearErrorStates(
     if state.twoFAState != nil {
         effects.append(Effect(value: .twoFA(.showIncorrectTwoFACodeError(.none))))
     }
-    if state.hardwareKeyState != nil {
-        effects.append(Effect(value: .hardwareKey(.showIncorrectHardwareKeyCodeError(false))))
-    }
     return .merge(effects)
 }
 
-// swiftlint:disable cyclomatic_complexity
 private func authenticateDidFail(
     _ error: LoginServiceError,
     _ state: inout CredentialsState,
@@ -399,21 +379,18 @@ private func authenticateDidFail(
             case true:
                 return Effect(value: .walletPairing(.needsEmailAuthorization))
             case false:
-                return .none
+                return Effect(value: .walletPairing(.approveEmailAuthorization))
             }
         case .sms:
             state.twoFAState = .init(
                 twoFAType: .sms
             )
             return Effect(value: .walletPairing(.handleSMS))
-        case .google:
+        case .google, .yubiKey, .yubikeyMtGox:
             state.twoFAState = .init(
-                twoFAType: .google
+                twoFAType: type
             )
             return Effect(value: .twoFA(.showTwoFACodeField(true)))
-        case .yubiKey, .yubikeyMtGox:
-            state.hardwareKeyState = .init()
-            return Effect(value: .hardwareKey(.showHardwareKeyCodeField(true)))
         default:
             fatalError("Unsupported TwoFA Types")
         }

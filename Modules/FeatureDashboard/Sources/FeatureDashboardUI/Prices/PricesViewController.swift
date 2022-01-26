@@ -162,7 +162,7 @@ public final class PricesViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         presenter.sections
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }

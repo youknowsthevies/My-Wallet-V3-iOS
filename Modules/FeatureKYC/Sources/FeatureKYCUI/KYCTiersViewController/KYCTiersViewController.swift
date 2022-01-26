@@ -319,7 +319,7 @@ extension KYCTiersViewController {
         fromViewController: UIViewController
     ) -> Disposable {
         tiersPageModel()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { model in
                 let controller = KYCTiersViewController(pageModel: model, parentFlow: .settings)
                 if let from = fromViewController as? UINavigationController {

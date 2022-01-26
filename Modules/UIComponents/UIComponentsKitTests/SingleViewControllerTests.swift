@@ -20,11 +20,11 @@ final class SingleChildViewControllerTests: XCTestCase {
             )
         ]
 
-        assertSnapshot(matching: container, as: .image)
+        assertSnapshot(matching: container, as: .image, record: false)
 
         controller.title = "Updated"
         controller.tabBarItem = UITabBarItem(title: "Updated", image: nil, selectedImage: nil)
 
-        assertSnapshot(matching: container, as: .image)
+        assertSnapshot(matching: container, as: .image, record: false)
     }
 }

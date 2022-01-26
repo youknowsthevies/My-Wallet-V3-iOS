@@ -21,7 +21,7 @@ public enum AssetLineChart {
         public struct Interaction {
 
             /// Percent change of the dataset
-            let delta: Double
+            let delta: Decimal
 
             /// The asset type
             let currency: CryptoCurrency
@@ -44,12 +44,16 @@ public enum AssetLineChart {
             init(value: Interaction) {
                 debugDescription = value.currency.displayCode
                 color = value.delta >= 0 ? .positivePrice : .negativePrice
-                points = value.prices.enumerated().map { offset, element in
-                    CGPoint(
-                        x: Double(offset),
-                        y: element.moneyValue.displayMajorValue.doubleValue
-                    )
-                }
+                points = value.prices
+                    .lazy
+                    .map(\.moneyValue.displayMajorValue.doubleValue)
+                    .enumerated()
+                    .map { offset, element in
+                        CGPoint(
+                            x: Double(offset),
+                            y: element
+                        )
+                    }
             }
         }
     }

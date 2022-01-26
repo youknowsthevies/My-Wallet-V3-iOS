@@ -16,12 +16,3 @@ extension Reachability {
         return true
     }
 }
-
-public final class InternetReachability: InternetReachabilityAPI {
-
-    public var canConnect: Bool {
-        Reachability.hasInternetConnection()
-    }
-
-    public init() {}
-}

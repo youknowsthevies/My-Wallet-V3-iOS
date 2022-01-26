@@ -33,7 +33,7 @@ public final class FiatBalanceViewInteractor {
             .flatMapLatest { fiatCurrency in
                 account.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }
-            .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: account.currencyType))
+            .catchAndReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: account.currencyType))
             .map { moneyValuePair -> FiatBalanceViewAsset.Value.Interaction in
                 .init(base: moneyValuePair.base, quote: moneyValuePair.quote)
             }

@@ -27,6 +27,7 @@ public struct LargeSegmentedControl<Selection: Hashable>: View {
     private var items: [Item]
 
     @Binding private var selection: Selection
+    @Environment(\.layoutDirection) private var layoutDirection
 
     /// Create a LargeSegmentedControl view with any number of items and a selection state.
     /// - Parameter items: Items who represents the buttons inside the segmented control
@@ -98,10 +99,19 @@ public struct LargeSegmentedControl<Selection: Hashable>: View {
                 height: proxy[anchor].height
             )
             .offset(
-                x: proxy[anchor].minX,
+                x: xOffset(for: proxy[anchor], in: proxy),
                 y: proxy[anchor].minY
             )
             .animation(.interactiveSpring())
+    }
+
+    private func xOffset(for rect: CGRect, in proxy: GeometryProxy) -> CGFloat {
+        switch layoutDirection {
+        case .rightToLeft:
+            return proxy.size.width - rect.minX - rect.width
+        default:
+            return rect.minX
+        }
     }
 }
 

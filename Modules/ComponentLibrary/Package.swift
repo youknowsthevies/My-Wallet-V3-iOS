@@ -60,7 +60,6 @@ let package = Package(
                 "Examples"
             ],
             exclude: [
-                "__Snapshots__",
                 "1 - Base/__Snapshots__",
                 "2 - Primitives/__Snapshots__",
                 "2 - Primitives/Buttons/__Snapshots__",

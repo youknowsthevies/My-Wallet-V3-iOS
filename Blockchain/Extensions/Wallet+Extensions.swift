@@ -1,54 +1,61 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
-import PlatformKit
-import RxSwift
 import StellarKit
+import WalletPayloadKit
+
+import FeatureAppUI
 
 /// `MnemonicAccessAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we check if the user needs to enter their
 /// secondary password if their wallet is double encrypted.
 extension Wallet: MnemonicAccessAPI {
-    public var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
+    public var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
         let prompter: SecondPasswordPromptable = resolve()
         return prompter
             .secondPasswordIfNeeded(type: .actionRequiresPassword)
-            .asSingle()
-            .flatMap(weak: self) { (self, secondPassword) -> Single<Mnemonic> in
-                self.mnemonic(with: secondPassword)
+            .mapError { _ in MnemonicAccessError.generic }
+            .flatMap { [weak self] secondPassword -> AnyPublisher<String, MnemonicAccessError> in
+                guard let self = self else {
+                    return .failure(.generic)
+                }
+                return self.mnemonic(with: secondPassword)
             }
-            .asMaybe()
+            .eraseToAnyPublisher()
     }
 
-    public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        Single.just(())
-            .observeOn(MainScheduler.asyncInstance)
-            .flatMap(weak: self) { (self, _) -> Single<Mnemonic> in
+    public func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
+        Just(())
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] _ -> AnyPublisher<Mnemonic, MnemonicAccessError> in
+                guard let self = self else {
+                    return .failure(.generic)
+                }
                 var secondPassword = secondPassword
                 if secondPassword?.isEmpty == true {
                     secondPassword = nil
                 }
                 if self.needsSecondPassword(), secondPassword == nil {
-                    return .error(MnemonicAccessError.generic)
+                    return .failure(.generic)
                 }
                 guard let mnemonic = self.getMnemonic(secondPassword) else {
-                    return .error(MnemonicAccessError.generic)
+                    return .failure(.generic)
                 }
                 return .just(mnemonic)
             }
+            .eraseToAnyPublisher()
     }
 
-    public var mnemonic: Maybe<Mnemonic> {
-        Maybe.just(())
-            .observeOn(MainScheduler.asyncInstance)
-            .flatMap(weak: self) { (self, _) -> Maybe<Mnemonic> in
-                guard !self.needsSecondPassword() else {
-                    return Maybe.empty()
+    public var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
+        Just(())
+            .receive(on: DispatchQueue.main)
+            .flatMap { [getMnemonic] _ -> AnyPublisher<Mnemonic, MnemonicAccessError> in
+                guard let mnemonic = getMnemonic(nil) else {
+                    return .failure(.generic)
                 }
-                guard let mnemonic = self.getMnemonic(nil) else {
-                    return Maybe.empty()
-                }
-                return Maybe.just(mnemonic)
+                return .just(mnemonic)
             }
+            .eraseToAnyPublisher()
     }
 }

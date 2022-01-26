@@ -2,30 +2,31 @@
 
 import Combine
 import DIKit
+import FeatureAppUI
 import RxSwift
 import ToolKit
-
-enum SecondPasswordError: Error {
-    case walletError(WalletError)
-    case userDismissed
-}
-
-protocol SecondPasswordPromptable: AnyObject {
-    func secondPasswordIfNeeded(type: PasswordScreenType) -> AnyPublisher<String?, SecondPasswordError>
-}
+import WalletPayloadKit
 
 final class SecondPasswordPrompter: SecondPasswordPromptable {
 
     private let secondPasswordStore: SecondPasswordStorable
     private let secondPasswordPrompterHelper: SecondPasswordHelperAPI
+    private let secondPasswordService: SecondPasswordServiceAPI
+
+    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
+
     @LazyInject private var walletManager: WalletManager
 
     init(
         secondPasswordStore: SecondPasswordStorable = resolve(),
-        secondPasswordPrompterHelper: SecondPasswordHelperAPI = resolve()
+        secondPasswordPrompterHelper: SecondPasswordHelperAPI = resolve(),
+        secondPasswordService: SecondPasswordServiceAPI = resolve(),
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.secondPasswordStore = secondPasswordStore
         self.secondPasswordPrompterHelper = secondPasswordPrompterHelper
+        self.secondPasswordService = secondPasswordService
+        self.nativeWalletEnabled = nativeWalletEnabled
     }
 
     func secondPasswordIfNeeded(type: PasswordScreenType) -> AnyPublisher<String?, SecondPasswordError> {
@@ -67,16 +68,30 @@ final class SecondPasswordPrompter: SecondPasswordPromptable {
     }
 
     private var secondPasswordNeeded: AnyPublisher<Bool, SecondPasswordError> {
+        nativeWalletEnabled()
+            .flatMap
+            { [needsSecondPassword_old, secondPasswordService] isEnabled -> AnyPublisher<Bool, SecondPasswordError> in
+                guard isEnabled else {
+                    return needsSecondPassword_old()
+                        .eraseToAnyPublisher()
+                }
+                return .just(secondPasswordService.walletRequiresSecondPassword)
+                    .ignoreFailure()
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func needsSecondPassword_old() -> AnyPublisher<Bool, SecondPasswordError> {
         Deferred { [walletManager] in
             Future { promise in
                 if walletManager.wallet.isInitialized() {
                     promise(.success(walletManager.wallet.needsSecondPassword()))
                 } else {
-                    promise(.failure(.notInitialized))
+                    promise(.failure(.walletNotInitialized))
                 }
             }
         }
-        .mapError(SecondPasswordError.walletError)
         .subscribe(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }

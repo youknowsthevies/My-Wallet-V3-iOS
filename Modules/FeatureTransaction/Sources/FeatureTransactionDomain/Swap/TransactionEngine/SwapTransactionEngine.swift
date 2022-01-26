@@ -268,7 +268,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
     /// - Parameter initialValue: The current `PendingTransaction` to be updated
     /// - Returns: An `Single<PendingTransaction>` with updated `validationState`
     func handlePendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
-        catchError { error -> Single<PendingTransaction> in
+        `catch` { error -> Single<PendingTransaction> in
             guard let networkError = error as? NabuNetworkError else {
                 throw error
             }

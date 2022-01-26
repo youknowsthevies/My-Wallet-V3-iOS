@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 class RecoveryPhraseViewModel {
 
@@ -47,6 +48,7 @@ class RecoveryPhraseViewModel {
 
         mnemonicComponentsProviding
             .components
+            .asObservable()
             .bindAndCatch(to: wordsRelay)
             .disposed(by: disposeBag)
 
@@ -55,7 +57,7 @@ class RecoveryPhraseViewModel {
 
         copyButtonViewModel.tapRelay
             .withLatestFrom(mnemonicAPI.mnemonic.asObservable())
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, mnemonic) in
                 pasteboarding.string = mnemonic
 
@@ -77,7 +79,7 @@ class RecoveryPhraseViewModel {
                 .seconds(3),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, _) in
                 let theme = ButtonViewModel.Theme(
                     backgroundColor: .white,

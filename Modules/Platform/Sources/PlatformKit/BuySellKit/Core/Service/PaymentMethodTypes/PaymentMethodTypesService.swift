@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import RxRelay
@@ -129,7 +130,13 @@ public enum PaymentMethodType: Equatable, Identifiable {
     }
 }
 
+public enum PaymentMethodTypesServiceError: Error {
+    case other(Error)
+}
+
 public protocol PaymentMethodTypesServiceAPI {
+
+    var paymentMethodTypesValidForBuyPublisher: AnyPublisher<[PaymentMethodType], PaymentMethodTypesServiceError> { get }
 
     var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> { get }
 
@@ -188,20 +195,22 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
 
-    var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> {
-        Observable
+    var paymentMethodTypesValidForBuyPublisher: AnyPublisher<[PaymentMethodType], PaymentMethodTypesServiceError> {
+        fiatCurrencyService
+            .tradingCurrencyPublisher
+            .setFailureType(to: PaymentMethodTypesServiceError.self)
             .combineLatest(
-                fiatCurrencyService.tradingCurrencyPublisher.asObservable(),
-                kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
+                kycTiersService.tiers
+                    .map(\.isTier2Approved)
+                    .mapError(PaymentMethodTypesServiceError.other),
                 featureFlagsService
                     .isEnabled(.remote(.openBanking))
-                    .asObservable()
+                    .mapError(PaymentMethodTypesServiceError.other)
             )
-            .flatMap(weak: self) { (self, payload) in
-                let (fiatCurrency, isTier2Approved, isOpenBankingEnabled) = payload
+            .flatMap { [methodTypes] fiatCurrency, isTier2Approved, isOpenBankingEnabled in
                 // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
                 // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
-                return self.methodTypes
+                methodTypes
                     .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
                         // we filter valid methods for buy
                         types.filterValidForBuy(
@@ -210,9 +219,16 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                             isOpenBankingEnabled: isOpenBankingEnabled
                         )
                     }
+                    .asPublisher()
+                    .mapError(PaymentMethodTypesServiceError.other)
+                    .eraseToAnyPublisher()
             }
-            .take(1)
-            .asSingle()
+            .removeDuplicates()
+            .shareReplay()
+    }
+
+    var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> {
+        paymentMethodTypesValidForBuyPublisher.asSingle()
     }
 
     var suggestedPaymentMethodTypes: Single<[PaymentMethodType]> {

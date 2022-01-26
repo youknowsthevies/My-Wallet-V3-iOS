@@ -1,0 +1,519 @@
+---
+format_version: '8'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ios
+trigger_map:
+- push_branch: release/*
+  workflow: internal-production-builds
+- push_branch: dev
+  workflow: staging-and-alpha-builds
+- pull_request_source_branch: "*"
+  workflow: run-tests
+- tag: "*"
+  workflow: release-builds
+workflows:
+  alpha-builds:
+    steps:
+    - script@1:
+        title: Build and Deploy
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Archive & Export Application
+            echo "--------------Archive & Export Application----------------"
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            bundle exec fastlane alpha skip_tests:true
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    envs:
+    - opts:
+        is_expand: false
+      APPCENTER_DISTRIBUTE_RELEASE_NOTES: internal-production-builds
+    - opts:
+        is_expand: false
+      APPCENTER_OWNER_TYPE: organization
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_KEY_ID: R8ZGR9LLA7
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_ISSUER_ID: 69a6de80-5974-47e3-e053-5b8c7c11a4d1
+    before_run:
+    - prepare_for_build
+  internal-production-builds:
+    steps:
+    - script@1:
+        title: Archive and export
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Archive & Export Application
+            echo "--------------Archive & Export Application----------------"
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            bundle exec fastlane internal_release skip_tests:true
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    envs:
+    - opts:
+        is_expand: false
+      APPCENTER_DISTRIBUTE_RELEASE_NOTES: internal-production-builds
+    before_run:
+    - prepare_for_build
+  mock-generation:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            FILE=./scripts/install-mockingbird.sh
+            if [ -f "$FILE" ]; then
+                sh "$FILE"
+            fi
+        title: Install Mockingbird
+    - script@1:
+        title: Install Mocks
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            FILE=./scripts/install-mocks.sh
+            if [ -f "$FILE" ]; then
+                sh "$FILE"
+            fi
+    before_run: []
+  prepare_for_build:
+    steps:
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6.1: {}
+    - cache-pull@2.5:
+        inputs:
+        - is_debug_mode: 'true'
+    - script@1:
+        title: openssl-build.sh
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            sh scripts/openssl-build.sh
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            sh scripts/bitrise/my-wallet-build.sh
+        title: my-wallet-build.sh
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            sh scripts/bitrise/install-gems.sh
+        title: install-gems.sh
+    - script@1:
+        title: install-brew-dependencies.sh
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # debug log
+            set -x
+
+            sh scripts/install-brew-dependencies.sh
+
+            exit 0
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            sh scripts/carthage-bootstrap.sh
+        title: carthage-bootstrap.sh
+    - script@1:
+        title: recaptcha.sh
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            if [ -f "scripts/recaptcha.sh" ]; then
+                sh scripts/recaptcha.sh
+            else
+                echo "recaptcha script not found"
+            fi
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+
+            echo "--------------Cloning Credentials Repo--------------"
+            git clone $CREDENTIALS_REPO /tmp/credentials
+            cd /tmp/credentials
+
+            echo "--------------Copying Firebase credentials--------------"
+            cp -R ./Firebase $BITRISE_SOURCE_DIR/Blockchain/
+
+            echo "--------------Copying .xcconfig files--------------"
+            cp -R ./Config $BITRISE_SOURCE_DIR/
+
+            echo "--------------Getting AdHoc export options--------------"
+            cp ./exportOptionsAdHoc.plist $BITRISE_SOURCE_DIR/exportOptionsAdHoc.plist
+
+            echo "--------------Getting AdHoc export options--------------"
+            cp ./exportOptionsAdHocProduction.plist $BITRISE_SOURCE_DIR/exportOptionsAdHocProduction.plist
+
+            echo "--------------Getting Release export options--------------"
+            cp ./exportOptions.plist $BITRISE_SOURCE_DIR/exportOptions.plist
+        title: Get wallet-ios-credentials
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            sh scripts/generate_projects.sh
+        title: Xcodegen
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages
+        title: Resolve Package Dependencies
+    - cache-push@2.5:
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+            ./Submodules/OpenSSL-for-iPhone/lib
+            ./Submodules/OpenSSL-for-iPhone/include
+            ./Submodules/My-Wallet-V3/dist
+            ./Carthage -> ./Cartfile.resolved
+            ~/Library/Caches/Homebrew/
+            ./SourcePackages
+            ./PackageCache
+  release-builds:
+    steps:
+    - script@1:
+        title: Archive and export
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Archive & Export Application
+            echo "--------------Archive & Export Application----------------"
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            bundle exec fastlane release skip_tests:true
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    envs:
+    - opts:
+        is_expand: false
+      APPCENTER_DISTRIBUTE_RELEASE_NOTES: release-builds
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_KEY_ID: R8ZGR9LLA7
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_ISSUER_ID: 69a6de80-5974-47e3-e053-5b8c7c11a4d1
+    before_run:
+    - prepare_for_build
+  run-tests:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+
+            # 'bundle install' already happened.
+            bundle exec danger
+        title: Run Danger
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            mkdir output
+            bundle exec fastlane execute_tests
+        title: Run tests
+    - script@1:
+        title: Move .app to deploy directory
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # --------------Move .app to deploy directory--------------
+            cp -R "$BC_BUILT_PRODUCTS_DIR/Blockchain.app" $BITRISE_DEPLOY_DIR
+    - slack@3:
+        inputs:
+        - channel: "#ios-ci"
+        - api_token: ''
+        - channel_on_error: "#ios-ci"
+        - text_on_error: ''
+        - emoji_on_error: ''
+        - pretext: "*Tests Pass!*"
+        - pretext_on_error: "*Tests Failed!*"
+        - webhook_url: "$SLACK_IOS_CI_WEBHOOK"
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    before_run:
+    - prepare_for_build
+    - mock-generation
+  staging-and-alpha-builds:
+    steps:
+    - script@1:
+        title: Archive and export
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Archive & Export Application
+            echo "--------------Archive & Export Application----------------"
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            bundle exec fastlane staging skip_tests:true
+            bundle exec fastlane alpha skip_tests:true
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    - slack@3:
+        inputs:
+        - channel: "#ios-ci"
+        - webhook_url_on_error: "$SLACK_IOS_CI_WEBHOOK"
+        - channel_on_error: "#ios-engineers"
+        - text_on_error: DEV IS BROKEN
+        - emoji_on_error: ":FIRE:"
+        - message_on_error: "$BITRISE_BUILD_URL"
+        - api_token: "$SLACK_IOS_CI_WEBHOOK"
+        - webhook_url: ''
+    envs:
+    - opts:
+        is_expand: false
+      APPCENTER_DISTRIBUTE_RELEASE_NOTES: staging-builds
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_KEY_ID: R8ZGR9LLA7
+    - opts:
+        is_expand: false
+      APPSTORE_CONNECT_API_ISSUER_ID: 69a6de80-5974-47e3-e053-5b8c7c11a4d1
+    before_run:
+    - prepare_for_build
+  staging-builds:
+    steps:
+    - script@1:
+        title: Archive and export
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Archive & Export Application
+            echo "--------------Archive & Export Application----------------"
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            bundle exec fastlane staging skip_tests:true
+    - deploy-to-bitrise-io@2.0:
+        inputs:
+        - is_compress: 'true'
+    before_run:
+    - prepare_for_build
+    envs:
+    - opts:
+        is_expand: false
+      APPCENTER_DISTRIBUTE_RELEASE_NOTES: staging-builds
+  TEST-SLACK:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            echo "Hello World!"
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+
+            exit 1
+    - slack@3:
+        inputs:
+        - channel_on_error: "#ios-engineers"
+        - text_on_error: testing bitrise integration
+        - emoji_on_error: ":fire:"
+        - message_on_error: "$BITRISE_BUILD_URL"
+        - webhook_url: "$SLACK_IOS_CI_WEBHOOK"
+        - channel: "#ios-ci"
+        - webhook_url_on_error: "$SLACK_IOS_CI_WEBHOOK"
+app:
+  envs:
+  - BITRISE_PROJECT_PATH: Blockchain.xcworkspace
+    opts:
+      is_expand: false
+  - opts:
+      is_expand: false
+    BITRISE_SCHEME: Blockchain (Staging)
+  - opts:
+      is_expand: false
+    BITRISE_EXPORT_METHOD: ad-hoc
+  - opts:
+      is_expand: false
+    NODE_VERSION: 8.17.0
+  - opts:
+      is_expand: false
+    CREDENTIALS_REPO: git@github.com:blockchain/wallet-ios-credentials.git
+  - opts:
+      is_expand: false
+    FASTLANE_USER: ios-team@blockchain.com
+  - opts:
+      is_expand: false
+    KEYCHAIN_NAME: blockchain-ci.keychain
+  - opts:
+      is_expand: false
+    KEYCHAIN_PASSWORD: BlockchainKeychainForCI
+  - opts:
+      is_expand: false
+    SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+  - opts:
+      is_expand: false
+    BITRISE_DEPLOY_DIR: "./output"
+  - opts:
+      is_expand: false
+    BITRISE_IPA_PATH: "./output/Blockchain.ipa"
+  - opts:
+      is_expand: false
+    SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+  - opts:
+      is_expand: false
+    APPCENTER_DISTRIBUTE_DESTINATIONS: Testers,Collaborators
+  - opts:
+      is_expand: false
+    APPCENTER_OWNER_NAME_DEV: bchris
+  - opts:
+      is_expand: false
+    APPCENTER_DISTRIBUTE_FILE: "./output/Blockchain.ipa"
+  - opts:
+      is_expand: false
+    APPCENTER_APP_NAME_DEV: Wallet-iOS-Dev
+  - opts:
+      is_expand: false
+    APPCENTER_APP_NAME_ALPHA: Wallet-iOS-Alpha
+  - opts:
+      is_expand: false
+    APPCENTER_OWNER_NAME: bchris
+  - opts:
+      is_expand: false
+    APPCENTER_OWNER_NAME_ALPHA: BlockchainMobile
+  - opts:
+      is_expand: false
+    APPCENTER_OWNER_NAME_STAGING: bchris
+  - opts:
+      is_expand: false
+    APPCENTER_APP_NAME_STAGING: Blockchain
+  - opts:
+      is_expand: false
+    APPCENTER_APP_NAME: Blockchain-iOS-Wallet-Production
+  - opts:
+      is_expand: false
+    GYM_SKIP_PACKAGE_DEPENDENCIES_RESOLUTION: 'false'
+  - opts:
+      is_expand: false
+    GYM_SKIP_PACKAGE_DEPENDENCIES_RESOLUTION: 'false'
+  - opts:
+      is_expand: false
+    SCAN_SKIP_PACKAGE_DEPENDENCIES_RESOLUTION: 'false'
+  - opts:
+      is_expand: false
+    SCAN_DISABLE_PACKAGE_AUTOMATIC_UPDATES: 'false'
+  - opts:
+      is_expand: false
+    SNAPSHOT_SKIP_PACKAGE_DEPENDENCIES_RESOLUTION: 'false'
+  - opts:
+      is_expand: false
+    SNAPSHOT_DISABLE_PACKAGE_AUTOMATIC_UPDATES: 'false'
+  - opts:
+      is_expand: false
+    FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '8'
+  - opts:
+      is_expand: false
+    FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '5'
+meta:
+  bitrise.io:
+    machine_type: elite
+    stack: osx-xcode-13.2.x

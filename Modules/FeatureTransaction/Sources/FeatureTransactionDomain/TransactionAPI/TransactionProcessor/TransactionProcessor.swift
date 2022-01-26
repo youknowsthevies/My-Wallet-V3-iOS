@@ -194,7 +194,7 @@ public final class TransactionProcessor {
                 engine
                     .doPostExecute(transactionResult: transactionResult)
                     .andThen(.just(transactionResult))
-                    .catchErrorJustReturn(transactionResult)
+                    .catchAndReturn(transactionResult)
             }
             .do(
                 afterSuccess: { [notificationCenter] _ in

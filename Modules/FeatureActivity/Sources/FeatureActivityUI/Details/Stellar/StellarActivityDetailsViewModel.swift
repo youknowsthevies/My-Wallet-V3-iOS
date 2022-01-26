@@ -27,14 +27,14 @@ struct StellarActivityDetailsViewModel: Equatable {
 
         cryptoAmount = details.cryptoAmount.displayString
         if let price = price {
-            value = details.cryptoAmount.convertToFiatValue(exchangeRate: price).displayString
+            value = details.cryptoAmount.convert(using: price).displayString
         } else {
             value = ""
         }
 
         if let fee = details.fee {
             if let price = price {
-                self.fee = "\(fee.displayString) / \(fee.convertToFiatValue(exchangeRate: price).displayString)"
+                self.fee = "\(fee.displayString) / \(fee.convert(using: price).displayString)"
             } else {
                 self.fee = fee.displayString
             }

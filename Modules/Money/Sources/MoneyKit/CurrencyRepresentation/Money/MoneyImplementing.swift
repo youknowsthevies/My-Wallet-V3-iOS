@@ -95,7 +95,7 @@ extension MoneyImplementing {
     ///   - value:    An amount in minor units. Any fractional digits will be trimmed.
     ///   - currency: A currency.
     public static func create(minor value: Decimal, currency: MoneyCurrency) -> Self {
-        let amount = BigInt(stringLiteral: "\(value.roundTo(places: 0))")
+        let amount = BigInt(decimalLiteral: value)
         return Self(amount: amount, currency: currency)
     }
 

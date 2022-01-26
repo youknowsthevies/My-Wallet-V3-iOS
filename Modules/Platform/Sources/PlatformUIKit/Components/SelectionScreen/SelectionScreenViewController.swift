@@ -124,7 +124,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             }
             .take(1)
             .asSingle()
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] index in
                 self?.tableView.scrollToRow(
                     at: IndexPath(row: index, section: 0),

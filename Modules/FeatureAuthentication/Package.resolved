@@ -38,12 +38,48 @@
         }
       },
       {
+        "package": "MetadataHDWalletKit",
+        "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
+        "state": {
+          "branch": null,
+          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "version": null
+        }
+      },
+      {
         "package": "RxSwift",
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
-          "revision": "cec68169a048a079f461ba203fe85636548d7a89",
+          "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/Boilertalk/secp256k1.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "823281fe9def21b384099b72a9a53ca988317b20",
+          "version": "0.1.4"
+        }
+      },
+      {
+        "package": "swift-algorithms",
+        "repositoryURL": "https://github.com/apple/swift-algorithms.git",
+        "state": {
+          "branch": null,
+          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
+          "version": "0.2.1"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "83b23d940471b313427da226196661856f6ba3e0",
+          "version": "0.4.4"
         }
       },
       {
@@ -53,6 +89,15 @@
           "branch": null,
           "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
           "version": "0.7.0"
+        }
+      },
+      {
+        "package": "cmark-gfm",
+        "repositoryURL": "https://github.com/apple/swift-cmark.git",
+        "state": {
+          "branch": "gfm",
+          "revision": "7fc530e5f12432db9768326ff74dc46de72a24e2",
+          "version": null
         }
       },
       {
@@ -69,8 +114,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
-          "version": "0.28.1"
+          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
+          "version": "0.32.0"
         }
       },
       {
@@ -78,8 +123,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "21f8fdbb3226e5e28a1a2fffac3e0f3deec34bf0",
-          "version": "0.2.1"
+          "revision": "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
+          "version": "0.3.0"
         }
       },
       {
@@ -89,6 +134,24 @@
           "branch": null,
           "revision": "680bf440178a78a627b1c2c64c0855f6523ad5b9",
           "version": "0.3.2"
+        }
+      },
+      {
+        "package": "swift-markdown",
+        "repositoryURL": "https://github.com/apple/swift-markdown.git",
+        "state": {
+          "branch": null,
+          "revision": "1023300b1d6847360ac9ceebbcff2bccacbcf2a5",
+          "version": null
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
+          "version": "0.1.0"
         }
       },
       {
@@ -102,11 +165,11 @@
       },
       {
         "package": "WalletCore",
-        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
+        "repositoryURL": "https://github.com/trustwallet/wallet-core",
         "state": {
           "branch": null,
-          "revision": "b9810df6aeddf2360fea0165e055afeec77ea579",
-          "version": "2.6.34"
+          "revision": "e29ec9324dc03ec4eed39dd6126a8b0d8ef2f209",
+          "version": "2.6.36"
         }
       },
       {

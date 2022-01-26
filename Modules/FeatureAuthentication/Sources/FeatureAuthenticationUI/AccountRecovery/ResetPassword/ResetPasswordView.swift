@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -63,11 +68,10 @@ struct ResetPasswordView: View {
 
             PrimaryButton(
                 title: LocalizedString.Button.resetPassword,
-                action: {
-                    viewStore.send(.reset(password: viewStore.newPassword))
-                },
-                loading: viewStore.binding(get: \.isLoading, send: .none)
-            )
+                isLoading: viewStore.isLoading
+            ) {
+                viewStore.send(.reset(password: viewStore.newPassword))
+            }
             .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
                 viewStore.passwordStrength == .weak)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)

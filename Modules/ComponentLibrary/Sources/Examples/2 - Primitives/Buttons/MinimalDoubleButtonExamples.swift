@@ -23,6 +23,19 @@ struct MinimalDoubleButtonExamplesView: View {
             .environment(\.layoutDirection, .rightToLeft)
 
             MinimalDoubleButton(
+                leadingTitle: "Leading w/ Icon",
+                leadingLeadingView: {
+                    Icon.placeholder
+                },
+                leadingAction: {},
+                trailingTitle: "Trailing w/ Icon",
+                trailingLeadingView: {
+                    Icon.placeholder
+                },
+                trailingAction: {}
+            )
+
+            MinimalDoubleButton(
                 leadingTitle: "leading disabled",
                 leadingAction: {},
                 trailingTitle: "trailing disabled",

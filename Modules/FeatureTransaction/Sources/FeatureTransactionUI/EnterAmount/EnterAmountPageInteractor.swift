@@ -143,7 +143,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     }
                     .asObservable()
             }
-            .subscribeOn(MainScheduler.asyncInstance)
+            .subscribe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
@@ -185,13 +185,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         let fee = transactionState
-            .takeWhile { $0.action == .send }
+            .take(while: { $0.action == .send })
             .compactMap(\.pendingTransaction)
             .map(\.feeAmount)
             .share(scope: .whileConnected)
 
         let auxiliaryViewAccount = transactionState
-            .takeWhile { $0.action.supportsBottomAccountsView }
+            .take(while: { $0.action.supportsBottomAccountsView })
             .map { state -> BlockchainAccount? in
                 switch state.action {
                 case .buy,
@@ -333,7 +333,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             )
 
         let interactorState = transactionStateAndLimitsFeature
-            .subscribeOn(MainScheduler.asyncInstance)
+            .subscribe(on: MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, tuple -> State in
                 let (updater, newLimitsUIEnabled) = tuple
                 guard let self = self else {
@@ -642,7 +642,7 @@ extension TransactionErrorState {
                 return source
             }
             // Convert fiat max amount into crypto amount.
-            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currency)
+            return source.convert(usingInverse: exchangeRate.quote, currency: source.currency)
         }
     }
 }

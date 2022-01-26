@@ -57,7 +57,6 @@ private struct CheckboxToggleStyle: ToggleStyle {
                 configuration.isOn ? .semantic.background : .clear
             )
             .frame(width: 24, height: 24)
-            .onTapGesture { configuration.isOn.toggle() }
             .background(
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .fill(
@@ -69,6 +68,12 @@ private struct CheckboxToggleStyle: ToggleStyle {
                     .stroke(
                         configuration.isOn ? Color.semantic.primary : variant.borderColor
                     )
+            )
+            .overlay(
+                Color.clear
+                    .frame(width: 32, height: 32)
+                    .contentShape(Rectangle())
+                    .onTapGesture { configuration.isOn.toggle() }
             )
     }
 }

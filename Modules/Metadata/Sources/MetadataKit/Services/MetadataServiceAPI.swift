@@ -17,6 +17,14 @@ public protocol MetadataServiceAPI {
         payloadIsDoubleEncrypted: Bool
     ) -> AnyPublisher<MetadataState, MetadataInitialisationError>
 
+    /// Fetches and initialises the root metadata node using a mnemonic phrase
+    /// - Parameters:
+    ///   - mnemonic: A seed phrase of the wallet to be recovered
+    /// - Returns: A `Publisher` of root metadata state or error
+    func initialize(
+        mnemonic: String
+    ) -> AnyPublisher<MetadataState, MetadataInitialisationError>
+
     /// Fetches a the specified metadata entry
     /// - Parameters:
     ///   - type: the type of metadata entry to fetch

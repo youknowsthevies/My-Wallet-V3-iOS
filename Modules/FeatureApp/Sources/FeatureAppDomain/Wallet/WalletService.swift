@@ -5,8 +5,14 @@ import ToolKit
 import WalletPayloadKit
 
 public struct WalletService {
-    public var fetch: (_ password: String) -> AnyPublisher<EmptyValue, WalletError>
-    public var refetch: (_ password: String, _ secondPassword: String) -> AnyPublisher<EmptyValue, WalletError>
+    public var fetch: (
+        _ password: String
+    ) -> AnyPublisher<EmptyValue, WalletError>
+
+    public var fetchUsingSecPassword: (
+        _ password: String,
+        _ secondPassword: String
+    ) -> AnyPublisher<EmptyValue, WalletError>
 }
 
 extension WalletService {
@@ -15,8 +21,8 @@ extension WalletService {
             fetch: { password -> AnyPublisher<EmptyValue, WalletError> in
                 fetcher.fetch(using: password)
             },
-            refetch: { _, _ -> AnyPublisher<EmptyValue, WalletError> in
-                .empty()
+            fetchUsingSecPassword: { password, secondPassword -> AnyPublisher<EmptyValue, WalletError> in
+                fetcher.fetch(using: password, secondPassword: secondPassword)
             }
         )
     }

@@ -40,7 +40,6 @@ extension Screen.Style {
         /// Dark background and light content
         case lightContent(
             ignoresStatusBar: Bool = false,
-            isTranslucent: Bool = false,
             background: UIColor = UIColor.NavigationBar.LightContent.background
         )
 
@@ -48,7 +47,6 @@ extension Screen.Style {
         /// Light background and dark content
         case darkContent(
             ignoresStatusBar: Bool = false,
-            isTranslucent: Bool = false,
             background: UIColor = UIColor.NavigationBar.DarkContent.background
         )
     }
@@ -150,8 +148,8 @@ extension Screen.Style.Bar {
     /// The tint color to apply to the navigation bar background. (`UINavigationBar.barTintColor`)
     public var backgroundColor: UIColor {
         switch self {
-        case .darkContent(ignoresStatusBar: _, isTranslucent: _, background: let color),
-             .lightContent(ignoresStatusBar: _, isTranslucent: _, background: let color):
+        case .darkContent(ignoresStatusBar: _, background: let color),
+             .lightContent(ignoresStatusBar: _, background: let color):
             return color
         }
     }
@@ -163,17 +161,8 @@ extension Screen.Style.Bar {
     /// `true`: Status bar style will not be modified
     var ignoresStatusBar: Bool {
         switch self {
-        case .darkContent(ignoresStatusBar: let value, isTranslucent: _, background: _),
-             .lightContent(ignoresStatusBar: let value, isTranslucent: _, background: _):
-            return value
-        }
-    }
-
-    /// Is translucent.
-    public var isTranslucent: Bool {
-        switch self {
-        case .darkContent(ignoresStatusBar: _, isTranslucent: let value, background: _),
-             .lightContent(ignoresStatusBar: _, isTranslucent: let value, background: _):
+        case .darkContent(ignoresStatusBar: let value, background: _),
+             .lightContent(ignoresStatusBar: let value, background: _):
             return value
         }
     }

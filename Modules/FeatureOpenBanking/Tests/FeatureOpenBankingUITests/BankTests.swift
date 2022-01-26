@@ -36,7 +36,12 @@ final class BankLinkTests: OpenBankingTestCase {
     }
 
     var initialState: BankState {
-        .init(data: .init(account: createAccount, action: .link(institution: institution)))
+        .init(data: .init(
+            account: createAccount,
+            action: .link(
+                institution: institution
+            )
+        ))
     }
 
     func test_initial_state() throws {

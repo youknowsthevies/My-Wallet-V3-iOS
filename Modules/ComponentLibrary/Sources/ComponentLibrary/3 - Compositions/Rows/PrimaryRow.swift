@@ -7,7 +7,7 @@ import SwiftUI
 ///
 /// # Usage:
 ///
-/// Only title and subtitle are mandatory to create a Row. Rest of parameters are optional. When no trailing accessory view es provided, a chevron view is shown
+/// Only title is mandatory to create a Row. Rest of parameters are optional. When no trailing accessory view es provided, a chevron view is shown
 /// ```
 /// PrimaryRow(
 ///     title: "Link a Bank",
@@ -16,7 +16,8 @@ import SwiftUI
 ///     tags: [
 ///         Tag(text: "Fastest", variant: .success),
 ///         Tag(text: "Warning Alert", variant: .warning)
-///     ] {
+///     ],
+///     isSelected: $selection {
 ///         Icon.bank
 ///             .fixedSize()
 ///     } trailing: {
@@ -39,6 +40,10 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     private let leading: Leading
     private let trailing: Trailing
 
+    private let action: (() -> Void)?
+    private let highlight: Bool
+    private let isSelectable: Bool
+
     /// Create a default row with the given data.
     ///
     /// Only Title is mandatory, rest of the parameters are optional and the row will form itself depending on the given data
@@ -47,6 +52,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     ///   - subtitle: Optional subtitle on the main vertical content view
     ///   - description: Optional description text on the main vertical content view
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
+    ///   - isSelected: Binding for the selection state
     ///   - leading: Optional view on the leading part of the row.
     ///   - trailing: Optional view on the trailing part of the row. If no view is provided, a chevron icon is added automatically.
     public init(
@@ -54,18 +60,40 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
+        highlight: Bool = true,
         @ViewBuilder leading: () -> Leading,
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.title = title
         self.subtitle = subtitle
         self.description = description
         self.tags = tags
+        self.highlight = highlight
+        isSelectable = action != nil
         self.leading = leading()
         self.trailing = trailing()
+        self.action = action
     }
 
     public var body: some View {
+        if isSelectable {
+            Button {
+                action?()
+            } label: {
+                horizontalContent
+            }
+            .buttonStyle(
+                PrimaryRowStyle(isSelectable: highlight && isSelectable)
+            )
+        } else {
+            horizontalContent
+                .background(Color.semantic.background)
+                .accessibilityElement(children: .combine)
+        }
+    }
+
+    var horizontalContent: some View {
         HStack(alignment: .customRowVerticalAlignment, spacing: 0) {
             leading
                 .padding(.trailing, Spacing.padding2)
@@ -77,7 +105,6 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Spacing.padding3)
-        .background(Color.semantic.background)
     }
 
     @ViewBuilder var mainContent: some View {
@@ -123,6 +150,16 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     }
 }
 
+private struct PrimaryRowStyle: ButtonStyle {
+
+    let isSelectable: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(configuration.isPressed && isSelectable ? Color.semantic.light : Color.semantic.background)
+    }
+}
+
 extension PrimaryRow where Leading == EmptyView {
 
     /// Initialize a PrimaryRow with no leading view
@@ -131,13 +168,15 @@ extension PrimaryRow where Leading == EmptyView {
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
     ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - isSelected: Binding for the selection state
     ///   - trailing: Optional view displayed at the trailing edge.
     public init(
         title: String,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -145,7 +184,8 @@ extension PrimaryRow where Leading == EmptyView {
             description: description,
             tags: tags,
             leading: { EmptyView() },
-            trailing: trailing
+            trailing: trailing,
+            action: action
         )
     }
 }
@@ -158,13 +198,15 @@ extension PrimaryRow where Trailing == ChevronRight {
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
     ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - isSelected: Binding for the selection state
     ///   - leading: View displayed at the leading edge.
     public init(
         title: String,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        @ViewBuilder leading: () -> Leading
+        @ViewBuilder leading: () -> Leading,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -172,7 +214,8 @@ extension PrimaryRow where Trailing == ChevronRight {
             description: description,
             tags: tags,
             leading: leading,
-            trailing: { ChevronRight() }
+            trailing: { ChevronRight() },
+            action: action
         )
     }
 }
@@ -185,11 +228,13 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
     ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - isSelected: Binding for the selection state
     public init(
         title: String,
         subtitle: String? = nil,
         description: String? = nil,
-        tags: [Tag] = []
+        tags: [Tag] = [],
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -197,7 +242,8 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
             description: description,
             tags: tags,
             leading: { EmptyView() },
-            trailing: { ChevronRight() }
+            trailing: { ChevronRight() },
+            action: action
         )
     }
 }
@@ -213,6 +259,7 @@ public struct ChevronRight: View {
                     dark: .palette.grey400
                 )
             )
+            .flipsForRightToLeftLayoutDirection(true)
     }
 }
 
@@ -230,124 +277,141 @@ extension VerticalAlignment {
 struct PrimaryRow_Previews: PreviewProvider {
 
     static var previews: some View {
-        Group {
-            PrimaryRow(
-                title: "Trading",
-                subtitle: "Buy & Sell"
-            )
+        PreviewController(selection: 0)
             .previewLayout(.sizeThatFits)
-            .previewDisplayName("Default Row")
+    }
 
-            PrimaryRow(
-                title: "Email Address",
-                subtitle: "satoshi@blockchain.com",
-                tags: [Tag(text: "Confirmed", variant: .success)]
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Row with Tag")
+    struct PreviewController: View {
 
-            PrimaryRow(
-                title: "From: BTC Trading Account",
-                subtitle: "To: 0x093871209487120934812027675"
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Default Row")
+        @State var selection: Int
 
-            PrimaryRow(
-                title: "Link a Bank",
-                subtitle: "Instant Connection",
-                description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
-                tags: [
-                    Tag(text: "Fastest", variant: .success),
-                    Tag(text: "Warning Alert", variant: .warning)
-                ]
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Large Row")
-
-            PrimaryRow(
-                title: "Cloud Backup",
-                subtitle: "Buy & Sell",
-                trailing: {
-                    Switch()
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Toggle Row")
-
-            PrimaryRow(title: "Features and Limits")
-                .previewLayout(.sizeThatFits)
-                .previewDisplayName("Just title Row")
+        init(selection: Int) {
+            _selection = State(initialValue: selection)
         }
-        .frame(width: 375)
 
-        Group {
-            PrimaryRow(
-                title: "Back Up Your Wallet",
-                subtitle: "Step 1",
-                leading: {
-                    Icon.wallet
-                        .fixedSize()
-                        .accentColor(.semantic.dark)
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Action Row")
-
-            PrimaryRow(
-                title: "Gold Level",
-                subtitle: "Higher Trading Limits",
-                tags: [Tag(text: "Approved", variant: .success)],
-                leading: {
-                    Icon.apple
-                        .fixedSize()
-                        .accentColor(.semantic.orangeBG)
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Row with Tag")
-
-            PrimaryRow(
-                title: "Trade",
-                subtitle: "BTC -> ETH",
-                leading: {
-                    Icon.trade
-                        .fixedSize()
-                        .accentColor(.semantic.success)
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Action Row")
-
-            PrimaryRow(
-                title: "Link a Bank",
-                subtitle: "Instant Connection",
-                description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
-                tags: [
-                    Tag(text: "Fastest", variant: .success),
-                    Tag(text: "Warning Alert", variant: .warning)
-                ],
-                leading: {
-                    Icon.bank
-                        .fixedSize()
-                        .accentColor(.semantic.primary)
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Large Row")
-
-            PrimaryRow(
-                title: "Features and Limits",
-                leading: {
-                    Icon.blockchain
-                        .fixedSize()
-                        .accentColor(.semantic.primary)
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Just title Row")
+        var body: some View {
+            Group {
+                PrimaryRow(
+                    title: "Trading",
+                    subtitle: "Buy & Sell",
+                    action: {
+                        selection = 0
+                    }
+                )
+                PrimaryRow(
+                    title: "Email Address",
+                    subtitle: "satoshi@blockchain.com",
+                    tags: [Tag(text: "Confirmed", variant: .success)],
+                    action: {
+                        selection = 1
+                    }
+                )
+                PrimaryRow(
+                    title: "From: BTC Trading Account",
+                    subtitle: "To: 0x093871209487120934812027675",
+                    action: {
+                        selection = 2
+                    }
+                )
+            }
+            .frame(width: 375)
+            Group {
+                PrimaryRow(
+                    title: "Link a Bank",
+                    subtitle: "Instant Connection",
+                    description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
+                    tags: [
+                        Tag(text: "Fastest", variant: .success),
+                        Tag(text: "Warning Alert", variant: .warning)
+                    ],
+                    action: {
+                        selection = 3
+                    }
+                )
+                PrimaryRow(
+                    title: "Cloud Backup",
+                    subtitle: "Buy & Sell",
+                    trailing: {
+                        Switch()
+                    }
+                )
+                PrimaryRow(
+                    title: "Features and Limits",
+                    action: {
+                        selection = 5
+                    }
+                )
+            }
+            .frame(width: 375)
+            Group {
+                PrimaryRow(
+                    title: "Back Up Your Wallet",
+                    subtitle: "Step 1",
+                    leading: {
+                        Icon.wallet
+                            .fixedSize()
+                            .accentColor(.semantic.dark)
+                    },
+                    action: {
+                        selection = 6
+                    }
+                )
+                PrimaryRow(
+                    title: "Gold Level",
+                    subtitle: "Higher Trading Limits",
+                    tags: [Tag(text: "Approved", variant: .success)],
+                    leading: {
+                        Icon.apple
+                            .fixedSize()
+                            .accentColor(.semantic.orangeBG)
+                    },
+                    action: {
+                        selection = 7
+                    }
+                )
+                PrimaryRow(
+                    title: "Trade",
+                    subtitle: "BTC -> ETH",
+                    leading: {
+                        Icon.trade
+                            .fixedSize()
+                            .accentColor(.semantic.success)
+                    },
+                    action: {
+                        selection = 8
+                    }
+                )
+                PrimaryRow(
+                    title: "Link a Bank",
+                    subtitle: "Instant Connection",
+                    description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
+                    tags: [
+                        Tag(text: "Fastest", variant: .success),
+                        Tag(text: "Warning Alert", variant: .warning)
+                    ],
+                    leading: {
+                        Icon.bank
+                            .fixedSize()
+                            .accentColor(.semantic.primary)
+                    },
+                    action: {
+                        selection = 9
+                    }
+                )
+                PrimaryRow(
+                    title: "Features and Limits",
+                    leading: {
+                        Icon.blockchain
+                            .fixedSize()
+                            .accentColor(.semantic.primary)
+                    },
+                    action: {
+                        selection = 10
+                    }
+                )
+            }
+            .frame(width: 375)
         }
-        .frame(width: 375)
     }
 
     struct Switch: View {

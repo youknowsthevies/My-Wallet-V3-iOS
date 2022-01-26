@@ -36,10 +36,10 @@ final class FiatCustodialAccount: FiatAccount {
     var actions: Single<AvailableActions> {
         let hasActionableBalance = actionableBalance
             .map(\.isPositive)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
         let canTransactWithBanks = paymentMethodService
             .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
 
         return Single.zip(canTransactWithBanks, hasActionableBalance)
             .map { fiatSupported, hasPositiveBalance in

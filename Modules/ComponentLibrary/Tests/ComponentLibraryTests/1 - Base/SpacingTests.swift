@@ -54,7 +54,7 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testPadding() {
@@ -62,7 +62,7 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testBorderRadii() {
@@ -70,6 +70,6 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }

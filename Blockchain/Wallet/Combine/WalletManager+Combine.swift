@@ -12,12 +12,6 @@ extension WalletManager: WalletManagerReactiveAPI {
             .ignoreFailure()
     }
 
-    var walletJSisReady: AnyPublisher<Void, Error> {
-        rx.walletJSReady
-            .asPublisher()
-            .mapToVoid()
-    }
-
     // MARK: WalletAuthDelegate
 
     /// Reactive wrapper for delegate method `walletDidDecrypt(withSharedKey:guid:)`

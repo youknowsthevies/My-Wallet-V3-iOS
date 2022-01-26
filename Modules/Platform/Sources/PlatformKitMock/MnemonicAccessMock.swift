@@ -1,22 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
-import RxSwift
+import WalletPayloadKit
 
 final class MnemonicAccessMock: MnemonicAccessAPI {
 
-    var underlyingMnemonicMaybe: Maybe<Mnemonic> = .just("")
-    var underlyingMnemonicSingle: Single<Mnemonic> = .just("")
+    var underlyingMnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> = .just("")
 
-    var mnemonic: Maybe<Mnemonic> {
-        underlyingMnemonicMaybe
+    var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
+        underlyingMnemonic
     }
 
-    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
-        underlyingMnemonicMaybe
+    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
+        underlyingMnemonic
     }
 
-    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        underlyingMnemonicSingle
+    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
+        underlyingMnemonic
     }
 }

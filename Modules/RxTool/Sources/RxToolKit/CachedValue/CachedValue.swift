@@ -112,8 +112,8 @@ public class CachedValue<Value> {
                 self?.refreshControl.update(refreshDate: Date())
                 self?.atomicValue.mutate { $0 = value }
             })
-            .observeOn(configuration.scheduler)
-            .subscribeOn(configuration.scheduler)
+            .observe(on: configuration.scheduler)
+            .subscribe(on: configuration.scheduler)
     }
 
     private func performFetch() -> Single<Value> {

@@ -190,7 +190,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
         pairsService.fetch()
             .map { .value($0) }
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .catchAndReturn(.invalid(.valueCouldNotBeCalculated))
             .startWith(.invalid(.empty))
             .bindAndCatch(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)

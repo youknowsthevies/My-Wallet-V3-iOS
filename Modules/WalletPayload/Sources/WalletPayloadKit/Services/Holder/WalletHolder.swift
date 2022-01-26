@@ -6,41 +6,10 @@ import MetadataKit
 import ToolKit
 import WalletCore
 
-enum WalletState {
-    case partial(wallet: Wallet)
-    case loaded(wallet: Wallet, metadata: MetadataState)
-
-    var isInitialised: Bool {
-        isMetadataInitialised
-    }
-
-    var wallet: Wallet {
-        switch self {
-        case .partial(wallet: let wallet):
-            return wallet
-        case .loaded(wallet: let wallet, _):
-            return wallet
-        }
-    }
-
-    var metadata: MetadataState? {
-        switch self {
-        case .partial:
-            return nil
-        case .loaded(_, metadata: let metadata):
-            return metadata
-        }
-    }
-
-    private var isMetadataInitialised: Bool {
-        metadata != nil
-    }
-}
-
 typealias WalletCreating = (BlockchainWallet) -> Wallet
 
 /// Responsible for holding a decoded wallet in memory
-final class WalletHolder: WalletHolderAPI, InMemoryWalletProviderAPI, ReleasableWalletAPI {
+final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
 
     var walletStatePublisher: AnyPublisher<WalletState?, Never> {
         walletState.publisher
@@ -48,7 +17,7 @@ final class WalletHolder: WalletHolderAPI, InMemoryWalletProviderAPI, Releasable
 
     private(set) var walletState = Atomic<WalletState?>(nil)
 
-    func provideWallet() -> WalletState? {
+    func provideWalletState() -> WalletState? {
         walletState.value
     }
 

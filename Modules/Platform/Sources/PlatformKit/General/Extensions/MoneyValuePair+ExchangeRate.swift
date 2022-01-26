@@ -13,10 +13,9 @@ extension MoneyValuePair {
             return MoneyValuePair.zero(baseCurrency: base.currency, quoteCurrency: quote.currency)
         }
 
-        // swiftlint:disable:next force_try
-        return try! MoneyValuePair(
+        return MoneyValuePair(
             base: .one(currency: base.currency),
-            quote: quote.convert(usingInverse: base, currencyType: quote.currency)
+            quote: quote.convert(usingInverse: base, currency: quote.currency)
         )
     }
 
@@ -29,10 +28,9 @@ extension MoneyValuePair {
             return MoneyValuePair.zero(baseCurrency: quote.currency, quoteCurrency: base.currency)
         }
 
-        // swiftlint:disable:next force_try
-        return try! MoneyValuePair(
+        return MoneyValuePair(
             base: .one(currency: quote.currencyType),
-            quote: base.convert(usingInverse: quote, currencyType: base.currencyType)
+            quote: base.convert(usingInverse: quote, currency: base.currencyType)
         )
     }
 }

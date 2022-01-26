@@ -5,11 +5,13 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppUI
 import Foundation
 import JavaScriptCore
 import PlatformKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 final class EthereumWallet: NSObject {
 
@@ -138,7 +140,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 )
                 return Disposables.create()
             }
-            .subscribeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.instance)
     }
 }
 

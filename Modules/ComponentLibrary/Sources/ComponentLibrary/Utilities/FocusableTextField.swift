@@ -37,11 +37,13 @@ struct FocusableTextField: UIViewRepresentable {
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
         configuration(uiView)
-        switch isFirstResponder {
-        case true:
-            uiView.becomeFirstResponder()
-        case false:
-            uiView.resignFirstResponder()
+        DispatchQueue.main.async { [isFirstResponder] in
+            switch isFirstResponder {
+            case true:
+                uiView.becomeFirstResponder()
+            case false:
+                uiView.resignFirstResponder()
+            }
         }
     }
 

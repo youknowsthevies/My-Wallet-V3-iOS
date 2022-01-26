@@ -25,10 +25,10 @@ final class EitherViewControllerTests: XCTestCase {
         let either: Either<Green, Blue> = .left(Green())
         let controller = EitherViewController(child: either)
 
-        assertSnapshot(matching: controller, as: .image)
+        assertSnapshot(matching: controller, as: .image, record: false)
 
         controller.child = .right(Blue())
 
-        assertSnapshot(matching: controller, as: .image)
+        assertSnapshot(matching: controller, as: .image, record: false)
     }
 }

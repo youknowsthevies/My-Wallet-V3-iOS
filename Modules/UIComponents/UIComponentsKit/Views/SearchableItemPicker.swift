@@ -1,6 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import Foundation
 import SwiftUI
 import ToolKit
@@ -130,11 +134,11 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
                 } else {
                     EmptyView()
                 }
+            },
+            action: {
+                onSelection(item)
             }
         )
-        .onTapGesture {
-            onSelection(item)
-        }
     }
 
     private func filtered(_ items: [SearchableItem<Identifier>]) -> [SearchableItem<Identifier>] {

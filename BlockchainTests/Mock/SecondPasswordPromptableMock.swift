@@ -2,6 +2,7 @@
 
 @testable import Blockchain
 import Combine
+import FeatureAppUI
 
 final class SecondPasswordPromptableMock: SecondPasswordPromptable {
     var underlyingSecondPasswordIfNeeded: AnyPublisher<

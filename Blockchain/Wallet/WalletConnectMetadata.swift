@@ -7,6 +7,7 @@ import FeatureWalletConnectDomain
 import Foundation
 import PlatformKit
 import ToolKit
+import WalletPayloadKit
 
 final class WalletConnectMetadata: NSObject, WalletConnectMetadataAPI {
 

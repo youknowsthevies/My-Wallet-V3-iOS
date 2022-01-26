@@ -2,9 +2,11 @@
 
 import MoneyKit
 import PlatformKit
+import ToolKit
 
 public struct InterestAccountBalanceDetails: Equatable {
     public let balance: String?
+    public let locked: String?
     public let pendingInterest: String?
     public let totalInterest: String?
     public let pendingWithdrawal: String?
@@ -15,6 +17,7 @@ public struct InterestAccountBalanceDetails: Equatable {
     public init(
         balance: String? = nil,
         pendingInterest: String? = nil,
+        locked: String? = nil,
         totalInterest: String? = nil,
         pendingWithdrawal: String? = nil,
         pendingDeposit: String? = nil,
@@ -22,6 +25,7 @@ public struct InterestAccountBalanceDetails: Equatable {
     ) {
         self.balance = balance
         self.pendingDeposit = pendingDeposit
+        self.locked = locked
         self.pendingInterest = pendingInterest
         self.totalInterest = totalInterest
         self.pendingWithdrawal = pendingWithdrawal
@@ -38,6 +42,19 @@ extension InterestAccountBalanceDetails {
             return nil
         }
         return currencyType
+    }
+
+    public var withdrawableBalance: MoneyValue? {
+        guard let currency = currencyType else { return nil }
+        guard let balance = moneyBalance else { return nil }
+        guard let locked = lockedBalance else { return nil }
+        let available = try? balance - locked
+        return available ?? .zero(currency: currency)
+    }
+
+    public var lockedBalance: MoneyValue? {
+        guard let currency = currencyType else { return nil }
+        return MoneyValue.create(minor: locked ?? "0", currency: currency)
     }
 
     public var moneyBalance: MoneyValue? {

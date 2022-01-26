@@ -98,7 +98,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
         )
 
         actionCellPresenters
-            .catchError { _ in
+            .catch { _ in
                 .just([])
             }
             .map { [assetBalanceViewPresenter] presenters -> [WalletActionCellType] in

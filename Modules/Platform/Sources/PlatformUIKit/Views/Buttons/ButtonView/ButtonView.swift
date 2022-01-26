@@ -111,7 +111,7 @@ public final class ButtonView: UIView {
                     latest: false,
                     scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
                 )
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 

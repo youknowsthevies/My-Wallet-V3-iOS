@@ -159,7 +159,7 @@ public final class StateService: StateServiceAPI {
 
     public var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     public let nextRelay = PublishRelay<Void>()
@@ -204,12 +204,12 @@ public final class StateService: StateServiceAPI {
         self.tierUpgradeRouter = tierUpgradeRouter
 
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
@@ -217,7 +217,7 @@ public final class StateService: StateServiceAPI {
     public func cardRoutingInteractor(with checkoutData: CheckoutData?) -> CardRouterInteractor {
         let interactor = CardRouterInteractor()
         interactor.completionCardData
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self, cardData) in
                 self.previous()
                 if let checkoutData = checkoutData?.checkoutData(byAppending: cardData) {
@@ -227,7 +227,7 @@ public final class StateService: StateServiceAPI {
             .disposed(by: disposeBag)
 
         interactor.cancellation
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self) in
                 self.previous()
             }
@@ -323,7 +323,7 @@ public final class StateService: StateServiceAPI {
                 pendingOrderDetailsService.pendingOrderDetails.map(\.first),
                 isFiatCurrencySupported
             ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .handleLoaderForLifecycle(
                 loader: loader,
                 style: .circle
@@ -398,7 +398,7 @@ public final class StateService: StateServiceAPI {
                         states: self.states(byAppending: state)
                     )
                 },
-                onError: { [weak alert] _ in
+                onFailure: { [weak alert] _ in
                     alert?.error(in: nil, action: nil)
                 }
             )
@@ -446,7 +446,7 @@ public final class StateService: StateServiceAPI {
                 } else {
                     self?.applyStateToPendingKYC(using: data)
                 }
-            } onError: { [weak self] error in
+            } onFailure: { [weak self] error in
                 Logger.shared.error(error)
                 self?.applyStateToPendingKYC(using: data)
             }

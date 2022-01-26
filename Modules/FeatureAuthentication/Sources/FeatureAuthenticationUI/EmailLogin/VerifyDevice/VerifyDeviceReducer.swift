@@ -204,23 +204,28 @@ let verifyDeviceReducer = Reducer.combine(
                     switch state.credentialsContext {
                     case .walletInfo(let walletInfo):
                         var twoFAState: TwoFAState?
-                        var hardwareKeyState: HardwareKeyState?
                         if let twoFAType = walletInfo.twoFAType {
                             switch twoFAType {
                             case .sms:
                                 twoFAState = TwoFAState(
                                     twoFAType: .sms,
                                     isTwoFACodeFieldVisible: true,
-                                    isResendSMSButtonVisible: twoFAType == .sms
+                                    isResendSMSButtonVisible: true
                                 )
                             case .google:
                                 twoFAState = TwoFAState(
                                     twoFAType: .google,
                                     isTwoFACodeFieldVisible: true
                                 )
-                            case .yubiKey, .yubikeyMtGox:
-                                hardwareKeyState = HardwareKeyState(
-                                    isHardwareKeyCodeFieldVisible: true
+                            case .yubiKey:
+                                twoFAState = TwoFAState(
+                                    twoFAType: .yubiKey,
+                                    isTwoFACodeFieldVisible: true
+                                )
+                            case .yubikeyMtGox:
+                                twoFAState = TwoFAState(
+                                    twoFAType: .yubikeyMtGox,
+                                    isTwoFACodeFieldVisible: true
                                 )
                             default:
                                 break
@@ -233,7 +238,7 @@ let verifyDeviceReducer = Reducer.combine(
                                 walletGuid: walletInfo.guid
                             ),
                             twoFAState: twoFAState,
-                            hardwareKeyState: hardwareKeyState
+                            nabuInfo: walletInfo.nabuInfo
                         )
                     case .walletIdentifier(let guid):
                         state.credentialsState = CredentialsState(

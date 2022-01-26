@@ -6,6 +6,7 @@ public struct InterestAccountBalanceDetailsResponse: Decodable {
 
     public let balance: String?
     public let pendingInterest: String?
+    public let lockedBalance: String?
     public let totalInterest: String?
     public let pendingWithdrawal: String?
     public let pendingDeposit: String?
@@ -14,6 +15,7 @@ public struct InterestAccountBalanceDetailsResponse: Decodable {
         case balance
         case pendingInterest
         case totalInterest
+        case locked
         case pendingWithdrawal
         case pendingDeposit
     }
@@ -22,6 +24,7 @@ public struct InterestAccountBalanceDetailsResponse: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
         balance = try values.decodeIfPresent(String.self, forKey: .balance)
+        lockedBalance = try values.decodeIfPresent(String.self, forKey: .locked)
         pendingDeposit = try values.decodeIfPresent(String.self, forKey: .pendingDeposit)
         pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)
         pendingWithdrawal = try values.decodeIfPresent(String.self, forKey: .pendingWithdrawal)
@@ -34,6 +37,7 @@ extension InterestAccountBalanceDetails {
         self.init(
             balance: response.balance,
             pendingInterest: response.pendingInterest,
+            locked: response.lockedBalance,
             totalInterest: response.totalInterest,
             pendingWithdrawal: response.pendingWithdrawal,
             pendingDeposit: response.pendingDeposit,

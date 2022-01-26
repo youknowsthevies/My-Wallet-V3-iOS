@@ -22,7 +22,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .map(\.value)
                 .compactMap { $0?.totalInterest }
                 .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
-                .map { $0.toDisplayString(includeSymbol: true) }
+                .map(\.displayString)
                 .map { .loaded(next: .init(text: $0)) }
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
@@ -60,7 +60,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .map(\.value)
                 .compactMap { $0?.pendingInterest }
                 .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
-                .map { $0.toDisplayString(includeSymbol: true) }
+                .map(\.displayString)
                 .map { .loaded(next: .init(text: $0)) }
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
@@ -133,7 +133,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .asObservable()
                 .compactMap { "\($0)% \(LocalizationId.annually)" }
                 .map { .loaded(next: .init(text: $0)) }
-                .catchErrorJustReturn(.loading)
+                .catchAndReturn(.loading)
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()

@@ -1,0 +1,39 @@
+name: Example
+
+options:
+
+  bundleIDPrefix: com.rainydayapps
+  deploymentTarget:
+    iOS: 14.0
+
+packages: 
+  ComposableArchitectureExtensions:
+    path: ../ComposableArchitectureExtensions
+
+targets:
+
+  ComposableNavigationExample:
+  
+    platform: iOS
+    type: application
+    info:
+      path: Example/Info.plist
+      properties:
+            UILaunchScreen:
+    sources:
+      - path: ./Example/App.swift
+    dependencies: 
+      - package: ComposableArchitectureExtensions
+        product: ComposableNavigation
+
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.composable.navigation
+
+schemes:
+        
+  ComposableNavigationExample:
+    build:
+      targets:
+        ComposableNavigationExample: all

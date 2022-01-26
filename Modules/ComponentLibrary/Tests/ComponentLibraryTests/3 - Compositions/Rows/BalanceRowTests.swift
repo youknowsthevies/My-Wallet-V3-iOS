@@ -16,7 +16,8 @@ final class BalanceRowTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 }

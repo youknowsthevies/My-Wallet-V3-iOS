@@ -18,7 +18,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     public func refresh() {}
@@ -44,15 +44,15 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currency = result.historicalPrices.currency
                     let window = result.priceWindow
                     let currentPrice = result.currentFiatValue
-                    let priceChange = FiatValue.create(
-                        major: result.historicalPrices.fiatChange,
+                    let priceChange = FiatValue(
+                        amount: result.historicalPrices.fiatChange,
                         currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
                             currentPrice: currentPrice.moneyValue,
                             time: window.time(for: currency),
-                            changePercentage: delta,
+                            changePercentage: delta.doubleValue,
                             priceChange: priceChange.moneyValue
                         )
                     )
@@ -62,27 +62,21 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
                     let fiatCurrency = currentFiatValue.currency
                     guard let selected = prices.last else { return .loading }
-                    let adjusted = HistoricalPriceSeries(
-                        currency: historicalPrices.currency,
-                        prices: prices
-                    )
+                    let adjusted = HistoricalPriceSeries(currency: historicalPrices.currency, prices: prices)
 
-                    let priceChange = FiatValue.create(
-                        major: adjusted.fiatChange,
-                        currency: fiatCurrency
-                    )
+                    let priceChange = FiatValue(amount: adjusted.fiatChange, currency: fiatCurrency)
 
                     return .loaded(
                         next: .init(
                             currentPrice: selected.moneyValue,
                             time: .timestamp(selected.timestamp),
-                            changePercentage: adjusted.delta,
+                            changePercentage: adjusted.delta.doubleValue,
                             priceChange: priceChange.moneyValue
                         )
                     )
                 }
             }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()

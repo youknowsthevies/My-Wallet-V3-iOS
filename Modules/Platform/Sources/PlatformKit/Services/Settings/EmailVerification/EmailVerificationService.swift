@@ -95,7 +95,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                         return ()
                     }
                     /// If email is not verified try again
-                    .catchError { error -> Single<Void> in
+                    .catch { error -> Single<Void> in
                         switch error {
                         case ServiceError.emailNotVerified:
                             return Single<Int>

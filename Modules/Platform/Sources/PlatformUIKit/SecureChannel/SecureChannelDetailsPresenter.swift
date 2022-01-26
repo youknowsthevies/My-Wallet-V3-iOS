@@ -17,7 +17,7 @@ final class SecureChannelDetailsPresenter: DetailsScreenPresenterAPI {
     let navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .custom(
         leading: .none,
         trailing: .close,
-        barStyle: .darkContent(isTranslucent: true, background: .clear)
+        barStyle: .darkContent(background: .clear)
     )
 
     let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default

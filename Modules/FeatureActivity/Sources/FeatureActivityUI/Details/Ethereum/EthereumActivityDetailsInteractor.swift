@@ -39,10 +39,10 @@ final class EthereumActivityDetailsInteractor {
         let transaction = detailsService
             .details(for: identifier)
         let note = note(for: identifier)
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
         let price = price(at: createdAt)
             .optional()
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
 
         return Observable
             .combineLatest(

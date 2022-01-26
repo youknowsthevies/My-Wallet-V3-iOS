@@ -36,12 +36,12 @@ class KYCStateSelectionPresenter {
 
     func fetchStates(for country: CountryData) {
         disposable = interactor.fetchState(for: country)
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] states in
                 guard let strongSelf = self else { return }
                 strongSelf.view?.display(states: states)
-            }, onError: { error in
+            }, onFailure: { error in
                 Logger.shared.error("Failed to fetch states: \(error)")
             })
     }

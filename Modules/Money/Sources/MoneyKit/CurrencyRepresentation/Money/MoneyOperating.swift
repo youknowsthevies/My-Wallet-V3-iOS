@@ -172,10 +172,8 @@ extension MoneyOperating {
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func * (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(lhs, rhs)
-        let productAmount = (lhs.amount * rhs.amount)
-            .quotientAndRemainder(dividingBy: BigInt(10).power(lhs.precision))
-            .quotient
-        return Self(amount: productAmount, currency: lhs.currency)
+        let amount = (lhs.amount * rhs.amount) / BigInt(10).power(lhs.precision)
+        return Self(amount: amount, currency: lhs.currency)
     }
 
     /// Calculates the product of two money, and stores the result in the left-hand-side variable.
@@ -204,16 +202,8 @@ extension MoneyOperating {
             throw MoneyOperatingError.divideByZero
         }
 
-        let decimalPower = BigInt(10).power(lhs.precision)
-        let (quotient, remainder) = lhs.amount.quotientAndRemainder(dividingBy: rhs.amount)
-        let quotientResult = quotient * decimalPower
-        let remainderDivisor = rhs.amount / decimalPower
-        guard remainder != 0, remainderDivisor != 0 else {
-            return Self(amount: quotientResult, currency: lhs.currency)
-        }
-
-        let remainderResult = remainder / remainderDivisor
-        return Self(amount: quotientResult + remainderResult, currency: lhs.currency)
+        let amount = (lhs.amount * BigInt(10).power(rhs.precision)) / rhs.amount
+        return Self(amount: amount, currency: lhs.currency)
     }
 
     /// Returns the quotient of dividing two money, and stores the result in the left-hand-side variable.
@@ -229,6 +219,34 @@ extension MoneyOperating {
         lhs = try lhs / rhs
     }
 
+    /// Converts the current money with currency `A` into another money with currency `B`, using a given exchange rate from `A` to `B`.
+    ///
+    /// - Parameter exchangeRate: An exchange rate, representing one major unit of currency `A` in currency `B`.
+    public func convert<T: MoneyOperating>(using exchangeRate: T) -> T {
+        guard currencyType != exchangeRate.currencyType else {
+            // Converting to the same currency.
+            return T(amount: amount, currency: exchangeRate.currency)
+        }
+        guard !isZero, !exchangeRate.isZero else {
+            return .zero(currency: exchangeRate.currency)
+        }
+        let conversionAmount = (amount * exchangeRate.amount) / BigInt(10).power(precision)
+        return T(amount: conversionAmount, currency: exchangeRate.currency)
+    }
+
+    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `B` to `A`.
+    ///
+    /// - Parameters:
+    ///   - exchangeRate: An exchange rate, representing one major unit of currency `B` in currency `A`.
+    ///   - currencyType: The destination currency `B`.
+    public func convert<T: MoneyOperating>(usingInverse exchangeRate: Self, currency: T.MoneyCurrency) -> T {
+        guard !isZero, !exchangeRate.isZero else {
+            return .zero(currency: currency)
+        }
+        let conversionAmount = (amount * BigInt(10).power(currency.precision)) / exchangeRate.amount
+        return T(amount: conversionAmount, currency: currency)
+    }
+
     /// Returns the value before a percentage increase/decrease (e.g. for a value of 15, and a `percentChange` of 0.5 i.e. 50%, this returns 10).
     ///
     /// - Parameter percentageChange: A percentage of change.
@@ -237,8 +255,8 @@ extension MoneyOperating {
         guard !percentageChange.isNaN, !percentageChange.isZero, percentageChange.isNormal else {
             return Self.zero(currency: currency)
         }
-        let majorAmount = displayMajorValue / Decimal(percentageChange)
-        return Self.create(major: majorAmount, currency: currency)
+        let minorAmount = amount.divide(by: Decimal(percentageChange))
+        return Self.create(minor: minorAmount, currency: currency)
     }
 
     /// Returns the percentage of the current money in another, rounded to 4 decimal places.
@@ -284,7 +302,7 @@ extension MoneyOperating {
     ///   - y: The value to calculate the percentage in.
     private static func percentage(of x: Self, in y: Self) throws -> Decimal {
         try ensureComparable(x, y)
-        return x.amount.decimalDivision(divisor: y.amount).roundTo(places: 4)
+        return x.amount.decimalDivision(by: y.amount).roundTo(places: 4)
     }
 
     /// Checks that two money have matching currencies.

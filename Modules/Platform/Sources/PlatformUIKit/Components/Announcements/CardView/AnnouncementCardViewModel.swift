@@ -228,7 +228,7 @@ public final class AnnouncementCardViewModel {
             .take(1)
             .ignoreElements()
             .asCompletable()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private let disposeBag = DisposeBag()

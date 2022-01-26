@@ -21,7 +21,7 @@ public final class AssetLineChartPresenter {
     public var state: Observable<AssetLineChart.State.Presentation> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private lazy var setup: Void = {

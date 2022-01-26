@@ -1,11 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import ToolKit
 
 public enum WalletError: LocalizedError, Equatable {
+    case unknown
     case payloadNotFound
     case initialization(WalletInitializationError)
     case decryption(WalletDecryptionError)
+    case recovery(WalletRecoverError)
 
     public var errorDescription: String? {
         switch self {
@@ -16,25 +19,72 @@ public enum WalletError: LocalizedError, Equatable {
             return error.errorDescription
         case .initialization(let error):
             return error.errorDescription
+        case .recovery(let error):
+            return error.errorDescription
+        case .unknown:
+            return ""
+        }
+    }
+
+    static func map(from error: PayloadCryptoError) -> WalletError {
+        switch error {
+        case .decodingFailed:
+            return .decryption(.genericDecodeError)
+        case .noPassword:
+            return .initialization(.invalidSecondPassword)
+        case .keyDerivationFailed:
+            return .initialization(.invalidSecondPassword)
+        case .encryptionFailed:
+            return .initialization(.invalidSecondPassword)
+        case .decryptionFailed:
+            return .initialization(.invalidSecondPassword)
+        case .unknown:
+            return .unknown
+        case .noEncryptedWalletData:
+            return .unknown
+        case .unsupportedPayloadVersion:
+            return .unknown
+        case .failedToDecryptV1Payload:
+            return .unknown
         }
     }
 }
 
 public enum WalletInitializationError: LocalizedError, Equatable {
     case unknown
+    case missingWallet
     case missingSeedHex
     case metadataInitialization
     case needsSecondPassword
+    case invalidSecondPassword
 
     public var errorDescription: String? {
         switch self {
         case .unknown:
+            return ""
+        case .missingWallet:
             return ""
         case .missingSeedHex:
             return ""
         case .metadataInitialization:
             return ""
         case .needsSecondPassword:
+            return ""
+        case .invalidSecondPassword:
+            return ""
+        }
+    }
+}
+
+public enum WalletRecoverError: LocalizedError, Equatable {
+    case unknown
+    case invalidSeedPhrase
+
+    public var errorDescription: String? {
+        switch self {
+        case .unknown:
+            return ""
+        case .invalidSeedPhrase:
             return ""
         }
     }
@@ -43,6 +93,8 @@ public enum WalletInitializationError: LocalizedError, Equatable {
 public enum WalletDecryptionError: LocalizedError, Equatable {
     case decryptionError
     case decodeError(Error)
+    case genericDecodeError
+    case hdWalletCreation
 
     public var errorDescription: String? {
         switch self {
@@ -50,6 +102,10 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
             return LocalizationConstants.WalletPayloadKit.Error.decryptionFailed
         case .decodeError(let error):
             return error.localizedDescription
+        case .genericDecodeError:
+            return LocalizationConstants.WalletPayloadKit.Error.unknown
+        case .hdWalletCreation:
+            unimplemented("WalletCore failure when creating HDWallet from seedHex")
         }
     }
 
@@ -59,6 +115,8 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
             return true
         case (.decodeError(let lhsError), .decodeError(let rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.genericDecodeError, .genericDecodeError):
+            return true
         default:
             return false
         }

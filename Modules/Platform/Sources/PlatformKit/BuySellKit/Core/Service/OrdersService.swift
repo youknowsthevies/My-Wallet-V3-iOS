@@ -1,13 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
+import NabuNetworkError
 import RxRelay
 import RxSwift
 import RxToolKit
 import ToolKit
 
+public enum OrdersServiceError: Error {
+    case mappingError
+    case network(NabuNetworkError)
+}
+
 public protocol OrdersServiceAPI: AnyObject {
+
+    var hasUserMadeAnyPurchases: AnyPublisher<Bool, OrdersServiceError> { get }
 
     /// Streams all cached Simple Buy orders from cache, or fetch from
     /// remote if they are not cached
@@ -24,11 +33,28 @@ final class OrdersService: OrdersServiceAPI {
 
     // MARK: - Service Error
 
-    enum ServiceError: Error {
-        case mappingError
-    }
+    private struct CacheKey: Hashable {}
 
     // MARK: - Exposed
+
+    var hasUserMadeAnyPurchases: AnyPublisher<Bool, OrdersServiceError> {
+        cachedAccumulatedTrades
+            .stream(key: CacheKey())
+            .compactMap { result -> [AccumulatedTradeDetails]? in
+                guard case .success(let values) = result else {
+                    return nil
+                }
+                return values
+            }
+            .map { accumulatedTradeAmounts -> Bool in
+                guard let tradedAmountOfAllTime = accumulatedTradeAmounts.first(where: { $0.period == .all }) else {
+                    return false
+                }
+                return !tradedAmountOfAllTime.amount.isZero
+            }
+            .setFailureType(to: OrdersServiceError.self)
+            .eraseToAnyPublisher()
+    }
 
     var orders: Single<[OrderDetails]> {
         ordersCachedValue.valueSingle
@@ -40,6 +66,12 @@ final class OrdersService: OrdersServiceAPI {
             schedulerIdentifier: "OrdersService"
         )
     )
+
+    private let cachedAccumulatedTrades: CachedValueNew<
+        CacheKey,
+        [AccumulatedTradeDetails],
+        OrdersServiceError
+    >
 
     // MARK: - Injected
 
@@ -63,6 +95,22 @@ final class OrdersService: OrdersServiceAPI {
                     }
                 }
         }
+
+        let accumulatedTrades: AnyCache<CacheKey, [AccumulatedTradeDetails]> = InMemoryCache(
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PerpetualCacheRefreshControl()
+        )
+        .eraseToAnyCache()
+
+        cachedAccumulatedTrades = CachedValueNew(
+            cache: accumulatedTrades,
+            fetch: { _ in
+                client
+                    .fetchAccumulatedTradeAmounts()
+                    .mapError(OrdersServiceError.network)
+                    .eraseToAnyPublisher()
+            }
+        )
     }
 
     func fetchOrders() -> Single<[OrderDetails]> {
@@ -75,6 +123,6 @@ final class OrdersService: OrdersServiceAPI {
                 OrderDetails(recorder: analyticsRecorder, response: response)
             }
             .asSingle()
-            .onNil(error: ServiceError.mappingError)
+            .onNil(error: OrdersServiceError.mappingError)
     }
 }

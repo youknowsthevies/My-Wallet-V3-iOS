@@ -33,18 +33,15 @@ indirect enum ExampleAction: NavigationAction {
     case end(EndAction)
 }
 
-let exampleReducer = Reducer<ExampleState, ExampleAction, Void>
-    .combine(
-        .init { state, action, _ in
-            switch action {
-            case .route(let route):
-                state.route = route
-                return .none
-            case .end:
-                return .fireAndForget { print("✅") }
-            }
-        }
-    )
+let exampleReducer = Reducer<ExampleState, ExampleAction, Void> { _, action, _ in
+    switch action {
+    case .route:
+        return .none
+    case .end:
+        return .fireAndForget { print("✅") }
+    }
+}
+.routing()
 
 enum ExampleRoute: NavigationRoute, CaseIterable {
 
@@ -70,7 +67,11 @@ enum ExampleRoute: NavigationRoute, CaseIterable {
             )
         case .end:
             EndContentView(
-                store: .init(initialState: .init(name: "End"), reducer: endReducer, environment: .init(dismiss: { viewStore.send(.dismiss()) }))
+                store: .init(
+                    initialState: .init(name: "End"),
+                    reducer: endReducer,
+                    environment: .init(dismiss: { viewStore.send(.dismiss()) })
+                )
             )
         }
     }

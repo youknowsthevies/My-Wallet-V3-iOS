@@ -69,7 +69,7 @@ final class UpdateMobileRouterStateService: UpdateMobileStateServiceAPI {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private let actionRelay = PublishRelay<Action>()
@@ -80,12 +80,12 @@ final class UpdateMobileRouterStateService: UpdateMobileStateServiceAPI {
 
     init() {
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }

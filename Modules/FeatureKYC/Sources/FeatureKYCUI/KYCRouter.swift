@@ -197,8 +197,8 @@ final class KYCRouter: KYCRouterAPI {
                 nabuUserService.fetchUser().asObservable(),
                 postTierObservable
             )
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
             .subscribe(onNext: { [weak self] user, tiersTuple in
                 let (tiersResponse, isSDDEligible, isSDDVerified) = tiersTuple
@@ -262,13 +262,14 @@ final class KYCRouter: KYCRouterAPI {
             tiersService.fetchTiers()
                 .asObservable()
                 .map(\.latestApprovedTier)
-                .catchErrorJustReturn(.tier0)
+                .catchAndReturn(.tier0)
                 .bindAndCatch(to: kycFinishedRelay)
                 .disposed(by: disposeBag)
             NotificationCenter.default.post(
                 name: Constants.NotificationKeys.kycFinished,
                 object: nil
             )
+            NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
         }
     }
 
@@ -300,8 +301,8 @@ final class KYCRouter: KYCRouterAPI {
         case .nextPageFromPageType(let type, let payload):
             handlePayloadFromPageType(type, payload)
             let disposable = pager.nextPage(from: type, payload: payload)
-                .subscribeOn(MainScheduler.asyncInstance)
-                .observeOn(MainScheduler.instance)
+                .subscribe(on: MainScheduler.asyncInstance)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] nextPage in
                     guard let self = self else {
                         return
@@ -347,7 +348,7 @@ final class KYCRouter: KYCRouterAPI {
         tiersService.tiers
             .asSingle()
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] response in
                     guard let self = self else { return }

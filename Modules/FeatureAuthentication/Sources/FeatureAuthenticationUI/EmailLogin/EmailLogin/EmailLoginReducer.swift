@@ -20,11 +20,11 @@ public enum EmailLoginAction: Equatable, NavigationAction {
     }
 
     case alert(AlertAction)
+    case closeButtonTapped
 
     // MARK: - Transitions and Navigations
 
     case onAppear
-    case closeButtonTapped
     case route(RouteIntent<EmailLoginRoute>?)
     case continueButtonTapped
 

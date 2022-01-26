@@ -53,14 +53,18 @@ public struct SegmentedViewModel {
         /// The action that will be triggered when the `Item` is tapped.
         public let action: (() -> Void)?
 
+        /// The identity of this segment item
+        public let id: AnyHashable?
+
         /// The content displayed on the `Item`. It can be a stringValue
         /// or an image, but not both.
         public let content: Content
 
         // MARK: - Init
 
-        init(content: Content, action: (() -> Void)? = nil) {
+        init(content: Content, id: AnyHashable? = nil, action: (() -> Void)? = nil) {
             self.content = content
+            self.id = id
             self.action = action
         }
 

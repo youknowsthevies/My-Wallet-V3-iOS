@@ -54,6 +54,7 @@ final class SwapQuotesEngine {
                 sampleDepositAddress: quote.sampleDepositAddress
             )
         }
+        .observe(on: MainScheduler.instance)
         .share(replay: 1, scope: .whileConnected)
     }
 
@@ -67,7 +68,7 @@ final class SwapQuotesEngine {
                 return Observable.timer(
                     .seconds(delay),
                     period: .seconds(delay),
-                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                    scheduler: MainScheduler.instance
                 )
                 .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuotePayload> in
                     self.fetchQuote(direction: direction, pair: pair).asObservable()

@@ -39,7 +39,7 @@ final class StellarConfigurationService: StellarConfigurationAPI {
             .do(onSuccess: { [weak self] _ in
                 self?.lastRefresh = Date()
             })
-            .catchErrorJustReturn(StellarConfiguration.Blockchain.production)
+            .catchAndReturn(StellarConfiguration.Blockchain.production)
             .do(onSuccess: { [weak self] configuration in
                 self?.cachedConfiguration.accept(configuration)
             })

@@ -85,7 +85,10 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
             case .select(let account, let institution):
                 state.selection = .init(
                     bank: .init(
-                        data: .init(account: account, action: .link(institution: institution))
+                        data: .init(
+                            account: account,
+                            action: .link(institution: institution)
+                        )
                     )
                 )
                 return .merge(
@@ -129,20 +132,17 @@ public struct InstitutionList: View {
                 switch viewStore.state {
                 case .success(let account) where account.attributes.institutions != nil:
                     SearchableList(
-                        account.attributes.institutions?.map(Item.init) ?? [],
+                        account.attributes.institutions.or(default: []),
                         placeholder: Localization.InstitutionList.search,
                         content: { bank in
-                            Button(
-                                action: {
-                                    viewStore.send(.select(account, bank.institution))
-                                },
-                                label: { bank }
-                            )
+                            Item(bank) {
+                                viewStore.send(.select(account, bank))
+                            }
                         },
                         empty: {
                             NoSearchResults
                         }
-                    )
+                    ).background(Color.semantic.background)
                 case .failure(let error):
                     InfoView(
                         .init(
@@ -193,6 +193,7 @@ extension InstitutionList {
     public struct Item: View, Identifiable {
 
         let institution: OpenBanking.Institution
+        let action: () -> Void
 
         public var id: Identity<OpenBanking.Institution> { institution.id }
 
@@ -202,48 +203,45 @@ extension InstitutionList {
                 ?? institution.media.first?.source
         }
 
-        init(_ institution: OpenBanking.Institution) {
+        init(_ institution: OpenBanking.Institution, action: @escaping () -> Void) {
             self.institution = institution
+            self.action = action
         }
 
         public var body: some View {
-            HStack {
-                Group {
-                    if let image = image {
-                        ImageResourceView(
-                            url: image,
-                            placeholder: { Color.viewPrimaryBackground }
-                        )
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    } else {
-                        Color.viewPrimaryBackground
+            PrimaryRow(
+                title: title,
+                leading: {
+                    Group {
+                        if let image = image {
+                            ImageResourceView(
+                                url: image,
+                                placeholder: { Color.semantic.background }
+                            )
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        } else {
+                            Color.viewPrimaryBackground
+                        }
                     }
-                }
-                .frame(width: 12.vw, height: 12.vw, alignment: .center)
-                Text(title)
-                    .typography(.body2)
-                    .foregroundColor(.textTitle)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .frame(width: 8.pt)
-                    .padding()
-                    .foregroundColor(.disclosureIndicator)
-            }
+                    .frame(width: 12.vw, height: 12.vw, alignment: .center)
+                },
+                action: action
+            )
             .frame(height: 9.5.vh, alignment: .center)
+            .background(Color.semantic.background)
         }
     }
 }
 
-extension InstitutionList.Item: CustomStringConvertible {
-    public var description: String { title }
+extension OpenBanking.Institution: CustomStringConvertible, Identifiable {
+    public var description: String { fullName }
 }
 
 #if DEBUG
 struct InstitutionList_Previews: PreviewProvider {
 
     static var previews: some View {
-        InstitutionList.Item(.mock)
         NavigationView {
             InstitutionList(
                 store: Store<InstitutionListState, InstitutionListAction>(

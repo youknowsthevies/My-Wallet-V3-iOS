@@ -50,6 +50,7 @@ public struct AppEnvironment {
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
 
     var walletService: WalletService
+    var secondPasswordPrompter: SecondPasswordPromptable
 
     var walletManager: WalletManagerAPI
     var walletUpgradeService: WalletUpgradeServicing
@@ -111,6 +112,7 @@ public struct AppEnvironment {
         urlSession: URLSession,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         appStoreOpener: AppStoreOpening,
+        secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String
     ) {
         self.loadingViewPresenter = loadingViewPresenter
@@ -154,6 +156,7 @@ public struct AppEnvironment {
         self.appStoreOpener = appStoreOpener
         self.buildVersionProvider = buildVersionProvider
         self.walletRepoPersistence = walletRepoPersistence
+        self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
     }
 }

@@ -8,8 +8,8 @@ import ToolKit
 // MARK: - Type
 
 public enum WalletPairingAction: Equatable {
-    case approveEmailAuthorization(_ has2FAEnabled: Bool)
-    case authenticate(String)
+    case approveEmailAuthorization
+    case authenticate(String, autoTrigger: Bool = false)
     case authenticateDidFail(LoginServiceError)
     case authenticateWithTwoFactorOTP(String)
     case authenticateWithTwoFactorOTPDidFail(LoginServiceError)
@@ -90,13 +90,13 @@ let walletPairingReducer = Reducer<
 > { state, action, environment in
     switch action {
 
-    case .approveEmailAuthorization(let has2FAEnabled):
-        return approveEmailAuthorization(state, has2FAEnabled, environment)
+    case .approveEmailAuthorization:
+        return approveEmailAuthorization(state, environment)
 
-    case .authenticate(let password):
+    case .authenticate(let password, let autoTrigger):
         // credentials reducer will set password here
         state.password = password
-        return authenticate(password, state, environment)
+        return authenticate(password, state, environment, isAutoTrigger: autoTrigger)
 
     case .authenticateWithTwoFactorOTP(let code):
         return authenticateWithTwoFactorOTP(code, state, environment)
@@ -133,7 +133,6 @@ let walletPairingReducer = Reducer<
 
 private func approveEmailAuthorization(
     _ state: WalletPairingState,
-    _ has2FAEnabled: Bool,
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     guard let emailCode = state.emailCode else {
@@ -158,9 +157,6 @@ private func approveEmailAuthorization(
                     break
                 }
             }
-            guard has2FAEnabled else {
-                return .none
-            }
             return .startPolling
         }
 }
@@ -168,7 +164,8 @@ private func approveEmailAuthorization(
 private func authenticate(
     _ password: String,
     _ state: WalletPairingState,
-    _ environment: WalletPairingEnvironment
+    _ environment: WalletPairingEnvironment,
+    isAutoTrigger: Bool
 ) -> Effect<WalletPairingAction, Never> {
     guard !state.walletGuid.isEmpty else {
         fatalError("GUID should not be empty")
@@ -183,6 +180,10 @@ private func authenticate(
             .map { result -> WalletPairingAction in
                 switch result {
                 case .success:
+                    if isAutoTrigger {
+                        // edge case handling: if auto triggered, we don't want to decrypt wallet
+                        return .none
+                    }
                     return .decryptWalletWithPassword(password)
                 case .failure(let error):
                     return .authenticateDidFail(error)
@@ -283,18 +284,15 @@ private func startPolling(
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     // Poll the Guid every 2 seconds
-    .concatenate(
-        Effect(value: .pollWalletIdentifier),
-        Effect
-            .timer(
-                id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
-                every: 2,
-                on: environment.pollingQueue
-            )
-            .map { _ in
-                .pollWalletIdentifier
-            }
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
-    )
+    Effect
+        .timer(
+            id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
+            every: 2,
+            on: environment.pollingQueue
+        )
+        .map { _ in
+            .pollWalletIdentifier
+        }
+        .receive(on: environment.mainQueue)
+        .eraseToEffect()
 }

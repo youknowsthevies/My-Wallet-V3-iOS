@@ -18,6 +18,10 @@ public protocol Network {
         request: Request,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType, NetworkError> where ResponseType: Decodable
+
+    func perform(
+        request: Request
+    ) -> AnyPublisher<Void, NetworkError>
 }
 
 extension Network {

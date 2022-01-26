@@ -74,7 +74,7 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
                     .map { model -> Action in
                         .userMustCompleteKYC(model: model)
                     }
-                    .observeOn(MainScheduler.asyncInstance)
+                    .observe(on: MainScheduler.asyncInstance)
             case .verified:
                 return .just(.userReadyForSwap)
             case .failed:

@@ -195,7 +195,7 @@ final class TabControllerManager: NSObject {
             .isBitPay(data)
             .andThen(BitPayInvoiceTarget.isBitcoin(data))
             .andThen(transactionPair)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] target, defaultAccount in
                 UIView.animate(
                     withDuration: 0.3,
