@@ -21,6 +21,10 @@ struct InterestAccountDetailsState: Equatable {
         IdentifiedArrayOf(uniqueElements: interestAccountOverview.items)
     }
 
+    var currency: CurrencyType {
+        interestAccountOverview.currency
+    }
+
     var interestAccountOverview: InterestAccountOverview
 
     init(interestAccountOverview: InterestAccountOverview) {
