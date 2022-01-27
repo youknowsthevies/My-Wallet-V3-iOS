@@ -117,6 +117,10 @@ struct OnboardingChecklistButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: SwiftUI Preview
+
+#if DEBUG
+
 struct OnboardingChecklistView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -201,3 +205,5 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
         )
     }
 }
+
+#endif

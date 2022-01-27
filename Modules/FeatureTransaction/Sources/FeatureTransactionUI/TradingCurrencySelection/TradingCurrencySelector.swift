@@ -97,6 +97,10 @@ struct TradingCurrencySelector: View {
     }
 }
 
+// MARK: SwiftUI Previews
+
+#if DEBUG
+
 struct TradingCurrencySelector_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -116,3 +120,5 @@ struct TradingCurrencySelector_Previews: PreviewProvider {
         )
     }
 }
+
+#endif
