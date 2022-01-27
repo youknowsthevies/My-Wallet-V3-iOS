@@ -56,6 +56,11 @@ public struct CredentialsState: Equatable {
     var credentialsFailureAlert: AlertState<CredentialsAction>?
     var isLoading: Bool
 
+    /// when the screen appears for the first time we would like to prepare for 2FA (if needed)
+    /// however, we don't want to prepare twice when the screen is appeared again (e.g. swipe back)
+    /// this flag is to decide whether the preparation is done already
+    var isTwoFAPrepared: Bool
+
     init(
         walletPairingState: WalletPairingState = .init(),
         passwordState: PasswordState = .init(),
@@ -68,7 +73,8 @@ public struct CredentialsState: Equatable {
         isWalletIdentifierIncorrect: Bool = false,
         isAccountLocked: Bool = false,
         credentialsFailureAlert: AlertState<CredentialsAction>? = nil,
-        isLoading: Bool = false
+        isLoading: Bool = false,
+        isTwoFAPrepared: Bool = false
     ) {
         self.walletPairingState = walletPairingState
         self.passwordState = passwordState
@@ -82,6 +88,7 @@ public struct CredentialsState: Equatable {
         self.isAccountLocked = isAccountLocked
         self.credentialsFailureAlert = credentialsFailureAlert
         self.isLoading = isLoading
+        self.isTwoFAPrepared = isTwoFAPrepared
     }
 }
 
@@ -212,9 +219,10 @@ let credentialsReducer = Reducer.combine(
             if let nabuInfo = info.nabuInfo {
                 state.nabuInfo = nabuInfo
             }
-            if let type = info.twoFAType, type.isTwoFactor {
+            if !state.isTwoFAPrepared, let type = info.twoFAType, type.isTwoFactor {
                 // if we want to send SMS when the view appears we would need to trigger approve authorization and sms error in order to send SMS when appeared
                 // also, if we want to show 2FA field when view appears, we need to do the above
+                state.isTwoFAPrepared = true
                 return Effect(
                     value: .walletPairing(
                         .authenticate(
