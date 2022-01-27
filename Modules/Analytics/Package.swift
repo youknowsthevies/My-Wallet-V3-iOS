@@ -19,7 +19,7 @@ let package = Package(
         .package(
             name: "Mockingbird",
             url: "https://github.com/birdrides/mockingbird.git",
-            from: "0.18.1"
+            .exact("0.18.1")
         )
     ],
     targets: [

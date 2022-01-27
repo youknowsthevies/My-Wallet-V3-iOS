@@ -68,6 +68,10 @@ public struct OnboardingChecklistOverview: View {
     }
 }
 
+// MARK: SwiftUI Previews
+
+#if DEBUG
+
 struct SwiftUIView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -86,3 +90,5 @@ struct SwiftUIView_Previews: PreviewProvider {
         )
     }
 }
+
+#endif
