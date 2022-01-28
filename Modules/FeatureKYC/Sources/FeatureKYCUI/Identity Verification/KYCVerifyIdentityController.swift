@@ -201,7 +201,10 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     /// - Parameters:
     ///   - document: enum of identity types mapped to an identity provider
     ///   - provider: the current provider of verification services
-    fileprivate func startVerificationFlow(_ document: KYCDocumentType? = nil, provider: VerificationProviders = .veriff) {
+    fileprivate func startVerificationFlow(
+        _ document: KYCDocumentType? = nil,
+        provider: VerificationProviders = .veriff
+    ) {
         switch provider {
         case .veriff:
             veriffCredentialsRequest()
@@ -326,10 +329,10 @@ extension KYCVerifyIdentityController: VeriffController {
 
     func veriffCredentialsRequest() {
         delegate?.createCredentials(onSuccess: { [weak self] credentials in
-            guard let this = self else { return }
-            this.launchVeriffController(credentials: credentials)
-        }, onError: { error in
+            self?.launchVeriffController(credentials: credentials)
+        }, onError: { [weak self] error in
             Logger.shared.error("Failed to get Veriff credentials. Error: \(String(describing: error))")
+            self?.onVeriffError(message: String(describing: error))
         })
     }
 }

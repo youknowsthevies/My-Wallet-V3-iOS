@@ -17,17 +17,19 @@ public protocol CameraPrompting: AnyObject {
 
 extension CameraPrompting where Self: MicrophonePrompting {
     public func willUseCamera() {
-        if PermissionsRequestor.shouldDisplayCameraPermissionsRequest() {
-            cameraPromptingDelegate?.promptToAcceptCameraPermissions(confirmHandler: {
-                self.requestCameraPermissions()
-            })
+        guard PermissionsRequestor.cameraRefused() == false else {
+            cameraPromptingDelegate?.showCameraPermissionsDenied()
             return
         }
-        if PermissionsRequestor.cameraRefused() == false {
+
+        guard PermissionsRequestor.shouldDisplayCameraPermissionsRequest() else {
             willUseMicrophone()
-        } else {
-            cameraPromptingDelegate?.showCameraPermissionsDenied()
+            return
         }
+
+        cameraPromptingDelegate?.promptToAcceptCameraPermissions(confirmHandler: {
+            self.requestCameraPermissions()
+        })
     }
 
     public func requestCameraPermissions() {

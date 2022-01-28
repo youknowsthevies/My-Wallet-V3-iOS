@@ -22,14 +22,11 @@ extension MicrophonePrompting {
     }
 
     public func willUseMicrophone() {
-        if PermissionsRequestor.shouldDisplayMicrophonePermissionsRequest() {
-            microphonePromptingDelegate?.promptToAcceptMicrophonePermissions(confirmHandler: {
-                self.checkMicrophonePermissions()
-            })
-            return
-        } else {
+        guard PermissionsRequestor.shouldDisplayMicrophonePermissionsRequest() else {
             microphonePromptingDelegate?.onMicrophonePromptingComplete()
+            return
         }
+        microphonePromptingDelegate?.promptToAcceptMicrophonePermissions(confirmHandler: checkMicrophonePermissions)
     }
 }
 
