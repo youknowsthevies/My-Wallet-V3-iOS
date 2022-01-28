@@ -15,4 +15,11 @@ extension WalletPayloadKit.AddressCache {
             changeAccount: model.changeAccount
         )
     }
+
+    var toAddressCacheResponse: AddressCacheResponse {
+        AddressCacheResponse(
+            receiveAccount: receiveAccount,
+            changeAccount: changeAccount
+        )
+    }
 }

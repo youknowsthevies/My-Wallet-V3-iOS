@@ -18,12 +18,12 @@ public enum DerivationType: String, Equatable, CaseIterable {
 }
 
 public class Derivation: Equatable {
-    var type: DerivationType
-    var purpose: Int
-    var xpriv: String
-    var xpub: String
-    var addressLabels: [AddressLabel]
-    var cache: AddressCache
+    public internal(set) var type: DerivationType
+    public internal(set) var purpose: Int
+    public internal(set) var xpriv: String
+    public internal(set) var xpub: String
+    public internal(set) var addressLabels: [AddressLabel]
+    public internal(set) var cache: AddressCache
 
     public init(
         type: DerivationType,

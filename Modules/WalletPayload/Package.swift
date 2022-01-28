@@ -41,6 +41,7 @@ let package = Package(
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "MetadataKit", package: "Metadata"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
@@ -75,6 +76,8 @@ let package = Package(
                 .product(name: "KeychainKitMock", package: "Keychain"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ToolKitMock", package: "Tool")

@@ -3,13 +3,13 @@
 import Foundation
 
 public final class Address: Equatable {
-    var addr: String
-    var priv: String?
-    var tag: Int
-    var label: String
-    var createdTime: Int
-    var createdDeviceName: String
-    var createdDeviceVersion: String
+    public internal(set) var addr: String
+    public internal(set) var priv: String?
+    public internal(set) var tag: Int
+    public internal(set) var label: String
+    public internal(set) var createdTime: Int
+    public internal(set) var createdDeviceName: String
+    public internal(set) var createdDeviceVersion: String
 
     var isArchived: Bool {
         tag == 2

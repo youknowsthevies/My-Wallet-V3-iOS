@@ -3,11 +3,11 @@
 import Foundation
 
 public final class Account: Equatable {
-    var index: Int
-    var label: String
-    var archived: Bool
-    var defaultDerivation: DerivationType
-    var derivations: [Derivation]
+    public internal(set) var index: Int
+    public internal(set) var label: String
+    public internal(set) var archived: Bool
+    public internal(set) var defaultDerivation: DerivationType
+    public internal(set) var derivations: [Derivation]
 
     var defaultDerivationAccount: Derivation? {
         derivations.first(where: { $0.type == defaultDerivation })

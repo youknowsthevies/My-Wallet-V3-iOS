@@ -3,8 +3,8 @@
 import Foundation
 
 public final class AddressLabel: Equatable {
-    var index: Int
-    var label: String
+    public internal(set) var index: Int
+    public internal(set) var label: String
 
     public init(
         index: Int,

@@ -3,10 +3,10 @@
 import Foundation
 
 public final class Options: Equatable {
-    var pbkdf2Iterations: Int
-    var feePerKB: Int
-    var html5Notifications: Bool
-    var logoutTime: Int
+    public internal(set) var pbkdf2Iterations: Int
+    public internal(set) var feePerKB: Int
+    public internal(set) var html5Notifications: Bool
+    public internal(set) var logoutTime: Int
 
     static var `default` = Options(
         pbkdf2Iterations: 5000,

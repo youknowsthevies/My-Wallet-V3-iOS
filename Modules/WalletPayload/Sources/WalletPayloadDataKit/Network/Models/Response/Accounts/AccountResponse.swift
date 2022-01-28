@@ -20,4 +20,13 @@ extension WalletPayloadKit.Account {
             derivations: model.derivations.map(WalletPayloadKit.Derivation.init(from:))
         )
     }
+
+    var toAccountResponse: AccountResponse {
+        AccountResponse(
+            label: label,
+            archived: archived,
+            defaultDerivation: DerivationResponse.Format.create(type: defaultDerivation),
+            derivations: derivations.map(\.derivationResponse)
+        )
+    }
 }

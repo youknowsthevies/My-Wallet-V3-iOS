@@ -4,8 +4,8 @@ import Foundation
 import MetadataKit
 
 public class AddressCache: Equatable {
-    var receiveAccount: String
-    var changeAccount: String
+    public internal(set) var receiveAccount: String
+    public internal(set) var changeAccount: String
 
     public init(
         receiveAccount: String,

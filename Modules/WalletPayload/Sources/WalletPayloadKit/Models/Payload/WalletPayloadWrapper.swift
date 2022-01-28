@@ -2,6 +2,15 @@
 
 import Foundation
 
+enum WalletVersion: Int {
+    case v4 = 4
+    case v3 = 3
+    case v2 = 2
+    case v1 = 1
+
+    static let supportedVersion = WalletVersion.v4
+}
+
 /// The wallet payload as it is returned by the server
 public struct WalletPayloadWrapper: Equatable {
 

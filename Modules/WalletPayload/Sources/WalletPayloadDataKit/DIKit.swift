@@ -4,9 +4,10 @@ import DIKit
 import Foundation
 import KeychainKit
 import NetworkKit
+import ToolKit
 import WalletPayloadKit
 
-enum WalletRepoKeychain {
+enum DIKitWalletPayloadTags {
     static let repoTag = "repo.tag"
     static let walletServer = "wallet.server"
 }
@@ -21,21 +22,14 @@ extension DependencyContainer {
 
         factory { WalletPayloadRepository() as WalletPayloadRepositoryAPI }
 
-        factory(tag: WalletRepoKeychain.walletServer) {
-            RequestBuilder(
-                config: Network.Config(
-                    scheme: "https",
-                    host: "api.blockchain.info",
-                    code: "35e77459-723f-48b0-8c9e-6e9e8f54fbd3",
-                    components: []
-                )
-            )
+        factory(tag: DIKitWalletPayloadTags.walletServer) {
+            RequestBuilder.walletServerBuilder()
         }
 
         factory { () -> ServerEntropyClientAPI in
             ServerEntropyClient(
                 networkAdapter: DIKit.resolve(),
-                requestBuilder: DIKit.resolve(tag: WalletRepoKeychain.walletServer)
+                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer)
             )
         }
 
@@ -45,8 +39,25 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> CreateWalletClientAPI in
+            CreateWalletClient(
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer)
+            )
+        }
+
+        factory { () -> CreateWalletRepositoryAPI in
+            CreateWalletRepository(
+                client: DIKit.resolve()
+            )
+        }
+
         factory { () -> WalletDecoderAPI in
             WalletDecoder() as WalletDecoderAPI
+        }
+
+        factory { () -> WalletEncodingAPI in
+            WalletEncoder() as WalletEncodingAPI
         }
 
         factory { () -> ReleasableWalletAPI in
@@ -62,7 +73,7 @@ extension DependencyContainer {
         single { WalletHolder() }
 
         single { () -> WalletRepoAPI in
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
+            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: DIKitWalletPayloadTags.repoTag)
             let initialStateOrEmpty = retrieveWalletRepoState(keychainAccess: keychainAccess) ?? .empty
             return WalletRepo(initialState: initialStateOrEmpty)
         }
@@ -70,7 +81,7 @@ extension DependencyContainer {
         single { () -> WalletRepoPersistenceAPI in
             let repo: WalletRepoAPI = DIKit.resolve()
             let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default)
-            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
+            let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: DIKitWalletPayloadTags.repoTag)
             return WalletRepoPersistence(
                 repo: repo,
                 keychainAccess: keychainAccess,
@@ -78,8 +89,42 @@ extension DependencyContainer {
             )
         }
 
-        single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
+        single(tag: DIKitWalletPayloadTags.repoTag) { () -> KeychainAccessAPI in
             KeychainAccess(service: "com.blockchain.wallet-repo")
         }
+    }
+}
+
+extension WalletPayloadData.Config {
+    fileprivate static func `default`(
+        code: APICode = resolve()
+    ) -> WalletPayloadData.Config {
+        WalletPayloadData.Config(
+            host: InfoDictionaryHelper.value(for: .apiURL),
+            code: code
+        )
+    }
+}
+
+extension WalletPayloadData.Config {
+    fileprivate static func walletServer(
+        config: WalletPayloadData.Config = .default()
+    ) -> Network.Config {
+        Network.Config(
+            scheme: "https",
+            host: config.host,
+            code: config.code,
+            components: []
+        )
+    }
+}
+
+extension RequestBuilder {
+
+    fileprivate static func walletServerBuilder(
+    ) -> RequestBuilder {
+        RequestBuilder(
+            config: WalletPayloadData.Config.walletServer()
+        )
     }
 }

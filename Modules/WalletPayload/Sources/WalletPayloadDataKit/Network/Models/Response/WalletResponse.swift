@@ -38,4 +38,17 @@ extension NativeWallet {
             addresses: blockchainWallet.addresses.map(WalletPayloadKit.Address.init(from:))
         )
     }
+
+    var toWalletResponse: WalletResponse {
+        WalletResponse(
+            guid: guid,
+            sharedKey: sharedKey,
+            doubleEncryption: doubleEncrypted,
+            doublePasswordHash: doublePasswordHash,
+            metadataHDNode: metadataHDNode,
+            options: options.toOptionsReponse,
+            addresses: addresses.map(\.toAddressResponse),
+            hdWallets: hdWallets.map(\.toHDWalletResponse)
+        )
+    }
 }

@@ -69,4 +69,14 @@ extension WalletPayloadKit.HDWallet {
             accounts: model.accounts.enumerated().map(WalletPayloadKit.Account.init(index:model:))
         )
     }
+
+    var toHDWalletResponse: HDWalletResponse {
+        HDWalletResponse(
+            seedHex: seedHex,
+            passphrase: passphrase,
+            mnemonicVerified: mnemonicVerified,
+            defaultAccountIndex: defaultAccountIndex,
+            accounts: accounts.map(\.toAccountResponse)
+        )
+    }
 }

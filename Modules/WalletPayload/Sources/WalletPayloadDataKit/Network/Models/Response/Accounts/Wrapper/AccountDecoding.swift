@@ -41,7 +41,7 @@ func accountWrapperDecodingStrategy(
     version3: AccountWrapper.Version3
 ) -> Result<AccountResponse, AccountStrategyDecodingError> {
     let derivation = DerivationResponse(
-        type: .legacy,
+        type: DerivationResponse.Format.legacy,
         purpose: DerivationResponse.Format.legacy.purpose,
         xpriv: version3.xpriv,
         xpub: version3.xpub,
@@ -52,7 +52,7 @@ func accountWrapperDecodingStrategy(
         AccountResponse(
             label: version3.label,
             archived: version3.archived,
-            defaultDerivation: .legacy,
+            defaultDerivation: DerivationResponse.Format.legacy,
             derivations: [derivation]
         )
     )

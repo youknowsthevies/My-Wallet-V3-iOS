@@ -35,4 +35,16 @@ extension WalletPayloadKit.Address {
             createdDeviceVersion: model.createdDeviceVersion
         )
     }
+
+    var toAddressResponse: AddressResponse {
+        AddressResponse(
+            addr: addr,
+            priv: priv,
+            tag: tag,
+            label: label,
+            createdTime: createdTime,
+            createdDeviceName: createdDeviceName,
+            createdDeviceVersion: createdDeviceVersion
+        )
+    }
 }

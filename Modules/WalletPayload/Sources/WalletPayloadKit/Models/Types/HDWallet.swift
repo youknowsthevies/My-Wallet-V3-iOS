@@ -6,11 +6,11 @@ import ToolKit
 import WalletCore
 
 public final class HDWallet: Equatable {
-    var seedHex: String
-    var passphrase: String
-    var mnemonicVerified: Bool
-    var defaultAccountIndex: Int
-    var accounts: [Account]
+    public internal(set) var seedHex: String
+    public internal(set) var passphrase: String
+    public internal(set) var mnemonicVerified: Bool
+    public internal(set) var defaultAccountIndex: Int
+    public internal(set) var accounts: [Account]
 
     public init(
         seedHex: String,

@@ -15,4 +15,11 @@ extension WalletPayloadKit.AddressLabel {
             label: model.label
         )
     }
+
+    var toAddressLabelResponse: AddressLabelResponse {
+        AddressLabelResponse(
+            index: index,
+            label: label
+        )
+    }
 }

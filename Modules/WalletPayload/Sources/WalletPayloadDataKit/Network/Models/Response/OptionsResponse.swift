@@ -26,4 +26,13 @@ extension WalletPayloadKit.Options {
             logoutTime: model.logoutTime
         )
     }
+
+    var toOptionsReponse: OptionsResponse {
+        OptionsResponse(
+            pbkdf2Iterations: pbkdf2Iterations,
+            feePerKB: feePerKB,
+            html5Notifications: html5Notifications,
+            logoutTime: logoutTime
+        )
+    }
 }

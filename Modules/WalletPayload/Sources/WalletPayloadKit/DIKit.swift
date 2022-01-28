@@ -56,6 +56,19 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCreatorAPI in
+            WalletCreator(
+                entropyService: DIKit.resolve(),
+                walletEncoder: DIKit.resolve(),
+                encryptor: PayloadCrypto(cryptor: AESCryptor()),
+                createWalletRepository: DIKit.resolve(),
+                uuidProvider: uuidProvider,
+                generateWallet: generateWallet(context:),
+                generateWrapper: generateWrapper(wallet:language:version:),
+                checksumProvider: checksumHex(data:)
+            )
+        }
+
         factory { () -> SecondPasswordServiceAPI in
             SecondPasswordService(walletHolder: DIKit.resolve())
         }

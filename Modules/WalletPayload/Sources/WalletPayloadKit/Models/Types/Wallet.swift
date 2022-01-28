@@ -7,14 +7,14 @@ import WalletCore
 /// The derived Wallet from the response model, `BlockchainWallet`
 /// Note: This should be renamed to `Wallet` once we finalise the migration to native code.
 public final class NativeWallet: Equatable {
-    var guid: String
-    var sharedKey: String
-    var doubleEncrypted: Bool
-    var doublePasswordHash: String?
-    var metadataHDNode: String?
-    var options: Options
-    var hdWallets: [HDWallet]
-    var addresses: [Address]
+    public internal(set) var guid: String
+    public internal(set) var sharedKey: String
+    public internal(set) var doubleEncrypted: Bool
+    public internal(set) var doublePasswordHash: String?
+    public internal(set) var metadataHDNode: String?
+    public internal(set) var options: Options
+    public internal(set) var hdWallets: [HDWallet]
+    public internal(set) var addresses: [Address]
 
     /// Returns the default HDWallet from the list
     /// - NOTE: We never add multiple HDWallet(s)
