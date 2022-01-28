@@ -71,7 +71,6 @@ struct AppDelegateEnvironment {
     var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving
     var certificatePinner: CertificatePinnerAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var customerSupportChatService: CustomerSupportChatServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
@@ -127,11 +126,6 @@ let appDelegateReducer = Reducer<
                 .filter(!)
                 .map(.setGlobalNavigationAppearance(.lightContent()))
                 .eraseToEffect(),
-
-            initializeCustomerChatSupport(
-                using: environment.customerSupportChatService,
-                apiKey: context.zendeskKey
-            ),
 
             environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
                 .filter { $0 }
@@ -212,15 +206,6 @@ let appDelegateReducer = Reducer<
 }
 
 // MARK: - Effect Methods
-
-private func initializeCustomerChatSupport(
-    using service: CustomerSupportChatServiceAPI,
-    apiKey: String
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        service.initializeWithAcccountKey(apiKey)
-    }
-}
 
 private func applyBlurFilter(
     handler: BlurVisualEffectHandlerAPI,

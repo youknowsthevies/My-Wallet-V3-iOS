@@ -233,24 +233,9 @@ packages:
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
     version: 0.32.0
-  ZendeskChatSDK:
-    url: https://github.com/zendesk/chat_sdk_ios.git
-    version: 2.11.1
-  ZendeskChatProvidersSDK:
-    url: https://github.com/zendesk/chat_providers_sdk_ios
-    version: 2.11.1
-  ZendeskMessagingSDK:
-    url: https://github.com/zendesk/messaging_sdk_ios
-    version: 3.8.2
-  ZendeskSDKConfigurationsSDK:
-    url: https://github.com/zendesk/sdkconfigurations_sdk_ios
-    version: 1.1.8
-  ZendeskMessagingAPISDK:
-    url: https://github.com/zendesk/messagingapi_sdk_ios
-    version: 3.8.2
-  ZendeskCommonUISDK:
-    url: https://github.com/zendesk/commonui_sdk_ios
-    version: 6.1.1
+  Intercom:
+    url: https://github.com/intercom/intercom-ios.git
+    version: 11.1.0
   DIKit:
     url: https://github.com/jackpooleybc/DIKit.git
     branch: safe-property-wrappers
@@ -427,7 +412,7 @@ targets:
         product: PulseUI
       - package: Pulse
         product: PulseCore
-      - package: ZendeskChatSDK
+      - package: Intercom
 
       - package: Analytics
         product: AnalyticsKit
