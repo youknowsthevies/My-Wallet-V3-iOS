@@ -46,7 +46,7 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
@@ -76,7 +76,7 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Veriff", package: "Veriff")
             ],

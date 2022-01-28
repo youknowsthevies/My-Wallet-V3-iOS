@@ -26,7 +26,7 @@ let package = Package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "0.2.1"
         ),
-        .package(path: "../ComponentLibrary")
+        .package(path: "../BlockchainComponentLibrary")
     ],
     targets: [
         .target(
@@ -44,7 +44,7 @@ let package = Package(
             name: "ComposableNavigation",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ],
             exclude: [
                 "README.md"

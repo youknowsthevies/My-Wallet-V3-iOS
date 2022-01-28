@@ -13,8 +13,8 @@ let package = Package(
             targets: ["AnalyticsKit"]
         ),
         .library(
-            name: "SharedComponentLibrary",
-            targets: ["SharedComponentLibrary"]
+            name: "BlockchainComponentLibrary",
+            targets: ["BlockchainComponentLibrary"]
         ),
         .library(
             name: "FeatureOpenBankingUI",
@@ -95,7 +95,7 @@ let package = Package(
             path: "Modules/Analytics/Tests/AnalyticsKitTests"
         ),
         .target(
-            name: "SharedComponentLibrary",
+            name: "BlockchainComponentLibrary",
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown")
@@ -106,8 +106,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "SharedComponentLibraryTests",
-            path: "Modules/ComponentLibrary/Tests/ComponentLibraryTests"
+            name: "BlockchainComponentLibraryTests",
+            path: "Modules/BlockchainComponentLibrary/Tests/BlockchainComponentLibraryTests"
         ),
         .target(
             name: "ComposableNavigation",
@@ -151,7 +151,7 @@ let package = Package(
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .target(name: "ToolKit"),
-                .target(name: "SharedComponentLibrary")
+                .target(name: "BlockchainComponentLibrary")
             ],
             path: "Modules/UIComponents/UIComponentsKit",
             resources: [
@@ -187,7 +187,7 @@ let package = Package(
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingData"),
                 .target(name: "ComposableNavigation"),
-                .target(name: "SharedComponentLibrary"),
+                .target(name: "BlockchainComponentLibrary"),
                 .target(name: "UIComponentsKit")
             ],
             path: "Modules/FeatureOpenBanking/Sources/FeatureOpenBankingUI"

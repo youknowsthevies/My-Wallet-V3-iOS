@@ -1,0 +1,79 @@
+name: Example
+
+options:
+
+  bundleIDPrefix: com.rainydayapps
+  deploymentTarget:
+    iOS: 14.0
+
+packages: 
+  BlockchainComponentLibrary:
+    path: ../BlockchainComponentLibrary
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    version: 1.9.0
+
+targets:
+
+  BlockchainComponentLibraryExample:
+  
+    platform: iOS
+    type: application
+    info:
+      path: Example/Info.plist
+      properties:
+            UILaunchScreen:
+    sources:
+      - path: ./Example/ExampleApp.swift
+    dependencies: 
+      - package: BlockchainComponentLibrary
+        product: Examples
+
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+  BlockchainComponentLibraryTests:
+
+    platform: iOS
+    type: bundle.unit-test
+    sources:
+      - path: ./Tests
+        excludes: ["**/__Snapshots__/*"]
+    dependencies:
+      - package: BlockchainComponentLibrary
+        product: BlockchainComponentLibrary
+      - package: SnapshotTesting
+
+  BlockchainComponentLibraryExampleMac:
+
+    platform: macOS
+    type: application
+    info:
+      path: Example/Info-macOS.plist
+    sources:
+      - path: ./Example/ExampleApp.swift
+    dependencies:
+      - package: BlockchainComponentLibrary
+        product: Examples
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+
+schemes:
+        
+  BlockchainComponentLibraryExample:
+    build:
+      targets:
+        BlockchainComponentLibraryExample: all
+    test:
+      targets:
+        - BlockchainComponentLibraryTests
+
+  BlockchainComponentLibraryExampleMac:
+    build:
+      targets:
+        BlockchainComponentLibraryExampleMac: all

@@ -1,7 +1,7 @@
 attributes:
   ORGANIZATIONNAME: Blockchain Luxembourg S.A
 include:
-  Modules/ComponentLibrary/project.yml
+  Modules/BlockchainComponentLibrary/project.yml
 configs:
   Debug Dev: debug
   Debug Production: debug
@@ -323,8 +323,8 @@ packages:
     path: Modules/UIComponents
   WalletPayload:
     path: Modules/WalletPayload
-  ComponentLibrary:
-    path: Modules/ComponentLibrary
+  BlockchainComponentLibrary:
+    path: Modules/BlockchainComponentLibrary
 targets:
   Blockchain:
     configFiles:

@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ComponentLibrary
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -27,7 +27,7 @@ struct CreateAccountView: View {
                     CreateAccountHeader()
                     CreateAccountForm(viewStore: viewStore)
                     Spacer()
-                    ComponentLibrary.PrimaryButton(
+                    BlockchainComponentLibrary.PrimaryButton(
                         title: LocalizedString.createAccountButton,
                         isLoading: viewStore.validatingInput
                     ) {

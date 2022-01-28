@@ -78,7 +78,7 @@ let package = Package(
         .package(path: "../UIComponents"),
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureCards")
     ],
@@ -139,7 +139,7 @@ let package = Package(
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ],
