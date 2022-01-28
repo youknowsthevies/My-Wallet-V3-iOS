@@ -294,9 +294,6 @@ extension WalletManager: WalletDelegate {
     func didGet(_ response: MultiAddressResponse) {
         latestMultiAddressResponse = response
         wallet.getAccountInfoAndExchangeRates()
-        let newDefaultAccountLabeledAddressesCount = wallet.getDefaultAccountLabelledAddressesCount()
-        let newCount = newDefaultAccountLabeledAddressesCount
-        BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount = Int(newCount)
         updateFiatSymbols()
     }
 

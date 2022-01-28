@@ -17,7 +17,6 @@ extension UserDefaults {
         case passwordPartHash
         case biometryEnabled
         case cloudBackupEnabled
-        case defaultAccountLabelledAddressesCount
         case didTapOnAirdropDeepLink
         case didAttemptToRouteForAirdrop
         case exchangeLinkIdentifier = "pitLinkIdentifier"

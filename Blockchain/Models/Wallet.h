@@ -143,8 +143,6 @@
 
 - (void)loading_stop;
 
-- (int)getDefaultAccountLabelledAddressesCount;
-
 # pragma mark - Settings
 
 - (NSString *)getMobileMessage;

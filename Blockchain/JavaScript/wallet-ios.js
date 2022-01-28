@@ -929,15 +929,6 @@ MyWalletPhone.labelForLegacyAddress = function(key) {
     return label == null ? '' : label;
 }
 
-MyWalletPhone.getDefaultAccountLabelledAddressesCount = function() {
-    if (!MyWallet.wallet.isUpgradedToHD) {
-        console.log('Warning: Getting accounts when wallet has not upgraded!');
-        return 0;
-    }
-
-    return MyWallet.wallet.hdwallet.defaultAccount.getLabels().length;
-}
-
 MyWalletPhone.changeNetwork = function(newNetwork) {
     console.log('Changing network to ');
     console.log(newNetwork);

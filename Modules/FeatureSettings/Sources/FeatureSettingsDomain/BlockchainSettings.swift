@@ -267,22 +267,6 @@ public final class BlockchainSettings: NSObject {
         }
 
         /**
-         Determines the number of labeled addresses for the default account.
-         - Note:
-         This value is set when the wallet has gotten its latest multi-address response.
-         This setting is currently only used in the `didGet(_ response: MultiAddressResponse)` function of the wallet manager.
-         */
-        @objc
-        public var defaultAccountLabelledAddressesCount: Int {
-            get {
-                defaults.integer(forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
-            }
-        }
-
-        /**
          Determines if the user deep linked into the app using the airdrop dynamic link. This value is used in various
          places to handle the airdrop flow (e.g. prompt the user to KYC to finish the airdrop, to continue KYC'ing if
          they have already gone through the KYC flow, etc.)
