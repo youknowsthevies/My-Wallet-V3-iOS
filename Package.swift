@@ -100,7 +100,7 @@ let package = Package(
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown")
             ],
-            path: "Modules/ComponentLibrary/Sources/ComponentLibrary",
+            path: "Modules/BlockchainComponentLibrary/Sources/BlockchainComponentLibrary",
             resources: [
                 .process("Resources/Fonts")
             ]
