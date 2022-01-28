@@ -107,10 +107,6 @@ let package = Package(
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "FeatureCardsDomain", package: "FeatureCards")
-            ],
-            resources: [
-                .copy("Services/Currencies/local-currencies-custodial.json"),
-                .copy("Services/Currencies/local-currencies-erc20.json")
             ]
         ),
         .target(

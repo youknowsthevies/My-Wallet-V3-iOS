@@ -12,14 +12,6 @@ import ToolKit
 import UIComponentsKit
 import UIKit
 
-protocol LoggedInViewController: UIViewController, LoggedInBridge {
-    init(store: Store<LoggedIn.State, LoggedIn.Action>)
-    func clear()
-}
-
-extension LoggedInHostingController: LoggedInViewController {}
-extension RootViewController: LoggedInViewController {}
-
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
@@ -28,7 +20,7 @@ final class AppHostingController: UIViewController {
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
 
     private var onboardingController: OnboardingHostingController?
-    private var loggedInController: LoggedInViewController?
+    private var loggedInController: RootViewController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
     private var featureFlagsService: FeatureFlagsServiceAPI
 
@@ -91,34 +83,22 @@ final class AppHostingController: UIViewController {
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
             .ifLet(then: { [weak self] store in
                 guard let self = self else { return }
-
-                func load(_ loggedInController: LoggedInViewController) {
-                    // this is important, register the controller as a bridge
-                    // for many places throughout the app
-                    self.loggedInDependencyBridge.register(bridge: loggedInController)
-                    loggedInController.view.frame = self.view.bounds
-                    if let onboardingController = self.onboardingController {
-                        self.transition(
-                            from: onboardingController,
-                            to: loggedInController,
-                            animate: true
-                        )
-                    } else {
-                        self.add(child: loggedInController)
-                    }
-                    self.loggedInController = loggedInController
-                    self.onboardingController = nil
+                let loggedInController = RootViewController(store: store)
+                // this is important, register the controller as a bridge
+                // for many places throughout the app
+                self.loggedInDependencyBridge.register(bridge: loggedInController)
+                loggedInController.view.frame = self.view.bounds
+                if let onboardingController = self.onboardingController {
+                    self.transition(
+                        from: onboardingController,
+                        to: loggedInController,
+                        animate: true
+                    )
+                } else {
+                    self.add(child: loggedInController)
                 }
-
-                self.featureFlagsService.isEnabled(.remote(.redesign))
-                    .sink { isEnabled in
-                        if isEnabled {
-                            load(RootViewController(store: store))
-                        } else {
-                            load(LoggedInHostingController(store: store))
-                        }
-                    }
-                    .store(in: &self.cancellables)
+                self.loggedInController = loggedInController
+                self.onboardingController = nil
             })
             .store(in: &cancellables)
 

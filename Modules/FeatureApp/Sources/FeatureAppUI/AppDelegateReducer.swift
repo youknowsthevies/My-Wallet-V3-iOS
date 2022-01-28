@@ -45,7 +45,6 @@ public enum AppDelegateAction: Equatable {
         completionHandler: (UIBackgroundFetchResult) -> Void
     )
     case applyCertificatePinning
-    case setGlobalNavigationAppearance(Screen.Style.Bar)
 }
 
 extension AppDelegateAction {
@@ -122,11 +121,6 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
-            environment.featureFlagService.isEnabled(.remote(.redesign))
-                .filter(!)
-                .map(.setGlobalNavigationAppearance(.lightContent()))
-                .eraseToEffect(),
-
             environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
                 .filter { $0 }
                 .map(.applyCertificatePinning)
@@ -193,14 +187,6 @@ let appDelegateReducer = Reducer<
     case .applyCertificatePinning:
         return .fireAndForget {
             environment.certificatePinner.pinCertificateIfNeeded()
-        }
-    case .setGlobalNavigationAppearance(let barStyle):
-        return .fireAndForget {
-            let navigationBarAppearance = UINavigationBar.appearance()
-            navigationBarAppearance.shadowImage = UIImage()
-            navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
-            navigationBarAppearance.barTintColor = barStyle.backgroundColor
-            navigationBarAppearance.tintColor = barStyle.tintColor
         }
     }
 }

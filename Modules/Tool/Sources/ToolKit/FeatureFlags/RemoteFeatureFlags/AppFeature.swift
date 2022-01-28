@@ -85,8 +85,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: - Redesign
 
-    case redesign
-
     case fab
 }
 
@@ -134,8 +132,6 @@ extension AppFeature {
             return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
-        case .redesign:
-            return "ios_ff_redesign"
         case .fab:
             return "ios_fab_data"
         case .newOnboardingTour:
@@ -187,8 +183,6 @@ extension AppFeature {
         case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
-            return true
-        case .redesign:
             return true
         case .fab:
             return true

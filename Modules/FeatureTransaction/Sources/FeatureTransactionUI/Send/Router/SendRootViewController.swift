@@ -34,7 +34,7 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
     // MARK: - Private Properties
 
     private let topMostViewControllerProvider: TopMostViewControllerProviding
-    private var hideNavigationBar: Bool = false
+    private var hideNavigationBar: Bool = true
     private var hideNavigationBarSubscription: AnyCancellable?
 
     @LazyInject var featureFlagsService: FeatureFlagsServiceAPI
@@ -45,8 +45,6 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .white
-        hideNavigationBarSubscription = featureFlagsService.isEnabled(.remote(.redesign))
-            .assign(to: \.hideNavigationBar, on: self)
     }
 
     override func viewDidLayoutSubviews() {
