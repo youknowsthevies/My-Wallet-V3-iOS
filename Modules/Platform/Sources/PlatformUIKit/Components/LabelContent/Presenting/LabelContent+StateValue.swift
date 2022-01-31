@@ -18,6 +18,15 @@ extension LabelContent {
     }
 }
 
+extension ObservableType where Element == String {
+
+    public func mapToLabelContentStateInteraction() -> Observable<LabelContent.State.Interaction> {
+        map { string in
+            .loaded(next: .init(text: string))
+        }
+    }
+}
+
 extension ObservableType where Element == String? {
 
     public func mapToLabelContentStateInteraction() -> Observable<LabelContent.State.Interaction> {
