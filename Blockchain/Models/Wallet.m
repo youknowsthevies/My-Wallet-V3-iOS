@@ -825,11 +825,6 @@ NSString * const kAccountInvitations = @"invited";
     return 0;
 }
 
-- (int)getDefaultAccountLabelledAddressesCount
-{
-    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
-}
-
 - (NSString *)getMobileMessage
 {
     if ([self isInitialized]) {
