@@ -6,11 +6,14 @@ import DIKit
 import FeatureAppUI
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
+import MoneyKit
+import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
 import UIComponentsKit
 import UIKit
+import WalletConnectSwift
 
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
@@ -23,6 +26,8 @@ final class AppHostingController: UIViewController {
     private var loggedInController: RootViewController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
     private var featureFlagsService: FeatureFlagsServiceAPI
+
+    private var dynamicBridge: DynamicDependencyBridge = .init()
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -46,6 +51,9 @@ final class AppHostingController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
+
+        loggedInDependencyBridge
+            .register(bridge: dynamicBridge)
 
         viewStore
             .publisher
@@ -73,7 +81,7 @@ final class AppHostingController: UIViewController {
                     self.add(child: onboardingController)
                 }
                 self.onboardingController = onboardingController
-                self.loggedInDependencyBridge.unregister()
+                self.dynamicBridge.register(bridge: SignedOutDependencyBridge())
                 self.loggedInController?.clear()
                 self.loggedInController = nil
             })
@@ -86,7 +94,7 @@ final class AppHostingController: UIViewController {
                 let loggedInController = RootViewController(store: store)
                 // this is important, register the controller as a bridge
                 // for many places throughout the app
-                self.loggedInDependencyBridge.register(bridge: loggedInController)
+                self.dynamicBridge.register(bridge: loggedInController)
                 loggedInController.view.frame = self.view.bounds
                 if let onboardingController = self.onboardingController {
                     self.transition(
