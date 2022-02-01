@@ -45,7 +45,7 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let sending = NSLocalizedString("Sending", comment: "Sending")
         public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
-        public static let transferred = NSLocalizedString("Transferred", comment: "Transferred")
+        public static let added = NSLocalizedString("Added", comment: "Added")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
         public static let buying = NSLocalizedString("Buying", comment: "Buying")
         public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
@@ -91,7 +91,7 @@ extension LocalizationConstants.Activity.Details {
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
         public static let withdrawal = NSLocalizedString("Withdrawal", comment: "Withdrawal")
         public static let rewardsEarned = NSLocalizedString("Rewards Earned", comment: "Rewards Earned")
-        public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
+        public static let added = NSLocalizedString("Added", comment: "Added")
     }
 
     public enum Button {

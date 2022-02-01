@@ -428,8 +428,8 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "Bank Transfers Only"
                     )
                     public static let description = NSLocalizedString(
-                        "Please do not send any funds via ACH. A real bank transfer must be sent",
-                        comment: "Please do not send any funds via ACH. A real bank transfer must be sent"
+                        "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.",
+                        comment: "Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected."
                     )
                 }
 
