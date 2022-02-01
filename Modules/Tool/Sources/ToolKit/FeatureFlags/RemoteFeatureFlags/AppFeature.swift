@@ -86,6 +86,10 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Redesign
 
     case fab
+
+    // MARK: - Native Wallet
+
+    case nativeWalletCreation
 }
 
 extension AppFeature {
@@ -138,6 +142,8 @@ extension AppFeature {
             return "ios_ff_new_onboarding_tour"
         case .hotWalletCustodial:
             return "ios_ff_hot_wallet_custodial"
+        case .nativeWalletCreation:
+            return "ios_ff_native_wallet_creation"
         }
     }
 
@@ -189,6 +195,8 @@ extension AppFeature {
         case .newOnboardingTour:
             return true
         case .hotWalletCustodial:
+            return false
+        case .nativeWalletCreation:
             return false
         }
     }

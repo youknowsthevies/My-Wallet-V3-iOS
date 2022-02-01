@@ -9,8 +9,8 @@ struct AddressLabelResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.AddressLabel {
-    convenience init(from model: AddressLabelResponse) {
-        self.init(
+    static func from(model: AddressLabelResponse) -> AddressLabel {
+        AddressLabel(
             index: model.index,
             label: model.label
         )

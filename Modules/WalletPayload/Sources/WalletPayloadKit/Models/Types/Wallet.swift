@@ -6,15 +6,15 @@ import WalletCore
 
 /// The derived Wallet from the response model, `BlockchainWallet`
 /// Note: This should be renamed to `Wallet` once we finalise the migration to native code.
-public final class NativeWallet: Equatable {
-    public internal(set) var guid: String
-    public internal(set) var sharedKey: String
-    public internal(set) var doubleEncrypted: Bool
-    public internal(set) var doublePasswordHash: String?
-    public internal(set) var metadataHDNode: String?
-    public internal(set) var options: Options
-    public internal(set) var hdWallets: [HDWallet]
-    public internal(set) var addresses: [Address]
+public struct NativeWallet: Equatable {
+    public let guid: String
+    public let sharedKey: String
+    public let doubleEncrypted: Bool
+    public let doublePasswordHash: String?
+    public let metadataHDNode: String?
+    public let options: Options
+    public let hdWallets: [HDWallet]
+    public let addresses: [Address]
 
     /// Returns the default HDWallet from the list
     /// - NOTE: We never add multiple HDWallet(s)
@@ -46,19 +46,6 @@ public final class NativeWallet: Equatable {
         self.options = options
         self.hdWallets = hdWallets
         self.addresses = addresses
-    }
-}
-
-extension NativeWallet {
-    public static func == (lhs: NativeWallet, rhs: NativeWallet) -> Bool {
-        lhs.guid == rhs.guid
-            && lhs.sharedKey == rhs.sharedKey
-            && lhs.doubleEncrypted == rhs.doubleEncrypted
-            && lhs.doublePasswordHash == rhs.doublePasswordHash
-            && lhs.metadataHDNode == rhs.metadataHDNode
-            && lhs.options == rhs.options
-            && lhs.hdWallets == rhs.hdWallets
-            && lhs.addresses == rhs.addresses
     }
 }
 

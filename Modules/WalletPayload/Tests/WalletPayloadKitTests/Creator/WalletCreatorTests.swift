@@ -22,12 +22,13 @@ class WalletCreatorTests: XCTestCase {
         mockServerEntropy.serverEntropyResult = .success("00000000000000000000000000000011")
         let rngService = RNGService(
             serverEntropyRepository: mockServerEntropy,
-            localEntropyProvider: { _ in .just(Data(hex: "00000000000000000000000000000001")) }
+            localEntropyProvider: { _ in .just(Data(hex: "00000000000000000000000000000001")) },
+            operationQueue: DispatchQueue(label: "rng.service.op.queue")
         )
         var uuidProviderCalled = false
         let uuidProvider: UUIDProvider = {
             uuidProviderCalled = true
-            return .just(("", ""))
+            return .just(("guid-value", "sharedKey-value"))
         }
         var generateWalletCalled = false
         let generateWalletMock: GenerateWalletProvider = { context in
@@ -40,12 +41,18 @@ class WalletCreatorTests: XCTestCase {
             return generateWrapper(wallet: wallet, language: language, version: version)
         }
         let mockCreateRepository = MockCreateWalletRepository()
+        let dispatchQueue = DispatchQueue(label: "wallet.creator.temp.op.queue")
         mockCreateRepository.createWallerResult = .just(())
+
+        let mockEncryptor = MockPayloadCrypto()
+        mockEncryptor.encryptDataResult = .success("")
+
         let creator = WalletCreator(
             entropyService: rngService,
             walletEncoder: WalletEncoder(),
-            encryptor: PayloadCrypto(cryptor: AESCryptor()),
+            encryptor: mockEncryptor,
             createWalletRepository: mockCreateRepository,
+            operationQueue: dispatchQueue,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
             generateWrapper: generateWrapperMock,
@@ -54,6 +61,7 @@ class WalletCreatorTests: XCTestCase {
 
         let expectation = expectation(description: "should create wallet")
 
+        let expectedValue = WalletCreation(guid: "guid-value", sharedKey: "sharedKey-value", password: "1234")
         let email = "some@some.com"
         let password = "1234"
         let accountName = "Private Key Wallet"
@@ -65,8 +73,9 @@ class WalletCreatorTests: XCTestCase {
                     }
                     XCTFail("should not fail: \(error)")
                 },
-                receiveValue: { emptyValue in
-                    XCTAssertEqual(emptyValue, EmptyValue.noValue)
+                receiveValue: { value in
+                    XCTAssertEqual(value, expectedValue)
+                    XCTAssertTrue(mockEncryptor.encryptDataCalled)
                     XCTAssertTrue(mockServerEntropy.getServerEntropyCalled)
                     XCTAssertTrue(uuidProviderCalled)
                     XCTAssertTrue(generateWalletCalled)
@@ -77,6 +86,6 @@ class WalletCreatorTests: XCTestCase {
             )
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation], timeout: 10)
     }
 }

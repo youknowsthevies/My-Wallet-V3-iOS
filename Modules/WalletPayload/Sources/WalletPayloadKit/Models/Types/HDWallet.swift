@@ -5,12 +5,12 @@ import MetadataKit
 import ToolKit
 import WalletCore
 
-public final class HDWallet: Equatable {
-    public internal(set) var seedHex: String
-    public internal(set) var passphrase: String
-    public internal(set) var mnemonicVerified: Bool
-    public internal(set) var defaultAccountIndex: Int
-    public internal(set) var accounts: [Account]
+public struct HDWallet: Equatable {
+    public let seedHex: String
+    public let passphrase: String
+    public let mnemonicVerified: Bool
+    public let defaultAccountIndex: Int
+    public let accounts: [Account]
 
     public init(
         seedHex: String,
@@ -24,16 +24,6 @@ public final class HDWallet: Equatable {
         self.mnemonicVerified = mnemonicVerified
         self.defaultAccountIndex = defaultAccountIndex
         self.accounts = accounts
-    }
-}
-
-extension HDWallet {
-    public static func == (lhs: HDWallet, rhs: HDWallet) -> Bool {
-        lhs.seedHex == rhs.seedHex
-            && lhs.passphrase == rhs.passphrase
-            && lhs.mnemonicVerified == rhs.mnemonicVerified
-            && lhs.defaultAccountIndex == rhs.defaultAccountIndex
-            && lhs.accounts == rhs.accounts
     }
 }
 

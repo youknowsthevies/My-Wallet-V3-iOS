@@ -58,8 +58,8 @@ extension DerivationResponse.Format {
 // MARK: - Derivation Creation
 
 extension WalletPayloadKit.Derivation {
-    convenience init(from model: DerivationResponse) {
-        self.init(
+    static func from(model: DerivationResponse) -> Derivation {
+        Derivation(
             type: DerivationResponse.Format.create(from: model.type),
             purpose: model.purpose,
             xpriv: model.xpriv,

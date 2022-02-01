@@ -57,11 +57,14 @@ extension DependencyContainer {
         }
 
         factory { () -> WalletCreatorAPI in
-            WalletCreator(
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.creation.op.queue", qos: .userInitiated, target: targetQueue)
+            return WalletCreator(
                 entropyService: DIKit.resolve(),
                 walletEncoder: DIKit.resolve(),
                 encryptor: PayloadCrypto(cryptor: AESCryptor()),
                 createWalletRepository: DIKit.resolve(),
+                operationQueue: queue,
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),
                 generateWrapper: generateWrapper(wallet:language:version:),
@@ -104,6 +107,17 @@ extension DependencyContainer {
             return BitcoinEntryFetcher(
                 walletHolder: holder,
                 metadataEntryService: metadata
+            )
+        }
+
+        factory { () -> RNGServiceAPI in
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "rng.service.op.queue", qos: .userInitiated, target: targetQueue)
+            return RNGService(
+                serverEntropyRepository: DIKit.resolve(),
+                localEntropyProvider: provideLocalEntropy(bytes:),
+                combineEntropyParsing: combineEntropies(local:remote:),
+                operationQueue: queue
             )
         }
 

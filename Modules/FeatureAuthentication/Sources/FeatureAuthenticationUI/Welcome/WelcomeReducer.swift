@@ -85,6 +85,7 @@ public struct WelcomeEnvironment {
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
     let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
@@ -98,6 +99,7 @@ public struct WelcomeEnvironment {
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         walletRecoveryService: WalletRecoveryService = DIKit.resolve(),
+        walletCreationService: WalletCreationService = DIKit.resolve(),
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.mainQueue = mainQueue
@@ -110,6 +112,7 @@ public struct WelcomeEnvironment {
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
         self.nativeWalletEnabled = nativeWalletEnabled
     }
 }
@@ -126,7 +129,8 @@ public let welcomeReducer = Reducer.combine(
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),
@@ -143,7 +147,8 @@ public let welcomeReducer = Reducer.combine(
                     featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),
@@ -157,7 +162,8 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),
@@ -173,7 +179,8 @@ public let welcomeReducer = Reducer.combine(
                     errorRecorder: $0.errorRecorder,
                     featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),

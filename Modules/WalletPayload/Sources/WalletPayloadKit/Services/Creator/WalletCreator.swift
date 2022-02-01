@@ -14,6 +14,7 @@ public enum WalletCreateError: LocalizedError, Equatable {
     case mnemonicFailure(MnemonicProviderError)
     case encodingError(WalletEncodingError)
     case networkError(NetworkError)
+    case legacyError(WalletCreationError)
 }
 
 struct WalletCreationContext: Equatable {
@@ -28,12 +29,15 @@ typealias GenerateWalletProvider = (WalletCreationContext) -> Result<NativeWalle
 typealias GenerateWrapperProvider = (NativeWallet, String, WalletVersion) -> Wrapper
 
 public protocol WalletCreatorAPI {
+
+    /// Creates a new wallet using the given email and password.
+    /// - Returns: `AnyPublisher<WalletCreation, WalletCreateError>`
     func createWallet(
         email: String,
         password: String,
         accountName: String,
         language: String
-    ) -> AnyPublisher<EmptyValue, WalletCreateError>
+    ) -> AnyPublisher<WalletCreation, WalletCreateError>
 }
 
 final class WalletCreator: WalletCreatorAPI {
@@ -42,6 +46,7 @@ final class WalletCreator: WalletCreatorAPI {
     private let walletEncoder: WalletEncodingAPI
     private let encryptor: PayloadCryptoAPI
     private let createWalletRepository: CreateWalletRepositoryAPI
+    private let operationQueue: DispatchQueue
     private let uuidProvider: UUIDProvider
     private let generateWallet: GenerateWalletProvider
     private let generateWrapper: GenerateWrapperProvider
@@ -52,6 +57,7 @@ final class WalletCreator: WalletCreatorAPI {
         walletEncoder: WalletEncodingAPI,
         encryptor: PayloadCryptoAPI,
         createWalletRepository: CreateWalletRepositoryAPI,
+        operationQueue: DispatchQueue,
         uuidProvider: @escaping UUIDProvider,
         generateWallet: @escaping GenerateWalletProvider,
         generateWrapper: @escaping GenerateWrapperProvider,
@@ -61,6 +67,7 @@ final class WalletCreator: WalletCreatorAPI {
         self.walletEncoder = walletEncoder
         self.encryptor = encryptor
         self.createWalletRepository = createWalletRepository
+        self.operationQueue = operationQueue
         self.entropyService = entropyService
         self.generateWallet = generateWallet
         self.generateWrapper = generateWrapper
@@ -72,12 +79,14 @@ final class WalletCreator: WalletCreatorAPI {
         password: String,
         accountName: String,
         language: String = "en"
-    ) -> AnyPublisher<EmptyValue, WalletCreateError> {
+    ) -> AnyPublisher<WalletCreation, WalletCreateError> {
         provideMnemonic(
             strength: .normal,
+            queue: operationQueue,
             entropyProvider: entropyService.generateEntropy(count:)
         )
         .mapError(WalletCreateError.mnemonicFailure)
+        .receive(on: operationQueue)
         .flatMap { [uuidProvider] mnemonic -> AnyPublisher<WalletCreationContext, WalletCreateError> in
             uuidProvider()
                 .map { guid, sharedKey in
@@ -131,13 +140,19 @@ final class WalletCreator: WalletCreatorAPI {
             .mapError(WalletCreateError.encodingError)
             .eraseToAnyPublisher()
         }
-        .flatMap { [createWalletRepository] payload -> AnyPublisher<EmptyValue, WalletCreateError> in
+        .flatMap { [createWalletRepository] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
             createWalletRepository.createWallet(email: email, payload: payload)
-                .map { _ in .noValue }
+                .map { _ in payload }
                 .mapError(WalletCreateError.networkError)
                 .eraseToAnyPublisher()
         }
-        .map { _ in .noValue }
+        .map { payload in
+            WalletCreation(
+                guid: payload.guid,
+                sharedKey: payload.sharedKey,
+                password: password
+            )
+        }
         .eraseToAnyPublisher()
     }
 }

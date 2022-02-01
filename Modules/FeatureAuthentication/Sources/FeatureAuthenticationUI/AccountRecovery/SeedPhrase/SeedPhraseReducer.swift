@@ -94,6 +94,7 @@ struct SeedPhraseEnvironment {
     let passwordValidator: PasswordValidatorAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -101,7 +102,8 @@ struct SeedPhraseEnvironment {
         passwordValidator: PasswordValidatorAPI = resolve(),
         externalAppOpener: ExternalAppOpener,
         analyticsRecorder: AnalyticsEventRecorderAPI,
-        walletRecoveryService: WalletRecoveryService
+        walletRecoveryService: WalletRecoveryService,
+        walletCreationService: WalletCreationService
     ) {
         self.mainQueue = mainQueue
         self.validator = validator
@@ -109,6 +111,7 @@ struct SeedPhraseEnvironment {
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
     }
 }
 
@@ -124,7 +127,8 @@ let seedPhraseReducer = Reducer.combine(
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),

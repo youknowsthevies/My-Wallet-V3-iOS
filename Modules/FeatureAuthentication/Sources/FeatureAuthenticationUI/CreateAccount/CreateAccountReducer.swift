@@ -150,6 +150,7 @@ struct CreateAccountEnvironment {
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
 }
 
 private typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount

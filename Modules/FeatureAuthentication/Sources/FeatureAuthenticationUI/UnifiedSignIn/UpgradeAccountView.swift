@@ -209,7 +209,8 @@ struct UpgradeAccountView_Previews: PreviewProvider {
                     errorRecorder: NoOpErrorRecoder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop
                 )
             ),
             exchangeOnly: true

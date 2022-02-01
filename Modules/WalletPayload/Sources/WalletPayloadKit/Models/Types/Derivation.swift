@@ -17,13 +17,13 @@ public enum DerivationType: String, Equatable, CaseIterable {
     }
 }
 
-public class Derivation: Equatable {
-    public internal(set) var type: DerivationType
-    public internal(set) var purpose: Int
-    public internal(set) var xpriv: String
-    public internal(set) var xpub: String
-    public internal(set) var addressLabels: [AddressLabel]
-    public internal(set) var cache: AddressCache
+public struct Derivation: Equatable {
+    public let type: DerivationType
+    public let purpose: Int
+    public let xpriv: String
+    public let xpub: String
+    public let addressLabels: [AddressLabel]
+    public let cache: AddressCache
 
     public init(
         type: DerivationType,
@@ -39,17 +39,6 @@ public class Derivation: Equatable {
         self.xpub = xpub
         self.addressLabels = addressLabels
         self.cache = cache
-    }
-}
-
-extension Derivation {
-    public static func == (lhs: Derivation, rhs: Derivation) -> Bool {
-        lhs.type == rhs.type
-            && lhs.purpose == rhs.purpose
-            && lhs.xpriv == rhs.xpriv
-            && lhs.xpub == rhs.xpub
-            && lhs.addressLabels == rhs.addressLabels
-            && lhs.cache == rhs.cache
     }
 }
 

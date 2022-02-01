@@ -26,16 +26,16 @@ struct WalletResponse: Equatable, Codable {
 }
 
 extension NativeWallet {
-    convenience init(from blockchainWallet: WalletResponse) {
-        self.init(
+    static func from(blockchainWallet: WalletResponse) -> NativeWallet {
+        NativeWallet(
             guid: blockchainWallet.guid,
             sharedKey: blockchainWallet.sharedKey,
             doubleEncrypted: blockchainWallet.doubleEncryption,
             doublePasswordHash: blockchainWallet.doublePasswordHash,
             metadataHDNode: blockchainWallet.metadataHDNode,
-            options: WalletPayloadKit.Options(from: blockchainWallet.options),
-            hdWallets: blockchainWallet.hdWallets.map(WalletPayloadKit.HDWallet.init(from:)),
-            addresses: blockchainWallet.addresses.map(WalletPayloadKit.Address.init(from:))
+            options: WalletPayloadKit.Options.from(model: blockchainWallet.options),
+            hdWallets: blockchainWallet.hdWallets.map(WalletPayloadKit.HDWallet.from(model:)),
+            addresses: blockchainWallet.addresses.map(WalletPayloadKit.Address.from(model:))
         )
     }
 

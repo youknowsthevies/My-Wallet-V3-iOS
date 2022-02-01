@@ -278,7 +278,8 @@ struct SeedPhraseView_Previews: PreviewProvider {
                     mainQueue: .main,
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop
                 )
             )
         )

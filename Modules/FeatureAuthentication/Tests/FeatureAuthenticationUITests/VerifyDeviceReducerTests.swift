@@ -41,7 +41,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock()
             )
         )
     }

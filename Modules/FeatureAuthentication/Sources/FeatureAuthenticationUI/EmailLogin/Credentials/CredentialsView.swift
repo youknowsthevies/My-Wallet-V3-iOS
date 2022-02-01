@@ -360,7 +360,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     errorRecorder: NoOpErrorRecorder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop
                 )
             )
         )

@@ -4,16 +4,16 @@ import Foundation
 import ToolKit
 import WalletCore
 
-public final class Wrapper: Equatable {
-    public internal(set) var pbkdf2Iterations: UInt32
-    public internal(set) var version: Int
-    public internal(set) var payloadChecksum: String
-    public internal(set) var language: String
-    public internal(set) var syncPubKeys: Bool
-    public internal(set) var warChecksum: String
-    public internal(set) var wallet: NativeWallet
+public struct Wrapper: Equatable {
+    public let pbkdf2Iterations: UInt32
+    public let version: Int
+    public let payloadChecksum: String
+    public let language: String
+    public let syncPubKeys: Bool
+    public let warChecksum: String
+    public let wallet: NativeWallet
 
-    init(
+    public init(
         pbkdf2Iterations: Int,
         version: Int,
         payloadChecksum: String,
@@ -29,18 +29,6 @@ public final class Wrapper: Equatable {
         self.syncPubKeys = syncPubKeys
         self.warChecksum = warChecksum
         self.wallet = wallet
-    }
-}
-
-extension Wrapper {
-    public static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
-        lhs.pbkdf2Iterations == rhs.pbkdf2Iterations
-            && lhs.version == rhs.version
-            && lhs.payloadChecksum == rhs.payloadChecksum
-            && lhs.language == rhs.language
-            && lhs.syncPubKeys == rhs.syncPubKeys
-            && lhs.warChecksum == rhs.warChecksum
-            && lhs.wallet == rhs.wallet
     }
 }
 

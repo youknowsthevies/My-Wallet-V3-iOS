@@ -103,7 +103,8 @@ struct ImportWalletView_Previews: PreviewProvider {
                     passwordValidator: PasswordValidator(),
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop
                 )
             )
         )

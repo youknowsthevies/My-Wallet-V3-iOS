@@ -39,6 +39,14 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCreationService in
+            WalletCreationService.live(
+                walletManager: DIKit.resolve(),
+                walletCreator: DIKit.resolve(),
+                nativeWalletCreationEnabled: { nativeWalletCreationFlagEnabled() }
+            )
+        }
+
         factory { () -> NabuAuthenticationErrorReceiverAPI in
             let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
             return broadcaster as NabuAuthenticationErrorReceiverAPI

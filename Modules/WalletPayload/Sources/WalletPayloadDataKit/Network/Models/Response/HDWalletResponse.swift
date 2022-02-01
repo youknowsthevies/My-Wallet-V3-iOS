@@ -60,13 +60,15 @@ struct HDWalletResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.HDWallet {
-    convenience init(from model: HDWalletResponse) {
-        self.init(
+    static func from(model: HDWalletResponse) -> HDWallet {
+        HDWallet(
             seedHex: model.seedHex,
             passphrase: model.passphrase,
             mnemonicVerified: model.mnemonicVerified,
             defaultAccountIndex: model.defaultAccountIndex,
-            accounts: model.accounts.enumerated().map(WalletPayloadKit.Account.init(index:model:))
+            accounts: model.accounts.enumerated().map { index, model in
+                WalletPayloadKit.Account.from(model: model, index: index)
+            }
         )
     }
 

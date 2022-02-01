@@ -2,14 +2,14 @@
 
 import Foundation
 
-public final class Address: Equatable {
-    public internal(set) var addr: String
-    public internal(set) var priv: String?
-    public internal(set) var tag: Int
-    public internal(set) var label: String
-    public internal(set) var createdTime: Int
-    public internal(set) var createdDeviceName: String
-    public internal(set) var createdDeviceVersion: String
+public struct Address: Equatable {
+    public let addr: String
+    public let priv: String?
+    public let tag: Int
+    public let label: String
+    public let createdTime: Int
+    public let createdDeviceName: String
+    public let createdDeviceVersion: String
 
     var isArchived: Bool {
         tag == 2
@@ -39,17 +39,5 @@ public final class Address: Equatable {
         self.createdTime = createdTime
         self.createdDeviceName = createdDeviceName
         self.createdDeviceVersion = createdDeviceVersion
-    }
-}
-
-extension Address {
-    public static func == (lhs: Address, rhs: Address) -> Bool {
-        lhs.addr == rhs.addr
-            && lhs.priv == rhs.priv
-            && lhs.tag == rhs.tag
-            && lhs.label == rhs.label
-            && lhs.createdTime == rhs.createdTime
-            && lhs.createdDeviceName == rhs.createdDeviceName
-            && lhs.createdDeviceVersion == rhs.createdDeviceVersion
     }
 }

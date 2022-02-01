@@ -11,13 +11,13 @@ struct AccountResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.Account {
-    convenience init(index: Int, model: AccountResponse) {
-        self.init(
+    static func from(model: AccountResponse, index: Int) -> Account {
+        Account(
             index: index,
             label: model.label,
             archived: model.archived,
             defaultDerivation: DerivationResponse.Format.create(from: model.defaultDerivation),
-            derivations: model.derivations.map(WalletPayloadKit.Derivation.init(from:))
+            derivations: model.derivations.map(WalletPayloadKit.Derivation.from(model:))
         )
     }
 

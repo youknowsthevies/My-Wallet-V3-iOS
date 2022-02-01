@@ -44,7 +44,8 @@ final class CredentialsReducerTests: XCTestCase {
                 externalAppOpener: MockExternalAppOpener(),
                 featureFlagsService: MockFeatureFlagsService(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock()
             )
         )
     }

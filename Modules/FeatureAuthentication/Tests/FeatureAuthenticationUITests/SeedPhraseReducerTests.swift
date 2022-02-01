@@ -36,7 +36,8 @@ final class SeedPhraseReducerTests: XCTestCase {
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock()
             )
         )
     }

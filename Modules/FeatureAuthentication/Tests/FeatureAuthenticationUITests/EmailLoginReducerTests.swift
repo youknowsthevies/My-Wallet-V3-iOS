@@ -36,7 +36,8 @@ final class EmailLoginReducerTests: XCTestCase {
                 featureFlagsService: MockFeatureFlagsService(),
                 errorRecorder: MockErrorRecorder(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock()
             )
         )
     }

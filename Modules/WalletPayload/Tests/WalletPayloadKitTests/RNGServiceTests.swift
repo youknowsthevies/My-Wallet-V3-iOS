@@ -18,6 +18,8 @@ class RNGServiceTests: XCTestCase {
     let oneLocalBuffer = Data(hex: "0000000000000000000000000000000000000000000000000000000000000001")
     let zerosLocalBuffer = Data(hex: "0000000000000000000000000000000000000000000000000000000000000000")
 
+    let dispatchQueue = DispatchQueue(label: "rngservice.temp.op.queue")
+
     private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
@@ -32,10 +34,12 @@ class RNGServiceTests: XCTestCase {
         let localEntropy = { (_: EntropyBytes) -> AnyPublisher<Data, RNGEntropyError> in
             .just(self.oneLocalBuffer)
         }
+
         let service = RNGService(
             serverEntropyRepository: mockServerEntropy,
             localEntropyProvider: localEntropy,
-            combineEntropyParsing: combineEntropies
+            combineEntropyParsing: combineEntropies,
+            operationQueue: dispatchQueue
         )
 
         let expectation = expectation(description: "")
@@ -64,10 +68,12 @@ class RNGServiceTests: XCTestCase {
         let localEntropy = { (_: EntropyBytes) -> AnyPublisher<Data, RNGEntropyError> in
             .just(self.oneLocalBuffer)
         }
+
         let service = RNGService(
             serverEntropyRepository: mockServerEntropy,
             localEntropyProvider: localEntropy,
-            combineEntropyParsing: combineEntropies
+            combineEntropyParsing: combineEntropies,
+            operationQueue: dispatchQueue
         )
 
         let expectation = expectation(description: "")
@@ -94,10 +100,12 @@ class RNGServiceTests: XCTestCase {
         let localEntropy = { (_: EntropyBytes) -> AnyPublisher<Data, RNGEntropyError> in
             .just(self.zerosLocalBuffer)
         }
+
         let service = RNGService(
             serverEntropyRepository: mockServerEntropy,
             localEntropyProvider: localEntropy,
-            combineEntropyParsing: combineEntropies
+            combineEntropyParsing: combineEntropies,
+            operationQueue: dispatchQueue
         )
 
         let expectation = expectation(description: "")

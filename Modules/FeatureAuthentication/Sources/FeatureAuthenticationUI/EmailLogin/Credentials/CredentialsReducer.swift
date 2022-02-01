@@ -106,6 +106,7 @@ struct CredentialsEnvironment {
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: (String) -> Bool
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -123,7 +124,8 @@ struct CredentialsEnvironment {
         featureFlagsService: FeatureFlagsServiceAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator,
-        walletRecoveryService: WalletRecoveryService
+        walletRecoveryService: WalletRecoveryService,
+        walletCreationService: WalletCreationService
     ) {
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
@@ -138,6 +140,7 @@ struct CredentialsEnvironment {
         self.analyticsRecorder = analyticsRecorder
         self.walletIdentifierValidator = walletIdentifierValidator
         self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
     }
 }
 
@@ -182,7 +185,8 @@ let credentialsReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),

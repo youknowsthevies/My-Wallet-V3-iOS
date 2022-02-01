@@ -28,6 +28,7 @@ struct ImportWalletEnvironment {
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
 }
 
 let importWalletReducer = Reducer.combine(
@@ -42,7 +43,8 @@ let importWalletReducer = Reducer.combine(
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService
                 )
             }
         ),
