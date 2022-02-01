@@ -183,6 +183,9 @@ extension FundsTransferDetailScreenPresenter {
                     textStyle: .init(color: .descriptionText, font: font),
                     linkStyle: .init(color: .linkableText, font: font)
                 )
+            case .USD:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
+                termsTextViewModel = nil
             default:
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil

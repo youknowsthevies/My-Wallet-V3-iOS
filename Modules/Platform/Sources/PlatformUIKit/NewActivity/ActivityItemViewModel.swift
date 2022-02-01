@@ -62,7 +62,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .interestEarned:
                 text = event.cryptoCurrency.code + " \(LocalizationStrings.rewardsEarned)"
             case .transfer:
-                text = LocalizationStrings.transferred + " \(event.cryptoCurrency.code)"
+                text = LocalizationStrings.added + " \(event.cryptoCurrency.code)"
             case .unknown:
                 unimplemented()
             }

@@ -88,7 +88,7 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .transfer:
-            title = LocalizedString.Title.transfer
+            title = LocalizedString.Title.added + " \(event.cryptoCurrency.displayCode)"
             let destination = event.cryptoCurrency.code + " \(LocalizedString.rewardsAccount)"
             toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
