@@ -41,17 +41,17 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
         fromString string: String?,
         asset: CryptoCurrency
     ) -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> {
-        guard let data = string else {
+        guard let string = string else {
             return .failure(CryptoTargetPayloadError.invalidStringData)
         }
-        let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
+        let metadata = makeCryptoQRMetaData(fromString: string, asset: asset)
         return BitPayInvoiceTarget
             // Check if the data is a BitPay payload.
-            .isBitPay(data)
+            .isBitPay(string)
             // Check if the asset is a supported asset for BitPay.
             .andThen(BitPayInvoiceTarget.isSupportedAsset(asset))
             // Return the BitPay data
-            .andThen(Single.just(.bitpay(data)))
+            .andThen(Single.just(.bitpay(string)))
             .asPublisher()
             .catch { error -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> in
                 guard let bitpayError = error as? BitPayError else {

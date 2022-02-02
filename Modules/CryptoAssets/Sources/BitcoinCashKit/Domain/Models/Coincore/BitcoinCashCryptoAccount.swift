@@ -9,12 +9,13 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
+final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCashCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
     let asset: CryptoCurrency = .coin(.bitcoinCash)
     let isDefault: Bool
+    let hdAccountIndex: Int
 
     func createTransactionEngine() -> Any {
         BitcoinOnChainTransactionEngineFactory<BitcoinCashToken>()
@@ -54,26 +55,13 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        let receiveAddress: Single<String> = bridge.receiveAddress(forXPub: xPub.address)
-        let account: Single<BitcoinCashWalletAccount> = bridge
-            .wallets
-            .map { [xPub] wallets in
-                wallets.filter { $0.publicKey == xPub }
-            }
-            .map { accounts -> BitcoinCashWalletAccount in
-                guard let account = accounts.first else {
-                    throw PlatformKitError.illegalStateException(message: "Expected a BitcoinCashWalletAccount")
-                }
-                return account
-            }
-
-        return Single.zip(receiveAddress, account)
-            .map { [label, onTxCompleted] address, account -> ReceiveAddress in
+        bridge
+            .receiveAddress(forXPub: xPub.address)
+            .map { [label, onTxCompleted] address -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinCashToken>(
                     address: address,
                     label: label,
-                    onTxCompleted: onTxCompleted,
-                    index: Int32(account.index)
+                    onTxCompleted: onTxCompleted
                 )
             }
     }
@@ -124,7 +112,6 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
 
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let xPub: XPub
-    private let hdAccountIndex: Int
     private let balanceService: BalanceServiceAPI
     private let priceService: PriceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI

@@ -246,7 +246,7 @@ public final class CoreDeeplinkHandler: URIHandlingAPI {
             return .just(.handleLink(content))
         }
 
-        if BitcoinURLPayload(url: url) != nil {
+        if BIP21URI<BitcoinToken>(url: url) != nil {
             let content = URIContent(url: url, context: .sendCrypto)
             return .just(.handleLink(content))
         }

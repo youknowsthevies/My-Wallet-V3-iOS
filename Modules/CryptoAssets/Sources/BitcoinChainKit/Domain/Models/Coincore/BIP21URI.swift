@@ -1,26 +1,42 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import MoneyKit
+import PlatformKit
 
-/// A URI scheme that conforms to BIP 21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
-public protocol BIP21URI: CryptoAssetQRMetadata {
-    static var scheme: String { get }
+/// A URI scheme that conforms to BIP21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
+public struct BIP21URI<Token: BitcoinChainToken>: CryptoAssetQRMetadata {
 
-    init(address: String, amount: String?)
-}
+    public let address: String
+    public let amount: String?
+    public let cryptoCurrency: CryptoCurrency
+    public let includeScheme: Bool
 
-extension BIP21URI {
+    /// Conformance to `CryptoAssetQRMetadata`, this is not the BIP21URI.
     public var absoluteString: String {
-        let prefix = includeScheme ? "\(Self.scheme):" : ""
-        let uri = "\(prefix)\(address)"
+        let prefix = includeScheme ? "\(Token.coin.uriScheme):" : ""
+        return "\(prefix)\(address)"
+    }
+
+    /// The BIP21URI absolute string.
+    public var bip21AbsoluteString: String {
+        var uri = "\(Token.coin.uriScheme):\(address)"
         if let amount = amount {
-            return "\(uri)?amount=\(amount)"
+            uri.append(contentsOf: "?amount=\(amount)")
         }
         return uri
     }
 
+    init(address: String, amount: String?, includeScheme: Bool) {
+        cryptoCurrency = Token.coin.cryptoCurrency
+        self.address = address
+        self.amount = amount
+        self.includeScheme = includeScheme
+    }
+
     public init?(url: URL) {
-        guard url.scheme == Self.scheme else {
+        // Checks if scheme matches the Token scheme (scheme is required).
+        guard url.scheme == Token.coin.uriScheme else {
             return nil
         }
 
@@ -62,6 +78,6 @@ extension BIP21URI {
             return nil
         }
 
-        self.init(address: address, amount: amount)
+        self.init(address: address, amount: amount, includeScheme: true)
     }
 }
