@@ -3,28 +3,24 @@
 import Combine
 import DIKit
 import Foundation
+import ToolKit
 
 public protocol WithdrawalLocksServiceAPI {
-    func withdrawalLocks() -> AnyPublisher<WithdrawalLocks, Never>
+    var withdrawalLocks: AnyPublisher<WithdrawalLocks, Never> { get }
 }
 
 final class WithdrawalLocksService: WithdrawalLocksServiceAPI {
-    func withdrawalLocks() -> AnyPublisher<WithdrawalLocks, Never> {
-        fiatCurrencyCodePublisher.defaultFiatCurrencyCode
-            .flatMap { [repository] currencyCode in
-                repository.withdrawalLocks(currencyCode: currencyCode)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    private let repository: WithdrawalLocksRepositoryAPI
-    private let fiatCurrencyCodePublisher: FiatCurrencyCodeProviderAPI
+    var withdrawalLocks: AnyPublisher<WithdrawalLocks, Never>
 
     init(
         repository: WithdrawalLocksRepositoryAPI = resolve(),
         fiatCurrencyCodePublisher: FiatCurrencyCodeProviderAPI = resolve()
     ) {
-        self.repository = repository
-        self.fiatCurrencyCodePublisher = fiatCurrencyCodePublisher
+        withdrawalLocks = fiatCurrencyCodePublisher.defaultFiatCurrencyCode
+            .flatMap { currencyCode in
+                repository.withdrawalLocks(currencyCode: currencyCode)
+            }
+            .removeDuplicates()
+            .shareReplay()
     }
 }
