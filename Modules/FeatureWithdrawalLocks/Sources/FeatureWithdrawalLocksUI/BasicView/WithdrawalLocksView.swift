@@ -63,7 +63,7 @@ public let withdrawalLocksReducer = Reducer<
     case .loadWithdrawalLocks:
         return .merge(
             environment.withdrawalLockService
-                .withdrawalLocks()
+                .withdrawalLocks
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map { withdrawalLocks in
@@ -71,9 +71,14 @@ public let withdrawalLocksReducer = Reducer<
                 }
         )
     case .present(withdrawalLocks: let withdrawalLocks):
+        let updated = state.withdrawalLocks != withdrawalLocks
         state.withdrawalLocks = withdrawalLocks
         return .fireAndForget {
-            environment.updateViewAction?(withdrawalLocks?.items.isEmpty == false)
+            if updated {
+                environment.updateViewAction?(
+                    withdrawalLocks?.items.isEmpty == false
+                )
+            }
         }
     case .route(let routeItent):
         state.route = routeItent
