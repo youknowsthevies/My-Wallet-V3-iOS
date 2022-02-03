@@ -45,7 +45,7 @@ public struct OnboardingChecklistView: View {
                         ForEach(viewStore.items) { item in
                             let completed = viewStore.completedItems.contains(item)
                             let pending = viewStore.pendingItems.contains(item)
-                            OnboardingRow(
+                            OnboardingChecklistRow(
                                 item: item,
                                 status: rowStatusForState(completed: completed, pending: pending)
                             )
@@ -83,7 +83,7 @@ public struct OnboardingChecklistView: View {
         }
     }
 
-    private func rowStatusForState(completed: Bool, pending: Bool) -> OnboardingRow.Status {
+    private func rowStatusForState(completed: Bool, pending: Bool) -> OnboardingChecklistRow.Status {
         guard completed else {
             guard pending else {
                 return .incomplete

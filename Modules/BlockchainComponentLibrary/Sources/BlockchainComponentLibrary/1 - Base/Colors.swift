@@ -82,6 +82,8 @@ extension Color {
             dark: .palette.red400
         )
 
+        public static let fadedBackground: Color = .palette.grey600.opacity(0.6)
+
         public static let blueBG: Color = .palette.blue000
 
         public static let greenBG: Color = .palette.green100

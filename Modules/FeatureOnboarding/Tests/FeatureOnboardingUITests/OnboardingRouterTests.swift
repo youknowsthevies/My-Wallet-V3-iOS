@@ -1,7 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineSchedulers
 @testable import FeatureOnboardingUI
 @testable import PlatformUIKitMock
+import SwiftUI
 import TestKit
 import ToolKit
 @testable import ToolKitMock
@@ -13,141 +16,213 @@ final class OnboardingRouterTests: XCTestCase {
     private var mockBuyCryptoRouter: MockBuyCryptoRouter!
     private var mockFeatureFlagService: MockFeatureFlagsService!
     private var mockEmailVerificationRouter: MockOnboardingEmailVerificationRouter!
+    private var testMainQueue: TestSchedulerOf<DispatchQueue>!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        testMainQueue = DispatchQueue.test
         mockBuyCryptoRouter = MockBuyCryptoRouter()
         mockFeatureFlagService = MockFeatureFlagsService()
         mockEmailVerificationRouter = MockOnboardingEmailVerificationRouter()
         router = OnboardingRouter(
             transactionsRouter: mockBuyCryptoRouter,
             emailVerificationRouter: mockEmailVerificationRouter,
-            featureFlagsService: mockFeatureFlagService
+            featureFlagsService: mockFeatureFlagService,
+            mainQueue: testMainQueue.eraseToAnyScheduler()
         )
     }
 
     override func tearDownWithError() throws {
         router = nil
+        testMainQueue = nil
         mockBuyCryptoRouter = nil
         mockFeatureFlagService = nil
         mockEmailVerificationRouter = nil
         try super.tearDownWithError()
     }
 
-    func test_skipsEmailVerification_if_feature_is_disabled() throws {
+    func test_skipsEmailVerification_if_feature_is_disabled_then_presents_ui_tour() throws {
+        // GIVEN: Email Verification at Onboarding is DISABLED
         let featureFlagPublisher = mockFeatureFlagService.disable(.remote(.showEmailVerificationInOnboarding))
         XCTAssertPublisherCompletion(featureFlagPublisher)
-        let routingResultPublisher = router.presentOnboarding(from: UIViewController())
-        XCTAssertPublisherCompletion(routingResultPublisher)
-        XCTAssertEqual(mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.count, 0)
-    }
 
-    func test_routesToEmailVerification_if_feature_is_enabled() throws {
-        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-        XCTAssertPublisherCompletion(featureFlagPublisher)
-        let routingResultPublisher = router.presentOnboarding(from: UIViewController())
-        XCTAssertPublisherCompletion(routingResultPublisher)
-        XCTAssertEqual(mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.count, 1)
-    }
-
-    func test_completesOnboarding_when_emailVerifcation_is_abandoned() throws {
-        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-        XCTAssertPublisherCompletion(featureFlagPublisher)
-        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.abandoned)
+        // WHEN: The OnboardingRouter is asked to present onboarding
         let mockViewController = MockViewController()
+        let routingResultPublisher = router.presentOnboarding(from: mockViewController)
+        var result: OnboardingResult?
+        let completionExpectation = expectation(description: "Onboarding Completes")
+        let cancellable = routingResultPublisher.sink { publisherResult in
+            result = publisherResult
+            completionExpectation.fulfill()
+        }
 
-        var onboardingResult: OnboardingResult?
-        let e = expectation(description: "Wait for email verification completion")
-        let cancellable = router.presentOnboarding(from: mockViewController)
-            .sink { result in
-                onboardingResult = result
-                e.fulfill()
-            }
-        wait(for: [e], timeout: 5)
+        // advance scheduler to allow for feature flag to be checked
+        testMainQueue.advance()
+
+        // THEN: Email Verification IS NOT presented
+        XCTAssertEqual(mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.count, 0)
+
+        // AND: The UI Tour is presented instead
+        let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
+        let onboardingTour = presentedViewController as? UIHostingController<UITourView>
+        XCTAssertNotNil(onboardingTour)
+
+        // WHEN: The tour is closed
+        onboardingTour?.rootView.close()
+
+        // THEN: The onboarding presentation publisher completes
+        wait(for: [completionExpectation], timeout: 10)
+        XCTAssertEqual(result, .abandoned)
         cancellable.cancel()
-        XCTAssertEqual(onboardingResult, .abandoned)
-        XCTAssertEqual(mockBuyCryptoRouter.recordedInvocations.presentBuyFlow.count, 0)
     }
 
-    // IOS-5189
-//    func test_dismissesEmailVerification_when_emailVerifcation_is_complete() throws {
-//        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        XCTAssertPublisherCompletion(featureFlagPublisher)
-//        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
-//        let mockViewController = MockViewController()
-//
-//        let e = expectation(description: "Wait for email verification completion")
-//        let cancellable = router.presentOnboarding(from: mockViewController)
-//            .sink { _ in
-//                e.fulfill()
-//            }
-//
-//        let delay = expectation(description: "Wait for flat map")
-//        DispatchQueue.main.asyncAfter(deadline: .now(), execute: delay.fulfill)
-//        wait(for: [delay], timeout: 5)
-//
-//        let dismissalRequests = mockViewController.recordedInvocations.dismiss
-//        dismissalRequests.first?.completion?()
-//        XCTAssertEqual(dismissalRequests.count, 1)
-//
-//        wait(for: [e], timeout: 5)
-//        cancellable.cancel()
-//    }
-//
-//    func test_presents_buyFlow_after_emailVerification() throws {
-//        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        XCTAssertPublisherCompletion(featureFlagPublisher)
-//        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
-//        let mockViewController = MockViewController()
-//
-//        var onboardingResult: OnboardingResult?
-//        let e = expectation(description: "Wait for email verification completion")
-//        let cancellable = router.presentOnboarding(from: mockViewController)
-//            .sink { result in
-//                onboardingResult = result
-//                e.fulfill()
-//            }
-//
-//        let delay = expectation(description: "Wait for flat map")
-//        DispatchQueue.main.asyncAfter(deadline: .now(), execute: delay.fulfill)
-//        wait(for: [delay], timeout: 5)
-//
-//        let dismissalRequests = mockViewController.recordedInvocations.dismiss
-//        dismissalRequests.first?.completion?()
-//        XCTAssertEqual(dismissalRequests.count, 1)
-//
-//        wait(for: [e], timeout: 5)
-//        cancellable.cancel()
-//        XCTAssertEqual(mockBuyCryptoRouter.recordedInvocations.presentBuyFlow.count, 1)
-//        XCTAssertEqual(onboardingResult, .abandoned)
-//    }
-//
-//    func test_completes_when_buyFlow_is_complete() throws {
-//        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        XCTAssertPublisherCompletion(featureFlagPublisher)
-//        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
-//        mockBuyCryptoRouter.stubbedResults.presentBuyFlow = .just(.completed)
-//        let mockViewController = MockViewController()
-//
-//        var onboardingResult: OnboardingResult?
-//        let e = expectation(description: "Wait for email verification completion")
-//        let cancellable = router.presentOnboarding(from: mockViewController)
-//            .sink { result in
-//                onboardingResult = result
-//                e.fulfill()
-//            }
-//
-//        let delay = expectation(description: "Wait for flat map")
-//        DispatchQueue.main.asyncAfter(deadline: .now(), execute: delay.fulfill)
-//        wait(for: [delay], timeout: 5)
-//
-//        let dismissalRequests = mockViewController.recordedInvocations.dismiss
-//        dismissalRequests.first?.completion?()
-//        XCTAssertEqual(dismissalRequests.count, 1)
-//
-//        wait(for: [e], timeout: 5)
-//        cancellable.cancel()
-//        XCTAssertEqual(mockBuyCryptoRouter.recordedInvocations.presentBuyFlow.count, 1)
-//        XCTAssertEqual(onboardingResult, .completed)
-//    }
+    func test_skipsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_ev_completed() throws {
+        // GIVEN: Email Verification at Onboarding is ENABLED
+        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        XCTAssertPublisherCompletion(featureFlagPublisher)
+
+        // AND: A mock email verification publisher
+        let mockEVSubject = PassthroughSubject<OnboardingResult, Never>()
+        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = mockEVSubject.eraseToAnyPublisher()
+
+        // WHEN: The OnboardingRouter is asked to present onboarding
+        let mockViewController = MockViewController()
+        let routingResultPublisher = router.presentOnboarding(from: mockViewController)
+        var result: OnboardingResult?
+        let completionExpectation = expectation(description: "Onboarding Completes")
+        let cancellable = routingResultPublisher.sink { publisherResult in
+            result = publisherResult
+            completionExpectation.fulfill()
+        }
+
+        // advance scheduler to allow for feature flag to be checked
+        testMainQueue.advance()
+
+        // THEN: Email Verification IS presented
+        let emailVerification = mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.first
+        XCTAssertNotNil(emailVerification)
+
+        // WHEN: Email Verification completes successfully
+        mockEVSubject.send(.completed)
+        mockEVSubject.send(completion: .finished)
+
+        // THEN: The UI Tour is presented instead
+        let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
+        let onboardingTour = presentedViewController as? UIHostingController<UITourView>
+        XCTAssertNotNil(onboardingTour)
+
+        // WHEN: The tour is closed
+        onboardingTour?.rootView.close()
+
+        // THEN: The onboarding presentation publisher completes
+        wait(for: [completionExpectation], timeout: 10)
+        XCTAssertEqual(result, .abandoned)
+        cancellable.cancel()
+    }
+
+    func test_showsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_ev_abandoned() throws {
+        // GIVEN: Email Verification at Onboarding is ENABLED
+        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        XCTAssertPublisherCompletion(featureFlagPublisher)
+
+        // AND: A mock email verification publisher
+        let mockEVSubject = PassthroughSubject<OnboardingResult, Never>()
+        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = mockEVSubject.eraseToAnyPublisher()
+
+        // WHEN: The OnboardingRouter is asked to present onboarding
+        let mockViewController = MockViewController()
+        let routingResultPublisher = router.presentOnboarding(from: mockViewController)
+        var result: OnboardingResult?
+        let completionExpectation = expectation(description: "Onboarding Completes")
+        let cancellable = routingResultPublisher.sink { publisherResult in
+            result = publisherResult
+            completionExpectation.fulfill()
+        }
+
+        // advance scheduler to allow for feature flag to be checked
+        testMainQueue.advance()
+
+        // THEN: Email Verification IS presented
+        let emailVerification = mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.first
+        XCTAssertNotNil(emailVerification)
+
+        // WHEN: Email Verification is abandoned
+        mockEVSubject.send(.abandoned)
+        mockEVSubject.send(completion: .finished)
+
+        // THEN: The UI Tour is presented instead
+        let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
+        let onboardingTour = presentedViewController as? UIHostingController<UITourView>
+        XCTAssertNotNil(onboardingTour)
+
+        // WHEN: The tour is closed
+        onboardingTour?.rootView.close()
+
+        // THEN: The onboarding presentation publisher completes
+        wait(for: [completionExpectation], timeout: 10)
+        XCTAssertEqual(result, .abandoned)
+        cancellable.cancel()
+    }
+
+    func test_showsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_then_buy() throws {
+        // GIVEN: Email Verification at Onboarding is ENABLED
+        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        XCTAssertPublisherCompletion(featureFlagPublisher)
+
+        // AND: A mock email verification publisher
+        let mockEVSubject = PassthroughSubject<OnboardingResult, Never>()
+        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = mockEVSubject.eraseToAnyPublisher()
+
+        // AND: a mock buy transaction publisher
+        let mockBuySubject = PassthroughSubject<OnboardingResult, Never>()
+        mockBuyCryptoRouter.stubbedResults.presentBuyFlow = mockBuySubject.eraseToAnyPublisher()
+
+        // WHEN: The OnboardingRouter is asked to present onboarding
+        let mockViewController = MockViewController()
+        let routingResultPublisher = router.presentOnboarding(from: mockViewController)
+        var result: OnboardingResult?
+        let completionExpectation = expectation(description: "Onboarding Completes")
+        let cancellable = routingResultPublisher.sink { publisherResult in
+            result = publisherResult
+            completionExpectation.fulfill()
+        }
+
+        // advance scheduler to allow for feature flag to be checked
+        testMainQueue.advance()
+
+        // THEN: Email Verification IS presented
+        let emailVerification = mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.first
+        XCTAssertNotNil(emailVerification)
+
+        // WHEN: Email Verification completes successfully
+        mockEVSubject.send(.completed)
+        mockEVSubject.send(completion: .finished)
+
+        // THEN: The UI Tour is presented instead
+        let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
+        let onboardingTour = presentedViewController as? UIHostingController<UITourView>
+        XCTAssertNotNil(onboardingTour)
+
+        // WHEN: The tour is completed
+        onboardingTour?.rootView.completion()
+
+        // THEN: The UI Tour is dismissed
+        let waitExpectation = expectation(description: "Wait for Deferred Future to execute")
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: waitExpectation.fulfill)
+        wait(for: [waitExpectation], timeout: 10)
+        mockViewController.recordedInvocations.dismiss.last?.completion?()
+
+        // AND: The buy flow is presented
+        let buy = mockBuyCryptoRouter.recordedInvocations.presentBuyFlow.first
+        XCTAssertNotNil(buy)
+
+        // WHEN: Buy is done
+        mockBuySubject.send(.completed)
+        mockBuySubject.send(completion: .finished)
+
+        // THEN: The onboarding presentation publisher completes
+        wait(for: [completionExpectation], timeout: 10)
+        XCTAssertEqual(result, .completed)
+        cancellable.cancel()
+    }
 }

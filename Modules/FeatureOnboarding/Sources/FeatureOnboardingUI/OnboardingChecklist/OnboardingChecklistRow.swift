@@ -5,7 +5,7 @@ import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit
 
-struct OnboardingRow: View {
+struct OnboardingChecklistRow: View {
 
     enum Status {
         case incomplete
@@ -65,9 +65,9 @@ struct OnboardingRow_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack(spacing: Spacing.padding1) {
-            OnboardingRow(item: .verifyIdentity, status: .incomplete)
-            OnboardingRow(item: .linkPaymentMethod, status: .pending)
-            OnboardingRow(item: .buyCrypto, status: .complete)
+            OnboardingChecklistRow(item: .verifyIdentity, status: .incomplete)
+            OnboardingChecklistRow(item: .linkPaymentMethod, status: .pending)
+            OnboardingChecklistRow(item: .buyCrypto, status: .complete)
         }
         .padding()
     }

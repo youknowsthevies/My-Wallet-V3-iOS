@@ -3,10 +3,11 @@ import SnapshotTesting
 import SwiftUI
 import XCTest
 
-final class ExchangeBuyButtonTests: XCTestCase {
+final class BuyButtonTests: XCTestCase {
+
     func testSnapshot() {
         let view = VStack(spacing: 5) {
-            ExchangeBuyButton_Previews.previews
+            BuyButton_Previews.previews
         }
         .frame(width: 320)
         .fixedSize()
