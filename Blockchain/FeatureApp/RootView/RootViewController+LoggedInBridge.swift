@@ -186,12 +186,10 @@ extension RootViewController: LoggedInBridge {
         userStateService
             .userState
             .first()
-            .map(\.balanceData?.hasAnyCryptoBalance)
             .receive(on: DispatchQueue.main)
-            .flatMap { hasCryptoBalance -> AnyPublisher<TransactionFlowResult, Never> in
-                // if we don't know what the user cyrpto balance is, assume the user has some crypto.
-                // this won't interfere with the swap flow.
-                guard hasCryptoBalance != false else {
+            .flatMap { result -> AnyPublisher<TransactionFlowResult, Never> in
+                // if we successfully got a user state object and that shows the user has a crypto balance <= 0, show the empty state
+                if case .success(let userState) = result, !userState.balanceData.hasAnyCryptoBalance {
                     guard let viewController = UIApplication.shared.topMostViewController else {
                         fatalError("Top most view controller cannot be nil")
                     }
@@ -200,6 +198,7 @@ extension RootViewController: LoggedInBridge {
                         .map(TransactionFlowResult.init)
                         .eraseToAnyPublisher()
                 }
+                // if instead we didn't get a user state, or the user state shows the user has a crypto balance > 0, just navigate to swap
                 return transactionsRouter.presentTransactionFlow(to: .swap(account))
             }
             .sink { result in
