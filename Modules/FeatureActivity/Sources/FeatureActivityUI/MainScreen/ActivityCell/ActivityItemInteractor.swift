@@ -10,7 +10,7 @@ final class ActivityItemInteractor {
 
     init(activityItemEvent: ActivityItemEvent, pairExchangeService: PairExchangeServiceAPI) {
         event = activityItemEvent
-        switch event {
+        switch activityItemEvent {
         case .buySell(let buySellActivityItem) where buySellActivityItem.isBuy:
             balanceViewInteractor = SimpleBalanceViewInteractor(
                 fiatValue: activityItemEvent.inputAmount,

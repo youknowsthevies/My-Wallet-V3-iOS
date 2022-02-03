@@ -54,6 +54,7 @@ extension InterestActivityItemEvent {
             confirmations: response.extraAttributes?.confirmations ?? 0,
             accountRef: response.extraAttributes?.beneficiary?.accountRef ?? "",
             recipientAddress: response.extraAttributes?.address ?? "",
+            isInternalTransfer: response.extraAttributes?.isInternalTransfer ?? false,
             state: InterestActivityItemEvent.interestStateFromResponseState(response.state),
             type: InterestActivityItemEvent.transactionTypeFromString(response.type)
         )
