@@ -8,14 +8,14 @@ import PlatformKit
 protocol UserAdapterAPI {
 
     /// A publisher that streams `UserState` values on subscription and on change.
-    var userState: AnyPublisher<UserState, Never> { get }
+    var userState: AnyPublisher<Result<UserState, UserStateError>, Never> { get }
 }
 
 // MARK: - UserAdapterAPI concrete implementation
 
 final class UserAdapter: UserAdapterAPI {
 
-    let userState: AnyPublisher<UserState, Never>
+    let userState: AnyPublisher<Result<UserState, UserStateError>, Never>
 
     init(
         coincore: CoincoreAPI,
@@ -29,13 +29,22 @@ final class UserAdapter: UserAdapterAPI {
                 ordersService.hasPurchasedAnyCryptoStream,
                 coincore.balanceStream
             )
-            .map { kycStatus, paymentMethods, hasEverPurchasedCrypto, balanceData -> UserState in
-                UserState(
-                    kycStatus: kycStatus,
-                    linkedPaymentMethods: paymentMethods,
-                    hasEverPurchasedCrypto: hasEverPurchasedCrypto,
-                    balanceData: balanceData
+            .map { kycStatusResult, paymentMethodsResult, hasEverPurchasedCryptoResult, balanceDataResult in
+                kycStatusResult.zip(
+                    paymentMethodsResult,
+                    hasEverPurchasedCryptoResult,
+                    balanceDataResult
                 )
+            }
+            .map { zippedResult -> Result<UserState, UserStateError> in
+                zippedResult.map { kycStatus, paymentMethods, hasEverPurchasedCrypto, balanceData in
+                    UserState(
+                        kycStatus: kycStatus,
+                        linkedPaymentMethods: paymentMethods,
+                        hasEverPurchasedCrypto: hasEverPurchasedCrypto,
+                        balanceData: balanceData
+                    )
+                }
             }
             .removeDuplicates()
             .shareReplay()
@@ -63,25 +72,29 @@ extension UserState.KYCStatus {
 
 extension KYCTiersServiceAPI {
 
-    fileprivate var kycStatusStream: AnyPublisher<UserState.KYCStatus, Never> {
-        tiersStream
-            .flatMap { [checkSimplifiedDueDiligenceVerification] tiers -> AnyPublisher<(KYC.UserTiers, Bool), Never> in
+    fileprivate var kycStatusStream: AnyPublisher<Result<UserState.KYCStatus, UserStateError>, Never> {
+        let checkSDDVerification = checkSimplifiedDueDiligenceVerification(for:pollUntilComplete:)
+        return tiersStream
+            .mapError(UserStateError.missingKYCInfo)
+            .flatMap { tiers -> AnyPublisher<(KYC.UserTiers, Bool), UserStateError> in
                 Just(tiers)
+                    .setFailureType(to: UserStateError.self)
                     .zip(
-                        checkSimplifiedDueDiligenceVerification(tiers.latestApprovedTier, false)
+                        checkSDDVerification(tiers.latestApprovedTier, false)
+                            .mapError(UserStateError.missingKYCInfo)
                     )
                     .eraseToAnyPublisher()
             }
             .map(UserState.KYCStatus.init)
-            .catch(UserState.KYCStatus.unverified)
-            .eraseToAnyPublisher()
+            .mapToResult()
     }
 }
 
 extension PaymentMethodTypesServiceAPI {
 
-    fileprivate var paymentMethodsStream: AnyPublisher<[UserState.PaymentMethod], Never> {
+    fileprivate var paymentMethodsStream: AnyPublisher<Result<[UserState.PaymentMethod], UserStateError>, Never> {
         paymentMethodTypesValidForBuyPublisher
+            .mapError(UserStateError.missingPaymentInfo)
             .map { paymentMethods -> [UserState.PaymentMethod] in
                 paymentMethods.compactMap { paymentMethodType -> UserState.PaymentMethod? in
                     guard !paymentMethodType.isSuggested else {
@@ -93,27 +106,29 @@ extension PaymentMethodTypesServiceAPI {
                     )
                 }
             }
-            .catch([])
-            .eraseToAnyPublisher()
+            .mapToResult()
     }
 }
 
 extension OrdersServiceAPI {
 
-    fileprivate var hasPurchasedAnyCryptoStream: AnyPublisher<Bool, Never> {
+    fileprivate var hasPurchasedAnyCryptoStream: AnyPublisher<Result<Bool, UserStateError>, Never> {
         hasUserMadeAnyPurchases
-            .catch(false)
-            .eraseToAnyPublisher()
+            .mapError(UserStateError.missingPurchaseHistory)
+            .mapToResult()
     }
 }
 
 extension CoincoreAPI {
 
-    fileprivate var balanceStream: AnyPublisher<UserState.BalanceData?, Never> {
-        hasFundedAccounts(for: .fiat)
-            .combineLatest(
+    fileprivate var balanceStream: AnyPublisher<Result<UserState.BalanceData, UserStateError>, Never> {
+        var randomNumberGenerator = SystemRandomNumberGenerator()
+        return hasFundedAccounts(for: .fiat)
+            .zip(
                 hasFundedAccounts(for: .crypto)
             )
+            // retry a few times on errors
+            .retry(5, delay: .exponential(using: &randomNumberGenerator), scheduler: DispatchQueue.main)
             .map { hasFiatBalance, hasCryptoBalance -> UserState.BalanceData in
                 UserState.BalanceData(
                     hasAnyBalance: hasFiatBalance || hasCryptoBalance,
@@ -121,7 +136,7 @@ extension CoincoreAPI {
                     hasAnyCryptoBalance: hasCryptoBalance
                 )
             }
-            .replaceError(with: nil)
-            .eraseToAnyPublisher()
+            .mapError(UserStateError.missingBalance)
+            .mapToResult()
     }
 }

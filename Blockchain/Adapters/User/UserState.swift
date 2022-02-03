@@ -1,5 +1,19 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+enum UserStateError: Error {
+    case missingBalance(Error)
+    case missingKYCInfo(Error)
+    case missingPaymentInfo(Error)
+    case missingPurchaseHistory(Error)
+}
+
+extension UserStateError: Equatable {
+
+    static func == (lhs: UserStateError, rhs: UserStateError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
+}
+
 /// A data structure that represents the state of the user
 struct UserState: Equatable {
 
@@ -37,5 +51,5 @@ struct UserState: Equatable {
     let kycStatus: KYCStatus
     let linkedPaymentMethods: [PaymentMethod]
     let hasEverPurchasedCrypto: Bool
-    let balanceData: BalanceData?
+    let balanceData: BalanceData
 }
