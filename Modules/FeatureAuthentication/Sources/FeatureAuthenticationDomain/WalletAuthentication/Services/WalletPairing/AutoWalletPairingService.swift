@@ -106,6 +106,6 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     public func encryptionPhrase(
         using guid: String
     ) -> AnyPublisher<String, AutoWalletPairingServiceError> {
-        encryptionPhrase(using: guid)
+        walletPairingRepository.encryptionPhrase(using: guid)
     }
 }
