@@ -1,22 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
-
 public enum CustomerSupportChatServiceError: Error {
     case unknown(Error)
 }
 
 public protocol CustomerSupportChatServiceAPI {
 
-    /// Initializes the ZenDesk SDK
+    /// Initializes the Intercom SDK
     /// - Parameter key: API Key
-    func initializeWithAcccountKey(_ key: String)
+    /// - Parameter appId: Intercom App ID
+    func initializeWithAcccountKey(_ key: String, appId: String)
 
-    /// Returns a `UIViewController` that is provided by the Customer
-    /// Support SDK.
-    /// - Parameter department: `CustomerSupportDepartment` - The department
-    /// that the user would like to speak with.
-    func buildMessagingScreenForDepartment(
-        _ department: CustomerSupportDepartment
-    ) -> AnyPublisher<UIViewController, CustomerSupportChatServiceError>
+    /// Presents the Intercom Messenger
+    func presentMessagingScreen()
 }

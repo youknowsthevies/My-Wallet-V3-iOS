@@ -54,6 +54,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     certificatePinner: $0.certificatePinner,
                     siftService: $0.siftService,
                     blurEffectHandler: $0.blurEffectHandler,
+                    customerSupportChatService: $0.customerSupportChatService,
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
                     featureFlagService: $0.featureFlagsService,

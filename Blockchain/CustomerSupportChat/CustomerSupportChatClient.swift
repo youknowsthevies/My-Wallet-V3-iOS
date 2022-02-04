@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Intercom
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -11,25 +12,28 @@ enum CustomerSupportChatClientError: Error {
 }
 
 protocol CustomerSupportChatClientAPI {
-    func setupWithAccountKey(_ key: String)
-    func buildMessagingScreenWithVisitorInfo(
-        _ visitorInfo: VisitorInformation,
-        department: CustomerSupportDepartment
-    ) -> Result<UIViewController, CustomerSupportChatClientError>
+    func setupWithAccountKey(_ key: String, applicationId: String)
+    func presentMessagingScreenWithVisitorInfo(
+        _ visitorInfo: VisitorInformation
+    )
 }
 
 final class CustomerSupportChatClient: CustomerSupportChatClientAPI {
 
-    private typealias LocalizationIds = LocalizationConstants.CustomerSupport
-
-    func setupWithAccountKey(_ key: String) {
-        // no-op
+    func setupWithAccountKey(
+        _ key: String,
+        applicationId: String
+    ) {
+        Intercom.setApiKey(key, forAppId: applicationId)
     }
 
-    func buildMessagingScreenWithVisitorInfo(
-        _ visitorInfo: VisitorInformation,
-        department: CustomerSupportDepartment
-    ) -> Result<UIViewController, CustomerSupportChatClientError> {
-        unimplemented()
+    func presentMessagingScreenWithVisitorInfo(
+        _ visitorInfo: VisitorInformation
+    ) {
+        Intercom.registerUser(
+            withUserId: visitorInfo.identifier,
+            email: visitorInfo.email
+        )
+        Intercom.presentMessenger()
     }
 }

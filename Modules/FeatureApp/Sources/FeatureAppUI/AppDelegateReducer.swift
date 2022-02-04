@@ -19,12 +19,15 @@ typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 struct BackgroundTaskId: Hashable {}
 
 public struct AppDelegateContext: Equatable {
-    let zendeskKey: String
+    let intercomApiKey: String
+    let intercomAppId: String
 
     public init(
-        zendeskKey: String
+        intercomApiKey: String,
+        intercomAppId: String
     ) {
-        self.zendeskKey = zendeskKey
+        self.intercomApiKey = intercomApiKey
+        self.intercomAppId = intercomAppId
     }
 }
 
@@ -71,6 +74,7 @@ struct AppDelegateEnvironment {
     var certificatePinner: CertificatePinnerAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
+    var customerSupportChatService: CustomerSupportChatServiceAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
@@ -120,6 +124,12 @@ let appDelegateReducer = Reducer<
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
+
+            initializeCustomerChatSupport(
+                using: environment.customerSupportChatService,
+                apiKey: context.intercomApiKey,
+                appId: context.intercomAppId
+            ),
 
             environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
                 .filter { $0 }
@@ -202,6 +212,16 @@ private func applyBlurFilter(
     }
     return Effect.fireAndForget {
         handler.applyEffect(on: view)
+    }
+}
+
+private func initializeCustomerChatSupport(
+    using service: CustomerSupportChatServiceAPI,
+    apiKey: String,
+    appId: String
+) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        service.initializeWithAcccountKey(apiKey, appId: appId)
     }
 }
 

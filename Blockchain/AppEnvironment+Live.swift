@@ -37,6 +37,7 @@ extension AppEnvironment {
             fiatCurrencySettingsService: resolve(),
             supportedAssetsRemoteService: resolve(),
             sharedContainer: .default,
+            customerSupportChatService: resolve(),
             analyticsRecorder: resolve(),
             crashlyticsRecorder: resolve(tag: "CrashlyticsRecorder"),
             openBanking: resolve(),
