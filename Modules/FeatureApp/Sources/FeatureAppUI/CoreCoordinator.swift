@@ -74,18 +74,11 @@ public enum CoreAppAction: Equatable {
     case proceedToDeviceAuthorization(LoginRequestInfo)
     case deviceAuthorizationFinished
 
-    // Wallet Creation
-    case createWallet(email: String, newPassword: String)
-    case create
-    case created(Result<WalletCreation, WalletCreationError>)
-
     // Account Recovery
     case resetPassword(newPassword: String)
 
     // Nabu Account Operations
     case resetVerificationStatusIfNeeded(guid: String?, sharedKey: String?)
-    case recoverUser(guid: String, sharedKey: String, userId: String, recoveryToken: String)
-    case setInitialResidentialAddress(country: String, state: String?)
 
     // Mobile Auth Sync
     case mobileAuthSync(isLogin: Bool)
@@ -601,82 +594,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         state.deviceAuthorization = nil
         return .none
 
-    case .createWallet(let email, let password):
-        let createState = state.onboarding?.welcomeState?.createWalletState
-        func setInitialAddressEffect() -> Effect<CoreAppAction, Never> {
-            guard let createState = createState else {
-                return .none
-            }
-            let country = createState.country.id.description
-            let state = createState.countryState?.id.description
-            return Effect(value: .setInitialResidentialAddress(country: country, state: state))
-        }
-
-        environment.loadingViewPresenter.showCircular()
-        environment.walletManager.loadWalletJS()
-        environment.walletManager.newWallet(password: password, email: email)
-
-        // Setting country and state requires us to have an authenticated user, so:
-        return .concatenate(
-            // Step 1: create a wallet and authenticate the user to ensure we have an authenticated user
-            .merge(
-                Effect(value: .create),
-                Effect(value: .authenticate)
-            ),
-            // Step 2: update the user info with country and state
-            setInitialAddressEffect()
-        )
-
-    case .create:
-        return environment
-            .walletManager
-            .didCreateNewAccount
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .cancellable(id: WalletCancelations.CreateId(), cancelInFlight: false)
-            .map { result -> CoreAppAction in
-                guard case .success(let value) = result else {
-                    return .created(
-                        .failure(.unknownError("Unknown Wallet Creation Error"))
-                    )
-                }
-                return .created(value)
-            }
-
-    case .created(.failure(let error)):
-        state.onboarding?.displayAlert = .walletCreation(error)
-        return .cancel(id: WalletCancelations.CreateId())
-
-    case .created(.success(let walletCreation)):
-        environment.walletManager.forgetWallet()
-        environment.walletManager.load(
-            with: walletCreation.guid,
-            sharedKey: walletCreation.sharedKey,
-            password: walletCreation.password
-        )
-        environment.walletManager.markWalletAsNew()
-        BlockchainSettings.App.shared.hasEndedFirstSession = false
-
-        // created wallet through reset account recovery
-        if let nabuInfo = state.onboarding?.nabuInfoForResetAccount {
-            return .merge(
-                .cancel(id: WalletCancelations.CreateId()),
-                Effect(
-                    value: .recoverUser(
-                        guid: walletCreation.guid,
-                        sharedKey: walletCreation.sharedKey,
-                        userId: nabuInfo.userId,
-                        recoveryToken: nabuInfo.recoveryToken
-                    )
-                )
-            )
-        } else {
-            return .merge(
-                .cancel(id: WalletCancelations.CreateId()),
-                Effect(value: .authenticate)
-            )
-        }
-
     case .prepareForLoggedIn:
         let coincoreInit = environment.coincore
             .initialize()
@@ -762,11 +679,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             value: .initializeWallet
         )
 
-    case .onboarding(.welcomeScreen(.requestedToCreateWallet(let email, let password))):
-        return Effect(
-            value: .createWallet(email: email, newPassword: password)
-        )
-
     case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
         return Effect(
             value: .fetchWallet(password: password)
@@ -777,14 +689,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         case .metadataRecovery,
              .importRecovery:
             return .none
-        case .resetAccountRecovery(let email, let newPassword, let nabuInfo):
-            state.onboarding?.nabuInfoForResetAccount = nabuInfo
-            return Effect(
-                value: .createWallet(
-                    email: email,
-                    newPassword: newPassword
-                )
-            )
+        case .resetAccountRecovery:
+            return .none
         }
     case .onboarding(.welcomeScreen(.triggerAuthenticate)):
         // this is needed for legacy wallet recovery flow
@@ -870,60 +776,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 }
                 return .none
             }
-
-    case .recoverUser(let guid, let sharedKey, let userId, let recoveryToken):
-        return environment
-            .accountRecoveryService
-            .recoverUser(
-                guid: guid,
-                sharedKey: sharedKey,
-                userId: userId,
-                recoveryToken: recoveryToken
-            )
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map { result -> CoreAppAction in
-                guard case .success = result else {
-                    environment.analyticsRecorder.record(
-                        event: AnalyticsEvents.New.AccountRecoveryCoreFlow.accountRecoveryFailed
-                    )
-                    // show recovery failures if the endpoint fails
-                    return .onboarding(
-                        .welcomeScreen(
-                            .emailLogin(
-                                .verifyDevice(
-                                    .credentials(
-                                        .seedPhrase(
-                                            .lostFundsWarning(
-                                                .resetPassword(.setResetAccountFailureVisible(true))
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                }
-                environment.analyticsRecorder.record(
-                    event: AnalyticsEvents.New.AccountRecoveryCoreFlow
-                        .accountPasswordReset(hasRecoveryPhrase: false)
-                )
-                return .none
-            }
-
-    case .setInitialResidentialAddress(let country, let state):
-        // I wanted to use `.fireAndForget` for this, but the call returns a `Publisher`, so it makes sense to convert it to an `Effect`.
-        // Otherwise, we'd have to sink and store the cancellable in a set we don't have here, nor want to have.
-        return environment.userService.setInitialResidentialInfo(
-            country: country,
-            state: state
-        )
-        // we don't care about the result, we have nothing to do with it here
-        .map(CoreAppAction.none)
-        // we also don't care about failures as users will be asked about country and state during KYC if we don't have that info yet
-        .ignoreFailure()
-        .receive(on: environment.mainQueue)
-        .eraseToEffect()
 
     case .mobileAuthSync(let isLogin):
         return .merge(

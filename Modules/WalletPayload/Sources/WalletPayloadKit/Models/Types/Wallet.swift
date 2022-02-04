@@ -70,16 +70,27 @@ func generateWallet(context: WalletCreationContext) -> Result<NativeWallet, Wall
         }
 }
 
-/// Calculates the seed from the given mnemonic
+/// Retrieves a `WalletCore.HDWallet` from the given mnemonic
+/// - Parameter mnemonic: A `String` to be used as the mnemonic phrase
+/// - Returns:  A `Result<HDWallet, WalletCreateError>`
+func getHDWallet(
+    from mnemonic: String
+) -> Result<WalletCore.HDWallet, WalletCreateError> {
+    guard let wallet = WalletCore.HDWallet(mnemonic: mnemonic, passphrase: "") else {
+        return .failure(.mnemonicFailure(.unableToProvide))
+    }
+    return .success(wallet)
+}
+
+/// Retrieves the entropy in hex format from the given mnemonic
 /// - Parameter mnemonic: A `String` to be used as the mnemonic phrase
 /// - Returns: A `Result<String, WalletCreateError>` that contains either the seed in hexadecimal format or failure
 func getSeedHex(
     from mnemonic: String
 ) -> Result<String, WalletCreateError> {
-    guard let wallet = WalletCore.HDWallet(mnemonic: mnemonic, passphrase: "") else {
-        return .failure(.mnemonicFailure(.unableToProvide))
-    }
-    return .success(wallet.seed.toHexString)
+    getHDWallet(from: mnemonic)
+        .map(\.entropy)
+        .map(\.toHexString)
 }
 
 // MARK: - Wallet Methods

@@ -19,8 +19,7 @@ final class WalletEncoder: WalletEncodingAPI {
     // `EncodedWalletPayload` > `WrapperResponse` > `Data` stored in `WalletCreationPayload`
     func encode(
         payload: EncodedWalletPayload,
-        checksum: String,
-        length: Int
+        applyChecksum: @escaping (Data) -> String
     ) -> AnyPublisher<WalletCreationPayload, WalletEncodingError> {
         createInnerWrapperResponse(context: payload)
             .flatMap { wrapper -> Result<Data, WalletEncodingError> in
@@ -32,8 +31,7 @@ final class WalletEncoder: WalletEncodingAPI {
                 WalletCreationPayload(
                     data: value,
                     wrapper: payload.wrapper,
-                    checksum: checksum,
-                    length: length
+                    applyChecksum: applyChecksum
                 )
             }
             .eraseToAnyPublisher()

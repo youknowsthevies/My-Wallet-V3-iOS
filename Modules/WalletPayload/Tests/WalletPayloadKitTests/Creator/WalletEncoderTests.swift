@@ -98,7 +98,8 @@ class WalletEncoderTests: XCTestCase {
 
         let encoder = WalletEncoder()
         let payload = EncodedWalletPayload(payloadContext: .encrypted("1234".data(using: .utf8)!), wrapper: wrapper)
-        encoder.encode(payload: payload, checksum: "some-checksum", length: 1)
+        let applyChecksum = { (_: Data) in "some-checksum" }
+        encoder.encode(payload: payload, applyChecksum: applyChecksum)
             .sink { completion in
                 guard case .failure = completion else {
                     return
@@ -107,7 +108,7 @@ class WalletEncoderTests: XCTestCase {
             } receiveValue: { walletCreationPayload in
                 XCTAssertEqual(walletCreationPayload.innerPayload, encoded)
                 XCTAssertEqual(walletCreationPayload.checksum, "some-checksum")
-                XCTAssertEqual(walletCreationPayload.length, 1)
+                XCTAssertEqual(walletCreationPayload.length, encoded.count)
                 XCTAssertEqual(walletCreationPayload.guid, wrapper.wallet.guid)
                 XCTAssertEqual(walletCreationPayload.sharedKey, wrapper.wallet.sharedKey)
                 XCTAssertEqual(walletCreationPayload.language, wrapper.language)

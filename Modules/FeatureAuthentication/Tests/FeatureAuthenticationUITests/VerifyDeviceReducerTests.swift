@@ -42,7 +42,9 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
-                walletCreationService: .mock()
+                walletCreationService: .mock(),
+                walletFetcherService: .mock,
+                accountRecoveryService: MockAccountRecoveryService()
             )
         )
     }

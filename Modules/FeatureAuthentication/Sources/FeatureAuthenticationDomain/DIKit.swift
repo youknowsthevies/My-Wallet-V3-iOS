@@ -43,7 +43,15 @@ extension DependencyContainer {
             WalletCreationService.live(
                 walletManager: DIKit.resolve(),
                 walletCreator: DIKit.resolve(),
+                nabuRepository: DIKit.resolve(),
                 nativeWalletCreationEnabled: { nativeWalletCreationFlagEnabled() }
+            )
+        }
+
+        factory { () -> WalletFetcherService in
+            WalletFetcherService.live(
+                walletManager: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
             )
         }
 

@@ -167,6 +167,7 @@ public struct SeedPhraseView: View {
                 trailing: Layout.trailingPadding
             )
         )
+        .alert(self.store.scope(state: \.failureAlert), dismiss: .alert(.dismiss))
     }
 
     private struct CustomNavigationTitle: ViewModifier {
@@ -279,7 +280,9 @@ struct SeedPhraseView_Previews: PreviewProvider {
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
-                    walletCreationService: .noop
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop,
+                    accountRecoveryService: NoOpAccountRecoveryService()
                 )
             )
         )

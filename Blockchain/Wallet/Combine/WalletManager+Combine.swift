@@ -7,7 +7,7 @@ import WalletPayloadKit
 
 extension WalletManager: WalletManagerReactiveAPI {
 
-    var didCreateNewAccount: AnyPublisher<Result<WalletCreation, WalletCreationError>, Never> {
+    var didCreateNewAccount: AnyPublisher<Result<WalletCreation, LegacyWalletCreationError>, Never> {
         rx.didCreateNewAccount
             .asPublisher()
             .ignoreFailure()

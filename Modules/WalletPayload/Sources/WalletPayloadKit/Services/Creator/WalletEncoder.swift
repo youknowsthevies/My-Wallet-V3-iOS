@@ -47,12 +47,11 @@ public struct WalletCreationPayload: Equatable {
     public init(
         data: Data,
         wrapper: Wrapper,
-        checksum: String,
-        length: Int
+        applyChecksum: (Data) -> String
     ) {
         innerPayload = data
-        self.checksum = checksum
-        self.length = length
+        checksum = applyChecksum(data)
+        length = data.count
         guid = wrapper.wallet.guid
         sharedKey = wrapper.wallet.sharedKey
         language = wrapper.language
@@ -77,7 +76,6 @@ public protocol WalletEncodingAPI {
     /// - Returns: `AnyPublisher<WalletCreationPayload, WalletEncodingError>`
     func encode(
         payload: EncodedWalletPayload,
-        checksum: String,
-        length: Int
+        applyChecksum: @escaping (Data) -> String
     ) -> AnyPublisher<WalletCreationPayload, WalletEncodingError>
 }

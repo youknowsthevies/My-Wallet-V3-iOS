@@ -10,6 +10,7 @@ import WalletPayloadKit
 enum DIKitWalletPayloadTags {
     static let repoTag = "repo.tag"
     static let walletServer = "wallet.server"
+    static let walletServerApi = "wallet.server.api"
 }
 
 extension DependencyContainer {
@@ -26,10 +27,14 @@ extension DependencyContainer {
             RequestBuilder.walletServerBuilder()
         }
 
+        factory(tag: DIKitWalletPayloadTags.walletServerApi) {
+            RequestBuilder.walletApiBuilder()
+        }
+
         factory { () -> ServerEntropyClientAPI in
             ServerEntropyClient(
                 networkAdapter: DIKit.resolve(),
-                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer)
+                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServerApi)
             )
         }
 
@@ -40,9 +45,11 @@ extension DependencyContainer {
         }
 
         factory { () -> CreateWalletClientAPI in
-            CreateWalletClient(
+            let apiCode: APICode = DIKit.resolve()
+            return CreateWalletClient(
                 networkAdapter: DIKit.resolve(),
-                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer)
+                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer),
+                apiCodeProvider: { apiCode }
             )
         }
 
@@ -96,7 +103,16 @@ extension DependencyContainer {
 }
 
 extension WalletPayloadData.Config {
-    fileprivate static func `default`(
+    fileprivate static func wallet(
+        code: APICode = resolve()
+    ) -> WalletPayloadData.Config {
+        WalletPayloadData.Config(
+            host: InfoDictionaryHelper.value(for: .walletServer),
+            code: code
+        )
+    }
+
+    fileprivate static func walletApi(
         code: APICode = resolve()
     ) -> WalletPayloadData.Config {
         WalletPayloadData.Config(
@@ -108,7 +124,18 @@ extension WalletPayloadData.Config {
 
 extension WalletPayloadData.Config {
     fileprivate static func walletServer(
-        config: WalletPayloadData.Config = .default()
+        config: WalletPayloadData.Config = .wallet()
+    ) -> Network.Config {
+        Network.Config(
+            scheme: "https",
+            host: config.host,
+            code: config.code,
+            components: []
+        )
+    }
+
+    fileprivate static func walletApi(
+        config: WalletPayloadData.Config = .walletApi()
     ) -> Network.Config {
         Network.Config(
             scheme: "https",
@@ -125,6 +152,13 @@ extension RequestBuilder {
     ) -> RequestBuilder {
         RequestBuilder(
             config: WalletPayloadData.Config.walletServer()
+        )
+    }
+
+    fileprivate static func walletApiBuilder(
+    ) -> RequestBuilder {
+        RequestBuilder(
+            config: WalletPayloadData.Config.walletApi()
         )
     }
 }

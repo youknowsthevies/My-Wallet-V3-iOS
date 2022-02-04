@@ -69,12 +69,12 @@ func createDerivation(
 ///   - index: An `Int` for the private key derivation
 /// - Returns: `Result<[Derivation], WalletCreateError>`
 func generateDerivations(
-    seedHex: String,
+    masterSeedHex: String,
     index: Int
 ) -> [Derivation] {
     DerivationType.allCases
         .map { type in
-            let key = deriveAccountKey(at: index, seedHex: seedHex, type: type)
+            let key = deriveAccountKey(at: index, seedHex: masterSeedHex, type: type)
             return createDerivation(privateKey: key, type: type)
         }
 }

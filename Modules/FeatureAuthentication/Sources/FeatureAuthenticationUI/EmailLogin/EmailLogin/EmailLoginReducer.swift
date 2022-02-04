@@ -92,6 +92,8 @@ struct EmailLoginEnvironment {
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
+    let accountRecoveryService: AccountRecoveryServiceAPI
     let validateEmail: (String) -> Bool
 
     init(
@@ -103,6 +105,8 @@ struct EmailLoginEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
+        walletFetcherService: WalletFetcherService,
+        accountRecoveryService: AccountRecoveryServiceAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
         self.mainQueue = mainQueue
@@ -113,6 +117,8 @@ struct EmailLoginEnvironment {
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.accountRecoveryService = accountRecoveryService
         self.validateEmail = validateEmail
     }
 }
@@ -131,7 +137,9 @@ let emailLoginReducer = Reducer.combine(
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),

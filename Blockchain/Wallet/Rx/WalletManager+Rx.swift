@@ -11,10 +11,10 @@ extension Reactive where Base: WalletManager {
 
     /// Reactive wrapper for delegate method `didCreateNewAccount(_:sharedKey:password:)`
     /// and `errorCreatingNewAccount(_:)`
-    /// Returns a `Result<WalletCreation, WalletCreationError>`
-    var didCreateNewAccount: Observable<Result<WalletCreation, WalletCreationError>> {
+    /// Returns a `Result<WalletCreation, LegacyWalletCreationError>`
+    var didCreateNewAccount: Observable<Result<WalletCreation, LegacyWalletCreationError>> {
         let success = base.rx.methodInvoked(#selector(WalletManager.didCreateNewAccount(_:sharedKey:password:)))
-            .map { arg -> Result<WalletCreation, WalletCreationError> in
+            .map { arg -> Result<WalletCreation, LegacyWalletCreationError> in
                 let guid = try castOrThrow(String.self, arg[0])
                 let sharedKey = try castOrThrow(String.self, arg[1])
                 let password = try castOrThrow(String.self, arg[2])
@@ -22,13 +22,13 @@ extension Reactive where Base: WalletManager {
             }
 
         let failure = base.rx.methodInvoked(#selector(WalletManager.errorCreatingNewAccount(_:)))
-            .map { arg -> Result<WalletCreation, WalletCreationError> in
+            .map { arg -> Result<WalletCreation, LegacyWalletCreationError> in
                 let message = try castOrThrow(String?.self, arg[0])
-                return .failure(WalletCreationError.message(message))
+                return .failure(LegacyWalletCreationError.message(message))
             }
 
         return Observable.merge(success, failure)
-            .catch { error -> Observable<Result<WalletCreation, WalletCreationError>> in
+            .catch { error -> Observable<Result<WalletCreation, LegacyWalletCreationError>> in
                 .just(
                     .failure(
                         .unknownError(

@@ -8,6 +8,13 @@ struct AccountResponse: Equatable, Codable {
     let archived: Bool
     let defaultDerivation: DerivationResponse.Format
     let derivations: [DerivationResponse]
+
+    enum CodingKeys: String, CodingKey {
+        case label
+        case archived
+        case defaultDerivation = "default_derivation"
+        case derivations
+    }
 }
 
 extension WalletPayloadKit.Account {

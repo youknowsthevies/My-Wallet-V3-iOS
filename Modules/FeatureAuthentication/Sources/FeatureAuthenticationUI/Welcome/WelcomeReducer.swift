@@ -86,6 +86,8 @@ public struct WelcomeEnvironment {
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
+    let accountRecoveryService: AccountRecoveryServiceAPI
     let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
@@ -100,6 +102,8 @@ public struct WelcomeEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         walletRecoveryService: WalletRecoveryService = DIKit.resolve(),
         walletCreationService: WalletCreationService = DIKit.resolve(),
+        walletFetcherService: WalletFetcherService = DIKit.resolve(),
+        accountRecoveryService: AccountRecoveryServiceAPI = DIKit.resolve(),
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.mainQueue = mainQueue
@@ -113,6 +117,8 @@ public struct WelcomeEnvironment {
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.accountRecoveryService = accountRecoveryService
         self.nativeWalletEnabled = nativeWalletEnabled
     }
 }
@@ -130,7 +136,8 @@ public let welcomeReducer = Reducer.combine(
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService
                 )
             }
         ),
@@ -148,7 +155,9 @@ public let welcomeReducer = Reducer.combine(
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),
@@ -163,7 +172,9 @@ public let welcomeReducer = Reducer.combine(
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),
@@ -180,7 +191,9 @@ public let welcomeReducer = Reducer.combine(
                     featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),
@@ -262,12 +275,8 @@ public let welcomeReducer = Reducer.combine(
             // handled in core coordinator
             return .none
 
-        case .createWallet(.createAccount):
-            let signUpState = state.createWalletState
-            guard let email = signUpState?.emailAddress, let password = signUpState?.password else {
-                return .none
-            }
-            return Effect(value: .requestedToCreateWallet(email, password))
+        case .createWallet(.triggerAuthenticate):
+            return Effect(value: .triggerAuthenticate)
 
         case .secondPasswordNotice(.closeButtonTapped):
             return Effect(value: .dismiss())
@@ -295,6 +304,9 @@ public let welcomeReducer = Reducer.combine(
         case .restoreWallet(.triggerAuthenticate):
             return Effect(value: .triggerAuthenticate)
 
+        case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.triggerAuthenticate)))):
+            return Effect(value: .triggerAuthenticate)
+
         case .restoreWallet(.restored(.success)),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success))))):
             return environment.nativeWalletEnabled()
@@ -307,6 +319,8 @@ public let welcomeReducer = Reducer.combine(
                 }
         case .restoreWallet(.restored(.failure)),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.failure))))):
+            return Effect(value: .triggerCancelAuthenticate)
+        case .createWallet(.accountCreation(.failure)):
             return Effect(value: .triggerCancelAuthenticate)
 
         case .triggerAuthenticate,

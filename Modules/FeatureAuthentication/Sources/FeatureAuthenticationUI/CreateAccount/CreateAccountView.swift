@@ -29,11 +29,11 @@ struct CreateAccountView: View {
                     Spacer()
                     BlockchainComponentLibrary.PrimaryButton(
                         title: LocalizedString.createAccountButton,
-                        isLoading: viewStore.validatingInput
+                        isLoading: viewStore.validatingInput || viewStore.isCreatingWallet
                     ) {
                         viewStore.send(.createButtonTapped)
                     }
-                    .disabled(viewStore.validatingInput || viewStore.inputValidationState.isInvalid)
+                    .disabled(viewStore.isCreateButtonDisabled)
                     .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
                 }
                 .padding(Spacing.padding3)
@@ -294,7 +294,8 @@ struct CreateAccountView_Previews: PreviewProvider {
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
-                    walletCreationService: .noop
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop
                 )
             )
         )

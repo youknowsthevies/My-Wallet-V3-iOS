@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Foundation
 import WalletPayloadKit
 
 final class MockWalletEncoder: WalletEncodingAPI {
@@ -19,8 +20,7 @@ final class MockWalletEncoder: WalletEncodingAPI {
 
     func encode(
         payload: EncodedWalletPayload,
-        checksum: String,
-        length: Int
+        applyChecksum: @escaping (Data) -> String
     ) -> AnyPublisher<WalletCreationPayload, WalletEncodingError> {
         encodeValue
     }

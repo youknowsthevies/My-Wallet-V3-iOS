@@ -103,6 +103,8 @@ struct VerifyDeviceEnvironment {
     let walletInfoBase64Encoder: (WalletInfo) throws -> String
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
+    let accountRecoveryService: AccountRecoveryServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -113,6 +115,8 @@ struct VerifyDeviceEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
+        walletFetcherService: WalletFetcherService,
+        accountRecoveryService: AccountRecoveryServiceAPI,
         walletInfoBase64Encoder: @escaping (WalletInfo) throws -> String = {
             try JSONEncoder().encode($0).base64EncodedString()
         }
@@ -125,6 +129,8 @@ struct VerifyDeviceEnvironment {
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.accountRecoveryService = accountRecoveryService
         self.walletInfoBase64Encoder = walletInfoBase64Encoder
     }
 }
@@ -144,7 +150,9 @@ let verifyDeviceReducer = Reducer.combine(
                     featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),
@@ -161,7 +169,9 @@ let verifyDeviceReducer = Reducer.combine(
                     featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
-                    walletCreationService: $0.walletCreationService
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),

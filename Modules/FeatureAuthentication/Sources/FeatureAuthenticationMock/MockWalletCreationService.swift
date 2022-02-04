@@ -7,8 +7,11 @@ import WalletPayloadKit
 extension WalletCreationService {
     public static func mock() -> Self {
         WalletCreationService(
-            createWallet: { _, _, _, _ -> AnyPublisher<WalletCreation, WalletCreateError> in
-                .failure(WalletCreateError.genericFailure)
+            createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+                .failure(WalletCreationServiceError.creationFailure(.genericFailure))
+            },
+            setResidentialInfo: { _, _ -> AnyPublisher<Void, Never> in
+                .just(())
             }
         )
     }

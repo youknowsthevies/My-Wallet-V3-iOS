@@ -104,7 +104,8 @@ struct ImportWalletView_Previews: PreviewProvider {
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
-                    walletCreationService: .noop
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop
                 )
             )
         )

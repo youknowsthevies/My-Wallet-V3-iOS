@@ -130,7 +130,9 @@ struct EmailLoginView_Previews: PreviewProvider {
                     errorRecorder: NoOpErrorRecoder(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
-                    walletCreationService: .noop
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop,
+                    accountRecoveryService: NoOpAccountRecoveryService()
                 )
             )
         )

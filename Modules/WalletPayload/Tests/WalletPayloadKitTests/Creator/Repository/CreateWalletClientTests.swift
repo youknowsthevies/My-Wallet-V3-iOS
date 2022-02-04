@@ -17,7 +17,8 @@ class CreateWalletClientTests: XCTestCase {
         let mockNetworkAdapter = NetworkAdapterMock()
         let client = CreateWalletClient(
             networkAdapter: mockNetworkAdapter,
-            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: ""))
+            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: "")),
+            apiCodeProvider: { "some-api-code" }
         )
 
         let time = Int(Date().timeIntervalSince1970 * 1000.0)
@@ -41,6 +42,10 @@ class CreateWalletClientTests: XCTestCase {
             URLQueryItem(
                 name: "format",
                 value: "plain"
+            ),
+            URLQueryItem(
+                name: "api_code",
+                value: "some-api-code"
             )
         ]
 
@@ -52,14 +57,14 @@ class CreateWalletClientTests: XCTestCase {
         let mockNetworkAdapter = NetworkAdapterMock()
         let client = CreateWalletClient(
             networkAdapter: mockNetworkAdapter,
-            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: ""))
+            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: "")),
+            apiCodeProvider: { "some-api-code" }
         )
 
         let payload = WalletCreationPayload(
             data: Data(),
             wrapper: provideDummyWrapper(),
-            checksum: "some-checksum",
-            length: 1
+            applyChecksum: { _ in "" }
         )
 
         let parameters = client.provideWrapperParameters(from: payload)

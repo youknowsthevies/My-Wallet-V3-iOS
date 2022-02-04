@@ -15,13 +15,16 @@ protocol CreateWalletClientAPI {
 final class CreateWalletClient: CreateWalletClientAPI {
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
+    private let apiCodeProvider: () -> String
 
     init(
         networkAdapter: NetworkAdapterAPI,
-        requestBuilder: RequestBuilder
+        requestBuilder: RequestBuilder,
+        apiCodeProvider: @escaping () -> String
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
+        self.apiCodeProvider = apiCodeProvider
     }
 
     func createWallet(
@@ -35,7 +38,7 @@ final class CreateWalletClient: CreateWalletClientAPI {
         let wrapperParameters = provideWrapperParameters(from: payload)
         let body = RequestBuilder.body(from: parameters + wrapperParameters)
         let request = requestBuilder.post(
-            path: "wallet",
+            path: ["wallet"],
             body: body,
             contentType: .formUrlEncoded
         )!
@@ -59,6 +62,10 @@ final class CreateWalletClient: CreateWalletClientAPI {
             URLQueryItem(
                 name: "format",
                 value: "plain"
+            ),
+            URLQueryItem(
+                name: "api_code",
+                value: apiCodeProvider()
             )
         ]
     }

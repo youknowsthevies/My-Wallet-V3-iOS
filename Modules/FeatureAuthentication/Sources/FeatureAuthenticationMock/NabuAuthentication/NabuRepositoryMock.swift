@@ -22,4 +22,11 @@ class MockNabuRepository: NabuRepositoryAPI {
     ) -> AnyPublisher<NabuSessionToken, NetworkError> {
         expectedSessionToken.publisher.eraseToAnyPublisher()
     }
+
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NetworkError> {
+        .just(())
+    }
 }

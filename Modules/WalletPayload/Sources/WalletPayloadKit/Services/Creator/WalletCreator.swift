@@ -14,7 +14,7 @@ public enum WalletCreateError: LocalizedError, Equatable {
     case mnemonicFailure(MnemonicProviderError)
     case encodingError(WalletEncodingError)
     case networkError(NetworkError)
-    case legacyError(WalletCreationError)
+    case legacyError(LegacyWalletCreationError)
 }
 
 struct WalletCreationContext: Equatable {
@@ -114,31 +114,50 @@ final class WalletCreator: WalletCreatorAPI {
                     guard case .encoded(let payload) = encodedPayload.payloadContext else {
                         return .failure(.expectedEncodedPayload)
                     }
-                    guard let value = String(data: payload, encoding: .utf8) else {
+                    guard let payloadValue = String(data: payload, encoding: .utf8) else {
                         return .failure(.genericFailure)
                     }
-                    return encryptor.encrypt(data: value, with: password, pbkdf2Iterations: wrapper.pbkdf2Iterations)
+                    return encryptor.encrypt(
+                        data: payloadValue,
+                        with: password,
+                        pbkdf2Iterations: wrapper.pbkdf2Iterations
+                    )
+                    .publisher
+                    .mapError { _ in WalletCreateError.encryptionFailure }
+                    .eraseToAnyPublisher()
+                    .flatMap { encryptedPayload -> AnyPublisher<String, WalletCreateError> in
+                        encryptor.decrypt(
+                            data: encryptedPayload,
+                            with: password,
+                            pbkdf2Iterations: wrapper.pbkdf2Iterations
+                        )
                         .publisher
                         .mapError { _ in WalletCreateError.encryptionFailure }
-                        .eraseToAnyPublisher()
-                        .map { encryptedPayload in
-                            EncodedWalletPayload(
-                                payloadContext: .encrypted(Data(encryptedPayload.utf8)),
-                                wrapper: wrapper
-                            )
+                        .crashOnError()
+                        .flatMap { decryptedPayload -> AnyPublisher<String, WalletCreateError> in
+                            guard decryptedPayload == payloadValue else {
+                                fatalError(
+                                    "wallet creation error: mismatch between encrypted and decrypted payload"
+                                )
+                            }
+                            return .just(encryptedPayload)
                         }
                         .eraseToAnyPublisher()
+                    }
+                    .map { encryptedPayload in
+                        EncodedWalletPayload(
+                            payloadContext: .encrypted(Data(encryptedPayload.utf8)),
+                            wrapper: wrapper
+                        )
+                    }
+                    .eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
         }
         .flatMap { [walletEncoder, checksumProvider] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
-            walletEncoder.encode(
-                payload: payload,
-                checksum: checksumProvider(payload.payloadContext.value),
-                length: payload.payloadContext.value.count
-            )
-            .mapError(WalletCreateError.encodingError)
-            .eraseToAnyPublisher()
+            walletEncoder.encode(payload: payload, applyChecksum: checksumProvider)
+                .mapError(WalletCreateError.encodingError)
+                .eraseToAnyPublisher()
         }
         .flatMap { [createWalletRepository] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
             createWalletRepository.createWallet(email: email, payload: payload)

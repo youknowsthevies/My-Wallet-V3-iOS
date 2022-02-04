@@ -28,4 +28,11 @@ public protocol NabuRepositoryAPI {
         deviceId: String,
         email: String
     ) -> AnyPublisher<NabuSessionToken, NetworkError>
+
+    /// Sets the initial residential info after user creation
+    /// - Returns: `AnyPublisher<Void, NetworkError>`
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NetworkError>
 }
