@@ -231,7 +231,9 @@ struct UITourView: View {
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },
                     presentPaymentMethodLinkingFlow: { _ in },
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: AnalyticsEventRecorder(
+                        analyticsServiceProviders: []
+                    )
                 )
             )
         )
