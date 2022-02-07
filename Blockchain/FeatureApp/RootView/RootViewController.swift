@@ -59,11 +59,6 @@ final class RootViewController: UIHostingController<RootView> {
             .store(in: &bag)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        viewStore.send(.ready)
-    }
-
     @objc dynamic required init?(coder aDecoder: NSCoder) {
         unimplemented()
     }
