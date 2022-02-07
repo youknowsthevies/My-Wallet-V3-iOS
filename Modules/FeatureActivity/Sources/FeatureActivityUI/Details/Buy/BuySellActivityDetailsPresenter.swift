@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import FeatureCardsDomain
 import Localization
 import MoneyKit
@@ -64,7 +66,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     init(
         event: BuySellActivityItemEvent,
-        interactor: BuySellActivityDetailsInteractor = .init()
+        interactor: BuySellActivityDetailsInteractor = .init(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.interactor = interactor
         self.event = event
@@ -98,7 +101,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultPresenter(
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
