@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureCardsDomain
+import Localization
 import MoneyKit
 import RxRelay
 import RxSwift
@@ -18,6 +19,9 @@ public enum PaymentMethodType: Equatable, Identifiable {
     /// An account for an asset. Currency supports fiat
     case account(FundData)
 
+    /// An Apple Pay payment method (from the user's buy data)
+    case applePay(CardData)
+
     /// A linked account bank
     case linkedBank(LinkedBankData)
 
@@ -28,6 +32,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
         switch self {
         case .card(let data):
             return .card([data.type])
+        case .applePay(let data):
+            return .applePay([data.type])
         case .account(let data):
             return .funds(data.topLimit.currencyType)
         case .suggested(let method):
@@ -44,6 +50,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
         switch self {
         case .card(let data):
             return .fiat(data.topLimit.currency)
+        case .applePay(let data):
+            return .fiat(data.topLimit.currency)
         case .account(let data):
             return data.topLimit.currencyType
         case .suggested(let method):
@@ -57,7 +65,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
         switch self {
         case .card,
              .account,
-             .linkedBank:
+             .linkedBank,
+             .applePay:
             return false
         case .suggested:
             return true
@@ -70,6 +79,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
             return fundData.label
         case .card(let card):
             return card.displayLabel
+        case .applePay:
+            return LocalizationConstants.LineItem.Transactional.applePay
         case .linkedBank(let data):
             return data.label
         case .suggested(let paymentMethod):
@@ -83,6 +94,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
             return fundData.topLimit.currency.code
         case .card(let card):
             return card.identifier
+        case .applePay:
+            return ""
         case .linkedBank(let data):
             return data.identifier
         case .suggested:
@@ -97,6 +110,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
             return card.identifier
         case .suggested:
             return nil
+        case .applePay:
+            return nil
         case .linkedBank(let data):
             return data.identifier
         case .account:
@@ -110,6 +125,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
             return funds.balance.moneyValue
         case .card(let cardData):
             return cardData.topLimit.moneyValue
+        case .applePay(let cardData):
+            return cardData.topLimit.moneyValue
         case .linkedBank(let bankData):
             return bankData.topLimit.moneyValue
         case .suggested(let paymentMethod):
@@ -122,6 +139,8 @@ public enum PaymentMethodType: Equatable, Identifiable {
         case .account(let funds):
             return funds.topLimit.moneyValue
         case .card(let cardData):
+            return cardData.topLimit.moneyValue
+        case .applePay(let cardData):
             return cardData.topLimit.moneyValue
         case .linkedBank(let bankData):
             return bankData.topLimit.moneyValue
@@ -401,7 +420,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 let card = types
                     .compactMap { type -> CardData? in
                         switch type {
-                        case .card(let cardData):
+                        case .card(let cardData),
+                             .applePay(let cardData):
                             return cardData
                         case .suggested, .account, .linkedBank:
                             return nil
@@ -447,7 +467,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                         switch type {
                         case .linkedBank(let bankData):
                             return bankData
-                        case .suggested, .account, .card:
+                        case .suggested, .account, .card, .applePay:
                             return nil
                         }
                     }
@@ -507,7 +527,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .filter { paymentMethod -> Bool in
                 switch paymentMethod.type {
                 case .bankAccount,
-                     .card:
+                     .card,
+                     .applePay:
                     return true
                 case .bankTransfer:
                     return true
@@ -598,7 +619,7 @@ extension Array where Element == PaymentMethodType {
                     return nil
                 }
                 return FiatCurrency(code: currencyType.code)
-            case .bankAccount, .card:
+            case .bankAccount, .card, .applePay:
                 return nil
             }
         }
@@ -608,7 +629,7 @@ extension Array where Element == PaymentMethodType {
     fileprivate var cards: [CardData] {
         compactMap { paymentMethod in
             switch paymentMethod {
-            case .card(let data):
+            case .card(let data), .applePay(let data):
                 return data
             case .suggested, .account, .linkedBank:
                 return nil
@@ -621,7 +642,7 @@ extension Array where Element == PaymentMethodType {
             switch paymentMethod {
             case .linkedBank(let data):
                 return data
-            case .suggested, .account, .card:
+            case .suggested, .account, .card, .applePay:
                 return nil
             }
         }
@@ -632,7 +653,7 @@ extension Array where Element == PaymentMethodType {
             switch paymentMethod {
             case .account(let data):
                 return data
-            case .suggested, .card, .linkedBank:
+            case .suggested, .card, .linkedBank, .applePay:
                 return nil
             }
         }
@@ -666,13 +687,15 @@ extension Array where Element == PaymentMethodType {
                         return currency == currentWalletCurrency.currencyType
                     }
                     return currency == currentWalletCurrency.currencyType && paymentMethod.isEligible
-                case .card:
+                case .card, .applePay:
                     return accountForEligibility ? paymentMethod.isEligible : true
                 }
             case .card(let data):
                 return data.state == .active
             case .linkedBank(let data) where !isOpenBankingEnabled && data.partner != .yodlee:
                 return false
+            case .applePay(let data):
+                return data.state == .active
             case .linkedBank(let data):
                 return data.state == .active && data.currency == currentWalletCurrency
             }

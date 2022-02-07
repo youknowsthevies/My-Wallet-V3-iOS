@@ -80,6 +80,9 @@ final class ACHFlowRootInteractor: Interactor,
 
     func navigate(with method: PaymentMethod) {
         switch method.type {
+        case .applePay:
+            stateService.previousRelay.accept(())
+            router?.closeFlow()
         case .bankAccount:
             stateService.previousRelay.accept(())
             router?.closeFlow()

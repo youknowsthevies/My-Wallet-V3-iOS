@@ -13,6 +13,7 @@ extension AnalyticsEvents {
             case bank
             case funds
             case newCard
+            case applePay
 
             public var string: String {
                 switch self {
@@ -24,6 +25,8 @@ extension AnalyticsEvents {
                     return "BANK"
                 case .newCard:
                     return "NEW_CARD"
+                case .applePay:
+                    return "APPLE_PAY"
                 }
             }
         }

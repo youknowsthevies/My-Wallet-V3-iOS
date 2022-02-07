@@ -108,7 +108,7 @@ extension CardPayload {
     }
 
     /// The partner for the card
-    public enum Acquirer: String, Codable {
+    public enum Acquirer: String, Codable, Equatable {
 
         /// EveryPay partner
         case everyPay = "EVERYPAY"

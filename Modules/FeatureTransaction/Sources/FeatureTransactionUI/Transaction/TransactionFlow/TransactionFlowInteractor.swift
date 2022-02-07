@@ -659,7 +659,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             }
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
-        case .funds:
+        case .funds, .applePay:
             // Nothing to link, move on to the next step
             transactionModel.process(action: .prepareTransaction)
         }

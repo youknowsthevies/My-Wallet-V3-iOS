@@ -151,6 +151,21 @@ extension LocalizationConstants.SimpleBuy {
             )
         }
 
+        public enum ApplePay {
+            public static let title = NSLocalizedString(
+                "Apple Pay",
+                comment: "Simple Buy: Use Apple Pay as a payment method"
+            )
+            public static let descriptionLimit = NSLocalizedString(
+                "Instantly Available",
+                comment: "Simple Buy: Use Apple Pay: description"
+            )
+            public static let descriptionInfo = NSLocalizedString(
+                "Simply tap to buy with Apple Pay",
+                comment: "Simple Buy: Use Apple Pay: description of Apple Pay"
+            )
+        }
+
         public enum DepositCash {
             public static let usTitle = NSLocalizedString(
                 "Wire Transfer",

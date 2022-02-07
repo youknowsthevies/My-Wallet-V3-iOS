@@ -76,7 +76,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         XCTAssertNil(mockPresenter.recordedInvocations.dismiss.first)
         // AND: The completion called is called with the expected result
         wait(for: [e], timeout: 10)
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .completed(nil))
     }
 
     func test_route_to_link_bank_usd() throws {
@@ -99,7 +99,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         XCTAssertNil(mockPresenter.recordedInvocations.dismiss.first)
         // AND: The completion called is called with the expected result
         wait(for: [e], timeout: 10)
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .completed(nil))
     }
 
     func test_route_to_link_bank_gbp_open_banking_enabled() throws {
@@ -231,7 +231,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         linkingInvocation?.completion(.completed)
         // THEN: Finally, the completion block is called with the expected result
         wait(for: [completionCalledExpectation], timeout: 10)
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .completed(nil))
     }
 
     func test_route_to_payment_linking_flow_ach_bank_selected() {
@@ -272,7 +272,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         linkingInvocation?.completion(.completed)
         // THEN: Finally, the completion block is called with the expected result
         wait(for: [completionCalledExpectation], timeout: 10)
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .completed(nil))
     }
 
     func test_route_to_payment_linking_flow_ob_bank_selected_feature_enabled() {
@@ -315,7 +315,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         linkingInvocation?.completion(.completed)
         // THEN: Finally, the completion block is called with the expected result
         wait(for: [completionCalledExpectation], timeout: 10)
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .completed(nil))
     }
 
     func test_route_to_payment_linking_flow_ob_bank_selected_feature_disabled() {

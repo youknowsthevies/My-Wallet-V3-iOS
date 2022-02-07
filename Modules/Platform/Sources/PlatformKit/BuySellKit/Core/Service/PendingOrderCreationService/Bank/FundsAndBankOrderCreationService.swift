@@ -29,7 +29,7 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
                     sourceCurrency: candidateOrderDetails.fiatCurrency,
                     destinationCurrency: candidateOrderDetails.cryptoCurrency,
                     amount: MoneyValue(fiatValue: candidateOrderDetails.fiatValue),
-                    paymentMethod: paymentMethod?.rawType,
+                    paymentMethod: paymentMethod?.requestType,
                     paymentMethodId: (paymentMethod?.isBankTransfer ?? false) ? candidateOrderDetails.paymentMethodId : nil
                 )
             )

@@ -30,6 +30,17 @@ extension SelectionButtonViewModel {
                     )
                 )
                 title = LocalizedString.Types.cardTitle
+            case .applePay:
+                leadingContent = .image(
+                    .init(
+                        image: .local(name: "icon-applepay", bundle: .platformUIKit),
+                        background: .clear,
+                        offset: 4,
+                        cornerRadius: .none,
+                        size: .init(edge: 32)
+                    )
+                )
+                title = LocalizedString.ApplePay.title
             case .funds:
                 leadingContent = .image(
                     .init(
@@ -134,6 +145,23 @@ extension SelectionButtonViewModel {
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title
             )
+        case .some(.applePay(let data)):
+            leadingContent = .image(
+                .init(
+                    image: .local(name: "icon-applepay", bundle: .platformUIKit),
+                    background: .clear,
+                    offset: 0,
+                    cornerRadius: .none,
+                    size: .init(width: 32, height: 32)
+                )
+            )
+            title = LocalizedString.ApplePay.title
+            accessibilityContent = AccessibilityContent(
+                id: title,
+                label: title
+            )
+            let limit = "\(data.topLimitDisplayValue) \(LocalizedString.Types.limitSubtitle)"
+            subtitleRelay.accept(limit)
         }
         accessibilityContentRelay.accept(accessibilityContent)
         leadingContentTypeRelay.accept(leadingContent)

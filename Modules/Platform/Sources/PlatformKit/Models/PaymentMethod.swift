@@ -10,6 +10,7 @@ public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
     case bankAccount = "BANK_ACCOUNT"
     case bankTransfer = "BANK_TRANSFER"
     case funds = "FUNDS"
+    case applePay = "APPLE_PAY"
 }
 
 /// The available payment methods
@@ -18,6 +19,9 @@ public struct PaymentMethod: Equatable, Comparable {
     public enum MethodType: Equatable, Comparable {
         /// Card payment method
         case card(Set<CardType>)
+
+        /// Apple Pay method
+        case applePay(Set<CardType>)
 
         /// Bank account payment method (linking via wire transfer)
         case bankAccount(CurrencyType)
@@ -32,7 +36,7 @@ public struct PaymentMethod: Equatable, Comparable {
             switch self {
             case .card:
                 return true
-            case .bankAccount, .bankTransfer, .funds:
+            case .bankAccount, .bankTransfer, .funds, .applePay:
                 return false
             }
         }
@@ -41,7 +45,7 @@ public struct PaymentMethod: Equatable, Comparable {
             switch self {
             case .funds:
                 return true
-            case .bankAccount, .bankTransfer, .card:
+            case .bankAccount, .bankTransfer, .card, .applePay:
                 return false
             }
         }
@@ -50,7 +54,7 @@ public struct PaymentMethod: Equatable, Comparable {
             switch self {
             case .bankAccount:
                 return true
-            case .funds, .card, .bankTransfer:
+            case .funds, .card, .bankTransfer, .applePay:
                 return false
             }
         }
@@ -59,7 +63,16 @@ public struct PaymentMethod: Equatable, Comparable {
             switch self {
             case .bankTransfer:
                 return true
-            case .funds, .card, .bankAccount:
+            case .funds, .card, .bankAccount, .applePay:
+                return false
+            }
+        }
+
+        public var isApplePay: Bool {
+            switch self {
+            case .applePay:
+                return true
+            case .funds, .card, .bankAccount, .bankTransfer:
                 return false
             }
         }
@@ -67,6 +80,23 @@ public struct PaymentMethod: Equatable, Comparable {
         public var rawType: PaymentMethodPayloadType {
             switch self {
             case .card:
+                return .card
+            case .applePay:
+                return .applePay
+            case .bankAccount:
+                return .bankAccount
+            case .funds:
+                return .funds
+            case .bankTransfer:
+                return .bankTransfer
+            }
+        }
+
+        public var requestType: PaymentMethodPayloadType {
+            switch self {
+            case .card:
+                return .card
+            case .applePay:
                 return .card
             case .bankAccount:
                 return .bankAccount
@@ -87,6 +117,8 @@ public struct PaymentMethod: Equatable, Comparable {
                 return 2
             case .bankAccount:
                 return 3
+            case .applePay:
+                return 4
             }
         }
 
@@ -103,6 +135,12 @@ public struct PaymentMethod: Equatable, Comparable {
                 /// at least one sub type is included. e.g: "VISA".
                 guard !cardTypes.isEmpty else { return nil }
                 self = .card(cardTypes)
+            case .applePay:
+                let cardTypes = Set(subTypes.compactMap { CardType(rawValue: $0) })
+                /// Addition validation - make sure that if `.card` is returned
+                /// at least one sub type is included. e.g: "VISA".
+                guard !cardTypes.isEmpty else { return nil }
+                self = .applePay(cardTypes)
             case .bankAccount:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
@@ -131,6 +169,8 @@ public struct PaymentMethod: Equatable, Comparable {
                 self = .bankTransfer(currency)
             case .funds:
                 self = .funds(currency)
+            case .applePay:
+                self = .applePay([])
             }
         }
 
@@ -148,6 +188,8 @@ public struct PaymentMethod: Equatable, Comparable {
         public func isSame(as otherType: MethodType) -> Bool {
             switch (self, otherType) {
             case (.card(let lhs), .card(let rhs)):
+                return lhs == rhs
+            case (.applePay(let lhs), .applePay(let rhs)):
                 return lhs == rhs
             case (.bankAccount(let currencyLhs), .bankAccount(let currencyRhs)):
                 return currencyLhs == currencyRhs
@@ -194,7 +236,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 impossible("Payment method types should use fiat.")
             }
             return fiat
-        case .card:
+        case .card, .applePay:
             return max.currency
         }
     }
@@ -224,6 +266,9 @@ public struct PaymentMethod: Equatable, Comparable {
             localizedString = fiatCurrency == .USD
                 ? localizationSpace.DepositCash.usTitle
                 : localizationSpace.DepositCash.europeTitle
+
+        case .applePay:
+            localizedString = localizationSpace.ApplePay.title
         }
         return localizedString
     }

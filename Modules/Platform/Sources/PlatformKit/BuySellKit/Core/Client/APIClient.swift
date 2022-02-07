@@ -20,7 +20,8 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
     OrdersActivityClientAPI &
     WithdrawalClientAPI &
     PaymentEligibleMethodsClientAPI &
-    LinkedBanksClientAPI
+    LinkedBanksClientAPI &
+    ApplePayClientAPI
 
 /// Simple-Buy network client
 // swiftlint:disable type_body_length
@@ -51,6 +52,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let transactions = ["payments", "transactions"]
         static let paymentMethods = ["payments", "methods"]
         static let eligiblePaymentMethods = ["eligible", "payment-methods"]
+        static let applePayInfo = ["payments", "apple-pay", "info"]
         static let paymentsCardAcquirers = ["payments", "card-acquirers"]
         static let beneficiaries = ["payments", "beneficiaries"]
         static let banks = ["payments", "banks"]
@@ -452,12 +454,32 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: queryParameters,
             authenticated: true
         )!
+
         return networkAdapter.perform(request: request)
     }
 
     func paymentsCardAcquirers() -> AnyPublisher<[PaymentCardAcquirer], NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.paymentsCardAcquirers,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    // MARK: - ApplePayInfoClientAPI
+
+    func applePayInfo(
+        for currency: String
+    ) -> AnyPublisher<ApplePayInfo, NabuNetworkError> {
+        let queryParameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: currency
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.applePayInfo,
+            parameters: queryParameters,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

@@ -1,68 +1,108 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureCardsDomain
-import RxSwift
+import NabuNetworkError
 
 /// Used to execute the order once created
 public protocol OrderConfirmationServiceAPI: AnyObject {
-    func confirm(checkoutData: CheckoutData) -> Single<CheckoutData>
+    func confirm(
+        checkoutData: CheckoutData
+    ) -> AnyPublisher<CheckoutData, OrderConfirmationServiceError>
+}
+
+public enum OrderConfirmationServiceError: Error {
+    case mappingError
+    case applePay(ApplePayError)
+    case nabu(NabuNetworkError)
 }
 
 final class OrderConfirmationService: OrderConfirmationServiceAPI {
-
-    // MARK: - Service Error
-
-    enum ServiceError: Error {
-        case mappingError
-    }
 
     // MARK: - Properties
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: CardOrderConfirmationClientAPI
+    private let applePayService: ApplePayServiceAPI
 
     // MARK: - Setup
 
     init(
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        client: CardOrderConfirmationClientAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        client: CardOrderConfirmationClientAPI,
+        applePayService: ApplePayServiceAPI
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
+        self.applePayService = applePayService
     }
 
-    func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
+    func confirm(checkoutData: CheckoutData) -> AnyPublisher<CheckoutData, OrderConfirmationServiceError> {
         let orderId = checkoutData.order.identifier
         let paymentMethodId = checkoutData.order.paymentMethodId
-        let partner: OrderPayload.ConfirmOrder.Partner
+
+        let confirmParams: AnyPublisher<
+            (
+                partner: OrderPayload.ConfirmOrder.Partner,
+                paymentMethodId: String?
+            ),
+            OrderConfirmationServiceError
+        >
         switch checkoutData.order.paymentMethod {
-        case .bankAccount:
-            partner = .bank
-        case .bankTransfer:
-            partner = .bank
-        case .card:
-            partner = .card(redirectURL: PartnerAuthorizationData.exitLink)
+        case .bankAccount, .bankTransfer:
+            confirmParams = .just((partner: .bank, paymentMethodId: paymentMethodId))
+        case .applePay where paymentMethodId?.isEmpty ?? true,
+             .card where paymentMethodId?.isEmpty ?? true:
+            let amount = checkoutData.order.inputValue.displayMajorValue
+            let currencyCode = checkoutData.order.inputValue.currency.code
+            confirmParams = applePayService
+                .getToken(
+                    amount: amount,
+                    currencyCode: currencyCode
+                )
+                .map { params -> (
+                    partner: OrderPayload.ConfirmOrder.Partner,
+                    paymentMethodId: String?
+                ) in
+                    (
+                        partner: OrderPayload.ConfirmOrder.Partner.applePay(params.token),
+                        paymentMethodId: params.beneficiaryId
+                    )
+                }
+                .mapError(OrderConfirmationServiceError.applePay)
+                .eraseToAnyPublisher()
+        case .applePay, .card:
+            confirmParams = .just((
+                partner: .card(redirectURL: PartnerAuthorizationData.exitLink),
+                paymentMethodId: paymentMethodId
+            ))
         case .funds:
-            partner = .funds
+            confirmParams = .just((partner: .funds, paymentMethodId: paymentMethodId))
         }
 
-        return client.confirmOrder(
-            with: orderId,
-            partner: partner,
-            paymentMethodId: paymentMethodId
-        )
-        .asSingle()
-        .map(weak: self) { (self, response) in
-            OrderDetails(recorder: self.analyticsRecorder, response: response)
-        }
-        .map { details -> OrderDetails in
-            guard let details = details else {
-                throw ServiceError.mappingError
+        return confirmParams
+            .flatMap { [client] params -> AnyPublisher<OrderPayload.Response, OrderConfirmationServiceError> in
+                client
+                    .confirmOrder(
+                        with: orderId,
+                        partner: params.partner,
+                        paymentMethodId: params.paymentMethodId
+                    )
+                    .mapError(OrderConfirmationServiceError.nabu)
+                    .eraseToAnyPublisher()
             }
-            return details
-        }
-        .map { checkoutData.checkoutData(byAppending: $0) }
+            .map { [analyticsRecorder] response -> OrderDetails? in
+                OrderDetails(recorder: analyticsRecorder, response: response)
+            }
+            .flatMap { details -> AnyPublisher<OrderDetails, OrderConfirmationServiceError> in
+                guard let details = details else {
+                    return .failure(OrderConfirmationServiceError.mappingError)
+                }
+                return .just(details)
+            }
+            .map { checkoutData.checkoutData(byAppending: $0) }
+            .eraseToAnyPublisher()
     }
 }

@@ -134,7 +134,9 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         }
     }
 
-    private func generateCellType(by paymentMethodType: PaymentMethodType) -> AddNewPaymentMethodCellViewModelItem? {
+    private func generateCellType(
+        by paymentMethodType: PaymentMethodType
+    ) -> AddNewPaymentMethodCellViewModelItem? {
         var cellType: AddNewPaymentMethodCellViewModelItem?
         switch paymentMethodType {
         case .suggested(let method):
@@ -148,10 +150,34 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     thumbImage: "icon-deposit-cash",
                     title: title,
                     descriptions: [
-                        .init(title: LocalizedString.DepositCash.description, titleColor: .descriptionText, titleFontSize: 12)
+                        .init(
+                            title: LocalizedString.DepositCash.description,
+                            titleColor: .descriptionText,
+                            titleFontSize: 12
+                        )
                     ],
                     badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.depositCash
+                )
+            case .applePay:
+                viewModel = ExplainedActionViewModel(
+                    thumbImage: "icon-applepay",
+                    title: LocalizedString.ApplePay.title,
+                    descriptions: [
+                        .init(
+                            title: LocalizedString.ApplePay.descriptionLimit,
+                            titleColor: .titleText,
+                            titleFontSize: 14
+                        ),
+                        .init(
+                            title: LocalizedString.ApplePay.descriptionInfo,
+                            titleColor: .descriptionText,
+                            titleFontSize: 12
+                        )
+                    ],
+                    badgeTitle: LocalizedString.Card.badgeTitle,
+                    uniqueAccessibilityIdentifier: AccessibilityId.useApplePay,
+                    thumbRenderDefault: true
                 )
             case .card:
                 viewModel = ExplainedActionViewModel(
@@ -195,6 +221,8 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     guard let self = self else { return }
                     let event: AnalyticsEvents.SimpleBuy.PaymentMethod
                     switch method.type {
+                    case .applePay:
+                        event = .applePay
                     case .bankAccount:
                         event = .bank
                     case .bankTransfer:
@@ -222,6 +250,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
             cellType = .suggestedPaymentMethod(viewModel)
         case .card,
              .account,
+             .applePay,
              .linkedBank:
             cellType = nil
         }

@@ -73,7 +73,7 @@ public final class CardOrderCheckoutInteractor {
                     sourceCurrency: fiatCurrency,
                     destinationCurrency: cryptoCurrency,
                     amount: MoneyValue(fiatValue: fiat),
-                    paymentMethod: checkoutData.order.paymentMethod.rawType,
+                    paymentMethod: checkoutData.order.paymentMethod.requestType,
                     paymentMethodId: paymentMethod.isBankTransfer ? paymentMethodId : nil
                 )
             )

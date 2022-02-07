@@ -3,6 +3,7 @@
 import DIKit
 import FeatureCardsDomain
 import MoneyKit
+import NabuNetworkError
 import RxRelay
 import RxSwift
 import ToolKit
@@ -26,6 +27,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
     private let tiersService: KYCTiersServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let applePayEligibilityService: ApplePayEligibleServiceAPI
 
     // MARK: - Setup
 
@@ -34,14 +36,20 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         tiersService: KYCTiersServiceAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        applePayEligibilityService: ApplePayEligibleServiceAPI = resolve()
     ) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledCurrenciesService = enabledCurrenciesService
+        self.applePayEligibilityService = applePayEligibilityService
 
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
+        let applePayEnabled = applePayEligibilityService
+            .isBackendEnabled()
+            .setFailureType(to: NabuNetworkError.self)
+
         let fetch = fiatCurrencyService.tradingCurrencyPublisher
             .asObservable()
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
@@ -52,7 +60,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }
-                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool, Bool)> in
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
@@ -61,14 +69,18 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         ) ? sddEligility.tier : nil
                     )
                     .map { ($0, sddEligility.eligible) }
+                    .combineLatest(applePayEnabled.setFailureType(to: NabuNetworkError.self))
+                    .map { ($0.0, $0.1, $1) }
                     .asSingle()
                 }
-                .map { methods, sddEligible -> [PaymentMethod] in
+                .map { methods, sddEligible, applePayEnabled -> [PaymentMethod] in
                     let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
-                        supportedFiatCurrencies: enabledFiatCurrencies
+                        supportedFiatCurrencies: enabledFiatCurrencies,
+                        enableApplePay: applePayEnabled
                     )
+
                     guard sddEligible else {
                         return paymentMethods
                     }
@@ -79,7 +91,8 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     paymentMethods.filter { paymentMethod in
                         switch paymentMethod.type {
                         case .card,
-                             .bankTransfer:
+                             .bankTransfer,
+                             .applePay:
                             return true
                         case .funds(let currencyType):
                             return currencyType.code == fiatCurrency.code
@@ -117,7 +130,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                 switch card.type {
                 case .card(let types):
                     return types
-                case .bankAccount, .bankTransfer, .funds:
+                case .bankAccount, .bankTransfer, .funds, .applePay:
                     return []
                 }
             }
@@ -127,6 +140,9 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         for currency: FiatCurrency
     ) -> Single<[PaymentMethod]> {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
+        let applePayEnabled = applePayEligibilityService
+            .isBackendEnabled()
+            .setFailureType(to: NabuNetworkError.self)
         return Single
             .just(currency)
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Single<[PaymentMethod]> in
@@ -136,7 +152,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }
-                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool, Bool)> in
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
@@ -145,13 +161,16 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         ) ? sddEligility.tier : nil
                     )
                     .map { ($0, sddEligility.eligible) }
+                    .combineLatest(applePayEnabled)
+                    .map { ($0.0, $0.1, $1) }
                     .asSingle()
                 }
-                .map { methods, sddEligible -> [PaymentMethod] in
+                .map { methods, sddEligible, applePayEnabled -> [PaymentMethod] in
                     let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
-                        supportedFiatCurrencies: enabledFiatCurrencies
+                        supportedFiatCurrencies: enabledFiatCurrencies,
+                        enableApplePay: applePayEnabled
                     )
                     guard sddEligible else {
                         return paymentMethods
@@ -163,7 +182,8 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     paymentMethods.filter { paymentMethod in
                         switch paymentMethod.type {
                         case .card,
-                             .bankTransfer:
+                             .bankTransfer,
+                             .applePay:
                             return true
                         case .funds(let currencyType):
                             return currencyType.code == fiatCurrency.code

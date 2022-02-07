@@ -190,8 +190,9 @@ final class BuyTransactionEngine: TransactionEngine {
                     return .error(TransactionValidationFailure(state: .incorrectDestinationCurrency))
                 }
                 let paymentMethodId: String?
-                if sourceAccount.paymentMethod.type.isFunds {
-                    // NOTE: This fixes IOS-5389
+                if sourceAccount.paymentMethod.type.isFunds
+                    || sourceAccount.paymentMethod.type.isApplePay
+                {
                     paymentMethodId = nil
                 } else {
                     paymentMethodId = sourceAccount.paymentMethodType.id
@@ -241,6 +242,7 @@ final class BuyTransactionEngine: TransactionEngine {
         }
         // Execute the order
         return orderConfirmationService.confirm(checkoutData: CheckoutData(order: order))
+            .asSingle()
             // Map order to Transaction Result
             .map { checkoutData -> TransactionResult in
                 TransactionResult.hashed(
@@ -322,7 +324,7 @@ extension BuyTransactionEngine {
                         sourceCurrency: source.fiatCurrency,
                         destinationCurrency: destination.asset,
                         amount: MoneyValue(fiatValue: fiatValue),
-                        paymentMethod: paymentMethod?.rawType,
+                        paymentMethod: paymentMethod?.requestType,
                         // the endpoint only accepts paymentMethodId parameter if paymentMethod is bank transfer
                         // refactor this by gracefully handle at the model level
                         paymentMethodId: (paymentMethod?.isBankTransfer ?? false) ? paymentMethodId : nil

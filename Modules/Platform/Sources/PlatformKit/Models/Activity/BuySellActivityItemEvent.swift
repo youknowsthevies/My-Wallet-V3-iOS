@@ -16,6 +16,7 @@ public struct BuySellActivityItemEvent {
 
     public enum PaymentMethod {
         case card(paymentMethodId: String?)
+        case applePay
         case bankTransfer
         case bankAccount
         case funds

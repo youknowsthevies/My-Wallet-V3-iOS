@@ -4,6 +4,7 @@ import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import DIKit
+import FeatureCardsDomain
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
@@ -253,6 +254,12 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     transactionModel.process(action: .returnToPreviousStep)
                 case .completed(let paymentMethod):
                     switch paymentMethod.type {
+                    case .applePay:
+                        transactionModel.process(
+                            action: .sourceAccountSelected(
+                                PaymentMethodAccount.applePay(from: paymentMethod)
+                            )
+                        )
                     case .bankAccount:
                         transactionModel.process(action: .showBankWiringInstructions)
                     case .bankTransfer:
@@ -569,5 +576,28 @@ extension AssetAction {
              .interestTransfer:
             return false
         }
+    }
+}
+
+extension PaymentMethodAccount {
+    fileprivate static func applePay(from method: PaymentMethod) -> PaymentMethodAccount {
+        PaymentMethodAccount(
+            paymentMethodType: PaymentMethodType.applePay(
+                CardData(
+                    identifier: "",
+                    state: .active,
+                    partner: .unknown,
+                    type: .unknown,
+                    currency: method.fiatCurrency,
+                    label: LocalizationConstants.Transaction.Buy.applePay,
+                    ownerName: "",
+                    number: "",
+                    month: "",
+                    year: "",
+                    cvv: "",
+                    topLimit: method.max
+                )),
+            paymentMethod: method
+        )
     }
 }

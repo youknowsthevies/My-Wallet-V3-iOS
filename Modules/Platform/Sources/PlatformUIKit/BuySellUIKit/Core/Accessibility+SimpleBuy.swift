@@ -22,6 +22,7 @@ extension Accessibility.Identifier {
             static let addBank = "\(prefix)AddBank"
             static let depositCash = "\(prefix)DepositCash"
             static let linkedBank = "\(prefix)LinkedBank"
+            static let useApplePay = "\(prefix)ApplePay"
         }
 
         enum Checkout {

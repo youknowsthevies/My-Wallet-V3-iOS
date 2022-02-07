@@ -33,6 +33,7 @@ public enum OrderPayload {
             case card(redirectURL: String)
             case bank
             case funds
+            case applePay(ApplePayToken)
         }
 
         struct Attributes: Encodable {
@@ -42,10 +43,20 @@ public enum OrderPayload {
 
             let redirectURL: String?
             let everypay: EveryPay?
+            let applePayPaymentToken: String?
             let callback: String?
 
-            init(redirectURL: String?, callback: String?) {
+            init(redirectURL: String?, callback: String?, applePay: ApplePayToken? = nil) {
                 everypay = redirectURL.map(EveryPay.init)
+
+                if let applePay = applePay,
+                   let encoded = try? JSONEncoder().encode(applePay)
+                {
+                    applePayPaymentToken = String(data: encoded, encoding: .utf8)
+                } else {
+                    applePayPaymentToken = nil
+                }
+
                 self.redirectURL = redirectURL
                 self.callback = callback
             }
@@ -69,6 +80,12 @@ public enum OrderPayload {
                 )
             case .funds:
                 attributes = nil
+            case .applePay(let params):
+                attributes = Attributes(
+                    redirectURL: PartnerAuthorizationData.exitLink,
+                    callback: nil,
+                    applePay: params
+                )
             }
             self.action = action
             self.paymentMethodId = paymentMethodId
@@ -104,8 +121,14 @@ public enum OrderPayload {
         ) {
             self.quoteId = quoteId
             self.action = action
-            self.paymentMethodId = paymentMethodId
-            self.paymentType = paymentType?.rawType
+            if paymentType?.isApplePay == true
+                || paymentMethodId?.isEmpty == true
+            {
+                self.paymentMethodId = nil
+            } else {
+                self.paymentMethodId = paymentMethodId
+            }
+            self.paymentType = paymentType?.requestType
             switch action {
             case .buy:
                 input = Input(

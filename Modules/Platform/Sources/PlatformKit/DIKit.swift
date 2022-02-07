@@ -238,6 +238,11 @@ extension DependencyContainer {
             return client as EligibleCardAcquirersAPI
         }
 
+        factory { () -> ApplePayClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as ApplePayClientAPI
+        }
+
         factory { () -> LinkedBanksClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as LinkedBanksClientAPI
@@ -252,7 +257,13 @@ extension DependencyContainer {
 
         factory { OrdersActivityService() as OrdersActivityServiceAPI }
 
-        factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
+        factory {
+            OrderConfirmationService(
+                analyticsRecorder: DIKit.resolve(),
+                client: DIKit.resolve(),
+                applePayService: DIKit.resolve()
+            ) as OrderConfirmationServiceAPI
+        }
 
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
 

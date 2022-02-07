@@ -5,6 +5,12 @@ public struct PaymentMethodsResponse: Decodable {
 
     public struct Method: Decodable {
 
+        /// Mobile payment types
+        enum MobilePaymentType: String, Decodable {
+            case applePay = "APPLE_PAY"
+            case googlePay = "GOOGLE_PAY"
+        }
+
         /// The limits for a given window of time (e.g. annual or daily)
         struct Limits: Decodable {
             let available: String
@@ -93,6 +99,9 @@ public struct PaymentMethodsResponse: Decodable {
 
         /// When `true`, the payment method can be shown to the user
         let visible: Bool
+
+        /// Enables Apple Pay
+        let mobilePayment: [MobilePaymentType]?
     }
 
     /// The currency for the payment method (e.g: `USD`)
@@ -100,4 +109,23 @@ public struct PaymentMethodsResponse: Decodable {
 
     /// The available methods of payment
     let methods: [Method]
+}
+
+extension PaymentMethodsResponse {
+    public var applePayEligible: Bool {
+        methods.contains { method in
+            method.applePayEligible
+        }
+    }
+}
+
+extension PaymentMethodsResponse.Method {
+    public var applePayEligible: Bool {
+        guard let mobilePayment = mobilePayment else {
+            return false
+        }
+        return mobilePayment.contains { type in
+            type == .applePay
+        }
+    }
 }

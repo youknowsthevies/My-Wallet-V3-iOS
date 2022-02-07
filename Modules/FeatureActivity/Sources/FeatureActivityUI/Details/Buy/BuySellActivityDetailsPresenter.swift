@@ -131,6 +131,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             paymentMethod = LocalizedLineItem.bankTransfer
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
+        case .applePay:
+            paymentMethod = LocalizedLineItem.applePay
         case .funds:
             paymentMethod = event.inputValue.currency.name
         }
@@ -206,6 +208,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .bankAccount:
             break
         case .funds:
+            break
+        case .applePay:
             break
         case .card(let paymentMethodId):
             interactor

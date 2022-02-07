@@ -54,6 +54,8 @@ extension PaymentMethod.MethodType {
             return .bank
         case .funds:
             return .funds
+        case .applePay:
+            return .applePay
         }
     }
 }
@@ -72,8 +74,33 @@ extension Array where Element == PaymentMethod {
         append(contentsOf: methods)
     }
 
-    init(methods: [PaymentMethodsResponse.Method], currency: FiatCurrency, supportedFiatCurrencies: [FiatCurrency]) {
+    init(
+        methods: [PaymentMethodsResponse.Method],
+        currency: FiatCurrency,
+        supportedFiatCurrencies: [FiatCurrency],
+        enableApplePay: Bool
+    ) {
         self.init()
+
+        if enableApplePay,
+           let card = methods.first(where: { $0.applePayEligible }),
+           let applePayPaymentMethod = PaymentMethod(
+               currency: currency.code,
+               method: .init(
+                   type: PaymentMethodPayloadType.applePay.rawValue,
+                   limits: card.limits,
+                   subTypes: card.subTypes,
+                   currency: card.currency,
+                   eligible: card.eligible,
+                   visible: card.visible,
+                   mobilePayment: card.mobilePayment
+               ),
+               supportedFiatCurrencies: supportedFiatCurrencies
+           )
+        {
+            append(applePayPaymentMethod)
+        }
+
         let methods = methods
             .compactMap {
                 PaymentMethod(
@@ -82,6 +109,7 @@ extension Array where Element == PaymentMethod {
                     supportedFiatCurrencies: supportedFiatCurrencies
                 )
             }
+
         append(contentsOf: methods)
     }
 

@@ -19,7 +19,7 @@ struct PortfolioView: UIViewControllerRepresentable {
             fiatBalanceCellProvider: fiatBalanceCellProvider,
             userHasCompletedOnboarding: userAdapter
                 .onboardingUserState
-                .map { $0.kycStatus == .complete && $0.hasLinkedPaymentMethods && $0.hasEverPurchasedCrypto }
+                .map { $0.kycStatus == .complete && $0.hasEverPurchasedCrypto }
                 .eraseToAnyPublisher(),
             onboardingChecklistViewBuilder: { [onboardingViewsFactory] in
                 onboardingViewsFactory.makeOnboardingChecklistOverview()

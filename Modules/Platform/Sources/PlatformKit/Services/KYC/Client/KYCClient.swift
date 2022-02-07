@@ -6,8 +6,8 @@ import NabuNetworkError
 import NetworkKit
 
 public struct SimplifiedDueDiligenceResponse: Codable {
-    let eligible: Bool
-    let tier: Int
+    public let eligible: Bool
+    public let tier: Int
 }
 
 // swiftlint:disable:next type_name

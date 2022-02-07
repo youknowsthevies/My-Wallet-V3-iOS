@@ -13,6 +13,8 @@ extension BuySellActivityItemEvent {
             paymentMethod = .bankTransfer
         case .card:
             paymentMethod = .card(paymentMethodId: orderDetails.paymentMethodId)
+        case .applePay:
+            paymentMethod = .applePay
         case .funds:
             paymentMethod = .funds
         }

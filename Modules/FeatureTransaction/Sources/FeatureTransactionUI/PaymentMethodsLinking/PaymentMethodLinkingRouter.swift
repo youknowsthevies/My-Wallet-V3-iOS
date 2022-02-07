@@ -6,9 +6,18 @@ import PlatformKit
 import ToolKit
 import UIKit
 
-public enum PaymentMethodsLinkingFlowResult {
+public enum PaymentMethodsLinkingFlowResult: Equatable {
     case abandoned
-    case completed
+    case completed(PaymentMethod?)
+
+    public var isCompleted: Bool {
+        switch self {
+        case .completed:
+            return true
+        case .abandoned:
+            return false
+        }
+    }
 }
 
 /// Use this protocol to present the end-to-end payment method linking flow (where the user selects which payment method to link among their linkable payment methods) and links it.
@@ -104,6 +113,9 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
                     case .card:
                         self.routeToCardLinkingFlow(from: viewController, completion: completion)
 
+                    case .applePay:
+                        completion(.completed(paymentMethod))
+
                     case .bankTransfer:
                         self.routeToDirectBankLinkingFlow(from: viewController, completion: completion)
 
@@ -131,7 +143,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
         cardLinker.presentCardLinkingFlow(from: viewController) { result in
-            let flowResult: PaymentMethodsLinkingFlowResult = result == .abandoned ? .abandoned : .completed
+            let flowResult: PaymentMethodsLinkingFlowResult = result == .abandoned ? .abandoned : .completed(nil)
             completion(flowResult)
         }
     }
@@ -182,7 +194,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
         bankAccountLinker.presentBankLinkingFlow(from: viewController) { result in
-            completion(result == .abandoned ? .abandoned : .completed)
+            completion(result == .abandoned ? .abandoned : .completed(nil))
         }
     }
 

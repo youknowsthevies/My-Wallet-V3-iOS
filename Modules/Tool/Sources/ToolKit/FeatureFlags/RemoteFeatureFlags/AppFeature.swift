@@ -64,6 +64,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable New Card Acquirers (Stripe & Checkout)
     case newCardAcquirers
 
+    /// Enable Apple Pay
+    case applePay
+
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
@@ -142,6 +145,8 @@ extension AppFeature {
             return "ios_ff_new_onboarding_tour"
         case .hotWalletCustodial:
             return "ios_ff_hot_wallet_custodial"
+        case .applePay:
+            return "ios_ff_apple_pay"
         case .nativeWalletCreation:
             return "ios_ff_native_wallet_creation"
         }
@@ -195,6 +200,8 @@ extension AppFeature {
         case .newOnboardingTour:
             return true
         case .hotWalletCustodial:
+            return false
+        case .applePay:
             return false
         case .nativeWalletCreation:
             return false

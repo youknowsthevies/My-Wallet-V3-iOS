@@ -61,7 +61,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
                     sourceCurrency: fiatCurrency,
                     destinationCurrency: cryptoCurrency,
                     amount: MoneyValue(fiatValue: fiat),
-                    paymentMethod: paymentMethod.rawType,
+                    paymentMethod: paymentMethod.requestType,
                     paymentMethodId: paymentMethod.isBankTransfer ? checkoutData.order.paymentMethodId : nil
                 )
             )

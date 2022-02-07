@@ -34,6 +34,13 @@ extension DependencyContainer {
 
         single { CardListRepository() as CardListRepositoryAPI }
 
+        factory {
+            ApplePayRepository(
+                client: DIKit.resolve(),
+                eligibleService: DIKit.resolve()
+            ) as ApplePayRepositoryAPI
+        }
+
         factory { CardAcquirersRepository() as CardAcquirersRepositoryAPI }
     }
 }

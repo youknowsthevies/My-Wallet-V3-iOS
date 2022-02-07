@@ -114,7 +114,8 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
             case .bankTransfer:
                 listener?.routeToLinkedBanks()
             case .card,
-                 .funds:
+                 .funds,
+                 .applePay:
                 unimplemented()
             }
         }
@@ -129,6 +130,8 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
             case .funds:
                 unimplemented()
             case .card:
+                unimplemented()
+            case .applePay:
                 unimplemented()
             case .bankTransfer:
                 viewModel = ExplainedActionViewModel(
@@ -170,7 +173,8 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
             cellType = .suggestedPaymentMethod(viewModel)
         case .card,
              .account,
-             .linkedBank:
+             .linkedBank,
+             .applePay:
             cellType = nil
         }
         return cellType
