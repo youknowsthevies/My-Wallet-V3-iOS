@@ -1,11 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
@@ -171,6 +167,7 @@ public struct SeedPhraseView: View {
                 trailing: Layout.trailingPadding
             )
         )
+        .alert(self.store.scope(state: \.failureAlert), dismiss: .alert(.dismiss))
     }
 
     private struct CustomNavigationTitle: ViewModifier {
@@ -282,7 +279,10 @@ struct SeedPhraseView_Previews: PreviewProvider {
                     mainQueue: .main,
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop,
+                    accountRecoveryService: NoOpAccountRecoveryService()
                 )
             )
         )

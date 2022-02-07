@@ -1,18 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-typealias ComponentLibrarySecondaryButton = SharedComponentLibrary.SecondaryButton
-#else
-import ComponentLibrary
-typealias ComponentLibrarySecondaryButton = ComponentLibrary.SecondaryButton
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureOpenBankingDomain
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+typealias BlockchainComponentLibrarySecondaryButton = BlockchainComponentLibrary.SecondaryButton
 
 public struct InstitutionListState: Equatable, NavigationState {
 
@@ -180,7 +176,7 @@ public struct InstitutionList: View {
                 .multilineTextAlignment(.center)
                 .padding([.leading, .trailing], 12.5.vmin)
             Spacer()
-            ComponentLibrarySecondaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
+            BlockchainComponentLibrarySecondaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
                 view.send(.showTransferDetails)
             }
             .padding(10.5.vmin)

@@ -1,10 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit

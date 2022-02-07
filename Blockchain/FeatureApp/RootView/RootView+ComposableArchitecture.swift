@@ -1,15 +1,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Combine
-import DIKit
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
+import DIKit
 import Localization
 import SwiftUI
 import ToolKit

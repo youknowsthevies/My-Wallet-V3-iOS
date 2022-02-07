@@ -25,7 +25,7 @@ let package = Package(
             from: "0.7.0"
         ),
         .package(path: "../Tool"),
-        .package(path: "../ComponentLibrary")
+        .package(path: "../BlockchainComponentLibrary")
     ],
     targets: [
         .target(
@@ -33,7 +33,7 @@ let package = Package(
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ],
             path: "UIComponentsKit",
             resources: [

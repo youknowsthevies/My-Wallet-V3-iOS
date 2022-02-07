@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 @testable import FeatureAuthenticationDomain
+@testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
 import HDWalletKit
 import ToolKit
@@ -36,7 +37,10 @@ final class SeedPhraseReducerTests: XCTestCase {
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock(),
+                walletFetcherService: .mock,
+                accountRecoveryService: MockAccountRecoveryService()
             )
         )
     }

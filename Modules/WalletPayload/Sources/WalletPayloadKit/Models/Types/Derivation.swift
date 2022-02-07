@@ -17,13 +17,13 @@ public enum DerivationType: String, Equatable, CaseIterable {
     }
 }
 
-public class Derivation: Equatable {
-    var type: DerivationType
-    var purpose: Int
-    var xpriv: String
-    var xpub: String
-    var addressLabels: [AddressLabel]
-    var cache: AddressCache
+public struct Derivation: Equatable {
+    public let type: DerivationType
+    public let purpose: Int
+    public let xpriv: String
+    public let xpub: String
+    public let addressLabels: [AddressLabel]
+    public let cache: AddressCache
 
     public init(
         type: DerivationType,
@@ -39,17 +39,6 @@ public class Derivation: Equatable {
         self.xpub = xpub
         self.addressLabels = addressLabels
         self.cache = cache
-    }
-}
-
-extension Derivation {
-    public static func == (lhs: Derivation, rhs: Derivation) -> Bool {
-        lhs.type == rhs.type
-            && lhs.purpose == rhs.purpose
-            && lhs.xpriv == rhs.xpriv
-            && lhs.xpub == rhs.xpub
-            && lhs.addressLabels == rhs.addressLabels
-            && lhs.cache == rhs.cache
     }
 }
 
@@ -80,12 +69,12 @@ func createDerivation(
 ///   - index: An `Int` for the private key derivation
 /// - Returns: `Result<[Derivation], WalletCreateError>`
 func generateDerivations(
-    seedHex: String,
+    masterSeedHex: String,
     index: Int
 ) -> [Derivation] {
     DerivationType.allCases
         .map { type in
-            let key = deriveAccountKey(at: index, seedHex: seedHex, type: type)
+            let key = deriveAccountKey(at: index, seedHex: masterSeedHex, type: type)
             return createDerivation(privateKey: key, type: type)
         }
 }

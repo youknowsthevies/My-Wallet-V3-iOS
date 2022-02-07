@@ -5,12 +5,12 @@ import MetadataKit
 import ToolKit
 import WalletCore
 
-public final class HDWallet: Equatable {
-    var seedHex: String
-    var passphrase: String
-    var mnemonicVerified: Bool
-    var defaultAccountIndex: Int
-    var accounts: [Account]
+public struct HDWallet: Equatable {
+    public let seedHex: String
+    public let passphrase: String
+    public let mnemonicVerified: Bool
+    public let defaultAccountIndex: Int
+    public let accounts: [Account]
 
     public init(
         seedHex: String,
@@ -24,16 +24,6 @@ public final class HDWallet: Equatable {
         self.mnemonicVerified = mnemonicVerified
         self.defaultAccountIndex = defaultAccountIndex
         self.accounts = accounts
-    }
-}
-
-extension HDWallet {
-    public static func == (lhs: HDWallet, rhs: HDWallet) -> Bool {
-        lhs.seedHex == rhs.seedHex
-            && lhs.passphrase == rhs.passphrase
-            && lhs.mnemonicVerified == rhs.mnemonicVerified
-            && lhs.defaultAccountIndex == rhs.defaultAccountIndex
-            && lhs.accounts == rhs.accounts
     }
 }
 
@@ -53,9 +43,11 @@ func generateHDWallet(
     accountName: String,
     totalAccounts: Int = 1
 ) -> Result<HDWallet, WalletCreateError> {
-    getSeedHex(from: mnemonic)
-        .flatMap { seedHex -> Result<(accounts: [Account], seedHex: String), WalletCreateError> in
-            let accounts = provideAccounts(count: totalAccounts, seedHex: seedHex, label: accountName)
+    getHDWallet(from: mnemonic)
+        .flatMap { hdWallet -> Result<(accounts: [Account], seedHex: String), WalletCreateError> in
+            let seedHex = hdWallet.entropy.toHexString()
+            let masterSeedHex = hdWallet.seed.toHexString()
+            let accounts = provideAccounts(count: totalAccounts, masterSeedHex: masterSeedHex, label: accountName)
             return .success((accounts, seedHex))
         }
         .map { accounts, seedHex in
@@ -77,11 +69,11 @@ func generateHDWallet(
 /// - Returns: An array of `Account`
 private func provideAccounts(
     count: Int,
-    seedHex: String,
+    masterSeedHex: String,
     label: String
 ) -> [Account] {
     (0..<count).map { index in
-        generateAccount(seedHex: seedHex, index: index, label: label)
+        generateAccount(masterSeedHex: masterSeedHex, index: index, label: label)
     }
 }
 
@@ -92,11 +84,11 @@ private func provideAccounts(
 ///   - label: A `String` to used as a prefix for each account
 /// - Returns: A `Result<Account, WalletCreateError>`
 private func generateAccount(
-    seedHex: String,
+    masterSeedHex: String,
     index: Int,
     label: String
 ) -> Account {
-    let derivations = generateDerivations(seedHex: seedHex, index: index)
+    let derivations = generateDerivations(masterSeedHex: masterSeedHex, index: index)
     let label = index > 0 ? "\(label)\(index + 1)" : label
     return createAccount(label: label, derivations: derivations)
 }

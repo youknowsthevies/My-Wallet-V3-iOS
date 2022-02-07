@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Analytics"),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
@@ -34,7 +34,7 @@ let package = Package(
             name: "FeatureOnboardingUI",
             dependencies: [
                 .product(name: "AnalyticsKit", package: "Analytics"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "DIKit", package: "DIKit"),

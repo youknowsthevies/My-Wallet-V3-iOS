@@ -4,8 +4,10 @@
 import PlatformKit
 import XCTest
 
-class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
-    var sut: BitcoinExternalAssetAddressFactory!
+// swiftlint:disable line_length
+// swiftlint:disable:next type_name
+final class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
+    var sut: BitcoinChainExternalAssetAddressFactory<BitcoinToken>!
 
     override func setUp() {
         super.setUp()
@@ -52,7 +54,27 @@ class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
                 label: "",
                 onTxCompleted: { _ in .empty() }
             )
-            XCTAssertThrowsError(try result.get(), "\(testcase)")
+            XCTAssertThrowsError(try result.get(), testcase)
+        }
+    }
+
+    static var bip21TestCases: [String] = [
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq?label=Luke-Jr",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq?amount=20.3&label=Luke-Jr",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq?req-somethingyoudontunderstand=50&req-somethingelseyoudontget=999",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq?somethingyoudontunderstand=50&somethingelseyoudontget=999"
+    ]
+
+    func testBIP21() {
+        for testcase in Self.bip21TestCases {
+            let result = sut.makeExternalAssetAddress(
+                address: testcase,
+                label: "",
+                onTxCompleted: { _ in .empty() }
+            )
+            XCTAssertNoThrow(try result.get(), testcase)
         }
     }
 

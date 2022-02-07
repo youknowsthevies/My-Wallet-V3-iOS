@@ -20,7 +20,6 @@ protocol LoggedInViewController: UIViewController, LoggedInBridge {
     func clear()
 }
 
-extension LoggedInHostingController: LoggedInViewController {}
 extension RootViewController: LoggedInViewController {}
 
 /// Acts as the main controller for onboarding and logged in states
@@ -31,7 +30,7 @@ final class AppHostingController: UIViewController {
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
 
     private var onboardingController: OnboardingHostingController?
-    private var loggedInController: LoggedInViewController?
+    private var loggedInController: RootViewController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
     private var featureFlagsService: FeatureFlagsServiceAPI
 
@@ -100,7 +99,7 @@ final class AppHostingController: UIViewController {
             .ifLet(then: { [weak self] store in
                 guard let self = self else { return }
 
-                func load(_ loggedInController: LoggedInViewController) {
+                func load(_ loggedInController: RootViewController) {
                     // this is important, register the controller as a bridge
                     // for many places throughout the app
                     self.dynamicBridge.register(bridge: loggedInController)

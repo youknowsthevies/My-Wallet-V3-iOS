@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Algorithms
-import ComponentLibrary
+import BlockchainComponentLibrary
 import DIKit
 import Examples
 import SwiftUI

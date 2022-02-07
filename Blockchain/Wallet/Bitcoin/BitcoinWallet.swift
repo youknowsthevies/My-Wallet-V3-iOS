@@ -120,21 +120,16 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
         with destination: BitcoinChainReceiveAddress<Token>,
         amount: MoneyValue,
         fees: MoneyValue,
-        source: CryptoAccount
+        source: BitcoinChainCryptoAccount
     ) -> Single<BitcoinChainTransactionProposal<Token>> where Token: BitcoinChainToken {
-        source
-            .receiveAddress
-            .map { $0 as! BitcoinChainReceiveAddress<Token> }
-            .map(\.index)
-            .map { index -> BitcoinChainTransactionProposal<Token> in
-                .init(
-                    destination: destination,
-                    amount: amount,
-                    fees: fees,
-                    walletIndex: index,
-                    source: source
-                )
-            }
+        let proposal = BitcoinChainTransactionProposal<Token>(
+            destination: destination,
+            amount: amount,
+            fees: fees,
+            walletIndex: Int32(source.hdAccountIndex),
+            source: source
+        )
+        return .just(proposal)
     }
 
     func buildCandidate<Token>(

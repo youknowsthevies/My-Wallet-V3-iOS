@@ -98,6 +98,82 @@ extension LocalizationConstants.Onboarding {
 }
 
 extension LocalizationConstants.Onboarding {
+
+    public enum UITour {
+
+        public static let tourNextStepCTA = NSLocalizedString(
+            "Next",
+            comment: "Onboarding UI Tour - Next Step CTA"
+        )
+
+        public static let tourFinishTourCTA = NSLocalizedString(
+            "Buy Now",
+            comment: "Onboarding UI Tour - Finish Tour CTA"
+        )
+
+        public static let stepHomeTitle = NSLocalizedString(
+            "See Your Balances",
+            comment: "Onboarding UI Tour - 'Home' Tab Tour - Title"
+        )
+
+        public static let stepHomeMessage = NSLocalizedString(
+            "Quickly check how your portfolio is performing. How much are you up today?",
+            comment: "Onboarding UI Tour - 'Home' Tab Tour - Message"
+        )
+
+        public static let stepPricesTitle = NSLocalizedString(
+            "Discover New Coins",
+            comment: "Onboarding UI Tour - 'Prices' Tab Tour - Title"
+        )
+
+        public static let stepPricesMessage = NSLocalizedString(
+            "Track the live price of over 1,200 coins and find new ones to add to your wallet.",
+            comment: "Onboarding UI Tour - 'Prices' Tab Tour - Message"
+        )
+
+        public static let stepBuySellTitle = NSLocalizedString(
+            "Buy & Sell",
+            comment: "Onboarding UI Tour - 'Buy & Sell' Tab Tour - Title"
+        )
+
+        public static let stepBuySellMessage = NSLocalizedString(
+            "Use your card or link your bank to buy crypto in seconds. Quick, easy & secure.",
+            comment: "Onboarding UI Tour - 'Buy & Sell' Tab Tour - Message"
+        )
+
+        public static let stepActivityTitle = NSLocalizedString(
+            "See All Transactions",
+            comment: "Onboarding UI Tour - 'Activity' Tab Tour - Title"
+        )
+
+        public static let stepActivityMessage = NSLocalizedString(
+            "Know exactly when you bought, sold or swapped and at what price.",
+            comment: "Onboarding UI Tour - 'Activity' Tab Tour - Message"
+        )
+
+        public static let stepFabTitle = NSLocalizedString(
+            "Instantly Trade",
+            comment: "Onboarding UI Tour - 'Trade' (FAB Menu) Tab Tour - Title"
+        )
+
+        public static let stepFabMessage = NSLocalizedString(
+            "Whether you want to swap with speed or send to a friend - we’ve got you covered!",
+            comment: "Onboarding UI Tour - 'Trade' (FAB Menu) Tab Tour - Message"
+        )
+
+        public static let stepChecklistTitle = NSLocalizedString(
+            "Get Set Up to Buy",
+            comment: "Onboarding UI Tour - 'New User Checklist' Tour - Title"
+        )
+
+        public static let stepChecklistMessage = NSLocalizedString(
+            "Add a card or link a bank to start buying crypto in seconds.",
+            comment: "Onboarding UI Tour - 'New User Checklist' Tour - Message"
+        )
+    }
+}
+
+extension LocalizationConstants.Onboarding {
     public static let createNewWallet = NSLocalizedString("Create New Wallet", comment: "")
     public static let termsOfServiceAndPrivacyPolicyNoticePrefix = NSLocalizedString("By creating a wallet you agree to Blockchain’s", comment: "Text displayed to the user notifying them that they implicitly agree to Blockchain’s terms of service and privacy policy when they create a wallet")
     public static let automaticPairing = NSLocalizedString("Automatic Pairing", comment: "")

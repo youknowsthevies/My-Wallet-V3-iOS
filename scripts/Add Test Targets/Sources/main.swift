@@ -21,6 +21,7 @@ private func xcrun(command: String...) -> Data {
     process.standardError = pipe
     process.arguments = command
     process.launchPath = "/usr/bin/xcrun"
+    process.environment = ["OS_ACTIVITY_MODE": "disable"]
     process.launch()
 
     let data = pipe.fileHandleForReading.readDataToEndOfFile()

@@ -1,13 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-typealias IconButtonFromComponentLibrary = SharedComponentLibrary.IconButton
-#else
-import ComponentLibrary
-typealias IconButtonFromComponentLibrary = ComponentLibrary.IconButton
-#endif
+import BlockchainComponentLibrary
 import SwiftUI
+
+typealias IconButtonFromBlockchainComponentLibrary = BlockchainComponentLibrary.IconButton
 
 public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
@@ -167,7 +163,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
     }
 
     private var closeButton: some View {
-        IconButtonFromComponentLibrary(
+        IconButtonFromBlockchainComponentLibrary(
             icon: .closev2.circle(),
             action: closeAction
         )

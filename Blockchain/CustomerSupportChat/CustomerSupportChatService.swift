@@ -10,6 +10,7 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
 
     private let emailSettingsService: EmailSettingsServiceAPI
     private let nabuUserService: NabuUserServiceAPI
+    private var cancellables = Set<AnyCancellable>()
     private let client: CustomerSupportChatClientAPI
 
     init(
@@ -22,17 +23,18 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
         self.client = client
     }
 
-    func initializeWithAcccountKey(_ key: String) {
-        client.setupWithAccountKey(key)
+    func initializeWithAcccountKey(
+        _ key: String,
+        appId: String
+    ) {
+        client.setupWithAccountKey(key, applicationId: appId)
     }
 
-    func buildMessagingScreenForDepartment(
-        _ department: CustomerSupportDepartment
-    ) -> AnyPublisher<UIViewController, CustomerSupportChatServiceError> {
-
-        let fullName = nabuUserService.user
-            .map(\.personalDetails)
-            .map(\.fullName)
+    func presentMessagingScreen() {
+        let userId = nabuUserService
+            .user
+            .map(\.identifier)
+            .map(\.sha256)
             .mapError(CustomerSupportChatServiceError.unknown)
 
         let email = emailSettingsService
@@ -42,24 +44,17 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
             .replaceError(with: "")
             .mapError(to: CustomerSupportChatServiceError.self)
 
-        return fullName.zip(email)
-            .map { fullName, email in
-                VisitorInformation(email: email, name: fullName)
+        userId.zip(email)
+            .map { userId, email in
+                VisitorInformation(email: email, identifier: userId)
             }
             .receive(on: DispatchQueue.main)
-            .flatMap { [client] visitorInformation -> AnyPublisher<UIViewController, CustomerSupportChatServiceError> in
-                let result = client
-                    .buildMessagingScreenWithVisitorInfo(
-                        visitorInformation,
-                        department: department
+            .sink(receiveValue: { [client] visitorInfo in
+                client
+                    .presentMessagingScreenWithVisitorInfo(
+                        visitorInfo
                     )
-                switch result {
-                case .success(let controller):
-                    return .just(controller)
-                case .failure(let error):
-                    return .failure(CustomerSupportChatServiceError.unknown(error))
-                }
-            }
-            .eraseToAnyPublisher()
+            })
+            .store(in: &cancellables)
     }
 }

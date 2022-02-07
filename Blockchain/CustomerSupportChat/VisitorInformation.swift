@@ -4,5 +4,5 @@ import Foundation
 
 struct VisitorInformation {
     let email: String
-    let name: String
+    let identifier: String
 }

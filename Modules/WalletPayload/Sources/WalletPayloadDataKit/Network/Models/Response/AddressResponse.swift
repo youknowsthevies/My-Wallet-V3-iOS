@@ -24,8 +24,8 @@ struct AddressResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.Address {
-    convenience init(from model: AddressResponse) {
-        self.init(
+    static func from(model: AddressResponse) -> Address {
+        Address(
             addr: model.addr,
             priv: model.priv,
             tag: model.tag,
@@ -33,6 +33,18 @@ extension WalletPayloadKit.Address {
             createdTime: model.createdTime,
             createdDeviceName: model.createdDeviceName,
             createdDeviceVersion: model.createdDeviceVersion
+        )
+    }
+
+    var toAddressResponse: AddressResponse {
+        AddressResponse(
+            addr: addr,
+            priv: priv,
+            tag: tag,
+            label: label,
+            createdTime: createdTime,
+            createdDeviceName: createdDeviceName,
+            createdDeviceVersion: createdDeviceVersion
         )
     }
 }

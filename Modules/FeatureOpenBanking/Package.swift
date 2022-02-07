@@ -42,7 +42,7 @@ let package = Package(
         ),
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../Network"),
         .package(path: "../Session"),
         .package(path: "../Test"),
@@ -77,7 +77,7 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
-                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]
         ),

@@ -34,10 +34,10 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     // MARK: - Views
 
     @IBOutlet private var resubmitButton: PrimaryButtonContainer!
-    @IBOutlet var summary: UILabel!
-    @IBOutlet var reasonsTitle: UILabel!
-    @IBOutlet var reasonsDescription: UILabel!
-    @IBOutlet var imageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private var summary: UILabel!
+    @IBOutlet private var reasonsTitle: UILabel!
+    @IBOutlet private var reasonsDescription: UILabel!
+    @IBOutlet private var imageTopConstraint: NSLayoutConstraint!
 
     // MARK: - Public Properties
 
@@ -96,7 +96,10 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     /// - Parameters:
     ///   - document: enum of identity types mapped to an identity provider
     ///   - provider: the current provider of verification services
-    fileprivate func startVerificationFlow(_ document: KYCDocumentType? = nil, provider: VerificationProviders = .veriff) {
+    fileprivate func startVerificationFlow(
+        _ document: KYCDocumentType? = nil,
+        provider: VerificationProviders = .veriff
+    ) {
         switch provider {
         case .veriff:
             veriffCredentialsRequest()
@@ -191,10 +194,10 @@ extension KYCResubmitIdentityController: VeriffController {
 
     func veriffCredentialsRequest() {
         delegate?.createCredentials(onSuccess: { [weak self] credentials in
-            guard let this = self else { return }
-            this.launchVeriffController(credentials: credentials)
-        }, onError: { error in
+            self?.launchVeriffController(credentials: credentials)
+        }, onError: { [weak self] error in
             Logger.shared.error("Failed to get Veriff credentials. Error: \(String(describing: error))")
+            self?.onVeriffError(message: String(describing: error))
         })
     }
 }
