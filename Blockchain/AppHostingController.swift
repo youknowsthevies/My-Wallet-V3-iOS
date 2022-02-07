@@ -15,6 +15,13 @@ import UIComponentsKit
 import UIKit
 import WalletConnectSwift
 
+protocol LoggedInViewController: UIViewController, LoggedInBridge {
+    init(store: Store<LoggedIn.State, LoggedIn.Action>)
+    func clear()
+}
+
+extension RootViewController: LoggedInViewController {}
+
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
@@ -91,22 +98,26 @@ final class AppHostingController: UIViewController {
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
             .ifLet(then: { [weak self] store in
                 guard let self = self else { return }
-                let loggedInController = RootViewController(store: store)
-                // this is important, register the controller as a bridge
-                // for many places throughout the app
-                self.dynamicBridge.register(bridge: loggedInController)
-                loggedInController.view.frame = self.view.bounds
-                if let onboardingController = self.onboardingController {
-                    self.transition(
-                        from: onboardingController,
-                        to: loggedInController,
-                        animate: true
-                    )
-                } else {
-                    self.add(child: loggedInController)
+
+                func load(_ loggedInController: RootViewController) {
+                    // this is important, register the controller as a bridge
+                    // for many places throughout the app
+                    self.dynamicBridge.register(bridge: loggedInController)
+                    loggedInController.view.frame = self.view.bounds
+                    if let onboardingController = self.onboardingController {
+                        self.transition(
+                            from: onboardingController,
+                            to: loggedInController,
+                            animate: true
+                        )
+                    } else {
+                        self.add(child: loggedInController)
+                    }
+                    self.loggedInController = loggedInController
+                    self.onboardingController = nil
                 }
-                self.loggedInController = loggedInController
-                self.onboardingController = nil
+
+                load(RootViewController(store: store))
             })
             .store(in: &cancellables)
 
