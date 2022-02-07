@@ -34,7 +34,6 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
         let userId = nabuUserService
             .user
             .map(\.identifier)
-            .map(\.sha256)
             .mapError(CustomerSupportChatServiceError.unknown)
 
         let email = emailSettingsService
