@@ -221,7 +221,9 @@ public struct PaymentMethod: Equatable, Comparable {
             localizedString = localizationSpace.Types.cardTitle
 
         case .funds:
-            localizedString = localizationSpace.DepositCash.title
+            localizedString = fiatCurrency == .USD
+                ? localizationSpace.DepositCash.usTitle
+                : localizationSpace.DepositCash.europeTitle
         }
         return localizedString
     }

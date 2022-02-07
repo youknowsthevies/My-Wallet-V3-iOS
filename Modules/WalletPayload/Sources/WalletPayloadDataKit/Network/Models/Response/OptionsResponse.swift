@@ -18,12 +18,21 @@ struct OptionsResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.Options {
-    convenience init(from model: OptionsResponse) {
-        self.init(
+    static func from(model: OptionsResponse) -> Options {
+        Options(
             pbkdf2Iterations: model.pbkdf2Iterations,
             feePerKB: model.feePerKB,
             html5Notifications: model.html5Notifications,
             logoutTime: model.logoutTime
+        )
+    }
+
+    var toOptionsReponse: OptionsResponse {
+        OptionsResponse(
+            pbkdf2Iterations: pbkdf2Iterations,
+            feePerKB: feePerKB,
+            html5Notifications: html5Notifications,
+            logoutTime: logoutTime
         )
     }
 }

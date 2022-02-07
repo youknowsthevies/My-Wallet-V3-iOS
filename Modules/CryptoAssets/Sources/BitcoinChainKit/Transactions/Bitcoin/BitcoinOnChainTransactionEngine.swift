@@ -52,6 +52,10 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
     /// with duplicated txs in the engine.
     private var didExecuteFlag: Bool = false
 
+    private var bitcoinChainCryptoAccount: BitcoinChainCryptoAccount {
+        sourceAccount as! BitcoinChainCryptoAccount
+    }
+
     private var receiveAddress: Single<BitcoinChainReceiveAddress<Token>> {
         switch transactionTarget {
         case let target as BitPayInvoiceTarget:
@@ -116,6 +120,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
+        precondition(sourceCryptoAccount is BitcoinChainCryptoAccount)
         precondition(sourceCryptoAccount.asset == Token.coin.cryptoCurrency)
     }
 
@@ -427,7 +432,7 @@ extension BitcoinOnChainTransactionEngine {
                     with: receiveAddress,
                     amount: amount,
                     fees: fees,
-                    source: self.sourceCryptoAccount
+                    source: self.bitcoinChainCryptoAccount
                 )
             }
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
@@ -487,7 +492,7 @@ extension BitcoinOnChainTransactionEngine {
                     with: receiveAddress,
                     amount: pendingTransaction.amount,
                     fees: fees,
-                    source: self.sourceCryptoAccount
+                    source: self.bitcoinChainCryptoAccount
                 )
             }
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in

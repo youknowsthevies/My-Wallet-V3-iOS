@@ -16,17 +16,15 @@ extension DependencyContainer {
 
         single(tag: BitcoinChainCoin.bitcoin) { BalanceService(coin: .bitcoin) as BalanceServiceAPI }
 
-        factory(tag: BitcoinChainCoin.bitcoin) { AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>.bitcoin() }
+        factory(tag: BitcoinChainCoin.bitcoin) {
+            AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>.bitcoin()
+        }
 
         factory(tag: BitcoinChainCoin.bitcoin) {
-            BitcoinExternalAssetAddressFactory() as ExternalAssetAddressFactory
+            BitcoinChainExternalAssetAddressFactory<BitcoinToken>() as ExternalAssetAddressFactory
         }
 
         factory { CryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>() }
-
-        factory { BitcoinTransactionSendingService() as BitcoinTransactionSendingServiceAPI }
-
-        factory { BitcoinTransactionBuildingService() as BitcoinTransactionBuildingServiceAPI }
 
         // MARK: - Bitcoin Cash
 
@@ -34,13 +32,21 @@ extension DependencyContainer {
 
         single(tag: BitcoinChainCoin.bitcoinCash) { BalanceService(coin: .bitcoinCash) as BalanceServiceAPI }
 
-        factory(tag: BitcoinChainCoin.bitcoinCash) { AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>.bitcoinCash() }
+        factory(tag: BitcoinChainCoin.bitcoinCash) {
+            AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>.bitcoinCash()
+        }
 
         factory(tag: BitcoinChainCoin.bitcoinCash) {
-            BitcoinCashExternalAssetAddressFactory() as ExternalAssetAddressFactory
+            BitcoinChainExternalAssetAddressFactory<BitcoinCashToken>() as ExternalAssetAddressFactory
         }
 
         factory { CryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>() }
+
+        // MARK: - Asset Agnostic
+
+        factory { BitcoinTransactionSendingService() as BitcoinTransactionSendingServiceAPI }
+
+        factory { BitcoinTransactionBuildingService() as BitcoinTransactionBuildingServiceAPI }
     }
 }
 

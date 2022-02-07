@@ -12,13 +12,13 @@ class DerivationTests: XCTestCase {
 
     // swiftlint:disable line_length
     func test_can_create_correct_derivation_for_legacy_type() {
-        let seedHex = getSeedHex(
+        let masterSeedHex = getHDWallet(
             from: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-        ).successData!
+        ).successData!.seed.toHexString
 
         let key = deriveAccountKey(
             at: 0,
-            seedHex: seedHex,
+            seedHex: masterSeedHex,
             type: .legacy
         )
 
@@ -34,13 +34,13 @@ class DerivationTests: XCTestCase {
     }
 
     func test_can_create_correct_derivation_for_segwit_type() {
-        let seedHex = getSeedHex(
+        let masterSeedHex = getHDWallet(
             from: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-        ).successData!
+        ).successData!.seed.toHexString
 
         let key = deriveAccountKey(
             at: 0,
-            seedHex: seedHex,
+            seedHex: masterSeedHex,
             type: .segwit
         )
 

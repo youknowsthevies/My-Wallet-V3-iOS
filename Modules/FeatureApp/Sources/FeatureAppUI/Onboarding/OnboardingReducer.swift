@@ -14,7 +14,7 @@ public enum Onboarding {
     public enum Alert: Equatable {
         case proceedToLoggedIn(ProceedToLoggedInError)
         case walletAuthentication(AuthenticationError)
-        case walletCreation(WalletCreationError)
+        case walletCreation(WalletCreationServiceError)
         case walletRecovery(WalletRecoveryError)
     }
 
@@ -39,7 +39,6 @@ public enum Onboarding {
         public var deeplinkContent: URIContent?
         public var walletCreationContext: WalletCreationContext?
         public var walletRecoveryContext: WalletRecoveryContext?
-        public var nabuInfoForResetAccount: WalletInfo.NabuInfo?
 
         public init(
             pinState: PinCore.State? = .init(),
@@ -169,7 +168,6 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 state.walletRecoveryContext = .importRecovery
                 return .none
             case .resetAccountRecovery(let email, let newPassword, let nabuInfo):
-                state.nabuInfoForResetAccount = nabuInfo
                 return .none
             }
         case .welcomeScreen(.informForWalletInitialization):

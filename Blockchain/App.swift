@@ -81,7 +81,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
         window.setRootViewController(hostingController)
         let context = AppDelegateContext(
-            zendeskKey: CustomerSupportChatConfiguration.apiKey
+            intercomApiKey: CustomerSupportChatConfiguration.apiKey,
+            intercomAppId: CustomerSupportChatConfiguration.appId
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true

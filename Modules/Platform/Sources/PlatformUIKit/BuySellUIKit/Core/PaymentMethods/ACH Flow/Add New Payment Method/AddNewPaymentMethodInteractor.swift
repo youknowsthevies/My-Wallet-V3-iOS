@@ -138,12 +138,15 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         var cellType: AddNewPaymentMethodCellViewModelItem?
         switch paymentMethodType {
         case .suggested(let method):
+            let title = paymentMethodType.currency == .fiat(.USD)
+                ? LocalizedString.DepositCash.usTitle
+                : LocalizedString.DepositCash.europeTitle
             let viewModel: ExplainedActionViewModel
             switch method.type {
             case .funds:
                 viewModel = ExplainedActionViewModel(
                     thumbImage: "icon-deposit-cash",
-                    title: LocalizedString.DepositCash.title,
+                    title: title,
                     descriptions: [
                         .init(title: LocalizedString.DepositCash.description, titleColor: .descriptionText, titleFontSize: 12)
                     ],

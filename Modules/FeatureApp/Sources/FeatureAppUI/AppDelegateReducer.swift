@@ -19,12 +19,15 @@ typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 struct BackgroundTaskId: Hashable {}
 
 public struct AppDelegateContext: Equatable {
-    let zendeskKey: String
+    let intercomApiKey: String
+    let intercomAppId: String
 
     public init(
-        zendeskKey: String
+        intercomApiKey: String,
+        intercomAppId: String
     ) {
-        self.zendeskKey = zendeskKey
+        self.intercomApiKey = intercomApiKey
+        self.intercomAppId = intercomAppId
     }
 }
 
@@ -45,7 +48,6 @@ public enum AppDelegateAction: Equatable {
         completionHandler: (UIBackgroundFetchResult) -> Void
     )
     case applyCertificatePinning
-    case setGlobalNavigationAppearance(Screen.Style.Bar)
 }
 
 extension AppDelegateAction {
@@ -71,8 +73,8 @@ struct AppDelegateEnvironment {
     var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving
     var certificatePinner: CertificatePinnerAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var customerSupportChatService: CustomerSupportChatServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
+    var customerSupportChatService: CustomerSupportChatServiceAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
@@ -123,14 +125,10 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
-            environment.featureFlagService.isEnabled(.remote(.redesign))
-                .filter(!)
-                .map(.setGlobalNavigationAppearance(.lightContent()))
-                .eraseToEffect(),
-
             initializeCustomerChatSupport(
                 using: environment.customerSupportChatService,
-                apiKey: context.zendeskKey
+                apiKey: context.intercomApiKey,
+                appId: context.intercomAppId
             ),
 
             environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
@@ -200,27 +198,10 @@ let appDelegateReducer = Reducer<
         return .fireAndForget {
             environment.certificatePinner.pinCertificateIfNeeded()
         }
-    case .setGlobalNavigationAppearance(let barStyle):
-        return .fireAndForget {
-            let navigationBarAppearance = UINavigationBar.appearance()
-            navigationBarAppearance.shadowImage = UIImage()
-            navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
-            navigationBarAppearance.barTintColor = barStyle.backgroundColor
-            navigationBarAppearance.tintColor = barStyle.tintColor
-        }
     }
 }
 
 // MARK: - Effect Methods
-
-private func initializeCustomerChatSupport(
-    using service: CustomerSupportChatServiceAPI,
-    apiKey: String
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        service.initializeWithAcccountKey(apiKey)
-    }
-}
 
 private func applyBlurFilter(
     handler: BlurVisualEffectHandlerAPI,
@@ -231,6 +212,16 @@ private func applyBlurFilter(
     }
     return Effect.fireAndForget {
         handler.applyEffect(on: view)
+    }
+}
+
+private func initializeCustomerChatSupport(
+    using service: CustomerSupportChatServiceAPI,
+    apiKey: String,
+    appId: String
+) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        service.initializeWithAcccountKey(apiKey, appId: appId)
     }
 }
 

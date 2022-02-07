@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import NabuNetworkError
 import NetworkError
 
 final class NabuRepository: NabuRepositoryAPI {
@@ -11,15 +12,18 @@ final class NabuRepository: NabuRepositoryAPI {
 
     private let userCreationClient: NabuUserCreationClientAPI
     private let sessionTokenClient: NabuSessionTokenClientAPI
+    private let initialAddressClient: NabuUserResidentialInfoClientAPI
 
     // MARK: - Setup
 
     init(
         userCreationClient: NabuUserCreationClientAPI = resolve(),
-        sessionTokenClient: NabuSessionTokenClientAPI = resolve()
+        sessionTokenClient: NabuSessionTokenClientAPI = resolve(),
+        initialAddressClient: NabuUserResidentialInfoClientAPI = resolve()
     ) {
         self.userCreationClient = userCreationClient
         self.sessionTokenClient = sessionTokenClient
+        self.initialAddressClient = initialAddressClient
     }
 
     // MARK: - API
@@ -48,5 +52,16 @@ final class NabuRepository: NabuRepositoryAPI {
             )
             .map(NabuSessionToken.init)
             .eraseToAnyPublisher()
+    }
+
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NetworkError> {
+        initialAddressClient
+            .setInitialResidentialInfo(
+                country: country,
+                state: state
+            )
     }
 }

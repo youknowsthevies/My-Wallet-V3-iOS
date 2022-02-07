@@ -42,6 +42,8 @@ extension DependencyContainer {
 
         factory { NabuResetUserClient() as NabuResetUserClientAPI }
 
+        factory { NabuUserResidentialInfoClient() as NabuUserResidentialInfoClientAPI }
+
         // MARK: - Repositories
 
         factory { JWTRepository() as JWTRepositoryAPI }

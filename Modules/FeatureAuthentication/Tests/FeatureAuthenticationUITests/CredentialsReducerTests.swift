@@ -44,7 +44,10 @@ final class CredentialsReducerTests: XCTestCase {
                 externalAppOpener: MockExternalAppOpener(),
                 featureFlagsService: MockFeatureFlagsService(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock(),
+                walletFetcherService: .mock,
+                accountRecoveryService: MockAccountRecoveryService()
             )
         )
     }
@@ -68,6 +71,7 @@ final class CredentialsReducerTests: XCTestCase {
         XCTAssertFalse(state.isWalletIdentifierIncorrect)
         XCTAssertFalse(state.isTwoFactorOTPVerified)
         XCTAssertFalse(state.isAccountLocked)
+        XCTAssertFalse(state.isTwoFAPrepared)
     }
 
     func test_did_appear_should_setup_wallet_info() {
@@ -77,6 +81,67 @@ final class CredentialsReducerTests: XCTestCase {
             state.walletPairingState.walletGuid = mockWalletInfo.guid
             state.walletPairingState.emailCode = mockWalletInfo.emailCode
         }
+    }
+
+    func test_did_appear_should_prepare_twoFA_if_needed() {
+        // login service is going to return sms required error
+        (testStore.environment.loginService as! MockLoginService).twoFAType = .sms
+
+        let mockWalletInfo = MockDeviceVerificationService.mockWalletInfoWithTwoFA
+        testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
+            state.walletPairingState.emailAddress = mockWalletInfo.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.guid
+            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.isTwoFAPrepared = true
+        }
+
+        testStore.receive(.walletPairing(.authenticate("", autoTrigger: true))) { state in
+            state.isLoading = true
+        }
+        testStore.receive(.showAccountLockedError(false)) { state in
+            state.isAccountLocked = false
+        }
+        testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
+            state.passwordState.isPasswordIncorrect = false
+        }
+        mockMainQueue.advance()
+
+        // authentication with sms requied
+        testStore.receive(.walletPairing(.authenticateDidFail(.twoFactorOTPRequired(.sms)))) { state in
+            state.twoFAState = .init(
+                twoFAType: .sms
+            )
+        }
+        testStore.receive(.walletPairing(.handleSMS))
+        testStore.receive(.twoFA(.showResendSMSButton(true))) { state in
+            state.twoFAState?.isResendSMSButtonVisible = true
+        }
+        testStore.receive(.twoFA(.showTwoFACodeField(true))) { state in
+            state.twoFAState?.isTwoFACodeFieldVisible = true
+            state.isLoading = false
+        }
+        testStore.receive(
+            .alert(
+                .show(
+                    title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title,
+                    message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message
+                )
+            )
+        ) { state in
+            state.credentialsFailureAlert = AlertState(
+                title: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title
+                ),
+                message: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message
+                ),
+                dismissButton: .default(
+                    TextState(LocalizationConstants.okString),
+                    action: .send(.alert(.dismiss))
+                )
+            )
+        }
+        mockMainQueue.advance()
     }
 
     func test_wallet_identifier_fallback_did_appear_should_setup_guid_if_present() {

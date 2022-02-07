@@ -13,7 +13,25 @@ extension AnalyticsEvents.New {
         case resetAccountCancelled
         case resetAccountClicked
 
+        case accountPasswordReset(
+            hasRecoveryPhrase: Bool
+        )
+        case accountRecoveryFailed
+
         var type: AnalyticsEventType { .nabu }
+
+        var params: [String: Any]? {
+            switch self {
+            case .accountPasswordReset(let hasRecoveryPhrase):
+                return [
+                    "has_recovery_phrase": hasRecoveryPhrase
+                ]
+            case .accountRecoveryFailed:
+                return [:]
+            default:
+                return [:]
+            }
+        }
     }
 }
 

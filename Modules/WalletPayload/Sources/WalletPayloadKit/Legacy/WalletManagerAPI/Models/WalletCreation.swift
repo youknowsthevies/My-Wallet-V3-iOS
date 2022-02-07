@@ -16,7 +16,7 @@ public struct WalletCreation: Equatable {
 }
 
 /// An enum to be used for wallet creation errors
-public enum WalletCreationError: LocalizedError, Equatable {
+public enum LegacyWalletCreationError: LocalizedError, Equatable {
     case message(String?)
     case unknownError(String?)
 

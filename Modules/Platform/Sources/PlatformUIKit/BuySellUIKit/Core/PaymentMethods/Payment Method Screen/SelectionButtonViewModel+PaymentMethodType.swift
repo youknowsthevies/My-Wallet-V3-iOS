@@ -40,7 +40,9 @@ extension SelectionButtonViewModel {
                         size: .init(edge: 32)
                     )
                 )
-                title = LocalizedString.DepositCash.title
+                title = paymentMethodType?.currency == .fiat(.USD)
+                    ? LocalizedString.DepositCash.usTitle
+                    : LocalizedString.DepositCash.europeTitle
             case .bankTransfer:
                 leadingContent = .image(
                     .init(

@@ -42,3 +42,29 @@ func decryptValue(
         pbkdf2Iterations: UInt32(pbkdf2Iterations)
     )
 }
+
+func encrypt(
+    value: Data,
+    password: String,
+    pbkdf2Iterations: Int,
+    encryptor: PayloadCryptoAPI = PayloadCrypto(cryptor: AESCryptor())
+) -> Result<String, PayloadCryptoError> {
+    guard let value = String(data: value, encoding: .utf8) else {
+        return .failure(.decodingFailed)
+    }
+    return encryptor.encrypt(data: value, with: password, pbkdf2Iterations: UInt32(pbkdf2Iterations))
+}
+
+/// Applies SHA256 hashing
+/// - Parameter data: The `Data` to be hashed
+/// - Returns: A hashed `Data`
+func checksum(data: Data) -> Data {
+    Data(SHA256.hash(data: data))
+}
+
+/// Applies SHA256 hashing and returns a hexademical string
+/// - Parameter value: The `String` to be hashed
+/// - Returns: A hashed `String`
+func checksumHex(data: Data) -> String {
+    checksum(data: data).toHexString
+}

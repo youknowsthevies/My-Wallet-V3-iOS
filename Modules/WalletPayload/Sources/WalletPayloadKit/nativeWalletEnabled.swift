@@ -14,6 +14,13 @@ public func nativeWalletFlagEnabled(
     service.isEnabled(.local(.nativeWalletPayload))
 }
 
+/// Useful top-level method to check whether native wallet creation feature flag is enabled or not
+public func nativeWalletCreationFlagEnabled(
+    service: FeatureFlagsServiceAPI = resolve()
+) -> AnyPublisher<Bool, Never> {
+    service.isEnabled(.local(.nativeWalletCreation))
+}
+
 /// Useful top-left method that output an Either type of values old and new.
 /// - Parameters:
 ///   - old: An old implementation to be used

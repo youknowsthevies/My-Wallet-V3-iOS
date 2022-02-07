@@ -8,6 +8,7 @@ public enum WalletError: LocalizedError, Equatable {
     case payloadNotFound
     case initialization(WalletInitializationError)
     case decryption(WalletDecryptionError)
+    case encryption(WalletEncodingError)
     case recovery(WalletRecoverError)
 
     public var errorDescription: String? {
@@ -20,6 +21,8 @@ public enum WalletError: LocalizedError, Equatable {
         case .initialization(let error):
             return error.errorDescription
         case .recovery(let error):
+            return error.errorDescription
+        case .encryption(let error):
             return error.errorDescription
         case .unknown:
             return ""
@@ -120,6 +123,28 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
             return lhsError.localizedDescription == rhsError.localizedDescription
         case (.genericDecodeError, .genericDecodeError):
             return true
+        default:
+            return false
+        }
+    }
+}
+
+public enum WalletEncodingError: LocalizedError, Equatable {
+    case encryptionFailure
+    case encodingError(EncodingError)
+    case genericFailure
+    case expectedEncryptedPayload
+
+    public static func == (lhs: WalletEncodingError, rhs: WalletEncodingError) -> Bool {
+        switch (lhs, rhs) {
+        case (.encryptionFailure, encryptionFailure):
+            return true
+        case (.genericFailure, genericFailure):
+            return true
+        case (.expectedEncryptedPayload, expectedEncryptedPayload):
+            return true
+        case (.encodingError(let lhsError), .encodingError(let rhsError)):
+            return lhsError.errorDescription == rhsError.errorDescription
         default:
             return false
         }

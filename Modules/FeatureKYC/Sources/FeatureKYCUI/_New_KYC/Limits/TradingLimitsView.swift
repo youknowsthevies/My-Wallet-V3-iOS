@@ -1,11 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Combine
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
@@ -131,7 +127,7 @@ struct TradingLimitsView: View {
                             Text(LocalizedStrings.emptyPageMessage)
                                 .typography(.body2)
                                 .multilineTextAlignment(.center)
-                            ComponentLibrary.PrimaryButton(
+                            BlockchainComponentLibrary.PrimaryButton(
                                 title: LocalizedStrings.emptyPageRetryButton
                             ) {
                                 viewStore.send(.fetchLimits)

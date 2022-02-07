@@ -1,10 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
@@ -192,12 +188,12 @@ struct LimitedFeaturesListHeader: View {
                     .typography(.paragraph1)
             }
             if kycTier.isZero {
-                ComponentLibrary.PrimaryButton(
+                BlockchainComponentLibrary.PrimaryButton(
                     title: LocalizedStrings.headerCTA_tier0,
                     action: action
                 )
             } else if kycTier.isSiver {
-                ComponentLibrary.PrimaryButton(
+                BlockchainComponentLibrary.PrimaryButton(
                     title: LocalizedStrings.headerCTA_tier1,
                     action: action
                 )

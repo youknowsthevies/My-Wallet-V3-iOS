@@ -9,10 +9,17 @@ struct AddressCacheResponse: Equatable, Codable {
 }
 
 extension WalletPayloadKit.AddressCache {
-    convenience init(from model: AddressCacheResponse) {
-        self.init(
+    static func from(model: AddressCacheResponse) -> AddressCache {
+        AddressCache(
             receiveAccount: model.receiveAccount,
             changeAccount: model.changeAccount
+        )
+    }
+
+    var toAddressCacheResponse: AddressCacheResponse {
+        AddressCacheResponse(
+            receiveAccount: receiveAccount,
+            changeAccount: changeAccount
         )
     }
 }

@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ComponentLibrary
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -27,13 +27,13 @@ struct CreateAccountView: View {
                     CreateAccountHeader()
                     CreateAccountForm(viewStore: viewStore)
                     Spacer()
-                    ComponentLibrary.PrimaryButton(
+                    BlockchainComponentLibrary.PrimaryButton(
                         title: LocalizedString.createAccountButton,
-                        isLoading: viewStore.validatingInput
+                        isLoading: viewStore.validatingInput || viewStore.isCreatingWallet
                     ) {
                         viewStore.send(.createButtonTapped)
                     }
-                    .disabled(viewStore.validatingInput || viewStore.inputValidationState.isInvalid)
+                    .disabled(viewStore.isCreateButtonDisabled)
                     .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
                 }
                 .padding(Spacing.padding3)
@@ -293,7 +293,9 @@ struct CreateAccountView_Previews: PreviewProvider {
                     passwordValidator: PasswordValidator(),
                     externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop
                 )
             )
         )

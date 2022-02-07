@@ -37,9 +37,11 @@ enum MnemonicStrength {
 /// - Returns: `AnyPublisher<String, MnemonicProviderError>`
 func provideMnemonic(
     strength: MnemonicStrength,
+    queue: DispatchQueue,
     entropyProvider: @escaping EntropyProvider
 ) -> AnyPublisher<String, MnemonicProviderError> {
     entropyProvider(strength.bytes)
+        .receive(on: queue)
         .mapError(MnemonicProviderError.entropyFailure)
         .flatMap { entropy -> AnyPublisher<String, MnemonicProviderError> in
             guard let wallet = WalletCore.HDWallet(entropy: entropy, passphrase: "") else {

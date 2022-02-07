@@ -8,7 +8,7 @@ final class WalletDecoder: WalletDecoderAPI {
 
     func createWallet(from data: Data) -> AnyPublisher<NativeWallet, WalletError> {
         decode(data: data)
-            .map(NativeWallet.init(from:))
+            .map(NativeWallet.from(blockchainWallet:))
             .eraseToAnyPublisher()
     }
 

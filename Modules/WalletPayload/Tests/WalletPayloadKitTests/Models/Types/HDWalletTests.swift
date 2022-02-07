@@ -16,7 +16,7 @@ class HDWalletTests: XCTestCase {
 
         let hdWalletResult = generateHDWallet(mnemonic: mnemonic, accountName: "account name", totalAccounts: 1)
 
-        let expectedSeedHex = "5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4"
+        let expectedSeedHex = "00000000000000000000000000000000"
 
         let expectedAccounts = [
             Account(

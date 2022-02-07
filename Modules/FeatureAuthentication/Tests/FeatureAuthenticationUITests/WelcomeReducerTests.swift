@@ -47,6 +47,9 @@ final class WelcomeReducerTests: XCTestCase {
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
+                walletCreationService: .mock(),
+                walletFetcherService: .mock,
+                accountRecoveryService: MockAccountRecoveryService(),
                 nativeWalletEnabled: { .just(false) }
             )
         )

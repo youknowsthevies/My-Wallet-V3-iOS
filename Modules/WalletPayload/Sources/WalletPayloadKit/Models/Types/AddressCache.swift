@@ -3,9 +3,9 @@
 import Foundation
 import MetadataKit
 
-public class AddressCache: Equatable {
-    var receiveAccount: String
-    var changeAccount: String
+public struct AddressCache: Equatable {
+    public let receiveAccount: String
+    public let changeAccount: String
 
     public init(
         receiveAccount: String,
@@ -13,13 +13,6 @@ public class AddressCache: Equatable {
     ) {
         self.receiveAccount = receiveAccount
         self.changeAccount = changeAccount
-    }
-}
-
-extension AddressCache {
-    public static func == (lhs: AddressCache, rhs: AddressCache) -> Bool {
-        lhs.receiveAccount == rhs.receiveAccount
-            && lhs.changeAccount == rhs.changeAccount
     }
 }
 
