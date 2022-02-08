@@ -108,8 +108,8 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         .init(
-            title: state.transactionErrorDescription,
-            subtitle: LocalizationIds.Failure.description,
+            title: state.transactionErrorTitle,
+            subtitle: state.transactionErrorDescription,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),

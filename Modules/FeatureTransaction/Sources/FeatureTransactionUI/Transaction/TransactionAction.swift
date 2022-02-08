@@ -232,7 +232,8 @@ extension TransactionAction {
             // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
             // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
             // go directly to the confirmation detail screen.
-            let step: TransactionFlowStep = destinationAccount is StaticTransactionTarget ? .confirmDetail : .enterAmount
+            let destinationIsStaticTransactionTarget = destinationAccount is StaticTransactionTarget
+            let step: TransactionFlowStep = destinationIsStaticTransactionTarget ? .confirmDetail : .enterAmount
             var newState = oldState
             newState.errorState = .none
             newState.destination = destinationAccount
@@ -451,7 +452,7 @@ enum FatalTransactionError: Error, Equatable {
         }
     }
 
-    var localizedDescription: String? {
+    var localizedDescription: String {
         switch self {
         case .rxError(let error):
             return "\(LocalizationConstants.Errors.genericError) \n\(error.debugDescription)"

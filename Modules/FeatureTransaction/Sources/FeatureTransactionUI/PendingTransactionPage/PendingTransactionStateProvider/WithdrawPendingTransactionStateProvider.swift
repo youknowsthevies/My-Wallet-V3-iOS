@@ -97,8 +97,8 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
         let amount = state.amount
         let currency = amount.currency
         return .init(
-            title: state.transactionErrorDescription,
-            subtitle: LocalizationIds.Failure.description,
+            title: state.transactionErrorTitle,
+            subtitle: state.transactionErrorDescription,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
