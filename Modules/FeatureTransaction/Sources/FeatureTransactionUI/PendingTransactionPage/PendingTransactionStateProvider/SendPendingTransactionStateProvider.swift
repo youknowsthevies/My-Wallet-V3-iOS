@@ -92,8 +92,8 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         let currency = state.amount.currency
         return .init(
-            title: state.transactionErrorDescription,
-            subtitle: LocalizationIds.Failure.description,
+            title: state.transactionErrorTitle,
+            subtitle: state.transactionErrorDescription,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .image(currency.logoResource),

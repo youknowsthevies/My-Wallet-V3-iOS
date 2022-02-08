@@ -66,8 +66,8 @@ final class SignPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         PendingTransactionPageState(
-            title: state.transactionErrorDescription,
-            subtitle: LocalizationIds.Failure.description,
+            title: state.transactionErrorTitle,
+            subtitle: state.transactionErrorDescription,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .image(state.amount.currency.logoResource),

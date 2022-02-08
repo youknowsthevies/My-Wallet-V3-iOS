@@ -565,17 +565,6 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Success 
     public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
-extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure {
-    public static let title = NSLocalizedString(
-        "Oops! Something Went Wrong.",
-        comment: "Oops! Something Went Wrong."
-    )
-    public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
-    )
-}
-
 // MARK: - Interest Transfer
 
 extension LocalizationConstants.Transaction.Transfer.ToS {
@@ -616,17 +605,6 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Success {
     public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
-extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
-    public static let title = NSLocalizedString(
-        "Oops! Something Went Wrong.",
-        comment: "Oops! Something Went Wrong."
-    )
-    public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
-    )
-}
-
 // MARK: - Withdraw Pending
 
 extension LocalizationConstants.Transaction.Withdraw.Completion.Pending {
@@ -645,17 +623,6 @@ extension LocalizationConstants.Transaction.Withdraw.Completion.Success {
     )
 }
 
-extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
-    public static let title = NSLocalizedString(
-        "Oops! Something Went Wrong.",
-        comment: "Oops! Something Went Wrong."
-    )
-    public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
-    )
-}
-
 // MARK: - Deposit Pending
 
 extension LocalizationConstants.Transaction.Deposit.Completion.Pending {
@@ -671,17 +638,6 @@ extension LocalizationConstants.Transaction.Deposit.Completion.Success {
     public static let description = NSLocalizedString(
         "While we wait for your bank to send the cash, here’s early access to %@ in your %@ Cash Account so you can buy crypto right now. Your funds will be available to withdraw once the bank transfer is complete on %@",
         comment: "While we wait for your bank to send the cash, here’s early access to $@ in your %@ Cash Account so you can buy crypto right now. Your funds will be available to withdraw once the bank transfer is complete on %@"
-    )
-}
-
-extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
-    public static let title = NSLocalizedString(
-        "Oops! Something Went Wrong.",
-        comment: "Oops! Something Went Wrong."
-    )
-    public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -1494,6 +1450,11 @@ extension LocalizationConstants.Transaction.Error {
     public static let unknownError = NSLocalizedString(
         "Oops! Something went wrong. Please try again.",
         comment: "Oops! Something went wrong. Please try again."
+    )
+
+    public static let unknownErrorDescription = NSLocalizedString(
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 
     public static let tooManyTransaction = NSLocalizedString(
