@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -9,6 +10,7 @@ import PlatformUIKit
 import RIBs
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 /// A protocol defining the API for the app's entry point to any `Transaction Flow`.
 /// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow.
@@ -29,6 +31,7 @@ public protocol TransactionsRouterAPI {
 
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
     private let eligibilityService: EligibilityServiceAPI
@@ -53,6 +56,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private var cancellables: Set<AnyCancellable> = []
 
     init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         pendingOrdersService: PendingOrderDetailsServiceAPI = resolve(),
         kycRouter: PlatformUIKit.KYCRouting = resolve(),
@@ -71,6 +75,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         receiveCoordinator: ReceiveCoordinator = ReceiveCoordinator(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
     ) {
+        self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -186,6 +191,7 @@ extension TransactionsRouter {
     }
 }
 
+// swiftlint:disable:next function_body_length
 extension TransactionsRouter {
 
     // swiftlint:disable:next cyclomatic_complexity
@@ -398,7 +404,8 @@ extension TransactionsRouter {
                                 .handleLoaderForLifecycle(loader: self.loadingViewPresenter)
                                 .sink(receiveValue: handler)
                                 .store(in: &self.cancellables)
-                        }
+                        },
+                        analyticsRecorder: analyticsRecorder
                     )
                 )
             )

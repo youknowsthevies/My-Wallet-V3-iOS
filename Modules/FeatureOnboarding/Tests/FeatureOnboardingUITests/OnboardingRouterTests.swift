@@ -20,7 +20,7 @@ final class OnboardingRouterTests: XCTestCase {
         mockFeatureFlagService = MockFeatureFlagsService()
         mockEmailVerificationRouter = MockOnboardingEmailVerificationRouter()
         router = OnboardingRouter(
-            buyCryptoRouter: mockBuyCryptoRouter,
+            transactionsRouter: mockBuyCryptoRouter,
             emailVerificationRouter: mockEmailVerificationRouter,
             featureFlagsService: mockFeatureFlagService
         )

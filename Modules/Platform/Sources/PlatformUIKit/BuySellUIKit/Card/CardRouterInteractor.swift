@@ -1,10 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import FeatureCardsDomain
 import RIBs
 import RxCocoa
 import RxRelay
 import RxSwift
+import RxToolKit
 
 public protocol CardAuthorizationRoutingInteractorAPI: AnyObject {
     func cardAuthorized(with paymentMethodId: String)

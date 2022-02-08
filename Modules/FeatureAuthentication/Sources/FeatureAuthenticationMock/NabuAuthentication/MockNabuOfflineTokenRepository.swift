@@ -2,6 +2,7 @@
 
 import Combine
 import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 final class MockNabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
     var expectedUserId: String?

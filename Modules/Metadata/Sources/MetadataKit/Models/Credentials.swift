@@ -2,11 +2,11 @@
 
 import Foundation
 
-public struct Credentials {
+public struct Credentials: Hashable {
 
-    let guid: String
-    let sharedKey: String
-    let password: String
+    public let guid: String
+    public let sharedKey: String
+    public let password: String
 
     public init(
         guid: String,

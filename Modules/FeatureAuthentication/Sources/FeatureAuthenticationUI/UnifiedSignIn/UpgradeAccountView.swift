@@ -212,7 +212,8 @@ struct UpgradeAccountView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecoder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             ),
             exchangeOnly: true

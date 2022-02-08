@@ -33,7 +33,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors")
+        .package(path: "../NetworkErrors"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -42,6 +43,10 @@ let package = Package(
                 .product(
                     name: "DIKit",
                     package: "DIKit"
+                ),
+                .product(
+                    name: "ToolKit",
+                    package: "Tool"
                 )
             ]
         ),

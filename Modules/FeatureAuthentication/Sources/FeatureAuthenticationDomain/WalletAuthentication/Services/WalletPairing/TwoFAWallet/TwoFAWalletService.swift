@@ -13,7 +13,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
 
     private let repository: TwoFAWalletRepositoryAPI
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
 
     // MARK: - Setup
@@ -21,7 +21,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
     public init(
         repository: TwoFAWalletRepositoryAPI,
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletFlagEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.repository = repository
@@ -108,6 +108,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
             .flatMap { [walletRepo] rawPayload -> AnyPublisher<Void, TwoFAWalletServiceError> in
                 walletRepo
                     .set(keyPath: \.encryptedPayload, value: rawPayload)
+                    .publisher
                     .mapToVoid()
                     .mapError()
             }

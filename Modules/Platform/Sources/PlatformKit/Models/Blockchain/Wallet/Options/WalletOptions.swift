@@ -7,7 +7,7 @@ public typealias JSONDictionary = [String: Any]
 public struct WalletOptions: Decodable {
 
     /// App update type
-    public enum UpdateType {
+    public enum UpdateType: Equatable {
 
         /// Possible update value representation
         public enum RawValue {
@@ -38,45 +38,17 @@ public struct WalletOptions: Decodable {
         }
     }
 
-    enum Keys {
-        static let domains = "domains"
-
-        static let partners = "partners"
-        static let partnerId = "partnerId"
-        static let ethereum = "ethereum"
-        static let lastTxFuse = "lastTxFuse"
-        static let countries = "countries"
-        static let mobile = "mobile"
-        static let walletRoot = "walletRoot"
-        static let maintenance = "maintenance"
-        static let mobileInfo = "mobileInfo"
-        static let shapeshift = "shapeshift"
-        static let xlm = "xlm"
-
-        static let ios = "ios"
-        static let update = "update"
-        static let updateType = "updateType"
-        static let latestStoreVersion = "latestStoreVersion"
-    }
-
     enum CodingKeys: String, CodingKey {
         case domains
-        case partners
-        case partnerId
-        case countries
-        case mobile
-        case walletRoot
-        case maintenance
         case ethereum
-        case mobileInfo
-        case shapeshift
-        case xlm
-        case ios
-        case update
-        case updateType
-        case latestStoreVersion
-        case xlmExchange
         case exchangeAddresses
+        case hotWalletAddresses
+        case ios
+        case maintenance
+        case mobile
+        case mobileInfo
+        case xlm
+        case xlmExchange
     }
 
     public struct Domains: Decodable {
@@ -120,10 +92,6 @@ public struct WalletOptions: Decodable {
         }
     }
 
-    public struct Ethereum: Decodable {
-        public let lastTxFuse: Int64
-    }
-
     public struct XLMMetadata: Decodable {
         public let operationFee: Int
         public let sendTimeOutSeconds: Int
@@ -143,24 +111,37 @@ public struct WalletOptions: Decodable {
     public struct AppUpdateMetadata: Decodable {
         let updateType: UpdateType
 
-        enum CodingKeys: String, CodingKey {
+        private enum CodingKeys: String, CodingKey {
             case update
+        }
+
+        private enum UpdateCodingKeys: String, CodingKey {
             case updateType
             case latestStoreVersion
         }
 
         public init(from decoder: Decoder) throws {
-            let iOSMetaData = try decoder.container(keyedBy: CodingKeys.self)
-            guard iOSMetaData.contains(.update) else { updateType = .none; return }
-
-            let updateMetaData = try iOSMetaData.nestedContainer(keyedBy: CodingKeys.self, forKey: .update)
-            let updateTypeRawValue = try updateMetaData.decodeIfPresent(String.self, forKey: .updateType)
-            let version = try updateMetaData.decodeIfPresent(String.self, forKey: .latestStoreVersion)
-            guard let type = updateTypeRawValue, let latest = version else {
+            guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
                 updateType = .none
                 return
             }
-            guard let latestVersion = AppVersion(string: latest) else {
+            guard let updateContainer = try? container.nestedContainer(
+                keyedBy: UpdateCodingKeys.self,
+                forKey: .update
+            ) else {
+                updateType = .none
+                return
+            }
+
+            guard let type = try updateContainer.decodeIfPresent(String.self, forKey: .updateType) else {
+                updateType = .none
+                return
+            }
+            guard let version = try updateContainer.decodeIfPresent(String.self, forKey: .latestStoreVersion) else {
+                updateType = .none
+                return
+            }
+            guard let latestVersion = AppVersion(string: version) else {
                 updateType = .none
                 return
             }
@@ -179,128 +160,22 @@ public struct WalletOptions: Decodable {
 
     public let domains: Domains?
 
-    public let updateType: UpdateType
-
     public let downForMaintenance: Bool
 
-    public let mobileInfo: MobileInfo?
+    public let hotWalletAddresses: [String: [String: String]]?
 
     public let mobile: Mobile?
 
-    public let xlmMetadata: XLMMetadata?
+    public let mobileInfo: MobileInfo?
 
-    public let ethereum: Ethereum
+    public let updateType: UpdateType
 
     public let xlmExchangeAddresses: [String]?
-}
 
-extension WalletOptions.Domains {
-    public init?(dictionary json: JSONDictionary) {
-        guard
-            let mobile = json[WalletOptions.Keys.domains] as? [String: String],
-            let stellarHorizonURLString = mobile[Keys.stellarHorizon.rawValue],
-            !stellarHorizonURLString.isEmpty,
-            let stellarHorizonURL = URL(string: stellarHorizonURLString)
-        else {
-            return nil
-        }
-        stellarHorizon = stellarHorizonURL.absoluteString
-    }
-}
-
-extension WalletOptions.XLMMetadata {
-    public init?(dictionary json: JSONDictionary) {
-        if let xlmData = json[WalletOptions.Keys.xlm] as? [String: Int] {
-            guard let fee = xlmData["operationFee"] else { return nil }
-            guard let timeout = xlmData["sendTimeOutSeconds"] else { return nil }
-            operationFee = fee
-            sendTimeOutSeconds = timeout
-        } else {
-            return nil
-        }
-    }
-}
-
-extension WalletOptions.Mobile {
-    public init(dictionary json: JSONDictionary) {
-        if let mobile = json[WalletOptions.Keys.mobile] as? [String: String] {
-            walletRoot = mobile[WalletOptions.Keys.walletRoot]
-        } else {
-            walletRoot = nil
-        }
-    }
-}
-
-extension WalletOptions.MobileInfo {
-    public init(dictionary json: JSONDictionary) {
-        if let mobileInfo = json[WalletOptions.Keys.mobileInfo] as? [String: String] {
-            if let code = Locale.current.languageCode {
-                message = mobileInfo[code] ?? mobileInfo["en"]
-            } else {
-                message = mobileInfo["en"]
-            }
-        } else {
-            message = nil
-        }
-    }
-}
-
-extension WalletOptions.UpdateType {
-    public init(dictionary json: JSONDictionary) {
-
-        // Extract version update values
-        guard let iosJson = json[WalletOptions.Keys.ios] as? JSONDictionary,
-              let updateJson = iosJson[WalletOptions.Keys.update] as? JSONDictionary
-        else {
-            self = .none
-            return
-        }
-
-        // First, verify the update type can be extracted, and fallback to `.none` if not
-        guard let updateTypeRawValue = updateJson[WalletOptions.Keys.updateType] as? String else {
-            self = .none
-            return
-        }
-
-        // Verify the latest available version in sotre can be extracted, and fallback to `.none` if not
-        guard let version = updateJson[WalletOptions.Keys.latestStoreVersion] as? String,
-              let latestVersion = AppVersion(string: version)
-        else {
-            self = .none
-            return
-        }
-
-        switch updateTypeRawValue {
-        case RawValue.forced:
-            self = .forced(latestVersion: latestVersion)
-        case RawValue.recommended:
-            self = .recommended(latestVersion: latestVersion)
-        default:
-            self = .none
-        }
-    }
-}
-
-extension WalletOptions.Ethereum {
-    public init(dictionary json: JSONDictionary) {
-        let ethereum = json[WalletOptions.Keys.ethereum] as? [String: Any]
-        lastTxFuse = ethereum?[WalletOptions.Keys.lastTxFuse] as? Int64 ?? 0
-    }
+    public let xlmMetadata: XLMMetadata?
 }
 
 extension WalletOptions {
-    public init(dictionary json: JSONDictionary) {
-        domains = WalletOptions.Domains(dictionary: json)
-        downForMaintenance = json[Keys.maintenance] as? Bool ?? false
-        mobile = WalletOptions.Mobile(dictionary: json)
-        mobileInfo = WalletOptions.MobileInfo(dictionary: json)
-        xlmMetadata = WalletOptions.XLMMetadata(dictionary: json)
-        updateType = WalletOptions.UpdateType(dictionary: json)
-        let xlmExchangeContainer = json[CodingKeys.xlmExchange.rawValue] as? [String: [String]]
-        xlmExchangeAddresses = xlmExchangeContainer?[CodingKeys.exchangeAddresses.rawValue] ?? nil
-        ethereum = WalletOptions.Ethereum(dictionary: json)
-    }
-
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         domains = try values.decodeIfPresent(Domains.self, forKey: .domains)
@@ -316,14 +191,18 @@ extension WalletOptions {
         } else {
             mobileInfo = nil
         }
-        let xlmExchangeAddressContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .xlmExchange)
-        xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
-        let appUpdateMetaData = try values.decodeIfPresent(AppUpdateMetadata.self, forKey: .ios)
-        if let value = appUpdateMetaData {
+        if let xlmExchangeAddressContainer = try? values.nestedContainer(keyedBy: CodingKeys.self, forKey: .xlmExchange) {
+            xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
+        } else {
+            xlmExchangeAddresses = nil
+        }
+
+        if let value = try values.decodeIfPresent(AppUpdateMetadata.self, forKey: .ios) {
             updateType = value.updateType
         } else {
             updateType = .none
         }
-        ethereum = try values.decode(Ethereum.self, forKey: .ethereum)
+
+        hotWalletAddresses = try values.decodeIfPresent([String: [String: String]].self, forKey: .hotWalletAddresses)
     }
 }

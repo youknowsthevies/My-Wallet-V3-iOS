@@ -6,6 +6,7 @@ import Localization
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import SwiftUI
 import ToolKit
 
 final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting {
@@ -38,6 +39,10 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
             id: LocalizedString.portfolio,
             viewController: PortfolioViewController(
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
+                userHasCompletedOnboarding: .just(true),
+                onboardingChecklistViewBuilder: {
+                    EmptyView()
+                },
                 presenter: dashboardScreenPresenter
             )
         ),

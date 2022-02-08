@@ -59,8 +59,8 @@ final class RootViewController: UIHostingController<RootView> {
             .store(in: &bag)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewStore.send(.ready)
     }
 
@@ -83,9 +83,9 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var fiatCurrencyService: FiatCurrencyServiceAPI
     @LazyInject var kycRouter: PlatformUIKit.KYCRouting
     @LazyInject var onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
-    @LazyInject var receiveCoordinator: ReceiveCoordinator
     @LazyInject var tiersService: KYCTiersServiceAPI
     @LazyInject var transactionsRouter: TransactionsRouterAPI
+    @LazyInject var userStateService: UserAdapterAPI
     @LazyInject var airdropRouter: AirdropRouterAPI
     @Inject var walletConnectService: WalletConnectServiceAPI
     @Inject var walletConnectRouter: WalletConnectRouterAPI

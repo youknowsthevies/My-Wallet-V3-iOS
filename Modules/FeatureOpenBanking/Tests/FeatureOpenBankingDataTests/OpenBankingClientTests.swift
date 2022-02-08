@@ -363,16 +363,16 @@ final class OpenBankingPaymentTests: XCTestCase {
             id: "b039317d-df85-413f-932d-2719346a839a",
             amount: .init(symbol: "GBP", value: "10.00"),
             amountMinor: "1000",
-            extraAttributes: .init(error: .code("ERROR_CODE")),
             insertedAt: "DATE",
             state: .failed,
             type: "CHARGE",
-            beneficiaryId: "..."
+            beneficiaryId: "...",
+            error: .code("ERROR_CODE")
         )
         .data()
 
         let details = try payment.poll(in: banking).wait()
-        XCTAssertEqual(details.extraAttributes?.error, .code("ERROR_CODE"))
+        XCTAssertEqual(details.error, .code("ERROR_CODE"))
     }
 
     func test_poll_pending_timeout() throws {

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardsDomain
 import Localization
 import MoneyKit
 import PlatformKit
@@ -131,7 +132,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
-            paymentMethod = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
+            paymentMethod = event.inputValue.currency.name
         }
         paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix

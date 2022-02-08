@@ -50,6 +50,11 @@ class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingN
 
     fileprivate func setupBarButtonItem() {
         guard let navController = navigationController as? KYCOnboardingNavigationController else { return }
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .white
+        navController.navigationBar.standardAppearance = appearance
+        navController.navigationBar.compactAppearance = appearance
+        navController.navigationBar.scrollEdgeAppearance = appearance
         navController.onboardingDelegate = self
         navController.setupBarButtonItem()
     }

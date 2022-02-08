@@ -43,7 +43,8 @@ extension Publisher {
     }
 
     public func asCompletable() -> Completable {
-        asSingle()
+        asObservable()
+            .ignoreElements()
             .asCompletable()
     }
 }

@@ -20,7 +20,6 @@ public enum EmailLoginAction: Equatable, NavigationAction {
     }
 
     case alert(AlertAction)
-    case closeButtonTapped
 
     // MARK: - Transitions and Navigations
 
@@ -91,6 +90,7 @@ struct EmailLoginEnvironment {
     let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
     let validateEmail: (String) -> Bool
 
     init(
@@ -100,6 +100,7 @@ struct EmailLoginEnvironment {
         featureFlagsService: FeatureFlagsServiceAPI,
         errorRecorder: ErrorRecording,
         analyticsRecorder: AnalyticsEventRecorderAPI,
+        walletRecoveryService: WalletRecoveryService,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
         self.mainQueue = mainQueue
@@ -108,6 +109,7 @@ struct EmailLoginEnvironment {
         self.featureFlagsService = featureFlagsService
         self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
         self.validateEmail = validateEmail
     }
 }
@@ -124,7 +126,8 @@ let emailLoginReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -159,10 +162,6 @@ let emailLoginReducer = Reducer.combine(
             environment.analyticsRecorder.record(
                 event: .loginViewed
             )
-            return .none
-
-        case .closeButtonTapped:
-            // handled in welcome reducer
             return .none
 
         case .route(let route):

@@ -18,12 +18,13 @@ public protocol MetadataServiceAPI {
     ) -> AnyPublisher<MetadataState, MetadataInitialisationError>
 
     /// Fetches and initialises the root metadata node using a mnemonic phrase
+    /// and recovers the wallet credentials
     /// - Parameters:
     ///   - mnemonic: A seed phrase of the wallet to be recovered
-    /// - Returns: A `Publisher` of root metadata state or error
-    func initialize(
-        mnemonic: String
-    ) -> AnyPublisher<MetadataState, MetadataInitialisationError>
+    /// - Returns: A `Publisher` of root metadata state and wallet credentials or error
+    func initializeAndRecoverCredentials(
+        from mnemonic: String
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError>
 
     /// Fetches a the specified metadata entry
     /// - Parameters:
@@ -131,10 +132,10 @@ extension MetadataServiceAPI {
     }
 }
 
-extension Publisher where Output == String, Failure == MetadataFetchError {
+extension Publisher where Output == String, Failure: FromDecodingError {
 
-    fileprivate func decodeEntry<Entry: Decodable>() -> AnyPublisher<Entry, MetadataFetchError> {
-        flatMap { jsonString -> AnyPublisher<Entry, MetadataFetchError> in
+    func decodeEntry<Entry: Decodable>() -> AnyPublisher<Entry, Failure> {
+        flatMap { jsonString -> AnyPublisher<Entry, Failure> in
             decodeJSONStringToEntry(jsonString: jsonString)
         }
         .eraseToAnyPublisher()

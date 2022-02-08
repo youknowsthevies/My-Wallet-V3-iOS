@@ -72,7 +72,12 @@ struct PriceListView_Previews: PreviewProvider {
     static var store = Store(
         initialState: tourState,
         reducer: reducer,
-        environment: TourEnvironment(createAccountAction: {}, restoreAction: {}, logInAction: {})
+        environment: TourEnvironment(
+            createAccountAction: {},
+            restoreAction: {},
+            logInAction: {},
+            manualLoginAction: {}
+        )
     )
 
     static var previews: some View {

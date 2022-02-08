@@ -5,6 +5,7 @@ import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 public protocol SecureChannelRouting {
     func didScanPairingQRCode(msg: String)

@@ -49,6 +49,7 @@ public final class MockKYCRouter: FeatureKYCUI.Routing {
 
     public func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
+        requireEmailVerification: Bool,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         recordedInvocations.presentEmailVerificationAndKYCIfNeeded.append(presenter)

@@ -131,7 +131,8 @@ struct SkipUpgradeView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecoder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

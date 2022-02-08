@@ -64,7 +64,7 @@ struct ImportWalletView: View {
                     viewStore.send(.goBackButtonTapped)
                 }
             }
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.createAccountState,
@@ -79,9 +79,7 @@ struct ImportWalletView: View {
                 label: EmptyView.init
             )
         }
-        .multilineTextAlignment(.center)
-        .navigationBarTitleDisplayMode(.inline)
-        .hideBackButtonTitle()
+        .primaryNavigation()
         .padding(
             EdgeInsets(
                 top: 0,
@@ -108,7 +106,8 @@ struct ImportWalletView_Previews: PreviewProvider {
                     mainQueue: .main,
                     passwordValidator: PasswordValidator(),
                     externalAppOpener: ToLogAppOpener(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

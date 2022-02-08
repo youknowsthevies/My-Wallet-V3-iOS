@@ -33,6 +33,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let prefix = "EmailLoginScreen."
 
         static let emailGroup = "\(prefix)emailGroup"
+        static let nextButton = "\(prefix)nextButton"
         static let continueButton = "\(prefix)continueButton"
         static let loginTitleText = "\(prefix)loginTitleText"
     }
@@ -65,6 +66,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let twoFAGroup = "\(prefix)twoFAGroup"
         static let resendSMSButton = "\(prefix)resendSMSButton"
         static let resetTwoFAButton = "\(prefix)resetTwoFAButton"
+        static let nextButton = "\(prefix)nextButton"
     }
 
     // MARK: - Account Recovery
@@ -79,6 +81,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let resetAccountButton = "\(prefix)resetAccountButton"
         static let contactSupportButton = "\(prefix)contactSupportButton"
         static let continueButton = "\(prefix)continueButton"
+        static let nextButton = "\(prefix)nextButton"
     }
 
     enum ResetAccountWarningScreen {
@@ -189,5 +192,18 @@ final class AccessibilityIdentifiers: NSObject {
         static let title = "\(prefix)title"
         static let message = "\(prefix)message"
         static let button = "\(prefix)button"
+    }
+
+    // MARK: - Password Required Screen
+
+    enum PasswordRequiredScreen {
+        static let prefix = "PasswordRequiredScreen."
+
+        static let header = "\(prefix)header"
+        static let walletIdGroup = "\(prefix)walletIdGroup"
+        static let description = "\(prefix)description"
+        static let passwordGroup = "\(prefix)passwordGroup"
+        static let forgotWalletDesription = "\(prefix)forgotWalletDescription"
+        static let forgotWalletButton = "\(prefix)forgotWalletButton"
     }
 }

@@ -154,4 +154,8 @@ public enum NabuErrorCode: Int, Codable, Equatable {
     case featureNotAvailable = 154
 
     case documentDataRequired = 160
+
+    /// Card Payments
+    case cardInsufficientFunds = 10000
+    case cardBankDecline = 10001
 }

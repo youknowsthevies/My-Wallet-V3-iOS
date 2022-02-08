@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BigInt
+import FeatureCardsDomain
 import FeatureOpenBankingDomain
 import Localization
 import MoneyKit
@@ -208,6 +209,15 @@ public struct OrderDetails {
             return true
         case .pendingDeposit, .pendingConfirmation, .depositMatched:
             return false
+        }
+    }
+
+    public var error: String? {
+        switch _value {
+        case .buy(let details):
+            return details.error
+        case .sell(let details):
+            return details.error
         }
     }
 

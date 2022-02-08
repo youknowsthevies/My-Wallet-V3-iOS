@@ -9,6 +9,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 /// Presenter for the side menu of the app. This presenter
 /// will handle the logic as to what side menu items should be

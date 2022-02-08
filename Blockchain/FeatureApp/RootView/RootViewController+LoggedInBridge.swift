@@ -2,10 +2,13 @@
 
 import Combine
 import FeatureInterestUI
+import FeatureOnboardingUI
+import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import UIComponentsKit
 
 extension RootViewController: LoggedInBridge {
 
@@ -58,7 +61,9 @@ extension RootViewController: LoggedInBridge {
     }
 
     func receive(into account: BlockchainAccount) {
-        receiveCoordinator.routeToReceive(sourceAccount: account)
+        transactionsRouter.presentTransactionFlow(to: .receive(account as? CryptoAccount))
+            .sink { result in "\(result)".peek("🧾") }
+            .store(in: &bag)
     }
 
     func withdraw(from account: BlockchainAccount) {
@@ -176,7 +181,26 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {
-        transactionsRouter.presentTransactionFlow(to: .swap(account))
+        let transactionsRouter = transactionsRouter
+        let onboardingRouter = onboardingRouter
+        userStateService
+            .userState
+            .first()
+            .receive(on: DispatchQueue.main)
+            .flatMap { result -> AnyPublisher<TransactionFlowResult, Never> in
+                // if we successfully got a user state object and that shows the user has a crypto balance <= 0, show the empty state
+                if case .success(let userState) = result, !userState.balanceData.hasAnyCryptoBalance {
+                    guard let viewController = UIApplication.shared.topMostViewController else {
+                        fatalError("Top most view controller cannot be nil")
+                    }
+                    return onboardingRouter
+                        .presentRequiredCryptoBalanceView(from: viewController)
+                        .map(TransactionFlowResult.init)
+                        .eraseToAnyPublisher()
+                }
+                // if instead we didn't get a user state, or the user state shows the user has a crypto balance > 0, just navigate to swap
+                return transactionsRouter.presentTransactionFlow(to: .swap(account))
+            }
             .sink { result in
                 "\(result)".peek("🧾 \(#function)")
             }

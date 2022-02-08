@@ -8,12 +8,12 @@ final class LanguageRepository: LanguageRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -28,6 +28,7 @@ final class LanguageRepository: LanguageRepositoryAPI {
                     return walletRepository.set(language: language)
                 }
                 return walletRepo.set(keyPath: \.properties.language, value: language)
+                    .publisher
                     .mapToVoid()
                     .mapError()
             }

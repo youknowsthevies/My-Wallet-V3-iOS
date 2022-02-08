@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
@@ -94,20 +95,27 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         let currency = state.amount.currency
+        let icon: CompositeStatusViewType.Composite.BaseViewType = .badgeImageViewModel(
+            .primary(
+                image: currency.logoResource,
+                contentColor: .white,
+                backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
+                cornerRadius: .roundedHigh,
+                accessibilityIdSuffix: "PendingTransactionFailureBadge"
+            )
+        )
+        if let details = state.order as? OrderDetails, let code = details.error {
+            return bankingError(
+                error: .code(code),
+                icon: icon
+            )
+        }
         return .init(
             title: state.transactionErrorDescription,
             subtitle: LocalizationIds.Failure.description,
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .badgeImageViewModel(
-                        .primary(
-                            image: currency.logoResource,
-                            contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
-                            cornerRadius: .roundedHigh,
-                            accessibilityIdSuffix: "PendingTransactionFailureBadge"
-                        )
-                    ),
+                    baseViewType: icon,
                     sideViewAttributes: .init(
                         type: .image(PendingStateViewModel.Image.circleError.imageResource),
                         position: .radiusDistanceFromCenter

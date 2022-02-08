@@ -21,6 +21,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// Enables native bitcion transaction
+    case nativeBitcoinTransaction
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -28,7 +31,8 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .disableSSLPinning,
              .unifiedSignIn,
-             .nativeWalletPayload:
+             .nativeWalletPayload,
+             .nativeBitcoinTransaction:
             return false
         }
     }
@@ -53,6 +57,8 @@ extension InternalFeature {
             return "Unified Sign In"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .nativeBitcoinTransaction:
+            return "Native Bitcoin Transaction"
         }
     }
 }

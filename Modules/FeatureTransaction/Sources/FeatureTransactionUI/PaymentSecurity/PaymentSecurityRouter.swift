@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import PlatformUIKit
 import UIKit

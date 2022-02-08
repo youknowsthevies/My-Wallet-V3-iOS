@@ -7,7 +7,9 @@ import DIKit
 @testable import FeatureAuthenticationMock
 import TestKit
 import ToolKit
+@testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 import XCTest
 
 class WalletPayloadServiceTests: XCTestCase {

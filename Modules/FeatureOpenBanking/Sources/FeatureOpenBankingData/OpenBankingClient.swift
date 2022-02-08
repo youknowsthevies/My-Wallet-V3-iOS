@@ -315,7 +315,7 @@ extension OpenBanking.Payment {
         .poll(
             max: 60,
             until: { payment in
-                guard payment.extraAttributes?.error == nil else { return true }
+                guard payment.error == nil else { return true }
                 return payment.extraAttributes?.authorisationUrl != nil
             },
             delay: .seconds(2),

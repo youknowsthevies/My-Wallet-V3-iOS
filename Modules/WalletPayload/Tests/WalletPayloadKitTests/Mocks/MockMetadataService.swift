@@ -19,9 +19,9 @@ class MockMetadataService: MetadataServiceAPI {
         initializeMetadata.eraseToAnyPublisher()
     }
 
-    func initialize(
-        mnemonic: String
-    ) -> AnyPublisher<MetadataState, MetadataInitialisationError> {
+    func initializeAndRecoverCredentials(
+        from mnemonic: String
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
         .empty()
     }
 

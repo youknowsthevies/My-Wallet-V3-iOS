@@ -10,12 +10,12 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let walletRepo: WalletRepoAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        walletRepo: WalletRepoAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -27,7 +27,9 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.sharedKey
                 }
-                return walletRepo.map(\.credentials.sharedKey)
+                return walletRepo
+                    .publisher
+                    .map(\.credentials.sharedKey)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
             }
@@ -40,7 +42,9 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.set(sharedKey: sharedKey)
                 }
-                return walletRepo.set(keyPath: \.credentials.sharedKey, value: sharedKey)
+                return walletRepo
+                    .set(keyPath: \.credentials.sharedKey, value: sharedKey)
+                    .publisher
                     .mapToVoid()
             }
             .mapToVoid()

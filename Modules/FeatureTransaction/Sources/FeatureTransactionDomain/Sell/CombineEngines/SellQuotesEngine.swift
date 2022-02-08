@@ -55,6 +55,7 @@ final class SellQuotesEngine {
             )
         }
         .eraseToAnyPublisher()
+        .shareReplay()
     }
 
     // MARK: - Private Functions

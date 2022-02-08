@@ -59,6 +59,9 @@ final class MetadataServiceTests: XCTestCase {
                 fetch: fetch,
                 put: put
             ),
+            initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                fetch: fetch
+            ),
             fetchEntry: provideFetchEntry(fetch: fetch),
             saveEntry: provideSave(fetch: fetch, put: put)
         )
@@ -85,6 +88,78 @@ final class MetadataServiceTests: XCTestCase {
         wait(
             for: [
                 initializedExpecation,
+                fetchCalledWithCorrectAddressExpectation
+            ],
+            timeout: 10.0
+        )
+    }
+
+    func test_initialize_and_recover_credentials() throws {
+
+        let environment = TestEnvironment()
+
+        let initializedAndRecoveredSuccessfullyExpecation = expectation(
+            description: "Metadata was successfully initialized and the credentials recovered"
+        )
+
+        let fetchCalledWithCorrectAddressExpectation = expectation(
+            description: "Fetch was called with the correct address"
+        )
+
+        let mnemonic = environment.mnemonic.mnemonicString
+
+        let expectedAddress = "1EfF3b4GusL5YkKji9HxqAhDBRRvEFSZiP"
+
+        let fetch: FetchMetadataEntry = { address in
+            XCTAssertEqual(address, expectedAddress)
+            fetchCalledWithCorrectAddressExpectation.fulfill()
+            return .just(MetadataPayload.credentialsMetadataEntryPayload)
+        }
+
+        let put: PutMetadataEntry = { _, _ in
+            XCTFail("Put should not be called")
+            return .just(())
+        }
+
+        let expectedMetadataState = environment.metadataState
+
+        let expectedCredentials = environment.credentials
+
+        let expectedRecoveryContext = RecoveryContext(
+            metadataState: expectedMetadataState,
+            credentials: expectedCredentials
+        )
+
+        subject = MetadataService(
+            initialize: provideInitialize(
+                fetch: fetch,
+                put: put
+            ),
+            initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                fetch: fetch
+            ),
+            fetchEntry: provideFetchEntry(fetch: fetch),
+            saveEntry: provideSave(fetch: fetch, put: put)
+        )
+
+        subject
+            .initializeAndRecoverCredentials(from: mnemonic)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                case .finished:
+                    break
+                }
+            }, receiveValue: { [initializedAndRecoveredSuccessfullyExpecation] recoveryContext in
+                XCTAssertEqual(recoveryContext, expectedRecoveryContext)
+                initializedAndRecoveredSuccessfullyExpecation.fulfill()
+            })
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                initializedAndRecoveredSuccessfullyExpecation,
                 fetchCalledWithCorrectAddressExpectation
             ],
             timeout: 10.0
@@ -124,6 +199,9 @@ final class MetadataServiceTests: XCTestCase {
             initialize: provideInitialize(
                 fetch: fetch,
                 put: put
+            ),
+            initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                fetch: fetch
             ),
             fetchEntry: provideFetchEntry(fetch: fetch),
             saveEntry: provideSave(fetch: fetch, put: put)

@@ -3,42 +3,46 @@
 import Combine
 import ToolKit
 
-final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
+public final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
 
-    struct RecordedInvocations {
-        var enable: [FeatureFlag] = []
-        var disable: [FeatureFlag] = []
-        var isEnabled: [FeatureFlag] = []
-        var object: [FeatureFlag] = []
+    public struct RecordedInvocations {
+        public var enable: [FeatureFlag] = []
+        public var disable: [FeatureFlag] = []
+        public var isEnabled: [FeatureFlag] = []
+        public var object: [FeatureFlag] = []
     }
 
-    struct StubbedResults {
-        var object: AnyPublisher<Codable?, FeatureFlagError> = .empty()
+    public struct StubbedResults {
+        public var object: AnyPublisher<Codable?, FeatureFlagError> = .empty()
     }
 
-    private(set) var recordedInvocations = RecordedInvocations()
-    var stubbedResults = StubbedResults()
+    public private(set) var recordedInvocations = RecordedInvocations()
+    public var stubbedResults = StubbedResults()
+
+    public init() {
+        // required
+    }
 
     private var features: [FeatureFlag: Bool] = [:]
 
-    func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
+    public func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
         features[feature] = true
         recordedInvocations.enable.append(feature)
         return .just(())
     }
 
-    func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
+    public func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
         features[feature] = false
         recordedInvocations.disable.append(feature)
         return .just(())
     }
 
-    func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
+    public func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
         recordedInvocations.isEnabled.append(feature)
         return .just(features[feature] ?? false)
     }
 
-    func object<Feature: Codable>(
+    public func object<Feature: Codable>(
         for feature: FeatureFlag,
         type: Feature.Type
     ) -> AnyPublisher<Feature?, FeatureFlagError> {

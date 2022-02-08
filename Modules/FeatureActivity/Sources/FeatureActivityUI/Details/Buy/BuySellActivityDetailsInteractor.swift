@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import RxSwift
 
@@ -15,5 +16,6 @@ final class BuySellActivityDetailsInteractor {
     func fetchCardDetails(for paymentMethodId: String?) -> Single<CardData?> {
         cardListService
             .card(by: paymentMethodId ?? "")
+            .asSingle()
     }
 }

@@ -16,13 +16,31 @@ struct TestEnvironment {
         static let sharedKey = "858dc73f-4877-483a-a10e-54a97e1197ea"
         static let password = "P5E5LZjwmzsv4rZJhd8mVMdVhYfKUHUn"
 
-        static let credentials: Credentials = {
-            Credentials(
-                guid: guid,
-                sharedKey: sharedKey,
-                password: password
-            )
-        }()
+        static let mnemonicWords = [
+            "clump",
+            "clump",
+            "slim",
+            "swap",
+            "town",
+            "hood",
+            "congress",
+            "craft",
+            "girl",
+            "thing",
+            "wreck",
+            "civil"
+        ]
+
+        static let mnemonicString = mnemonicWords.joined(separator: " ")
+
+        // swiftlint:disable:next force_try
+        static let mnemonic = try! Mnemonic.from(mnemonicString: mnemonicString).get()
+
+        static let credentials = Credentials(
+            guid: guid,
+            sharedKey: sharedKey,
+            password: password
+        )
 
         // swiftlint:disable:next line_length
         static let metadataNodeXPriv = "xprv9usvuXHXKk2VR4igogrz9JXxyCEKhauoy4JbHT5TM8HTebb4RUTEtBqwXx1tQApuwYHT1oBM5CLdYTYvqxD8m7P98JC3LcHKRgPMhXpgaHH"
@@ -51,15 +69,13 @@ struct TestEnvironment {
             )
         }()
 
-        static let metadataState: MetadataState = {
-            MetadataState(
-                metadataNodes: metadataNodes,
-                secondPasswordNode: secondPasswordNode
-            )
-        }()
+        static let metadataState = MetadataState(
+            metadataNodes: metadataNodes,
+            secondPasswordNode: secondPasswordNode
+        )
 
         // swiftlint:disable:next line_length
-        static let masterKeyXPrv: String = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
+        static let masterKeyXPrv = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
 
         static let masterKey: MasterKey = {
             // swiftlint:disable force_try
@@ -105,6 +121,8 @@ struct TestEnvironment {
     var metadataNodeXPriv = Default.metadataNodeXPriv
 
     var sharedMetadataNodeXPriv = Default.sharedMetadataNodeXPriv
+
+    var mnemonic = Default.mnemonic
 
     var credentials = Default.credentials
 

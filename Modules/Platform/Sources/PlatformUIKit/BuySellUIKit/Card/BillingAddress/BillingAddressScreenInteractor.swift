@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import RIBs
 import RxRelay
@@ -10,10 +12,10 @@ final class BillingAddressScreenInteractor: Interactor {
 
     // MARK: - Properties
 
-    var selectedCountry: Observable<Country> {
+    var selectedCountry: Observable<FeatureCardsDomain.Country> {
         countrySelectionService.selectedData
             .map(\.id)
-            .compactMap { Country(code: $0) }
+            .compactMap { FeatureCardsDomain.Country(code: $0) }
     }
 
     // MARK: - Setup
@@ -79,7 +81,16 @@ final class BillingAddressScreenInteractor: Interactor {
         Completable
             .create(weak: self) { (self, observer) in
                 let cardData = self.cardData.data(byAppending: billingAddress)
-                let disposable = self.service.add(card: cardData)
+                let dataRepo: DataRepositoryAPI = resolve()
+                let email = dataRepo.user.map(\.email.address)
+                    .catch { _ in
+                        Empty<String, Never>(completeImmediately: false)
+                    }
+                    .eraseToAnyPublisher()
+                let currencyService: FiatCurrencySettingsServiceAPI = resolve()
+                let currency = currencyService.tradingCurrency
+                let disposable = self.service.add(card: cardData, email: email, currency: currency)
+                    .asSingle()
                     .subscribe(
                         onSuccess: { [weak self] data in
                             self?.routingInteractor.authorizeCardAddition(with: data)
@@ -97,5 +108,11 @@ final class BillingAddressScreenInteractor: Interactor {
 
     func previous() {
         routingInteractor.previousRelay.accept(())
+    }
+}
+
+extension FeatureCardsDomain.Country {
+    var platform: PlatformKit.Country {
+        .init(code: code) ?? .US
     }
 }

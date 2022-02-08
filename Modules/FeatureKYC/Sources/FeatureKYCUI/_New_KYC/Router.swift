@@ -52,6 +52,7 @@ public protocol Routing {
     ///   - requiredTier: the minimum KYC tier the user needs to be on to avoid presenting the KYC Flow
     func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
+        requireEmailVerification: Bool,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError>
 
@@ -179,14 +180,19 @@ public class Router: Routing {
 
     public func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
+        requireEmailVerification: Bool,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         // step 1: check email verification status and present email verification flow if email is unverified.
         presentEmailVerificationIfNeeded(from: presenter)
-            // step 2: check KYC status and present KYC flow if user is not verified.
-            .flatMap { [presentKYCIfNeeded] _ -> AnyPublisher<FlowResult, RouterError> in
-                // Even if the user skips emai verification, move on to KYC
-                presentKYCIfNeeded(presenter, requiredTier)
+            // step 2: check KYC status and present KYC flow if user has verified their email address.
+            .flatMap { [presentKYCIfNeeded] result -> AnyPublisher<FlowResult, RouterError> in
+                if requireEmailVerification {
+                    guard case .completed = result else {
+                        return .just(.abandoned)
+                    }
+                }
+                return presentKYCIfNeeded(presenter, requiredTier)
             }
             .eraseToAnyPublisher()
     }

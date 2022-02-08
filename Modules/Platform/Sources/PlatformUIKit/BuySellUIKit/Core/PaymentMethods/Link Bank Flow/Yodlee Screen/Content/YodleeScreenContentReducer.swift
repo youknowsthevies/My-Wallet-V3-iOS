@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureOpenBankingUI
 import Localization
 import PlatformKit
 
@@ -215,79 +216,37 @@ final class YodleeScreenContentReducer {
 
     // MARK: Private
 
-    private func linkingBankFailureButtonContent(from linkageError: LinkedBankData.LinkageError) -> YodleeButtonsContent {
+    private func linkingBankFailureButtonContent(
+        from linkageError: LinkedBankData.LinkageError
+    ) -> YodleeButtonsContent {
         switch linkageError {
         case .alreadyLinked:
             return okButtonContent()
-        case .unsuportedAccount:
+        case .infoNotFound:
             return tryDifferentBankAndCancelButtonContent()
-        case .namesMismatched:
+        case .nameMismatch:
             return tryDifferentBankAndCancelButtonContent()
-        case .timeout:
+        case .failed:
             return tryAgainAndCanceButtonContent()
-        case .unknown:
+        default:
             return tryAgainAndCanceButtonContent()
         }
     }
 
-    private func linkingBankFailureTitles(from linkageError: LinkedBankData.LinkageError) -> (title: String, subtitle: InteractableTextViewModel) {
-        switch linkageError {
-        case .alreadyLinked:
-            return (
-                LocalizedStrings.FailurePendingContent.AlreadyLinked.title,
-                .init(
-                    inputs: [
-                        .text(string: LocalizedStrings.FailurePendingContent.AlreadyLinked.subtitle),
-                        .url(string: LocalizedStrings.FailurePendingContent.contactUs, url: supportUrl)
-                    ],
-                    textStyle: subtitleTextStyle,
-                    linkStyle: subtitleLinkTextStyle,
-                    alignment: .center
-                )
+    private func linkingBankFailureTitles(
+        from linkageError: LinkedBankData.LinkageError
+    ) -> (title: String, subtitle: InteractableTextViewModel) {
+        let ui = BankState.UI.errors[.code(linkageError.rawValue), default: BankState.UI.defaultError]
+        return (
+            ui.info.title,
+            .init(
+                inputs: [
+                    .text(string: ui.info.subtitle)
+                ],
+                textStyle: subtitleTextStyle,
+                linkStyle: subtitleLinkTextStyle,
+                alignment: .center
             )
-        case .namesMismatched:
-            return (
-                LocalizedStrings.FailurePendingContent.AccountNamesMismatched.title,
-                .init(
-                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountNamesMismatched.subtitle)],
-                    textStyle: subtitleTextStyle,
-                    linkStyle: subtitleLinkTextStyle,
-                    alignment: .center
-                )
-            )
-        case .unsuportedAccount:
-            return (
-                LocalizedStrings.FailurePendingContent.AccountUnsupported.title,
-                .init(
-                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountUnsupported.subtitle)],
-                    textStyle: subtitleTextStyle,
-                    linkStyle: subtitleLinkTextStyle,
-                    alignment: .center
-                )
-            )
-        case .timeout:
-            return (
-                LocalizedStrings.FailurePendingContent.Timeout.title,
-                .init(
-                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.Timeout.subtitle)],
-                    textStyle: subtitleTextStyle,
-                    linkStyle: subtitleLinkTextStyle,
-                    alignment: .center
-                )
-            )
-        case .unknown:
-            return (
-                LocalizedStrings.FailurePendingContent.Generic.title,
-                .init(
-                    inputs: [
-                        .text(string: LocalizedStrings.FailurePendingContent.Generic.subtitle),
-                        .url(string: LocalizedStrings.FailurePendingContent.contactSupport, url: supportUrl)
-                    ],
-                    textStyle: subtitleTextStyle,
-                    linkStyle: subtitleLinkTextStyle,
-                    alignment: .center
-                )
-            )
-        }
+        )
     }
 }

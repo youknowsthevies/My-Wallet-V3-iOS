@@ -70,6 +70,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enables the new pricing model
     case newQuoteForSimpleBuy
 
+    /// Enables the use of the hot wallet address for custodial transactions.
+    case hotWalletCustodial
+
     // MARK: - Account Picker
 
     /// New SwiftUI account picker from `FeatureAccountPicker`
@@ -137,6 +140,8 @@ extension AppFeature {
             return "ios_fab_data"
         case .newOnboardingTour:
             return "ios_ff_new_onboarding_tour"
+        case .hotWalletCustodial:
+            return "ios_ff_hot_wallet_custodial"
         }
     }
 
@@ -178,7 +183,7 @@ extension AppFeature {
         case .newLimitsUIEnabled:
             return true
         case .newQuoteForSimpleBuy:
-            return false
+            return true
         case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
@@ -189,6 +194,8 @@ extension AppFeature {
             return true
         case .newOnboardingTour:
             return true
+        case .hotWalletCustodial:
+            return false
         }
     }
 }

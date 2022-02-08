@@ -97,7 +97,7 @@ public struct SeedPhraseView: View {
             .disabled(!viewStore.seedPhraseScore.isValid)
             .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.continueButton)
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.resetPasswordState,
@@ -114,7 +114,7 @@ public struct SeedPhraseView: View {
                 label: EmptyView.init
             )
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.lostFundsWarningState,
@@ -131,7 +131,7 @@ public struct SeedPhraseView: View {
                 label: EmptyView.init
             )
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.importWalletState,
@@ -163,7 +163,6 @@ public struct SeedPhraseView: View {
             )
         }
         .modifier(CustomNavigationTitle(viewStore: viewStore))
-        .hideBackButtonTitle()
         .padding(
             EdgeInsets(
                 top: Layout.topPadding,
@@ -179,20 +178,24 @@ public struct SeedPhraseView: View {
 
         @ViewBuilder
         func body(content: Content) -> some View {
-            if viewStore.context == .restoreWallet {
-                content.whiteNavigationBarStyle().toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Text(LocalizedString.NavigationTitle.restoreWallet)
-                            .font(Font(weight: .semibold, size: Layout.largeNavigationTitleFontSize))
-                            .padding(.top, Layout.largeNavigationTitleTopPadding)
+            content
+                .primaryNavigation(
+                    title: viewStore.context == .restoreWallet ?
+                        LocalizedString.NavigationTitle.restoreWallet :
+                        LocalizedString.NavigationTitle.troubleLoggingIn
+                ) {
+                    Button {
+                        viewStore.send(.restoreWallet(.metadataRecovery(seedPhrase: viewStore.seedPhrase)))
+                    } label: {
+                        Text(LocalizedString.next)
+                            .typography(.paragraph2)
+                            .foregroundColor(
+                                !viewStore.seedPhraseScore.isValid ? .semantic.muted : .semantic.primary
+                            )
                     }
+                    .disabled(!viewStore.seedPhraseScore.isValid)
+                    .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.nextButton)
                 }
-            } else {
-                content.whiteNavigationBarStyle().navigationBarTitle(
-                    LocalizedString.NavigationTitle.troubleLoggingIn,
-                    displayMode: .inline
-                )
-            }
         }
     }
 
@@ -278,7 +281,8 @@ struct SeedPhraseView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     externalAppOpener: ToLogAppOpener(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

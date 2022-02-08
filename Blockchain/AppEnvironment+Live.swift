@@ -27,6 +27,7 @@ extension AppEnvironment {
             backgroundAppHandler: resolve(),
             portfolioSyncingService: resolve(),
             mobileAuthSyncService: resolve(),
+            pushNotificationsRepository: resolve(),
             resetPasswordService: resolve(),
             accountRecoveryService: resolve(),
             userService: resolve(),
@@ -43,7 +44,8 @@ extension AppEnvironment {
             cardService: resolve(),
             coincore: resolve(),
             erc20CryptoAssetService: resolve(),
-            walletService: .live(fetcher: DIKit.resolve()),
+            walletService: .live(fetcher: DIKit.resolve(), recovery: DIKit.resolve()),
+            walletPayloadService: resolve(),
             walletManager: resolve(),
             walletUpgradeService: resolve(),
             walletRepoPersistence: resolve(),
@@ -55,7 +57,8 @@ extension AppEnvironment {
             mainQueue: .main,
             appStoreOpener: resolve(),
             secondPasswordPrompter: resolve(),
-            buildVersionProvider: Bundle.versionAndBuildNumber
+            buildVersionProvider: Bundle.versionAndBuildNumber,
+            externalAppOpener: resolve()
         )
     }
 }

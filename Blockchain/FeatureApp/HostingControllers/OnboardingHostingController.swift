@@ -9,6 +9,7 @@ import FeatureAuthenticationUI
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 /// Acts as a container for Pin screen and Login screen
@@ -85,25 +86,15 @@ final class OnboardingHostingController: UIViewController {
             .store(in: &cancellables)
 
         store
-            .scope(state: \.passwordScreen, action: Onboarding.Action.passwordScreen)
-            .ifLet(then: { [weak self] _ in
+            .scope(state: \.passwordRequiredState, action: Onboarding.Action.passwordScreen)
+            .ifLet(then: { [weak self] passwordRequiredStore in
                 guard let self = self else { return }
-                let walletFetcher: (String) -> Void = { [weak self] password in
-                    self?.viewStore.send(.passwordScreen(.authenticate(password)))
-                }
-                let forgetWalletRouting: () -> Void = { [weak self] in
-                    self?.viewStore.send(.passwordScreen(.forgetWallet))
-                }
-                let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
-                let presenter = PasswordRequiredScreenPresenter(
-                    interactor: interactor,
-                    forgetWalletRouting: forgetWalletRouting
+                let hostingController = UIHostingController(
+                    rootView: self.makePasswordRequiredView(store: passwordRequiredStore)
                 )
-                let viewController = PasswordRequiredViewController(presenter: presenter)
-                let navigationController = UINavigationController(rootViewController: viewController)
-
-                self.transitionFromCurrentController(to: navigationController)
-                self.currentController = navigationController
+                self.transitionFromCurrentController(to: hostingController)
+                hostingController.view.constraint(edgesTo: self.view)
+                self.currentController = hostingController
             })
             .store(in: &cancellables)
 
@@ -128,6 +119,16 @@ final class OnboardingHostingController: UIViewController {
             TourViewAdapter(store: store, featureFlagService: self.featureFlagService)
                 .primaryNavigation()
                 .navigationBarHidden(true)
+        }
+    }
+
+    @ViewBuilder
+    private func makePasswordRequiredView(
+        store: Store<PasswordRequiredState, PasswordRequiredAction>
+    ) -> some View {
+        PrimaryNavigationView {
+            PasswordRequiredView(store: store)
+                .primaryNavigation()
         }
     }
 

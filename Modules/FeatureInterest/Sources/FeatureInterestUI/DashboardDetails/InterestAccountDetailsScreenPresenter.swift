@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 public final class InterestAccountDetailsScreenPresenter {
 
@@ -95,8 +96,8 @@ public final class InterestAccountDetailsScreenPresenter {
         }
     }
 
-    private let primaryButtonViewModel: ButtonViewModel = .primary(with: LocalizationId.transfer)
-    private let secondaryButtonViewModel: ButtonViewModel = .secondary(with: LocalizationId.withdraw)
+    private let primaryButtonViewModel: ButtonViewModel
+    private let secondaryButtonViewModel: ButtonViewModel
     private let interactor: InterestAccountDetailsScreenInteractor
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let tabSwapping: TabSwapping
@@ -110,6 +111,10 @@ public final class InterestAccountDetailsScreenPresenter {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.tabSwapping = tabSwapping
         self.interactor = interactor
+        let code = interactor.cryptoCurrency.displayCode
+
+        primaryButtonViewModel = .primary(with: LocalizationId.add + " \(code)")
+        secondaryButtonViewModel = .secondary(with: LocalizationId.withdraw + " \(code)")
 
         primaryButtonViewModel
             .tapRelay

@@ -17,15 +17,28 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderDirection: OrderDirection = .fromUserKey
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let quotesEngine: SwapQuotesEngine
+    let quotesEngine: SellQuotesEngine
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
+
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
+    lazy var quote: Observable<PricedQuote> = {
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+            .asObservable()
+    }()
+
     init(
-        quotesEngine: SwapQuotesEngine,
+        quotesEngine: SellQuotesEngine,
         requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
@@ -81,8 +94,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        quotesEngine
-            .getRate(direction: orderDirection, pair: pair)
+        quote
             .take(1)
             .asSingle()
             .flatMap(weak: self) { (self, pricedQuote) -> Single<PendingTransaction> in
@@ -141,8 +153,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: false)
-                                    .asObservable()
-                                    .ignoreElements()
                                     .asCompletable()
                                     .catch { _ in .empty() }
                                     .andThen(.error(error))
@@ -150,8 +160,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: true)
-                                    .asObservable()
-                                    .ignoreElements()
                                     .asCompletable()
                                     .catch { _ in .empty() }
                                     .andThen(.just(result))
@@ -178,7 +186,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 self.onChainEngine
                     .update(amount: amount, pendingTransaction: pendingTransaction)
                     .do(onSuccess: { pendingTransaction in
-                        self.quotesEngine.updateAmount(pendingTransaction.amount.amount)
+                        self.quotesEngine.update(amount: pendingTransaction.amount.amount)
                     })
                     .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
                         self.clearConfirmations(pendingTransaction: pendingTransaction)
@@ -187,8 +195,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        quotesEngine
-            .getRate(direction: orderDirection, pair: pair)
+        quote
             .take(1)
             .asSingle()
             .map { [targetAsset, sourceAccount, target] pricedQuote -> (PendingTransaction, PricedQuote) in

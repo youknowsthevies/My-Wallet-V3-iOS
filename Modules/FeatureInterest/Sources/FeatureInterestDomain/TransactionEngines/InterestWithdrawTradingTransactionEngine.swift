@@ -8,7 +8,8 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-public final class InterestWithdrawTradingTransationEngine: InterestTransactionEngine {
+/// Transaction Engine for Interest Withdraw to a Trading Account.
+public final class InterestWithdrawTradingTransactionEngine: InterestTransactionEngine {
 
     // MARK: - InterestTransactionEngine
 
@@ -83,7 +84,7 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
-                schedulerIdentifier: "InterestWithdrawTradingTransationEngine"
+                schedulerIdentifier: "InterestWithdrawTradingTransactionEngine"
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in

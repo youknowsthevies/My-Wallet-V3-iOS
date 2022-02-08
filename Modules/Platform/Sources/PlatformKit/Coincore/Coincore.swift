@@ -5,6 +5,7 @@ import DIKit
 import MoneyKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 public enum CoincoreError: Error, Equatable {
     case failedToInitializeAsset(error: AssetError)

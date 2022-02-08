@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureCardsDomain
 import MoneyKit
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 

@@ -17,16 +17,14 @@ extension DependencyContainer {
 
     public static var metadataDataKit = module {
 
+        factory { Metadata.Config.default() }
+
+        factory(tag: DIKitMetadataTags.metadata) { () -> Network.Config in
+            Network.Config.metadata()
+        }
+
         factory(tag: DIKitMetadataTags.metadata) { () -> RequestBuilder in
-            // TODO: Load config from file
-            RequestBuilder(
-                config: Network.Config(
-                    scheme: "https",
-                    host: "api.blockchain.info",
-                    code: "35e77459-723f-48b0-8c9e-6e9e8f54fbd3",
-                    components: []
-                )
-            )
+            RequestBuilder.metadataBuilder()
         }
 
         factory { () -> MetadataRepositoryAPI in
@@ -39,5 +37,40 @@ extension DependencyContainer {
                 requestBuilder: DIKit.resolve(tag: DIKitMetadataTags.metadata)
             )
         }
+    }
+}
+
+extension Metadata.Config {
+
+    fileprivate static func `default`(
+        code: APICode = resolve()
+    ) -> Metadata.Config {
+        Metadata.Config(
+            host: InfoDictionaryHelper.value(for: .apiURL),
+            code: code
+        )
+    }
+}
+
+extension Network.Config {
+
+    fileprivate static func metadata(
+        config: Metadata.Config = resolve()
+    ) -> Network.Config {
+        Network.Config(
+            scheme: "https",
+            host: config.host,
+            code: config.code,
+            components: []
+        )
+    }
+}
+
+extension RequestBuilder {
+
+    fileprivate static func metadataBuilder(
+        config: Network.Config = resolve(tag: DIKitMetadataTags.metadata)
+    ) -> RequestBuilder {
+        RequestBuilder(config: config)
     }
 }

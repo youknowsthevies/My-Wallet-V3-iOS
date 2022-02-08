@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import FeatureCardsDomain
 import MoneyKit
 
 public struct BuyOrderDetails {
@@ -18,6 +19,7 @@ public struct BuyOrderDetails {
     public let paymentMethod: PaymentMethod.MethodType
 
     public let creationDate: Date?
+    public let error: String?
 
     public internal(set) var paymentMethodId: String?
 
@@ -27,6 +29,7 @@ public struct BuyOrderDetails {
 
     // MARK: - Setup
 
+    // swiftlint:disable cyclomatic_complexity
     init?(recorder: AnalyticsEventRecorderAPI, response: OrderPayload.Response) {
         guard let state = State(rawValue: response.state) else {
             return nil
@@ -81,5 +84,9 @@ public struct BuyOrderDetails {
         if creationDate == nil {
             recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }
+
+        error = response.paymentError ?? response.attributes?.error
     }
 }
+
+extension OrderPayload.Response: OrderPayloadResponseAPI {}

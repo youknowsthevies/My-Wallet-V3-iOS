@@ -34,6 +34,7 @@ import SwiftUI
 public struct PrimaryRow<Leading: View, Trailing: View>: View {
 
     private let title: String
+    private let caption: String?
     private let subtitle: String?
     private let description: String?
     private let tags: [Tag]
@@ -49,6 +50,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     /// Only Title is mandatory, rest of the parameters are optional and the row will form itself depending on the given data
     /// - Parameters:
     ///   - title: Title of the row
+    ///   - caption: Optional text shown on top of the title
     ///   - subtitle: Optional subtitle on the main vertical content view
     ///   - description: Optional description text on the main vertical content view
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
@@ -57,6 +59,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     ///   - trailing: Optional view on the trailing part of the row. If no view is provided, a chevron icon is added automatically.
     public init(
         title: String,
+        caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
@@ -66,6 +69,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         action: (() -> Void)? = nil
     ) {
         self.title = title
+        self.caption = caption
         self.subtitle = subtitle
         self.description = description
         self.tags = tags
@@ -110,9 +114,16 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     @ViewBuilder var mainContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 5) {
+                if let caption = caption {
+                    Text(caption)
+                        .typography(.caption1)
+                        .foregroundColor(.semantic.body)
+                }
+
                 Text(title)
                     .typography(.body2)
                     .foregroundColor(.semantic.title)
+
                 if let subtitle = subtitle {
                     Text(subtitle)
                         .typography(.paragraph1)
@@ -172,6 +183,7 @@ extension PrimaryRow where Leading == EmptyView {
     ///   - trailing: Optional view displayed at the trailing edge.
     public init(
         title: String,
+        caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
@@ -180,6 +192,7 @@ extension PrimaryRow where Leading == EmptyView {
     ) {
         self.init(
             title: title,
+            caption: caption,
             subtitle: subtitle,
             description: description,
             tags: tags,
@@ -202,6 +215,7 @@ extension PrimaryRow where Trailing == ChevronRight {
     ///   - leading: View displayed at the leading edge.
     public init(
         title: String,
+        caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
@@ -210,6 +224,7 @@ extension PrimaryRow where Trailing == ChevronRight {
     ) {
         self.init(
             title: title,
+            caption: caption,
             subtitle: subtitle,
             description: description,
             tags: tags,
@@ -231,6 +246,7 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
     ///   - isSelected: Binding for the selection state
     public init(
         title: String,
+        caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
@@ -238,6 +254,7 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
     ) {
         self.init(
             title: title,
+            caption: caption,
             subtitle: subtitle,
             description: description,
             tags: tags,

@@ -71,6 +71,15 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         super.didBecomeActive()
 
         let methods = paymentMethodService.suggestedMethods
+            .map { suggestedMethods in
+                suggestedMethods.sorted { lhs, _ in
+                    if case .suggested(let method) = lhs {
+                        return method.type.isCard // bring card payment method to top
+                    } else {
+                        return false
+                    }
+                }
+            }
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .map { [weak self] (methods: [PaymentMethodType]) -> [AddNewPaymentMethodCellViewModelItem] in
                 guard let self = self else { return [] }
@@ -136,7 +145,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     thumbImage: "icon-deposit-cash",
                     title: LocalizedString.DepositCash.title,
                     descriptions: [
-                        .init(title: LocalizedString.DepositCash.description, titleColor: .titleText, titleFontSize: 14)
+                        .init(title: LocalizedString.DepositCash.description, titleColor: .descriptionText, titleFontSize: 12)
                     ],
                     badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.depositCash
@@ -153,7 +162,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                             titleFontSize: 12
                         )
                     ],
-                    badgeTitle: LocalizedString.Card.badgeTitle,
+                    badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard
                 )
             case .bankTransfer:
@@ -172,7 +181,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                             titleFontSize: 12
                         )
                     ],
-                    badgeTitle: LocalizedString.Card.badgeTitle,
+                    badgeTitle: nil,
                     uniqueAccessibilityIdentifier: AccessibilityId.linkedBank
                 )
             case .bankAccount:

@@ -12,6 +12,7 @@ import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import UIComponentsKit
 
 final class QRCodeScannerAdapter {
 

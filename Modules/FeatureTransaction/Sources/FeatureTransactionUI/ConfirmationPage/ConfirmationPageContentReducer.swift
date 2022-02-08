@@ -65,11 +65,16 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
+    private let withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI
 
     // MARK: - Private Properties
 
-    init(messageRecorder: MessageRecording = resolve()) {
+    init(
+        messageRecorder: MessageRecording = resolve(),
+        withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI = resolve()
+    ) {
         self.messageRecorder = messageRecorder
+        self.withdrawalLocksCheckRepository = withdrawalLocksCheckRepository
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
         memoModel = TextFieldViewModel(
@@ -332,19 +337,52 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
-            let content = LabelContent(
-                text: TransactionFlowDescriptor
-                    .confirmDisclaimerText(
-                        action: state.action,
-                        currencyCode: state.asset.code,
-                        accountLabel: state.destination?.label ?? ""
-                    ),
-                font: .main(.medium, 12),
-                color: .descriptionText,
-                alignment: .left,
-                accessibility: .id("disclaimer")
+            let disclaimerText = TransactionFlowDescriptor
+                .confirmDisclaimerText(
+                    action: state.action,
+                    currencyCode: state.asset.code,
+                    accountLabel: state.destination?.label ?? ""
+                )
+            let labelContentInteractor = DefaultLabelContentInteractor()
+            let labelContentPresenter = DefaultLabelContentPresenter(
+                interactor: labelContentInteractor,
+                descriptors: .init(
+                    fontWeight: .medium,
+                    contentColor: .descriptionText,
+                    fontSize: 12,
+                    lineBreakMode: .byWordWrapping,
+                    accessibility: .id("disclaimer")
+                )
             )
-            disclaimer.append(.staticLabel(content))
+            if state.action == .buy {
+                let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
+                withdrawalLocksCheckRepository.withdrawalLocksCheck(
+                    paymentMethod: paymentMethod?.type.rawType.rawValue ?? "",
+                    currencyCode: state.source?.currencyType.code ?? ""
+                )
+                .asObservable()
+                .map {
+                    DefaultLabelContentInteractor.InteractionState.loaded(
+                        next: .init(
+                            text: [
+                                disclaimerText,
+                                TransactionFlowDescriptor.confirmDisclaimerForBuy(
+                                    paymentMethod: paymentMethod,
+                                    lockDays: $0.lockDays
+                                )
+                            ].joined(separator: " ")
+                        )
+                    )
+                }
+                .startWith(.loading)
+                .bind(to: labelContentInteractor.stateRelay)
+                .disposed(by: disposeBag)
+            } else {
+                labelContentInteractor.stateRelay.accept(
+                    .loaded(next: .init(text: disclaimerText))
+                )
+            }
+            disclaimer.append(.label(labelContentPresenter))
         }
 
         let topCells: [DetailsScreen.CellType] = imageNoticeModels + noticeModels

@@ -58,46 +58,42 @@ final class BankLinkTests: OpenBankingTestCase {
             URLRequest(.get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c")
         ] = nil
 
-        store.assert(
-            .send(.request) { state in
-                state.ui = .communicating(to: state.name)
-            },
-            .do { [self] in scheduler.advance(by: .seconds(1)) },
-            .send(.failure(.timeout)) { state in
-                state.ui = .error(.timeout)
-            },
-            .send(.cancel)
-        )
+        store.send(.request) { state in
+            state.ui = .communicating(to: state.name)
+        }
+
+        scheduler.advance(by: .seconds(1))
+
+        store.send(.failure(.timeout)) { [self] state in
+            state.ui = .error(.timeout, in: environment)
+        }
+        store.send(.cancel)
     }
 
     func test_request() throws {
 
-        try store.assert(
-            .send(.request) { state in
-                state.ui = .communicating(to: state.name)
-            },
-            .do { [self] in scheduler.advance() },
-            .receive(.waitingForConsent),
-            .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
-                state.ui = .waiting(for: state.name)
-            },
-            .do { [self] in state.set(.is.authorised, to: true) },
-            .do { [self] in scheduler.advance() },
-            .receive(.finalise(.linked(account, institution: institution))) { state in
-                state.ui = .linked(institution: state.name)
-            },
-            .send(.cancel)
-        )
+        store.send(.request) { state in
+            state.ui = .communicating(to: state.name)
+        }
+        scheduler.advance()
+        store.receive(.waitingForConsent)
+        try store.receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
+            state.ui = .waiting(for: state.name)
+        }
+        state.set(.is.authorised, to: true)
+        scheduler.advance()
+        store.receive(.finalise(.linked(account, institution: institution))) { state in
+            state.ui = .linked(institution: state.name)
+        }
+        store.send(.cancel)
 
         try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())
     }
 
     func test_fail() throws {
-        store.assert(
-            .send(.failure(.bankTransferAccountAlreadyLinked)) { state in
-                state.ui = .error(.bankTransferAccountAlreadyLinked)
-            }
-        )
+        store.send(.failure(.bankTransferAccountAlreadyLinked)) { [self] state in
+            state.ui = .error(.bankTransferAccountAlreadyLinked, in: environment)
+        }
     }
 
     func test_dismiss() throws {
@@ -161,22 +157,24 @@ final class BankPaymentTests: OpenBankingTestCase {
 
     func test_request() throws {
 
-        try store.assert(
-            .send(.request) { state in
-                state.ui = .communicating(to: state.name)
-            },
-            .do { [self] in scheduler.advance() },
-            .receive(.waitingForConsent),
-            .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
-                state.ui = .waiting(for: state.name)
-            },
-            .do { [self] in state.set(.is.authorised, to: true) },
-            .do { [self] in scheduler.advance() },
-            .receive(.finalise(.deposited(details))) { [self] state in
-                state.ui = .deposit(success: details, in: environment)
-            },
-            .send(.cancel)
-        )
+        store.send(.request) { state in
+            state.ui = .communicating(to: state.name)
+        }
+
+        scheduler.advance()
+
+        store.receive(.waitingForConsent)
+        try store.receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
+            state.ui = .waiting(for: state.name)
+        }
+
+        state.set(.is.authorised, to: true)
+        scheduler.advance()
+
+        store.receive(.finalise(.deposited(details))) { [self] state in
+            state.ui = .deposit(success: details, in: environment)
+        }
+        store.send(.cancel)
 
         try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())
     }

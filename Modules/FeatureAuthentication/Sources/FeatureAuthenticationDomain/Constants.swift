@@ -37,6 +37,10 @@ public enum Constants {
     }
 
     public enum SupportURL {
+        public enum ForgotPassword {
+            public static let supportLink = "https://support.blockchain.com/hc/en-us/articles/211205343-I-forgot-my-password-What-can-you-do-to-help-"
+        }
+
         public enum ResetPassword {
             public static let identityVerificationOverview =
                 "https://support.blockchain.com/hc/en-us/articles/360018080172-Identity-Verification-Overview"

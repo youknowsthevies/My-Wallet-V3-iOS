@@ -67,7 +67,7 @@ public let withdrawalLockInfoReducer = Reducer<
     case .loadWithdrawalLocks:
         return .merge(
             environment.withdrawalLockService
-                .withdrawalLocks()
+                .withdrawalLocks
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map { withdrawalLocks in

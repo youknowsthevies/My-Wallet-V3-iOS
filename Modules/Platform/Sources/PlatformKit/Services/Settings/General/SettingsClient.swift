@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
-import FeatureAuthenticationDomain
 import NetworkKit
 import RxSwift
+import WalletPayloadKit
 
 public enum CurrencyUpdateError: LocalizedError {
     case credentialsError(MissingCredentialsError)

@@ -157,7 +157,7 @@ public struct CredentialsView: View {
             }
             .disabled(viewStore.isLoading || viewStore.walletPairingState.walletGuid.isEmpty)
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.seedPhraseState,
@@ -182,8 +182,19 @@ public struct CredentialsView: View {
                 trailing: Layout.trailingPadding
             )
         )
-        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
-        .hideBackButtonTitle()
+        .primaryNavigation(title: LocalizedString.navigationTitle) {
+            Button {
+                viewStore.send(.continueButtonTapped)
+            } label: {
+                Text(LocalizedString.Button.next)
+                    .typography(.paragraph2)
+                    .foregroundColor(
+                        viewStore.walletPairingState.walletGuid.isEmpty ? .semantic.muted : .semantic.primary
+                    )
+            }
+            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
+            .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.nextButton)
+        }
         .onAppear {
             viewStore.send(.didAppear(context: context))
         }
@@ -281,10 +292,10 @@ public struct CredentialsView: View {
             onReturnTapped: {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = false
-                if viewStore.twoFAState != nil {
-                    viewStore.send(.continueButtonTapped)
-                } else {
+                if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                     self.isTwoFAFieldFirstResponder = true
+                } else {
+                    viewStore.send(.continueButtonTapped)
                 }
             },
             trailingAccessoryView: {
@@ -352,7 +363,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecorder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

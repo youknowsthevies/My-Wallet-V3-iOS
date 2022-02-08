@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureCardsDomain
 import MoneyKit
 import RxRelay
 import RxSwift
@@ -375,7 +376,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         Single
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
-                cardListService.fetchCards(),
+                cardListService.fetchCards().asSingle(),
                 tradingBalanceService.balances.asSingle(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
@@ -417,7 +418,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         Single
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
-                cardListService.cardsSingle,
+                cardListService.cards.asSingle(),
                 tradingBalanceService.balances.asSingle(),
                 linkedBankService.fetchLinkedBanks(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
@@ -556,7 +557,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         Observable
             .combineLatest(
                 paymentMethodsService.paymentMethods,
-                cardListService.cards,
+                cardListService.cards.asObservable(),
                 tradingBalanceService.balances.asObservable(),
                 linkedBankService.fetchLinkedBanks().asObservable(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()

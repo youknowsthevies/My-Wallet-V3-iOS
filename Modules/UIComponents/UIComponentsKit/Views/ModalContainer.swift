@@ -13,6 +13,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
     public enum HeaderStyle {
         case small
+        case medium
         case large
     }
 
@@ -42,7 +43,6 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
     public var body: some View {
         VStack(spacing: Spacing.padding3) {
             header()
-                .padding(.horizontal, Spacing.padding3)
 
             content()
                 .frame(maxWidth: .infinity)
@@ -55,6 +55,8 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
         switch headerStyle {
         case .small:
             smallHeader
+        case .medium:
+            mediumHeader
         case .large:
             largeHeader
         }
@@ -68,11 +70,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     if let title = title {
                         Text(title)
                             .typography(.title3)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .padding(.top, 12) // pad to half the close button
@@ -81,7 +85,42 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
                 closeButton
             }
+            .padding(.horizontal, Spacing.padding3)
         }
+    }
+
+    private var mediumHeader: some View {
+        VStack(spacing: Spacing.padding2) {
+            VStack(spacing: Spacing.padding1) {
+                closeHandle
+
+                HStack(alignment: .top) {
+                    Spacer()
+                    closeButton
+                }
+            }
+            .padding(.horizontal, Spacing.padding3)
+
+            topAccessory()
+
+            if title != nil || subtitle != nil {
+                VStack(spacing: Spacing.baseline) {
+                    if let title = title {
+                        Text(title)
+                            .typography(.title3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(.horizontal, Spacing.padding3)
+            }
+        }
+        .multilineTextAlignment(.center)
     }
 
     private var largeHeader: some View {
@@ -94,6 +133,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     closeButton
                 }
             }
+            .padding(.horizontal, Spacing.padding3)
 
             topAccessory()
 
@@ -102,13 +142,16 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                     if let title = title {
                         Text(title)
                             .typography(.title2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+                .padding(.horizontal, Spacing.padding3)
             }
         }
         .multilineTextAlignment(.center)

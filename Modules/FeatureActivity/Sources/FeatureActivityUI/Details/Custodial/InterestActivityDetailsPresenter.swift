@@ -88,23 +88,27 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .transfer:
-            title = LocalizedString.Title.transfer
+            title = LocalizedString.Title.added + " \(event.cryptoCurrency.displayCode)"
+            let crypto = event.cryptoCurrency
+            let name = crypto.name
             let destination = event.cryptoCurrency.code + " \(LocalizedString.rewardsAccount)"
+
             toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            fromPresenter = DefaultLineItemCellPresenter(
-                interactor: DefaultLineItemCellInteractor(
-                    title: DefaultLabelContentInteractor(
-                        knownValue: LocalizationConstants.LineItem.Transactional.from
-                    ),
-                    description: AccountNameLabelContentInteractor(
-                        address: event.accountRef,
-                        currencyType: .crypto(event.cryptoCurrency)
+            if event.isInternalTransfer {
+                fromPresenter = TransactionalLineItem
+                    .from(name + " \(crypto.defaultTradingWalletName)")
+                    .defaultPresenter(
+                        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
                     )
-                ),
-                accessibilityIdPrefix: ""
-            )
+            } else {
+                fromPresenter = TransactionalLineItem
+                    .from(name + " \(crypto.defaultWalletName)")
+                    .defaultPresenter(
+                        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+                    )
+            }
         case .unknown:
             unimplemented()
         }

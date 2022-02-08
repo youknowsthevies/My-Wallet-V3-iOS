@@ -137,6 +137,7 @@ final class ReceiveScreenPresenter {
 
         qrCodeMetadata
             .map(\.address)
+            .catchAndReturn("")
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
             .bindAndCatch(to: addressLabelContentPresenting.interactor.stateRelay)
@@ -144,7 +145,7 @@ final class ReceiveScreenPresenter {
 
         interactor.account
             .balance
-            .map { $0.toDisplayString(includeSymbol: true) }
+            .map(\.displayString)
             .asObservable()
             .mapToLabelContentStateInteraction()
             .catchAndReturn(.loading)
@@ -153,6 +154,7 @@ final class ReceiveScreenPresenter {
 
         state
             .map(\.memo)
+            .catchAndReturn(nil)
             .compactMap { $0 }
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
@@ -167,47 +169,52 @@ final class ReceiveScreenPresenter {
         // MARK: - Copy
 
         copyButton.tapRelay
-            .bind { [eventsRecorder] in
+            .bind { [eventsRecorder, account = interactor.account] in
                 eventsRecorder.record(event:
                     AnalyticsEvents.New.Receive.receiveDetailsCopied(
-                        accountType: .init(self.interactor.account as? CryptoAccount),
-                        currency: self.interactor.account.currencyType.code
+                        accountType: .init(account as? CryptoAccount),
+                        currency: account.currencyType.code
                     )
                 )
             }
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .withLatestFrom(qrCodeMetadata.map(\.absoluteString))
+            .withLatestFrom(qrCodeMetadata.map(\.address))
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .bindAndCatch(weak: self) { _, _ in
+            .bind(onNext: { _ in
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                 feedbackGenerator.prepare()
                 feedbackGenerator.impactOccurred()
-            }
+            })
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .map {
+            .map { _ in
                 ButtonViewModel.Theme(
                     backgroundColor: .successButton,
                     contentColor: .white,
                     text: LocalizedString.Button.copied
                 )
             }
-            .bindAndCatch(weak: self) { (self, theme) in
-                self.copyButton.animate(theme: theme)
-            }
+            .bind(onNext: { [copyButton] theme in
+                copyButton.animate(theme: theme)
+            })
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
             .delay(.seconds(2), scheduler: MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self) in
-                self.copyButton.animate(theme: ButtonViewModel.secondary(with: LocalizedString.Button.copy).theme)
+            .map { _ in
+                ButtonViewModel.secondary(
+                    with: LocalizedString.Button.copy
+                ).theme
             }
+            .bind(onNext: { [copyButton] theme in
+                copyButton.animate(theme: theme)
+            })
             .disposed(by: disposeBag)
 
         // MARK: - Share

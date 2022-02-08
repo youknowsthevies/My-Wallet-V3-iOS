@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureCardsDomain
 import FeatureSettingsDomain
 import Localization
 import MoneyKit
@@ -18,10 +19,6 @@ import ToolKit
 import UIKit
 import WebKit
 
-public protocol AppCoordinating: AnyObject {
-    func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
-}
-
 public protocol AuthenticationCoordinating: AnyObject {
     func enableBiometrics()
     func changePin()
@@ -31,21 +28,13 @@ public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
 }
 
-public enum AccountLinkingFlowPresenterCompletion {
-    case dismiss
-    case select(PaymentMethod)
-}
-
-public protocol AccountLinkingFlowPresenterAPI {
-
-    func presentAccountLinkingFlow(
-        from presenter: UIViewController,
-        filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping (AccountLinkingFlowPresenterCompletion) -> Void
-    )
-}
-
 public protocol PaymentMethodsLinkerAPI {
+
+    func routeToBankLinkingFlow(
+        for currency: FiatCurrency,
+        from viewController: UIViewController,
+        completion: @escaping () -> Void
+    )
     func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
 }
 
@@ -80,7 +69,6 @@ final class SettingsRouter: SettingsRouterAPI {
 
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
-    private unowned let appCoordinator: AppCoordinating
     private unowned let authenticationCoordinator: AuthenticationCoordinating
     private unowned let exchangeCoordinator: ExchangeCoordinating
     private unowned let appStoreOpener: AppStoreOpening
@@ -94,11 +82,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let externalActionsProvider: ExternalActionsProviderAPI
 
     private let kycRouter: KYCRouterAPI
-
-    private var cardRouter: CardRouter!
-    private var linkBankFlowRouter: LinkBankFlowStarter?
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-    private let presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -113,7 +97,6 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     init(
-        appCoordinator: AppCoordinating = resolve(),
         builder: SettingsBuilding = SettingsBuilder(),
         wallet: WalletRecoveryVerifing = resolve(),
         guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve(),
@@ -133,11 +116,9 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve()
     ) {
         self.wallet = wallet
-        self.appCoordinator = appCoordinator
         self.builder = builder
         self.authenticationCoordinator = authenticationCoordinator
         self.exchangeCoordinator = exchangeCoordinator
@@ -155,7 +136,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
-        self.presentAccountLinkingFlow = presentAccountLinkingFlow
         self.externalActionsProvider = externalActionsProvider
 
         previousRelay
@@ -174,6 +154,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .bindAndCatch(weak: self) { (self) in
                 cardListService
                     .fetchCards()
+                    .asSingle()
                     .subscribe()
                     .disposed(by: self.disposeBag)
             }
@@ -228,33 +209,9 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.modalPresentationStyle = .custom
             topViewController.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            let presenter = topViewController
-            paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
-                presenter.dismiss(animated: true) {
-                    addCardCompletionRelay.accept(())
-                }
-            }
+            showCardLinkingFlow()
         case .showAddBankScreen(let fiatCurrency):
-            switch fiatCurrency {
-            case .USD:
-                showLinkBankFlow()
-            case .GBP, .EUR:
-                featureFlagsService
-                    .isEnabled(.remote(.openBanking))
-                    .if(
-                        then: { [weak self] in
-                            guard let self = self else { return }
-                            self.showLinkOpenBankingFlow(currency: fiatCurrency)
-                        },
-                        else: { [weak self] in
-                            guard let self = self else { return }
-                            self.showFundTransferDetails(currency: fiatCurrency)
-                        }
-                    )
-                    .store(in: &cancellables)
-            default:
-                showFundTransferDetails(currency: fiatCurrency)
-            }
+            showBankLinkingFlow(currency: fiatCurrency)
         case .showAppStore:
             appStoreOpener.openAppStore()
         case .showBackupScreen:
@@ -375,60 +332,21 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
-    private func showFundTransferDetails(currency: FiatCurrency) {
-        appCoordinator.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: false)
-    }
-
-    private func showLinkOpenBankingFlow(currency: FiatCurrency) {
-        let viewController = topViewController
-        presentAccountLinkingFlow
-            .presentAccountLinkingFlow(
-                from: viewController,
-                filter: { type in
-                    type.method.isFunds || type.method.isBankTransfer
-                },
-                completion: { [weak self] result in
-                    guard let self = self else { return }
-                    viewController.dismiss(animated: true) {
-                        switch result {
-                        case .dismiss:
-                            break
-                        case .select(let method):
-                            switch method.type {
-                            case .funds:
-                                self.showFundTransferDetails(currency: currency)
-                            case .bankTransfer:
-                                self.showLinkBankFlow()
-                            default:
-                                assertionFailure("Unsupported payment method: \(method)")
-                            }
-                        }
-                    }
-                }
-            )
-    }
-
-    private func showLinkBankFlow() {
-        let builder = LinkBankFlowRootBuilder()
-        // we need to pass the the navigation controller so we can present and dismiss from within the flow.
-        let router = builder.build()
-        linkBankFlowRouter = router
-        let flowDismissed: () -> Void = { [weak self] in
-            guard let self = self else { return }
-            self.linkBankFlowRouter = nil
+    private func showCardLinkingFlow() {
+        let presenter = topViewController
+        paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
+            presenter.dismiss(animated: true) {
+                addCardCompletionRelay.accept(())
+            }
         }
+    }
+
+    private func showBankLinkingFlow(currency: FiatCurrency) {
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
-        router.startFlow()
-            .take(until: { $0.isCloseEffect }, behavior: .inclusive)
-            .skip { $0.shouldSkipEffect }
-            .subscribe(onNext: { [weak self] effect in
-                guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
-                    flowDismissed()
-                    return
-                }
-                self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: flowDismissed)
-            })
-            .disposed(by: disposeBag)
+        let viewController = topViewController
+        paymentMethodLinker.routeToBankLinkingFlow(for: currency, from: viewController) {
+            viewController.dismiss(animated: true, completion: nil)
+        }
     }
 
     private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {

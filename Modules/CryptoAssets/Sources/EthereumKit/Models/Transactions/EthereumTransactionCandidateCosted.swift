@@ -39,12 +39,13 @@ public struct EthereumTransactionCandidateCosted {
             input.gasLimit = Data(hexString: candidate.gasLimit.hexString)!
 
             switch candidate.transferType {
-            case .erc20Transfer(let contractAddress):
+            case .erc20Transfer(let contractAddress, let addressReference):
                 input.toAddress = contractAddress.publicKey
                 input.transaction = EthereumTransaction.with { transaction in
                     transaction.erc20Transfer = EthereumTransaction.ERC20Transfer.with { transfer in
                         transfer.to = candidate.to.publicKey
                         transfer.amount = Data(hexString: candidate.value.hexString)!
+                        transfer.addressReference = addressReference?.publicKey ?? ""
                     }
                 }
             case .transfer(let data):

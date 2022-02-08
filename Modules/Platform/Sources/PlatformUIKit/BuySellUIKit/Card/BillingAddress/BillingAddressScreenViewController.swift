@@ -1,9 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
+
 import DIKit
+import Localization
+import NabuNetworkError
 import RxCocoa
 import RxRelay
 import RxSwift
+import SwiftUI
+import UIComponentsKit
 
 final class BillingAddressScreenViewController: BaseTableViewController {
 
@@ -49,11 +59,46 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         setupKeyboardObserver()
 
         presenter.errorTrigger
-            .emit(onNext: { [weak self] in
+            .emit(onNext: { [weak self] error in
                 guard let self = self else { return }
-                self.alertViewPresenter.error(in: self, action: nil)
+                switch error {
+                case .nabuError(let nabu) as NabuNetworkError:
+                    switch nabu.code {
+                    case .cardInsufficientFunds:
+                        self.presentError(LocalizationConstants.Transaction.Error.cardInsufficientFunds)
+                    case .cardBankDecline:
+                        self.presentError(LocalizationConstants.Transaction.Error.cardBankDecline)
+                    default:
+                        self.alertViewPresenter.error(in: self, action: nil)
+                    }
+                default:
+                    self.alertViewPresenter.error(in: self, action: nil)
+                }
             })
             .disposed(by: disposeBag)
+    }
+
+    private func presentError(_ title: String) {
+        navigationController?
+            .pushViewController(
+                UIHostingController(
+                    rootView: ActionableView(
+                        .init(
+                            media: .image(named: "icon-card"),
+                            overlay: .init(media: .image(named: "validation-error")),
+                            title: title,
+                            subtitle: LocalizationConstants.ErrorScreen.subtitle
+                        ),
+                        buttons: [
+                            .init(title: LocalizationConstants.ErrorScreen.button) { [weak self] in
+                                self?.navigationController?.popToRootViewControllerAnimated(animated: true)
+                            }
+                        ],
+                        in: .platformUIKit
+                    )
+                ),
+                animated: true
+            )
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -31,6 +31,7 @@ final class ContextProviderTests: XCTestCase {
         XCTAssertEqual(contextProvider?.anonymousId, guid)
     }
 
+    #if canImport(UIKit)
     func test_contextProvider_returnsCorrectContext() throws {
         let context = contextProvider?.context
 
@@ -44,4 +45,5 @@ final class ContextProviderTests: XCTestCase {
         XCTAssertEqual(context?.device.name, UIDevice.current.name)
         XCTAssertEqual(context?.device.id, UIDevice.current.identifierForVendor?.uuidString)
     }
+    #endif
 }

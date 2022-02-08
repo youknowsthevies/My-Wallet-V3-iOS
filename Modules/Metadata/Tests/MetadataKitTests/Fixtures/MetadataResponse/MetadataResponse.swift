@@ -17,6 +17,10 @@ extension MetadataResponse {
         )
     }
 
+    static var credentialsEntryMetadataResponse: MetadataResponse {
+        Fixtures.load(name: "wallet_credentials_entry_response", in: .module)!
+    }
+
     static var ethereumFetchMagicMetadataResponse: MetadataResponse {
         fetchMagicResponse(for: "129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81")!
     }

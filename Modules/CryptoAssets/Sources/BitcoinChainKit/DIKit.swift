@@ -24,6 +24,10 @@ extension DependencyContainer {
 
         factory { CryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>() }
 
+        factory { BitcoinTransactionSendingService() as BitcoinTransactionSendingServiceAPI }
+
+        factory { BitcoinTransactionBuildingService() as BitcoinTransactionBuildingServiceAPI }
+
         // MARK: - Bitcoin Cash
 
         factory(tag: BitcoinChainCoin.bitcoinCash) { APIClient(coin: .bitcoinCash) as APIClientAPI }

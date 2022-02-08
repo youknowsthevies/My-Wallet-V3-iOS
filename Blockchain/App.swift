@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftformat:disable redundantSelf
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -8,6 +9,8 @@ import ERC20DataKit
 import FeatureActivityData
 import FeatureAppDomain
 import FeatureAppUI
+import FeatureCardsData
+import FeatureCardsUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsData
@@ -18,11 +21,13 @@ import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import Firebase
+import FirebaseCrashlytics
 import MetadataDataKit
 import MetadataKit
 import PlatformDataKit
 import ToolKit
 import UIKit
+import WalletPayloadDataKit
 
 @UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -91,6 +96,7 @@ func defineDependencies() {
         DependencyContainer.toolKit
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
+        DependencyContainer.walletPayloadDataKit
         DependencyContainer.metadataKit
         DependencyContainer.metadataDataKit
         DependencyContainer.moneyKit
@@ -129,6 +135,9 @@ func defineDependencies() {
         DependencyContainer.featureAppDomain
         DependencyContainer.withdrawalLocksData
         DependencyContainer.withdrawalLocksDomain
+        DependencyContainer.featureCardsDomain
+        DependencyContainer.featureCardsUI
+        DependencyContainer.featureCardsData
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif
@@ -155,8 +164,14 @@ private func bootstrap() {
         false
         #endif
     }()
+
     FirebaseApp.configure()
     defineDependencies()
+
+    SystemEventAnalytics.start(
+        recordingOn: resolve(),
+        didCrashOnPreviousExecution: FirebaseCrashlytics.Crashlytics.crashlytics().didCrashDuringPreviousExecution
+    )
 }
 
 private func eraseWalletForUITestsIfNeeded() {

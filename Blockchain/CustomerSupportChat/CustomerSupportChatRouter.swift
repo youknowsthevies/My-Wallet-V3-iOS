@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 protocol CustomerSupportChatRouterAPI {
     func start()

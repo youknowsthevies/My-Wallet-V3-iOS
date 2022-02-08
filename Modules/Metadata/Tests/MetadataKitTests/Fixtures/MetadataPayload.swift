@@ -7,6 +7,10 @@ import TestKit
 
 extension MetadataPayload {
 
+    static var credentialsMetadataEntryPayload: MetadataPayload {
+        MetadataPayload(from: MetadataResponse.credentialsEntryMetadataResponse)
+    }
+
     static var ethereumMetadataEntryPayload: MetadataPayload {
         MetadataPayload(from: MetadataResponse.ethereumEntryMetadataResponse)
     }

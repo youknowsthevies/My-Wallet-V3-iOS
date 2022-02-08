@@ -38,16 +38,6 @@ public struct EmailLoginView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.EmailLogin
 
-    private enum Layout {
-        static let topPadding: CGFloat = 34
-        static let bottomPadding: CGFloat = 34
-        static let leadingPadding: CGFloat = 24
-        static let trailingPadding: CGFloat = 24
-
-        static let navigationTitleFontSize: CGFloat = 20
-        static let navigationTitleTopPadding: CGFloat = 15
-    }
-
     private let store: Store<EmailLoginState, EmailLoginAction>
 
     @State private var isEmailFieldFirstResponder: Bool = false
@@ -60,10 +50,7 @@ public struct EmailLoginView: View {
         WithViewStore(store) { viewStore in
             VStack {
                 emailField
-                    .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.emailGroup)
-
                 Spacer()
-
                 PrimaryButton(
                     title: LocalizedString.Button._continue,
                     isLoading: viewStore.isLoading
@@ -73,28 +60,21 @@ public struct EmailLoginView: View {
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
             }
-            .padding(
-                EdgeInsets(
-                    top: Layout.topPadding,
-                    leading: Layout.leadingPadding,
-                    bottom: Layout.bottomPadding,
-                    trailing: Layout.trailingPadding
-                )
-            )
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text(LocalizedString.navigationTitle)
-                        .font(Font(weight: .semibold, size: Layout.navigationTitleFontSize))
-                        .padding(.top, Layout.navigationTitleTopPadding)
-                        .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.loginTitleText)
+            .padding(Spacing.padding3)
+            .primaryNavigation(title: LocalizedString.navigationTitle) {
+                Button {
+                    viewStore.send(.continueButtonTapped)
+                } label: {
+                    Text(LocalizedString.Button.next)
+                        .typography(.paragraph2)
+                        .foregroundColor(
+                            !viewStore.isEmailValid ? .semantic.muted : .semantic.primary
+                        )
                 }
+                .disabled(!viewStore.isEmailValid)
+                .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.nextButton)
             }
             .navigationRoute(in: store)
-            .trailingNavigationButton(.close) {
-                viewStore.send(.closeButtonTapped)
-            }
-            .whiteNavigationBarStyle()
-            .hideBackButtonTitle()
             .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
             .onAppear {
                 viewStore.send(.onAppear)
@@ -132,6 +112,7 @@ public struct EmailLoginView: View {
                     }
                 }
             )
+            .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.emailGroup)
             .disabled(viewStore.isLoading)
         }
     }
@@ -151,7 +132,8 @@ struct EmailLoginView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     errorRecorder: NoOpErrorRecoder(),
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    walletRecoveryService: .noop
                 )
             )
         )

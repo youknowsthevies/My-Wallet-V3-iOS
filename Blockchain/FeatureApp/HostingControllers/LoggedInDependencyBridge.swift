@@ -1,8 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureAppUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureSettingsUI
+import MoneyKit
+import PlatformKit
 import PlatformUIKit
 
 // These protocols are added here for simplicity,
@@ -45,8 +48,6 @@ protocol LoggedInBridge: DrawerRouting,
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
     func register(bridge: LoggedInBridge)
-    /// Unregisters the bridge
-    func unregister()
 
     /// Provides `BackupFlowStarterAPI` methods
     func resolveBackupFlowStarter() -> BackupFlowStarterAPI
@@ -85,10 +86,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func register(bridge: LoggedInBridge) {
         hostingControllerBridge = bridge
-    }
-
-    func unregister() {
-        hostingControllerBridge = nil
     }
 
     func resolveBackupFlowStarter() -> BackupFlowStarterAPI {
@@ -147,4 +144,91 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
         precondition(hostingControllerBridge is T, "Bridge does not conform to \(T.self) protocol")
         return hostingControllerBridge as! T
     }
+}
+
+// swiftlint:disable line_length
+
+class DynamicDependencyBridge: UIViewController, LoggedInBridge {
+
+    private var wrapped: LoggedInBridge = SignedOutDependencyBridge()
+
+    func register(bridge: LoggedInBridge) {
+        wrapped = bridge
+    }
+
+    func toggleSideMenu() { wrapped.toggleSideMenu() }
+    func closeSideMenu() { wrapped.closeSideMenu() }
+    func send(from account: BlockchainAccount) { wrapped.send(from: account) }
+    func send(from account: BlockchainAccount, target: TransactionTarget) { wrapped.send(from: account, target: target) }
+    func sign(from account: BlockchainAccount, target: TransactionTarget) { wrapped.sign(from: account, target: target) }
+    func receive(into account: BlockchainAccount) { wrapped.receive(into: account) }
+    func withdraw(from account: BlockchainAccount) { wrapped.withdraw(from: account) }
+    func deposit(into account: BlockchainAccount) { wrapped.deposit(into: account) }
+    func interestTransfer(into account: BlockchainAccount) { wrapped.interestTransfer(into: account) }
+    func interestWithdraw(from account: BlockchainAccount) { wrapped.interestWithdraw(from: account) }
+    func switchTabToDashboard() { wrapped.switchTabToDashboard() }
+    func switchToSend() { wrapped.switchToSend() }
+    func switchTabToReceive() { wrapped.switchTabToReceive() }
+    func switchToActivity() { wrapped.switchToActivity() }
+    func switchToActivity(for currencyType: CurrencyType) { wrapped.switchToActivity() }
+    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) { wrapped.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerfied) }
+    func startBackupFlow() { wrapped.startBackupFlow() }
+    func showSettingsView() { wrapped.showSettingsView() }
+    func reload() { wrapped.reload() }
+    func presentKYCIfNeeded() { wrapped.presentKYCIfNeeded() }
+    func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) { wrapped.presentBuyIfNeeded(cryptoCurrency) }
+    func enableBiometrics() { wrapped.enableBiometrics() }
+    func changePin() { wrapped.changePin() }
+    func showQRCodeScanner() { wrapped.showQRCodeScanner() }
+    func handleSwapCrypto(account: CryptoAccount?) { wrapped.handleSwapCrypto(account: account) }
+    func handleSellCrypto(account: CryptoAccount?) { wrapped.handleSellCrypto(account: account) }
+    func handleBuyCrypto(account: CryptoAccount?) { wrapped.handleBuyCrypto(account: account) }
+    func handleBuyCrypto(currency: CryptoCurrency) { wrapped.handleBuyCrypto(currency: currency) }
+    func showCashIdentityVerificationScreen() { wrapped.showCashIdentityVerificationScreen() }
+    func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) { wrapped.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: isOriginDeposit) }
+    func switchTabToSwap() { wrapped.switchTabToSwap() }
+    func logout() { wrapped.logout() }
+    func handleAccountsAndAddresses() { wrapped.handleAccountsAndAddresses() }
+    func handleAirdrops() { wrapped.handleAirdrops() }
+    func handleSupport() { wrapped.handleSupport() }
+    func handleSecureChannel() { wrapped.handleSecureChannel() }
+}
+
+class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
+    func toggleSideMenu() {}
+    func closeSideMenu() {}
+    func send(from account: BlockchainAccount) {}
+    func send(from account: BlockchainAccount, target: TransactionTarget) {}
+    func sign(from account: BlockchainAccount, target: TransactionTarget) {}
+    func receive(into account: BlockchainAccount) {}
+    func withdraw(from account: BlockchainAccount) {}
+    func deposit(into account: BlockchainAccount) {}
+    func interestTransfer(into account: BlockchainAccount) {}
+    func interestWithdraw(from account: BlockchainAccount) {}
+    func switchTabToDashboard() {}
+    func switchToSend() {}
+    func switchTabToReceive() {}
+    func switchToActivity() {}
+    func switchToActivity(for currencyType: CurrencyType) {}
+    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {}
+    func startBackupFlow() {}
+    func showSettingsView() {}
+    func reload() {}
+    func presentKYCIfNeeded() {}
+    func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {}
+    func enableBiometrics() {}
+    func changePin() {}
+    func showQRCodeScanner() {}
+    func handleSwapCrypto(account: CryptoAccount?) {}
+    func handleSellCrypto(account: CryptoAccount?) {}
+    func handleBuyCrypto(account: CryptoAccount?) {}
+    func handleBuyCrypto(currency: CryptoCurrency) {}
+    func showCashIdentityVerificationScreen() {}
+    func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {}
+    func switchTabToSwap() {}
+    func logout() {}
+    func handleAccountsAndAddresses() {}
+    func handleAirdrops() {}
+    func handleSupport() {}
+    func handleSecureChannel() {}
 }

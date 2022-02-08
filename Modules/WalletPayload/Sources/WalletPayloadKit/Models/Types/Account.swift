@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct Account: Equatable {
+public final class Account: Equatable {
     var index: Int
     var label: String
     var archived: Bool
@@ -13,7 +13,7 @@ struct Account: Equatable {
         derivations.first(where: { $0.type == defaultDerivation })
     }
 
-    init(
+    public init(
         index: Int,
         label: String,
         archived: Bool,
@@ -29,5 +29,28 @@ struct Account: Equatable {
 
     func derivation(for format: DerivationType) -> Derivation? {
         derivations.first { $0.type == format }
+    }
+}
+
+func createAccount(
+    label: String,
+    derivations: [Derivation]
+) -> Account {
+    Account(
+        index: 0,
+        label: label,
+        archived: false,
+        defaultDerivation: .segwit,
+        derivations: derivations
+    )
+}
+
+extension Account {
+    public static func == (lhs: Account, rhs: Account) -> Bool {
+        lhs.index == rhs.index
+            && lhs.label == rhs.label
+            && lhs.archived == rhs.archived
+            && lhs.defaultDerivation == rhs.defaultDerivation
+            && lhs.derivations == rhs.derivations
     }
 }

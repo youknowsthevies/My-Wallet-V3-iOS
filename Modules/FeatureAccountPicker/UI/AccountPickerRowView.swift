@@ -146,7 +146,7 @@ private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 0) {
                     badgeView
                         .frame(width: 32, height: 32)
@@ -161,6 +161,7 @@ private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View
                                 .textStyle(.subheading)
                         }
                     }
+                    Spacer()
                 }
 
                 multiBadgeView
@@ -360,7 +361,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
             AccountPickerRowView(
                 model: linkedBankAccountRow,
                 send: { _ in },
-                badgeView: { _ in EmptyView() },
+                badgeView: { _ in Icon.bank },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
                 withdrawalLocksView: { EmptyView() },
@@ -368,7 +369,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 cryptoBalance: nil,
                 currencyCode: nil
             )
-            .previewLayout(PreviewLayout.sizeThatFits)
+            .previewLayout(PreviewLayout.fixed(width: 320, height: 100))
             .padding()
             .previewDisplayName("LinkedBankAccountRow")
         }

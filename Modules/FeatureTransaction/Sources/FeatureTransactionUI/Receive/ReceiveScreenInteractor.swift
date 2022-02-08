@@ -3,7 +3,6 @@
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
-import RxRelay
 import RxSwift
 
 final class ReceiveScreenInteractor {

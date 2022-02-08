@@ -39,6 +39,10 @@ public enum WelcomeAction: Equatable, NavigationAction {
     case manualPairing(CredentialsAction) // should only be on internal build
     case secondPasswordNotice(SecondPasswordNotice.Action)
     case informSecondPasswordDetected
+    case informForWalletInitialization
+
+    case triggerAuthenticate // needed for legacy wallet flow
+    case triggerCancelAuthenticate // needed for legacy wallet flow
 
     // MARK: - Utils
 
@@ -80,6 +84,8 @@ public struct WelcomeEnvironment {
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
+    let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -90,7 +96,9 @@ public struct WelcomeEnvironment {
         buildVersionProvider: @escaping () -> String,
         errorRecorder: ErrorRecording = resolve(),
         externalAppOpener: ExternalAppOpener = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        walletRecoveryService: WalletRecoveryService = DIKit.resolve(),
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator
@@ -101,6 +109,8 @@ public struct WelcomeEnvironment {
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
+        self.nativeWalletEnabled = nativeWalletEnabled
     }
 }
 
@@ -115,7 +125,8 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -131,7 +142,8 @@ public let welcomeReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -144,7 +156,8 @@ public let welcomeReducer = Reducer.combine(
                 SeedPhraseEnvironment(
                     mainQueue: $0.mainQueue,
                     externalAppOpener: $0.externalAppOpener,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -159,7 +172,8 @@ public let welcomeReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     featureFlagsService: $0.featureFlagsService,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -248,11 +262,7 @@ public let welcomeReducer = Reducer.combine(
             }
             return Effect(value: .requestedToCreateWallet(email, password))
 
-        case .createWallet(.closeButtonTapped),
-             .emailLogin(.closeButtonTapped),
-             .restoreWallet(.closeButtonTapped),
-             .manualPairing(.closeButtonTapped),
-             .secondPasswordNotice(.closeButtonTapped):
+        case .secondPasswordNotice(.closeButtonTapped):
             return Effect(value: .dismiss())
 
         // TODO: refactor this by not relying on access lower level reducers
@@ -274,6 +284,29 @@ public let welcomeReducer = Reducer.combine(
 
         case .informSecondPasswordDetected:
             return .enter(into: .secondPassword)
+
+        case .restoreWallet(.triggerAuthenticate):
+            return Effect(value: .triggerAuthenticate)
+
+        case .restoreWallet(.restored(.success)),
+             .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success))))):
+            return environment.nativeWalletEnabled()
+                .eraseToEffect()
+                .map { isEnabled -> WelcomeAction in
+                    guard isEnabled else {
+                        return .none
+                    }
+                    return .informForWalletInitialization
+                }
+        case .restoreWallet(.restored(.failure)),
+             .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.failure))))):
+            return Effect(value: .triggerCancelAuthenticate)
+
+        case .triggerAuthenticate,
+             .triggerCancelAuthenticate,
+             .informForWalletInitialization:
+            // handled in core coordinator
+            return .none
 
         case .createWallet,
              .emailLogin,

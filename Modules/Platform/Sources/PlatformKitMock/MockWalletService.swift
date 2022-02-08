@@ -22,6 +22,15 @@ class WalletServiceMock: WalletOptionsAPI {
 
 extension WalletOptions {
     static var empty: WalletOptions {
-        WalletOptions(dictionary: ["maintenance": false])
+        WalletOptions(
+            domains: nil,
+            downForMaintenance: false,
+            hotWalletAddresses: nil,
+            mobile: nil,
+            mobileInfo: nil,
+            updateType: .none,
+            xlmExchangeAddresses: nil,
+            xlmMetadata: nil
+        )
     }
 }

@@ -4,6 +4,7 @@ import DIKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import UIComponentsKit
 
 final class CashIdentityVerificationRouter {
 

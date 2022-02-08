@@ -2,6 +2,7 @@
 
 import Combine
 import NetworkError
+import WalletPayloadKit
 
 public enum AccountRecoveryServiceError: Error, Equatable {
     case jwtService(JWTServiceError)

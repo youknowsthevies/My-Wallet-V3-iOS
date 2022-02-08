@@ -27,7 +27,13 @@ public struct InterestAttributes: Decodable {
     public let hash: String?
     public let identifier: String?
     public let transactionHash: String?
+    public let transferType: String?
     public let beneficiary: InterestBeneficiary?
+
+    public var isInternalTransfer: Bool {
+        guard let type = transferType else { return false }
+        return type == "INTERNAL"
+    }
 }
 
 public struct InterestBeneficiary: Decodable {
@@ -41,6 +47,7 @@ public struct InterestActivityItemEvent: Equatable {
     public let identifier: String
     public let insertedAt: Date
     public let confirmations: Int
+    public let isInternalTransfer: Bool
     public let accountRef: String
     public let recipientAddress: String
     public let state: InterestActivityItemEventState
@@ -54,6 +61,7 @@ public struct InterestActivityItemEvent: Equatable {
         confirmations: Int = 0,
         accountRef: String,
         recipientAddress: String,
+        isInternalTransfer: Bool,
         state: InterestActivityItemEventState,
         type: InterestTransactionType
     ) {
@@ -64,6 +72,7 @@ public struct InterestActivityItemEvent: Equatable {
         self.recipientAddress = recipientAddress
         self.identifier = identifier
         self.insertedAt = insertedAt
+        self.isInternalTransfer = isInternalTransfer
         self.state = state
         self.type = type
     }

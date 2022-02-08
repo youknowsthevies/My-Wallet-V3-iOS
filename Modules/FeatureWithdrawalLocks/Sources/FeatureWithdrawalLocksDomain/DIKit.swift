@@ -6,6 +6,6 @@ extension DependencyContainer {
 
     public static var withdrawalLocksDomain = module {
 
-        factory { WithdrawalLocksService() as WithdrawalLocksServiceAPI }
+        single { WithdrawalLocksService() as WithdrawalLocksServiceAPI }
     }
 }

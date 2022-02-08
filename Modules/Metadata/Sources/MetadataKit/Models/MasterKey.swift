@@ -17,7 +17,8 @@ extension MasterKey {
     public static func from(
         seedHex: String
     ) -> Result<MasterKey, MasterKeyError> {
-        PrivateKey.bitcoinKeyFrom(seedHex: seedHex)
+        Result<PrivateKey, MasterKeyError>
+            .success(PrivateKey.bitcoinKeyFrom(seedHex: seedHex))
             .mapError(MasterKeyError.failedToInstantiate)
             .map(MasterKey.init(privateKey:))
     }

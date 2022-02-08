@@ -53,8 +53,32 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let amountViewInteracting: AmountViewInteracting
         let amountViewPresenting: AmountViewPresenting
         switch action {
+        case .sell:
+            guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
+                fatalError("Expected a crypto as a source account.")
+            }
+            guard let fiat = destinationAccount.currencyType.fiatCurrency else {
+                fatalError("Expected a fiat as a destination account.")
+            }
+            amountViewInteracting = AmountTranslationInteractor(
+                fiatCurrencyClosure: {
+                    Observable.just(fiat)
+                },
+                cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
+                priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                defaultCryptoCurrency: crypto,
+                initialActiveInput: .fiat
+            )
+
+            amountViewPresenting = AmountTranslationPresenter(
+                interactor: amountViewInteracting as! AmountTranslationInteractor,
+                analyticsRecorder: analyticsEventRecorder,
+                displayBundle: displayBundle.amountDisplayBundle,
+                inputTypeToggleVisibility: .visible
+            )
+
+            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
         case .swap,
-             .sell,
              .send,
              .interestWithdraw,
              .interestTransfer:

@@ -7,6 +7,7 @@ import PlatformKit
 import RIBs
 import RxCocoa
 import RxSwift
+import UIComponentsKit
 
 /// Represents an effect as part of the LinkBank Flow
 public enum LinkBankFlowEffect: Equatable {

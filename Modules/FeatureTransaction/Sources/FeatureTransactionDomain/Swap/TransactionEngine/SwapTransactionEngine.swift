@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import MoneyKit
 import NabuNetworkError
@@ -190,32 +191,25 @@ extension SwapTransactionEngine {
     // MARK: - SwapTransactionEngine
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
-        let orderDirection = orderDirection, sourceAsset = sourceAsset, target = target
         let amountInSourceCurrency = currencyConversionService
             .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
-            .asSingle()
-        let addresses = Single.zip(
-            target.receiveAddress,
-            sourceAccount.receiveAddress
-        )
-        .map { ($0.0.address, $0.1.address) }
 
         return Single.zip(
-            addresses,
-            amountInSourceCurrency
+            target.receiveAddress,
+            sourceAccount.receiveAddress,
+            amountInSourceCurrency.asSingle()
         )
-        .flatMap { [orderQuoteRepository, orderCreationRepository] addresses, convertedAmount -> Single<SwapOrder> in
-            let (destinationAddress, refundAddress) = addresses
-            return orderQuoteRepository
+        .flatMap { [orderDirection, sourceAsset, target, orderQuoteRepository, orderCreationRepository]
+            destinationAddress, refundAddress, convertedAmount -> Single<SwapOrder> in
+            orderQuoteRepository
                 .fetchQuote(
                     direction: orderDirection,
                     sourceCurrencyType: sourceAsset.currencyType,
                     destinationCurrencyType: target.currencyType
                 )
-                .asSingle()
-                .flatMap { quote -> Single<SwapOrder> in
-                    let destination = orderDirection.requiresDestinationAddress ? destinationAddress : nil
-                    let refund = orderDirection.requiresRefundAddress ? refundAddress : nil
+                .flatMap { quote -> AnyPublisher<SwapOrder, NabuNetworkError> in
+                    let destination = orderDirection.requiresDestinationAddress ? destinationAddress.address : nil
+                    let refund = orderDirection.requiresRefundAddress ? refundAddress.address : nil
                     return orderCreationRepository
                         .createOrder(
                             direction: orderDirection,
@@ -224,8 +218,8 @@ extension SwapTransactionEngine {
                             destinationAddress: destination,
                             refundAddress: refund
                         )
-                        .asSingle()
                 }
+                .asSingle()
         }
         .do(onDispose: { [weak self] in
             self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)

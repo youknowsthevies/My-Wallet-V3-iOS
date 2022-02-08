@@ -9,10 +9,11 @@ import RxSwift
 protocol SellTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: SwapQuotesEngine { get }
+    var quotesEngine: SellQuotesEngine { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
+    var quote: Observable<PricedQuote> { get }
 }
 
 extension SellTransactionEngine {
@@ -60,26 +61,21 @@ extension SellTransactionEngine {
 
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
         transactionExchangeRatePair
-            .map(\.inverseExchangeRate)
             .take(1)
             .asSingle()
+            .map(\.inverseExchangeRate)
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
-        quotesEngine
-            .getRate(
-                direction: orderDirection,
-                pair: .init(
-                    sourceCurrencyType: sourceAsset,
-                    destinationCurrencyType: target.currencyType
-                )
-            )
+        quote
             .map { [target] pricedQuote -> MoneyValue in
                 MoneyValue(amount: pricedQuote.price, currency: target.currencyType)
             }
             .map { [sourceAsset] rate -> MoneyValuePair in
                 MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
             }
+            .asObservable()
+            .share(replay: 1, scope: .whileConnected)
     }
 
     func updateLimits(

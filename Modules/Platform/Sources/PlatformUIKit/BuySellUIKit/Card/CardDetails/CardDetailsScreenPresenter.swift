@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCardsDomain
 import Localization
 import PlatformKit
 import RIBs
@@ -280,5 +281,13 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
     func previous() {
         interactor.cancel()
+    }
+}
+
+extension Accessibility.Identifier {
+    public enum CardDetailsScreen {
+        private static let prefix = "CardDetailsScreen."
+        static let noticeLabel = "\(prefix)noticeLabel"
+        static let noticeImage = "\(prefix)noticeImage"
     }
 }

@@ -63,16 +63,6 @@ let package = Package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "0.2.1"
         ),
-        .package(
-            name: "Stripe",
-            url: "https://github.com/stripe/stripe-ios",
-            from: "21.9.0"
-        ),
-        .package(
-            name: "Frames",
-            url: "https://github.com/checkout/frames-ios.git",
-            .upToNextMajor(from: "3.0.0")
-        ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
@@ -89,7 +79,8 @@ let package = Package(
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
-        .package(path: "../FeatureWithdrawalLocks")
+        .package(path: "../FeatureWithdrawalLocks"),
+        .package(path: "../FeatureCards")
     ],
     targets: [
         .target(
@@ -115,8 +106,7 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
-                .product(name: "Frames", package: "Frames"),
-                .product(name: "Stripe", package: "Stripe")
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
@@ -132,7 +122,8 @@ let package = Package(
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ]
         ),
         .target(
@@ -150,8 +141,7 @@ let package = Package(
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
-                .product(name: "Frames", package: "Frames"),
-                .product(name: "Stripe", package: "Stripe")
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

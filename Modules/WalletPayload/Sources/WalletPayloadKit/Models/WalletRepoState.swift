@@ -15,7 +15,7 @@ public struct WalletRepoState: Equatable, Codable {
     public var encryptedPayload: WalletPayloadWrapper
 
     /// Provides an empty state
-    static let empty = WalletRepoState(
+    public static let empty = WalletRepoState(
         credentials: .empty,
         properties: .empty,
         encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")

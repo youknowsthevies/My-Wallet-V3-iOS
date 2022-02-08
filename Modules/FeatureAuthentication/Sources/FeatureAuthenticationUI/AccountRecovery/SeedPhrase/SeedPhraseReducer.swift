@@ -1,12 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
 
 // MARK: - Type
+
+public enum WalletRecoveryIds {
+    public struct RecoveryId: Hashable {}
+    public struct ImportId: Hashable {}
+}
 
 public enum SeedPhraseAction: Equatable {
 
@@ -22,7 +28,6 @@ public enum SeedPhraseAction: Equatable {
         }
     }
 
-    case closeButtonTapped
     case didChangeSeedPhrase(String)
     case didChangeSeedPhraseScore(MnemonicValidationScore)
     case validateSeedPhrase
@@ -35,6 +40,9 @@ public enum SeedPhraseAction: Equatable {
     case lostFundsWarning(LostFundsWarningAction)
     case importWallet(ImportWalletAction)
     case restoreWallet(WalletRecovery)
+    case restored(Result<EmptyValue, WalletRecoveryError>)
+    case imported(Result<EmptyValue, WalletRecoveryError>)
+    case triggerAuthenticate // needed for legacy wallet flow
     case open(urlContent: URLContent)
     case none
 }
@@ -85,19 +93,22 @@ struct SeedPhraseEnvironment {
     let externalAppOpener: ExternalAppOpener
     let passwordValidator: PasswordValidatorAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let walletRecoveryService: WalletRecoveryService
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         validator: SeedPhraseValidatorAPI = resolve(),
         passwordValidator: PasswordValidatorAPI = resolve(),
         externalAppOpener: ExternalAppOpener,
-        analyticsRecorder: AnalyticsEventRecorderAPI
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        walletRecoveryService: WalletRecoveryService
     ) {
         self.mainQueue = mainQueue
         self.validator = validator
         self.passwordValidator = passwordValidator
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
     }
 }
 
@@ -112,7 +123,8 @@ let seedPhraseReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    walletRecoveryService: $0.walletRecoveryService
                 )
             }
         ),
@@ -156,9 +168,6 @@ let seedPhraseReducer = Reducer.combine(
         SeedPhraseEnvironment
     > { state, action, environment in
         switch action {
-
-        case .closeButtonTapped:
-            return .none
 
         case .didChangeSeedPhrase(let seedPhrase):
             state.seedPhrase = seedPhrase
@@ -253,27 +262,60 @@ let seedPhraseReducer = Reducer.combine(
             guard let createAccountState = state.importWalletState?.createAccountState else {
                 return .none
             }
-            return Effect(
-                value: .restoreWallet(
-                    .importRecovery(
-                        email: createAccountState.emailAddress,
-                        newPassword: createAccountState.password,
-                        seedPhrase: state.seedPhrase
-                    )
-                )
-            )
+            let email = createAccountState.emailAddress
+            let password = createAccountState.password
+            let mnemonic = state.seedPhrase
+            return environment.walletRecoveryService
+                .recover(email, password, mnemonic)
+                .receive(on: environment.mainQueue)
+                .mapError { _ in WalletRecoveryError.failedToRestoreWallet }
+                .catchToEffect()
+                .cancellable(id: WalletRecoveryIds.ImportId(), cancelInFlight: true)
+                .map(SeedPhraseAction.imported)
 
         case .importWallet:
             return .none
 
+        case .restoreWallet(.metadataRecovery(let mnemonic)):
+            return .concatenate(
+                Effect(value: .triggerAuthenticate),
+                environment.walletRecoveryService
+                    .recoverFromMetadata(mnemonic)
+                    .receive(on: environment.mainQueue)
+                    .mapError { _ in WalletRecoveryError.failedToRestoreWallet }
+                    .catchToEffect()
+                    .cancellable(id: WalletRecoveryIds.RecoveryId(), cancelInFlight: true)
+                    .map(SeedPhraseAction.restored)
+            )
         case .restoreWallet:
             return .none
+
+        case .restored(.success):
+            return .cancel(id: WalletRecoveryIds.RecoveryId())
+
+        case .restored(.failure):
+            return .merge(
+                .cancel(id: WalletRecoveryIds.RecoveryId()),
+                Effect(value: .setImportWalletScreenVisible(true))
+            )
+
+        case .imported(.success):
+            return .cancel(id: WalletRecoveryIds.ImportId())
+
+        case .imported(.failure(let error)):
+            guard state.importWalletState != nil else {
+                return .none
+            }
+            return Effect(value: .importWallet(.importWalletFailed(error)))
 
         case .open(let urlContent):
             guard let url = urlContent.url else {
                 return .none
             }
             environment.externalAppOpener.open(url)
+            return .none
+
+        case .triggerAuthenticate:
             return .none
 
         case .none:

@@ -30,15 +30,22 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let topAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
 
+    private var withdrawalLocksVisible = BehaviorSubject<Bool?>(value: nil)
     private lazy var withdrawalLocksHostingController: UIHostingController<WithdrawalLocksView> = {
         let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
             initialState: .init(),
             reducer: withdrawalLocksReducer,
             environment: WithdrawalLocksEnvironment { [weak self] isVisible in
-                self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+                self?.withdrawalLocksVisible.onNext(isVisible)
             }
         )
         return UIHostingController(rootView: WithdrawalLocksView(store: store))
+    }()
+
+    private lazy var withdrawalLocksHeightConstraint: NSLayoutConstraint = {
+        let constraint = withdrawalLocksHostingController.view.heightAnchor.constraint(equalToConstant: 1)
+        constraint.isActive = true
+        return constraint
     }()
 
     private let withdrawalLocksSeparatorView = TitledSeparatorView()
@@ -134,6 +141,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         topAuxiliaryItemSeparatorView.layoutToSuperview(axis: .horizontal)
         topAuxiliaryItemSeparatorView.layout(dimension: .height, to: 1)
 
+        withdrawalLocksHostingController.view.isHidden = true
         withdrawalLocksHostingController.view.layout(edge: .top, to: .bottom, of: topAuxiliaryItemSeparatorView)
         withdrawalLocksHostingController.view.layoutToSuperview(axis: .horizontal)
 
@@ -265,13 +273,24 @@ final class EnterAmountViewController: BaseScreenViewController,
             })
             .disposed(by: disposeBag)
 
-        stateDriver
-            .map(\.showWithdrawalLocks)
-            .drive(onNext: { [weak self] showWithdrawalLocks in
-                let heightAnchor = self?.withdrawalLocksHostingController.view.heightAnchor
-                heightAnchor?.constraint(equalToConstant: 1).isActive = !showWithdrawalLocks
-                self?.withdrawalLocksSeparatorView.isHidden = !showWithdrawalLocks
-                self?.withdrawalLocksHostingController.view.isHidden = !showWithdrawalLocks
+        rx.viewWillAppear
+            .flatMap(weak: self) { (self, _) in
+                Observable.combineLatest(
+                    self.withdrawalLocksVisible.compactMap { $0 }.asObservable(),
+                    stateDriver.map(\.showWithdrawalLocks).asObservable()
+                )
+            }
+            .subscribe(onNext: { [weak self] isVisible, shouldShowWithdrawalLocks in
+                if shouldShowWithdrawalLocks {
+                    self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+                    self?.withdrawalLocksHeightConstraint.constant = isVisible ? 44 : 1
+                    self?.withdrawalLocksHostingController.view.isHidden = !isVisible
+                } else {
+                    self?.withdrawalLocksSeparatorView.isHidden = true
+                    self?.withdrawalLocksHeightConstraint.constant = 1
+                    self?.withdrawalLocksHostingController.view.isHidden = true
+                }
+                self?.view.layoutIfNeeded()
             })
             .disposed(by: disposeBag)
 
