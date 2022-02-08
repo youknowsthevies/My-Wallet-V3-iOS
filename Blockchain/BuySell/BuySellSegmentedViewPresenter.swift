@@ -62,7 +62,8 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
                         "\(result)".peek("🧾 \(#function)")
                     }
                     .store(in: &self.cancellables)
-            }
+            },
+            featureFlagService: featureFlagService
         )
         buyListViewController.automaticallyApplyNavigationBarStyle = false
 
@@ -117,6 +118,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
     private let transactionsRouter: TransactionsRouterAPI
     private let cryptoCurrenciesService: CryptoCurrenciesServiceAPI
     private let coincore: CoincoreAPI
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     /// Currently retained RIBs router in use.
     private var currentRIBRouter: RIBs.Routing?
@@ -127,11 +129,13 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
     init(
         cryptoCurrenciesService: CryptoCurrenciesServiceAPI = resolve(),
         transactionsRouter: TransactionsRouterAPI = resolve(),
-        coincore: CoincoreAPI = resolve()
+        coincore: CoincoreAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.transactionsRouter = transactionsRouter
         self.cryptoCurrenciesService = cryptoCurrenciesService
         self.coincore = coincore
+        self.featureFlagService = featureFlagService
     }
 }
 

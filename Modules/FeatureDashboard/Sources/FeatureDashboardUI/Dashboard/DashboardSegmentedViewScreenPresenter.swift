@@ -43,7 +43,8 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
                 onboardingChecklistViewBuilder: {
                     EmptyView()
                 },
-                presenter: dashboardScreenPresenter
+                presenter: dashboardScreenPresenter,
+                featureFlagService: featureFlagService
             )
         ),
         SegmentedViewScreenItem(
@@ -54,7 +55,8 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
                     interactor: PricesScreenInteractor(
                         showSupportedPairsOnly: false
                     )
-                )
+                ),
+                featureFlagService: featureFlagService
             )
         )
     ]
@@ -68,6 +70,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
     private let drawerRouter: DrawerRouting
     private let disposeBag = DisposeBag()
     private var qrCodeScannerRouter: QRCodeScannerRouting
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     // MARK: - Init
 
@@ -75,12 +78,14 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
         drawerRouter: DrawerRouting,
         fiatBalanceCellProvider: FiatBalanceCellProviding,
         dashboardScreenPresenter: PortfolioScreenPresenter,
-        qrCodeScannerRouter: QRCodeScannerRouting
+        qrCodeScannerRouter: QRCodeScannerRouting,
+        featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.drawerRouter = drawerRouter
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.dashboardScreenPresenter = dashboardScreenPresenter
         self.qrCodeScannerRouter = qrCodeScannerRouter
+        self.featureFlagService = featureFlagService
         trailingButton = .qrCode
 
         leadingButtonTapRelay

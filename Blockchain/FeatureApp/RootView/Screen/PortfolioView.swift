@@ -5,12 +5,14 @@ import FeatureDashboardUI
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
+import ToolKit
 
 struct PortfolioView: UIViewControllerRepresentable {
 
     var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
     var onboardingViewsFactory = OnboardingViewsFactory()
     var userAdapter: UserAdapterAPI = resolve()
+    var featureFlagService: FeatureFlagsServiceAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
@@ -24,7 +26,8 @@ struct PortfolioView: UIViewControllerRepresentable {
             onboardingChecklistViewBuilder: { [onboardingViewsFactory] in
                 onboardingViewsFactory.makeOnboardingChecklistOverview()
             },
-            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer())
+            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer()),
+            featureFlagService: featureFlagService
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

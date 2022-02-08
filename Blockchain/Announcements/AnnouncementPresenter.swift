@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureDashboardUI
 import FeatureKYCDomain
@@ -41,6 +42,7 @@ final class AnnouncementPresenter {
     private let navigationRouter: NavigationRouterAPI
     private let exchangeProviding: ExchangeProviding
     private let accountsRouter: AccountsRouting
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     // MARK: - Rx
 
@@ -56,6 +58,9 @@ final class AnnouncementPresenter {
     private let disposeBag = DisposeBag()
 
     private var currentAnnouncement: Announcement?
+
+    // Combine
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Setup
 
@@ -79,7 +84,8 @@ final class AnnouncementPresenter {
         kycSettings: KYCSettingsAPI = DIKit.resolve(),
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
-        analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
     ) {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
@@ -101,6 +107,7 @@ final class AnnouncementPresenter {
         self.navigationRouter = navigationRouter
         self.exchangeProviding = exchangeProviding
         self.accountsRouter = accountsRouter
+        self.featureFlagService = featureFlagService
 
         announcement
             .asObservable()
@@ -370,16 +377,25 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        let builder = AssetDetailsBuilder(
-            accountsRouter: accountsRouter,
-            currency: currency,
-            exchangeProviding: exchangeProviding
-        )
-        let controller = builder.build()
-        navigationRouter.present(
-            viewController: controller,
-            using: .modalOverTopMost
-        )
+        featureFlagService.isEnabled(.local(.redesignCoinview))
+            .receive(on: DispatchQueue.main)
+            .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
+                if isEnabled {
+                    // Run Coinview
+                } else {
+                    let builder = AssetDetailsBuilder(
+                        accountsRouter: accountsRouter,
+                        currency: currency,
+                        exchangeProviding: exchangeProviding
+                    )
+                    let controller = builder.build()
+                    navigationRouter.present(
+                        viewController: controller,
+                        using: .modalOverTopMost
+                    )
+                }
+            }
+            .store(in: &cancellables)
     }
 
     /// Computes asset rename card announcement.
