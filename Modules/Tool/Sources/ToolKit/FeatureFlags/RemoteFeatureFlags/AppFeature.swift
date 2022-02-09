@@ -49,9 +49,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
 
-    /// Enable ACH withdraw and deposit
-    case withdrawAndDepositACH
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -109,8 +106,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .withdrawAndDepositACH:
-            return "ach_withdraw_deposit_enabled"
         case .biometry:
             return nil
         case .showOnboardingAfterSignUp:
@@ -164,8 +159,6 @@ extension AppFeature {
         case .announcements:
             return false
         case .siftScienceEnabled:
-            return false
-        case .withdrawAndDepositACH:
             return false
         case .biometry:
             return false

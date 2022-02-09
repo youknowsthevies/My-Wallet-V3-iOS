@@ -208,8 +208,6 @@ extension DependencyContainer {
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
-        factory { WithdrawalRouter() as WithdrawalRouting }
-
         // MARK: - AppCoordinator
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }

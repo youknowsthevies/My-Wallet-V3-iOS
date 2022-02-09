@@ -348,23 +348,18 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         let supportedCurrencies = fetchSupportedCurrenciesForBankTransactions(
             fiatCurrency: fiatCurrency
         )
-        let achEnabled = featureFetching
-            .fetchBool(for: .withdrawAndDepositACH)
-        return Single.zip(
-            supportedCurrencies,
-            achEnabled
-        )
-        .map { currencies, isACHEnabled in
-            if isACHEnabled, fiatCurrency.isACHSupportedCurrency {
-                return currencies.contains(fiatCurrency)
+        return supportedCurrencies
+            .map { currencies in
+                if fiatCurrency.isACHSupportedCurrency {
+                    return currencies.contains(fiatCurrency)
+                }
+                // Filter out all currencies that are supported for ACH.
+                // If ACH is disabled, the user should not be able to transact.
+                // If ACH is enabled but the currency is not an ACH supported currency
+                // the currency will be available.
+                let available = currencies.filter { !$0.isACHSupportedCurrency }
+                return available.contains(fiatCurrency)
             }
-            // Filter out all currencies that are supported for ACH.
-            // If ACH is disabled, the user should not be able to transact.
-            // If ACH is enabled but the currency is not an ACH supported currency
-            // the currency will be available.
-            let available = currencies.filter { !$0.isACHSupportedCurrency }
-            return available.contains(fiatCurrency)
-        }
     }
 
     func eligiblePaymentMethods(
@@ -396,15 +391,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.fetchCards().asSingle(),
-                tradingBalanceService.balances.asSingle(),
-                featureFetching.fetchBool(for: .withdrawAndDepositACH)
+                tradingBalanceService.balances.asSingle()
             )
             .map {
                 (
                     paymentMethods: $0.0,
                     cards: $0.1,
-                    balances: $0.2,
-                    withdrawAndDepositACHEnabled: $0.3
+                    balances: $0.2
                 )
             }
             .map(weak: self) { (self, payload) in
@@ -412,8 +405,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     paymentMethods: payload.paymentMethods,
                     cards: payload.cards,
                     balances: payload.balances,
-                    linkedBanks: [],
-                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                    linkedBanks: []
                 )
             }
             .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] types in
@@ -440,16 +432,14 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.cards.asSingle(),
                 tradingBalanceService.balances.asSingle(),
-                linkedBankService.fetchLinkedBanks(),
-                featureFetching.fetchBool(for: .withdrawAndDepositACH)
+                linkedBankService.fetchLinkedBanks()
             )
             .map {
                 (
                     paymentMethods: $0.0,
                     cards: $0.1,
                     balances: $0.2,
-                    linkedBanks: $0.3,
-                    withdrawAndDepositACHEnabled: $0.4
+                    linkedBanks: $0.3
                 )
             }
             .map(weak: self) { (self, payload) in
@@ -457,8 +447,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     paymentMethods: payload.paymentMethods,
                     cards: payload.cards,
                     balances: payload.balances,
-                    linkedBanks: payload.linkedBanks,
-                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                    linkedBanks: payload.linkedBanks
                 )
             }
             .map { types in
@@ -507,8 +496,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         paymentMethods: [PaymentMethod],
         cards: [CardData],
         balances: CustodialAccountBalanceStates,
-        linkedBanks: [LinkedBankData],
-        withdrawAndDepositACHEnabled: Bool
+        linkedBanks: [LinkedBankData]
     ) -> [PaymentMethodType] {
         let topCardLimit = (paymentMethods.first { $0.type.isCard })?.max
 
@@ -537,8 +525,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     case .crypto:
                         return true
                     case .fiat(let fiatCurrency):
-                        let enabledCurrencies: [FiatCurrency] = withdrawAndDepositACHEnabled ? [.USD, .GBP, .EUR] : [.GBP, .EUR]
-                        return enabledCurrencies.contains(fiatCurrency)
+                        return [.USD, .GBP, .EUR].contains(fiatCurrency)
                     }
                 }
             }
@@ -580,16 +567,14 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethods,
                 cardListService.cards.asObservable(),
                 tradingBalanceService.balances.asObservable(),
-                linkedBankService.fetchLinkedBanks().asObservable(),
-                featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()
+                linkedBankService.fetchLinkedBanks().asObservable()
             )
             .map {
                 (
                     paymentMethods: $0.0,
                     cards: $0.1,
                     balances: $0.2,
-                    linkedBanks: $0.3,
-                    withdrawAndDepositACHEnabled: $0.4
+                    linkedBanks: $0.3
                 )
             }
             .map(weak: self) { (self, payload) in
@@ -597,8 +582,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     paymentMethods: payload.paymentMethods,
                     cards: payload.cards,
                     balances: payload.balances,
-                    linkedBanks: payload.linkedBanks,
-                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                    linkedBanks: payload.linkedBanks
                 )
             }
     }
