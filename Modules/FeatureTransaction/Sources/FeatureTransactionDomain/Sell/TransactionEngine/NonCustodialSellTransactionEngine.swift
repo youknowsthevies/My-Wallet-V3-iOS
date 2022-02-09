@@ -17,7 +17,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderDirection: OrderDirection = .fromUserKey
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let quotesEngine: SellQuotesEngine
+    let quotesEngine: QuotesEngine
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
 
@@ -38,7 +38,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     }()
 
     init(
-        quotesEngine: SellQuotesEngine,
+        quotesEngine: QuotesEngine,
         requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
@@ -215,6 +215,9 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 confirmations.append(.sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)))
                 if let sourceAccountLabel = sourceAccount?.label {
                     confirmations.append(.source(.init(value: sourceAccountLabel)))
+                }
+                if !pricedQuote.staticFee.isZero {
+                    confirmations.append(.transactionFee(.init(fee: pricedQuote.staticFee)))
                 }
                 confirmations += [
                     .destination(.init(value: target.label)),

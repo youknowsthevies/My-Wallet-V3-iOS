@@ -12,7 +12,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     let canTransactFiat: Bool = true
     var requireSecondPassword: Bool = false
-    let quotesEngine: SellQuotesEngine
+    let quotesEngine: QuotesEngine
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -33,7 +33,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }()
 
     init(
-        quotesEngine: SellQuotesEngine,
+        quotesEngine: QuotesEngine,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
@@ -93,12 +93,9 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        let amountInSourceCurrency = currencyConversionService
-            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
-            .asSingle()
         let order = createOrder(pendingTransaction: pendingTransaction)
         return Single
-            .zip(order, amountInSourceCurrency)
+            .zip(order, amountInSourceCurrency(for: pendingTransaction))
             .map { _, amount in
                 TransactionResult.unHashed(amount: amount)
             }
@@ -131,11 +128,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let quote = quote.take(1).asSingle()
-        let amountInSourceCurrency = currencyConversionService
-            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
-            .asSingle()
         return Single
-            .zip(quote, amountInSourceCurrency)
+            .zip(quote, amountInSourceCurrency(for: pendingTransaction))
             .map { [targetAsset] pricedQuote, sellSourceValue -> (PendingTransaction, PricedQuote) in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: sellSourceValue.currency)
@@ -147,6 +141,9 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                 }
                 if let sellDestinationFiatValue = sellDestinationValue.fiatValue {
                     confirmations.append(.sellDestinationValue(.init(fiatValue: sellDestinationFiatValue)))
+                }
+                if !pricedQuote.staticFee.isZero {
+                    confirmations.append(.transactionFee(.init(fee: pricedQuote.staticFee)))
                 }
                 confirmations += [
                     .sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)),

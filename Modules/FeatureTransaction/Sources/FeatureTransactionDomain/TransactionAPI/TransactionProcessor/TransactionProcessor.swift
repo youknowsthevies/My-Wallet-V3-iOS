@@ -14,14 +14,13 @@ public final class TransactionProcessor {
         engine.canTransactFiat
     }
 
-    public var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
-        engine.fiatExchangeRatePairs
-    }
-
-    // If the source and target assets are not the same this MAY return a stream of the exchange rates
-    // between them. Or it may simply complete.
-    public var transactionExchangeRatePair: Observable<MoneyValuePair> {
-        engine.transactionExchangeRatePair
+    public var transactionExchangeRates: Observable<TransactionExchangeRates> {
+        pendingTxSubject
+            .asObservable()
+            .flatMap { [engine] pendingTransaction -> Observable<TransactionExchangeRates> in
+                engine.fetchExchangeRates(for: pendingTransaction)
+                    .asObservable()
+            }
     }
 
     // Initialise the transaction as required.

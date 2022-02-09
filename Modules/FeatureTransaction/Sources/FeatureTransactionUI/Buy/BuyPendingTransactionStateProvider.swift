@@ -44,10 +44,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         }
         let canUpgradeTier = canUpgradeTier(from: state.userKYCStatus?.tiers)
         return .init(
-            title: String(
-                format: LocalizationIds.Success.title,
-                state.amount.displayString
-            ),
+            title: LocalizationIds.Success.title,
             subtitle: String(
                 format: LocalizationIds.Success.description,
                 destinationCurrency.name
@@ -70,39 +67,19 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     }
 
     private func inProgress(state: TransactionState) -> PendingTransactionPageState {
-        let sent = state.amount
-        let received: MoneyValue
-        switch state.moneyValueFromDestination() {
-        case .success(let value):
-            received = value
-        case .failure:
-            switch state.destination {
-            case nil:
-                fatalError("Expected a Destination: \(state)")
-            case let account as SingleAccount:
-                received = .zero(currency: account.currencyType)
-            case let cryptoTarget as CryptoTarget:
-                received = .zero(currency: cryptoTarget.asset)
-            default:
-                fatalError("Unsupported state.destination: \(String(reflecting: state.destination))")
+        let fiat = state.amount
+        let crypto = state.pendingTransaction?.confirmations.compactMap { confirmation -> MoneyValue? in
+            if case .buyCryptoValue(let value) = confirmation {
+                return MoneyValue(cryptoValue: value.baseValue)
+            } else {
+                return nil
             }
-        }
-        let title: String
-        if !received.isZero, !sent.isZero {
-            // If we have both sent and receive values:
-            title = String(
-                format: LocalizationIds.InProgress.title,
-                received.displayString,
-                sent.displayString
-            )
-        } else {
-            // If we have invalid inputs but we should continue.
-            title = String(
-                format: LocalizationIds.InProgress.title,
-                received.displayCode,
-                sent.displayCode
-            )
-        }
+        }.first
+        let title = String(
+            format: LocalizationIds.InProgress.title,
+            crypto?.displayString ?? "",
+            fiat.displayString
+        )
         return .init(
             title: title,
             subtitle: LocalizationIds.InProgress.description,

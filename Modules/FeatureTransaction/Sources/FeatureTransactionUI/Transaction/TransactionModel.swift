@@ -157,17 +157,13 @@ final class TransactionModel {
             return nil
         case .updateTransactionComplete:
             return nil
-        case .fetchFiatRates:
-            return processFiatRatePairs()
-        case .fetchTargetRates:
-            return processTransactionRatePair()
+        case .fetchTransactionExchangeRates:
+            return processFetchExchangeRates()
+        case .transactionExchangeRatesFetched:
+            return nil
         case .fetchUserKYCInfo:
             return processFetchKYCStatus()
         case .userKYCInfoFetched:
-            return nil
-        case .transactionFiatRatePairs:
-            return nil
-        case .sourceDestinationPair:
             return nil
         case .fatalTransactionError:
             return nil
@@ -493,8 +489,7 @@ final class TransactionModel {
 
     private func onFirstUpdate(amount: MoneyValue) {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
-        process(action: .fetchFiatRates)
-        process(action: .fetchTargetRates)
+        process(action: .fetchTransactionExchangeRates)
         process(action: .fetchUserKYCInfo)
         process(action: .updateAmount(amount))
     }
@@ -507,19 +502,11 @@ final class TransactionModel {
             }
     }
 
-    private func processFiatRatePairs() -> Disposable {
+    private func processFetchExchangeRates() -> Disposable {
         interactor
-            .startFiatRatePairsFetch
-            .subscribe { [weak self] transactionMoneyValuePairs in
-                self?.process(action: .transactionFiatRatePairs(transactionMoneyValuePairs))
-            }
-    }
-
-    private func processTransactionRatePair() -> Disposable {
-        interactor
-            .startCryptoRatePairFetch
-            .subscribe { [weak self] moneyValuePair in
-                self?.process(action: .sourceDestinationPair(moneyValuePair))
+            .transactionExchangeRates
+            .subscribe { [weak self] rates in
+                self?.process(action: .transactionExchangeRatesFetched(rates))
             }
     }
 

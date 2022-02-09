@@ -257,18 +257,11 @@ final class TransactionInteractor {
         transactionProcessor?.reset()
     }
 
-    var startCryptoRatePairFetch: Observable<MoneyValuePair> {
+    var transactionExchangeRates: Observable<TransactionExchangeRates> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
-        return transactionProcessor.transactionExchangeRatePair
-    }
-
-    var startFiatRatePairsFetch: Observable<TransactionMoneyValuePairs> {
-        guard let transactionProcessor = transactionProcessor else {
-            fatalError("Tx Processor is nil")
-        }
-        return transactionProcessor.fiatExchangeRatePairs
+        return transactionProcessor.transactionExchangeRates
     }
 
     var canTransactFiat: Bool {

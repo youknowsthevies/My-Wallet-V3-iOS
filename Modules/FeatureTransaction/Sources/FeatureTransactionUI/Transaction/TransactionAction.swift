@@ -47,13 +47,11 @@ enum TransactionAction: MviAction {
     case securityChecksCompleted
     case updateTransactionPending
     case updateTransactionComplete
-    case fetchFiatRates
-    case fetchTargetRates
+    case fetchTransactionExchangeRates
+    case transactionExchangeRatesFetched(TransactionExchangeRates)
     case fetchUserKYCInfo
     case userKYCInfoFetched(TransactionState.KYCStatus?)
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
-    case sourceDestinationPair(MoneyValuePair)
-    case transactionFiatRatePairs(TransactionMoneyValuePairs)
     case validateTransaction
     case validateTransactionAfterKYC
     case createOrder
@@ -191,11 +189,11 @@ extension TransactionAction {
                 passwordRequired: passwordRequired
             )
 
-        case .fetchFiatRates:
+        case .fetchTransactionExchangeRates:
             return oldState
 
-        case .fetchTargetRates:
-            return oldState
+        case .transactionExchangeRatesFetched(let exchangeRates):
+            return oldState.update(keyPath: \.exchangeRates, value: exchangeRates)
 
         case .fetchUserKYCInfo:
             return oldState
@@ -203,23 +201,10 @@ extension TransactionAction {
         case .userKYCInfoFetched(let kycStatus):
             return oldState.update(keyPath: \.userKYCStatus, value: kycStatus)
 
-        case .sourceDestinationPair(let pair):
-            var newState = oldState
-            newState.sourceDestinationPair = pair
-            return newState
-
-        case .transactionFiatRatePairs(let pair):
-            var newState = oldState
-            newState.destinationToFiatPair = pair.destination
-            newState.sourceToFiatPair = pair.source
-            return newState
-
         case .sourceAccountSelected(let sourceAccount):
             var newState = oldState
             newState.source = sourceAccount
-            newState.sourceDestinationPair = nil
-            newState.sourceToFiatPair = nil
-            newState.destinationToFiatPair = nil
+            newState.exchangeRates = nil
 
             // The standard flow is [select source] -> [select target] -> [enter amount] -> ...
             // Therefore if we have ... -> [enter amount] -> [select source] -> ... we should go back to [enter amount]
@@ -239,9 +224,7 @@ extension TransactionAction {
             newState.destination = destinationAccount
             newState.nextEnabled = false
             newState.step = step
-            newState.sourceDestinationPair = nil
-            newState.sourceToFiatPair = nil
-            newState.destinationToFiatPair = nil
+            newState.exchangeRates = nil
 
             // The standard flow is [select source] -> [select target] -> [enter amount] -> ...
             // Therefore if we have ... -> [enter amount] -> [select target] -> ... we should go back to [enter amount]

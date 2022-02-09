@@ -12,10 +12,10 @@ import ToolKit
 protocol SwapTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: SwapQuotesEngine { get }
+    var quotesEngine: QuotesEngine { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
-    var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
+    var quote: Observable<PricedQuote> { get }
 }
 
 extension PendingTransaction {
@@ -57,14 +57,7 @@ extension SwapTransactionEngine {
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
-        quotesEngine
-            .getRate(
-                direction: orderDirection,
-                pair: .init(
-                    sourceCurrencyType: sourceAsset,
-                    destinationCurrencyType: target.currencyType
-                )
-            )
+        quote
             .map(weak: self) { (self, pricedQuote) -> MoneyValue in
                 MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
             }
@@ -123,7 +116,7 @@ extension SwapTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let quote = quotesEngine.getRate(direction: orderDirection, pair: pair)
+        let quote = quote
             .take(1)
             .asSingle()
         let amountInSourceCurrency = currencyConversionService
@@ -176,16 +169,28 @@ extension SwapTransactionEngine {
     }
 
     private func startQuotesFetching() -> Disposable {
-        quotesEngine
-            .getRate(direction: orderDirection, pair: pair)
-            .do(onNext: { [weak self] _ in
-                _ = self?.askForRefreshConfirmation(true).subscribe()
-            })
+        quote
+            .flatMap { [weak self] _ -> Completable in
+                guard let self = self else { return .empty() }
+                return self.askForRefreshConfirmation(true)
+            }
             .subscribe()
     }
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         doBuildConfirmations(pendingTransaction: pendingTransaction)
+    }
+
+    // MARK: - Exchange Rates
+
+    func sourceToDestinationTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        sourceExchangeRatePair.asPublisher()
+            .map(\.quote)
+            .mapError { _ in PriceServiceError.missingPrice }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - SwapTransactionEngine
@@ -199,27 +204,25 @@ extension SwapTransactionEngine {
             sourceAccount.receiveAddress,
             amountInSourceCurrency.asSingle()
         )
-        .flatMap { [orderDirection, sourceAsset, target, orderQuoteRepository, orderCreationRepository]
-            destinationAddress, refundAddress, convertedAmount -> Single<SwapOrder> in
-            orderQuoteRepository
-                .fetchQuote(
-                    direction: orderDirection,
-                    sourceCurrencyType: sourceAsset.currencyType,
-                    destinationCurrencyType: target.currencyType
-                )
-                .flatMap { quote -> AnyPublisher<SwapOrder, NabuNetworkError> in
-                    let destination = orderDirection.requiresDestinationAddress ? destinationAddress.address : nil
-                    let refund = orderDirection.requiresRefundAddress ? refundAddress.address : nil
-                    return orderCreationRepository
+        .flatMap { [weak self] destinationAddress, refundAddress, convertedAmount -> Single<SwapOrder> in
+            guard let self = self else { return .never() }
+            return self.quote
+                .take(1)
+                .asSingle()
+                .flatMap { [weak self] quote -> Single<SwapOrder> in
+                    guard let self = self else { return .never() }
+                    let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress.address : nil
+                    let refund = self.orderDirection.requiresRefundAddress ? refundAddress.address : nil
+                    return self.orderCreationRepository
                         .createOrder(
-                            direction: orderDirection,
+                            direction: self.orderDirection,
                             quoteIdentifier: quote.identifier,
                             volume: convertedAmount,
                             destinationAddress: destination,
                             refundAddress: refund
                         )
+                        .asSingle()
                 }
-                .asSingle()
         }
         .do(onDispose: { [weak self] in
             self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
@@ -228,28 +231,17 @@ extension SwapTransactionEngine {
 
     // MARK: - Private Functions
 
-    var sourceExchangeRatePair: Single<MoneyValuePair> {
-        walletCurrencyService
-            .displayCurrency
+    private var sourceExchangeRatePair: Single<MoneyValuePair> {
+        transactionExchangeRatePair
+            .take(1)
             .asSingle()
-            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
-                currencyConversionService
-                    .conversionRate(from: sourceAsset.currencyType, to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
-                    .asSingle()
-            }
     }
 
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
-        walletCurrencyService
-            .displayCurrency
+        transactionExchangeRatePair
+            .take(1)
             .asSingle()
-            .flatMap { [currencyConversionService, target] fiatCurrency -> Single<MoneyValuePair> in
-                currencyConversionService
-                    .conversionRate(from: target.currencyType, to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: target.currencyType), quote: $0) }
-                    .asSingle()
-            }
+            .map(\.inverseExchangeRate)
     }
 }
 

@@ -4,7 +4,9 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 
-public protocol OnChainTransactionEngine: TransactionEngine {}
+public protocol OnChainTransactionEngine: TransactionEngine {
+    var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> { get }
+}
 
 extension OnChainTransactionEngine {
 
@@ -34,7 +36,11 @@ extension OnChainTransactionEngine {
         }
     }
 
-    public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    public func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {
             return updateFeeSelection(

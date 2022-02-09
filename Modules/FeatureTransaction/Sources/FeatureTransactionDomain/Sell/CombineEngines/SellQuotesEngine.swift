@@ -3,10 +3,19 @@
 import BigInt
 import Combine
 import DIKit
+import MoneyKit
 import NabuNetworkError
 import PlatformKit
 
-final class SellQuotesEngine {
+struct PricedQuote {
+    let identifier: String
+    let price: BigInt
+    let networkFee: MoneyValue
+    let staticFee: MoneyValue
+    let sampleDepositAddress: String
+}
+
+final class QuotesEngine {
 
     // MARK: - Constants
 
@@ -48,6 +57,7 @@ final class SellQuotesEngine {
         .map { quote, amount -> PricedQuote in
             let interpolator = PricesInterpolator(prices: quote.quote.priceTiers)
             return PricedQuote(
+                identifier: quote.identifier,
                 price: interpolator.rate(amount: amount),
                 networkFee: quote.networkFee,
                 staticFee: quote.staticFee,

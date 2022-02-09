@@ -6,6 +6,64 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+/// Convert amounts for comparison from fiat to crypto or vice versa, but never crypto -> crypto as this is not fully supported yet.
+public struct TransactionExchangeRates: Equatable, CustomStringConvertible {
+
+    /// The conversion rate from the user-entered `PendingTransaction`'s `amount` (in the Enter Amount Screen) to the transaction's `sourceAccount`.
+    ///
+    /// This is used to normalize the entered `amount` and compare it with the transaction's `limits` (including the available balance for the transaction).
+    /// This is the case when the entered amount's input currency doesn't match the source's currency.
+    /// e.g. for Buy the source is fiat but the user can enter an amount in crypto; for Send or Swap, the source is crypto but the user can enter the amount in fiat.
+    public let amountToSourceRate: MoneyValue
+
+    /// The conversion rate from the `PendingTransaction`'s `fee` to the transaction's `sourceAccount`.
+    ///
+    /// This rate is used to convert and subtract the `PendingTransaction`'s on-chain `fee` with the source's `balance` to calculate the available balance
+    /// for on-chain transactions like Send or Non-Custodial Swap.
+    ///
+    /// The available balance is also used to validate the transaction by comparing it to the applicable `limit`s.
+    public let onChainFeeToSourceRate: MoneyValue
+
+    /// The conversion rate from the wallet's `tradingCurrency` to the `PendingTransaction`'s `sourceAccount`.
+    ///
+    /// Used to normalize the `PendingTransaction`'s `limits` to compare them with the `sourceAccount`'s available balance and with the
+    /// user-entered `amount` (in the Enter Amount Screen). This is done to validate the transaction.
+    ///
+    /// - NOTE: Make sure `TradingLimits` are fetched using the wallet's trading currency!
+    public let fiatTradingCurrencyToSourceRate: MoneyValue
+
+    /// The conversion rate from the `PendingTransaction`'s `sourceAccount` to the wallet's `tradingCurrency`.
+    ///
+    /// Used to convert the source (if not in fiat already) to display prices **only**!
+    public let sourceToFiatTradingCurrencyRate: MoneyValue
+
+    /// The conversion rate from the `PendingTransaction`'s `targetAccount` to the wallet's `tradingCurrency`.
+    ///
+    /// Used to convert the source (if not in fiat already) to display prices **only**!
+    public let destinationToFiatTradingCurrencyRate: MoneyValue
+
+    /// The conversion rate from the `PendingTransaction`'s `sourceAccount` to the transaction's `targetAccount`.
+    ///
+    /// Used to convert the source (if not in fiat already) to display prices **only**!
+    public let sourceToDestinationTradingCurrencyRate: MoneyValue
+}
+
+extension TransactionExchangeRates {
+
+    public var description: String {
+        """
+        \n
+        Amount to Source Rate: \(amountToSourceRate.displayString)
+        On Chain Fee to Source Rate: \(onChainFeeToSourceRate.displayString)
+        Fiat Trading Currency to Source Rate: \(fiatTradingCurrencyToSourceRate.displayString)
+        Source to Fiat Trading Currency Rate: \(sourceToFiatTradingCurrencyRate.displayString)
+        Destination to Fiat Rate: \(destinationToFiatTradingCurrencyRate.displayString)
+        Source to Destination Trading Currency Rate: \(sourceToDestinationTradingCurrencyRate.displayString)
+        \n
+        """
+    }
+}
+
 public protocol TransactionOrder {
     var identifier: String { get }
 }
@@ -19,20 +77,57 @@ public protocol TransactionEngine: AnyObject {
     /// Used to convert amounts in different currencies
     var currencyConversionService: CurrencyConversionServiceAPI { get }
 
-    /// Does this engine accept fiat input amounts
-    var canTransactFiat: Bool { get }
     /// askForRefreshConfirmation: Must be set by TransactionProcessor
     var askForRefreshConfirmation: AskForRefreshConfirmation! { get set }
 
     /// The account the user is transacting from
     var sourceAccount: BlockchainAccount! { get set }
-
     var transactionTarget: TransactionTarget! { get set }
-    var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> { get }
     var requireSecondPassword: Bool { get }
-    // If the source and target assets are not the same this MAY return a stream of the exchange rates
-    // between them. Or it may simply complete.
-    var transactionExchangeRatePair: Observable<MoneyValuePair> { get }
+
+    var canTransactFiat: Bool { get }
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func amountToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func onChainFeeToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func fiatTradingCurrencyToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func sourceToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func destinationToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
+
+    /// The implementation is defaulted to use the `currencyConversionService` instance required by the protocol to fetch the conversion rate.
+    /// The default implementation takes care of any edge cases around doing so, such as crypto -> crypto rates fetching which may not be supported directly.
+    func sourceToDestinationTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError>
 
     func assertInputsValid()
     func start(
@@ -118,17 +213,161 @@ public protocol TransactionEngine: AnyObject {
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 }
 
+// MARK: - Conversion rates
+
 extension TransactionEngine {
 
     public var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
 
+    public func amountToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        currencyConversionService.conversionRate(
+            from: pendingTransaction.amount.currency,
+            to: sourceAsset
+        )
+    }
+
+    public func onChainFeeToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        // The price endpoint doesn't support crypto -> crypto rates, so we need to be careful here.
+        currencyConversionService.conversionRate(
+            from: pendingTransaction.feeAmount.currency,
+            to: tradingCurrency.currencyType
+        )
+        .zip(
+            sourceToFiatTradingCurrencyRate(
+                pendingTransaction: pendingTransaction,
+                tradingCurrency: tradingCurrency
+            )
+        )
+        .map { [sourceAsset] feeToFiatRate, sourceToFiatRate in
+            feeToFiatRate.convert(usingInverse: sourceToFiatRate, currency: sourceAsset)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func fiatTradingCurrencyToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        currencyConversionService.conversionRate(
+            from: tradingCurrency.currencyType,
+            to: sourceAsset
+        )
+    }
+
+    public func sourceToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        currencyConversionService.conversionRate(
+            from: sourceAsset,
+            to: tradingCurrency.currencyType
+        )
+    }
+
+    public func destinationToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        currencyConversionService.conversionRate(
+            from: targetAsset,
+            to: tradingCurrency.currencyType
+        )
+    }
+
+    public func sourceToDestinationTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        // The price endpoint doesn't support crypto -> crypto rates, so we need to be careful here.
+        sourceToFiatTradingCurrencyRate(
+            pendingTransaction: pendingTransaction,
+            tradingCurrency: tradingCurrency
+        )
+        .zip(
+            destinationToFiatTradingCurrencyRate(
+                pendingTransaction: pendingTransaction,
+                tradingCurrency: tradingCurrency
+            )
+        )
+        .map { [targetAsset] sourceToFiatRate, destinationToFiatRate in
+            sourceToFiatRate.convert(usingInverse: destinationToFiatRate, currency: targetAsset)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func fetchExchangeRates(
+        for pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<TransactionExchangeRates, PriceServiceError> {
+        walletCurrencyService
+            .tradingCurrencyPublisher
+            .setFailureType(to: PriceServiceError.self)
+            .flatMap { [weak self] tradingCurrency -> AnyPublisher<[MoneyValue], PriceServiceError> in
+                guard let self = self else {
+                    fatalError("Publiser not retained '\(#function)'")
+                }
+                let exchangeRatesPublishers: [AnyPublisher<MoneyValue, PriceServiceError>] = [
+                    self.amountToSourceRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    ),
+                    self.onChainFeeToSourceRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    ),
+                    self.fiatTradingCurrencyToSourceRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    ),
+                    self.sourceToFiatTradingCurrencyRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    ),
+                    self.destinationToFiatTradingCurrencyRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    ),
+                    self.sourceToDestinationTradingCurrencyRate(
+                        pendingTransaction: pendingTransaction,
+                        tradingCurrency: tradingCurrency
+                    )
+                ]
+                return exchangeRatesPublishers.zip()
+            }
+            .map { exchangeRates -> TransactionExchangeRates in
+                TransactionExchangeRates(
+                    amountToSourceRate: exchangeRates[0],
+                    onChainFeeToSourceRate: exchangeRates[1],
+                    fiatTradingCurrencyToSourceRate: exchangeRates[2],
+                    sourceToFiatTradingCurrencyRate: exchangeRates[3],
+                    destinationToFiatTradingCurrencyRate: exchangeRates[4],
+                    sourceToDestinationTradingCurrencyRate: exchangeRates[5]
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Other
+
+extension TransactionEngine {
+
     public var sourceAsset: CurrencyType {
         guard let account = sourceAccount as? SingleAccount else {
             fatalError("Expected a SingleAccount: \(String(describing: sourceAccount))")
         }
         return account.currencyType
+    }
+
+    public var targetAsset: CurrencyType {
+        transactionTarget.currencyType
     }
 
     public var sourceCryptoCurrency: CryptoCurrency {
@@ -222,12 +461,7 @@ extension TransactionEngine {
     }
 }
 
-private struct TransactionValidationConversionRates {
-    let amountToWalletRate: MoneyValue
-    let feeToWalletRate: MoneyValue
-    let sourceToWalletRate: MoneyValue
-    let limitsToAmountRate: MoneyValue
-}
+// MARK: - Transaction validation
 
 extension TransactionEngine {
 
@@ -235,80 +469,86 @@ extension TransactionEngine {
         guard let sourceAccount = sourceAccount, transactionTarget != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
-        // NOTE: Convert amounts for comparison from fiat to crypto or vice versa, but never crypto -> crypto as this is not fully supported yet.
-        return fetchAmountConversionRates(for: pendingTransaction)
-            .mapError { error -> Error in
-                error // map to generic Error for zipping with balance
-            }
+
+        return fetchExchangeRates(for: pendingTransaction)
+            .eraseError()
             .zip(sourceAccount.balancePublisher)
             .asSingle()
-            .map { [weak self] conversionRates, sourceBalance -> Void in
-                let convertedBalance = sourceBalance.convert(using: conversionRates.sourceToWalletRate)
-                let convertedFee = pendingTransaction.feeAmount.convert(using: conversionRates.feeToWalletRate)
-                guard try convertedBalance >= convertedFee else {
-                    throw TransactionValidationFailure(state: .belowFees(convertedFee, convertedBalance))
+            .map { [weak self] exchangeRates, sourceBalance -> Void in
+                guard let self = self else {
+                    return
+                }
+                // normalize all amounts to the transaction's source account currency so we can compare and operate on them
+                let amountInSourceCurrency = pendingTransaction.amount.convert(
+                    using: exchangeRates.amountToSourceRate
+                )
+                let feeInSourceCurrency = pendingTransaction.feeAmount.convert(
+                    using: exchangeRates.onChainFeeToSourceRate
+                )
+                let transactionLimitsInSourceCurrency = try self.transactionLimitsInSourceCurrency(
+                    from: pendingTransaction,
+                    exchangeRates: exchangeRates
+                )
+                // calculate available balance
+                let availableBalanceInSourceCurrency = try sourceBalance - feeInSourceCurrency
+
+                // validate the transaction
+                if self.sourceAsset.cryptoCurrency?.isERC20 != true {
+                    guard try sourceBalance >= feeInSourceCurrency else {
+                        throw TransactionValidationFailure(
+                            state: .belowFees(feeInSourceCurrency, sourceBalance)
+                        )
+                    }
                 }
 
-                let amount = pendingTransaction.amount
-                let limits = pendingTransaction.normalizedLimits.convert(using: conversionRates.limitsToAmountRate)
-                let availableBalanceInWalletCurrency = try convertedBalance - convertedFee
-                let availableBalance: MoneyValue = availableBalanceInWalletCurrency.convert(
-                    usingInverse: conversionRates.amountToWalletRate,
-                    currency: amount.currencyType
+                // rate using to display limits errors in the input currency
+                let sourceToInputAmountRate = MoneyValuePair(
+                    base: .one(currency: pendingTransaction.amount.currency),
+                    exchangeRate: exchangeRates.amountToSourceRate
+                ).inverseQuote.quote
+
+                try self.validate(
+                    amountInSourceCurrency,
+                    hasAmountUpToSourceLimit: availableBalanceInSourceCurrency,
+                    sourceToAmountRate: sourceToInputAmountRate
                 )
-                try self?.validate(amount, hasAmountUpToSourceLimit: availableBalance)
-                try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)
+                try self.validate(
+                    amountInSourceCurrency,
+                    isWithin: transactionLimitsInSourceCurrency,
+                    sourceToAmountRate: sourceToInputAmountRate
+                )
             }
             .asCompletable()
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
-    private func fetchAmountConversionRates(
-        for pendingTransaction: PendingTransaction
-    ) -> AnyPublisher<TransactionValidationConversionRates, PriceServiceError> {
-        walletCurrencyService
-            .tradingCurrencyPublisher
-            .setFailureType(to: PriceServiceError.self)
-            .flatMap { [currencyConversionService, sourceAsset] walletCurrency in
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.amount.currencyType,
-                    to: walletCurrency.currencyType
-                )
-                .zip(
-                    currencyConversionService.conversionRate(
-                        from: pendingTransaction.feeAmount.currencyType,
-                        to: walletCurrency.currencyType
-                    ),
-                    currencyConversionService.conversionRate(
-                        from: sourceAsset,
-                        to: walletCurrency.currencyType
-                    ),
-                    currencyConversionService.conversionRate(
-                        from: pendingTransaction.normalizedLimits.currencyType,
-                        to: pendingTransaction.amount.currencyType
-                    )
-                )
-            }
-            .map { conversionRates in
-                let (amountToWalletRate, feeToWalletRate, sourceToWallet, limitsToAmountRate) = conversionRates
-                return TransactionValidationConversionRates(
-                    amountToWalletRate: amountToWalletRate,
-                    feeToWalletRate: feeToWalletRate,
-                    sourceToWalletRate: sourceToWallet,
-                    limitsToAmountRate: limitsToAmountRate
-                )
-            }
-            .eraseToAnyPublisher()
+    private func transactionLimitsInSourceCurrency(
+        from pendingTransaction: PendingTransaction,
+        exchangeRates: TransactionExchangeRates
+    ) throws -> TransactionLimits {
+        let limits = pendingTransaction.normalizedLimits
+        let convertedLimits: TransactionLimits
+        if limits.currencyType == pendingTransaction.amount.currencyType {
+            convertedLimits = limits.convert(using: exchangeRates.amountToSourceRate)
+        } else if limits.currencyType == sourceAccount.currencyType {
+            convertedLimits = limits
+        } else {
+            print("🚨 Limits should be set in either the same currency as the input amount or in the source currency")
+            throw TransactionValidationFailure(state: .optionInvalid)
+        }
+        return convertedLimits
     }
 
     private func validate(
         _ amount: MoneyValue,
         isWithin limits: TransactionLimits,
-        amountToWalletRate: MoneyValue
+        sourceToAmountRate: MoneyValue
     ) throws {
         let minLimit = limits.minimum ?? .zero(currency: limits.currencyType)
         guard try amount >= minLimit else {
-            throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
+            throw TransactionValidationFailure(
+                state: .belowMinimumLimit(minLimit.convert(using: sourceToAmountRate))
+            )
         }
 
         guard let maxLimit = limits.maximum else {
@@ -319,23 +559,29 @@ extension TransactionEngine {
             if sourceAccount is LinkedBankAccount {
                 throw TransactionValidationFailure(
                     state: .overMaximumSourceLimit(
-                        maxLimit.convert(using: amountToWalletRate),
+                        maxLimit.convert(using: sourceToAmountRate),
                         sourceAccount.label,
                         amount
                     )
                 )
             }
+            let maxLimitForDisplay = maxLimit.convert(using: sourceToAmountRate)
+            let effectiveLimit = limits.effectiveLimit?.convert(using: sourceToAmountRate)
             throw TransactionValidationFailure(
                 state: .overMaximumPersonalLimit(
-                    limits.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
-                    maxLimit.convert(using: amountToWalletRate),
+                    effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimitForDisplay),
+                    maxLimitForDisplay,
                     limits.suggestedUpgrade
                 )
             )
         }
     }
 
-    private func validate(_ amount: MoneyValue, hasAmountUpToSourceLimit limit: MoneyValue) throws {
+    private func validate(
+        _ amount: MoneyValue,
+        hasAmountUpToSourceLimit limit: MoneyValue,
+        sourceToAmountRate: MoneyValue
+    ) throws {
         guard (sourceAccount is LinkedBankAccount) == false else {
             // bank accounts have no balance to us, so nothing to there's validate against
             return
@@ -343,13 +589,17 @@ extension TransactionEngine {
         guard try amount <= limit else {
             if let source = sourceAccount as? PaymentMethodAccount, !source.paymentMethod.type.isFunds {
                 throw TransactionValidationFailure(
-                    state: .overMaximumSourceLimit(limit, sourceAccount.label, amount)
+                    state: .overMaximumSourceLimit(
+                        limit.convert(using: sourceToAmountRate),
+                        sourceAccount.label,
+                        amount.convert(using: sourceToAmountRate)
+                    )
                 )
             }
             throw TransactionValidationFailure(
                 state: .insufficientFunds(
-                    limit,
-                    amount,
+                    limit.convert(using: sourceToAmountRate),
+                    amount, // leave amount is source currency
                     sourceAccount.currencyType,
                     transactionTarget.currencyType
                 )
