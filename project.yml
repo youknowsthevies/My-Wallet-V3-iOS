@@ -273,6 +273,8 @@ packages:
     path: Modules/FeatureCards
   FeatureDashboard:
     path: Modules/FeatureDashboard
+  FeatureCoin:
+    path: Modules/FeatureCoin
   FeatureDebug:
     path: Modules/FeatureDebug
   FeatureInterest:
@@ -386,6 +388,7 @@ targets:
       - package: FeatureAuthentication
       - package: FeatureCards
       - package: FeatureDashboard
+      - package: FeatureCoin
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC

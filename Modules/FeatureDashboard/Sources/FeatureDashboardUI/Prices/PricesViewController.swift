@@ -151,17 +151,17 @@ public final class PricesViewController: BaseScreenViewController {
 
         Observable.combineLatest(
             tableView.rx.modelSelected(PricesCellType.self),
-            featureFlagService.isEnabled(.local(.redesignCoinview)).asObservable()
+            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
         )
-        .subscribe(onNext: { [presenter] model, isRedesignCoinviewEnabled in
+        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
             switch model {
             case .emptyState:
                 break
             case .currency(let cryptoCurrency, _):
                 if let customSelectionActionClosure = self.customSelectionActionClosure {
                     customSelectionActionClosure(cryptoCurrency)
-                } else if isRedesignCoinviewEnabled {
-                    // Show Redesign Coinview
+                } else if isRedesignCoinViewEnabled {
+                    // Show Redesign CoinView
                 } else {
                     presenter.router.showDetailsScreen(for: cryptoCurrency)
                 }

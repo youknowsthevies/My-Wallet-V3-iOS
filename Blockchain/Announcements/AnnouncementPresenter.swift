@@ -377,11 +377,11 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        featureFlagService.isEnabled(.local(.redesignCoinview))
+        featureFlagService.isEnabled(.local(.redesignCoinView))
             .receive(on: DispatchQueue.main)
             .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
                 if isEnabled {
-                    // Run Coinview
+                    // Run CoinView
                 } else {
                     let builder = AssetDetailsBuilder(
                         accountsRouter: accountsRouter,

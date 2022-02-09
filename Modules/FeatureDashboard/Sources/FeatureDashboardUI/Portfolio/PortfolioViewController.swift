@@ -167,9 +167,9 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
         Observable.combineLatest(
             tableView.rx.modelSelected(PortfolioCellType.self),
-            featureFlagService.isEnabled(.local(.redesignCoinview)).asObservable()
+            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
         )
-        .subscribe(onNext: { [presenter] model, isRedesignCoinviewEnabled in
+        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
             switch model {
             case .announcement,
                  .totalBalance,
@@ -179,8 +179,8 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
                  .emptyState:
                 break
             case .crypto(let cryptoPresenter):
-                if isRedesignCoinviewEnabled {
-                    // Show Redesign Coinview
+                if isRedesignCoinViewEnabled {
+                    // Show Redesign CoinView
                 } else {
                     presenter.router.showDetailsScreen(for: cryptoPresenter.cryptoCurrency)
                 }
