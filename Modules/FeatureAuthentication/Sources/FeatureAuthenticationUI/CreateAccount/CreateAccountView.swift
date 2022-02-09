@@ -127,6 +127,8 @@ private struct CreateAccountForm: View {
             subTextStyle: viewStore.passwordStrength.inputSubTextStyle,
             state: shouldShowError ? .error : .default,
             configuration: {
+                $0.autocorrectionType = .no
+                $0.autocapitalizationType = .none
                 $0.isSecureTextEntry = !viewStore.passwordFieldTextVisible
                 $0.textContentType = .newPassword
             },
