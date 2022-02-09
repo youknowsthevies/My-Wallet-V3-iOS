@@ -48,6 +48,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         transactionTarget as! EthereumSendTransactionTarget
     }
 
+    private var ethereumCryptoAccount: EthereumCryptoAccount {
+        sourceAccount as! EthereumCryptoAccount
+    }
+
     // MARK: - Init
 
     init(
@@ -86,7 +90,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     func assertInputsValid() {
-        precondition(sourceAccount is CryptoNonCustodialAccount)
+        precondition(sourceAccount is EthereumCryptoAccount)
         precondition(sourceCryptoCurrency == .coin(.ethereum))
         precondition(transactionTarget is EthereumSendTransactionTarget)
     }
@@ -178,19 +182,28 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         let address = walletConnectTarget.transaction.to
             .flatMap { EthereumAddress(address: $0) }
 
-        let transaction = transactionBuildingService
-            .buildTransaction(
-                amount: pendingTransaction.amount,
-                to: address!,
-                gasPrice: BigUInt(pendingTransaction.gasPrice.amount),
-                gasLimit: BigUInt(pendingTransaction.gasLimit),
-                transferType: .transfer(data: Data(hex: walletConnectTarget.transaction.data))
-            )
+        let transactionPublisher = ethereumCryptoAccount.nonce
+            .eraseError()
+            .flatMap { [transactionBuildingService, walletConnectTarget] nonce in
+                transactionBuildingService
+                    .buildTransaction(
+                        amount: pendingTransaction.amount,
+                        to: address!,
+                        gasPrice: BigUInt(pendingTransaction.gasPrice.amount),
+                        gasLimit: BigUInt(pendingTransaction.gasLimit),
+                        nonce: nonce,
+                        transferType: .transfer(data: Data(hex: walletConnectTarget.transaction.data))
+                    )
+                    .eraseError()
+                    .publisher
+            }
+            .eraseToAnyPublisher()
+
         switch walletConnectTarget.method {
         case .sign:
             return Single
                 .zip(
-                    transaction.single,
+                    transactionPublisher.asSingle(),
                     keyPairProvider.keyPair(with: secondPassword)
                 )
                 .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionEncoded> in
@@ -205,7 +218,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                     .signed(rawTx: rawTransaction)
                 }
         case .send:
-            return transaction.single
+            return transactionPublisher.asSingle()
                 .flatMap { [ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,

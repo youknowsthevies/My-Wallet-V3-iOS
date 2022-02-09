@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import Combine
 import DIKit
 import EthereumKit
@@ -72,6 +73,16 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    /// The nonce (transaction count) of this account.
+    var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
+        nonceRepository.nonce(for: publicKey)
+    }
+
+    /// The ethereum balance of this account.
+    var ethereumBalance: AnyPublisher<CryptoValue, EthereumBalanceRepositoryError> {
+        ethereumBalanceRepository.balance(for: publicKey)
+    }
+
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
         Single.zip(
             canPerformInterestTransfer(),
@@ -120,41 +131,44 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             .ignoreFailure()
     }
 
-    private let featureFlagsService: FeatureFlagsServiceAPI
-    private let publicKey: String
+    private let balanceService: ERC20BalanceServiceAPI
     private let erc20Token: AssetModel
     private let erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
-    private let balanceService: ERC20BalanceServiceAPI
-    private let featureFetcher: FeatureFetching
+    private let ethereumBalanceRepository: EthereumBalanceRepositoryAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let nonceRepository: EthereumNonceRepositoryAPI
     private let priceService: PriceServiceAPI
-    private let transactionsService: ERC20HistoricalTransactionServiceAPI
-    private let swapTransactionsService: SwapActivityServiceAPI
+    private let publicKey: String
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
+    private let transactionsService: ERC20HistoricalTransactionServiceAPI
 
     init(
         publicKey: String,
         erc20Token: AssetModel,
-        erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
         balanceService: ERC20BalanceServiceAPI = resolve(),
-        transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
+        erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve(),
+        ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        nonceRepository: EthereumNonceRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        swapTransactionsService: SwapActivityServiceAPI = resolve(),
         supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        transactionsService: ERC20HistoricalTransactionServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
         asset = .erc20(erc20Token)
         label = asset.defaultWalletName
         self.balanceService = balanceService
-        self.featureFetcher = featureFetcher
-        self.transactionsService = transactionsService
-        self.swapTransactionsService = swapTransactionsService
+        self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
+        self.ethereumBalanceRepository = ethereumBalanceRepository
+        self.featureFlagsService = featureFlagsService
+        self.nonceRepository = nonceRepository
         self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
-        self.featureFlagsService = featureFlagsService
-        self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
+        self.swapTransactionsService = swapTransactionsService
+        self.transactionsService = transactionsService
     }
 
     private var isPairToFiatAvailable: Single<Bool> {

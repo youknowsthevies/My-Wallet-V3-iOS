@@ -23,12 +23,12 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
+            nonce: nonce,
             transferType: .transfer(data: data)
         )
 
         let result = EthereumTransactionCandidateCosted.create(
-            transaction: transaction,
-            nonce: nonce
+            transaction: transaction
         )
 
         guard case .success(let costed) = result else {
@@ -62,12 +62,12 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasPrice: 42000000000,
             gasLimit: 78009,
             value: 2000000000000000000,
+            nonce: 0,
             transferType: .erc20Transfer(contract: tokenContract, addressReference: addressReference)
         )
 
         let result = EthereumTransactionCandidateCosted.create(
-            transaction: transaction,
-            nonce: 0
+            transaction: transaction
         )
 
         guard case .success(let costed) = result else {
@@ -104,12 +104,12 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
+            nonce: nonce,
             transferType: .transfer()
         )
 
         let result = EthereumTransactionCandidateCosted.create(
-            transaction: transaction,
-            nonce: nonce
+            transaction: transaction
         )
 
         guard case .failure(let error) = result else {
@@ -131,12 +131,12 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
+            nonce: nonce,
             transferType: .transfer()
         )
 
         let result = EthereumTransactionCandidateCosted.create(
-            transaction: transaction,
-            nonce: nonce
+            transaction: transaction
         )
 
         guard case .failure(let error) = result else {

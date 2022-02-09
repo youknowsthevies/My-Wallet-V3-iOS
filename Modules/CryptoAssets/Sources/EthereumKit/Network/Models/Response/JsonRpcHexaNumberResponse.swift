@@ -3,8 +3,9 @@
 import BigInt
 import Foundation
 
-/// A Json RPC response with a single hexadecimal number.
-struct JsonRpcSingleHexaResponse: Decodable {
+/// A Json RPC response with a hexadecimal number as 'result'.
+/// The number will be converted to a `BigInt`.
+struct JsonRpcHexaNumberResponse: Decodable {
 
     // MARK: Types
 
@@ -25,7 +26,7 @@ struct JsonRpcSingleHexaResponse: Decodable {
             throw DecodingError.dataCorruptedError(
                 forKey: .result,
                 in: container,
-                debugDescription: "'result' is not a hexadecimal number."
+                debugDescription: "'result' is not a hexadecimal BigInt number."
             )
         }
         self.result = result

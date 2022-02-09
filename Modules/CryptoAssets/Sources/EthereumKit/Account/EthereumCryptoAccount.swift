@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import Combine
 import DIKit
 import MoneyKit
@@ -23,8 +24,9 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
-        accountDetailsService.accountDetails()
-            .map(\.balance)
+        ethereumBalanceRepository
+            .balance(for: publicKey)
+            .asSingle()
             .moneyValue
     }
 
@@ -59,6 +61,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+    }
+
+    var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
+        nonceRepository.nonce(for: publicKey)
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
@@ -101,11 +107,12 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let publicKey: String
     private let hdAccountIndex: Int
-    private let accountDetailsService: EthereumAccountDetailsServiceAPI
+    private let ethereumBalanceRepository: EthereumBalanceRepositoryAPI
     private let priceService: PriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let nonceRepository: EthereumNonceRepositoryAPI
 
     init(
         publicKey: String,
@@ -114,9 +121,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         bridge: EthereumWalletBridgeAPI = resolve(),
-        accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
+        ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
+        nonceRepository: EthereumNonceRepositoryAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         let asset = CryptoCurrency.coin(.ethereum)
@@ -126,10 +134,11 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         self.priceService = priceService
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
-        self.accountDetailsService = accountDetailsService
+        self.ethereumBalanceRepository = ethereumBalanceRepository
         self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
         self.featureFlagsService = featureFlagsService
+        self.nonceRepository = nonceRepository
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -173,6 +182,6 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func invalidateAccountBalance() {
-        accountDetailsService.invalidateEthereumAccountDetails()
+        ethereumBalanceRepository.invalidateCache()
     }
 }

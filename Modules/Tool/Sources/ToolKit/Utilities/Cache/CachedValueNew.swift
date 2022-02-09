@@ -72,6 +72,13 @@ public final class CachedValueNew<Key: Hashable, Value: Equatable, CacheError: E
             .store(in: &cancellables)
     }
 
+    public func invalidateCache() {
+        cache
+            .removeAll()
+            .subscribe()
+            .store(in: &cancellables)
+    }
+
     /// Streams the value associated with the given key, including any subsequent updates, optionally skipping stale values in the local data source.
     ///
     /// If the value is in the local data source, but stale, and `skipStale` is set to false, this value will be streamed, but a remote data source request will be created to update it.

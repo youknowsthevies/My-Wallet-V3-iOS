@@ -13,8 +13,7 @@ public struct EthereumTransactionCandidateCosted {
     }
 
     static func create(
-        transaction: EthereumTransactionCandidate,
-        nonce: BigUInt
+        transaction: EthereumTransactionCandidate
     ) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError> {
         guard transaction.gasPrice > 0 else {
             return .failure(.noGasPrice)
@@ -23,18 +22,17 @@ public struct EthereumTransactionCandidateCosted {
             return .failure(.noGasLimit)
         }
         let costed = EthereumTransactionCandidateCosted(
-            transaction: signingInput(with: transaction, nonce: nonce)
+            transaction: signingInput(with: transaction)
         )
         return .success(costed)
     }
 
     private static func signingInput(
-        with candidate: EthereumTransactionCandidate,
-        nonce: BigUInt
+        with candidate: EthereumTransactionCandidate
     ) -> EthereumSigningInput {
         EthereumSigningInput.with { input in
             input.chainID = Data(hexString: "01")!
-            input.nonce = Data(hexString: nonce.hexString)!
+            input.nonce = Data(hexString: candidate.nonce.hexString)!
             input.gasPrice = Data(hexString: candidate.gasPrice.hexString)!
             input.gasLimit = Data(hexString: candidate.gasLimit.hexString)!
 

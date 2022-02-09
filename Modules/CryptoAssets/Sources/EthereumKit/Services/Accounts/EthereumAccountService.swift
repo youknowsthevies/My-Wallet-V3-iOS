@@ -2,8 +2,11 @@
 
 import Combine
 import DIKit
-import NetworkKit
 import ToolKit
+
+public enum EthereumAccountServiceError: Error {
+    case failed(Error)
+}
 
 public protocol EthereumAccountServiceAPI {
 
@@ -12,7 +15,7 @@ public protocol EthereumAccountServiceAPI {
     /// - Parameter address: An ethereum address.
     ///
     /// - Returns: A publisher that emits a `Bool` on success, or a `NetworkError` on failure.
-    func isContract(address: String) -> AnyPublisher<Bool, NetworkError>
+    func isContract(address: String) -> AnyPublisher<Bool, EthereumAccountServiceError>
 }
 
 final class EthereumAccountService: EthereumAccountServiceAPI {
@@ -24,7 +27,7 @@ final class EthereumAccountService: EthereumAccountServiceAPI {
     // MARK: - Private Properties
 
     /// The ethereum account client.
-    private let accountClient: EthereumAccountClientAPI
+    private let accountClient: GetCodeClientAPI
 
     /// The dictionary of boolean truth values of ethereum addresses being associated with ethereum smart contracts, indexed by their respective address.
     private let isContractAddressCache: Atomic<[String: Bool]>
@@ -37,7 +40,7 @@ final class EthereumAccountService: EthereumAccountServiceAPI {
     ///   - accountClient:          An ethereum account client.
     ///   - isContractAddressCache: An atomic dictionary.
     init(
-        accountClient: EthereumAccountClientAPI = resolve(),
+        accountClient: GetCodeClientAPI = resolve(),
         isContractAddressCache: Atomic<[String: Bool]> = resolve(tag: Tag.isContractAddressCache)
     ) {
         self.accountClient = accountClient
@@ -46,11 +49,12 @@ final class EthereumAccountService: EthereumAccountServiceAPI {
 
     // MARK: Internal Methods
 
-    func isContract(address: String) -> AnyPublisher<Bool, NetworkError> {
+    func isContract(address: String) -> AnyPublisher<Bool, EthereumAccountServiceError> {
         guard let isContractAddress = isContractAddressCache.value[address] else {
             return accountClient
-                .isContract(address: address)
-                .map(\.contract)
+                .code(address: address)
+                .mapError(EthereumAccountServiceError.failed)
+                .map { !$0.result.isEmpty }
                 .handleEvents(receiveOutput: { [isContractAddressCache] isContract in
                     isContractAddressCache.mutate { $0[address] = isContract }
                 })

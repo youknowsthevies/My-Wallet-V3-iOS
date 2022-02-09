@@ -43,6 +43,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
+    private var ethereumCryptoAccount: EthereumCryptoAccount {
+        sourceAccount as! EthereumCryptoAccount
+    }
+
     /// The current transactionTarget receive address.
     private var receiveAddress: Single<ReceiveAddress> {
         switch transactionTarget {
@@ -107,6 +111,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
+        precondition(sourceAccount is EthereumCryptoAccount)
         precondition(sourceCryptoCurrency == .coin(.ethereum))
     }
 
@@ -263,15 +268,20 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 feeCache.valueSingle,
                 destinationAddresses
             )
-            .flatMap { [transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
-                transactionBuildingService.buildTransaction(
-                    amount: pendingTransaction.amount,
-                    to: destinationAddresses.destination,
-                    addressReference: destinationAddresses.referenceAddress,
-                    feeLevel: pendingTransaction.feeLevel,
-                    fee: fee,
-                    contractAddress: nil
-                ).single
+            .flatMap { [ethereumCryptoAccount, transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
+                ethereumCryptoAccount.nonce
+                    .flatMap { nonce in
+                        transactionBuildingService.buildTransaction(
+                            amount: pendingTransaction.amount,
+                            to: destinationAddresses.destination,
+                            addressReference: destinationAddresses.referenceAddress,
+                            feeLevel: pendingTransaction.feeLevel,
+                            fee: fee,
+                            nonce: nonce,
+                            contractAddress: nil
+                        ).publisher
+                    }
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher

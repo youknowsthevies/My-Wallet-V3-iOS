@@ -59,11 +59,11 @@ final class EthereumSignerTests: XCTestCase {
                 gasPrice: testCase.gasPrice,
                 gasLimit: testCase.gasLimit,
                 value: testCase.value,
+                nonce: 9,
                 transferType: .transfer()
             )
             guard case .success(let costed) = EthereumTransactionCandidateCosted.create(
-                transaction: candidate,
-                nonce: 9
+                transaction: candidate
             ) else {
                 XCTFail("EthereumTransactionCandidateCosted failed: \(testCase.rawTransaction)")
                 break

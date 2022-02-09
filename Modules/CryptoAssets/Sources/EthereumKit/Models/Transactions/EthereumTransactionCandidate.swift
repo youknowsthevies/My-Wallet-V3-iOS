@@ -13,6 +13,7 @@ public struct EthereumTransactionCandidate: Equatable {
     let gasPrice: BigUInt
     let gasLimit: BigUInt
     let value: BigUInt
+    let nonce: BigUInt
     let transferType: TransferType
 
     init(
@@ -20,12 +21,14 @@ public struct EthereumTransactionCandidate: Equatable {
         gasPrice: BigUInt,
         gasLimit: BigUInt,
         value: BigUInt,
+        nonce: BigUInt,
         transferType: TransferType
     ) {
         self.to = to
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
         self.value = value
+        self.nonce = nonce
         self.transferType = transferType
     }
 }

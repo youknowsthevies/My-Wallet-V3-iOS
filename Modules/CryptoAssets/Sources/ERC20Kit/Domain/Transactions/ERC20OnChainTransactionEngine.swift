@@ -42,7 +42,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let erc20Token: AssetModel
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumKit.EthereumFeeServiceAPI
-    private let ethereumAccountDetails: EthereumAccountDetailsServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
@@ -74,32 +73,34 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
+    private var erc20CryptoAccount: ERC20CryptoAccount {
+        sourceAccount as! ERC20CryptoAccount
+    }
+
     // MARK: - Init
 
     init(
         erc20Token: AssetModel,
         requireSecondPassword: Bool,
-        ethereumAccountDetails: EthereumAccountDetailsServiceAPI = resolve(),
-        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
-        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
-        transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         hotWalletAddressService: HotWalletAddressServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
-        ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
+        transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
+        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        self.erc20Token = erc20Token
-        self.ethereumAccountDetails = ethereumAccountDetails
-        self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
-        self.feeService = feeService
-        self.requireSecondPassword = requireSecondPassword
-        self.transactionsService = transactionsService
-        self.transactionBuildingService = transactionBuildingService
+        self.erc20Token = erc20Token
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
+        self.feeService = feeService
         self.hotWalletAddressService = hotWalletAddressService
         self.receiveAddressFactory = receiveAddressFactory
+        self.requireSecondPassword = requireSecondPassword
+        self.transactionBuildingService = transactionBuildingService
+        self.transactionsService = transactionsService
+        self.walletCurrencyService = walletCurrencyService
 
         feeCache = CachedValue(
             configuration: .onSubscription(
@@ -115,6 +116,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
+        precondition(sourceAccount is ERC20CryptoAccount)
         precondition(sourceCryptoCurrency.isERC20)
     }
 
@@ -241,16 +243,21 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 feeCache.valueSingle,
                 destinationAddresses
             )
-            .flatMap { [erc20Token, transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
-                transactionBuildingService.buildTransaction(
-                    amount: pendingTransaction.amount,
-                    to: destinationAddresses.destination,
-                    addressReference: destinationAddresses.referenceAddress,
-                    feeLevel: pendingTransaction.feeLevel,
-                    fee: fee,
-                    contractAddress: erc20Token.contractAddress
-                )
-                .single
+            .flatMap { [erc20CryptoAccount, erc20Token, transactionBuildingService] fee, destinationAddresses
+                -> Single<EthereumTransactionCandidate> in
+                erc20CryptoAccount.nonce
+                    .flatMap { nonce in
+                        transactionBuildingService.buildTransaction(
+                            amount: pendingTransaction.amount,
+                            to: destinationAddresses.destination,
+                            addressReference: destinationAddresses.referenceAddress,
+                            feeLevel: pendingTransaction.feeLevel,
+                            fee: fee,
+                            nonce: nonce,
+                            contractAddress: erc20Token.contractAddress
+                        ).publisher
+                    }
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher.send(
@@ -469,7 +476,8 @@ extension ERC20OnChainTransactionEngine {
     }
 
     private var ethereumAccountBalance: Single<CryptoValue> {
-        ethereumAccountDetails.accountDetails().map(\.balance)
+        erc20CryptoAccount.ethereumBalance
+            .asSingle()
     }
 
     /// Streams `MoneyValuePair` for the exchange rate of the source ERC20 Asset in the current fiat currency.
