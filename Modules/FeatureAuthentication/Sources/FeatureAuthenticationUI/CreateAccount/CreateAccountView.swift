@@ -103,6 +103,7 @@ private struct CreateAccountForm: View {
             placeholder: LocalizedString.TextFieldPlaceholder.email,
             state: shouldShowError ? .error : .default,
             configuration: {
+                $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.keyboardType = .emailAddress
                 $0.textContentType = .emailAddress
