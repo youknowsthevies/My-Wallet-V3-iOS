@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 
 import PackageDescription
 
@@ -22,7 +22,9 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.32.0"
         ),
-        .package(path: "../BlockchainComponentLibrary")
+        .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../Localization"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -41,12 +43,20 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCoinDomain"),
                 .product(
+                    name: "ComposableArchitecture",
+                    package: "swift-composable-architecture"
+                ),
+                .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
                 ),
                 .product(
-                    name: "ComposableArchitecture",
-                    package: "swift-composable-architecture"
+                    name: "Localization",
+                    package: "Localization"
+                ),
+                .product(
+                    name: "ToolKit",
+                    package: "Tool"
                 )
             ]
         ),
