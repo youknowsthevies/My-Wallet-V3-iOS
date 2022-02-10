@@ -640,11 +640,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
         return .merge(
-            .fireAndForget {
-                environment.analyticsRecorder.record(
-                    event: AnalyticsEvents.New.Navigation.signedIn
-                )
-            },
             .cancel(id: WalletCancelations.AssetInitializationId()),
             .cancel(id: WalletCancelations.InitializationId()),
             .cancel(id: WalletCancelations.UpgradeId()),

@@ -128,6 +128,9 @@ let loggedInReducer = Reducer<
                 .fireAndForget(),
             .fireAndForget {
                 NotificationCenter.default.post(name: .login, object: nil)
+                environment.analyticsRecorder.record(
+                    event: AnalyticsEvents.New.Navigation.signedIn
+                )
             },
             handleStartup(context: context)
         )
