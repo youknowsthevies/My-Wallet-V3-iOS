@@ -21,7 +21,7 @@ final class StellarTransactionDispatcher {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let horizonProxy: HorizonProxyAPI
 
-    private let minSend = CryptoValue(amount: 1, currency: .coin(.stellar))
+    private let minSend = CryptoValue(amount: 1, currency: .stellar)
     private var sendTimeOutSeconds: Single<Int> {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
@@ -92,10 +92,10 @@ final class StellarTransactionDispatcher {
     // MARK: Private Methods
 
     private func checkInput(sendDetails: SendDetails) -> Completable {
-        guard sendDetails.value.currencyType == .coin(.stellar) else {
+        guard sendDetails.value.currencyType == .stellar else {
             return .error(SendFailureReason.unknown)
         }
-        guard sendDetails.fee.currencyType == .coin(.stellar) else {
+        guard sendDetails.fee.currencyType == .stellar else {
             return .error(SendFailureReason.unknown)
         }
         return .empty()
@@ -171,10 +171,10 @@ final class StellarTransactionDispatcher {
     private func transaction(sendDetails: SendDetails) -> Single<StellarTransaction> {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
             .flatMap(weak: self) { (self, sourceAccount) -> Single<StellarTransaction> in
-                guard sendDetails.value.currencyType == .coin(.stellar) else {
+                guard sendDetails.value.currencyType == .stellar else {
                     return .error(PlatformKitError.illegalArgument)
                 }
-                guard sendDetails.fee.currencyType == .coin(.stellar) else {
+                guard sendDetails.fee.currencyType == .stellar else {
                     return .error(PlatformKitError.illegalArgument)
                 }
                 return self.createTransaction(sendDetails: sendDetails, sourceAccount: sourceAccount)
@@ -246,7 +246,7 @@ extension stellarsdk.TransactionPostResponseEnum {
         case .success(let details):
             let feeCharged = CryptoValue(
                 amount: BigInt(details.transactionResult.feeCharged),
-                currency: .coin(.stellar)
+                currency: .stellar
             )
             return SendConfirmationDetails(
                 sendDetails: sendDetails,

@@ -1,36 +1,27 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import MoneyKit
+import MoneyKit
+@testable import MoneyKitMock
 import XCTest
 
 final class MoneyValueConvertTests: XCTestCase {
 
-    var mockCoin6Precision: AssetModel {
-        AssetModel(
-            code: "MOCK",
-            displayCode: "MOCK",
-            kind: .coin(minimumOnChainConfirmations: 0),
-            name: "Mock Coin",
-            precision: 6,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: nil,
-            sortIndex: 0
-        )
+    var mockCoin6Precision: CryptoCurrency {
+        .mockCoin(name: "MOCK", precision: 6, sortIndex: 0)
     }
 
     func testConvertingALGOIntoBTCUsingBTCExchangeRate() {
         let exchangeRate = CryptoValue(
             amount: 400,
-            currency: .coin(.bitcoin)
+            currency: .bitcoin
         )
         let value = CryptoValue(
             amount: 10000,
-            currency: .coin(mockCoin6Precision)
+            currency: mockCoin6Precision
         )
         let expected = CryptoValue(
             amount: 4,
-            currency: .coin(.bitcoin)
+            currency: .bitcoin
         )
         let result = value.convert(using: exchangeRate)
         XCTAssertEqual(result, expected)
@@ -39,19 +30,19 @@ final class MoneyValueConvertTests: XCTestCase {
     func testConvertingBTCIntoALGOUsingBTCExchangeRate() {
         let exchangeRate = CryptoValue(
             amount: 400,
-            currency: .coin(.bitcoin)
+            currency: .bitcoin
         )
         let value = CryptoValue(
             amount: 4,
-            currency: .coin(.bitcoin)
+            currency: .bitcoin
         )
         let expected = CryptoValue(
             amount: 10000,
-            currency: .coin(mockCoin6Precision)
+            currency: mockCoin6Precision
         )
         let result: CryptoValue = value.convert(
             usingInverse: exchangeRate,
-            currency: .coin(mockCoin6Precision)
+            currency: mockCoin6Precision
         )
         XCTAssertEqual(result, expected)
     }

@@ -53,7 +53,7 @@ struct ERC20ReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding
         eip681URI: EIP681URI,
         cryptoCurrency: CryptoCurrency
     ) -> Bool {
-        eip681URI.cryptoCurrency == .coin(.ethereum)
+        eip681URI.cryptoCurrency == .ethereum
             || eip681URI.cryptoCurrency == cryptoCurrency
     }
 }

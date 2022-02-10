@@ -15,7 +15,7 @@ final class AccountResponseTests: XCTestCase {
 
         XCTAssertEqual(
             account.totalBalance,
-            CryptoValue.create(major: 198.8944970, currency: .coin(.stellar))
+            CryptoValue.create(major: 198.8944970, currency: .stellar)
         )
     }
 }

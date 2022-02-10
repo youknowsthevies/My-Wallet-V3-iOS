@@ -155,7 +155,7 @@ final class TransactionInteractor {
 
         case .buy:
             // TODO: the new limits API will require an amount
-            return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
+            return fetchPaymentAccounts(for: .bitcoin, amount: nil)
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
             return Single.zip(allEligibleCryptoAccounts, tradingPairs)

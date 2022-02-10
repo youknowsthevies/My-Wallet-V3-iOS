@@ -20,8 +20,7 @@ final class WalletConnectAccountProvider {
 
 extension WalletConnectAccountProvider: WalletConnectAccountProviderAPI {
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        coincore[.coin(.ethereum)]
-            .defaultAccount
+        coincore[.ethereum].defaultAccount
     }
 }
 

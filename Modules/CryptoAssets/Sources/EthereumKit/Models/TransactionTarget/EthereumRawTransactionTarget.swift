@@ -9,7 +9,7 @@ public struct EthereumRawTransactionTarget: WalletConnectTarget {
     // MARK: - Public Properties
 
     public let onTxCompleted: TxCompleted
-    public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
+    public let currencyType: CurrencyType = .crypto(.ethereum)
     public var label: String {
         dAppName
     }

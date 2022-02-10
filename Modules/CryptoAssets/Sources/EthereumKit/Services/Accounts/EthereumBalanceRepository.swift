@@ -43,7 +43,7 @@ final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
                 client
                     .balance(address: address)
                     .map { response -> CryptoValue in
-                        CryptoValue.create(minor: response.result, currency: .coin(.ethereum))
+                        CryptoValue.create(minor: response.result, currency: .ethereum)
                     }
                     .mapError(EthereumBalanceRepositoryError.failed)
                     .eraseToAnyPublisher()

@@ -18,25 +18,25 @@ class CryptoFormatterTests: XCTestCase {
         englishLocale = Locale(identifier: "en_US")
         btcFormatter = CryptoFormatter(
             locale: englishLocale,
-            cryptoCurrency: .coin(.bitcoin),
+            cryptoCurrency: .bitcoin,
             minFractionDigits: 1,
             withPrecision: .short
         )
         ethFormatter = CryptoFormatter(
             locale: englishLocale,
-            cryptoCurrency: .coin(.ethereum),
+            cryptoCurrency: .ethereum,
             minFractionDigits: 1,
             withPrecision: .short
         )
         bchFormatter = CryptoFormatter(
             locale: englishLocale,
-            cryptoCurrency: .coin(.bitcoinCash),
+            cryptoCurrency: .bitcoinCash,
             minFractionDigits: 1,
             withPrecision: .short
         )
         xlmFormatter = CryptoFormatter(
             locale: englishLocale,
-            cryptoCurrency: .coin(.stellar),
+            cryptoCurrency: .stellar,
             minFractionDigits: 1,
             withPrecision: .short
         )
@@ -127,7 +127,7 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatEthLongPrecision() {
         let formatter = CryptoFormatter(
             locale: englishLocale,
-            cryptoCurrency: .coin(.ethereum),
+            cryptoCurrency: .ethereum,
             minFractionDigits: 1,
             withPrecision: .long
         )
@@ -327,7 +327,7 @@ class CryptoFormatterTests: XCTestCase {
         let italyLocale = Locale(identifier: "it_IT")
         let formatter = CryptoFormatter(
             locale: italyLocale,
-            cryptoCurrency: .coin(.bitcoin),
+            cryptoCurrency: .bitcoin,
             minFractionDigits: 1,
             withPrecision: .long
         )

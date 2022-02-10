@@ -131,8 +131,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private var hasHistory: AnyPublisher<Bool, Never> {
         erc20TokenAccountsRepository
             .tokens(for: EthereumAddress(address: publicKey)!)
-            .map { [erc20Token] tokens in
-                tokens[.erc20(erc20Token)] != nil
+            .map { [asset] tokens in
+                tokens[asset] != nil
             }
             .replaceError(with: false)
             .ignoreFailure()
@@ -165,7 +165,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        asset = .erc20(erc20Token)
+        asset = erc20Token.cryptoCurrency!
         label = asset.defaultWalletName
         self.balanceService = balanceService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository

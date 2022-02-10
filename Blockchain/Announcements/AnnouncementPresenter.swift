@@ -533,7 +533,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.handleBuyCrypto(currency: .coin(.bitcoin))
+                self?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }
@@ -547,7 +547,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.handleBuyCrypto(currency: .coin(.bitcoin))
+                self?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }
@@ -638,7 +638,7 @@ extension AnnouncementPresenter {
 }
 
 extension AnnouncementPresenter {
-    private func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
+    private func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
         walletOperating.handleBuyCrypto(currency: currency)
         analyticsRecorder.record(
             event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)

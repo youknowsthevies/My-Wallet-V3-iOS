@@ -70,24 +70,24 @@ class StellarTransactionDispatcherTests: XCTestCase {
         let desiredAmount = try sendDetails.value.moneyValue + sendDetails.fee.moneyValue
         dryRunInvalidTransaction(
             sendDetails,
-            with: .insufficientFunds(.create(major: 51, currency: .crypto(.coin(.stellar))), desiredAmount)
+            with: .insufficientFunds(.create(major: 51, currency: .crypto(.stellar)), desiredAmount)
         )
     }
 
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
-        let sendDetails = SendDetails.valid(value: .init(amount: 10000000, currency: .coin(.stellar)))
-        horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .coin(.stellar))
+        let sendDetails = SendDetails.valid(value: .init(amount: 10000000, currency: .stellar))
+        horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .stellar)
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
 
         dryRunInvalidTransaction(
             sendDetails,
-            with: .belowMinimumSendNewAccount(.create(major: 5, currency: .crypto(.coin(.stellar))))
+            with: .belowMinimumSendNewAccount(.create(major: 5, currency: .crypto(.stellar)))
         )
     }
 
     func testDryRunTransaction_BelowMinimumSend() throws {
-        let sendDetails = SendDetails.valid(value: .init(amount: 1, currency: .coin(.stellar)))
+        let sendDetails = SendDetails.valid(value: .init(amount: 1, currency: .stellar))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
@@ -112,7 +112,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
 extension SendDetails {
     fileprivate static func valid(
         toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",
-        value: CryptoValue = .create(major: 50, currency: .coin(.stellar))
+        value: CryptoValue = .create(major: 50, currency: .stellar)
     ) -> SendDetails {
         SendDetails(
             fromAddress: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
@@ -120,7 +120,7 @@ extension SendDetails {
             toAddress: toAddress,
             toLabel: "To Label",
             value: value,
-            fee: .create(major: 1, currency: .coin(.stellar)),
+            fee: .create(major: 1, currency: .stellar),
             memo: .text("1234567890")
         )
     }

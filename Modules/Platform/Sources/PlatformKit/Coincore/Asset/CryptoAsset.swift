@@ -101,15 +101,15 @@ extension CryptoCurrency {
     /// To be used only during the forced wallet label update.
     fileprivate var legacyLabel: String? {
         switch self {
-        case .coin(.bitcoin):
+        case .bitcoin:
             return LocalizationConstants.Account.legacyMyBitcoinWallet
-        case .coin(.bitcoinCash):
+        case .bitcoinCash:
             // Legacy BCH label is not localized.
             return "My Bitcoin Cash Wallet"
-        case .coin(.ethereum):
+        case .ethereum:
             // Legacy ETH label is not localized.
             return "My Ether Wallet"
-        case .coin(.stellar):
+        case .stellar:
             // Legacy XLM label is not localized.
             return "My Stellar Wallet"
         default:

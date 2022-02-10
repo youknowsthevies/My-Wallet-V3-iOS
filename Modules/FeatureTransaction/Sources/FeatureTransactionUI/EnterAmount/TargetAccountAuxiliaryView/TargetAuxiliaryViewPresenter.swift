@@ -44,7 +44,7 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             // return a placeholder (same view but redacted, so no info is visible, just placeholder 'boxes')
             return UIHostingController(
                 rootView: TargetAccountAuxiliaryView(
-                    asset: .coin(.bitcoin),
+                    asset: .bitcoin,
                     price: .zero(currency: .fiat(.USD)),
                     action: { [weak self] in
                         self?.handleTap()

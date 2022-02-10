@@ -24,23 +24,18 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
     }
 
     func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
-        switch cryptoCurrency {
-        case .coin(let model):
-            switch model.code {
-            case NonCustodialCoinCode.bitcoin.rawValue:
-                return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"
-            case NonCustodialCoinCode.ethereum.rawValue:
-                return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-            case NonCustodialCoinCode.bitcoinCash.rawValue:
-                return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
-            case NonCustodialCoinCode.stellar.rawValue:
-                return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
-            default:
-                return nil
-            }
-        case .erc20:
+        switch (cryptoCurrency.assetModel, cryptoCurrency.assetModel.kind) {
+        case (.bitcoin, _):
+            return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"
+        case (.ethereum, _):
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-        case .celoToken:
+        case (.bitcoinCash, _):
+            return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
+        case (.stellar, _):
+            return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
+        case (_, .erc20):
+            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
+        default:
             return nil
         }
     }

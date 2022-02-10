@@ -138,7 +138,7 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
     /// Validates that a given EIP681URI is 'compatible' with a 'CryptoCurrency'.
     private static func validate(cryptoCurrency: CryptoCurrency, eip681URI: EIP681URI) -> Bool {
         switch eip681URI.cryptoCurrency {
-        case .coin(.ethereum):
+        case .ethereum:
             // CryptoCurrency is Ethereum, allowed.
             return true
         case let item where item == cryptoCurrency:

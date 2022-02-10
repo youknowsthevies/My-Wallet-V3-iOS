@@ -305,7 +305,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 extension CryptoTradingAccount {
     fileprivate var isMemoSupported: Bool {
         switch asset {
-        case .coin(.stellar):
+        case .stellar:
             return true
         default:
             return false

@@ -6,7 +6,7 @@ import PlatformKit
 public struct EthereumAddress: AssetAddress, Hashable {
 
     public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .coin(.ethereum)
+    public let cryptoCurrency: CryptoCurrency = .ethereum
 
     public init(string address: String) throws {
         try EthereumAddressValidator.validate(address: address)

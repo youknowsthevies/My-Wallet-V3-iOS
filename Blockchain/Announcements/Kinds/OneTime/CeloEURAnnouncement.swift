@@ -125,7 +125,7 @@ struct CeloEURAnnouncementContainer: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIViewType {
         let presenter = CeloEURAnnouncement(
-            celoEUR: .coin(.bitcoin),
+            celoEUR: .bitcoin,
             tiers: KYC.UserTiers(
                 tiers: [
                     KYC.UserTier(tier: .tier0, state: .verified),

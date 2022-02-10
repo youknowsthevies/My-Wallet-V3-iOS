@@ -4,16 +4,9 @@ import DIKit
 import Foundation
 
 /// A crypto currency, representing a digital asset.
-public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible, Equatable {
+public struct CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible, Equatable {
 
-    /// A coin crypto currency.
-    case coin(AssetModel)
-
-    /// A coin crypto currency.
-    case celoToken(AssetModel)
-
-    /// An Ethereum ERC-20 crypto currency.
-    case erc20(AssetModel)
+    public let assetModel: AssetModel
 
     /// Creates a crypto currency.
     ///
@@ -32,6 +25,21 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
         self = cryptoCurrency
     }
 
+    /// Creates a crypto currency.
+    ///
+    /// If `AssetModel` is not a crypto currency model, this initializer returns `nil`.
+    ///
+    /// - Parameters:
+    ///   - assetModel: An AssetModel.
+    public init?(assetModel: AssetModel) {
+        switch assetModel.kind {
+        case .fiat:
+            return nil
+        case .erc20, .celoToken, .coin:
+            self.assetModel = assetModel
+        }
+    }
+
     /// Creates an ERC-20 crypto currency.
     ///
     /// If `erc20Address` is invalid, this initializer returns `nil`.
@@ -41,16 +49,11 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
     ///   - enabledCurrenciesService: An enabled currencies service.
     public init?(erc20Address: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         guard let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies.first(where: { currency in
-            switch currency {
-            case .coin, .celoToken:
+            switch currency.assetModel.kind {
+            case .erc20(let contractAddress):
+                return contractAddress.caseInsensitiveCompare(erc20Address) == .orderedSame
+            default:
                 return false
-            case .erc20(let model):
-                switch model.kind {
-                case .erc20(let contractAddress):
-                    return contractAddress.caseInsensitiveCompare(erc20Address) == .orderedSame
-                default:
-                    return false
-                }
             }
         }) else {
             return nil
@@ -92,16 +95,6 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
     /// Whether the crypto currency is an Celo Token asset.
     public var isCeloToken: Bool {
         assetModel.kind.isCeloToken
-    }
-
-    /// The underlying asset of the crypto currency.
-    public var assetModel: AssetModel {
-        switch self {
-        case .coin(let model),
-             .erc20(let model),
-             .celoToken(let model):
-            return model
-        }
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -148,4 +141,15 @@ extension CryptoCurrency {
     public static func == (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
         lhs.assetModel == rhs.assetModel
     }
+}
+
+extension CryptoCurrency {
+
+    public static let bitcoin = AssetModel.bitcoin.cryptoCurrency!
+
+    public static let bitcoinCash = AssetModel.bitcoinCash.cryptoCurrency!
+
+    public static let ethereum = AssetModel.ethereum.cryptoCurrency!
+
+    public static let stellar = AssetModel.stellar.cryptoCurrency!
 }

@@ -51,7 +51,7 @@ extension SimpleBuyQuoteTests {
         let twoThousandFiveHundred = FiatValue.create(minor: "250000", currency: .GBP)!
         let quote = try Quote(
             sourceCurrency: FiatCurrency.GBP,
-            destinationCurrency: CryptoCurrency.coin(.bitcoin),
+            destinationCurrency: CryptoCurrency.bitcoin,
             value: MoneyValue(fiatValue: twoThousandFiveHundred),
             response: response
         )

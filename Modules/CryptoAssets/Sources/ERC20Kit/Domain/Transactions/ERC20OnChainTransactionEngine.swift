@@ -46,6 +46,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
 
+    private lazy var cryptoCurrency = erc20Token.cryptoCurrency!
+
     /// The current transactionTarget receive address.
     private var receiveAddress: Single<ReceiveAddress> {
         switch transactionTarget {
@@ -127,24 +129,24 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             availableBalance
         )
-        .map { [erc20Token, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+        .map { [cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
             if let predefinedAmount = predefinedAmount,
-               predefinedAmount.currency == .erc20(erc20Token)
+               predefinedAmount.currency == cryptoCurrency
             {
                 amount = predefinedAmount.moneyValue
             } else {
-                amount = .zero(currency: .erc20(erc20Token))
+                amount = .zero(currency: cryptoCurrency)
             }
             return PendingTransaction(
                 amount: amount,
                 available: availableBalance,
-                feeAmount: .zero(currency: .coin(.ethereum)),
-                feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                feeAmount: .zero(currency: .ethereum),
+                feeForFullAvailable: .zero(currency: .ethereum),
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(.coin(.ethereum))
+                    asset: .crypto(.ethereum)
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -192,7 +194,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         guard let crypto = amount.cryptoValue else {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
-        guard crypto.currencyType == .erc20(erc20Token) else {
+        guard crypto.currencyType == cryptoCurrency else {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
         return Single.zip(
@@ -400,8 +402,8 @@ extension ERC20OnChainTransactionEngine {
     }
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable { [erc20Token] in
-            guard try pendingTransaction.amount > .zero(currency: .erc20(erc20Token)) else {
+        Completable.fromCallable { [cryptoCurrency] in
+            guard try pendingTransaction.amount > .zero(currency: cryptoCurrency) else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
             }
         }
@@ -463,8 +465,8 @@ extension ERC20OnChainTransactionEngine {
         Single.zip(
             sourceExchangeRatePair,
             ethereumExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .erc20(erc20Token))),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .erc20(erc20Token)))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: cryptoCurrency)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: cryptoCurrency))
         )
         .map { sourceExchange, ethereumExchange, amount, feeAmount -> (FiatValue, FiatValue) in
             let erc20Quote = sourceExchange.quote.fiatValue!
@@ -505,8 +507,8 @@ extension ERC20OnChainTransactionEngine {
             .displayCurrency
             .flatMap { [currencyConversionService] fiatCurrency in
                 currencyConversionService
-                    .conversionRate(from: .crypto(.coin(.ethereum)), to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: .crypto(.coin(.ethereum))), quote: $0) }
+                    .conversionRate(from: .crypto(.ethereum), to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: .crypto(.ethereum)), quote: $0) }
             }
             .asSingle()
     }

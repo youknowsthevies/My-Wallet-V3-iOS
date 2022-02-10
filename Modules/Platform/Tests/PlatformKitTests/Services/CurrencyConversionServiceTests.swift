@@ -31,9 +31,9 @@ final class CurrencyConversionServiceTests: XCTestCase {
         )
         let amountToConvert = MoneyValue(amount: 200000, currency: .fiat(.USD))
         // WHEN: The service is asked to convert the USD amount into BTC
-        let publisher = conversionService.convert(amountToConvert, to: .crypto(.coin(.bitcoin)))
+        let publisher = conversionService.convert(amountToConvert, to: .crypto(.bitcoin))
         // THEN: The converted amount should be 0.02 BTC
-        XCTAssertPublisherValues(publisher, MoneyValue(amount: 2000000, currency: .crypto(.coin(.bitcoin))))
+        XCTAssertPublisherValues(publisher, MoneyValue(amount: 2000000, currency: .crypto(.bitcoin)))
     }
 
     func test_converts_crypto_to_fiat() {
@@ -43,7 +43,7 @@ final class CurrencyConversionServiceTests: XCTestCase {
             timestamp: Date(),
             moneyValue: MoneyValue(amount: 10000000, currency: .fiat(.USD))
         )
-        let amountToConvert = MoneyValue(amount: 200000000, currency: .crypto(.coin(.bitcoin)))
+        let amountToConvert = MoneyValue(amount: 200000000, currency: .crypto(.bitcoin))
         // WHEN: The service is asked to convert the BTC amount into USD
         let publisher = conversionService.convert(amountToConvert, to: .fiat(.USD))
         // THEN: The converted amount should be $200k
@@ -67,13 +67,13 @@ final class CurrencyConversionServiceTests: XCTestCase {
         // GIVEN: the price of 1 BTC is 10 ETH and a fiat amount of 2 BTC to convert into USD
         mockPriceService.stubbedResults.priceQuoteAtTime = PriceQuoteAtTime(
             timestamp: Date(),
-            moneyValue: MoneyValue(amount: 1000000000, currency: .crypto(.coin(.ethereum)))
+            moneyValue: MoneyValue(amount: 1000000000, currency: .crypto(.ethereum))
         )
-        let amountToConvert = MoneyValue(amount: 200000000, currency: .crypto(.coin(.bitcoin)))
+        let amountToConvert = MoneyValue(amount: 200000000, currency: .crypto(.bitcoin))
         // WHEN: The service is asked to convert the BTC amount into ETH
-        let publisher = conversionService.convert(amountToConvert, to: .crypto(.coin(.ethereum)))
+        let publisher = conversionService.convert(amountToConvert, to: .crypto(.ethereum))
         // THEN: The converted amount should be 20 ETH
-        XCTAssertPublisherValues(publisher, MoneyValue(amount: 2000000000, currency: .crypto(.coin(.ethereum))))
+        XCTAssertPublisherValues(publisher, MoneyValue(amount: 2000000000, currency: .crypto(.ethereum)))
     }
 
     func test_does_not_convert_amount_into_same_currency() {

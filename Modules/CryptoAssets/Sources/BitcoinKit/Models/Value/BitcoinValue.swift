@@ -10,9 +10,9 @@ public enum BitcoinValueError: Error {
 
 public struct BitcoinValue: CryptoMoney {
 
-    public let currencyType: CurrencyType = .crypto(.coin(.bitcoin))
+    public let currencyType: CurrencyType = .crypto(.bitcoin)
 
-    public let currency: CryptoCurrency = .coin(.bitcoin)
+    public let currency: CryptoCurrency = .bitcoin
 
     public var amount: BigInt {
         crypto.amount
@@ -23,22 +23,22 @@ public struct BitcoinValue: CryptoMoney {
     private let crypto: CryptoMoney
 
     public init(crypto: CryptoMoney) throws {
-        guard crypto.currencyType == .coin(.bitcoin) else {
+        guard crypto.currencyType == .bitcoin else {
             throw BitcoinValueError.invalidCryptoValue
         }
         self.crypto = crypto
     }
 
     public init(minor value: Decimal) {
-        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
+        crypto = CryptoValue.create(minor: value, currency: .bitcoin)
     }
 
     public init(minor value: Int) {
-        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
+        crypto = CryptoValue.create(minor: value, currency: .bitcoin)
     }
 
     public init(minor value: BigInt) {
-        crypto = CryptoValue.create(minor: value, currency: .coin(.bitcoin))
+        crypto = CryptoValue.create(minor: value, currency: .bitcoin)
     }
 }
 

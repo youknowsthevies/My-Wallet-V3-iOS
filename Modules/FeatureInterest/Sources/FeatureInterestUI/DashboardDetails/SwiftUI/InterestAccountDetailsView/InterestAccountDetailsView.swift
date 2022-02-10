@@ -151,14 +151,14 @@ struct InterestAccountDetailsView_Previews: PreviewProvider {
     static let state: InterestAccountDetailsState = .init(
         interestAccountOverview: .init(
             interestAccountEligibility: .init(
-                currencyType: .crypto(.coin(.bitcoin)),
+                currencyType: .crypto(.bitcoin),
                 isEligible: true,
                 ineligibilityReason: .eligible
             ),
             interestAccountRate: .init(currencyCode: "BTC", rate: 4.9),
             interestAccountLimits: .init(
                 interestLockupDuration: 4.0,
-                cryptoCurrency: .coin(.bitcoin),
+                cryptoCurrency: .bitcoin,
                 nextInterestPayment: Date(),
                 minDepositAmount: .zero(currency: .USD),
                 maxWithdrawalAmount: .zero(currency: .USD)

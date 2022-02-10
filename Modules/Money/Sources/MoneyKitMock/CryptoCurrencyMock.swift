@@ -30,7 +30,11 @@ extension AssetModel {
         )!
     }
 
-    static func mockCoin(name: String, precision: Int = 18, sortIndex: Int = 0) -> AssetModel {
+    static func mockCoin(
+        name: String,
+        precision: Int = 18,
+        sortIndex: Int = 0
+    ) -> AssetModel {
         AssetModel(
             assetResponse: .init(
                 symbol: name,
@@ -50,5 +54,34 @@ extension AssetModel {
             ),
             sortIndex: sortIndex
         )!
+    }
+}
+
+extension CryptoCurrency {
+
+    static func mockERC20(
+        name: String,
+        erc20Address: String = "ETH",
+        precision: Int = 18,
+        sortIndex: Int = 0
+    ) -> CryptoCurrency {
+        AssetModel.mockERC20(
+            name: name,
+            erc20Address: erc20Address,
+            precision: precision,
+            sortIndex: sortIndex
+        ).cryptoCurrency!
+    }
+
+    static func mockCoin(
+        name: String,
+        precision: Int = 18,
+        sortIndex: Int = 0
+    ) -> CryptoCurrency {
+        AssetModel.mockCoin(
+            name: name,
+            precision: precision,
+            sortIndex: sortIndex
+        ).cryptoCurrency!
     }
 }

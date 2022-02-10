@@ -8,7 +8,7 @@ struct SEP7URI: CryptoAssetQRMetadata {
 
     private static let scheme: String = "web+stellar"
 
-    let cryptoCurrency: CryptoCurrency = .coin(.stellar)
+    let cryptoCurrency: CryptoCurrency = .stellar
     let address: String
     let amount: CryptoValue?
     let includeScheme: Bool = true
@@ -24,7 +24,7 @@ struct SEP7URI: CryptoAssetQRMetadata {
 
     init(address: String, amount: String?, memo: String?) {
         self.address = address
-        self.amount = amount.flatMap { .create(major: $0, currency: .coin(.stellar)) }
+        self.amount = amount.flatMap { .create(major: $0, currency: .stellar) }
         self.memo = memo
     }
 

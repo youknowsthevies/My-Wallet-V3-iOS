@@ -54,7 +54,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         guard Self.validate(address: eip681URI.address) else {
             return .failure(.invalidAddress)
         }
-        guard eip681URI.cryptoCurrency == .coin(.ethereum) else {
+        guard eip681URI.cryptoCurrency == .ethereum else {
             return .failure(.wrongAsset)
         }
         // Creates BitcoinChainReceiveAddress from 'BIP21URI'.

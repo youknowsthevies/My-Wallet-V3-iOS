@@ -17,7 +17,7 @@ final class BitcoinCashAsset: CryptoAsset {
 
     // MARK: - Properties
 
-    let asset: CryptoCurrency = .coin(.bitcoinCash)
+    let asset: CryptoCurrency = .bitcoinCash
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultAccount

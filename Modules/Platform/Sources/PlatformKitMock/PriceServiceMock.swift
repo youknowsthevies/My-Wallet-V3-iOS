@@ -9,11 +9,11 @@ public final class PriceServiceMock: PriceServiceAPI {
 
     public struct StubbedResults {
         public var moneyValuePair = MoneyValuePair(
-            base: .one(currency: .coin(.bitcoin)),
+            base: .one(currency: .bitcoin),
             quote: MoneyValue(amount: 10000000, currency: .fiat(.USD))
         )
         public var historicalPriceSeries = HistoricalPriceSeries(
-            currency: .coin(.bitcoin),
+            currency: .bitcoin,
             prices: [
                 PriceQuoteAtTime(
                     timestamp: Date(),

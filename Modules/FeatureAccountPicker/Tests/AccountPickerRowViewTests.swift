@@ -128,7 +128,7 @@ class AccountPickerRowViewTests: XCTestCase {
             BadgeImageViewRepresentable(
                 viewModel: {
                     let model: BadgeImageViewModel = .default(
-                        image: CryptoCurrency.coin(.bitcoin).logoResource,
+                        image: CryptoCurrency.bitcoin.logoResource,
                         cornerRadius: .round,
                         accessibilityIdSuffix: ""
                     )
@@ -209,7 +209,7 @@ class AccountPickerRowViewTests: XCTestCase {
             viewModel: {
                 let model: BadgeImageViewModel = .template(
                     image: .local(name: "ic-private-account", bundle: .platformUIKit),
-                    templateColor: CryptoCurrency.coin(.bitcoin).brandUIColor,
+                    templateColor: CryptoCurrency.bitcoin.brandUIColor,
                     backgroundColor: .white,
                     cornerRadius: .round,
                     accessibilityIdSuffix: ""

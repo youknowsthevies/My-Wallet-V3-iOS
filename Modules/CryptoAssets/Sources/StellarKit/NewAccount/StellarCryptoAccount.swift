@@ -123,7 +123,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         priceService: PriceServiceAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
-        let asset = CryptoCurrency.coin(.stellar)
+        let asset = CryptoCurrency.stellar
         self.asset = asset
         self.bridge = bridge
         self.publicKey = publicKey

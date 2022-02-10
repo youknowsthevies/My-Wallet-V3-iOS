@@ -57,8 +57,8 @@ extension OrderQuotePayload {
         identifier: "",
         pair: OrderPair.btc_eth,
         quote: .btc_eth_quote,
-        networkFee: .zero(currency: .crypto(.coin(.bitcoin))),
-        staticFee: .zero(currency: .crypto(.coin(.bitcoin))),
+        networkFee: .zero(currency: .crypto(.bitcoin)),
+        staticFee: .zero(currency: .crypto(.bitcoin)),
         sampleDepositAddress: "",
         expiresAt: Date(),
         createdAt: Date(),
@@ -68,14 +68,14 @@ extension OrderQuotePayload {
 
 extension OrderPair {
     static let btc_eth = OrderPair(
-        sourceCurrencyType: .crypto(.coin(.bitcoin)),
-        destinationCurrencyType: .crypto(.coin(.ethereum))
+        sourceCurrencyType: .crypto(.bitcoin),
+        destinationCurrencyType: .crypto(.ethereum)
     )
 }
 
 extension OrderQuote {
     static let btc_eth_quote: OrderQuote = .init(
-        pair: .init(sourceCurrencyType: .crypto(.coin(.bitcoin)), destinationCurrencyType: .crypto(.coin(.bitcoin))),
+        pair: .init(sourceCurrencyType: .crypto(.bitcoin), destinationCurrencyType: .crypto(.bitcoin)),
         priceTiers: [
             .init(volume: "286", price: "34936084430000000000", marginPrice: "34936084430000000000"),
             .init(volume: "2862782", price: "34931056570000000000", marginPrice: "34931056570000000000")

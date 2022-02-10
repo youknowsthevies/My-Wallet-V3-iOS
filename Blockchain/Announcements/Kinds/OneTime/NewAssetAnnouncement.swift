@@ -107,7 +107,7 @@ struct NewAssetAnnouncementContainer: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIViewType {
         let presenter = NewAssetAnnouncement(
-            cryptoCurrency: .coin(.bitcoin),
+            cryptoCurrency: .bitcoin,
             dismiss: {},
             action: {}
         )

@@ -70,7 +70,7 @@ final class EthereumActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            of: CurrencyType.crypto(.coin(.ethereum)),
+            of: CurrencyType.crypto(.ethereum),
             in: fiatCurrency,
             at: .time(date)
         )

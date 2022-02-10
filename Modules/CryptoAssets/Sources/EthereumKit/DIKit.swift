@@ -34,7 +34,7 @@ extension DependencyContainer {
 
         // MARK: CoinCore
 
-        factory(tag: CryptoCurrency.coin(.ethereum)) { EthereumAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
 
         // MARK: Other
 

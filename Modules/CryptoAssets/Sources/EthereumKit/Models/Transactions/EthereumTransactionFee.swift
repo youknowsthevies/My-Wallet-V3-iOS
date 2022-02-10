@@ -43,7 +43,7 @@ public struct EthereumTransactionFee {
         let price = fee(feeLevel: feeLevel).amount
         let gasLimit = BigInt(isContract ? gasLimitContract : gasLimit)
         let amount = price * gasLimit
-        return CryptoValue.create(minor: amount, currency: .coin(.ethereum))
+        return CryptoValue.create(minor: amount, currency: .ethereum)
     }
 }
 
@@ -51,6 +51,6 @@ extension CryptoValue {
 
     static func ether(gwei: BigInt) -> CryptoValue {
         let wei = gwei * BigInt(1e9)
-        return CryptoValue(amount: wei, currency: .coin(.ethereum))
+        return CryptoValue(amount: wei, currency: .ethereum)
     }
 }

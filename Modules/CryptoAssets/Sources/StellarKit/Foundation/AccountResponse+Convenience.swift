@@ -15,18 +15,18 @@ extension AccountResponse {
             .compactMap { Decimal(string: $0) }
             .reduce(0, +)
 
-        return CryptoValue.create(major: value, currency: .coin(.stellar))
+        return CryptoValue.create(major: value, currency: .stellar)
     }
 
     func toAssetAccountDetails(minimumBalance: CryptoValue) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountId,
-            name: CryptoCurrency.coin(.stellar).defaultWalletName,
-            description: CryptoCurrency.coin(.stellar).defaultWalletName,
+            name: CryptoCurrency.stellar.defaultWalletName,
+            description: CryptoCurrency.stellar.defaultWalletName,
             sequence: Int(sequenceNumber),
             subentryCount: subentryCount
         )
-        var actionableBalance: CryptoValue = .zero(currency: .coin(.stellar))
+        var actionableBalance: CryptoValue = .zero(currency: .stellar)
         if let balanceMinusReserve = try? totalBalance - minimumBalance, balanceMinusReserve.isPositive {
             actionableBalance = balanceMinusReserve
         }

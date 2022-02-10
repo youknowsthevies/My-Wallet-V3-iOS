@@ -27,32 +27,31 @@ enum ActivityDetailsPresenterFactory {
         case .swap(let swap):
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):
-            switch transactional.currency {
-            case .coin(let model):
-                return Self.presenter(model: model, transactional: transactional, router: router)
-            case .erc20:
-                let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
-                return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
-            case .celoToken:
-                fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
-            }
+            return Self.presenter(
+                cryptoCurrency: transactional.currency,
+                transactional: transactional,
+                router: router
+            )
         }
     }
 
     private static func presenter(
-        model: AssetModel,
+        cryptoCurrency: CryptoCurrency,
         transactional: TransactionalActivityItemEvent,
         router: ActivityRouterAPI
     ) -> DetailsScreenPresenterAPI {
-        switch model.code {
-        case NonCustodialCoinCode.bitcoin.rawValue:
+        switch cryptoCurrency {
+        case .bitcoin:
             return BitcoinActivityDetailsPresenter(event: transactional, router: router)
-        case NonCustodialCoinCode.bitcoinCash.rawValue:
+        case .bitcoinCash:
             return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
-        case NonCustodialCoinCode.stellar.rawValue:
+        case .stellar:
             return StellarActivityDetailsPresenter(event: transactional, router: router)
-        case NonCustodialCoinCode.ethereum.rawValue:
+        case .ethereum:
             return EthereumActivityDetailsPresenter(event: transactional, router: router)
+        case let asset where asset.isERC20:
+            let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
+            return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
         default:
             fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
         }

@@ -33,7 +33,7 @@ struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvid
     }
 
     init?(address: String, label: String, onTxCompleted: @escaping TxCompleted) {
-        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: .coin(.ethereum)) else {
+        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: .ethereum) else {
             return nil
         }
         self.eip681URI = eip681URI

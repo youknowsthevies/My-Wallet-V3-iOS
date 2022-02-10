@@ -26,7 +26,7 @@ public struct EthereumActivityItemEventDetails: Equatable {
         amount = transaction.amount
         createdAt = transaction.createdAt
         data = transaction.data
-        fee = transaction.fee ?? .zero(currency: .coin(.ethereum))
+        fee = transaction.fee ?? .zero(currency: .ethereum)
         from = transaction.fromAddress
         identifier = transaction.transactionHash
         to = transaction.toAddress

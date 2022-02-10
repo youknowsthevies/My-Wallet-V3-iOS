@@ -43,7 +43,7 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
 
     func initialize() -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
         Deferred { [coincore] in
-            Just(coincore[.coin(.ethereum)])
+            Just(coincore[.ethereum])
         }
         .flatMap(\.defaultAccount)
         .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)

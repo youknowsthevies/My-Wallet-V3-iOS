@@ -81,7 +81,7 @@ final class APIClient: TransactionPushClientAPI,
     func fees(
         cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
-        guard cryptoCurrency == .coin(.ethereum) || cryptoCurrency.isERC20 else {
+        guard cryptoCurrency == .ethereum || cryptoCurrency.isERC20 else {
             fatalError("Using Ethereum APIClient for incompatible CryptoCurrency")
         }
         var parameters: [URLQueryItem] = []
@@ -138,14 +138,9 @@ final class APIClient: TransactionPushClientAPI,
 
 extension CryptoCurrency {
     var erc20ContractAddress: String? {
-        switch self {
-        case .erc20(let model):
-            switch model.kind {
-            case .erc20(let contractAddress):
-                return contractAddress
-            default:
-                return nil
-            }
+        switch assetModel.kind {
+        case .erc20(let contractAddress):
+            return contractAddress
         default:
             return nil
         }

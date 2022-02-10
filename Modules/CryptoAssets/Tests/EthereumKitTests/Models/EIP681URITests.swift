@@ -15,12 +15,10 @@ final class EIP681URITests: XCTestCase {
     }
 
     var enabledCurrenciesService: MockEnabledCurrenciesService!
-    let currency: CryptoCurrency = .erc20(
-        .mockERC20(
-            name: "ERC20 1",
-            erc20Address: TestCase.contract,
-            sortIndex: 0
-        )
+    let currency: CryptoCurrency = .mockERC20(
+        name: "ERC20 1",
+        erc20Address: TestCase.contract,
+        sortIndex: 0
     )
 
     override func setUp() {
@@ -43,11 +41,11 @@ final class EIP681URITests: XCTestCase {
         )
         XCTAssertNotNil(eip681URI)
         XCTAssertEqual(eip681URI?.address, TestCase.address)
-        XCTAssertEqual(eip681URI?.cryptoCurrency, .coin(.ethereum))
+        XCTAssertEqual(eip681URI?.cryptoCurrency, .ethereum)
         XCTAssertEqual(
             eip681URI?.method,
             .send(
-                amount: .create(major: "2.014", currency: .coin(.ethereum)),
+                amount: .create(major: "2.014", currency: .ethereum),
                 gasLimit: 20,
                 gasPrice: 10
             )

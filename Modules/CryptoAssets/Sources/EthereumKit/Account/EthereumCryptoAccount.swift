@@ -127,7 +127,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         nonceRepository: EthereumNonceRepositoryAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
-        let asset = CryptoCurrency.coin(.ethereum)
+        let asset = CryptoCurrency.ethereum
         self.asset = asset
         self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex

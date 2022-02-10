@@ -250,7 +250,7 @@ class CoinSelectionTests: XCTestCase {
 private func unspents(_ values: [Int]) -> [UnspentOutput] {
     values.compactMap { value in
         let absolute = abs(value)
-        let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .coin(.bitcoin))
+        let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .bitcoin)
         guard let bitcoinValue = try? BitcoinValue(crypto: cryptoValue) else {
             return nil
         }

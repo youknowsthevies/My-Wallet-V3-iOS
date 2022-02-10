@@ -55,7 +55,7 @@ final class ERC20Asset: CryptoAsset {
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
-        asset = .erc20(erc20Token)
+        asset = erc20Token.cryptoCurrency!
         addressFactory = ERC20ExternalAssetAddressFactory(asset: asset)
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge

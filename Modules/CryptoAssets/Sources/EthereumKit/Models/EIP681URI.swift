@@ -58,7 +58,7 @@ public struct EIP681URI: CryptoAssetQRMetadata {
                 destination: address,
                 amount: nil
             )
-        } else if cryptoCurrency == .coin(.ethereum) {
+        } else if cryptoCurrency == .ethereum {
             self.address = address
             method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
         } else {
@@ -116,7 +116,7 @@ extension EIP681URIParser {
         switch method {
         case .send:
             // If this is a 'send', then we are sending Ethereum.
-            return .coin(.ethereum)
+            return .ethereum
         case .transfer:
             // If this is a 'transfer', then we need to find which token we are sending.
             // We do this by matching 'address' with one of the coins contract address.
@@ -137,7 +137,7 @@ extension EIP681URIParser.Method {
                 amount: amount
                     .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
-                        CryptoValue(amount: amount, currency: .coin(.ethereum))
+                        CryptoValue(amount: amount, currency: .ethereum)
                     },
                 gasLimit: gasLimit.flatMap { BigUInt($0) },
                 gasPrice: gasPrice.flatMap { BigUInt($0) }

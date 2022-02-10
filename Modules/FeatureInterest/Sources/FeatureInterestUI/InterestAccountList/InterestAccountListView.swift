@@ -76,9 +76,9 @@ struct InterestAccountListView_Previews: PreviewProvider {
     static var testCurrencyPairs = [
         InterestAccountDetails(
             ineligibilityReason: .eligible,
-            currency: .crypto(.coin(.bitcoin)),
-            balance: MoneyValue.create(major: "12.0", currency: .crypto(.coin(.bitcoin)))!,
-            interestEarned: MoneyValue.create(major: "12.0", currency: .crypto(.coin(.bitcoin)))!,
+            currency: .crypto(.bitcoin),
+            balance: MoneyValue.create(major: "12.0", currency: .crypto(.bitcoin))!,
+            interestEarned: MoneyValue.create(major: "12.0", currency: .crypto(.bitcoin))!,
             rate: 8.0
         )
     ]

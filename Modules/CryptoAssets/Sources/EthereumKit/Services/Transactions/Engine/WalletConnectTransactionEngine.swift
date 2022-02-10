@@ -85,13 +85,13 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: .coin(.ethereum))
+            self.feeService.fees(cryptoCurrency: .ethereum)
         }
     }
 
     func assertInputsValid() {
         precondition(sourceAccount is EthereumCryptoAccount)
-        precondition(sourceCryptoCurrency == .coin(.ethereum))
+        precondition(sourceCryptoCurrency == .ethereum)
         precondition(transactionTarget is EthereumSendTransactionTarget)
     }
 
@@ -176,7 +176,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currency == .crypto(.coin(.ethereum)) else {
+        guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
             fatalError("Not an ethereum value.")
         }
         let address = walletConnectTarget.transaction.to
@@ -317,7 +317,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         func transactionGasPrice() -> Single<CryptoValue>? {
             walletConnectTarget.transaction.gasPrice
                 .flatMap { BigInt($0.withoutHex, radix: 16) }
-                .flatMap { CryptoValue(amount: $0, currency: .coin(.ethereum)) }
+                .flatMap { CryptoValue(amount: $0, currency: .ethereum) }
                 .flatMap { Single.just($0) }
         }
         func regularGasPrice() -> Single<CryptoValue> {
@@ -335,7 +335,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 (
                     gasLimit,
                     gasPrice,
-                    CryptoValue(amount: gasLimit * gasPrice.amount, currency: .coin(.ethereum))
+                    CryptoValue(amount: gasLimit * gasPrice.amount, currency: .ethereum)
                 )
             }
     }
@@ -391,8 +391,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .coin(.ethereum))),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .coin(.ethereum)))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .ethereum)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .ethereum))
         )
         .map { sourceExchangeRatePair, amount, feeAmount in
             (
@@ -426,7 +426,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
 extension EthereumSendTransactionTarget {
     func pendingTransacation(fiatCurrency: FiatCurrency) -> PendingTransaction {
-        let ethereum: CryptoCurrency = .coin(.ethereum)
+        let ethereum: CryptoCurrency = .ethereum
         let zeroEthereum: MoneyValue = .zero(currency: ethereum)
         let amount: MoneyValue = transaction.value
             .flatMap { BigInt($0.withoutHex, radix: 16) }

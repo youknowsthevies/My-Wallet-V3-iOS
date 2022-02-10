@@ -240,7 +240,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleBuyCrypto() {
-        handleBuyCrypto(currency: .coin(.bitcoin))
+        handleBuyCrypto(currency: .bitcoin)
     }
 
     func handleBuyCrypto(currency: CryptoCurrency) {

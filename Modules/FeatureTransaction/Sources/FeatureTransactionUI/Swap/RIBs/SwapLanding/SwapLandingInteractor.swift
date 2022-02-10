@@ -71,18 +71,18 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .catch { _ in nonCustodialAccounts }
             .map { [pax] accounts -> [SwapTrendingPairViewModel] in
                 var pairs: [(CryptoCurrency, CryptoCurrency)] = [
-                    (.coin(.bitcoin), .coin(.ethereum)),
-                    (.coin(.bitcoin), pax),
-                    (.coin(.bitcoin), .coin(.stellar))
+                    (.bitcoin, .ethereum),
+                    (.bitcoin, pax),
+                    (.bitcoin, .stellar)
                 ]
                 switch DevicePresenter.type {
                 case .superCompact, .compact:
                     break
                 case .regular:
-                    pairs.append((.coin(.bitcoin), .coin(.bitcoinCash)))
+                    pairs.append((.bitcoin, .bitcoinCash))
                 case .max:
-                    pairs.append((.coin(.bitcoin), .coin(.bitcoinCash)))
-                    pairs.append((.coin(.ethereum), pax))
+                    pairs.append((.bitcoin, .bitcoinCash))
+                    pairs.append((.ethereum, pax))
                 }
                 return pairs
                     .compactMap { pair -> SwapTrendingPair? in

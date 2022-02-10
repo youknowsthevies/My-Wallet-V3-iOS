@@ -17,7 +17,7 @@ extension DependencyContainer {
 
         single { UnspentOutputRepository() }
 
-        factory(tag: CryptoCurrency.coin(.bitcoin)) { BitcoinAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
 
         single { BitcoinHistoricalTransactionService() as BitcoinHistoricalTransactionServiceAPI }
 
