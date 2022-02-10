@@ -137,7 +137,7 @@ final class APIClient: TransactionPushClientAPI,
 }
 
 extension CryptoCurrency {
-    fileprivate var erc20ContractAddress: String? {
+    var erc20ContractAddress: String? {
         switch self {
         case .erc20(let model):
             switch model.kind {

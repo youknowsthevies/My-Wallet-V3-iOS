@@ -432,6 +432,8 @@ private struct UITourPopup: View {
     }
 }
 
+#if DEBUG
+
 struct UITourView_Previews: PreviewProvider {
 
     struct TestView: View {
@@ -504,3 +506,5 @@ struct UITourView_Previews: PreviewProvider {
         TestView(initialStep: .onboardingChecklist)
     }
 }
+
+#endif

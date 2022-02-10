@@ -7,12 +7,9 @@ import MoneyKit
 /// as well as other metadata such as an amount, message, etc. The set of supported metadata
 /// can be asset dependent.
 public protocol CryptoAssetQRMetadata {
-    var cryptoCurrency: CryptoCurrency { get }
 
     /// The asset's address (e.g. "1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
     var address: String { get }
-
-    var amount: String? { get }
 
     /// Converts this URL to an absolute string (e.g. "bitcoin:1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
     var absoluteString: String { get }

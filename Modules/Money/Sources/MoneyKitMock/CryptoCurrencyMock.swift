@@ -3,7 +3,12 @@
 @testable import MoneyKit
 
 extension AssetModel {
-    static func mockERC20(name: String, precision: Int = 18, sortIndex: Int = 0) -> AssetModel {
+    static func mockERC20(
+        name: String,
+        erc20Address: String = "ETH",
+        precision: Int = 18,
+        sortIndex: Int = 0
+    ) -> AssetModel {
         AssetModel(
             assetResponse: .init(
                 symbol: name,
@@ -15,7 +20,7 @@ extension AssetModel {
                     name: "ERC20",
                     minimumOnChainConfirmations: nil,
                     parentChain: "ETH",
-                    erc20Address: "ETH",
+                    erc20Address: erc20Address,
                     logoPngUrl: "ETH",
                     spotColor: nil,
                     websiteUrl: "ETH"

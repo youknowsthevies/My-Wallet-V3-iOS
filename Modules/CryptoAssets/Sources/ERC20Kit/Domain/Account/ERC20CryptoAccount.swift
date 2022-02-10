@@ -63,7 +63,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(ERC20ReceiveAddress(asset: asset, address: publicKey, label: label, onTxCompleted: onTxCompleted))
+        .just(
+            ERC20ReceiveAddress(
+                asset: asset,
+                address: publicKey,
+                label: label,
+                onTxCompleted: onTxCompleted
+            )!
+        )
     }
 
     var activity: Single<[ActivityItemEvent]> {

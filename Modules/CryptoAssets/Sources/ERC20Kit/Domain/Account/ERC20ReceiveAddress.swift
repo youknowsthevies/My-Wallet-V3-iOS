@@ -8,27 +8,43 @@ import RxSwift
 
 struct ERC20ReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
 
-    let asset: CryptoCurrency
-    let address: String
-    let label: String
-    let onTxCompleted: TxCompleted
-
-    var metadata: CryptoAssetQRMetadata {
-        EthereumURLPayload(address: address)!
+    var asset: CryptoCurrency {
+        eip681URI.cryptoCurrency
     }
 
+    var address: String {
+        eip681URI.address
+    }
+
+    var metadata: CryptoAssetQRMetadata {
+        eip681URI
+    }
+
+    let label: String
+    let onTxCompleted: TxCompleted
+    let eip681URI: EIP681URI
+
     init(
+        eip681URI: EIP681URI,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) {
+        self.eip681URI = eip681URI
+        self.label = label
+        self.onTxCompleted = onTxCompleted
+    }
+
+    init?(
         asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) {
-        guard asset.isERC20 else {
-            fatalError("Not an ERC20 Token")
+        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: asset) else {
+            return nil
         }
-        self.onTxCompleted = onTxCompleted
-        self.asset = asset
-        self.address = address
+        self.eip681URI = eip681URI
         self.label = label
+        self.onTxCompleted = onTxCompleted
     }
 }

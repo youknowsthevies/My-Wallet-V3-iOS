@@ -228,6 +228,7 @@ let package = Package(
             dependencies: [
                 .target(name: "EthereumKit"),
                 .target(name: "EthereumKitMock"),
+                .product(name: "MoneyKitMock", package: "Money"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "RxBlocking", package: "RxSwift"),

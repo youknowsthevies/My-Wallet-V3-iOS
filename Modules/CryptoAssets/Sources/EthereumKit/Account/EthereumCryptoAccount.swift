@@ -53,7 +53,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(EthereumReceiveAddress(address: publicKey, label: label, onTxCompleted: onTxCompleted))
+        .just(EthereumReceiveAddress(address: publicKey, label: label, onTxCompleted: onTxCompleted)!)
     }
 
     var activity: Single<[ActivityItemEvent]> {
