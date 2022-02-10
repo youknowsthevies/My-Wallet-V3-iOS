@@ -6,7 +6,6 @@ import RxSwift
 
 public enum CryptoReceiveAddressFactoryError: Error {
     case invalidAddress
-    case unsupportedAsset
 }
 
 /// A service that creates a `CryptoReceiveAddress` of the given `CryptoCurrency`.

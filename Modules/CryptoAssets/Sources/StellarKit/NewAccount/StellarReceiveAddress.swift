@@ -13,7 +13,7 @@ struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvidi
     let onTxCompleted: TxCompleted
 
     var metadata: CryptoAssetQRMetadata {
-        StellarURLPayload(address: address, amount: nil, memo: memo)
+        SEP7URI(address: address, amount: nil, memo: memo)
     }
 
     init(

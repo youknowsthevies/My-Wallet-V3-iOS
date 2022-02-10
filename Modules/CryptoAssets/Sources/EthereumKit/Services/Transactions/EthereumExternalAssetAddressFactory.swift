@@ -6,6 +6,11 @@ import PlatformKit
 import RxSwift
 import WalletCore
 
+enum EthereumAddressFactoryError: Error {
+    case invalidAddress
+    case wrongAsset
+}
+
 /// ExternalAssetAddressFactory implementation for Ethereum.
 ///
 /// This factory will first try to create a EthereumReceiveAddress assuming the input is a EIP681URI, so
@@ -19,12 +24,18 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         onTxCompleted: @escaping TxCompleted
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         eip681URI(address: address, label: label, onTxCompleted: onTxCompleted)
-            .flatMapError { _ in
-                self.ethereumReceiveAddress(
-                    address: address,
-                    label: label,
-                    onTxCompleted: onTxCompleted
-                )
+            .flatMapError { error in
+                switch error {
+                case .invalidAddress:
+                    return self.ethereumReceiveAddress(
+                        address: address,
+                        label: label,
+                        onTxCompleted: onTxCompleted
+                    )
+                    .replaceError(with: .invalidAddress)
+                case .wrongAsset:
+                    return .failure(.invalidAddress)
+                }
             }
     }
 
@@ -34,7 +45,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+    ) -> Result<CryptoReceiveAddress, EthereumAddressFactoryError> {
         // Creates BIP21URI from url.
         guard let eip681URI = EIP681URI(url: address, enabledCurrenciesService: resolve()) else {
             return .failure(.invalidAddress)
@@ -43,10 +54,13 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         guard Self.validate(address: eip681URI.address) else {
             return .failure(.invalidAddress)
         }
+        guard eip681URI.cryptoCurrency == .coin(.ethereum) else {
+            return .failure(.wrongAsset)
+        }
         // Creates BitcoinChainReceiveAddress from 'BIP21URI'.
         let receiveAddress = EthereumReceiveAddress(
             eip681URI: eip681URI,
-            label: label,
+            label: label == address ? eip681URI.address : label,
             onTxCompleted: onTxCompleted
         )
         return .success(receiveAddress)
@@ -58,7 +72,9 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+    ) -> Result<CryptoReceiveAddress, EthereumAddressFactoryError> {
+        // If label is same as address, we will replace it with the sanitized version (without prefix).
+        let replaceLabel = label == address
         // Removes the prefix, if present.
         let address = address.removing(prefix: "ethereum:")
         // Validates the address is valid.
@@ -68,7 +84,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // Creates EthereumReceiveAddress from 'address'.
         guard let receiveAddress = EthereumReceiveAddress(
             address: address,
-            label: label,
+            label: replaceLabel ? address : label,
             onTxCompleted: onTxCompleted
         ) else {
             return .failure(.invalidAddress)

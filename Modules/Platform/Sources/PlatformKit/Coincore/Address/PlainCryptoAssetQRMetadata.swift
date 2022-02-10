@@ -6,7 +6,7 @@ import MoneyKit
 /// A `CryptoAssetQRMetadata` that doesn't know how to validate the asset/address and assumes it is correct.
 struct PlainCryptoAssetQRMetadata: CryptoAssetQRMetadata {
     let address: String
-    let amount: String? = nil
+    let amount: CryptoValue? = nil
     let cryptoCurrency: CryptoCurrency
     let includeScheme: Bool = false
     var absoluteString: String {

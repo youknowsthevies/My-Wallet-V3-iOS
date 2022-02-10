@@ -33,7 +33,7 @@ final class StellarCryptoReceiveAddressFactory: ExternalAssetAddressFactory {
         guard let url = URL(string: address) else {
             return nil
         }
-        guard let urlPayload = StellarURLPayload(url: url) else {
+        guard let urlPayload = SEP7URI(url: url) else {
             return nil
         }
         return validateAndCreate(

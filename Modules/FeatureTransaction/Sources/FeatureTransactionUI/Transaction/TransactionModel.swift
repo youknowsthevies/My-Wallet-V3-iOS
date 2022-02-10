@@ -470,11 +470,11 @@ final class TransactionModel {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
-            .do(onNext: { [weak self] _ in
+            .do(onNext: { [weak self] pendingTransaction in
                 guard let self = self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
-                self.onFirstUpdate(amount: amount)
+                self.onFirstUpdate(amount: pendingTransaction.amount)
             })
             .subscribe(
                 onNext: { [weak self] transaction in

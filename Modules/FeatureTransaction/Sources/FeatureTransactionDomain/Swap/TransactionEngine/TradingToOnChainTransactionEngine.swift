@@ -139,9 +139,18 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
         return transactionLimits.eraseError()
             .zip(walletCurrencyService.displayCurrencyPublisher.eraseError())
-            .map { [sourceTradingAccount, sourceAsset] transactionLimits, walletCurrency -> PendingTransaction in
+            .map { [sourceTradingAccount, sourceAsset, predefinedAmount] transactionLimits, walletCurrency
+                -> PendingTransaction in
+                let amount: MoneyValue
+                if let predefinedAmount = predefinedAmount,
+                   predefinedAmount.currencyType == sourceAsset
+                {
+                    amount = predefinedAmount.moneyValue
+                } else {
+                    amount = .zero(currency: sourceAsset)
+                }
                 var pendingTransaction = PendingTransaction(
-                    amount: .zero(currency: sourceAsset),
+                    amount: amount,
                     available: .zero(currency: sourceAsset),
                     feeAmount: .zero(currency: sourceAsset),
                     feeForFullAvailable: .zero(currency: sourceAsset),

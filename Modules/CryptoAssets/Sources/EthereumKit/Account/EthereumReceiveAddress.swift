@@ -11,7 +11,7 @@ struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvid
     }
 
     var address: String {
-        eip681URI.address
+        eip681URI.method.destination ?? eip681URI.address
     }
 
     var metadata: CryptoAssetQRMetadata {

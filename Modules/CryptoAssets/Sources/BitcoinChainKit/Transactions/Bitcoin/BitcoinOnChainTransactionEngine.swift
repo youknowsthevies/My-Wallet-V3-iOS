@@ -145,30 +145,30 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single.zip(
-            walletCurrencyService
-                .displayCurrency
-                .asSingle(),
-            availableBalance,
-            featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
-        )
-        .map(weak: self) { _, values -> PendingTransaction in
-            let (fiatCurrency, availableBalance, _) = values
-            return .init(
-                amount: .zero(currency: Token.coin.cryptoCurrency),
-                available: availableBalance,
-                feeAmount: .zero(currency: Token.coin.cryptoCurrency),
-                feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
-                feeSelection: .init(
-                    selectedLevel: .regular,
-                    availableLevels: [.regular, .priority],
-                    asset: Token.coin.cryptoCurrency.currencyType
-                ),
-                selectedFiatCurrency: fiatCurrency,
-                // TODO: update feature flag logic when the feature is complete
-                nativeBitcoinTransactionEnabled: false
+        Single
+            .zip(
+                walletCurrencyService
+                    .displayCurrency
+                    .asSingle(),
+                availableBalance,
+                featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
             )
-        }
+            .map { [predefinedAmount] fiatCurrency, availableBalance, _ -> PendingTransaction in
+                PendingTransaction(
+                    amount: predefinedAmount?.moneyValue ?? .zero(currency: Token.coin.cryptoCurrency),
+                    available: availableBalance,
+                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
+                    feeSelection: .init(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: Token.coin.cryptoCurrency.currencyType
+                    ),
+                    selectedFiatCurrency: fiatCurrency,
+                    // TODO: update feature flag logic when the feature is complete
+                    nativeBitcoinTransactionEnabled: false
+                )
+            }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

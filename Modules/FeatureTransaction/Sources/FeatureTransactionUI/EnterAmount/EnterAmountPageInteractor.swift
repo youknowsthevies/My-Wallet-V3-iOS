@@ -59,7 +59,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let accountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractor
     private let accountAuxiliaryViewPresenter: AccountAuxiliaryViewPresenter
 
-    /// The interactor that `SingleAmountPreseneter` uses
+    /// The interactor that `SingleAmountPresenter` uses
     private let amountViewInteractor: AmountViewInteracting
 
     private let transactionModel: TransactionModel
@@ -141,6 +141,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .subscribe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
+            .compactMap(\.initialAmountToSet)
+            .take(1)
+            .asSingle()
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe { [weak self] (amount: MoneyValue) in
+                // On the first time initialAmountToSet is available,
+                // we will set it to AmountViewInteractor, so the UI
+                // is up to date with the State.
+                self?.amountViewInteractor.set(amount: amount)
             }
             .disposeOnDeactivate(interactor: self)
 

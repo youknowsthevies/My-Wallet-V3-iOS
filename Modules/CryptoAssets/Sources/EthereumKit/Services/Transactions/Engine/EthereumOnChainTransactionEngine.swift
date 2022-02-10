@@ -122,9 +122,17 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             availableBalance
         )
-        .map { fiatCurrency, availableBalance -> PendingTransaction in
-            .init(
-                amount: .zero(currency: .coin(.ethereum)),
+        .map { [predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+            let amount: MoneyValue
+            if let predefinedAmount = predefinedAmount,
+               predefinedAmount.currency == .coin(.ethereum)
+            {
+                amount = predefinedAmount.moneyValue
+            } else {
+                amount = .zero(currency: .coin(.ethereum))
+            }
+            return PendingTransaction(
+                amount: amount,
                 available: availableBalance,
                 feeAmount: .zero(currency: .coin(.ethereum)),
                 feeForFullAvailable: .zero(currency: .coin(.ethereum)),

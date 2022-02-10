@@ -217,6 +217,17 @@ public protocol TransactionEngine: AnyObject {
 
 extension TransactionEngine {
 
+    public var predefinedAmount: CryptoValue? {
+        switch transactionTarget {
+        case let target as CryptoAssetQRMetadata:
+            return target.amount
+        case let target as CryptoAssetQRMetadataProviding:
+            return target.metadata.amount
+        default:
+            return nil
+        }
+    }
+
     public var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }

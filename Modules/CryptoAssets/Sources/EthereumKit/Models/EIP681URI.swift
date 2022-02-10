@@ -4,6 +4,7 @@ import BigInt
 import Foundation
 import MoneyKit
 import PlatformKit
+import ToolKit
 import WalletCore
 
 /// Implementation of EIP 681 URI
@@ -13,12 +14,33 @@ public struct EIP681URI: CryptoAssetQRMetadata {
     public enum Method: Equatable {
         case send(amount: CryptoValue?, gasLimit: BigUInt?, gasPrice: BigUInt?)
         case transfer(destination: String, amount: CryptoValue?)
+
+        public var amount: CryptoValue? {
+            switch self {
+            case .send(let amount, _, _):
+                return amount
+            case .transfer(_, let amount):
+                return amount
+            }
+        }
+
+        public var destination: String? {
+            switch self {
+            case .send:
+                return nil
+            case .transfer(let destination, _):
+                return destination
+            }
+        }
     }
 
     public let cryptoCurrency: CryptoCurrency
     public let address: String
     public let method: Method
     public let includeScheme: Bool = false
+    public var amount: CryptoValue? {
+        method.amount
+    }
 
     /// Conformance to `CryptoAssetQRMetadata`, this is not the EIP681URI.
     public var absoluteString: String {
@@ -113,15 +135,7 @@ extension EIP681URIParser.Method {
         case .send(let amount, let gasLimit, let gasPrice):
             return .send(
                 amount: amount
-                    .flatMap { amount in
-                        if amount.contains("e") {
-                            return BigInt(
-                                decimalLiteral: NSDecimalNumber(string: amount) as Decimal
-                            )
-                        } else {
-                            return BigInt(amount)
-                        }
-                    }
+                    .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
                         CryptoValue(amount: amount, currency: .coin(.ethereum))
                     },
@@ -135,7 +149,7 @@ extension EIP681URIParser.Method {
             return .transfer(
                 destination: address,
                 amount: amount
-                    .flatMap { BigInt($0) }
+                    .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
                         CryptoValue(amount: amount, currency: cryptoCurrency)
                     }

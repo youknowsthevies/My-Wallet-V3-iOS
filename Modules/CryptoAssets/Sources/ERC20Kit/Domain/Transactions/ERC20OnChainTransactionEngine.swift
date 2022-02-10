@@ -127,10 +127,17 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             availableBalance
         )
-
-        .map { [erc20Token] fiatCurrency, availableBalance -> PendingTransaction in
-            .init(
-                amount: .zero(currency: .erc20(erc20Token)),
+        .map { [erc20Token, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+            let amount: MoneyValue
+            if let predefinedAmount = predefinedAmount,
+               predefinedAmount.currency == .erc20(erc20Token)
+            {
+                amount = predefinedAmount.moneyValue
+            } else {
+                amount = .zero(currency: .erc20(erc20Token))
+            }
+            return PendingTransaction(
+                amount: amount,
                 available: availableBalance,
                 feeAmount: .zero(currency: .coin(.ethereum)),
                 feeForFullAvailable: .zero(currency: .coin(.ethereum)),

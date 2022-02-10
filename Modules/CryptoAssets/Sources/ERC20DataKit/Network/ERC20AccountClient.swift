@@ -25,20 +25,11 @@ final class ERC20AccountClient: ERC20AccountClientAPI {
     /// URL path and query constructors for V2 endpoints (`eth/v2`).
     private enum EndpointV2 {
 
-        private static let base: [String] = ["eth", "v2"]
-
-        /// The URL path for a given account (e.g. `eth/v2/account/<address>`).
-        ///
-        /// - Parameter address: An ethereum account address.
-        static func account(for address: String) -> [String] {
-            base + ["account", address]
-        }
-
         /// The URL path to the `tokens` endpoint, for a given account (e.g. `eth/v2/account/<address>/tokens`).
         ///
         /// - Parameter address: An ethereum account address.
         static func tokens(for address: String) -> [String] {
-            account(for: address) + ["tokens"]
+            ["eth", "v2", "account", address, "tokens"]
         }
     }
 

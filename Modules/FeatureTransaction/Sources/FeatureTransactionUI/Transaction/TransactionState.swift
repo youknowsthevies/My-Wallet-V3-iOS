@@ -80,6 +80,24 @@ struct TransactionState: StateType {
 
     var stepsBackStack: [TransactionFlowStep] = []
 
+    /// The predefined MoneyValue that should be used.
+    var initialAmountToSet: MoneyValue? {
+        switch destination {
+        case let target as CryptoAssetQRMetadata:
+            // The predefined amount is only used if the PendingTransaction has
+            // it already set. This means the engine chose to use it.
+            let amount = target.amount?.moneyValue
+            return amount == pendingTransaction?.amount ? amount : nil
+        case let target as CryptoAssetQRMetadataProviding:
+            // The predefined amount is only used if the PendingTransaction has
+            // it already set. This means the engine chose to use it.
+            let amount = target.metadata.amount?.moneyValue
+            return amount == pendingTransaction?.amount ? amount : nil
+        default:
+            return nil
+        }
+    }
+
     init(
         action: AssetAction,
         source: BlockchainAccount? = nil,
