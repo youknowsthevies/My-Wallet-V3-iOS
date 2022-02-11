@@ -188,8 +188,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
                                     fee: pendingTransaction.feeAmount,
                                     feeInFiat: fiatFees.moneyValue
                                 )
-                            ),
-                            .total(.init(total: pendingTransaction.amount))
+                            )
                         ]
                     )
             }
