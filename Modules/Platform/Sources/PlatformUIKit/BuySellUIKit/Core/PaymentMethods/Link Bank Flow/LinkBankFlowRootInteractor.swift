@@ -123,6 +123,8 @@ final class LinkBankFlowRootInteractor: Interactor,
 
     func updateBankLinked() {
         bankFlowEffectRelay.accept(.bankLinked)
+        linkedBankService.invalidate()
+        beneficiariesService.invalidate()
     }
 
     // MARK: - Private

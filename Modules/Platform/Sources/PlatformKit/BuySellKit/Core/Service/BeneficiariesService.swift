@@ -24,6 +24,9 @@ public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
 
     /// Fetch beneficiaries once, but other subscribers to `beneficiaries` would get the new value
     func fetch() -> Observable<[Beneficiary]>
+
+    // Invalidate the caches to update the beneficiary and linked bank
+    func invalidate()
 }
 
 final class BeneficiariesService: BeneficiariesServiceAPI {
@@ -143,6 +146,12 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         case .linkedBank:
             return linkedBankService.deleteBank(by: id)
         }
+    }
+
+    func invalidate() {
+        beneficiariesRelay.accept(nil)
+        linkedBankService.invalidate()
+        beneficiariesServiceUpdater.markForRefresh()
     }
 }
 
