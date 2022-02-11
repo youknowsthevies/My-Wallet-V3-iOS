@@ -1,5 +1,6 @@
 --exclude Carthage,Submodules,SourcePackages,vendor,scripts
 --disable blankLinesAtStartOfScope
+--disable spaceAroundParens
 --allman false
 --assetliterals visual-width
 --beforemarks 
