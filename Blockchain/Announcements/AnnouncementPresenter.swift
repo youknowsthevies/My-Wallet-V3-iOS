@@ -25,7 +25,6 @@ final class AnnouncementPresenter {
     private let walletOperating: WalletOperationsRouting
     private let backupFlowStarter: BackupFlowStarterAPI
     private let settingsStarter: SettingsStarterAPI
-    private let tab: TabSwapping
 
     private let featureFetcher: RxFeatureFetching
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
@@ -77,7 +76,6 @@ final class AnnouncementPresenter {
         walletOperating: WalletOperationsRouting = DIKit.resolve(),
         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
-        tab: TabSwapping = DIKit.resolve(),
         exchangeCoordinator: ExchangeCoordinator = .shared,
         kycRouter: KYCRouterAPI = DIKit.resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
@@ -103,7 +101,6 @@ final class AnnouncementPresenter {
         self.walletOperating = walletOperating
         self.backupFlowStarter = backupFlowStarter
         self.settingsStarter = settingsStarter
-        self.tab = tab
         self.navigationRouter = navigationRouter
         self.exchangeProviding = exchangeProviding
         self.accountsRouter = accountsRouter
@@ -146,16 +143,19 @@ final class AnnouncementPresenter {
     }
 
     /// Resolves the first valid announcement according by the provided types and preliminary data
+    // swiftlint:disable:next cyclomatic_complexity
     private func resolve(
         metadata: AnnouncementsMetadata,
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
-        // IOS-6127: wallets with no balance should show no announcements
-        guard preliminaryData.hasAnyWalletBalance else {
-            return .none
-        }
         // For other users, keep the current logic in place
         for type in metadata.order {
+            // IOS-6127: wallets with no balance should show no announcements
+            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch no matter what.
+            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch else {
+                return .none
+            }
+
             let announcement: Announcement
             switch type {
             case .resubmitDocumentsAfterRecovery:
@@ -229,7 +229,10 @@ final class AnnouncementPresenter {
                     user: preliminaryData.user,
                     tiers: preliminaryData.tiers
                 )
+            case .ukEntitySwitch:
+                announcement = ukEntitySwitch(user: preliminaryData.user)
             }
+
             // Return the first different announcement that should show
             if announcement.shouldShow {
                 if currentAnnouncement?.type != announcement.type {
@@ -312,7 +315,7 @@ extension AnnouncementPresenter {
                 self.kycRouter.start(
                     tier: tier,
                     parentFlow: .airdrop,
-                    from: self.tab
+                    from: self.tabSwapping
                 )
             }
         )
@@ -348,7 +351,7 @@ extension AnnouncementPresenter {
                 self.kycRouter.start(
                     tier: tier,
                     parentFlow: .announcement,
-                    from: self.tab
+                    from: self.tabSwapping
                 )
             }
         )
@@ -435,6 +438,22 @@ extension AnnouncementPresenter {
                 }
                 webViewServiceAPI.openSafari(
                     url: "https://www.blockchain.com/getceur",
+                    from: topMostViewController
+                )
+            }
+        )
+    }
+
+    private func ukEntitySwitch(user: NabuUser) -> Announcement {
+        UKEntitySwitchAnnouncement(
+            userCountry: user.address?.country,
+            dismiss: hideAnnouncement,
+            action: { [topMostViewControllerProvider, webViewServiceAPI] in
+                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                webViewServiceAPI.openSafari(
+                    url: "https://support.blockchain.com/hc/en-us/articles/4418431131668",
                     from: topMostViewController
                 )
             }
@@ -614,7 +633,7 @@ extension AnnouncementPresenter {
                 self.kycRouter.start(
                     tier: tier,
                     parentFlow: .announcement,
-                    from: self.tab
+                    from: self.tabSwapping
                 )
             }
         )
@@ -630,7 +649,7 @@ extension AnnouncementPresenter {
                 self.kycRouter.start(
                     tier: tier,
                     parentFlow: .announcement,
-                    from: self.tab
+                    from: self.tabSwapping
                 )
             }
         )
