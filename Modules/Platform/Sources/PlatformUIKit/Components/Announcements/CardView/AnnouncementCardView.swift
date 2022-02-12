@@ -110,8 +110,6 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
 
         if !viewModel.badgeImage.isVisible {
             badgeImageView.removeFromSuperview()
-            // this fixes a layout issue when no badge is specified.
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
         }
 
         if viewModel.buttons.isEmpty {
