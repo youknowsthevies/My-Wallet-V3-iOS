@@ -4,7 +4,6 @@
 
 #import "AccountsAndAddressesNavigationController.h"
 #import "Assets.h"
-#import "ECSlidingViewController.h"
 #import "KeychainItemWrapper.h"
 #import "KeychainItemWrapper+Credentials.h"
 #import "Reachability.h"

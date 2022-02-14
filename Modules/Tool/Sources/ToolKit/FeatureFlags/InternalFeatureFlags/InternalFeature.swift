@@ -21,6 +21,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// Enabled native wallet creation instead of JS
+    case nativeWalletCreation
+
     /// Enables native bitcion transaction
     case nativeBitcoinTransaction
 
@@ -32,7 +35,8 @@ public enum InternalFeature: String, CaseIterable {
              .disableSSLPinning,
              .unifiedSignIn,
              .nativeWalletPayload,
-             .nativeBitcoinTransaction:
+             .nativeBitcoinTransaction,
+             .nativeWalletCreation:
             return false
         }
     }
@@ -59,6 +63,8 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .nativeBitcoinTransaction:
             return "Native Bitcoin Transaction"
+        case .nativeWalletCreation:
+            return "Native Wallet Creation"
         }
     }
 }

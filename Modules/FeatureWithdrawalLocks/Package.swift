@@ -28,7 +28,7 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
@@ -77,8 +77,8 @@ let package = Package(
                     package: "DIKit"
                 ),
                 .product(
-                    name: "ComponentLibrary",
-                    package: "ComponentLibrary"
+                    name: "BlockchainComponentLibrary",
+                    package: "BlockchainComponentLibrary"
                 ),
                 .product(
                     name: "ComposableArchitecture",

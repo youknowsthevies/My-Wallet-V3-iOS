@@ -29,14 +29,17 @@ final class EmailLoginReducerTests: XCTestCase {
         testStore = TestStore(
             initialState: .init(),
             reducer: emailLoginReducer,
-            environment: .init(
+            environment: EmailLoginEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlagsService: MockFeatureFlagsService(),
                 errorRecorder: MockErrorRecorder(),
                 analyticsRecorder: MockAnalyticsRecorder(),
-                walletRecoveryService: .mock()
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock(),
+                walletFetcherService: .mock,
+                accountRecoveryService: MockAccountRecoveryService()
             )
         )
     }

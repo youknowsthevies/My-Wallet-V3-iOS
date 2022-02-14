@@ -152,8 +152,12 @@ extension LocalizationConstants.SimpleBuy {
         }
 
         public enum DepositCash {
-            public static let title = NSLocalizedString(
+            public static let usTitle = NSLocalizedString(
                 "Wire Transfer",
+                comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
+            )
+            public static let europeTitle = NSLocalizedString(
+                "Bank Transfer",
                 comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
             )
             public static let description = NSLocalizedString(

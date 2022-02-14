@@ -55,15 +55,18 @@ final class RNGService: RNGServiceAPI {
     private let serverEntropyRepository: ServerEntropyRepositoryAPI
     private let localEntropyProvider: LocalEntropyProvider
     private let combineEntropyParsing: CombineEntropyParser
+    private let operationQueue: DispatchQueue
 
     init(
         serverEntropyRepository: ServerEntropyRepositoryAPI,
         localEntropyProvider: @escaping LocalEntropyProvider = provideLocalEntropy,
-        combineEntropyParsing: @escaping CombineEntropyParser = combineEntropies
+        combineEntropyParsing: @escaping CombineEntropyParser = combineEntropies,
+        operationQueue: DispatchQueue
     ) {
         self.serverEntropyRepository = serverEntropyRepository
         self.localEntropyProvider = localEntropyProvider
         self.combineEntropyParsing = combineEntropyParsing
+        self.operationQueue = operationQueue
     }
 
     func generateEntropy(
@@ -81,6 +84,7 @@ final class RNGService: RNGServiceAPI {
     ) -> AnyPublisher<Data, RNGEntropyError> {
         serverEntropyRepository.getServerEntropy(bytes: bytes, format: format)
             .mapError(RNGEntropyError.networkFailure)
+            .receive(on: operationQueue)
             .map(Data.init(hex:))
             .combineLatest(localEntropyProvider(bytes))
             .flatMap { [combineEntropyParsing] serverEntropy, localEntropy -> AnyPublisher<Data, RNGEntropyError> in

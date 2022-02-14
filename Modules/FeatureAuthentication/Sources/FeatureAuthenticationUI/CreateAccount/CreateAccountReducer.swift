@@ -9,6 +9,10 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+public enum CreateAccountIds {
+    public struct CreationId: Hashable {}
+}
+
 public enum CreateAccountContext {
     case importWallet
     case createWallet
@@ -107,6 +111,12 @@ public struct CreateAccountState: Equatable, NavigationState {
     public var inputValidationState: InputValidationState
     public var failureAlert: AlertState<CreateAccountAction>?
 
+    public var isCreatingWallet = false
+
+    var isCreateButtonDisabled: Bool {
+        validatingInput || inputValidationState.isInvalid || isCreatingWallet
+    }
+
     public init(
         context: CreateAccountContext,
         countries: [SearchableItem<String>] = CountryPickerView.countries,
@@ -142,6 +152,10 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<CreateAccountRoute>?)
     case validatePasswordStrength
     case accountRecoveryFailed(WalletRecoveryError)
+    case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
+    // required for legacy flow
+    case triggerAuthenticate
+    case none
 }
 
 struct CreateAccountEnvironment {
@@ -150,9 +164,11 @@ struct CreateAccountEnvironment {
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
 }
 
-private typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
+typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
 
 let createAccountReducer = Reducer<
     CreateAccountState,
@@ -197,7 +213,53 @@ let createAccountReducer = Reducer<
         }
 
     case .createAccount:
-        return .none // handled by parent
+        // by this point we have validated all the fields neccessary
+        state.isCreatingWallet = true
+        let accountName = CreateAccountLocalization.defaultAccountName
+        return .merge(
+            Effect(value: .triggerAuthenticate),
+            environment.walletCreationService
+                .createWallet(
+                    state.emailAddress,
+                    state.password,
+                    accountName
+                )
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .cancellable(id: CreateAccountIds.CreationId(), cancelInFlight: true)
+                .map(CreateAccountAction.accountCreation)
+        )
+
+    case .accountCreation(.failure(let error)):
+        state.isCreatingWallet = false
+        let title = LocalizationConstants.Errors.error
+        let message = error.localizedDescription
+        return .merge(
+            Effect(
+                value: .alert(
+                    .show(title: title, message: message)
+                )
+            ),
+            .cancel(id: CreateAccountIds.CreationId())
+        )
+
+    case .accountCreation(.success(let context)):
+        return .concatenate(
+            Effect(value: .triggerAuthenticate),
+            .merge(
+                .cancel(id: CreateAccountIds.CreationId()),
+                environment.walletCreationService
+                    .setResidentialInfo(state.country.id.description, state.countryState?.id.description)
+                    .receive(on: environment.mainQueue)
+                    .eraseToEffect()
+                    .fireAndForget(),
+                environment.walletFetcherService
+                    .fetchWallet(context.guid, context.sharedKey, context.password)
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map { _ in CreateAccountAction.none }
+            )
+        )
 
     case .createButtonTapped:
         state.validatingInput = true
@@ -276,6 +338,12 @@ let createAccountReducer = Reducer<
 
     case .alert(.dismiss):
         state.failureAlert = nil
+        return .none
+
+    case .triggerAuthenticate:
+        return .none
+
+    case .none:
         return .none
 
     case .binding:

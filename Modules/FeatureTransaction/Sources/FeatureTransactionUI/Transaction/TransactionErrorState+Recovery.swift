@@ -3,6 +3,7 @@
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
+import NabuNetworkError
 import PlatformKit
 import ToolKit
 import UIComponentsKit
@@ -63,6 +64,7 @@ extension TransactionErrorState {
         return text
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func recoveryWarningTitle(for action: AssetAction) -> String {
         let text: String
         switch self {
@@ -99,11 +101,29 @@ extension TransactionErrorState {
             )
         case .overMaximumPersonalLimit:
             text = Localization.overMaximumPersonalLimitRecoveryTitle
-        default:
+        case .none:
             if BuildFlag.isInternal {
-                unimplemented()
+                Logger.shared.error("Unsupported API error thrown or an internal error thrown")
             }
-            text = ""
+            text = Localization.unknownError
+        case .addressIsContract:
+            text = Localization.addressIsContract
+        case .invalidAddress:
+            text = Localization.invalidAddress
+        case .invalidPassword:
+            text = Localization.invalidPassword
+        case .optionInvalid:
+            text = Localization.optionInvalid
+        case .pendingOrdersLimitReached:
+            text = Localization.pendingOrderLimitReached
+        case .transactionInFlight:
+            text = Localization.transactionInFlight
+        case .fatalError:
+            text = Localization.fatalErrorShort
+        case .nabuError:
+            text = Localization.nextworkErrorShort
+        case .unknownError:
+            text = Localization.unknownError
         }
         return text
     }
@@ -126,11 +146,14 @@ extension TransactionErrorState {
             text = localizedOverMaxSourceLimitMessage(action: action)
         case .overMaximumPersonalLimit:
             text = localizedOverMaxPersonalLimitMessage(action: action)
+        case .nabuError(let error):
+            text = transactionErrorDescription(for: error.code, action: action)
+        case .fatalError(let fatalTransactionError):
+            text = transactionErrorDescription(for: fatalTransactionError, action: action)
+        case .unknownError:
+            text = Localization.unknownErrorDescription
         default:
-            if BuildFlag.isInternal {
-                unimplemented()
-            }
-            text = ""
+            text = String(describing: self)
         }
         return text
     }
@@ -220,6 +243,87 @@ extension TransactionErrorState {
 // MARK: - Helpers
 
 extension TransactionErrorState {
+
+    private func transactionErrorDescription(for networkError: NabuNetworkError, action: AssetAction) -> String {
+        let errorDescription: String
+        switch networkError {
+        case .nabuError(let error):
+            errorDescription = transactionErrorDescription(for: error.code, action: action)
+        case .communicatorError(let error):
+            errorDescription = String(describing: error)
+        }
+        return errorDescription
+    }
+
+    private func transactionErrorDescription(for fatalError: FatalTransactionError, action: AssetAction) -> String {
+        let errorDescription: String
+        switch fatalError {
+        case .generic(let error):
+            if let networkError = error as? NabuNetworkError {
+                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            } else if let validationError = error as? TransactionValidationFailure {
+                errorDescription = validationError.state.mapToTransactionErrorState.recoveryWarningTitle(for: action)
+            } else {
+                errorDescription = Localization.unknownError
+            }
+
+        default:
+            errorDescription = fatalError.localizedDescription
+        }
+        return errorDescription
+    }
+
+    // swiftlint:disable:next cyclomatic_complexity
+    private func transactionErrorDescription(for code: NabuErrorCode, action: AssetAction) -> String {
+        switch code {
+        case .orderBelowMinLimit:
+            return String(format: Localization.tradingBelowMin, action.name)
+        case .orderAboveMaxLimit:
+            return String(format: Localization.tradingAboveMax, action.name)
+        case .dailyLimitExceeded:
+            return String(format: Localization.tradingDailyExceeded, action.name)
+        case .weeklyLimitExceeded:
+            return String(format: Localization.tradingWeeklyExceeded, action.name)
+        case .annualLimitExceeded:
+            return String(format: Localization.tradingYearlyExceeded, action.name)
+        case .tradingDisabled:
+            return Localization.tradingServiceDisabled
+        case .pendingOrdersLimitReached:
+            return Localization.pendingOrderLimitReached
+        case .invalidCryptoAddress:
+            return Localization.tradingInvalidAddress
+        case .invalidCryptoCurrency:
+            return Localization.tradingInvalidCurrency
+        case .invalidFiatCurrency:
+            return Localization.tradingInvalidFiat
+        case .orderDirectionDisabled:
+            return Localization.tradingDirectionDisabled
+        case .userNotEligibleForSwap:
+            return Localization.tradingIneligibleForSwap
+        case .invalidDestinationAddress:
+            return Localization.tradingInvalidAddress
+        case .notFoundCustodialQuote:
+            return Localization.tradingQuoteInvalidOrExpired
+        case .orderAmountNegative:
+            return Localization.tradingInvalidDestinationAmount
+        case .withdrawalForbidden:
+            return Localization.pendingWithdraw
+        case .withdrawalLocked:
+            return Localization.withdrawBalanceLocked
+        case .insufficientBalance:
+            return String(format: Localization.tradingInsufficientBalance, action.name)
+        case .albertExecutionError:
+            return Localization.tradingAlbertError
+        case .orderInProgress:
+            return String(format: Localization.tooManyTransaction, action.name)
+        case .cardInsufficientFunds:
+            return Localization.cardInsufficientFunds
+        case .cardBankDecline:
+            return Localization.cardBankDecline
+        default:
+            return Localization.unknownError
+        }
+    }
 
     private func localizedInsufficientFundsMessage(action: AssetAction) -> String {
         guard case .insufficientFunds(let balance, _, let sourceCurrency, let targetCurrency) = self else {

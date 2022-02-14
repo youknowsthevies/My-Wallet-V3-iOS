@@ -9,12 +9,13 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class BitcoinCryptoAccount: CryptoNonCustodialAccount {
+final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
     let asset: CryptoCurrency = .coin(.bitcoin)
     let isDefault: Bool
+    let hdAccountIndex: Int
 
     func createTransactionEngine() -> Any {
         BitcoinOnChainTransactionEngineFactory<BitcoinToken>()
@@ -55,15 +56,11 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
 
     var receiveAddress: Single<ReceiveAddress> {
         bridge.receiveAddress(forXPub: xPub.address)
-            .flatMap { [bridge] address -> Single<(Int32, String)> in
-                Single.zip(bridge.walletIndex(for: address), .just(address))
-            }
-            .map { [label, onTxCompleted] index, address -> ReceiveAddress in
+            .map { [label, onTxCompleted] address -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinToken>(
                     address: address,
                     label: label,
-                    onTxCompleted: onTxCompleted,
-                    index: index
+                    onTxCompleted: onTxCompleted
                 )
             }
     }
@@ -116,7 +113,6 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let xPub: XPub
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
-    private let hdAccountIndex: Int
     private let priceService: PriceServiceAPI
     private let walletAccount: BitcoinWalletAccount
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI

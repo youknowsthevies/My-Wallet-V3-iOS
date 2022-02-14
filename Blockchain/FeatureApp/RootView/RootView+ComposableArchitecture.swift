@@ -1,15 +1,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Combine
-import DIKit
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
+import DIKit
 import Localization
 import SwiftUI
 import ToolKit
@@ -17,7 +13,6 @@ import ToolKit
 struct RootViewState: Equatable, NavigationState {
 
     var route: RouteIntent<RootViewRoute>?
-    var isReady: Bool = false
 
     @BindableState var tab: Tab = .home
     @BindableState var fab: FrequentAction
@@ -61,7 +56,6 @@ enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onAppear
-    case ready
 }
 
 enum RootViewRoute: NavigationRoute {
@@ -112,9 +106,6 @@ let rootViewReducer = Reducer<
         return .none
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false
-        return .none
-    case .ready:
-        state.isReady = true
         return .none
     case .onAppear:
         return environment.featureFlagsService.object(

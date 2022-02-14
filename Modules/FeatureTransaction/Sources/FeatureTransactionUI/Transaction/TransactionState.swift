@@ -51,7 +51,7 @@ struct TransactionState: StateType {
     }
 
     var executionStatus: TransactionExecutionStatus = .notStarted
-    var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
+    var errorState: TransactionErrorState = .none
     var order: TransactionOrder?
     var userKYCStatus: KYCStatus?
 
@@ -332,111 +332,12 @@ extension TransactionState {
 
 extension TransactionState {
 
-    private typealias LocalizationIds = LocalizationConstants.Transaction.Error
-
-    // swiftlint:disable cyclomatic_complexity
-    var transactionErrorDescription: String {
-        switch errorState {
-        case .none:
-            if BuildFlag.isInternal {
-                Logger.shared.error("Unsupported API error thrown or an internal error thrown")
-                fatalError("Please map to appropriate error code.")
-            }
-            return LocalizationIds.unknownError
-        case .addressIsContract:
-            return LocalizationIds.addressIsContract
-        case .belowMinimumLimit:
-            return String(format: LocalizationIds.tradingBelowMin, action.name)
-        case .insufficientFunds:
-            return LocalizationIds.insufficientFunds
-        case .belowFees:
-            return String(format: LocalizationIds.insufficientFundsForFees, amount.currency.name)
-        case .invalidAddress:
-            return LocalizationIds.invalidAddress
-        case .invalidPassword:
-            return LocalizationIds.invalidPassword
-        case .optionInvalid:
-            return LocalizationIds.optionInvalid
-        case .overMaximumSourceLimit,
-             .overMaximumPersonalLimit:
-            return LocalizationIds.overMaximumLimit
-        case .pendingOrdersLimitReached:
-            return LocalizationIds.pendingOrderLimitReached
-        case .transactionInFlight:
-            return LocalizationIds.transactionInFlight
-        case .fatalError(let fatalTransactionError):
-            switch fatalTransactionError {
-            case .generic(let error):
-                guard let networkError = error as? NabuNetworkError else {
-                    return LocalizationIds.unknownError
-                }
-                guard case .nabuError(let nabu) = networkError else {
-                    return LocalizationIds.unknownError
-                }
-
-                return transactionErrorDescriptionForError(nabu.code)
-            case .rxError:
-                return LocalizationIds.unknownError
-
-            case .message(let message):
-                return message
-            }
-        case .unknownError:
-            return LocalizationIds.unknownError
-        case .nabuError(let error):
-            return transactionErrorDescriptionForError(error.code)
-        }
+    var transactionErrorTitle: String {
+        errorState.recoveryWarningTitle(for: action)
     }
 
-    private func transactionErrorDescriptionForError(_ code: NabuErrorCode) -> String {
-        switch code {
-        case .orderBelowMinLimit:
-            return String(format: LocalizationIds.tradingBelowMin, action.name)
-        case .orderAboveMaxLimit:
-            return String(format: LocalizationIds.tradingAboveMax, action.name)
-        case .dailyLimitExceeded:
-            return String(format: LocalizationIds.tradingDailyExceeded, action.name)
-        case .weeklyLimitExceeded:
-            return String(format: LocalizationIds.tradingWeeklyExceeded, action.name)
-        case .annualLimitExceeded:
-            return String(format: LocalizationIds.tradingYearlyExceeded, action.name)
-        case .tradingDisabled:
-            return LocalizationIds.tradingServiceDisabled
-        case .pendingOrdersLimitReached:
-            return LocalizationIds.pendingOrderLimitReached
-        case .invalidCryptoAddress:
-            return LocalizationIds.tradingInvalidAddress
-        case .invalidCryptoCurrency:
-            return LocalizationIds.tradingInvalidCurrency
-        case .invalidFiatCurrency:
-            return LocalizationIds.tradingInvalidFiat
-        case .orderDirectionDisabled:
-            return LocalizationIds.tradingDirectionDisabled
-        case .userNotEligibleForSwap:
-            return LocalizationIds.tradingIneligibleForSwap
-        case .invalidDestinationAddress:
-            return LocalizationIds.tradingInvalidAddress
-        case .notFoundCustodialQuote:
-            return LocalizationIds.tradingQuoteInvalidOrExpired
-        case .orderAmountNegative:
-            return LocalizationIds.tradingInvalidDestinationAmount
-        case .withdrawalForbidden:
-            return LocalizationIds.pendingWithdraw
-        case .withdrawalLocked:
-            return LocalizationIds.withdrawBalanceLocked
-        case .insufficientBalance:
-            return String(format: LocalizationIds.tradingInsufficientBalance, action.name)
-        case .albertExecutionError:
-            return LocalizationIds.tradingAlbertError
-        case .orderInProgress:
-            return String(format: LocalizationIds.tooManyTransaction, action.name)
-        case .cardInsufficientFunds:
-            return LocalizationIds.cardInsufficientFunds
-        case .cardBankDecline:
-            return LocalizationIds.cardBankDecline
-        default:
-            return LocalizationIds.unknownError
-        }
+    var transactionErrorDescription: String {
+        errorState.recoveryWarningMessage(for: action)
     }
 }
 

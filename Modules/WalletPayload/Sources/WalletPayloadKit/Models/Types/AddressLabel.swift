@@ -2,9 +2,9 @@
 
 import Foundation
 
-public final class AddressLabel: Equatable {
-    var index: Int
-    var label: String
+public struct AddressLabel: Equatable {
+    public let index: Int
+    public let label: String
 
     public init(
         index: Int,
@@ -12,12 +12,5 @@ public final class AddressLabel: Equatable {
     ) {
         self.index = index
         self.label = label
-    }
-}
-
-extension AddressLabel {
-    public static func == (lhs: AddressLabel, rhs: AddressLabel) -> Bool {
-        lhs.index == rhs.index
-            && lhs.label == rhs.label
     }
 }

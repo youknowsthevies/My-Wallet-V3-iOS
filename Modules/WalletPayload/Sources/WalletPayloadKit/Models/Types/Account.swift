@@ -2,12 +2,12 @@
 
 import Foundation
 
-public final class Account: Equatable {
-    var index: Int
-    var label: String
-    var archived: Bool
-    var defaultDerivation: DerivationType
-    var derivations: [Derivation]
+public struct Account: Equatable {
+    public let index: Int
+    public let label: String
+    public let archived: Bool
+    public let defaultDerivation: DerivationType
+    public let derivations: [Derivation]
 
     var defaultDerivationAccount: Derivation? {
         derivations.first(where: { $0.type == defaultDerivation })
@@ -43,14 +43,4 @@ func createAccount(
         defaultDerivation: .segwit,
         derivations: derivations
     )
-}
-
-extension Account {
-    public static func == (lhs: Account, rhs: Account) -> Bool {
-        lhs.index == rhs.index
-            && lhs.label == rhs.label
-            && lhs.archived == rhs.archived
-            && lhs.defaultDerivation == rhs.defaultDerivation
-            && lhs.derivations == rhs.derivations
-    }
 }

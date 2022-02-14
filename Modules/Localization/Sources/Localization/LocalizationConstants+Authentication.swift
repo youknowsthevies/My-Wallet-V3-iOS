@@ -439,6 +439,11 @@ extension LocalizationConstants.FeatureAuthentication {
     // MARK: - Create Account
 
     public enum CreateAccount {
+        public static let defaultAccountName = NSLocalizedString(
+            "Private Key Wallet",
+            comment: "New account name label"
+        )
+
         public static let headerTitle = NSLocalizedString(
             "Create Your Account.",
             comment: "Create Account screen: header title"

@@ -26,7 +26,7 @@ protocol VeriffController: UIViewController, VeriffSdkDelegate {
     func onVeriffCancelled()
 }
 
-extension VeriffController where Self: UIViewController {
+extension VeriffController {
 
     internal var veriff: VeriffSdk {
         VeriffSdk.shared

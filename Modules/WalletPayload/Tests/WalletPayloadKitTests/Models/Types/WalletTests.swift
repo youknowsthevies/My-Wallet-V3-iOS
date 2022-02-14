@@ -77,12 +77,13 @@ class WalletTests: XCTestCase {
     func test_can_get_seedHex_from_mnemonic() {
         // given a valid mnemonic
         let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+        let expectedSeedHex = "00000000000000000000000000000000"
         // returns a seed hex
         switch getSeedHex(from: mnemonic) {
         case .success(let seedHex):
             XCTAssertEqual(
                 seedHex,
-                "5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4"
+                expectedSeedHex
             )
         case .failure:
             XCTFail("should provide a seedHex on valid mnemonic")
@@ -102,7 +103,7 @@ class WalletTests: XCTestCase {
     // swiftlint:enable line_length
 
     func test_getMnemonic_method_works() throws {
-        let wallet = NativeWallet(from: blockchainWalletV4)
+        let wallet = NativeWallet.from(blockchainWallet: blockchainWalletV4)
 
         let mnemonicResult = getMnemonic(from: wallet)
 
@@ -116,7 +117,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_getMnemonic_method_works_with_double_encrypted_wallets() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         let mnemonicResult = getMnemonic(from: wallet, secondPassword: secondPassword)
 
@@ -130,7 +131,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_getMnemonic_method_works_with_double_encrypted_wallets_wrong_password_fails() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         let mnemonicResult = getMnemonic(from: wallet, secondPassword: "wrong-pass")
 
@@ -144,7 +145,7 @@ class WalletTests: XCTestCase {
 
     func test_getSeedHex_method_works() throws {
         // given
-        let encryptedWallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let encryptedWallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         // when
         let seedHexFromDoubleEncryptedWallet = getSeedHex(
@@ -157,7 +158,7 @@ class WalletTests: XCTestCase {
         XCTAssertEqual(seedHexFromDoubleEncryptedWallet, "6a4d9524d413fdf69ca1b5664d1d6db0")
 
         // given
-        let wallet = NativeWallet(from: blockchainWalletV4)
+        let wallet = NativeWallet.from(blockchainWallet: blockchainWalletV4)
         // when
         let seedHex = getSeedHex(from: wallet).successData
 
@@ -168,7 +169,7 @@ class WalletTests: XCTestCase {
 
     func test_getSeedHex_method_returns_error_on_double_encrypted_wallet() {
         // given
-        let encryptedWallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let encryptedWallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         // when
         var seedHexResult = getSeedHex(
@@ -189,7 +190,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_decrypt_value_method_successfully_decrypts_values() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         guard let seedHex = wallet.defaultHDWallet?.seedHex else {
             XCTFail("seedHex not found of wallet")
@@ -211,7 +212,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_decrypt_value_method_returns_correct_error() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         guard let seedHex = wallet.defaultHDWallet?.seedHex else {
             XCTFail("seedHex not found of wallet")
@@ -233,7 +234,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_validate_second_password_method() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         let result: Result<String, WalletError> = validateSecondPassword(
             password: "secret",
@@ -251,7 +252,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_validate_second_password_method_return_correct_error() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         let result: Result<String, WalletError> = validateSecondPassword(
             password: "wrong-pass",
@@ -270,7 +271,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_second_password_isValid_method() throws {
-        let wallet = NativeWallet(from: doubleEncBlockchainWallet)
+        let wallet = NativeWallet.from(blockchainWallet: doubleEncBlockchainWallet)
 
         XCTAssertTrue(
             isValid(secondPassword: secondPassword, wallet: wallet)
@@ -282,7 +283,7 @@ class WalletTests: XCTestCase {
     }
 
     func test_second_password_isValid_method_stops_on_non_double_encrypted_wallets() throws {
-        let wallet = NativeWallet(from: blockchainWalletV4)
+        let wallet = NativeWallet.from(blockchainWallet: blockchainWalletV4)
 
         XCTAssertFalse(
             isValid(secondPassword: secondPassword, wallet: wallet)

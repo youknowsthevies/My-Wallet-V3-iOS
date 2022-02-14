@@ -32,6 +32,15 @@ public enum BitcoinChainCoin: String {
             return 546
         }
     }
+
+    public var uriScheme: String {
+        switch self {
+        case .bitcoin:
+            return "bitcoin"
+        case .bitcoinCash:
+            return "bitcoincash"
+        }
+    }
 }
 
 public protocol BitcoinChainToken {

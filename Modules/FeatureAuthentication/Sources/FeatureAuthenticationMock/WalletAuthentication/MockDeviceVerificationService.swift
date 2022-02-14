@@ -21,6 +21,16 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
         nabuInfo: nil
     )
 
+    static let mockWalletInfoWithTwoFA = WalletInfo(
+        guid: "cd76e920-7a39-4458-829a-1bb752ef628d",
+        email: "test@example.com",
+        emailCode: "example email code",
+        twoFAType: .sms,
+        isMobileSetup: false,
+        hasCloudBackup: false,
+        nabuInfo: nil
+    )
+
     static let mockWalletInfoWithGuidOnly = WalletInfo(
         guid: "cd76e920-7a39-4458-829a-1bb752ef628d"
     )

@@ -5,7 +5,7 @@ import Combine
 public protocol WalletManagerReactiveAPI {
 
     /// Reactive method for creating a new wallet account
-    var didCreateNewAccount: AnyPublisher<Result<WalletCreation, WalletCreationError>, Never> { get }
+    var didCreateNewAccount: AnyPublisher<Result<WalletCreation, LegacyWalletCreationError>, Never> { get }
 
     // MARK: WalletAuthDelegate
 

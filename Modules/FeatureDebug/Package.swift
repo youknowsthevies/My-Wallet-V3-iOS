@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Tool"),
-        .package(path: "../ComponentLibrary"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "0.2.1"
@@ -22,7 +22,7 @@ let package = Package(
             name: "FeatureDebugUI",
             dependencies: [
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "Examples", package: "ComponentLibrary"),
+                .product(name: "Examples", package: "BlockchainComponentLibrary"),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ]
         ),

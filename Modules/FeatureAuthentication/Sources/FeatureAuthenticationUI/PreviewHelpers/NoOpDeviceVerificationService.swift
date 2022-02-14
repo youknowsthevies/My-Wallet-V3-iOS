@@ -63,3 +63,21 @@ final class NoOpFeatureConfigurator: FeatureConfiguratorAPI {
         .failure(.missingValue)
     }
 }
+
+final class NoOpAccountRecoveryService: AccountRecoveryServiceAPI {
+    func recoverUser(
+        guid: String,
+        sharedKey: String,
+        userId: String,
+        recoveryToken: String
+    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
+        .just(())
+    }
+
+    func resetVerificationStatus(
+        guid: String,
+        sharedKey: String
+    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
+        .failure(.failedToSaveOfflineToken(.offlineToken))
+    }
+}

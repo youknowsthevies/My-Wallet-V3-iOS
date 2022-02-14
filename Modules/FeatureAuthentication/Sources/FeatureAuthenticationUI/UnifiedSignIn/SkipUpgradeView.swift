@@ -1,11 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -132,7 +128,10 @@ struct SkipUpgradeView_Previews: PreviewProvider {
                     errorRecorder: NoOpErrorRecoder(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
-                    walletRecoveryService: .noop
+                    walletRecoveryService: .noop,
+                    walletCreationService: .noop,
+                    walletFetcherService: .noop,
+                    accountRecoveryService: NoOpAccountRecoveryService()
                 )
             )
         )

@@ -78,7 +78,7 @@ public protocol BitcoinChainSendBridgeAPI {
         with destination: BitcoinChainReceiveAddress<Token>,
         amount: MoneyValue,
         fees: MoneyValue,
-        source: CryptoAccount
+        source: BitcoinChainCryptoAccount
     ) -> Single<BitcoinChainTransactionProposal<Token>>
 
     func buildCandidate<Token: BitcoinChainToken>(

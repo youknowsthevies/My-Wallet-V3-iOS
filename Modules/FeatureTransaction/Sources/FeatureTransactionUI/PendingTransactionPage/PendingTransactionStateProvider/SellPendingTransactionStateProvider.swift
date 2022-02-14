@@ -105,8 +105,8 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         .init(
-            title: state.transactionErrorDescription,
-            subtitle: LocalizationIds.Failure.description,
+            title: state.transactionErrorTitle,
+            subtitle: state.transactionErrorDescription,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .image(state.asset.logoResource),

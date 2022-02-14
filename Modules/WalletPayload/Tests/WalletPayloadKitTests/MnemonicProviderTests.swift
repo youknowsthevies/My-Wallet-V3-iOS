@@ -21,8 +21,8 @@ class MnemonicProviderTests: XCTestCase {
 
         // swiftlint:disable:next line_length
         let expectedMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-
-        provideMnemonic(strength: .normal) { bytes in
+        let dispatchQueue = DispatchQueue(label: "mnemonic.provider.temp.op.queue")
+        provideMnemonic(strength: .normal, queue: dispatchQueue) { bytes in
             .just(Data(repeating: 0, count: bytes))
         }
         .sink { completion in

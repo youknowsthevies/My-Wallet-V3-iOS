@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationDomain
+import Localization
 import ToolKit
 
 // MARK: - Type
@@ -12,6 +13,7 @@ import ToolKit
 public enum WalletRecoveryIds {
     public struct RecoveryId: Hashable {}
     public struct ImportId: Hashable {}
+    public struct AccountRecoveryAfterResetId: Hashable {}
 }
 
 public enum SeedPhraseAction: Equatable {
@@ -28,6 +30,12 @@ public enum SeedPhraseAction: Equatable {
         }
     }
 
+    public enum AlertAction: Equatable {
+        case show(title: String, message: String)
+        case dismiss
+    }
+
+    case alert(AlertAction)
     case didChangeSeedPhrase(String)
     case didChangeSeedPhraseScore(MnemonicValidationScore)
     case validateSeedPhrase
@@ -42,6 +50,7 @@ public enum SeedPhraseAction: Equatable {
     case restoreWallet(WalletRecovery)
     case restored(Result<EmptyValue, WalletRecoveryError>)
     case imported(Result<EmptyValue, WalletRecoveryError>)
+    case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
     case triggerAuthenticate // needed for legacy wallet flow
     case open(urlContent: URLContent)
     case none
@@ -69,6 +78,7 @@ public struct SeedPhraseState: Equatable {
     var resetAccountWarningState: ResetAccountWarningState?
     var lostFundsWarningState: LostFundsWarningState?
     var importWalletState: ImportWalletState?
+    var failureAlert: AlertState<SeedPhraseAction>?
 
     var accountResettable: Bool {
         nabuInfo != nil
@@ -84,6 +94,7 @@ public struct SeedPhraseState: Equatable {
         isResetAccountBottomSheetVisible = false
         isLostFundsWarningScreenVisible = false
         isImportWalletScreenVisible = false
+        failureAlert = nil
     }
 }
 
@@ -94,6 +105,9 @@ struct SeedPhraseEnvironment {
     let passwordValidator: PasswordValidatorAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
+    let accountRecoveryService: AccountRecoveryServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -101,7 +115,10 @@ struct SeedPhraseEnvironment {
         passwordValidator: PasswordValidatorAPI = resolve(),
         externalAppOpener: ExternalAppOpener,
         analyticsRecorder: AnalyticsEventRecorderAPI,
-        walletRecoveryService: WalletRecoveryService
+        walletRecoveryService: WalletRecoveryService,
+        walletCreationService: WalletCreationService,
+        walletFetcherService: WalletFetcherService,
+        accountRecoveryService: AccountRecoveryServiceAPI
     ) {
         self.mainQueue = mainQueue
         self.validator = validator
@@ -109,6 +126,9 @@ struct SeedPhraseEnvironment {
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.accountRecoveryService = accountRecoveryService
     }
 }
 
@@ -124,7 +144,9 @@ let seedPhraseReducer = Reducer.combine(
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService
                 )
             }
         ),
@@ -239,14 +261,78 @@ let seedPhraseReducer = Reducer.combine(
             guard let nabuInfo = state.nabuInfo else {
                 return .none
             }
-            return Effect(
-                value: .restoreWallet(
-                    .resetAccountRecovery(
-                        email: state.emailAddress,
-                        newPassword: password,
-                        nabuInfo: nabuInfo
+            let accountName = CreateAccountLocalization.defaultAccountName
+            return .concatenate(
+                Effect(value: .triggerAuthenticate),
+                environment.walletCreationService
+                    .createWallet(
+                        state.emailAddress,
+                        password,
+                        accountName
                     )
-                )
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: CreateAccountIds.CreationId(), cancelInFlight: true)
+                    .map(SeedPhraseAction.accountCreation)
+            )
+
+        case .accountCreation(.failure(let error)):
+            let title = LocalizationConstants.Errors.error
+            let message = error.localizedDescription
+            state.lostFundsWarningState?.resetPasswordState?.isLoading = false
+            return .merge(
+                Effect(
+                    value: .alert(
+                        .show(
+                            title: title,
+                            message: message
+                        )
+                    )
+                ),
+                .cancel(id: CreateAccountIds.CreationId())
+            )
+
+        case .accountCreation(.success(let context)):
+            guard let nabuInfo = state.nabuInfo else {
+                return .none
+            }
+            return .merge(
+                .cancel(id: CreateAccountIds.CreationId()),
+                // The effects of fetching a wallet still happen on the CoreCoordinator,
+                // this should not be fireAndForget once we have wallet loading natively
+                environment.walletFetcherService
+                    .fetchWallet(context.guid, context.sharedKey, context.password)
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .fireAndForget(),
+                environment.accountRecoveryService
+                    .recoverUser(
+                        guid: context.guid,
+                        sharedKey: context.sharedKey,
+                        userId: nabuInfo.userId,
+                        recoveryToken: nabuInfo.recoveryToken
+                    )
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: WalletRecoveryIds.AccountRecoveryAfterResetId(), cancelInFlight: false)
+                    .map { result -> SeedPhraseAction in
+                        guard case .success = result else {
+                            environment.analyticsRecorder.record(
+                                event: AnalyticsEvents.New.AccountRecoveryFlow.accountRecoveryFailed
+                            )
+                            // show recovery failures if the endpoint fails
+                            return .lostFundsWarning(
+                                .resetPassword(
+                                    .setResetAccountFailureVisible(true)
+                                )
+                            )
+                        }
+                        environment.analyticsRecorder.record(
+                            event: AnalyticsEvents.New.AccountRecoveryFlow
+                                .accountPasswordReset(hasRecoveryPhrase: false)
+                        )
+                        return .none
+                    }
             )
 
         case .lostFundsWarning:
@@ -316,6 +402,21 @@ let seedPhraseReducer = Reducer.combine(
             return .none
 
         case .triggerAuthenticate:
+            return .none
+
+        case .alert(.show(let title, let message)):
+            state.failureAlert = AlertState(
+                title: TextState(verbatim: title),
+                message: TextState(verbatim: message),
+                dismissButton: .default(
+                    TextState(LocalizationConstants.okString),
+                    action: .send(.alert(.dismiss))
+                )
+            )
+            return .none
+
+        case .alert(.dismiss):
+            state.failureAlert = nil
             return .none
 
         case .none:

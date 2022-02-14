@@ -62,6 +62,9 @@ struct UpgradeAccountEnvironment {
     let featureFlagsService: FeatureFlagsServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
+    let walletCreationService: WalletCreationService
+    let walletFetcherService: WalletFetcherService
+    let accountRecoveryService: AccountRecoveryServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -69,7 +72,10 @@ struct UpgradeAccountEnvironment {
         errorRecorder: ErrorRecording,
         featureFlagsService: FeatureFlagsServiceAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
-        walletRecoveryService: WalletRecoveryService
+        walletRecoveryService: WalletRecoveryService,
+        walletCreationService: WalletCreationService,
+        walletFetcherService: WalletFetcherService,
+        accountRecoveryService: AccountRecoveryServiceAPI
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
@@ -77,6 +83,9 @@ struct UpgradeAccountEnvironment {
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.accountRecoveryService = accountRecoveryService
     }
 }
 
@@ -93,7 +102,10 @@ let upgradeAccountReducer = Reducer.combine(
                     errorRecorder: $0.errorRecorder,
                     featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder,
-                    walletRecoveryService: $0.walletRecoveryService
+                    walletRecoveryService: $0.walletRecoveryService,
+                    walletCreationService: $0.walletCreationService,
+                    walletFetcherService: $0.walletFetcherService,
+                    accountRecoveryService: $0.accountRecoveryService
                 )
             }
         ),

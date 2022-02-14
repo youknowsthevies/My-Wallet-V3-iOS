@@ -1,10 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
-#if canImport(SharedComponentLibrary)
-import SharedComponentLibrary
-#else
-import ComponentLibrary
-#endif
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
@@ -65,53 +61,47 @@ struct RootView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if viewStore.isReady {
-                TabView(selection: viewStore.binding(\.$tab)) {
-                    tab(.home) {
-                        PortfolioView()
-                    }
-                    tab(.prices) {
-                        PricesView()
-                    }
-                    fab()
-                    tab(.buyAndSell) {
-                        BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
-                    }
-                    tab(.activity) {
-                        ActivityView()
-                    }
+            TabView(selection: viewStore.binding(\.$tab)) {
+                tab(.home) {
+                    PortfolioView()
                 }
-                .onAppear {
-                    viewStore.send(.onAppear)
+                tab(.prices) {
+                    PricesView()
                 }
-                .overlay(
-                    FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
-                        .identity(blockchain.ux.user.fab)
-                        .background(
-                            Circle()
-                                .fill(Color.semantic.background)
-                                .padding(8)
-                        )
-                        .pulse(enabled: viewStore.fab.animate, inset: 8)
-                        .padding([.leading, .trailing], 24.pt)
-                        .offset(y: 6.pt)
-                        .contentShape(Rectangle())
-                        .background(Color.white.invisible()),
-                    alignment: .bottom
-                )
-                .ignoresSafeArea(.keyboard, edges: .bottom)
-                .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn)) {
-                    FrequentActionView(
-                        list: viewStore.fab.data.list,
-                        buttons: viewStore.fab.data.buttons
-                    ) { action in
-                        viewStore.send(.frequentAction(action))
-                    }
+                fab()
+                tab(.buyAndSell) {
+                    BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
                 }
-            } else {
-                ProgressView(value: 0.25)
-                    .frame(width: 50.pt, height: 50.pt)
-                    .progressViewStyle(.indeterminate)
+                tab(.activity) {
+                    ActivityView()
+                }
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .overlay(
+                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
+                    .identity(blockchain.ux.user.fab)
+                    .background(
+                        Circle()
+                            .fill(Color.semantic.background)
+                            .padding(8)
+                    )
+                    .pulse(enabled: viewStore.fab.animate, inset: 8)
+                    .padding([.leading, .trailing], 24.pt)
+                    .offset(y: 6.pt)
+                    .contentShape(Rectangle())
+                    .background(Color.white.invisible()),
+                alignment: .bottom
+            )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn)) {
+                FrequentActionView(
+                    list: viewStore.fab.data.list,
+                    buttons: viewStore.fab.data.buttons
+                ) { action in
+                    viewStore.send(.frequentAction(action))
+                }
             }
         }
         .navigationRoute(in: store)
