@@ -13,26 +13,32 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
     static let deeplinkWithValidGuid = URL(string: "https://login.blockchain.com/#/login/cd76e920-7a39-4458-829a-1bb752ef628d")!
 
     static let mockWalletInfo = WalletInfo(
-        guid: "cd76e920-7a39-4458-829a-1bb752ef628d",
-        email: "test@example.com",
-        emailCode: "example email code",
-        isMobileSetup: false,
-        hasCloudBackup: false,
-        nabuInfo: nil
+        wallet: WalletInfo.Wallet(
+            guid: "cd76e920-7a39-4458-829a-1bb752ef628d",
+            email: "test@example.com",
+            emailCode: "example email code",
+            isMobileSetup: false,
+            hasCloudBackup: false,
+            nabu: nil
+        )
     )
 
     static let mockWalletInfoWithTwoFA = WalletInfo(
-        guid: "cd76e920-7a39-4458-829a-1bb752ef628d",
-        email: "test@example.com",
-        emailCode: "example email code",
-        twoFAType: .sms,
-        isMobileSetup: false,
-        hasCloudBackup: false,
-        nabuInfo: nil
+        wallet: WalletInfo.Wallet(
+            guid: "cd76e920-7a39-4458-829a-1bb752ef628d",
+            email: "test@example.com",
+            twoFaType: .sms,
+            emailCode: "example email code",
+            isMobileSetup: false,
+            hasCloudBackup: false,
+            sessionId: nil
+        )
     )
 
     static let mockWalletInfoWithGuidOnly = WalletInfo(
-        guid: "cd76e920-7a39-4458-829a-1bb752ef628d"
+        wallet: WalletInfo.Wallet(
+            guid: "cd76e920-7a39-4458-829a-1bb752ef628d"
+        )
     )
 
     var expectedSessionMismatch: Bool = false

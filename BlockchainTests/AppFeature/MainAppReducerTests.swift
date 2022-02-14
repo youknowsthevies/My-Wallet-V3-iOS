@@ -709,21 +709,19 @@ final class MainAppReducerTests: XCTestCase {
             details: DeviceVerificationDetails(originLocation: "", originIP: "", originBrowser: ""),
             timestamp: Date(timeIntervalSince1970: 1000)
         )
-        testStore.assert(
-            .send(.loginRequestReceived(
-                deeplink: MockDeviceVerificationService.validDeeplink
-            )),
-            .do { self.mockMainQueue.advance() },
-            .receive(
-                .checkIfConfirmationRequired(
-                    sessionId: "",
-                    base64Str: ""
-                )
-            ),
-            .receive(.proceedToDeviceAuthorization(requestInfo)) { state in
-                state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
-            }
+        testStore.send(.loginRequestReceived(
+            deeplink: MockDeviceVerificationService.validDeeplink
+        ))
+        mockMainQueue.advance()
+        testStore.receive(
+            .checkIfConfirmationRequired(
+                sessionId: "",
+                base64Str: ""
+            )
         )
+        testStore.receive(.proceedToDeviceAuthorization(requestInfo)) { state in
+            state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
+        }
     }
 }
 

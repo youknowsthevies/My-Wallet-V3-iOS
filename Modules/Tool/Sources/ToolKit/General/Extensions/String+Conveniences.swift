@@ -94,18 +94,26 @@ extension String {
         trimmingCharacters(in: .whitespaces)
     }
 
-    /// Returns the base64 string with proper paddings
-    public var paddedBase64: String {
-        if count % 4 == 0 {
-            return self
-        } else if (count + 1) % 4 == 0 {
-            return self + "="
-        } else if (count + 2) % 4 == 0 {
-            return self + "=="
-        } else {
-            // valid base64 (without padding) should require 0-2 paddings only
-            return self
+    // MARK: - Base64
+
+    /// Converts a base64-url encoded string to a base64 encoded string.
+    /// https://tools.ietf.org/html/rfc4648#page-7
+    public var base64URLUnescaped: String {
+        let replaced = replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        /// https://stackoverflow.com/questions/43499651/decode-base64url-to-base64-swift
+        let padding = replaced.count % 4
+        if padding > 0 {
+            return replaced + String(repeating: "=", count: 4 - padding)
         }
+        return replaced
+    }
+
+    /// Converts a base64 encoded string to a base64-url encoded string.
+    public var base64URLEscaped: String {
+        replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 
     // MARK: - JS

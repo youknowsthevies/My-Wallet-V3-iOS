@@ -224,7 +224,7 @@ let verifyDeviceReducer = Reducer.combine(
                     switch state.credentialsContext {
                     case .walletInfo(let walletInfo):
                         var twoFAState: TwoFAState?
-                        if let twoFAType = walletInfo.twoFAType {
+                        if let twoFAType = walletInfo.wallet?.twoFaType {
                             switch twoFAType {
                             case .sms:
                                 twoFAState = TwoFAState(
@@ -253,12 +253,12 @@ let verifyDeviceReducer = Reducer.combine(
                         }
                         state.credentialsState = CredentialsState(
                             walletPairingState: WalletPairingState(
-                                emailAddress: walletInfo.email ?? "",
-                                emailCode: walletInfo.emailCode,
-                                walletGuid: walletInfo.guid
+                                emailAddress: walletInfo.wallet?.email ?? "",
+                                emailCode: walletInfo.wallet?.emailCode,
+                                walletGuid: walletInfo.wallet?.guid ?? ""
                             ),
                             twoFAState: twoFAState,
-                            nabuInfo: walletInfo.nabuInfo
+                            nabuInfo: walletInfo.wallet?.nabu
                         )
                     case .walletIdentifier(let guid):
                         state.credentialsState = CredentialsState(
@@ -317,9 +317,9 @@ let verifyDeviceReducer = Reducer.combine(
                 }
 
         case .didExtractWalletInfo(let walletInfo):
-            guard walletInfo.email != nil, walletInfo.emailCode != nil
+            guard walletInfo.wallet?.email != nil, walletInfo.wallet?.emailCode != nil
             else {
-                state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
+                state.credentialsContext = .walletIdentifier(guid: walletInfo.wallet?.guid)
                 // cancel the polling once wallet info is extracted
                 // it could be from the deeplink or from the polling
                 return .merge(

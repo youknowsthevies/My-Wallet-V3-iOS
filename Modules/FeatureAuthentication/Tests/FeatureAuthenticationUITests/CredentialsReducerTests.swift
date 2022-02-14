@@ -77,9 +77,9 @@ final class CredentialsReducerTests: XCTestCase {
     func test_did_appear_should_setup_wallet_info() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
         }
     }
 
@@ -89,9 +89,9 @@ final class CredentialsReducerTests: XCTestCase {
 
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfoWithTwoFA
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
             state.isTwoFAPrepared = true
         }
 
@@ -145,7 +145,7 @@ final class CredentialsReducerTests: XCTestCase {
     }
 
     func test_wallet_identifier_fallback_did_appear_should_setup_guid_if_present() {
-        let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.guid
+        let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.wallet!.guid
         testStore.send(.didAppear(context: .walletIdentifier(guid: mockWalletGuid))) { state in
             state.walletPairingState.walletGuid = mockWalletGuid
         }
@@ -460,9 +460,9 @@ final class CredentialsReducerTests: XCTestCase {
     private func setupWalletInfo() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
         }
     }
 }

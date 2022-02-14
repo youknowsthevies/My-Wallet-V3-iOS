@@ -31,11 +31,11 @@ extension AnalyticsEvents.New {
 
         var params: [String: Any]? {
             switch self {
-            case .deviceVerified(let wallet):
+            case .deviceVerified(let info):
                 let walletInfoDecoded: [String: Any] = [
-                    "guid_first_four": String(wallet.guid.prefix(4)),
-                    "has_cloud_backup": wallet.hasCloudBackup ?? false,
-                    "is_mobile_setup": wallet.isMobileSetup ?? false,
+                    "guid_first_four": String(info.wallet?.guid.prefix(4) ?? ""),
+                    "has_cloud_backup": info.wallet?.hasCloudBackup ?? false,
+                    "is_mobile_setup": info.wallet?.isMobileSetup ?? false,
                     "mobile_device_type": Device.iOS.rawValue
                 ]
                 return ["wallet": walletInfoDecoded]

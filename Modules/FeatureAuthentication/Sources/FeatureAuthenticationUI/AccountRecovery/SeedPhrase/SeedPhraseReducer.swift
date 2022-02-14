@@ -67,7 +67,7 @@ public enum AccountRecoveryContext: Equatable {
 public struct SeedPhraseState: Equatable {
     var context: AccountRecoveryContext
     var emailAddress: String
-    var nabuInfo: WalletInfo.NabuInfo?
+    var nabuInfo: WalletInfo.Nabu?
     var seedPhrase: String
     var seedPhraseScore: MnemonicValidationScore
     var isResetPasswordScreenVisible: Bool
@@ -84,7 +84,7 @@ public struct SeedPhraseState: Equatable {
         nabuInfo != nil
     }
 
-    init(context: AccountRecoveryContext, emailAddress: String = "", nabuInfo: WalletInfo.NabuInfo? = nil) {
+    init(context: AccountRecoveryContext, emailAddress: String = "", nabuInfo: WalletInfo.Nabu? = nil) {
         self.context = context
         self.emailAddress = emailAddress
         self.nabuInfo = nabuInfo

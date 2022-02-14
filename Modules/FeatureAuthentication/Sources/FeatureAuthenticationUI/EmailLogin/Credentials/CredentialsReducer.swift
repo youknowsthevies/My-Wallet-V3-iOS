@@ -47,7 +47,7 @@ public struct CredentialsState: Equatable {
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var seedPhraseState: SeedPhraseState?
-    var nabuInfo: WalletInfo.NabuInfo?
+    var nabuInfo: WalletInfo.Nabu?
     var isManualPairing: Bool
     var isTroubleLoggingInScreenVisible: Bool
     var isTwoFactorOTPVerified: Bool
@@ -66,7 +66,7 @@ public struct CredentialsState: Equatable {
         passwordState: PasswordState = .init(),
         twoFAState: TwoFAState? = nil,
         seedPhraseState: SeedPhraseState? = nil,
-        nabuInfo: WalletInfo.NabuInfo? = nil,
+        nabuInfo: WalletInfo.Nabu? = nil,
         isManualPairing: Bool = false,
         isTroubleLoggingInScreenVisible: Bool = false,
         isTwoFactorOTPVerified: Bool = false,
@@ -225,13 +225,13 @@ let credentialsReducer = Reducer.combine(
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):
-            state.walletPairingState.emailAddress = info.email ?? ""
-            state.walletPairingState.walletGuid = info.guid
-            state.walletPairingState.emailCode = info.emailCode
-            if let nabuInfo = info.nabuInfo {
+            state.walletPairingState.emailAddress = info.wallet?.email ?? ""
+            state.walletPairingState.emailCode = info.wallet?.emailCode
+            state.walletPairingState.walletGuid = info.wallet?.guid ?? ""
+            if let nabuInfo = info.wallet?.nabu {
                 state.nabuInfo = nabuInfo
             }
-            if !state.isTwoFAPrepared, let type = info.twoFAType, type.isTwoFactor {
+            if !state.isTwoFAPrepared, let type = info.wallet?.twoFaType, type.isTwoFactor {
                 // if we want to send SMS when the view appears we would need to trigger approve authorization and sms error in order to send SMS when appeared
                 // also, if we want to show 2FA field when view appears, we need to do the above
                 state.isTwoFAPrepared = true
