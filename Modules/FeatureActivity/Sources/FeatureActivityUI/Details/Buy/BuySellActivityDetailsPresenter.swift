@@ -43,6 +43,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: Private Properties (Model Relay)
 
     private let cardDataRelay: BehaviorRelay<CardData?> = .init(value: nil)
+    private let buyExchangeRateRelay: BehaviorRelay<MoneyValue?> = .init(value: nil)
 
     // MARK: Private Properties (LabelContentPresenting)
 
@@ -111,12 +112,18 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
-        let exchangeRate = event.isBuy ? pair.inverseExchangeRate : pair.exchangeRate
-        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
-        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+        if event.isBuy {
+            exchangeRatePresenter = TransactionalLineItem.exchangeRate().defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+        } else {
+            let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
+            let exchangeRate = pair.exchangeRate
+            let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
+            exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+        }
 
         let total = event.isBuy ? event.inputValue.displayString : event.outputValue.displayString
         totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
@@ -149,6 +156,13 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map { "\($0.label) \($0.displaySuffix)" }
             .map { .loaded(next: .init(text: $0)) }
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
+            .disposed(by: disposeBag)
+
+        buyExchangeRateRelay
+            .compactMap { $0 }
+            .map { [$0.displayString, event.outputValue.code].joined(separator: " / ") }
+            .map { .loaded(next: .init(text: $0)) }
+            .bindAndCatch(to: exchangeRatePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         let source = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
@@ -206,6 +220,14 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     }
 
     func viewDidLoad() {
+        if event.isBuy {
+            interactor
+                .fetchPrice(for: event.identifier)
+                .asObservable()
+                .bindAndCatch(to: buyExchangeRateRelay)
+                .disposed(by: disposeBag)
+        }
+
         switch event.paymentMethod {
         case .bankTransfer:
             break
