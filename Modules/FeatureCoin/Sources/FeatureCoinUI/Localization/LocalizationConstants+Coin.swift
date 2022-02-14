@@ -4,6 +4,24 @@ import Localization
 
 extension LocalizationConstants {
     enum Coin {
+        enum Label {
+            enum Title {
+                static let aboutCrypto = NSLocalizedString(
+                    "About %@",
+                    comment: "Coin View: About crypto title"
+                )
+            }
+        }
+
+        enum Link {
+            enum Title {
+                static let visitWebsite = NSLocalizedString(
+                    "Visit Website ->",
+                    comment: "Coin View: Visit website link title"
+                )
+            }
+        }
+
         enum Button {
             enum Title {
                 static let buy = NSLocalizedString(

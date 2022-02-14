@@ -5,8 +5,8 @@ import SwiftUI
 
 struct DoubleButton: View {
 
-    @State var primaryAction: DoubleButtonAction?
-    @State var secondaryAction: DoubleButtonAction?
+    var primaryAction: DoubleButtonAction?
+    var secondaryAction: DoubleButtonAction?
 
     let action: (DoubleButtonAction) -> Void
 
