@@ -184,6 +184,29 @@ extension LocalizationConstants {
             )
         }
 
+        public enum UKEntitySwap {
+
+            public static let title = NSLocalizedString(
+                "New legal entity",
+                comment: "UKEntitySwap announcement card title."
+            )
+
+            public static let description = NSLocalizedString(
+                "Starting later this month, UK customers will be served by our European subsidiary, Blockchain (LT), UAB. You will not experience any changes in user experience or lose access to your funds during this transition.",
+                comment: "UKEntitySwap announcement card description."
+            )
+
+            public static let ctaButtonPrimary = NSLocalizedString(
+                "I Understand",
+                comment: "UKEntitySwap card CTA button title."
+            )
+
+            public static let ctaButtonSecondary = NSLocalizedString(
+                "Learn More",
+                comment: "UKEntitySwap card CTA button title."
+            )
+        }
+
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",
