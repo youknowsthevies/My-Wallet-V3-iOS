@@ -339,10 +339,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel.process(action: .targetAccountSelected(target))
     }
 
-    func didConfirmTransaction() {
-        transactionModel.process(action: .executeTransaction)
-    }
-
     func continueToKYCTiersScreen() {
         router?.presentKYCFlowIfNeeded { _ in
             // NOOP: this was designed for Swap where presenting KYC means replacing the root view with a KYC prompt.
