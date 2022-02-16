@@ -29,9 +29,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: Onboarding (After Login)
 
-    /// Shows Email Verification insted of Simple Buy at Login
-    case showOnboardingAfterSignUp
-
     /// Shows Email Verification in Onboarding, otherwise just show the buy flow
     case showEmailVerificationInOnboarding
 
@@ -112,8 +109,6 @@ extension AppFeature {
             return "sift_science_enabled"
         case .biometry:
             return nil
-        case .showOnboardingAfterSignUp:
-            return "show_onboarding_after_sign_up_ios"
         case .showEmailVerificationInOnboarding:
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
@@ -167,8 +162,6 @@ extension AppFeature {
         case .siftScienceEnabled:
             return false
         case .biometry:
-            return false
-        case .showOnboardingAfterSignUp:
             return false
         case .showEmailVerificationInOnboarding:
             return false

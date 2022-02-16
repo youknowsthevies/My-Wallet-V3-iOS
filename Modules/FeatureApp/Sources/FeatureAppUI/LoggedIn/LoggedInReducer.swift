@@ -151,26 +151,7 @@ let loggedInReducer = Reducer<
         state.displaySendCryptoScreen = false
         return .none
     case .handleNewWalletCreation:
-        return environment.featureFlagsService.isEnabled(.remote(.showOnboardingAfterSignUp))
-            .receive(on: environment.mainQueue)
-            .flatMap { shouldShowOnboarding -> Effect<LoggedIn.Action, Never> in
-                guard shouldShowOnboarding else {
-                    // display old buy flow
-                    return environment.fiatCurrencySettingsService
-                        .update(displayCurrency: .locale, context: .walletCreation)
-                        .receive(on: environment.mainQueue)
-                        .catchToEffect()
-                        .map { result -> LoggedIn.Action in
-                            guard case .success = result else {
-                                return .none
-                            }
-                            return .showLegacyBuyFlow
-                        }
-                }
-                return Effect(value: .showOnboarding)
-            }
-            .eraseToEffect()
-            .cancellable(id: LoggedInIdentifier())
+        return Effect(value: .showOnboarding)
     case .showOnboarding:
         // display new onboarding flow
         state.displayOnboardingFlow = true

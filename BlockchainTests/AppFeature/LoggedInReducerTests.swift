@@ -136,9 +136,6 @@ final class LoggedInReducerTests: XCTestCase {
     }
 
     func test_reducer_handles_new_wallet_correctly_should_show_new_onboarding() {
-        // when
-        _ = mockFeatureFlagsService.enable(.remote(.showOnboardingAfterSignUp))
-
         // given
         let context = LoggedIn.Context.wallet(.new)
         testStore.send(.start(context))
@@ -149,25 +146,6 @@ final class LoggedInReducerTests: XCTestCase {
 
         testStore.receive(.showOnboarding) { state in
             state.displayOnboardingFlow = true
-        }
-
-        testStore.send(.logout)
-    }
-
-    func test_reducer_handles_new_wallet_correctly_should_show_legacy_flow() {
-        // when
-        _ = mockFeatureFlagsService.disable(.remote(.showOnboardingAfterSignUp))
-
-        // given
-        let context = LoggedIn.Context.wallet(.new)
-        testStore.send(.start(context))
-        mockMainQueue.advance()
-
-        // then
-        testStore.receive(.handleNewWalletCreation)
-
-        testStore.receive(.showLegacyBuyFlow) { state in
-            state.displayLegacyBuyFlow = true
         }
 
         testStore.send(.logout)
