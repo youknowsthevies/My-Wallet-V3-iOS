@@ -6,7 +6,6 @@ import ComposableNavigation
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
-import FeatureAuthenticationUI
 
 struct SearchCryptoDomainView: View {
 
