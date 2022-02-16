@@ -1,12 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import FeatureCryptoDomainUI
+import BlockchainComponentLibrary
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationView {
-            NavigationLink(
+        PrimaryNavigationView {
+            PrimaryNavigationLink(
                 destination: SearchCryptoDomainView(
                     store: .init(
                         initialState: .init(),

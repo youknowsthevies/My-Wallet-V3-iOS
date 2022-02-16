@@ -25,23 +25,11 @@ struct SearchCryptoDomainView: View {
                 .padding([.leading, .trailing], Spacing.padding3)
             domainList
         }
+        .primaryNavigation(
+            title: LocalizedString.title,
+            trailing: { cartBarButton }
+        )
         .navigationRoute(in: store)
-        .navigationTitle(LocalizedString.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: backButton, trailing: cartBarButton)
-    }
-
-    private var backButton: some View {
-        WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.dismiss())
-            }) {
-                Icon.chevronLeft
-                    .frame(width: 24, height: 24)
-                    .accentColor(.semantic.primary)
-            }
-        }
     }
 
     private var cartBarButton: some View {
@@ -70,6 +58,7 @@ struct SearchCryptoDomainView: View {
         }
     }
 
+    @ViewBuilder
     private var alertCardDescription: some View {
         WithViewStore(store) { viewStore in
             if viewStore.isAlertCardShown {
@@ -77,7 +66,7 @@ struct SearchCryptoDomainView: View {
                     title: LocalizedString.Description.title,
                     message: LocalizedString.Description.body,
                     onCloseTapped: {
-                        withAnimation(.linear){
+                        withAnimation {
                             viewStore.send(.set(\.$isAlertCardShown, false))
                         }
                     }

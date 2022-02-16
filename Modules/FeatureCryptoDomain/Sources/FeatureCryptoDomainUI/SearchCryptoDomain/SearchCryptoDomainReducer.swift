@@ -15,6 +15,7 @@ enum SearchCryptoDomainRoute: NavigationRoute {
     func destination(in store: Store<SearchCryptoDomainState, SearchCryptoDomainAction>) -> some View {
         switch self {
         case .checkout:
+            // TODO: replace with checkout screen
             EmptyView()
         }
     }
@@ -84,8 +85,10 @@ let searchCryptoDomainReducer = Reducer<
     case .route(let route):
         state.route = route
         return .none
+    case .binding(.set(\.$isAlertCardShown, false)):
+        state.isAlertCardShown = false
+        return .none
     case .binding:
         return .none
     }
 }
-.debug()
