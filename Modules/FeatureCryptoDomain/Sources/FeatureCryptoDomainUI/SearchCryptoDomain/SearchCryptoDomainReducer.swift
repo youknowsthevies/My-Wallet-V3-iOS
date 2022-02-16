@@ -71,9 +71,6 @@ let searchCryptoDomainReducer = Reducer<
     SearchCryptoDomainEnvironment
 > { state, action, environment in
     switch action {
-    case .route(let route):
-        state.route = route
-        return .none
     case .binding(\.$searchText):
         if state.searchText.isEmpty {
             state.filteredSearchResults = state.searchResults
@@ -93,6 +90,9 @@ let searchCryptoDomainReducer = Reducer<
         return .none
     case .binding:
         return .none
+    case .route:
+        return .none
     }
 }
+.routing()
 .binding()
