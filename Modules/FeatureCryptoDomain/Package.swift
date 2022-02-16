@@ -42,6 +42,7 @@ let package = Package(
         .target(
             name: "FeatureCryptoDomainDomain",
             dependencies: [
+                .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool")
             ]
