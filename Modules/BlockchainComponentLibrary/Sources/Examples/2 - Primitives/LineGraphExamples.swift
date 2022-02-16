@@ -19,23 +19,43 @@ struct LineGraphExamples: View {
     var body: some View {
         VStack {
             LineGraph(
-                selectedIndex: $selectedIndex,
-                selectionTitle: selectedIndex.map { "\($0)" },
-                smoothingChunkSize: 7, // one week sliding average
-                showsCurrentDot: false,
-                data: data // 365 days data
+                selection: $selectedIndex,
+                selectionTitle: { n in
+                    Text("\(n)")
+                        .typography(.caption2)
+                        .foregroundColor(.semantic.title)
+                        .background(Color.semantic.background)
+                },
+                data: data
             )
-
             LineGraph(
-                selectedIndex: $liveSelectedIndex,
-                selectionTitle: liveSelectedIndex.map { "\($0)" },
-                smoothingChunkSize: 5, // 5 minute sliding average
-                showsCurrentDot: true,
-                data: liveData // 60 minutes data
+                selection: $selectedIndex,
+                selectionTitle: { n in
+                    Text("\(n)")
+                        .typography(.caption2)
+                        .foregroundColor(.semantic.title)
+                        .background(Color.semantic.background)
+                },
+                data: data,
+                tolerance: 10
+            )
+            LineGraph(
+                selection: $selectedIndex,
+                selectionTitle: { n in
+                    Text("\(n)")
+                        .typography(.caption2)
+                        .foregroundColor(.semantic.title)
+                        .background(Color.semantic.background)
+                },
+                data: liveData,
+                tolerance: 10,
+                isLive: true
             )
             .onReceive(timer) { _ in
-                liveData.removeFirst()
-                liveData.append(Double.random(in: 10000...20000))
+                withAnimation {
+                    liveData.removeFirst()
+                    liveData.append(liveData.randomElement()!)
+                }
             }
         }
         .background(Color.semantic.background)

@@ -39,12 +39,18 @@ let package = Package(
             name: "swift-markdown",
             url: "https://github.com/apple/swift-markdown.git",
             .revision("1023300b1d6847360ac9ceebbcff2bccacbcf2a5")
+        ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "1.0.0"
         )
     ],
     targets: [
         .target(
             name: "BlockchainComponentLibrary",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown")
             ],
