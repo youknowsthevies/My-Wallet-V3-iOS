@@ -72,12 +72,10 @@ struct InterestIdentityVerificationView: View {
         )
     }
 
-    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> AnyView {
-        AnyView(
-            BadgeImageViewRepresentable(
-                viewModel: viewModel,
-                size: 40
-            )
+    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> some View {
+        BadgeImageViewRepresentable(
+            viewModel: viewModel,
+            size: 40
         )
     }
 }
@@ -116,12 +114,10 @@ struct NumberedBadgeView: View {
         }
     }
 
-    private func badgeViewWithViewModel(_ viewModel: BadgeViewModel) -> AnyView {
-        AnyView(
-            BadgeViewRepresentable(
-                viewModel: viewModel,
-                size: 32
-            )
+    private func badgeViewWithViewModel(_ viewModel: BadgeViewModel) -> some View {
+        BadgeViewRepresentable(
+            viewModel: viewModel,
+            size: 32
         )
     }
 }

@@ -202,15 +202,16 @@ public struct CredentialsView: View {
 
     // MARK: - Private
 
-    private func emailOrWalletIdentifierView() -> AnyView {
+    @ViewBuilder
+    private func emailOrWalletIdentifierView() -> some View {
         switch context {
         case .walletInfo(let info):
-            return AnyView(emailTextfield(info: info))
+            emailTextfield(info: info)
         case .walletIdentifier,
              .manualPairing:
-            return AnyView(walletIdentifierTextfield())
+            walletIdentifierTextfield()
         case .none:
-            return AnyView(Divider().foregroundColor(.clear))
+            Divider().foregroundColor(.clear)
         }
     }
 

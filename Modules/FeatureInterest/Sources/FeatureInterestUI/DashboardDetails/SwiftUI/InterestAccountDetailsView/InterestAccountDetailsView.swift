@@ -137,12 +137,10 @@ struct InterestAccountDetailsView: View {
         }
     }
 
-    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> AnyView {
-        AnyView(
-            BadgeImageViewRepresentable(
-                viewModel: viewModel,
-                size: 32
-            )
+    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> some View {
+        BadgeImageViewRepresentable(
+            viewModel: viewModel,
+            size: 32
         )
     }
 }
