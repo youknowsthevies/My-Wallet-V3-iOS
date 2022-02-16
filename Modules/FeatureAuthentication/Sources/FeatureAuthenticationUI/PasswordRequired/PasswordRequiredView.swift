@@ -61,7 +61,6 @@ public struct PasswordRequiredView: View {
                     isFirstResponder: .constant(false),
                     label: LocalizedString.walletIdentifier,
                     state: .default
-                    }
                 )
                 .disabled(true)
                 .accessibility(identifier: AccessibilityIdentifiers.PasswordRequiredScreen.walletIdGroup)
