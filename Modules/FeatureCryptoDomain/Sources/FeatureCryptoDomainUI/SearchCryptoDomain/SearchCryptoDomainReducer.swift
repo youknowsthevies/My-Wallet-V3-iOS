@@ -42,23 +42,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         searchText: String = "",
         isSearchFieldSelected: Bool = false,
         isAlertCardShown: Bool = true,
-        searchResults: [SearchDomainResult] = [
-            SearchDomainResult(
-                domainName: "cocacola.blockchain",
-                domainType: .premium,
-                domainAvailability: .unavailable
-            ),
-            SearchDomainResult(
-                domainName: "cocacola001.blockchain",
-                domainType: .free,
-                domainAvailability: .availableForFree
-            ),
-            SearchDomainResult(
-                domainName: "cocola.blockchain",
-                domainType: .premium,
-                domainAvailability: .availableForPremiumSale(price: "50")
-            )
-        ],
+        searchResults: [SearchDomainResult] = [],
         route: RouteIntent<SearchCryptoDomainRoute>? = nil
     ) {
         self.searchText = searchText
