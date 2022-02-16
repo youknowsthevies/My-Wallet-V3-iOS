@@ -116,22 +116,22 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(
                     searchResults: [
-                       SearchDomainResult(
-                           domainName: "cocacola.blockchain",
-                           domainType: .premium,
-                           domainAvailability: .unavailable
-                       ),
-                       SearchDomainResult(
-                           domainName: "cocacola001.blockchain",
-                           domainType: .free,
-                           domainAvailability: .availableForFree
-                       ),
-                       SearchDomainResult(
-                           domainName: "cocola.blockchain",
-                           domainType: .premium,
-                           domainAvailability: .availableForPremiumSale(price: "50")
-                       )
-                   ]
+                        SearchDomainResult(
+                            domainName: "cocacola.blockchain",
+                            domainType: .premium,
+                            domainAvailability: .unavailable
+                        ),
+                        SearchDomainResult(
+                            domainName: "cocacola001.blockchain",
+                            domainType: .free,
+                            domainAvailability: .availableForFree
+                        ),
+                        SearchDomainResult(
+                            domainName: "cocola.blockchain",
+                            domainType: .premium,
+                            domainAvailability: .availableForPremiumSale(price: "50")
+                        )
+                    ]
                 ),
                 reducer: searchCryptoDomainReducer,
                 environment: .init(mainQueue: .main)
