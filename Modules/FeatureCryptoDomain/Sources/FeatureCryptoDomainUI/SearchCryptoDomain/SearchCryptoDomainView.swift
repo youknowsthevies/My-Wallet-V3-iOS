@@ -61,7 +61,6 @@ struct SearchCryptoDomainView: View {
         }
     }
 
-    @ViewBuilder
     private var alertCardDescription: some View {
         WithViewStore(store) { viewStore in
             if viewStore.isAlertCardShown {

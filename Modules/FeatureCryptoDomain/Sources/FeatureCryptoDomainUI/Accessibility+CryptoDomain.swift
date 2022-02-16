@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-private enum AccessibilityIdentifiers {
+enum AccessibilityIdentifiers {
 
     // MARK: - Search Domain Screen
 
