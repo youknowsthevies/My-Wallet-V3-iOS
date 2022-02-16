@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit
@@ -16,7 +17,7 @@ struct EmailVerificationView: View {
     }
 
     var body: some View {
-        NavigationView {
+        PrimaryNavigationView {
             VStack {
                 // Programmatic Navigation Stack
                 // `EmptyView`s are set as source to hide the links since individual EV subviews don't know about destinations

@@ -362,7 +362,7 @@ struct TaskView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack {
-            NavigationView {
+            PrimaryNavigationView {
                 ScrollView {
                     TaskView(
                         Task.group(

@@ -238,7 +238,7 @@ extension OpenBanking.Institution: CustomStringConvertible, Identifiable {
 struct InstitutionList_Previews: PreviewProvider {
 
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             InstitutionList(
                 store: Store<InstitutionListState, InstitutionListAction>(
                     initialState: InstitutionListState(),

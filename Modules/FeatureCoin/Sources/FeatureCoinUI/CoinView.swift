@@ -136,7 +136,7 @@ public struct CoinView: View {
 // swiftlint:disable type_name
 struct CoinView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             CoinView(
                 store: .init(
                     initialState: .init(

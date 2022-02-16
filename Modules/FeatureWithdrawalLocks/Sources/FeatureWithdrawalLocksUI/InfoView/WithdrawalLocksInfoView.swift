@@ -177,7 +177,7 @@ public struct WithdrawalLocksInfoView: View {
 // swiftlint:disable type_name
 struct WithdrawalLocksInfoView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             WithdrawalLocksInfoView(store:
                 .init(
                     initialState: .init(

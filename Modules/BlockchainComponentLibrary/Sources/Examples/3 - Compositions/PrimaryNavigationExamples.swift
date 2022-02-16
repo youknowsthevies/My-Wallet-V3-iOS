@@ -32,9 +32,8 @@ struct DestinationView: View {
     var body: some View {
         Text("Try swipe to go back")
             .primaryNavigation(
-                icon: { Icon.placeholder.accentColor(.semantic.muted) },
-                title: "Another view",
-                byline: "With byline"
+                leading: { Icon.placeholder.accentColor(.semantic.muted) },
+                title: "Another view"
             )
     }
 }

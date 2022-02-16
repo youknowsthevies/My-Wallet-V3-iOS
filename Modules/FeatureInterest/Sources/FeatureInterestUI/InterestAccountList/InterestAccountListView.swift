@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureInterestDomain
@@ -39,7 +40,7 @@ struct InterestAccountListView: View {
                         viewStore.send(.setupInterestAccountListScreen)
                     })
                 } else {
-                    NavigationView {
+                    PrimaryNavigationView {
                         List {
                             if !viewStore.isKYCVerified {
                                 InterestIdentityVerificationView {
