@@ -27,6 +27,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Search Domains list view description body"
             )
         }
+
         public enum ListView {
             public static let freeDomain = NSLocalizedString(
                 "Free domain",

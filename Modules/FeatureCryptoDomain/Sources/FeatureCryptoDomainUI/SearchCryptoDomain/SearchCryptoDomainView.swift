@@ -3,9 +3,9 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
-import FeatureCryptoDomainDomain
 
 struct SearchCryptoDomainView: View {
 
@@ -79,9 +79,9 @@ struct SearchCryptoDomainView: View {
         WithViewStore(store) { viewStore in
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(viewStore.binding(\.$searchResults), id: \.domainName) { result in
+                    ForEach(viewStore.filteredSearchResults, id: \.domainName) { result in
                         Divider()
-                        createDomainRow(result: result.wrappedValue)
+                        createDomainRow(result: result)
                     }
                     Divider()
                 }

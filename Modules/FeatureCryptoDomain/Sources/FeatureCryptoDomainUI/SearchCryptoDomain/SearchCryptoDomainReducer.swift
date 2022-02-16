@@ -4,6 +4,7 @@ import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
 import SwiftUI
+import ToolKit
 
 // MARK: - Type
 
@@ -33,7 +34,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var searchText: String
     @BindableState var isSearchFieldSelected: Bool
     @BindableState var isAlertCardShown: Bool
-    @BindableState var searchResults: [SearchDomainResult]
+    var searchResults: [SearchDomainResult]
+    var filteredSearchResults: [SearchDomainResult]
     var route: RouteIntent<SearchCryptoDomainRoute>?
 
     init(
@@ -63,6 +65,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         self.isSearchFieldSelected = isSearchFieldSelected
         self.isAlertCardShown = isAlertCardShown
         self.searchResults = searchResults
+        filteredSearchResults = searchResults
         self.route = route
     }
 }
@@ -70,6 +73,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let fuzzyAlgorithm = FuzzyAlgorithm(caseInsensitive: true)
+    let fuzzyTolerance = 0.3
 
     init(mainQueue: AnySchedulerOf<DispatchQueue>) {
         self.mainQueue = mainQueue
@@ -85,10 +90,25 @@ let searchCryptoDomainReducer = Reducer<
     case .route(let route):
         state.route = route
         return .none
-    case .binding(.set(\.$isAlertCardShown, false)):
-        state.isAlertCardShown = false
+    case .binding(\.$searchText):
+        if state.searchText.isEmpty {
+            state.filteredSearchResults = state.searchResults
+        } else {
+            state.filteredSearchResults = state.searchResults.filter {
+                let fuzzy = environment.fuzzyAlgorithm
+                let tolerance = environment.fuzzyTolerance
+                return fuzzy.distance(
+                    between: $0.domainName,
+                    and: state.searchText
+                ) < tolerance || fuzzy.distance(
+                    between: $0.domainName,
+                    and: state.searchText
+                ) < tolerance
+            }
+        }
         return .none
     case .binding:
         return .none
     }
 }
+.binding()
