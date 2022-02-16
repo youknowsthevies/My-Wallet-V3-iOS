@@ -6,10 +6,12 @@ import ComposableNavigation
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
+import FeatureAuthenticationUI
 
 struct SearchCryptoDomainView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.SearchDomain
+    private typealias Accessibility = AccessibilityIdentifiers.SearchDomain
 
     private let store: Store<SearchCryptoDomainState, SearchCryptoDomainAction>
 
@@ -41,6 +43,7 @@ struct SearchCryptoDomainView: View {
                     .frame(width: 24, height: 24)
                     .accentColor(.semantic.muted)
             }
+            .accessibilityIdentifier(Accessibility.cartButton)
         }
     }
 
@@ -55,6 +58,7 @@ struct SearchCryptoDomainView: View {
                     viewStore.send(.set(\.$isSearchFieldSelected, false))
                 }
             )
+            .accessibilityIdentifier(Accessibility.searchBar)
         }
     }
 
@@ -71,6 +75,7 @@ struct SearchCryptoDomainView: View {
                         }
                     }
                 )
+                .accessibilityIdentifier(Accessibility.alertCard)
             }
         }
     }
@@ -86,6 +91,7 @@ struct SearchCryptoDomainView: View {
                     Divider()
                 }
             }
+            .accessibilityIdentifier(Accessibility.domainList)
         }
     }
 
@@ -102,6 +108,7 @@ struct SearchCryptoDomainView: View {
             ],
             action: {}
         )
+        .accessibilityIdentifier(Accessibility.domainListRow)
     }
 }
 
