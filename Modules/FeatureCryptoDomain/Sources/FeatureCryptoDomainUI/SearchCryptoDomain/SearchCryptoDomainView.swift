@@ -86,7 +86,7 @@ struct SearchCryptoDomainView: View {
                         Divider()
                         createDomainRow(result: result)
                     }
-                    Divider()
+                    PrimaryDivider()
                 }
             }
             .accessibilityIdentifier(Accessibility.domainList)
