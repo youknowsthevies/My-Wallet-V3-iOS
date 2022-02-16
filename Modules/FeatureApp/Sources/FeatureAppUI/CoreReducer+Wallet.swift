@@ -32,7 +32,7 @@ enum WalletCancelations {
 }
 
 public enum WalletAction: Equatable {
-    case walletFetched(Result<EmptyValue, WalletError>)
+    case walletFetched(Result<WalletFetchedContext, WalletError>)
     case fetchWithSecondPassword(password: String, secondPassword: String)
 }
 
@@ -42,8 +42,19 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
         combined(
             with: Reducer { _, action, environment in
                 switch action {
-                case .wallet(.walletFetched(.success)):
-                    return Effect(value: .initializeWallet)
+                case .wallet(.walletFetched(.success(let value))):
+                    // convert to WalletDecryption model
+                    let decryption = WalletDecryption(
+                        guid: value.guid,
+                        sharedKey: value.sharedKey,
+                        passwordPartHash: value.passwordPartHash
+                    )
+                    // send the legacy actions
+                    // this is temporary once we completely move to native wallet login
+                    return .merge(
+                        Effect(value: .didDecryptWallet(decryption)),
+                        Effect(value: .authenticated(.success(true)))
+                    )
 
                 case .wallet(.walletFetched(.failure(.initialization(.needsSecondPassword)))):
                     return environment.secondPasswordPrompter
@@ -64,7 +75,26 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                         }
 
                 case .wallet(.walletFetched(.failure(let error))):
-                    unimplemented("TODO: Provide correct error handling: \(error)")
+                    // hide loader if any
+                    environment.loadingViewPresenter.hide()
+                    // show alert
+                    let buttons: CoreAlertAction.Buttons = .init(
+                        primary: .default(
+                            TextState(verbatim: LocalizationConstants.ErrorAlert.button),
+                            action: .send(.alert(.dismiss))
+                        ),
+                        secondary: nil
+                    )
+                    let alertAction = CoreAlertAction.show(
+                        title: LocalizationConstants.Errors.error,
+                        message: error.errorDescription ?? LocalizationConstants.Errors.genericError,
+                        buttons: buttons
+                    )
+                    return .merge(
+                        Effect(value: .alert(alertAction)),
+                        .cancel(id: WalletCancelations.FetchId()),
+                        Effect(value: .onboarding(.handleWalletDecryptionError))
+                    )
 
                 case .wallet(.fetchWithSecondPassword(let password, let secondPassword)):
                     return environment.walletService

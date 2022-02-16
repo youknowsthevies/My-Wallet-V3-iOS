@@ -11,15 +11,18 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
 
     private let repository: WalletPayloadRepositoryAPI
     private let walletRepo: WalletRepoAPI
+    private let credentialsRepository: CredentialsRepositoryAPI
 
     // MARK: - Setup
 
     init(
         repository: WalletPayloadRepositoryAPI,
-        walletRepo: WalletRepoAPI
+        walletRepo: WalletRepoAPI,
+        credentialsRepository: CredentialsRepositoryAPI
     ) {
         self.repository = repository
         self.walletRepo = walletRepo
+        self.credentialsRepository = credentialsRepository
     }
 
     public func requestUsingSessionToken() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
@@ -44,18 +47,10 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
 
     public func requestUsingSharedKey() -> AnyPublisher<Void, WalletPayloadServiceError> {
         let request = request(guid:sharedKey:)
-        return walletRepo
+        return credentialsRepository
             .credentials
             .first()
-            .flatMap { credentials -> AnyPublisher<(guid: String, sharedKey: String), WalletPayloadServiceError> in
-                guard !credentials.guid.isEmpty else {
-                    return .failure(.missingCredentials(.guid))
-                }
-                guard !credentials.sharedKey.isEmpty else {
-                    return .failure(.missingCredentials(.sharedKey))
-                }
-                return .just((credentials.guid, credentials.sharedKey))
-            }
+            .mapError(WalletPayloadServiceError.missingCredentials)
             .flatMap { credentials -> AnyPublisher<Void, WalletPayloadServiceError> in
                 request(credentials.guid, credentials.sharedKey)
             }
@@ -118,7 +113,7 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
             .set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
             .set(keyPath: \.encryptedPayload, value: rawPayload)
             .set(keyPath: \.properties.authenticatorType, value: authenticatorType)
-            .publisher
+            .get()
             .map { _ in payload }
             .first()
             .mapError()

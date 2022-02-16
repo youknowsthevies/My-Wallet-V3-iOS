@@ -28,9 +28,22 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
                     return walletRepository.sharedKey
                 }
                 return walletRepo
-                    .publisher
+                    .get()
                     .map(\.credentials.sharedKey)
-                    .map { key in key.isEmpty ? nil : key }
+                    .flatMap { key -> AnyPublisher<String?, Never> in
+                        guard !key.isEmpty else {
+                            return walletRepository.sharedKey
+                                .flatMap { legacyRepoKey -> AnyPublisher<String?, Never> in
+                                    guard let legacyRepoKey = legacyRepoKey else {
+                                        return .just(nil)
+                                    }
+                                    walletRepo.set(keyPath: \.credentials.sharedKey, value: legacyRepoKey)
+                                    return .just(legacyRepoKey)
+                                }
+                                .eraseToAnyPublisher()
+                        }
+                        return .just(key)
+                    }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -44,7 +57,8 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
                 }
                 return walletRepo
                     .set(keyPath: \.credentials.sharedKey, value: sharedKey)
-                    .publisher
+                    .get()
+                    .first()
                     .mapToVoid()
             }
             .mapToVoid()

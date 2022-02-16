@@ -28,7 +28,7 @@ final class LanguageRepository: LanguageRepositoryAPI {
                     return walletRepository.set(language: language)
                 }
                 return walletRepo.set(keyPath: \.properties.language, value: language)
-                    .publisher
+                    .get()
                     .mapToVoid()
                     .mapError()
             }

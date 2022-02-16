@@ -22,7 +22,8 @@ public struct CoreAppState: Equatable {
     public var onboarding: Onboarding.State? = .init()
     public var loggedIn: LoggedIn.State?
     public var deviceAuthorization: AuthorizeDeviceState?
-    public var alertContent: AlertViewContent?
+
+    public var alertState: AlertState<CoreAppAction>?
 
     var isLoggedIn: Bool {
         onboarding == nil && loggedIn != nil
@@ -44,6 +45,17 @@ public enum ProceedToLoggedInError: Error, Equatable {
     case erc20Service(ERC20CryptoAssetServiceError)
 }
 
+public indirect enum CoreAlertAction: Equatable {
+    public struct Buttons: Equatable {
+        let primary: AlertState<CoreAppAction>.Button
+        let secondary: AlertState<CoreAppAction>.Button?
+    }
+
+    case show(title: String, message: String, buttons: Buttons?)
+    case dismiss
+    case openAppStore
+}
+
 public enum CoreAppAction: Equatable {
     case start
     case loggedIn(LoggedIn.Action)
@@ -54,6 +66,7 @@ public enum CoreAppAction: Equatable {
     case deeplink(DeeplinkOutcome)
     case requirePin
     case setupPin
+    case alert(CoreAlertAction)
 
     // Wallet Authentication
     case wallet(WalletAction)
@@ -117,7 +130,9 @@ struct CoreAppEnvironment {
     var appStoreOpener: AppStoreOpening
     var walletPayloadService: WalletPayloadServiceAPI
     var walletService: WalletService
+    var forgetWalletService: ForgetWalletService
     var secondPasswordPrompter: SecondPasswordPromptable
+    var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
     var buildVersionProvider: () -> String
 }
 
@@ -140,6 +155,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     walletPayloadService: environment.walletPayloadService,
                     featureFlagsService: environment.featureFlagsService,
                     externalAppOpener: environment.externalAppOpener,
+                    forgetWalletService: environment.forgetWalletService,
                     buildVersionProvider: environment.buildVersionProvider
                 )
             }
@@ -258,23 +274,22 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(value: .loggedIn(.deeplink(content)))
 
     case .deeplink(.informAppNeedsUpdate):
-        // TODO: This is ugly, rethink how we handle alert actions
-        let actions = [
-            UIAlertAction(
-                title: LocalizationConstants.DeepLink.updateNow,
-                style: .default,
-                handler: { [environment] _ in
-                    environment.appStoreOpener.openAppStore()
-                }
+        let buttons: CoreAlertAction.Buttons = .init(
+            primary: .default(
+                TextState(verbatim: LocalizationConstants.DeepLink.updateNow),
+                action: .send(.alert(.openAppStore))
             ),
-            UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
-        ]
-        state.alertContent = AlertViewContent(
+            secondary: .cancel(
+                TextState(verbatim: LocalizationConstants.cancel),
+                action: .send(.alert(.dismiss))
+            )
+        )
+        let alertAction = CoreAlertAction.show(
             title: LocalizationConstants.DeepLink.deepLinkUpdateTitle,
             message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
-            actions: actions
+            buttons: buttons
         )
-        return .none
+        return Effect(value: .alert(alertAction))
 
     case .deeplink(.ignore):
         return .none
@@ -286,7 +301,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .fetchWallet(let password):
         environment.loadingViewPresenter.showCircular()
-        return nativeWalletFlagEnabled()
+        return environment.nativeWalletFlagEnabled()
             .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
                 guard nativeWalletEnabled else {
                     // As much as I (Dimitris) hate delay-ing work this is one of those method
@@ -309,7 +324,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         let walletManager = environment.walletManager
         let walletService = environment.walletService
         let mainQueue = environment.mainQueue
-        return nativeWalletFlagEnabled()
+        return environment.nativeWalletFlagEnabled()
             .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
                 guard nativeWalletEnabled else {
                     walletManager.fetch(with: password)
@@ -798,6 +813,55 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     }
 }
 .walletReducer()
+.alertReducer()
+
+// MARK: - Alert Reducer
+
+extension Reducer where State == CoreAppState, Action == CoreAppAction, Environment == CoreAppEnvironment {
+    /// Returns a combined reducer that handles all the wallet related actions
+    func alertReducer() -> Self {
+        combined(
+            with: Reducer { state, action, environment in
+                switch action {
+                case .alert(.show(let title, let message, let buttons)):
+                    let defaultButton = AlertState<CoreAppAction>.Button.default(
+                        TextState(verbatim: LocalizationConstants.ErrorAlert.button),
+                        action: .send(.alert(.dismiss))
+                    )
+                    let buttons = buttons ?? CoreAlertAction.Buttons(
+                        primary: defaultButton,
+                        secondary: nil
+                    )
+                    if let secondary = buttons.secondary {
+                        state.alertState = AlertState(
+                            title: TextState(verbatim: title),
+                            message: TextState(verbatim: message),
+                            primaryButton: buttons.primary,
+                            secondaryButton: secondary
+                        )
+                    } else {
+                        state.alertState = AlertState(
+                            title: TextState(verbatim: title),
+                            message: TextState(verbatim: message),
+                            dismissButton: buttons.primary
+                        )
+                    }
+                    return .none
+                case .alert(.dismiss):
+                    state.alertState = nil
+                    return .none
+
+                case .alert(.openAppStore):
+                    state.alertState = nil
+                    environment.appStoreOpener.openAppStore()
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}
 
 // MARK: Private Methods
 

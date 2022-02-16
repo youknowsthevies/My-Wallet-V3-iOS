@@ -30,7 +30,7 @@ final class PinInteractor: PinInteracting {
 
     private let pinClient: PinClientAPI
     private let maintenanceService: MaintenanceServicing
-    private let credentialsProvider: WalletCredentialsProviding
+    private let passwordRepository: PasswordRepositoryAPI
     private let wallet: WalletProtocol
     private let appSettings: AppSettingsAuthenticating
     private let recorder: ErrorRecording
@@ -42,7 +42,7 @@ final class PinInteractor: PinInteracting {
     // MARK: - Setup
 
     init(
-        credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository,
+        passwordRepository: PasswordRepositoryAPI = resolve(),
         pinClient: PinClientAPI = PinClient(),
         maintenanceService: MaintenanceServicing = resolve(),
         wallet: WalletProtocol = WalletManager.shared.wallet,
@@ -56,7 +56,7 @@ final class PinInteractor: PinInteracting {
             settings: appSettings,
             service: DIKit.resolve()
         )
-        self.credentialsProvider = credentialsProvider
+        self.passwordRepository = passwordRepository
         self.pinClient = pinClient
         self.maintenanceService = maintenanceService
         self.wallet = wallet
@@ -171,20 +171,21 @@ final class PinInteractor: PinInteracting {
     }
 
     private func handleCreatePinResponse(response: PinStoreResponse, payload: PinPayload) -> Completable {
-        Single<(pin: String, password: String)>
-            .create(weak: self) { (self, observer) -> Disposable in
+        passwordRepository.password
+            .asObservable()
+            .take(1)
+            .asSingle()
+            .flatMap { password -> Single<(pin: String, password: String)> in
                 // Wallet must have password at the stage
-                guard let password = self.credentialsProvider.legacyPassword else {
+                guard let password = password else {
                     let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
                     self.recorder.error(error)
-                    observer(.error(error))
-                    return Disposables.create()
+                    return .error(error)
                 }
 
                 guard response.error == nil else {
                     self.recorder.error(PinError.serverError(""))
-                    observer(.error(PinError.serverError(response.error!)))
-                    return Disposables.create()
+                    return .error(PinError.serverError(response.error!))
                 }
 
                 guard response.isSuccessful else {
@@ -194,8 +195,7 @@ final class PinInteractor: PinInteracting {
                     )
                     let error = PinError.serverError(message)
                     self.recorder.error(error)
-                    observer(.error(error))
-                    return Disposables.create()
+                    return .error(error)
                 }
 
                 guard let pinValue = payload.pinValue,
@@ -204,11 +204,9 @@ final class PinInteractor: PinInteracting {
                 else {
                     let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
                     self.recorder.error(error)
-                    observer(.error(error))
-                    return Disposables.create()
+                    return .error(error)
                 }
-                observer(.success((pin: pinValue, password: password)))
-                return Disposables.create()
+                return .just((pin: pinValue, password: password))
             }
             .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
                 self.walletCryptoService

@@ -26,7 +26,7 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.authenticatorType
                 }
-                return walletRepo.publisher
+                return walletRepo.get()
                     .map(\.properties.authenticatorType)
                     .eraseToAnyPublisher()
             }
@@ -40,7 +40,7 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
                     return walletRepository.set(authenticatorType: authenticatorType)
                 }
                 return walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
-                    .publisher
+                    .get()
                     .mapToVoid()
             }
             .mapToVoid()

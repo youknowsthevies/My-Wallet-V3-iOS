@@ -9,74 +9,32 @@ final class CredentialsRepository: CredentialsRepositoryAPI {
     let guid: AnyPublisher<String?, Never>
     let sharedKey: AnyPublisher<String?, Never>
 
-    // This is set to the older WalletRepository API, soon to be removed
-    private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
+    private let guidRepository: GuidRepositoryAPI
+    private let sharedKeyRepository: SharedKeyRepositoryAPI
 
     init(
-        walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepoAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        guidRepository: GuidRepositoryAPI,
+        sharedKeyRepository: SharedKeyRepositoryAPI
     ) {
-        self.walletRepository = walletRepository
-        self.walletRepo = walletRepo
-        self.nativeWalletEnabled = nativeWalletEnabled
+        self.guidRepository = guidRepository
+        self.sharedKeyRepository = sharedKeyRepository
 
-        guid = nativeWalletEnabled()
-            .flatMap { isEnabled -> AnyPublisher<String?, Never> in
-                guard isEnabled else {
-                    return walletRepository.guid
-                }
-                return walletRepo.publisher
-                    .map(\.credentials.guid)
-                    .map { key in key.isEmpty ? nil : key }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        guid = guidRepository
+            .guid
 
-        sharedKey = nativeWalletEnabled()
-            .flatMap { isEnabled -> AnyPublisher<String?, Never> in
-                guard isEnabled else {
-                    return walletRepository.sharedKey
-                }
-                return walletRepo.publisher
-                    .map(\.credentials.sharedKey)
-                    .map { key in key.isEmpty ? nil : key }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        sharedKey = sharedKeyRepository
+            .sharedKey
     }
 
     // MARK: - GuidRepositoryAPI
 
     func set(guid: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(guid: guid)
-                }
-                return walletRepo.set(keyPath: \.credentials.guid, value: guid)
-                    .publisher
-                    .mapToVoid()
-            }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        guidRepository.set(guid: guid)
     }
 
     // MARK: - SharedKeyRepositoryAPI
 
     func set(sharedKey: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(sharedKey: sharedKey)
-                }
-                return walletRepo.set(keyPath: \.credentials.sharedKey, value: sharedKey)
-                    .publisher
-                    .mapToVoid()
-            }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        sharedKeyRepository.set(sharedKey: sharedKey)
     }
 }

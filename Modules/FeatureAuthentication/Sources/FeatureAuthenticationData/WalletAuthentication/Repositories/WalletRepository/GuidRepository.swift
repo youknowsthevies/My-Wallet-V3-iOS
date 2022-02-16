@@ -28,9 +28,22 @@ final class GuidRepository: GuidRepositoryAPI {
                     return walletRepository.guid
                 }
                 return walletRepo
-                    .publisher
+                    .get()
                     .map(\.credentials.guid)
-                    .map { key in key.isEmpty ? nil : key }
+                    .flatMap { guid -> AnyPublisher<String?, Never> in
+                        guard !guid.isEmpty else {
+                            return walletRepository.guid
+                                .flatMap { legacyRepoKey -> AnyPublisher<String?, Never> in
+                                    guard let legacyRepoValue = legacyRepoKey else {
+                                        return .just(nil)
+                                    }
+                                    walletRepo.set(keyPath: \.credentials.guid, value: legacyRepoValue)
+                                    return .just(legacyRepoValue)
+                                }
+                                .eraseToAnyPublisher()
+                        }
+                        return .just(guid)
+                    }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -43,7 +56,7 @@ final class GuidRepository: GuidRepositoryAPI {
                     return walletRepository.set(guid: guid)
                 }
                 return walletRepo.set(keyPath: \.credentials.guid, value: guid)
-                    .publisher
+                    .get()
                     .mapToVoid()
             }
             .mapToVoid()

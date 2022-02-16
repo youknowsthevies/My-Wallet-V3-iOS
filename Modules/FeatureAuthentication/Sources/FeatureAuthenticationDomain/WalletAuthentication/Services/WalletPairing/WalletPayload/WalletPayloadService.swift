@@ -32,6 +32,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
         repository: WalletPayloadRepositoryAPI,
         walletRepository: WalletRepositoryAPI,
         walletRepo: WalletRepoAPI,
+        credentialsRepository: CredentialsRepositoryAPI,
         nativeWalletEnabledUse: @escaping NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI>
     ) {
         self.repository = repository
@@ -44,7 +45,8 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
         )
         newImpl = WalletPayloadServiceNew(
             repository: repository,
-            walletRepo: walletRepo
+            walletRepo: walletRepo,
+            credentialsRepository: credentialsRepository
         )
     }
 

@@ -12,10 +12,18 @@ extension DependencyContainer {
 
     // MARK: - WalletPayloadKit Module
 
+    // swiftlint:disable closure_body_length
     public static var walletPayloadKit = module {
 
         single(tag: WalletRepoOperationsQueue.queueTag) { () -> DispatchQueue in
             DispatchQueue(label: "wallet.payload.operations.queue")
+        }
+
+        factory { () -> ForgetWalletAPI in
+            ForgetWallet(
+                walletRepo: DIKit.resolve(),
+                walletState: DIKit.resolve()
+            )
         }
 
         factory { () -> WalletFetcherAPI in
@@ -137,4 +145,5 @@ extension DependencyContainer {
 
         factory { WalletUpgradeJSService() as WalletUpgradeJSServicing }
     }
+    // swiftlint:enable closure_body_length
 }

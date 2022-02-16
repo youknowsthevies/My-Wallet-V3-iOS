@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
@@ -25,6 +26,7 @@ class OnboardingReducerTests: XCTestCase {
     var mockPushNotificationsRepository: MockPushNotificationsRepository!
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockExternalAppOpener: MockExternalAppOpener!
+    var mockForgetWalletService: ForgetWalletService!
     var mockQueue: TestSchedulerOf<DispatchQueue>!
     var cancellables = Set<AnyCancellable>()
 
@@ -47,6 +49,8 @@ class OnboardingReducerTests: XCTestCase {
         mockAlertPresenter = MockAlertViewPresenter()
         mockExternalAppOpener = MockExternalAppOpener()
         mockQueue = DispatchQueue.test
+
+        mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         // disable the manual login
         mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
@@ -90,6 +94,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -122,6 +127,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -158,6 +164,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -190,6 +197,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -226,6 +234,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -262,6 +271,7 @@ class OnboardingReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 featureFlagsService: mockFeatureFlagsService,
                 externalAppOpener: mockExternalAppOpener,
+                forgetWalletService: mockForgetWalletService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )

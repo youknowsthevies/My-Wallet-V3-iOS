@@ -68,6 +68,7 @@ final class WalletLogic: WalletLogicAPI {
         secondPassword: String
     ) -> AnyPublisher<WalletState, WalletError> {
         holder.walletStatePublisher
+            .first()
             .flatMap { walletState -> AnyPublisher<WalletState, WalletError> in
                 guard let walletState = walletState else {
                     return .failure(.payloadNotFound)

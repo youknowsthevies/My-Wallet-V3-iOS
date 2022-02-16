@@ -54,6 +54,7 @@ final class MainAppReducerTests: XCTestCase {
 
     var mockWalletService: WalletService!
     var mockWalletPayloadService: MockWalletPayloadService!
+    var mockForgetWalletService: ForgetWalletService!
 
     var testStore: TestStore<
         CoreAppState,
@@ -108,6 +109,7 @@ final class MainAppReducerTests: XCTestCase {
             recoverFromMetadata: { _ in .empty() }
         )
         mockWalletPayloadService = MockWalletPayloadService()
+        mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         testStore = TestStore(
             initialState: CoreAppState(),
@@ -143,7 +145,9 @@ final class MainAppReducerTests: XCTestCase {
                 appStoreOpener: mockAppStoreOpener,
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
+                forgetWalletService: mockForgetWalletService,
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
+                nativeWalletFlagEnabled: { .just(false) },
                 buildVersionProvider: { "" }
             )
         )

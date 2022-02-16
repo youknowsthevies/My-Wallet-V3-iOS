@@ -30,12 +30,12 @@ class WalletRepoTests: XCTestCase {
     }
 
     func test_can_retrieve_state_variables() {
-        let walletStorage = WalletRepo(
+        let walletRepo = WalletRepo(
             initialState: initialState
         )
 
-        XCTAssertEqual(walletStorage.credentials.guid, "guid")
-        XCTAssertEqual(walletStorage.credentials.sharedKey, "sharedKey")
+        XCTAssertEqual(walletRepo.credentials.guid, "guid")
+        XCTAssertEqual(walletRepo.credentials.sharedKey, "sharedKey")
     }
 
     func test_wallet_storage_can_provide_publisher() {
@@ -46,7 +46,7 @@ class WalletRepoTests: XCTestCase {
         var receivedState: WalletRepoState?
         let expectation = expectation(description: "wallet.storage.publisher.expectation")
         walletRepo
-            .publisher
+            .get()
             .sink(receiveValue: { state in
                 receivedState = state
                 expectation.fulfill()
@@ -60,21 +60,21 @@ class WalletRepoTests: XCTestCase {
     }
 
     func test_wallet_storage_can_provide_state_variable_as_publisher() {
-        let walletStorage = WalletRepo(
+        let walletRepo = WalletRepo(
             initialState: initialState
         )
 
         var receivedValues: [String] = []
         let expectation = expectation(description: "wallet.storage.publisher.expectation")
         expectation.expectedFulfillmentCount = 3
-        walletStorage.credentials
+        walletRepo.credentials
             .sink(receiveValue: { credentials in
                 receivedValues.append(credentials.guid)
                 expectation.fulfill()
             })
             .store(in: &cancellables)
 
-        walletStorage.set(
+        walletRepo.set(
             keyPath: \.credentials.guid,
             value: "updated-guid"
         )
@@ -85,7 +85,7 @@ class WalletRepoTests: XCTestCase {
             sessionToken: "new-sessionToken",
             password: "new-password"
         )
-        walletStorage.set(
+        walletRepo.set(
             keyPath: \.credentials,
             value: updatedCredentials
         )
@@ -95,22 +95,22 @@ class WalletRepoTests: XCTestCase {
         XCTAssertNotNil(receivedValues)
         XCTAssertEqual(receivedValues.count, 3)
         XCTAssertEqual(receivedValues, ["guid", "updated-guid", "updated-guid-2"])
-        XCTAssertEqual(walletStorage.credentials, updatedCredentials)
+        XCTAssertEqual(walletRepo.credentials, updatedCredentials)
     }
 
     func test_wallet_storage_can_change_state() {
-        let walletStorage = WalletRepo(
+        let walletRepo = WalletRepo(
             initialState: initialState
         )
 
-        walletStorage.set(keyPath: \.credentials.guid, value: "updated-guid")
+        walletRepo.set(keyPath: \.credentials.guid, value: "updated-guid")
 
-        XCTAssertEqual(walletStorage.credentials.guid, "updated-guid")
-        XCTAssertEqual(walletStorage.credentials.sharedKey, "sharedKey")
+        XCTAssertEqual(walletRepo.credentials.guid, "updated-guid")
+        XCTAssertEqual(walletRepo.credentials.sharedKey, "sharedKey")
     }
 
     func test_wallet_storage_can_set_a_new_state() {
-        let walletStorage = WalletRepo(
+        let walletRepo = WalletRepo(
             initialState: initialState
         )
 
@@ -129,9 +129,9 @@ class WalletRepoTests: XCTestCase {
             encryptedPayload: .init(pbkdf2IterationCount: 1, version: 4, payload: "")
         )
 
-        walletStorage.set(value: updatedState)
+        walletRepo.set(value: updatedState)
 
-        XCTAssertEqual(walletStorage.credentials, updatedState.credentials)
-        XCTAssertEqual(walletStorage.properties, updatedState.properties)
+        XCTAssertEqual(walletRepo.credentials, updatedState.credentials)
+        XCTAssertEqual(walletRepo.properties, updatedState.properties)
     }
 }
