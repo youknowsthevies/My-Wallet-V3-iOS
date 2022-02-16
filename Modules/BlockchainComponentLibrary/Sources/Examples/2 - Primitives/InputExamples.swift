@@ -2,6 +2,8 @@
 
 import BlockchainComponentLibrary
 import SwiftUI
+
+#if canImport(UIKit)
 import UIKit
 
 struct InputExamples: View {
@@ -110,3 +112,13 @@ struct InputExamples_Previews: PreviewProvider {
         InputExamples()
     }
 }
+#else
+
+struct InputExamples: View {
+
+    var body: some View {
+        Text("Not supported on macOS")
+    }
+}
+
+#endif

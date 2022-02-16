@@ -209,14 +209,9 @@ struct UITourView: View {
                 Spacer()
             }
             .primaryNavigation(
+                leading: { Icon.qrCode },
                 title: TabsLocalization.home,
-                isLargeTitle: true,
-                trailing: {
-                    HStack(spacing: Spacing.padding3) {
-                        Icon.qrCode
-                        Icon.user
-                    }
-                }
+                trailing: { Icon.user }
             )
         }
     }

@@ -69,41 +69,33 @@ public struct Size: Hashable, Codable {
 }
 
 extension BinaryInteger {
-    public var cgFloat: CGFloat { CGFloat(self) }
-}
 
-extension BinaryFloatingPoint {
-    public var cgFloat: CGFloat { CGFloat(self) }
-}
+    public var pt: Length { .pt(cg) }
 
-extension BinaryInteger {
+    public var vw: Length { .vw(cg) }
+    public var vh: Length { .vh(cg) }
+    public var vmin: Length { .vmin(cg) }
+    public var vmax: Length { .vmax(cg) }
 
-    public var pt: Length { .pt(cgFloat) }
-
-    public var vw: Length { .vw(cgFloat) }
-    public var vh: Length { .vh(cgFloat) }
-    public var vmin: Length { .vmin(cgFloat) }
-    public var vmax: Length { .vmax(cgFloat) }
-
-    public var pw: Length { .pw(cgFloat) }
-    public var ph: Length { .ph(cgFloat) }
-    public var pmin: Length { .pmin(cgFloat) }
-    public var pmax: Length { .pmax(cgFloat) }
+    public var pw: Length { .pw(cg) }
+    public var ph: Length { .ph(cg) }
+    public var pmin: Length { .pmin(cg) }
+    public var pmax: Length { .pmax(cg) }
 }
 
 extension BinaryFloatingPoint {
 
-    public var pt: Length { .pt(cgFloat) }
+    public var pt: Length { .pt(cg) }
 
-    public var vw: Length { .vw(cgFloat) }
-    public var vh: Length { .vh(cgFloat) }
-    public var vmin: Length { .vmin(cgFloat) }
-    public var vmax: Length { .vmax(cgFloat) }
+    public var vw: Length { .vw(cg) }
+    public var vh: Length { .vh(cg) }
+    public var vmin: Length { .vmin(cg) }
+    public var vmax: Length { .vmax(cg) }
 
-    public var pw: Length { .pw(cgFloat) }
-    public var ph: Length { .ph(cgFloat) }
-    public var pmin: Length { .pmin(cgFloat) }
-    public var pmax: Length { .pmax(cgFloat) }
+    public var pw: Length { .pw(cg) }
+    public var ph: Length { .ph(cg) }
+    public var pmin: Length { .pmin(cg) }
+    public var pmax: Length { .pmax(cg) }
 }
 
 extension CGRect {

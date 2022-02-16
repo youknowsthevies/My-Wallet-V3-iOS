@@ -1,475 +1,406 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
-
+import Accelerate
+import CoreGraphics
 import SwiftUI
 
 /// A view displaying a line graph, with a vertical selection bar when touched.
 ///
 ///     LineGraph(
-///         selectedIndex: $selectedIndex,
-///         selectionTitle: dateString(for: selectedIndex),
-///         smoothingChunkSize: 7,
-///         data: data
+///         selection: $selectedIndex,
+///         selectionTitle: { i in
+///             Text("\(data[n])")
+///         },
+///         data: data,
+///         tolerance: 5,
+///         isLive: false
 ///     )
 ///
 /// # Figma
 ///
 /// [Graph](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=1125%3A7721)
-public struct LineGraph: View {
-    @Binding private var selectedIndex: Int?
-    private let selectionTitle: String?
-    private let smoothingChunkSize: Int
-    private let showsCurrentDot: Bool
-    private let data: [Double]
+public struct LineGraph<Title: View>: View {
 
-    // Smoothing algorithm. Defined here as its used in a
-    // number of views, and can be switched in the future.
-    private let smoothedPath: ([CGPoint]) -> Path = cubicPath(from:)
+    let padding = (
+        highlight: 20.cg,
+        trailing: 26.cg
+    )
 
-    private let liveTrailingPadding: CGFloat = 26
+    @Binding public var selection: Int?
+    public let isLive: Bool
+    public let selectionTitle: (Int) -> Title?
 
-    @State private var size: CGSize = .zero
-    @State private var titleWidth: CGFloat = 0
-    @Environment(\.layoutDirection) private var layoutDirection
+    public var isHighlighted: Bool {
+        _highlight == nil
+    }
 
-    /// Create a touchable line graph view
-    ///
-    /// - Parameters:
-    ///   - selectedIndex: Binding for the currently selected data index. nil hides the selection bar.
-    ///   - selectionTitle: The text displayed above the selection bar when visible.
-    ///   - smoothingChunkSize: Size of chunks for sliding average of unselected graph. eg `7` for `data.count == 365`.
-    ///   - data: Array of doubles, scaled to fit within the charts y-bounds. Distributed evenly across the x-axis.
-    ///   - showsCurrentDot: Whether to show the "live" dot at the end of the line chart
+    private let my: (
+        smooth: (
+            shape: LineShape,
+            integral: LineShape
+        ),
+        sharp: (
+            shape: LineShape,
+            integral: LineShape
+        )
+    )
+
+    @State private var _size: CGSize = .zero
+    @State private var _highlight: CGFloat?
+    @State private var _title: CGFloat = 0
+
     public init(
-        selectedIndex: Binding<Int?>,
-        selectionTitle: String?,
-        smoothingChunkSize: Int,
-        showsCurrentDot: Bool,
-        data: [Double]
+        selection: Binding<Int?> = .constant(nil),
+        @ViewBuilder selectionTitle: @escaping (Int) -> Title?,
+        data: [Double],
+        tolerance: Int = 5,
+        density: Int = 300,
+        isLive: Bool = false
     ) {
-        _selectedIndex = selectedIndex
+        _selection = selection
         self.selectionTitle = selectionTitle
-        self.smoothingChunkSize = smoothingChunkSize
-        self.showsCurrentDot = showsCurrentDot
-        self.data = data
+        self.isLive = isLive
+        let (min, max) = data.minAndMax() ?? (0, .greatestFiniteMagnitude)
+        let span = (max - min).d
+        let data = data.map { value in
+            1.d - (value.d - min.d) / span
+        }
+        let smooth = LineShape.vertices(
+            of: data,
+            tolerance: tolerance,
+            density: density
+        )
+        let sharp = LineShape.vertices(
+            of: data,
+            tolerance: 1,
+            density: density
+        )
+        my = (
+            smooth: (
+                shape: LineShape(
+                    data: data,
+                    tolerance: tolerance,
+                    density: density,
+                    vertices: smooth
+                ),
+                integral: LineShape(
+                    data: data,
+                    tolerance: tolerance,
+                    density: density,
+                    closed: true,
+                    vertices: smooth
+                )
+            ),
+            sharp: (
+                shape: LineShape(
+                    data: data,
+                    tolerance: 1,
+                    density: density,
+                    vertices: sharp
+                ),
+                integral: LineShape(
+                    data: data,
+                    tolerance: 1,
+                    density: density,
+                    closed: true,
+                    vertices: sharp
+                )
+            )
+        )
     }
 
     public var body: some View {
         ZStack(alignment: .leading) {
-            Group {
-                // Gradient fill under the line
-                gradientFill
-
-                // Main line, cut to the selection point if it exists
-                mainLine
-
-                // If selected, display faded line under the main line.
-                fadedUnderLine
-
-                // If live, show dot
-                dot
-            }
-            .padding(.bottom, 1) // No cropped stroke at lower bounds
-            .flipsForRightToLeftLayoutDirection(true)
-
-            verticalSelectionBar
-        }
-        .background(
-            GeometryReader { proxy in
-                Color.clear.onAppear {
-                    size = proxy.size
+            GeometryReader { geometry in
+                Group {
+                    Group {
+                        fill()
+                        stroked()
+                        faded()
+                    }
+                    .anchorPreference(key: GraphSizePreferenceKey.self, value: .bounds) { anchor in
+                        geometry[anchor].size
+                    }
+                    dot(geometry)
                 }
             }
-        )
-        .frame(height: 240)
-        .padding(.trailing, showsCurrentDot ? liveTrailingPadding : 0)
-        .background(Color.semantic.background)
+            .onPreferenceChange(GraphSizePreferenceKey.self) { size in
+                _size = size
+            }
+            .padding(.bottom, .unit)
+            .padding(.top, padding.highlight)
+            Group {
+                highlight()
+                    .animation(.none)
+            }
+        }
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    // Find nearest data point to touch point
-                    var percentage = value.location.x / size.width
-                    if showsCurrentDot, percentage > 1 {
-                        percentage = 1
-                    }
-                    guard (0...1).contains(percentage) else {
-                        selectedIndex = nil
-                        return
-                    }
-                    if layoutDirection == .rightToLeft {
-                        percentage = 1.0 - percentage
-                    }
-                    selectedIndex = Int(round(CGFloat(data.count - 1) * percentage))
+                    let percentage = (value.location.x / _size.width).clamped(to: 0...1)
+                    _highlight = percentage
+                    selection = index(from: percentage).clamped(to: 0...line.shape.data.count)
                 }
                 .onEnded { _ in
-                    selectedIndex = nil
+                    _highlight = nil
+                    selection = nil
                 }
         )
+        .padding(.trailing, isLive ? padding.trailing : 0)
     }
 
-    // MARK: Private
-
-    @ViewBuilder private var dot: some View {
-        if showsCurrentDot {
-            Dot(
-                data: data,
-                isSmooth: true,
-                smoothingChunkSize: smoothingChunkSize,
-                smoothedPath: smoothedPath
-            )
-            .opacity(selectedIndex == nil ? 1 : 0)
-        }
+    private func index(from percentage: CGFloat) -> Int {
+        round((my.sharp.shape.data.count - 1).cg * percentage).i
     }
 
-    @ViewBuilder private var gradientFill: some View {
-        Line(
-            data: data,
-            cut: nil,
-            isSmooth: selectedIndex == nil,
-            smoothingChunkSize: smoothingChunkSize,
-            smoothedPath: smoothedPath,
-            isClosed: true
-        )
-        .fill(
-            LinearGradient(
-                gradient: Gradient(
-                    colors: [
-                        .semantic.primary.opacity(0.08),
-                        .semantic.primary.opacity(0.00)
-                    ]
-                ),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
+    public var line: (shape: LineShape, integral: LineShape) {
+        _highlight == nil ? my.smooth : my.sharp
     }
 
-    @ViewBuilder private var mainLine: some View {
-        Line(
-            data: data,
-            cut: selectedIndex,
-            isSmooth: selectedIndex == nil,
-            smoothingChunkSize: smoothingChunkSize,
-            smoothedPath: smoothedPath,
-            isClosed: false
-        )
-        .stroke(
-            Color.semantic.primary,
-            style: StrokeStyle(
-                lineWidth: 2.0,
-                lineJoin: .round
-            )
-        )
-    }
-
-    @ViewBuilder private var fadedUnderLine: some View {
-        if selectedIndex != nil {
-            Line(
-                data: data,
-                cut: nil,
-                isSmooth: false,
-                smoothingChunkSize: smoothingChunkSize,
-                smoothedPath: smoothedPath,
-                isClosed: false
-            )
-            .stroke(
+    @ViewBuilder private func fill() -> some View {
+        line.integral
+            .fill(
                 LinearGradient(
                     gradient: Gradient(
                         colors: [
-                            .semantic.primary.opacity(0.3),
-                            .semantic.primary.opacity(0.05)
+                            .semantic.primary.opacity(0.08),
+                            .semantic.primary.opacity(0.00)
                         ]
                     ),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ),
-                style: StrokeStyle(
-                    lineWidth: 2.0,
-                    lineJoin: .round
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
             )
-        }
     }
 
-    @ViewBuilder private var verticalSelectionBar: some View {
-        if let index = selectedIndex {
-            ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(Color.semantic.title)
-                    .frame(width: 1)
-                    .padding(.top, 20)
-                    .offset(x: selectedPosition(for: index))
-
-                if let title = selectionTitle {
-                    titleView(title, index: index)
-                        .onPreferenceChange(TitleWidthPreferenceKey.self) { value in
-                            titleWidth = value
-                        }
-                }
-            }
-        }
+    @ViewBuilder private func stroked() -> some View {
+        line.shape.stroke(Color.semantic.primary, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+            .clipShape(ClippedRectangle(x: _highlight ?? 1, y: 1))
     }
 
-    @ViewBuilder private func titleView(_ title: String, index: Int) -> some View {
-        GeometryReader { proxy in
-            Text(title)
-                .typography(.caption2)
-                .foregroundColor(.semantic.title)
-                .background(Color.semantic.background)
-                .padding(.horizontal, 1)
-                .offset(x: titleOffset(for: index))
-                .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
-                    proxy[anchor].size.width
-                }
-        }
+    @ViewBuilder private func faded() -> some View {
+        line.shape.stroke(
+            LinearGradient(
+                gradient: Gradient(
+                    colors: [
+                        .semantic.primary.opacity(0.3),
+                        .semantic.primary.opacity(0.05)
+                    ]
+                ),
+                startPoint: .leading,
+                endPoint: .trailing
+            ),
+            style: StrokeStyle(lineWidth: 2, lineJoin: .round)
+        )
     }
 
-    // Find opposing x offset to avoid title clipping on edges
-    private func titleOffset(for index: Int) -> CGFloat {
-        let halfTitle = titleWidth / 2
-        let position = selectedPosition(for: index)
-        let totalWidth = showsCurrentDot ? size.width + liveTrailingPadding : size.width
-
-        if position + halfTitle > totalWidth { // trailing
-            return totalWidth - titleWidth
-        } else if position - halfTitle < 0 { // leading
-            return 0
-        } else {
-            return position - halfTitle
-        }
-    }
-
-    // Find x coordinate for the given data index.
-    // Used to offset selection bar
-    private func selectedPosition(for index: Int) -> CGFloat {
-        let result = (size.width / CGFloat(data.count - 1)) * CGFloat(index)
-        var offset = result - 0.5
-        if !showsCurrentDot, index == data.index(before: data.endIndex) {
-            offset -= 1
-        }
-        return offset
-    }
-}
-
-// MARK: - Private Types
-
-private struct Line: Shape {
-    var data: [Double]
-
-    /// Optional data index to stop line at
-    let cut: Int?
-
-    /// If this line should have averaging + smoothing applied
-    let isSmooth: Bool
-
-    /// Chunk size for sliding average
-    let smoothingChunkSize: Int
-
-    /// Smoothing function, eg `cubicCurve(from:)`
-    let smoothedPath: ([CGPoint]) -> Path
-
-    /// If this path should be closed for filling background
-    let isClosed: Bool
-
-    private let verticalPadding: CGFloat = 48.0
-
-    func path(in rect: CGRect) -> Path {
-        let inset = rect.insetBy(dx: 0, dy: verticalPadding)
-
-        var path: Path
-        if isSmooth, smoothingChunkSize > 1 {
-            let points = data
-                .slidingAverages(chunkSize: smoothingChunkSize)
-                .points(in: inset.size, offset: CGPoint(x: 0, y: verticalPadding))
-            path = smoothedPath(points)
-        } else {
-            let points = data.points(
-                in: inset.size,
-                offset: CGPoint(x: 0, y: verticalPadding)
-            )
-            path = Path()
-            path.addLines(points.dropLast(cut.map { data.count - 1 - $0 } ?? 0))
-        }
-
-        if isClosed {
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.closeSubpath()
-        }
-
-        return path
-    }
-}
-
-private struct Dot: View {
-    let data: [Double]
-
-    /// If this line should have averaging + smoothing applied
-    let isSmooth: Bool
-
-    /// Chunk size for sliding average
-    let smoothingChunkSize: Int
-
-    /// Smoothing function, eg `cubicCurve(from:)`
-    let smoothedPath: ([CGPoint]) -> Path
-
-    private let size: CGFloat = 8
-    private let offset: CGFloat = 48
-
-    var body: some View {
-        GeometryReader { proxy in
-            if let point = position(in: proxy.size) {
+    @ViewBuilder private func dot(_ geometry: GeometryProxy) -> some View {
+        if isLive {
+            if let end = line.shape.path(in: geometry.frame(in: .local)).currentPoint {
+                let length: CGFloat = 8
+                let offset = end - (length / 2)
                 Circle()
                     .fill(Color.semantic.primary)
-                    .frame(width: size, height: size)
+                    .frame(width: length, height: length)
                     .pulse()
                     .transformEffect(
-                        .init(
-                            translationX: point.x - size / 2,
-                            y: point.y - size / 2
-                        )
+                        CGAffineTransform(translationX: offset.x, y: offset.y)
                     )
             }
         }
     }
 
-    private func position(in size: CGSize) -> CGPoint? {
-        var point: CGPoint?
-        var size = size
-        size.height -= offset * 2
+    @ViewBuilder private func highlight() -> some View {
+        if let percentage = _highlight {
+            Rectangle()
+                .fill(Color.semantic.title)
+                .frame(width: 1)
+                .padding(.top, 20)
+                .offset(x: _size.width * percentage)
+            if let title = selectionTitle(index(from: percentage)) {
+                GeometryReader { proxy in
+                    title
+                        .padding(.horizontal, 1)
+                        .offset(
+                            x: (percentage * _size.width - _title / 2)
+                                .clamped(to: 0...max(1, _size.width - _title))
+                        )
+                        .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
+                            proxy[anchor].size.width
+                        }
+                }
+                .onPreferenceChange(TitleWidthPreferenceKey.self) { value in
+                    _title = value
+                }
+            }
+        }
+    }
+}
 
-        if isSmooth, smoothingChunkSize > 1 {
-            point = smoothedPath(
-                data.slidingAverages(chunkSize: smoothingChunkSize)
-                    .points(in: size)
-            ).currentPoint
+extension LineGraph where Title == EmptyView {
+
+    public init(
+        selection: Binding<Int?> = .constant(nil),
+        data: [Double],
+        tolerance: Int = 5,
+        density: Int = 300,
+        isLive: Bool = false
+    ) {
+        self.init(
+            selection: selection,
+            selectionTitle: { _ in EmptyView() },
+            data: data,
+            tolerance: tolerance,
+            density: density,
+            isLive: isLive
+        )
+    }
+}
+
+public struct LineShape: Shape {
+
+    public var animatableData: AnimatableVertices {
+        get { .init(values: data) }
+        set { data = newValue.values }
+    }
+
+    public var data: [Double] {
+        didSet { vertices = LineShape.vertices(of: data, tolerance: tolerance) }
+    }
+
+    var vertices: [CGPoint]
+
+    let tolerance: Int
+    let density: Int
+    let isClosed: Bool
+
+    public init(
+        data: [Double],
+        tolerance: Int,
+        density: Int,
+        closed isClosed: Bool = false,
+        vertices: [CGPoint]
+    ) {
+        self.data = data
+        self.tolerance = tolerance
+        self.density = density
+        self.isClosed = isClosed
+        self.vertices = vertices
+    }
+
+    static func vertices(of y: [Double], tolerance: Int, density: Int = 300) -> [CGPoint] {
+        let x = Array(stride(from: 0.d, through: 1, by: 1 / (y.count - 1).d))
+        let scale = Scale<Double>(domain: x, range: y)
+        let x2 = stride(from: 0.d, through: 1, by: 1 / (density - 1).d)
+        let y2: [Double]
+        if tolerance > 1 {
+            y2 = x2.map(scale.linear).slidingAverages(radius: tolerance, prefixAndSuffix: .reverseToFit)
         } else {
-            point = data.points(in: size).last
+            y2 = x2.map(scale.linear)
+        }
+        return zip(x2, y2).map { CGPoint(x: $0, y: $1) }
+    }
+
+    public func path(in rect: CGRect) -> Path {
+        let vertices = vertices.map { $0 * rect.size }
+        if let first = vertices.first {
+            return Path { path in
+                path.move(to: first)
+                for point in vertices.dropFirst() {
+                    path.addLine(to: point)
+                }
+                if isClosed {
+                    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+                    path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+                    path.closeSubpath()
+                }
+            }
+        } else {
+            return Path()
+        }
+    }
+}
+
+extension LineShape {
+
+    public struct AnimatableVertices: VectorArithmetic {
+
+        public static var zero = AnimatableVertices(values: [0.0])
+
+        public static func + (lhs: AnimatableVertices, rhs: AnimatableVertices) -> AnimatableVertices {
+            let count = min(lhs.values.count, rhs.values.count)
+            return AnimatableVertices(values: vDSP.add(lhs.values[0..<count], rhs.values[0..<count]))
         }
 
-        point?.y += offset
+        public static func += (lhs: inout AnimatableVertices, rhs: AnimatableVertices) {
+            let count = min(lhs.values.count, rhs.values.count)
+            vDSP.add(lhs.values[0..<count], rhs.values[0..<count], result: &lhs.values[0..<count])
+        }
 
-        return point
+        public static func - (lhs: AnimatableVertices, rhs: AnimatableVertices) -> AnimatableVertices {
+            let count = min(lhs.values.count, rhs.values.count)
+            return AnimatableVertices(values: vDSP.subtract(lhs.values[0..<count], rhs.values[0..<count]))
+        }
+
+        public static func -= (lhs: inout AnimatableVertices, rhs: AnimatableVertices) {
+            let count = min(lhs.values.count, rhs.values.count)
+            vDSP.subtract(lhs.values[0..<count], rhs.values[0..<count], result: &lhs.values[0..<count])
+        }
+
+        public var values: [Double]
+
+        public mutating func scale(by rhs: Double) {
+            values = vDSP.multiply(rhs, values)
+        }
+
+        public var magnitudeSquared: Double {
+            vDSP.sum(vDSP.multiply(values, values))
+        }
+    }
+}
+
+private struct GraphSizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
     }
 }
 
 private struct TitleWidthPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
 
-    static func reduce(
-        value: inout CGFloat,
-        nextValue: () -> CGFloat
-    ) {
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
 }
 
-// MARK: - Internal (for performance testing)
-
-extension Array where Element == Double {
-    func points(in size: CGSize, offset: CGPoint = .zero) -> [CGPoint] {
-        guard let max = self.max(), let min = self.min() else { return [] }
-        let x = size.width / CGFloat(count - 1)
-        let diff = max - min
-        return enumerated().map { index, element in
-            let percentage = (element - min) / diff
-            return CGPoint(
-                x: (x * CGFloat(index)) + offset.x,
-                y: (size.height - CGFloat(percentage) * size.height) + offset.y
-            )
-        }
-    }
-}
-
-extension Array where Element: FloatingPoint {
-    func slidingAverages(chunkSize: Int) -> [Element] {
-        // stride + map can be replaced by swift-algorithms `chunks(ofCount: smoothingChunkSize)`
-        stride(from: 0, to: count, by: chunkSize)
-            .map {
-                self[$0..<Swift.min($0 + chunkSize, count)]
-            }
-            .reduce(into: []) { result, chunk in
-                let average = chunk.reduce(0, +) / Element(chunk.count)
-                result.append(average)
-            }
-    }
-}
-
-/// Smoothing adapted from `drawCubicBezier` in `danielgindi/Charts`
-func cubicPath(from points: [CGPoint]) -> Path {
-    var path = Path()
-
-    // intensity default 0.2
-    let intensity: CGFloat = 0.2
-
-    guard let current = points.first,
-          let last = points.last,
-          points.count > 2
-    else {
-        return path
-    }
-
-    path.move(to: current)
-
-    var first = points
-    first.insert(current, at: 0) // Dupe the first point for a starting control point
-    let second = first.dropFirst()
-    let third = first.dropFirst(2)
-    var forth = first.dropFirst(3)
-    forth.append(last) // Dupe the last point so we get to the end of the graph
-
-    zip(zip(first, second), zip(third, forth))
-        .forEach { zipped in
-            let ((first, second), (third, forth)) = zipped
-
-            let distance1 = CGPoint(
-                x: (third.x - first.x) * intensity,
-                y: (third.y - first.y) * intensity
-            )
-            let distance2 = CGPoint(
-                x: (forth.x - second.x) * intensity,
-                y: (forth.y - second.y) * intensity
-            )
-
-            path.addCurve(
-                to: third,
-                control1: CGPoint(
-                    x: second.x + distance1.x,
-                    y: second.y + distance1.y
-                ),
-                control2: CGPoint(
-                    x: third.x - distance2.x,
-                    y: third.y - distance2.y
-                )
-            )
-        }
-
-    return path
-}
-
+// swiftlint:disable line_length
 struct LineGraph_Previews: PreviewProvider {
     static var previews: some View {
-        PreviewContainer(showsCurrentDot: false)
+        PreviewContainer(isLive: false)
             .previewLayout(.sizeThatFits)
-
-        PreviewContainer(showsCurrentDot: true)
+        PreviewContainer(isLive: true)
             .previewLayout(.sizeThatFits)
     }
 
     struct PreviewContainer: View {
-        let showsCurrentDot: Bool
-
-        @State var selectedIndex: Int?
-        // swiftlint:disable:next line_length
-        @State var data: [Double] = [19164.48, 19276.59, 19439.75, 21379.48, 22847.46, 23150.79, 23869.92, 23490.58, 22745.48, 23824.99, 23253.37, 23715.53, 24693.58, 26443.21, 26246.58, 27036.69, 27376.37, 28856.59, 28982.56, 29393.75, 32195.46, 33000.78, 32035.03, 34046.67, 36860.41, 39486.04, 40670.25, 40240.72, 38240.09, 35544.94, 34011.82, 37393.13, 39158.47, 36828.52, 36065.2, 35793.01, 36632.35, 36020.13, 35538.98, 30797.88, 33002.38, 32099.74, 32276.84, 32243.26, 32541.8, 30419.17, 33403.17, 34314.26, 34318.1, 33136.46, 33522.9, 35529.66, 37676.25, 37002.09, 38278.61, 39323.26, 38928.1, 46364.3, 46589.58, 44878.17, 48013.38, 47471.4, 47185.19, 48720.37, 47951.85, 49160.1, 52118.23, 51608.15, 55916.5, 56001.2, 57487.86, 54123.4, 48880.43, 50624.84, 46800.42, 46340.31, 46155.87, 45113.92, 49618.43, 48356.04, 50477.7, 48448.91, 48861.38, 48881.59, 51169.7, 52299.33, 54881.52, 55997.23, 57764.0, 57253.28, 61258.73, 59133.47, 55754.72, 56872.38, 58913.0, 57665.9, 58075.1, 58085.8, 57411.17, 54204.96, 54477.46, 52508.23, 51415.92, 55074.47, 55863.93, 55783.71, 57627.67, 58730.13, 58735.25, 58736.92, 59031.32, 57076.49, 58206.55, 59054.1, 58020.46, 55947.27, 58048.59, 58102.58, 59774.0, 59964.87, 59834.74, 63554.44, 62969.12, 63252.63, 61455.98, 60087.09, 56251.48, 55703.14, 56507.91, 53808.8, 51731.71, 51153.13, 50110.53, 49075.58, 54056.64, 55071.46, 54884.1, 53584.15, 57796.62, 57857.5, 56610.46, 57213.33, 53241.72, 57473.23, 56428.16, 57380.27, 58928.81, 58280.73, 55883.5, 56750.0, 49007.09, 49702.27, 49922.52, 46736.58, 46441.64, 43596.24, 42912.19, 36964.27, 40784.32, 37280.35, 37528.3, 34754.54, 38728.59, 38410.5, 39266.04, 38445.29, 35689.62, 34647.67, 35684.59, 37310.54, 36662.64, 37585.24, 39188.59, 36885.51, 35530.38, 35816.17, 33514.87, 33450.19, 37338.36, 36704.57, 37313.18, 35494.9, 39066.82, 40525.8, 40188.56, 38324.87, 38068.04, 35729.82, 35524.17, 35592.35, 31686.55, 32447.59, 33674.66, 34639.38, 31640.58, 32160.91, 34644.45, 34456.67, 35847.7, 35047.36, 33536.88, 33856.86, 34688.98, 35309.3, 33747.97, 34211.01, 33839.04, 32877.41, 33818.52, 33515.57, 34227.64, 33158.25, 32686.56, 32814.61, 31738.59, 31421.25, 31520.66, 31783.49, 30815.94, 29790.24, 32118.06, 32297.89, 33581.63, 34279.34, 35365.2, 37318.14, 39405.95, 40002.53, 40005.93, 42214.15, 41659.06, 40000.46, 39193.94, 38138.0, 39750.14, 40882.0, 42825.95, 44634.13, 43816.14, 46333.46, 45608.37, 45611.46, 44417.78, 47833.98, 47112.19, 47056.41, 45982.55, 44648.57, 44777.86, 46734.65, 49327.75, 48932.02, 49335.68, 49523.5, 47744.58, 48972.09, 46962.8, 49056.86, 48897.65, 48806.78, 47074.77, 47155.87, 48862.76, 49329.01, 50035.33, 49947.38, 51769.06, 52677.4, 46809.17, 46078.38, 46368.69, 44847.48, 45144.79, 46059.12, 44968.76, 47072.12, 48167.85, 47785.26, 47263.6, 48259.45, 47249.38, 42901.56, 40619.27, 43604.76, 44888.96, 42815.56, 42742.01, 43182.63, 42238.2, 41011.16, 41522.38, 43757.81, 48140.11, 47727.1, 48205.72, 49143.95, 51505.83, 55343.76, 53801.1, 53867.3, 55122.59, 54625.74, 57452.01, 56242.94, 57406.69, 57397.74, 61641.17, 60948.78, 61546.21, 61971.59, 64287.64, 66063.56, 62354.86, 60697.06, 61277.28, 60884.18, 63070.54, 60345.17, 58538.49, 60587.09, 62249.18, 61731.29, 61373.44, 61029.5, 63241.11, 62954.86, 61441.83, 61072.32, 61516.31, 63293.22, 67562.17, 66954.11, 64976.73, 64838.81, 64254.67, 64420.94, 65468.75, 63584.25, 60172.26, 60381.35, 56921.34, 58133.02, 59777.98, 58755.9, 56301.52, 57578.22, 57187.54, 58935.45, 53588.21, 54801.15, 57292.28, 57828.45, 57025.79, 57229.76, 56508.48, 53713.84, 49253.86, 49380.43, 50564.63, 50645.41, 50511.12, 47659.68, 47137.46]
-
+        @State var selection: Int?
+        let isLive: Bool
+        let data = [19164.48, 19276.59, 19439.75, 21379.48, 22847.46, 23150.79, 23869.92, 23490.58, 22745.48, 23824.99, 23253.37, 23715.53, 24693.58, 26443.21, 26246.58, 27036.69, 27376.37, 28856.59, 28982.56, 29393.75, 32195.46, 33000.78, 32035.03, 34046.67, 36860.41, 39486.04, 40670.25, 40240.72, 38240.09, 35544.94, 34011.82, 37393.13, 39158.47, 36828.52, 36065.2, 35793.01, 36632.35, 36020.13, 35538.98, 30797.88, 33002.38, 32099.74, 32276.84, 32243.26, 32541.8, 30419.17, 33403.17, 34314.26, 34318.1, 33136.46, 33522.9, 35529.66, 37676.25, 37002.09, 38278.61, 39323.26, 38928.1, 46364.3, 46589.58, 44878.17, 48013.38, 47471.4, 47185.19, 48720.37, 47951.85, 49160.1, 52118.23, 51608.15, 55916.5, 56001.2, 57487.86, 54123.4, 48880.43, 50624.84, 46800.42, 46340.31, 46155.87, 45113.92, 49618.43, 48356.04, 50477.7, 48448.91, 48861.38, 48881.59, 51169.7, 52299.33, 54881.52, 55997.23, 57764.0, 57253.28, 61258.73, 59133.47, 55754.72, 56872.38, 58913.0, 57665.9, 58075.1, 58085.8, 57411.17, 54204.96, 54477.46, 52508.23, 51415.92, 55074.47, 55863.93, 55783.71, 57627.67, 58730.13, 58735.25, 58736.92, 59031.32, 57076.49, 58206.55, 59054.1, 58020.46, 55947.27, 58048.59, 58102.58, 59774.0, 59964.87, 59834.74, 63554.44, 62969.12, 63252.63, 61455.98, 60087.09, 56251.48, 55703.14, 56507.91, 53808.8, 51731.71, 51153.13, 50110.53, 49075.58, 54056.64, 55071.46, 54884.1, 53584.15, 57796.62, 57857.5, 56610.46, 57213.33, 53241.72, 57473.23, 56428.16, 57380.27, 58928.81, 58280.73, 55883.5, 56750.0, 49007.09, 49702.27, 49922.52, 46736.58, 46441.64, 43596.24, 42912.19, 36964.27, 40784.32, 37280.35, 37528.3, 34754.54, 38728.59, 38410.5, 39266.04, 38445.29, 35689.62, 34647.67, 35684.59, 37310.54, 36662.64, 37585.24, 39188.59, 36885.51, 35530.38, 35816.17, 33514.87, 33450.19, 37338.36, 36704.57, 37313.18, 35494.9, 39066.82, 40525.8, 40188.56, 38324.87, 38068.04, 35729.82, 35524.17, 35592.35, 31686.55, 32447.59, 33674.66, 34639.38, 31640.58, 32160.91, 34644.45, 34456.67, 35847.7, 35047.36, 33536.88, 33856.86, 34688.98, 35309.3, 33747.97, 34211.01, 33839.04, 32877.41, 33818.52, 33515.57, 34227.64, 33158.25, 32686.56, 32814.61, 31738.59, 31421.25, 31520.66, 31783.49, 30815.94, 29790.24, 32118.06, 32297.89, 33581.63, 34279.34, 35365.2, 37318.14, 39405.95, 40002.53, 40005.93, 42214.15, 41659.06, 40000.46, 39193.94, 38138.0, 39750.14, 40882.0, 42825.95, 44634.13, 43816.14, 46333.46, 45608.37, 45611.46, 44417.78, 47833.98, 47112.19, 47056.41, 45982.55, 44648.57, 44777.86, 46734.65, 49327.75, 48932.02, 49335.68, 49523.5, 47744.58, 48972.09, 46962.8, 49056.86, 48897.65, 48806.78, 47074.77, 47155.87, 48862.76, 49329.01, 50035.33, 49947.38, 51769.06, 52677.4, 46809.17, 46078.38, 46368.69, 44847.48, 45144.79, 46059.12, 44968.76, 47072.12, 48167.85, 47785.26, 47263.6, 48259.45, 47249.38, 42901.56, 40619.27, 43604.76, 44888.96, 42815.56, 42742.01, 43182.63, 42238.2, 41011.16, 41522.38, 43757.81, 48140.11, 47727.1, 48205.72, 49143.95, 51505.83, 55343.76, 53801.1, 53867.3, 55122.59, 54625.74, 57452.01, 56242.94, 57406.69, 57397.74, 61641.17, 60948.78, 61546.21, 61971.59, 64287.64, 66063.56, 62354.86, 60697.06, 61277.28, 60884.18, 63070.54, 60345.17, 58538.49, 60587.09, 62249.18, 61731.29, 61373.44, 61029.5, 63241.11, 62954.86, 61441.83, 61072.32, 61516.31, 63293.22, 67562.17, 66954.11, 64976.73, 64838.81, 64254.67, 64420.94, 65468.75, 63584.25, 60172.26, 60381.35, 56921.34, 58133.02, 59777.98, 58755.9, 56301.52, 57578.22, 57187.54, 58935.45, 53588.21, 54801.15, 57292.28, 57828.45, 57025.79, 57229.76, 56508.48, 53713.84, 49253.86, 49380.43, 50564.63, 50645.41, 50511.12, 47659.68, 47137.46]
         var body: some View {
-            LineGraph(
-                selectedIndex: $selectedIndex,
-                selectionTitle: selectedIndex.map { "\($0)" },
-                smoothingChunkSize: 7,
-                showsCurrentDot: showsCurrentDot,
-                data: data
-            )
+            ZStack {
+                LineGraph(
+                    selection: $selection,
+                    selectionTitle: { i in
+                        Text("\(i) -> \(data.count)")
+                            .typography(.caption2)
+                            .foregroundColor(.semantic.title)
+                            .background(Color.semantic.background)
+                    },
+                    data: data,
+                    isLive: isLive
+                )
+                .background(Color.semantic.background)
+            }
         }
     }
 }

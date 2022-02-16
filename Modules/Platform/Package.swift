@@ -61,7 +61,7 @@ let package = Package(
         .package(
             name: "swift-algorithms",
             url: "https://github.com/apple/swift-algorithms.git",
-            from: "0.2.1"
+            from: "1.0.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),

@@ -188,7 +188,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if options.contains(.destinationEmbeddedIntoNavigationView) {
-                            NavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }
                         } else {
                             intent.value.route.destination(in: store)
                         }
@@ -200,7 +200,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if context.contains(.destinationEmbeddedIntoNavigationView) {
-                            NavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }
                         } else {
                             intent.value.route.destination(in: store)
                         }
@@ -214,7 +214,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if context.contains(.destinationEmbeddedIntoNavigationView) {
-                            NavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }
                         } else {
                             intent.value.route.destination(in: store)
                         }

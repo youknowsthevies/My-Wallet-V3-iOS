@@ -90,6 +90,10 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Native Wallet
 
     case nativeWalletCreation
+
+    // MARK: - Card Issuance
+
+    case cardIssuance
 }
 
 extension AppFeature {
@@ -144,6 +148,8 @@ extension AppFeature {
             return "ios_ff_apple_pay"
         case .nativeWalletCreation:
             return "ios_ff_native_wallet_creation"
+        case .cardIssuance:
+            return "ios_ff_card_issuance"
         }
     }
 
@@ -197,6 +203,8 @@ extension AppFeature {
         case .applePay:
             return false
         case .nativeWalletCreation:
+            return false
+        case .cardIssuance:
             return false
         }
     }

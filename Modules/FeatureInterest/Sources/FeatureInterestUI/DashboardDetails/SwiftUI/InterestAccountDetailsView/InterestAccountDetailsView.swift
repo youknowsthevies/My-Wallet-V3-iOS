@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureInterestDomain
 import Localization
@@ -28,7 +29,7 @@ struct InterestAccountDetailsView: View {
                         viewStore.send(.loadInterestAccountBalanceInfo)
                     }
             } else {
-                NavigationView {
+                PrimaryNavigationView {
                     ActionableView(
                         buttons: viewStore
                             .supportedActions

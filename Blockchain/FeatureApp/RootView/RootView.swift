@@ -120,9 +120,13 @@ struct RootView: View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
+                    leading: {
+                        account()
+                    },
                     title: tab.name,
-                    isLargeTitle: true,
-                    trailing: navigationButtons
+                    trailing: {
+                        QR()
+                    }
                 )
         }
         .tabItem {
@@ -146,13 +150,6 @@ struct RootView: View {
     ) -> some View where Content: View, Scope: Equatable {
         WithViewStore(store.scope(state: state)) { viewStore in
             self.tab(tab) { content(viewStore.state) }
-        }
-    }
-
-    @ViewBuilder func navigationButtons() -> some View {
-        HStack(spacing: Spacing.padding3) {
-            QR()
-            account()
         }
     }
 

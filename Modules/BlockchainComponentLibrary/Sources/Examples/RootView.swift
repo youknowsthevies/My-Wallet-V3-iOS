@@ -60,10 +60,7 @@ public struct RootView: View {
     public var body: some View {
         PrimaryNavigationView {
             NavigationLinkProviderView(data: RootView.data)
-                .primaryNavigation(
-                    title: "📚 Component Library",
-                    isLargeTitle: true
-                ) {
+                .primaryNavigation(title: "📚 Component Library") {
                     Button(colorScheme == .light ? "🌗" : "🌓") {
                         colorScheme = colorScheme == .light ? .dark : .light
                     }

@@ -163,6 +163,7 @@ extension PrimaryPicker {
 
 // MARK: - Private
 
+#if canImport(UIKit)
 extension PrimaryPicker {
 
     /// Shaped background with optional rounded corners.
@@ -220,6 +221,25 @@ private struct RowShape: Shape {
         return Path(path.cgPath)
     }
 }
+
+#else
+
+extension PrimaryPicker {
+
+    /// Shaped background with optional rounded corners.
+    private struct RowBackground: View {
+        let position: Row.Position
+        var body: some View {
+            ZStack {
+                Rectangle()
+                    .fill(Color.semantic.background)
+                Rectangle()
+                    .stroke(Color.semantic.medium, lineWidth: 1)
+            }
+        }
+    }
+}
+#endif
 
 extension PrimaryPicker.Row {
 
