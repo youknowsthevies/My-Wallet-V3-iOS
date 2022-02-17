@@ -1,12 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-import ComposableArchitecture
-import ComposableNavigation
 import Localization
 import SwiftUI
-
-// MARK: - ComposableArchitecture
 
 // MARK: - ClaimBenefitsView
 
@@ -14,20 +10,26 @@ struct ClaimBenefitsView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimBenefits
 
+    @Environment(\.presentationMode) private var presentationMode
+
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding3) {
             benefitsHeader
                 .padding([.leading, .trailing], Spacing.padding3)
             benefitsList
             Spacer()
-            PrimaryButton(title: LocalizedString.claimButton) {}
-                .padding([.leading, .trailing], Spacing.padding3)
+            PrimaryButton(title: LocalizedString.claimButton) {
+                presentationMode.wrappedValue.dismiss()
+            }
+            .padding([.leading, .trailing], Spacing.padding3)
         }
         .primaryNavigation(trailing: { closeButton })
     }
 
     private var closeButton: some View {
-        Button(action: {}) {
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }) {
             Icon.closeCirclev2
                 .frame(width: 24, height: 24)
                 .accentColor(.semantic.muted)
