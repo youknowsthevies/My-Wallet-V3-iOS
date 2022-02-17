@@ -127,51 +127,39 @@ struct ClaimIntroductionView: View {
     private var introductionList: some View {
         VStack(alignment: .leading, spacing: 0) {
             PrimaryDivider()
-            IntroductionRow(
-                imageName: "number-one",
+            PrimaryRow(
                 title: LocalizedString.ListView.ChooseDomain.title,
-                message: LocalizedString.ListView.ChooseDomain.description
-            )
+                subtitle: LocalizedString.ListView.ChooseDomain.description,
+                leading: {
+                    Image("number-one")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
             PrimaryDivider()
-            IntroductionRow(
-                imageName: "number-two",
+            PrimaryRow(
                 title: LocalizedString.ListView.ClaimDomain.title,
-                message: LocalizedString.ListView.ClaimDomain.description
-            )
+                subtitle: LocalizedString.ListView.ClaimDomain.description,
+                leading: {
+                    Image("number-two")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
             PrimaryDivider()
-            IntroductionRow(
-                imageName: "number-three",
+            PrimaryRow(
                 title: LocalizedString.ListView.ReceiveCrypto.title,
-                message: LocalizedString.ListView.ReceiveCrypto.description
-            )
+                subtitle: LocalizedString.ListView.ReceiveCrypto.description,
+                leading: {
+                    Image("number-three")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
             PrimaryDivider()
-        }
-    }
-
-    private struct IntroductionRow: View {
-        let imageName: String
-        let title: String
-        let message: String
-
-        var body: some View {
-            HStack(alignment: .top) {
-                Image(imageName)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .padding(.trailing, 5)
-                    .accessibility(identifier: Accessibility.introductionRowImage)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(title)
-                        .typography(.body2)
-                        .accessibility(identifier: Accessibility.introductionRowTitle)
-                    Text(message)
-                        .typography(.paragraph1)
-                        .foregroundColor(.semantic.overlay)
-                        .accessibility(identifier: Accessibility.introductionRowMessage)
-                }
-            }
-            .padding([.top, .bottom], 20)
-            .padding([.leading, .trailing], 24)
         }
     }
 }
