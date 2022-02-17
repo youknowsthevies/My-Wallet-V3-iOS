@@ -77,6 +77,72 @@ extension LocalizationConstants.FeatureCryptoDomain {
         )
     }
 
+    // MARK: - Claim Benefits Screen
+
+    public enum ClaimBenefits {
+        public enum Header {
+            public static let title = NSLocalizedString(
+                "What’s a Crypto Domain?",
+                comment: "What's a crypto domain header title"
+            )
+            public static let description = NSLocalizedString(
+                "Crypto domains are like a universal username for the world of crypto.",
+                comment: "What's a crypto domain header description"
+            )
+        }
+
+        public enum BenefitsList {
+            public enum SimplifyTransaction {
+                public static let title = NSLocalizedString(
+                    "Simplify Crypto Transactions",
+                    comment: "Simplify Transaction benefit title"
+                )
+                public static let description = NSLocalizedString(
+                    "Replace all your complicated wallet addresses your domain name.",
+                    comment: "Simplify Transaction benefit description"
+                )
+            }
+
+            public enum MultiNetwork {
+                public static let title = NSLocalizedString(
+                    "Multiple Coins and Networks",
+                    comment: "MultiNetwork benefit title"
+                )
+                public static let description = NSLocalizedString(
+                    "Receive 275+ coins across multiple blockchain networks with your domain.",
+                    comment: "MultiNetwork benefit description"
+                )
+            }
+
+            public enum Ownership {
+                public static let title = NSLocalizedString(
+                    "Full Ownership",
+                    comment: "Ownership benefit title"
+                )
+                public static let description = NSLocalizedString(
+                    "Unlike traditional domains, fully own and control your domain. Claim it once, own it for life!",
+                    comment: "Ownership benefit description"
+                )
+            }
+
+            public enum MuchMore {
+                public static let title = NSLocalizedString(
+                    "And Much More",
+                    comment: "Much more benefit title"
+                )
+                public static let description = NSLocalizedString(
+                    "Use your domain to login to web3 apps, create and host websites, and showcase your NFT galleries.",
+                    comment: "Much more beneift description"
+                )
+            }
+        }
+
+        public static let claimButton = NSLocalizedString(
+            "Claim Domain",
+            comment: "Claim domain CTA button"
+        )
+    }
+
     // MARK: - Search Domain Screen
 
     public enum SearchDomain {
