@@ -37,7 +37,6 @@ struct LivePricesView: View {
                     viewStore.send(.priceListDidScroll(offset: $0))
                 }
             }
-            .padding(.top)
         }
     }
 }

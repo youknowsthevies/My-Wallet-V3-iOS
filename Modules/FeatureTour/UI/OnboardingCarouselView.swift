@@ -3,17 +3,16 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import Localization
+import PlatformUIKit
 import SwiftUI
 
-public struct TourView: View {
+public struct OnboardingCarouselView: View {
 
-    let store: Store<TourState, TourAction>
-
+    private let store: Store<TourState, TourAction>
     private let list: LivePricesList
+    private var manualLoginEnabled: Bool
 
-    @State var manualLoginEnabled: Bool
-
-    init(store: Store<TourState, TourAction>, manualLoginEnabled: Bool) {
+    private init(store: Store<TourState, TourAction>, manualLoginEnabled: Bool) {
         self.store = store
         self.manualLoginEnabled = manualLoginEnabled
         list = LivePricesList(store: store)
@@ -34,11 +33,13 @@ public struct TourView: View {
         WithViewStore(self.store) { viewStore in
             VStack {
                 Image("logo-blockchain-black", bundle: Bundle.featureTour)
-                    .padding(.top)
-                    .padding(.horizontal, 24)
+                    .padding([.top, .horizontal], Spacing.padding3)
+                    .padding(.bottom, Spacing.padding2)
                 ZStack {
-                    makeTabView()
+                    makeTabView(viewStore)
                     makeButtonsView(viewStore)
+                        // space for page indicators
+                        .padding(.bottom, Spacing.padding6)
                 }
                 .background(
                     ZStack {
@@ -58,7 +59,7 @@ public struct TourView: View {
     }
 }
 
-extension TourView {
+extension OnboardingCarouselView {
 
     public enum Carousel {
         case brokerage
@@ -86,57 +87,77 @@ extension TourView {
         }
 
         @ViewBuilder private func makeCarouselView(image: Image?, text: String) -> some View {
-            VStack {
+            let isSmallDevice = DevicePresenter.type <= .compact
+            VStack(spacing: Spacing.padding2) {
                 if let image = image {
                     image
-                        .frame(height: 280.0)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: isSmallDevice ? 230 : 300)
                 }
+
                 Text(text)
                     .multilineTextAlignment(.center)
                     .frame(width: 200.0)
                     .textStyle(.title)
+
+                Spacer()
             }
-            .padding(.bottom, 180)
         }
     }
 
-    @ViewBuilder private func makeTabView() -> some View {
-        TabView {
+    @ViewBuilder private func makeTabView(
+        _ viewStore: ViewStore<TourState, TourAction>
+    ) -> some View {
+        TabView(
+            selection: viewStore.binding(
+                get: { $0.visibleStep },
+                send: { .didChangeStep($0) }
+            )
+        ) {
             Carousel.brokerage.makeView()
+                .tag(TourState.Step.brokerage)
             Carousel.earn.makeView()
+                .tag(TourState.Step.earn)
             Carousel.keys.makeView()
+                .tag(TourState.Step.keys)
             LivePricesView(store: store, list: list)
+                .tag(TourState.Step.prices)
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
 
-    @ViewBuilder private func makeButtonsView(_ viewStore: ViewStore<TourState, TourAction>) -> some View {
-        VStack(spacing: 16) {
+    @ViewBuilder private func makeButtonsView(
+        _ viewStore: ViewStore<TourState, TourAction>
+    ) -> some View {
+        VStack(spacing: .zero) {
             Spacer()
-            PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
-                viewStore.send(.createAccount)
-            }
-            if manualLoginEnabled {
-                SecondaryButton(title: LocalizationConstants.Tour.manualLoginButtonTitle) {
-                    viewStore.send(.manualLogin)
+            VStack(spacing: Spacing.padding2) {
+                PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
+                    viewStore.send(.createAccount)
                 }
+                if manualLoginEnabled {
+                    SecondaryButton(title: LocalizationConstants.Tour.manualLoginButtonTitle) {
+                        viewStore.send(.manualLogin)
+                    }
+                }
+                MinimalDoubleButton(
+                    leadingTitle: LocalizationConstants.Tour.restoreButtonTitle,
+                    leadingAction: { viewStore.send(.restore) },
+                    trailingTitle: LocalizationConstants.Tour.loginButtonTitle,
+                    trailingAction: { viewStore.send(.logIn) }
+                )
             }
-            MinimalDoubleButton(
-                leadingTitle: LocalizationConstants.Tour.restoreButtonTitle,
-                leadingAction: { viewStore.send(.restore) },
-                trailingTitle: LocalizationConstants.Tour.loginButtonTitle,
-                trailingAction: { viewStore.send(.logIn) }
-            )
         }
-        .padding(.top)
-        .padding(.bottom, 60)
-        .padding(.horizontal, 24)
+        .padding(.horizontal, Spacing.padding3)
+        .opacity(viewStore.gradientBackgroundOpacity)
     }
 }
 
 struct TourView_Previews: PreviewProvider {
+
     static var previews: some View {
-        TourView(
+        OnboardingCarouselView(
             environment: TourEnvironment(
                 createAccountAction: {},
                 restoreAction: {},
