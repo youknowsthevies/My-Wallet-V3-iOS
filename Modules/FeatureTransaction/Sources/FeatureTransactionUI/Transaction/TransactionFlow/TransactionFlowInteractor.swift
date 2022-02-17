@@ -379,7 +379,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             return
         }
         guard !newState.isGoingBack else {
-            guard previousState?.step.goingBackSkipsNavigation == false else {
+            guard !goingBackSkipsNavigation(previousState: previousState, newState: newState) else {
                 return
             }
 
@@ -670,6 +670,33 @@ extension OpenBankingAction {
             return order.inputValue.code
         case .deposit(let order):
             return order.amount.code
+        }
+    }
+}
+
+extension TransactionFlowInteractor {
+
+    func goingBackSkipsNavigation(
+        previousState: TransactionState?,
+        newState: TransactionState
+    ) -> Bool {
+        guard let previousState = previousState,
+              previousState.step.goingBackSkipsNavigation
+        else {
+            return false
+        }
+
+        let source = newState.source as? PaymentMethodAccount
+
+        switch (previousState.step, newState.step) {
+        /// Dismiss the select payment method screen when selecting Apple Pay in the linkPaymentMethod screen
+        case (.linkPaymentMethod, .enterAmount) where source?.paymentMethod.type.isApplePay == true:
+            return false
+        /// Dismiss the selectSource screen after adding a new card
+        case (.linkACard, .selectSource):
+            return false
+        default:
+            return true
         }
     }
 }

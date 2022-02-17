@@ -11,7 +11,6 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
-import RxSwift
 import SwiftUI
 import ToolKit
 import UIComponentsKit
@@ -59,7 +58,6 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
-    private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
 
     var isDisplayingRootViewController: Bool {
@@ -255,11 +253,18 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 case .completed(let paymentMethod):
                     switch paymentMethod.type {
                     case .applePay:
-                        transactionModel.process(
-                            action: .sourceAccountSelected(
-                                PaymentMethodAccount.applePay(from: paymentMethod)
-                            )
+                        self.interactor.didSelectSourceAccount(
+                            account: PaymentMethodAccount.applePay(from: paymentMethod)
                         )
+                        transactionModel
+                            .state
+                            .asPublisher()
+                            .receive(on: DispatchQueue.main)
+                            .compactMap(\.destination)
+                            .sink(receiveValue: { [weak self] destination in
+                                self?.interactor.didSelectDestinationAccount(target: destination)
+                            })
+                            .store(in: &self.cancellables)
                     case .bankAccount:
                         transactionModel.process(action: .showBankWiringInstructions)
                     case .bankTransfer:
@@ -312,8 +317,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
+            .asPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [topMostViewControllerProvider] effect, state in
                 topMostViewControllerProvider
                     .topMostViewController?
                     .dismiss(animated: true, completion: nil)
@@ -324,7 +330,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     transactionModel.process(action: .bankAccountLinked(state.action))
                 }
             })
-            .disposed(by: disposeBag)
+            .store(in: &cancellables)
     }
 
     func presentBankWiringInstructions(transactionModel: TransactionModel) {
@@ -451,26 +457,34 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
         transactionModel
             .state
-            .take(1)
-            .asSingle()
-            .observe(on: MainScheduler.instance)
-            .subscribe { [securityRouter, showFailure] transactionState in
-                guard
-                    let order = transactionState.order as? OrderDetails,
-                    let authorizationData = order.authorizationData
-                else {
-                    let error = FatalTransactionError.message("Order should contain authorization data.")
-                    showFailure(error)
-                    return
+            .asPublisher()
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [showFailure] result in
+                    switch result {
+                    case .failure(let error):
+                        showFailure(error)
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { [securityRouter, showFailure] transactionState in
+                    guard
+                        let order = transactionState.order as? OrderDetails,
+                        let authorizationData = order.authorizationData
+                    else {
+                        let error = FatalTransactionError.message("Order should contain authorization data.")
+                        showFailure(error)
+                        return
+                    }
+                    securityRouter?.presentPaymentSecurity(
+                        from: presenter,
+                        authorizationData: authorizationData
+                    )
                 }
-                securityRouter?.presentPaymentSecurity(
-                    from: presenter,
-                    authorizationData: authorizationData
-                )
-            } onFailure: { [showFailure] error in
-                showFailure(error)
-            }
-            .disposed(by: disposeBag)
+            )
+            .store(in: &cancellables)
     }
 
     func presentNewTransactionFlow(
