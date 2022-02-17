@@ -10,6 +10,69 @@ extension LocalizationConstants {
 
 extension LocalizationConstants.FeatureCryptoDomain {
 
+    // MARK: - Claim Introduction Screen
+
+    public enum ClaimIntroduction {
+        public static let title = NSLocalizedString(
+            "Claim Your Domain",
+            comment: "Claim Introduction view navigation title"
+        )
+        public enum Header {
+            public static let title = NSLocalizedString(
+                "How It Works",
+                comment: "Claim Introduction header title"
+            )
+            public static let description = NSLocalizedString(
+                "Claiming your crypto domain is easy. Follow the steps below to claim your free domain* through Unstoppable Domains.",
+                comment: "Claim Introduction view header description"
+            )
+        }
+        public enum ListView {
+            public enum ChooseDomain {
+                public static let title = NSLocalizedString(
+                    "Choose Your Domain",
+                    comment: "Claim Introduction choose domain row title"
+                )
+                public static let description = NSLocalizedString(
+                    "Select a domain and mint it to get started.",
+                    comment: "Claim Introduction choose domain row description"
+                )
+            }
+            public enum ClaimDomain {
+                public static let title = NSLocalizedString(
+                    "Claim Your Domain",
+                    comment: "Claim Introduction chaim domain row title"
+                )
+                public static let description = NSLocalizedString(
+                    "Claim your free domain provided by Unstoppable Domains.",
+                    comment: "Claim Introduction chaim domain row description"
+                )
+            }
+            public enum ReceiveCrypto {
+                public static let title = NSLocalizedString(
+                    "Receive Crypto",
+                    comment: "Claim Introduction receive crypto row title"
+                )
+                public static let description = NSLocalizedString(
+                    "Share your domain rather than your wallet address to receive crypto.",
+                    comment: "Claim Introduction receive crypto row description"
+                )
+            }
+        }
+        public static let promptButton = NSLocalizedString(
+            "What’s a Crypto Domain?",
+            comment: "What’s a Crypto Domain? prompt button text"
+        )
+        public static let instruction = NSLocalizedString(
+            "*Free domains must be a minimum of 7 characters long and not a protected domain. (e.g. nike.blockchain)",
+            comment: "Claim instruction"
+        )
+        public static let goButton = NSLocalizedString(
+            "Let's Go",
+            comment: "Let's go button text"
+        )
+    }
+
     // MARK: - Search Domain Screen
 
     public enum SearchDomain {
