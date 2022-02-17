@@ -161,6 +161,7 @@ struct ClaimIntroductionView: View {
             ).padding([.top, .bottom], 10)
             PrimaryDivider()
         }
+        .accessibility(identifier: Accessibility.introductionList)
     }
 }
 
