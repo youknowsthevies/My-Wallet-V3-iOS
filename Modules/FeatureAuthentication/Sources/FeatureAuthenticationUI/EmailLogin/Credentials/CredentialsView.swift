@@ -239,7 +239,6 @@ public struct CredentialsView: View {
             ),
             title: LocalizedString.TextFieldTitle.walletIdentifier,
             configuration: {
-                $0.adjustsFontSizeToFitWidth = true
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.textContentType = .username
