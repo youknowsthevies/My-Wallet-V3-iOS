@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationDomain
@@ -67,6 +68,7 @@ public struct PasswordRequiredEnvironment {
     let walletManager: WalletManagerAPI
     let pushNotificationsRepository: PushNotificationsRepositoryAPI
     let mobileAuthSyncService: MobileAuthSyncServiceAPI
+    let forgetWalletService: ForgetWalletService
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -74,7 +76,8 @@ public struct PasswordRequiredEnvironment {
         walletPayloadService: WalletPayloadServiceAPI,
         walletManager: WalletManagerAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
-        mobileAuthSyncService: MobileAuthSyncServiceAPI
+        mobileAuthSyncService: MobileAuthSyncServiceAPI,
+        forgetWalletService: ForgetWalletService
     ) {
         self.mainQueue = mainQueue
         self.externalAppOpener = externalAppOpener
@@ -82,6 +85,7 @@ public struct PasswordRequiredEnvironment {
         self.walletManager = walletManager
         self.pushNotificationsRepository = pushNotificationsRepository
         self.mobileAuthSyncService = mobileAuthSyncService
+        self.forgetWalletService = forgetWalletService
     }
 }
 
@@ -146,6 +150,7 @@ public let passwordRequiredReducer = Reducer<
         return .none
     case .forgetWallet:
         environment.walletManager.forgetWallet()
+        environment.forgetWalletService.forget()
         return .merge(
             environment
                 .pushNotificationsRepository

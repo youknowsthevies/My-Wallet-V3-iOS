@@ -577,6 +577,7 @@ extension DependencyContainer {
                 repository: DIKit.resolve(),
                 walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
+                credentialsRepository: DIKit.resolve(),
                 nativeWalletEnabledUse: nativeWalletEnabledUseImpl
             )
         }
@@ -594,9 +595,9 @@ extension DependencyContainer {
         }
 
         factory { () -> DeviceVerificationServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
+            let sessionTokenRepository: SessionTokenRepositoryAPI = DIKit.resolve()
             return DeviceVerificationService(
-                sessionTokenRepository: manager.repository
+                sessionTokenRepository: sessionTokenRepository
             ) as DeviceVerificationServiceAPI
         }
 

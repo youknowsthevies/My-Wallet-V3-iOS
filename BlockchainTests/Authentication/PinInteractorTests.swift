@@ -5,9 +5,12 @@ import PlatformKit
 import RxBlocking
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAuthenticationData
+@testable import WalletPayloadDataKit
 
 /// Tests the pin interactor
 class PinInteractorTests: XCTestCase {
@@ -29,8 +32,16 @@ class PinInteractorTests: XCTestCase {
         MockBlockchainSettingsApp()
     }
 
-    var credentialsProvider: WalletCredentialsProviding {
-        MockWalletCredentialsProvider.valid
+    var passwordRepository: PasswordRepository {
+        let walletRepository = MockWalletRepository()
+        walletRepository.expectedPassword = "blockchain"
+        let walletRepo = WalletRepo(initialState: .empty)
+        walletRepo.set(keyPath: \.credentials.password, value: "blockchain")
+        return PasswordRepository(
+            walletRepository: walletRepository,
+            walletRepo: walletRepo,
+            nativeWalletEnabled: { .just(false) }
+        )
     }
 
     // MARK: - Test success cases
@@ -46,7 +57,7 @@ class PinInteractorTests: XCTestCase {
     /// Tests PIN operation
     private func testPin(operation: Operation) throws {
         let interactor = PinInteractor(
-            credentialsProvider: credentialsProvider,
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .success),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -81,6 +92,7 @@ class PinInteractorTests: XCTestCase {
         let maintenanceService = WalletServiceMock()
         maintenanceService.underlyingServerUnderMaintenanceMessage = expectedMessage
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .success),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -115,6 +127,7 @@ class PinInteractorTests: XCTestCase {
 
     func testInvalidPinValidation() throws {
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: nil, error: "Invalid Numerical Value"),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -137,6 +150,7 @@ class PinInteractorTests: XCTestCase {
     // Incorrect pin returns proper error
     func testIncorrectPinValidation() throws {
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(
                 statusCode: .incorrect,
                 remaining: 0
@@ -160,6 +174,7 @@ class PinInteractorTests: XCTestCase {
     // Too many failed validation attempts
     func testTooManyFailedValidationAttempts() throws {
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .deleted),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -182,6 +197,7 @@ class PinInteractorTests: XCTestCase {
     // Backoff error is returned in the relevant case
     func testBackoffError() throws {
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(
                 statusCode: .backoff,
                 remaining: 10
@@ -205,6 +221,7 @@ class PinInteractorTests: XCTestCase {
     // Invalid status code in response should lead to an exception
     func testFailureOnInvalidStatusCode() throws {
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: nil),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -226,6 +243,7 @@ class PinInteractorTests: XCTestCase {
     func testPersistingPinAfterValidation() throws {
         let settings = MockBlockchainSettingsApp()
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .success),
             maintenanceService: maintenanceService,
             wallet: wallet,
@@ -246,6 +264,7 @@ class PinInteractorTests: XCTestCase {
         struct ServerError: Error {}
         let pinClient = MockPinClient(statusCode: .success, error: "server error")
         let interactor = PinInteractor(
+            passwordRepository: passwordRepository,
             pinClient: pinClient,
             maintenanceService: maintenanceService,
             wallet: wallet,

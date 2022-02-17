@@ -44,7 +44,11 @@ extension AppEnvironment {
             cardService: resolve(),
             coincore: resolve(),
             erc20CryptoAssetService: resolve(),
-            walletService: .live(fetcher: DIKit.resolve(), recovery: DIKit.resolve()),
+            walletService: .live(
+                fetcher: DIKit.resolve(),
+                recovery: DIKit.resolve()
+            ),
+            forgetWalletService: .live(forgetWallet: DIKit.resolve()),
             walletPayloadService: resolve(),
             walletManager: resolve(),
             walletUpgradeService: resolve(),

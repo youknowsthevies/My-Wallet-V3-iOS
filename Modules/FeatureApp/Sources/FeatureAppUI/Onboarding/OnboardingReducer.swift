@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
@@ -24,6 +25,8 @@ public enum Onboarding {
         case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequiredAction)
         case welcomeScreen(WelcomeAction)
+        /// Used to change state on sub-reducers
+        case handleWalletDecryptionError
         case handleMetadataRecoveryAfterAuthentication
         case informSecondPasswordDetected
         case informForWalletInitialization
@@ -71,6 +74,7 @@ public enum Onboarding {
         let walletPayloadService: WalletPayloadServiceAPI
         let featureFlagsService: FeatureFlagsServiceAPI
         let externalAppOpener: ExternalAppOpener
+        let forgetWalletService: ForgetWalletService
         var buildVersionProvider: () -> String
     }
 }
@@ -116,7 +120,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     walletPayloadService: $0.walletPayloadService,
                     walletManager: $0.walletManager,
                     pushNotificationsRepository: $0.pushNotificationsRepository,
-                    mobileAuthSyncService: $0.mobileAuthSyncService
+                    mobileAuthSyncService: $0.mobileAuthSyncService,
+                    forgetWalletService: $0.forgetWalletService
                 )
             }
         ),
@@ -129,8 +134,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 WalletUpgrade.Environment()
             }
         ),
-    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> {
-        state, action, environment in
+    // swiftlint:disable closure_body_length
+    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
         case .start:
             return decideFlow(
@@ -195,6 +200,31 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return Effect(value: .welcomeScreen(.informSecondPasswordDetected))
         case .informForWalletInitialization:
             return .none
+        case .handleWalletDecryptionError:
+            if state.welcomeState?.manualCredentialsState != nil {
+                return Effect(
+                    value: .welcomeScreen(
+                        .manualPairing(
+                            .password(
+                                .showIncorrectPasswordError(true)
+                            )
+                        )
+                    )
+                )
+            }
+            return Effect(
+                value: .welcomeScreen(
+                    .emailLogin(
+                        .verifyDevice(
+                            .credentials(
+                                .password(
+                                    .showIncorrectPasswordError(true)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         case .handleMetadataRecoveryAfterAuthentication:
             // if it is from the restore wallet screen
             if state.welcomeState?.restoreWalletState != nil {
@@ -221,6 +251,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         }
     }
+    // swiftlint:enable closure_body_length
 )
 
 // MARK: - Internal Methods

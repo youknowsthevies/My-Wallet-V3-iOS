@@ -5,10 +5,16 @@ import Combine
 @dynamicMemberLookup
 public protocol WalletRepoAPI {
 
-    /// The underlying publisher, `AnyPublisher<WalletRepoState, Never>`
-    var publisher: AnyPublisher<WalletRepoState, Never> { get }
+    /// Gets the current value of the `WalletRepoState`
+    /// - Returns: `Publishers.First<AnyPublisher<WalletRepoState, Never>>`
+    func get() -> Publishers.First<AnyPublisher<WalletRepoState, Never>>
 
-    /// Sets the given value on the selected keyPath
+    /// Streams the value of the underlying state of `WalletRepoState`
+    /// - Returns: `AnyPublisher<WalletRepoState, Never>`
+    func stream() -> AnyPublisher<WalletRepoState, Never>
+
+    /// Sets the given value on the selected keyPath and return the updated state as a stream.
+    ///
     /// - Parameters:
     ///   - keyPath: A `WritableKeyPath` for the underlying variable
     ///   - value: A value to be to written for the selected keyPath
@@ -19,6 +25,7 @@ public protocol WalletRepoAPI {
     ) -> Self
 
     /// Sets an new `WalletStorageState` value
+    ///
     /// - Parameter value: A `WalletStorageState` to be set.
     @discardableResult
     func set(

@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import MetadataKit
+@testable import MetadataKitMock
+@testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 
 import Combine
@@ -18,30 +21,37 @@ class WalletLogicTests: XCTestCase {
         cancellables = []
     }
 
-    // TODO: Dimitris to fix
-//    func test_wallet_logic_can_initialize_a_wallet() {
-//        let walletHolder = WalletHolder()
-//        var walletCreatorCalled = false
-//        let walletCreator: WalletCreating = { blockchainWallet in
-//            walletCreatorCalled = true
-//            return { Wallet(from: blockchainWallet) }
-//        }
-//
-//        let walletLogic = WalletLogic(holder: walletHolder, creator: walletCreator)
-//
-//        let expectation = expectation(description: "wallet holding")
-//
-//        walletLogic.initialize(using: jsonV4)
-//            .sink { _ in
-//                //
-//            } receiveValue: { _ in
-//                XCTAssertTrue(walletCreatorCalled)
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        wait(for: [expectation], timeout: 2)
-//
-//        XCTAssertNotNil(walletHolder.wallet)
-//    }
+    func test_wallet_logic_can_initialize_a_wallet() {
+        let walletHolder = WalletHolder()
+        var decoderWalletCalled = false
+        let decoder: WalletDecoding = { data -> AnyPublisher<NativeWallet, WalletError> in
+            decoderWalletCalled = true
+            return WalletDecoder().createWallet(from: data)
+        }
+        let metadataService = MetadataServiceMock()
+
+        let walletLogic = WalletLogic(
+            holder: walletHolder,
+            decoder: decoder,
+            metadata: metadataService,
+            notificationCenter: .default
+        )
+
+        metadataService.initializeValue = .just(MetadataState.mock)
+
+        let expectation = expectation(description: "wallet-fetching-expectation")
+
+        walletLogic.initialize(with: "password", payload: jsonV4)
+            .sink { _ in
+                //
+            } receiveValue: { _ in
+                XCTAssertTrue(decoderWalletCalled)
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 2)
+
+        XCTAssertTrue(walletHolder.walletState.value!.isInitialised)
+    }
 }

@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import MetadataKit
+@testable import MetadataKitMock
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 
@@ -21,49 +23,81 @@ class WalletFetcherTests: XCTestCase {
         cancellables = []
     }
 
-    // TODO: Dimitris to fix
-//    func test_wallet_fetcher_is_able_to_fetch_using_password() throws {
-//        // skip test until it is finalized and working
-//        try XCTSkipIf(true)
-//
-//        let dispatchQueue = DispatchQueue(label: "wallet.fetcher.op-queue")
-//        let payloadCrypto = PayloadCrypto(cryptor: AESCryptor())
-//        let walletHolder = WalletHolder()
-//        let walletLogic = WalletLogic(holder: walletHolder, creator: createWallet(from:))
-//        let walletFetcher = WalletFetcher(
-//            walletRepo: walletRepo,
-//            payloadCrypto: payloadCrypto,
-//            walletLogic: walletLogic,
-//            operationsQueue: dispatchQueue
-//        )
-//
-//        let encryptedPayload = try JSONDecoder().decode(WalletPayloadWrapper.self, from: jsonV4)
-//        walletRepo.set(
-//            keyPath: \.encryptedPayload,
-//            value: encryptedPayload
-//        )
-//        var receivedValue: EmptyValue?
-//        var error: Error?
-//        let expectation = expectation(description: "wallet-fetching-expectation")
-//
-//        walletFetcher.fetch(using: "misura12!")
-//            .sink { completion in
-//                switch completion {
-//                case .finished:
-//                    break
-//                case .failure(let failureError):
-//                    error = failureError
-//                }
-//            } receiveValue: { value in
-//                receivedValue = value
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        waitForExpectations(timeout: 2)
-//
-//        XCTAssertNotNil(walletHolder.wallet)
-//        XCTAssertEqual(receivedValue, .noValue)
-//        XCTAssertNil(error)
-//    }
+    func test_wallet_fetcher_is_able_to_fetch_using_password() throws {
+        let dispatchQueue = DispatchQueue(label: "wallet.fetcher.op-queue")
+        let payloadCrypto = PayloadCrypto(cryptor: AESCryptor())
+        let walletHolder = WalletHolder()
+        let decoder = WalletDecoder()
+        let metadataService = MetadataServiceMock()
+        let notificationCenterSpy = NotificationCenterSpy()
+        let walletLogic = WalletLogic(
+            holder: walletHolder,
+            decoder: decoder.createWallet(from:),
+            metadata: metadataService,
+            notificationCenter: notificationCenterSpy
+        )
+        let walletFetcher = WalletFetcher(
+            walletRepo: walletRepo,
+            payloadCrypto: payloadCrypto,
+            walletLogic: walletLogic,
+            operationsQueue: dispatchQueue
+        )
+
+        let encryptedPayload = try JSONDecoder().decode(WalletPayloadWrapper.self, from: jsonV4)
+        walletRepo.set(
+            keyPath: \.encryptedPayload,
+            value: encryptedPayload
+        )
+        var receivedValue: WalletFetchedContext?
+        let expectedValue = WalletFetchedContext(
+            guid: "dfa6d0af-7b04-425d-b35c-ded8efaa0016",
+            sharedKey: "b4a3dcbc-3e85-4cbf-8d0f-e31f9663e888",
+            passwordPartHash: "561e1"
+        )
+        var error: Error?
+        let expectation = expectation(description: "wallet-fetching-expectation")
+
+        metadataService.initializeValue = .just(MetadataState.mock)
+
+        walletFetcher.fetch(using: "misura12!")
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let failureError):
+                    error = failureError
+                }
+            } receiveValue: { value in
+                receivedValue = value
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        waitForExpectations(timeout: 2)
+
+        XCTAssertTrue(walletHolder.walletState.value!.isInitialised)
+        XCTAssertEqual(receivedValue, expectedValue)
+        XCTAssertNil(error)
+
+        // Ensure we send both notification
+        XCTAssertTrue(notificationCenterSpy.postNotificationCalled)
+        XCTAssertEqual(
+            notificationCenterSpy.postNotifications,
+            [
+                Notification(name: .walletInitialized),
+                Notification(name: .walletMetadataLoaded)
+            ]
+        )
+    }
+}
+
+class NotificationCenterSpy: NotificationCenter {
+
+    var postNotifications: [Notification] = []
+    var postNotificationCalled = false
+
+    override func post(_ notification: Notification) {
+        postNotifications.append(notification)
+        postNotificationCalled = true
+    }
 }

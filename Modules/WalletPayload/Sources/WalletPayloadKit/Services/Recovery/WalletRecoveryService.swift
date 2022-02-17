@@ -116,7 +116,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             .set(keyPath: \.credentials.guid, value: model.guid)
             .set(keyPath: \.credentials.sharedKey, value: model.sharedKey)
             .set(keyPath: \.credentials.password, value: model.password)
-            .publisher
+            .get()
             .map { _ in model }
             .eraseToAnyPublisher()
     }
@@ -129,7 +129,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             .set(keyPath: \.properties.language, value: walletPayload.language)
             .set(keyPath: \.properties.syncPubKeys, value: walletPayload.shouldSyncPubKeys)
             .set(keyPath: \.properties.authenticatorType, value: walletPayload.authenticatorType)
-            .publisher
+            .get()
             .map { _ in context }
             .eraseToAnyPublisher()
     }

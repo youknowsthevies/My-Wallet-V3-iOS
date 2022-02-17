@@ -7,12 +7,12 @@ import WalletPayloadKit
 public struct WalletService {
     public var fetch: (
         _ password: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
+    ) -> AnyPublisher<WalletFetchedContext, WalletError>
 
     public var fetchUsingSecPassword: (
         _ password: String,
         _ secondPassword: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
+    ) -> AnyPublisher<WalletFetchedContext, WalletError>
 
     public var recoverFromMetadata: (
         _ mnemonic: String
@@ -25,10 +25,10 @@ extension WalletService {
         recovery: WalletRecoveryServiceAPI
     ) -> WalletService {
         WalletService(
-            fetch: { password -> AnyPublisher<EmptyValue, WalletError> in
+            fetch: { password -> AnyPublisher<WalletFetchedContext, WalletError> in
                 fetcher.fetch(using: password)
             },
-            fetchUsingSecPassword: { password, secondPassword -> AnyPublisher<EmptyValue, WalletError> in
+            fetchUsingSecPassword: { password, secondPassword -> AnyPublisher<WalletFetchedContext, WalletError> in
                 fetcher.fetch(using: password, secondPassword: secondPassword)
             },
             recoverFromMetadata: { mnemonic -> AnyPublisher<EmptyValue, WalletError> in

@@ -68,3 +68,13 @@ func checksum(data: Data) -> Data {
 func checksumHex(data: Data) -> String {
     checksum(data: data).toHexString
 }
+
+/// Applies SHA256 to given value and returns the first 5 characters.
+/// - Parameter value: A `String` for the hashing the be applied
+/// - Returns: A hashed `String`
+func hashPassword(_ value: String) -> String {
+    let data = Data(value.utf8)
+    let hashedString = checksumHex(data: data)
+    let endIndex = hashedString.index(hashedString.startIndex, offsetBy: min(value.count, 5))
+    return String(hashedString[..<endIndex])
+}

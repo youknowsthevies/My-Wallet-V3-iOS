@@ -14,6 +14,7 @@ class WalletCryptoTests: XCTestCase {
     }
 
     func test_decrypt_value_using_second_password() throws {
+        // swiftlint:disable:next line_length
         let encryptedSeedHex = "YSxSY3q6gfjrmVoRg8GbJU9gyqFFQxitGEmxBKbmE40av+Daa/WIBQf2yguYlrEKPd5O2fgrJVmw9Otf2iVH5w=="
         let secPassword = "secret"
         let decryptedSeedHex = try decryptValue(
@@ -24,5 +25,14 @@ class WalletCryptoTests: XCTestCase {
         ).get()
 
         XCTAssertEqual(decryptedSeedHex, "6a4d9524d413fdf69ca1b5664d1d6db0")
+    }
+
+    func test_hash_password_returns_correct_value() {
+        let password = "aRandomPassword"
+        let expectedHash = "eccba"
+
+        let hashed = hashPassword(password)
+        XCTAssertEqual(hashed, expectedHash)
+        XCTAssertEqual(hashed.count, 5)
     }
 }

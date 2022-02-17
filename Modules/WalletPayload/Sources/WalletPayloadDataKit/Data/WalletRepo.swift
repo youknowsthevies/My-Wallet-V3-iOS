@@ -5,13 +5,24 @@ import WalletPayloadKit
 
 final class WalletRepo: WalletRepoAPI {
     private var state: CurrentValueSubject<WalletRepoState, Never>
-
-    var publisher: AnyPublisher<WalletRepoState, Never> {
-        state.eraseToAnyPublisher()
-    }
+    private let publisher: AnyPublisher<WalletRepoState, Never>
 
     init(initialState: WalletRepoState) {
         state = CurrentValueSubject<WalletRepoState, Never>(initialState)
+        publisher = state
+            .eraseToAnyPublisher()
+    }
+
+    /// Gets the current value of the `WalletRepoState`
+    /// - Returns: `Publisher.First<WalletRepoState, Never>`
+    func get() -> Publishers.First<AnyPublisher<WalletRepoState, Never>> {
+        publisher.first()
+    }
+
+    /// Streams the value of the underlying state of `WalletRepoState`
+    /// - Returns: `AnyPublisher<WalletRepoState, Never>`
+    func stream() -> AnyPublisher<WalletRepoState, Never> {
+        publisher.eraseToAnyPublisher()
     }
 
     /// Returns the resulting value of a given key path.
@@ -31,10 +42,8 @@ final class WalletRepo: WalletRepoAPI {
             .eraseToAnyPublisher()
     }
 
-    /// Sets the given value on the selected keyPath
-    /// - Parameters:
-    ///   - keyPath: A `WritableKeyPath` for the underlying variable
-    ///   - value: A value to be to written for the selected keyPath
+    /// Sets an new `WalletStorageState` value
+    /// - Parameter value: A `WalletStorageState` to be set.
     @discardableResult
     func set<Value>(
         keyPath: WritableKeyPath<WalletRepoState, Value>,
@@ -44,7 +53,8 @@ final class WalletRepo: WalletRepoAPI {
         return self
     }
 
-    /// Sets an new `WalletStorageState` value
+    /// Sets an new `WalletStorageState` value.
+    ///
     /// - Parameter value: A `WalletStorageState` to be set.
     @discardableResult
     func set(

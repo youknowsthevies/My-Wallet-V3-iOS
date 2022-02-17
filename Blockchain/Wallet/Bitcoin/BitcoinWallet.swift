@@ -42,7 +42,7 @@ final class BitcoinWallet: NSObject {
     weak var reactiveWallet: ReactiveWalletAPI!
 
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
-    private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
+
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
 

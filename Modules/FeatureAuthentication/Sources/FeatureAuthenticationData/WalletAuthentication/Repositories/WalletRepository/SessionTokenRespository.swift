@@ -27,7 +27,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.sessionToken
                 }
-                return walletRepo.publisher
+                return walletRepo.get()
                     .map(\.credentials.sessionToken)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
@@ -42,7 +42,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                     return walletRepository.set(sessionToken: sessionToken)
                 }
                 return walletRepo.set(keyPath: \.credentials.sessionToken, value: sessionToken)
-                    .publisher
+                    .get()
                     .mapToVoid()
             }
             .mapToVoid()
@@ -56,7 +56,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
                     return walletRepository.cleanSessionToken()
                 }
                 return walletRepo.set(keyPath: \.credentials.sessionToken, value: "")
-                    .publisher
+                    .get()
                     .mapToVoid()
             }
             .mapToVoid()

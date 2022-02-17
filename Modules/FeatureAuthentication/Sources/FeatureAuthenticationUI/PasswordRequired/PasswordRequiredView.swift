@@ -60,10 +60,7 @@ public struct PasswordRequiredView: View {
                     text: .constant(viewStore.walletIdentifier),
                     isFirstResponder: .constant(false),
                     label: LocalizedString.walletIdentifier,
-                    state: .default,
-                    configuration: {
-                        $0.adjustsFontSizeToFitWidth = true
-                    }
+                    state: .default
                 )
                 .disabled(true)
                 .accessibility(identifier: AccessibilityIdentifiers.PasswordRequiredScreen.walletIdGroup)
