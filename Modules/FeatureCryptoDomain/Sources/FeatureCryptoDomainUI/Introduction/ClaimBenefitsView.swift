@@ -9,6 +9,7 @@ import SwiftUI
 struct ClaimBenefitsView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimBenefits
+    private typealias Accessibility = AccessibilityIdentifiers.Benefits
 
     @Environment(\.presentationMode) private var presentationMode
 
@@ -22,6 +23,7 @@ struct ClaimBenefitsView: View {
                 presentationMode.wrappedValue.dismiss()
             }
             .padding([.leading, .trailing], Spacing.padding3)
+            .accessibility(identifier: Accessibility.ctaButton)
         }
         .primaryNavigation(trailing: { closeButton })
     }
@@ -40,10 +42,12 @@ struct ClaimBenefitsView: View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
             Text(LocalizedString.Header.title)
                 .typography(.title3)
+                .accessibility(identifier: Accessibility.headerTitle)
             Text(LocalizedString.Header.description)
                 .typography(.paragraph1)
                 .foregroundColor(.semantic.overlay)
                 .multilineTextAlignment(.center)
+                .accessibility(identifier: Accessibility.headerDescription)
         }
     }
 
@@ -92,6 +96,7 @@ struct ClaimBenefitsView: View {
                 )
             }
         }
+        .accessibility(identifier: Accessibility.benefitsList)
     }
 }
 
