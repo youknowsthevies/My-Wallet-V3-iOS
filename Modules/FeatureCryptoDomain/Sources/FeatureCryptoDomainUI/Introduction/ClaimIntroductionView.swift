@@ -86,6 +86,7 @@ struct ClaimIntroductionView: View {
             VStack(alignment: .center, spacing: Spacing.padding3) {
                 introductionHeader
                     .padding([.top, .leading, .trailing], Spacing.padding3)
+                introductionList
                 Spacer()
                 SmallMinimalButton(title: LocalizedString.promptButton) {
                     viewStore.send(.enter(into: .benefits))
@@ -117,17 +118,63 @@ struct ClaimIntroductionView: View {
         }
     }
 
-    private var introductionList: some View {}
-}
-
-struct ClaimIntroductionView_Previews: PreviewProvider {
-    static var previews: some View {
-        ClaimIntroductionView(
-            store: .init(
-                initialState: .init(),
-                reducer: claimIntroductionReducer,
-                environment: ()
+    private var introductionList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PrimaryDivider()
+            IntroductionRow(
+                imageName: "number-one",
+                title: LocalizedString.ListView.ChooseDomain.title,
+                message: LocalizedString.ListView.ChooseDomain.description
             )
-        )
+            PrimaryDivider()
+            IntroductionRow(
+                imageName: "number-two",
+                title: LocalizedString.ListView.ClaimDomain.title,
+                message: LocalizedString.ListView.ClaimDomain.description
+            )
+            PrimaryDivider()
+            IntroductionRow(
+                imageName: "number-three",
+                title: LocalizedString.ListView.ReceiveCrypto.title,
+                message: LocalizedString.ListView.ReceiveCrypto.description
+            )
+            PrimaryDivider()
+        }
+    }
+
+    private struct IntroductionRow: View {
+        let imageName: String
+        let title: String
+        let message: String
+
+        var body: some View {
+            HStack(alignment: .top) {
+                Image(imageName)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .padding(.trailing, 5)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(title)
+                        .typography(.body2)
+                    Text(message)
+                        .typography(.paragraph1)
+                        .foregroundColor(.semantic.overlay)
+                }
+            }
+            .padding([.top, .bottom], 20)
+            .padding([.leading, .trailing], 24)
+        }
+    }
+
+    struct ClaimIntroductionView_Previews: PreviewProvider {
+        static var previews: some View {
+            ClaimIntroductionView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: claimIntroductionReducer,
+                    environment: ()
+                )
+            )
+        }
     }
 }
