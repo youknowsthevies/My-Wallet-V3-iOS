@@ -180,4 +180,21 @@ extension LocalizationConstants.FeatureCryptoDomain {
             )
         }
     }
+
+    // MARK: - Domain Checkout Screen
+
+    public enum DomainCheckout {
+        public static let navigationTitle = NSLocalizedString(
+            "Cart",
+            comment: "Domain checkout navigation title"
+        )
+        public static let terms = NSLocalizedString(
+            "I agree to the Terms & Conditions for claiming a free crypto domain through Blockchain.com and Unstoppable Domains.",
+            comment: "Domain checkout terms"
+        )
+        public static let button = NSLocalizedString(
+            "Claim",
+            comment: "Domain checkout button"
+        )
+    }
 }
