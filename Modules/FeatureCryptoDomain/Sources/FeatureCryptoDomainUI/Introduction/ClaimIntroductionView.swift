@@ -74,6 +74,7 @@ let claimIntroductionReducer = Reducer.combine(
 struct ClaimIntroductionView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimIntroduction
+    private typealias Accessibility = AccessibilityIdentifiers.HowItWorks
 
     private let store: Store<ClaimIntroductionState, ClaimIntroductionAction>
 
@@ -91,16 +92,19 @@ struct ClaimIntroductionView: View {
                 SmallMinimalButton(title: LocalizedString.promptButton) {
                     viewStore.send(.enter(into: .benefits))
                 }
+                .accessibility(identifier: Accessibility.smallButton)
                 Spacer()
                 Text(LocalizedString.instruction)
                     .typography(.caption1)
                     .foregroundColor(.semantic.overlay)
                     .multilineTextAlignment(.center)
                     .padding([.leading, .trailing], Spacing.padding3)
+                    .accessibility(identifier: Accessibility.instructionText)
                 PrimaryButton(title: LocalizedString.goButton) {
                     viewStore.send(.navigate(to: .searchDomain))
                 }
                 .padding([.leading, .trailing], Spacing.padding3)
+                .accessibility(identifier: Accessibility.ctaButton)
             }
             .navigationRoute(in: store)
             .primaryNavigation(title: LocalizedString.title)
@@ -111,10 +115,12 @@ struct ClaimIntroductionView: View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
             Text(LocalizedString.Header.title)
                 .typography(.title3)
+                .accessibility(identifier: Accessibility.headerTitle)
             Text(LocalizedString.Header.description)
                 .typography(.paragraph1)
                 .foregroundColor(.semantic.overlay)
                 .multilineTextAlignment(.center)
+                .accessibility(identifier: Accessibility.headerDescription)
         }
     }
 
@@ -153,28 +159,31 @@ struct ClaimIntroductionView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
                     .padding(.trailing, 5)
+                    .accessibility(identifier: Accessibility.introductionRowImage)
                 VStack(alignment: .leading, spacing: 5) {
                     Text(title)
                         .typography(.body2)
+                        .accessibility(identifier: Accessibility.introductionRowTitle)
                     Text(message)
                         .typography(.paragraph1)
                         .foregroundColor(.semantic.overlay)
+                        .accessibility(identifier: Accessibility.introductionRowMessage)
                 }
             }
             .padding([.top, .bottom], 20)
             .padding([.leading, .trailing], 24)
         }
     }
+}
 
-    struct ClaimIntroductionView_Previews: PreviewProvider {
-        static var previews: some View {
-            ClaimIntroductionView(
-                store: .init(
-                    initialState: .init(),
-                    reducer: claimIntroductionReducer,
-                    environment: ()
-                )
+struct ClaimIntroductionView_Previews: PreviewProvider {
+    static var previews: some View {
+        ClaimIntroductionView(
+            store: .init(
+                initialState: .init(),
+                reducer: claimIntroductionReducer,
+                environment: ()
             )
-        }
+        )
     }
 }
