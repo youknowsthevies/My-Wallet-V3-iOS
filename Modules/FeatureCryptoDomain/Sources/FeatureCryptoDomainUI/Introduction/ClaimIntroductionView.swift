@@ -33,6 +33,7 @@ struct ClaimIntroductionState: NavigationState {
     var route: RouteIntent<ClaimIntroductionRoute>?
     var searchState: SearchCryptoDomainState?
 }
+
 enum ClaimIntroductionAction: NavigationAction {
     case route(RouteIntent<ClaimIntroductionRoute>?)
     case searchAction(SearchCryptoDomainAction)
@@ -116,12 +117,7 @@ struct ClaimIntroductionView: View {
         }
     }
 
-    private var introductionList: some View {
-
-    }
-
-
-
+    private var introductionList: some View {}
 }
 
 struct ClaimIntroductionView_Previews: PreviewProvider {

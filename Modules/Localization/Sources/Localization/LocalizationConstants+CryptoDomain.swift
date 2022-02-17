@@ -27,6 +27,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Claim Introduction view header description"
             )
         }
+
         public enum ListView {
             public enum ChooseDomain {
                 public static let title = NSLocalizedString(
@@ -38,6 +39,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                     comment: "Claim Introduction choose domain row description"
                 )
             }
+
             public enum ClaimDomain {
                 public static let title = NSLocalizedString(
                     "Claim Your Domain",
@@ -48,6 +50,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                     comment: "Claim Introduction chaim domain row description"
                 )
             }
+
             public enum ReceiveCrypto {
                 public static let title = NSLocalizedString(
                     "Receive Crypto",
@@ -59,6 +62,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 )
             }
         }
+
         public static let promptButton = NSLocalizedString(
             "What’s a Crypto Domain?",
             comment: "What’s a Crypto Domain? prompt button text"
