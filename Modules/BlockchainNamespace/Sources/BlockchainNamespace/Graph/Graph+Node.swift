@@ -1,5 +1,4 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-// swiftlint:disable type_name
 
 import Foundation
 
@@ -7,6 +6,7 @@ extension Graph {
 
     public struct Node: Decodable {
 
+        // swiftlint:disable:next type_name
         public typealias ID = String
         public typealias Name = String
         public typealias Protonym = String
