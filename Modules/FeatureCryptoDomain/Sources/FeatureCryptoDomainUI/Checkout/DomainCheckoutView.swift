@@ -19,6 +19,8 @@ struct DomainCheckoutView: View {
 
     var body: some View {
         VStack(spacing: Spacing.padding2) {
+            selectedDomains
+                .padding(.top, Spacing.padding3)
             Spacer()
             termsRow
             PrimaryButton(title: LocalizedString.button) {
@@ -28,6 +30,38 @@ struct DomainCheckoutView: View {
         }
         .padding([.leading, .trailing], Spacing.padding3)
         .primaryNavigation(title: LocalizedString.navigationTitle)
+    }
+
+    private var selectedDomains: some View {
+        WithViewStore(store) { viewStore in
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewStore.selectedDomains, id: \.domainName) { domain in
+                        PrimaryRow(
+                            title: domain.domainName,
+                            subtitle: domain.domainType.statusLabel,
+                            trailing: {
+                                Button(
+                                    action: {
+                                        withAnimation {
+                                            viewStore.send(.removeDomain(domain))
+                                        }
+                                    },
+                                    label: {
+                                        Icon.delete
+                                            .frame(width: 24, height: 24)
+                                            .accentColor(.semantic.muted)
+                                    }
+                                )
+                            }
+                        ).overlay(
+                            RoundedRectangle(cornerRadius: 8.0)
+                                .strokeBorder(Color.semantic.medium)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private var termsRow: some View {
