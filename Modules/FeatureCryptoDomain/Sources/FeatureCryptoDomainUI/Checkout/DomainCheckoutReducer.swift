@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import OrderedCollections
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
+import OrderedCollections
 import SwiftUI
 
 enum DomainCheckoutRoute: NavigationRoute {
@@ -33,7 +33,7 @@ let domainCheckoutReducer = Reducer<
     DomainCheckoutState,
     DomainCheckoutAction,
     Void
-> { state, action, _ in
+> { _, action, _ in
     switch action {
     case .route:
         return .none

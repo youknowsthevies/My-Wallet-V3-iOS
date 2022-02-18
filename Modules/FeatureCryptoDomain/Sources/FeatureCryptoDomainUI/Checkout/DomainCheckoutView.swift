@@ -5,7 +5,6 @@ import ComposableArchitecture
 import ComposableNavigation
 import Localization
 import SwiftUI
-import FeatureAuthenticationUI
 
 struct DomainCheckoutView: View {
 
@@ -19,7 +18,7 @@ struct DomainCheckoutView: View {
     }
 
     var body: some View {
-        VStack(spacing: Spacing.padding1) {
+        VStack(spacing: Spacing.padding2) {
             Spacer()
             termsRow
             PrimaryButton(title: LocalizedString.button) {
@@ -36,7 +35,8 @@ struct DomainCheckoutView: View {
             HStack(alignment: .top, spacing: Spacing.padding1) {
                 PrimarySwitch(
                     accessibilityLabel: Accessibility.termsSwitch,
-                    isOn: viewStore.binding(\.$termsSwitchIsOn))
+                    isOn: viewStore.binding(\.$termsSwitchIsOn)
+                )
                 Text(LocalizedString.terms)
                     .typography(.micro)
                     .accessibilityIdentifier(Accessibility.termsText)
