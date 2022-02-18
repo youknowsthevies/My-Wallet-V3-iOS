@@ -10,8 +10,7 @@ final class MockCoincore: CoincoreAPI {
     var allAccounts: AnyPublisher<AccountGroup, CoincoreError> = .empty()
     var allAssets: [Asset] = []
     var fiatAsset: Asset = MockAsset()
-    var cryptoAssets: [CryptoAsset] = []
-
+    var cryptoAssets: [CryptoAsset] = [MockAsset()]
     var initializePublisherCalled = false
 
     func initialize() -> AnyPublisher<Void, CoincoreError> {
@@ -26,24 +25,51 @@ final class MockCoincore: CoincoreAPI {
         .just([])
     }
 
-    var requestedCryptoAsset: CryptoAsset!
-
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
-        requestedCryptoAsset
+        cryptoAssets.first(where: { $0.asset == cryptoCurrency })!
     }
 }
 
-class MockAsset: Asset {
+class MockAsset: CryptoAsset {
+
+    var accountGroup: AccountGroup = CryptoAccountCustodialGroup(asset: .bitcoin)
+
+    var asset: CryptoCurrency {
+        accountGroup.currencyType.cryptoCurrency!
+    }
+
+    func initialize() -> AnyPublisher<Void, AssetError> {
+        .just(())
+    }
+
+    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
+        guard let account = accountGroup.accounts.first else {
+            return .failure(.noDefaultAccount)
+        }
+        return .just(account)
+    }
+
+    var canTransactToCustodial: AnyPublisher<Bool, Never> {
+        .just(true)
+    }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        .failure(.invalidAddress)
+    }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
-        .empty()
+        .just(accountGroup)
     }
 
     func transactionTargets(account: SingleAccount) -> AnyPublisher<[SingleAccount], Never> {
-        .empty()
+        .just(accountGroup.accounts)
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
-        .empty()
+        .just(nil)
     }
 }

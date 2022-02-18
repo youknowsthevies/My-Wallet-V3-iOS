@@ -503,7 +503,10 @@ extension DependencyContainer {
         }
 
         factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> FeatureOnboardingUI.EmailVerificationRouterAPI in
@@ -517,7 +520,10 @@ extension DependencyContainer {
         }
 
         factory { () -> TransactionsAdapterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> PlatformUIKit.KYCRouting in
