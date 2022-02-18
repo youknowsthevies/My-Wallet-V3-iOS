@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import OrderedCollections
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
+import OrderedCollections
 import SwiftUI
 import ToolKit
 
@@ -88,7 +88,7 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainState,
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
-    > { state, action, environment in
+    > { state, action, _ in
         switch action {
         case .binding:
             return .none

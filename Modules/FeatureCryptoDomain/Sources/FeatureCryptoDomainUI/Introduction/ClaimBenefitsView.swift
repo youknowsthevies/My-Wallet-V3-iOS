@@ -7,12 +7,12 @@ import SwiftUI
 // MARK: - ClaimBenefitsView
 
 struct ClaimBenefitsView: View {
-    
+
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimBenefits
     private typealias Accessibility = AccessibilityIdentifiers.Benefits
-    
+
     @Environment(\.presentationMode) private var presentationMode
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding3) {
             benefitsHeader
@@ -28,7 +28,7 @@ struct ClaimBenefitsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .primaryNavigation(trailing: { closeButton })
     }
-    
+
     private var closeButton: some View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
@@ -38,7 +38,7 @@ struct ClaimBenefitsView: View {
                 .accentColor(.semantic.muted)
         }
     }
-    
+
     private var benefitsHeader: some View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
             Text(LocalizedString.Header.title)
@@ -51,7 +51,7 @@ struct ClaimBenefitsView: View {
                 .accessibility(identifier: Accessibility.headerDescription)
         }
     }
-    
+
     private var benefitsList: some View {
         VStack(alignment: .center, spacing: 10) {
             PrimaryRow(
