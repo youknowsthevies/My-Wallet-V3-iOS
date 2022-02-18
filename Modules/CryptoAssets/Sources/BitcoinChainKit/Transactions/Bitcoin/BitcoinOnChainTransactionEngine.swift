@@ -88,9 +88,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        signingService: BitcoinTransactionSigningServiceAPI = resolve(),
-        sendingService: BitcoinTransactionSendingServiceAPI = resolve(),
-        buildingService: BitcoinTransactionBuildingServiceAPI = resolve(),
+        signingService: BitcoinTransactionSigningServiceAPI = resolve(tag: Token.coin),
+        sendingService: BitcoinTransactionSendingServiceAPI = resolve(tag: Token.coin),
+        buildingService: BitcoinTransactionBuildingServiceAPI = resolve(tag: Token.coin),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
         recorder: Recording = resolve(tag: "CrashlyticsRecorder")

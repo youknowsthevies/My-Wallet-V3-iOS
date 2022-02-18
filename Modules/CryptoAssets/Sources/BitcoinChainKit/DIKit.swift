@@ -12,7 +12,30 @@ extension DependencyContainer {
 
         // MARK: - Bitcoin
 
-        factory(tag: BitcoinChainCoin.bitcoin) { APIClient(coin: .bitcoin) as APIClientAPI }
+        factory(tag: BitcoinChainCoin.bitcoin) {
+            BitcoinChainKit.APIClient(coin: .bitcoin) as BitcoinChainKit.APIClientAPI
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> UnspentOutputRepositoryAPI in
+            UnspentOutputRepository(
+                client: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
+            )
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinTransactionSigningServiceAPI in
+            BitcoinTransactionSigningService()
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinTransactionSendingServiceAPI in
+            BitcoinTransactionSendingService()
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinTransactionBuildingServiceAPI in
+            BitcoinTransactionBuildingService(
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
+                coinSelection: DIKit.resolve()
+            )
+        }
 
         single(tag: BitcoinChainCoin.bitcoin) { BalanceService(coin: .bitcoin) as BalanceServiceAPI }
 
@@ -28,7 +51,30 @@ extension DependencyContainer {
 
         // MARK: - Bitcoin Cash
 
-        factory(tag: BitcoinChainCoin.bitcoinCash) { APIClient(coin: .bitcoinCash) as APIClientAPI }
+        factory(tag: BitcoinChainCoin.bitcoinCash) {
+            BitcoinChainKit.APIClient(coin: .bitcoinCash) as BitcoinChainKit.APIClientAPI
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> UnspentOutputRepositoryAPI in
+            UnspentOutputRepository(
+                client: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash)
+            )
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> BitcoinTransactionSigningServiceAPI in
+            BitcoinTransactionSigningService()
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> BitcoinTransactionSendingServiceAPI in
+            BitcoinTransactionSendingService()
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> BitcoinTransactionBuildingServiceAPI in
+            BitcoinTransactionBuildingService(
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
+                coinSelection: DIKit.resolve()
+            )
+        }
 
         single(tag: BitcoinChainCoin.bitcoinCash) { BalanceService(coin: .bitcoinCash) as BalanceServiceAPI }
 
@@ -44,15 +90,7 @@ extension DependencyContainer {
 
         // MARK: - Asset Agnostic
 
-        factory { UnspentOutputRepository() as UnspentOutputRepositoryAPI }
-
         factory { CoinSelection() as CoinSelector }
-
-        factory { BitcoinTransactionSigningService() as BitcoinTransactionSigningServiceAPI }
-
-        factory { BitcoinTransactionSendingService() as BitcoinTransactionSendingServiceAPI }
-
-        factory { BitcoinTransactionBuildingService() as BitcoinTransactionBuildingServiceAPI }
     }
 }
 

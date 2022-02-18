@@ -25,9 +25,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
 
     // MARK: - Init
 
-    init(
-        client: APIClientAPI = resolve()
-    ) {
+    init(client: BitcoinChainKit.APIClientAPI) {
         self.client = client
         let cache: AnyCache<Set<XPub>, UnspentOutputs> = InMemoryCache(
             configuration: .onLoginLogout(),

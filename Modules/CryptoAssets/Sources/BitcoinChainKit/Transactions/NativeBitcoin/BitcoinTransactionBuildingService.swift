@@ -49,8 +49,8 @@ final class BitcoinTransactionBuildingService: BitcoinTransactionBuildingService
     // MARK: - Setup
 
     init(
-        unspentOutputRepository: UnspentOutputRepositoryAPI = resolve(),
-        coinSelection: CoinSelection = resolve()
+        unspentOutputRepository: UnspentOutputRepositoryAPI,
+        coinSelection: CoinSelector
     ) {
         self.unspentOutputRepository = unspentOutputRepository
         self.coinSelection = coinSelection
