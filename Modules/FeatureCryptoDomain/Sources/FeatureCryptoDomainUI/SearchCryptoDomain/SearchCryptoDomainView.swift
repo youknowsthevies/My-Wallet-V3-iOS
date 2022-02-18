@@ -98,17 +98,18 @@ struct SearchCryptoDomainView: View {
             PrimaryRow(
                 title: result.domainName,
                 subtitle: result.domainType.statusLabel,
-                tags: [
+                trailing: {
                     Tag(
                         text: result.domainAvailability.availabilityLabel,
                         variant: result.domainAvailability == .availableForFree ?
                             .success : result.domainAvailability == .unavailable ? .default : .infoAlt
                     )
-                ],
+                },
                 action: {
                     viewStore.send(.selectDomain(result))
                 }
             )
+            .disabled(result.domainAvailability == .unavailable)
             .accessibilityIdentifier(Accessibility.domainListRow)
         }
     }
@@ -127,6 +128,11 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                         ),
                         SearchDomainResult(
                             domainName: "cocacola001.blockchain",
+                            domainType: .free,
+                            domainAvailability: .availableForFree
+                        ),
+                        SearchDomainResult(
+                            domainName: "cocacola002.blockchain",
                             domainType: .free,
                             domainAvailability: .availableForFree
                         ),

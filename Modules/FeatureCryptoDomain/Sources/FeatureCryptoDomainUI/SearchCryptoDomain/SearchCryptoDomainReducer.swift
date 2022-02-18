@@ -106,6 +106,9 @@ let searchCryptoDomainReducer = Reducer.combine(
                 }
             }
             return .none
+        case .checkoutAction(.removeDomain(let domain)):
+            state.selectedDomains.remove(domain)
+            return .none
         case .checkoutAction:
             return .none
         }
