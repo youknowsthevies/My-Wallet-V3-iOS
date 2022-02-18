@@ -181,6 +181,29 @@ extension LocalizationConstants.FeatureCryptoDomain {
         }
     }
 
+    // MARK: - Buy Domain Action Screen
+
+    public enum BuyDomain {
+        public static let header = NSLocalizedString(
+            "$@ is a premium domain.",
+            comment: "Buy domain bottom action view header"
+        )
+        public static let prompt = NSLocalizedString(
+            "Would you like to purchase it on unstoppabledomains.com?",
+            comment: "Buy domain bottom action view prompt"
+        )
+        public enum Button {
+            public static let buyDomain = NSLocalizedString(
+                "Buy Domain",
+                comment: "Buy domain bottom action view buy button"
+            )
+            public static let noThanks = NSLocalizedString(
+                "No Thanks",
+                comment: "Buy domain buttom action view cancel button"
+            )
+        }
+    }
+
     // MARK: - Domain Checkout Screen
 
     public enum DomainCheckout {
