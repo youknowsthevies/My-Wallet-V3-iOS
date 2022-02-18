@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import BitcoinChainKit
+import MoneyKit
 import PlatformKit
 import ToolKit
 import WalletCore
 
-struct UnspentOutput: Equatable {
+public struct UnspentOutput: Equatable {
 
     struct XPub: Equatable {
         let m: String
@@ -21,7 +21,7 @@ struct UnspentOutput: Equatable {
 
     let script: String
 
-    let value: BitcoinValue
+    let value: CryptoValue
 
     let confirmations: UInt
 
@@ -32,7 +32,7 @@ struct UnspentOutput: Equatable {
     init(
         hash: String,
         script: String,
-        value: BitcoinValue,
+        value: CryptoValue,
         confirmations: UInt,
         transactionIndex: Int,
         xpub: XPub
@@ -74,7 +74,7 @@ extension UnspentOutput {
 
 extension UnspentOutput {
     init(response: UnspentOutputResponse) {
-        let value = BitcoinValue(minor: response.value)
+        let value = CryptoValue.create(minor: response.value, currency: .bitcoin)
         hash = response.tx_hash
         script = response.script
         self.value = value

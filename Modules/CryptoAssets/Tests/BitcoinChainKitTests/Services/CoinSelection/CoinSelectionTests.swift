@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-@testable import BitcoinKit
+@testable import BitcoinChainKit
 import MoneyKit
 import PlatformKit
 import XCTest
@@ -72,7 +72,7 @@ class CoinSelectionTests: XCTestCase {
         let selected = unspents([20000, 300000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
-            absoluteFee: 20570,
+            absoluteFee: 20570, // (10 + (2 * 148) + (2 * 34)) * 55 = 20570
             amount: 10000,
             change: 289430
         )
@@ -93,7 +93,7 @@ class CoinSelectionTests: XCTestCase {
         )
         let result = subject.select(inputs: inputs)
 
-        let absoluteFee: Int64 = 36850 // (10 + (4 * 148) + (2 * 34)) * 55
+        let absoluteFee: Int64 = 36850 // (10 + (4 * 148) + (2 * 34)) * 55 = 36850
         let selected = unspents([20000, 30000, 50000, 300000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
@@ -251,17 +251,14 @@ private func unspents(_ values: [Int]) -> [UnspentOutput] {
     values.compactMap { value in
         let absolute = abs(value)
         let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .bitcoin)
-        guard let bitcoinValue = try? BitcoinValue(crypto: cryptoValue) else {
-            return nil
-        }
-        return UnspentOutput.createP2PKH(with: bitcoinValue)
+        return UnspentOutput.createP2PKH(with: cryptoValue)
     }
 }
 
 extension UnspentOutput {
 
     static func create(
-        with value: BitcoinValue,
+        with value: CryptoValue,
         hash: String = "hash",
         script: String,
         confirmations: UInt = 0,
@@ -279,7 +276,7 @@ extension UnspentOutput {
     }
 
     static func createP2PKH(
-        with value: BitcoinValue,
+        with value: CryptoValue,
         hash: String = "hash",
         confirmations: UInt = 0,
         transactionIndex: Int = 0,
@@ -296,7 +293,7 @@ extension UnspentOutput {
     }
 
     static func createP2WPKH(
-        with value: BitcoinValue,
+        with value: CryptoValue,
         hash: String = "hash",
         confirmations: UInt = 0,
         transactionIndex: Int = 0,

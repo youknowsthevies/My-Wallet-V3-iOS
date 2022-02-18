@@ -43,6 +43,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
+    private let signingService: BitcoinTransactionSigningServiceAPI
     private let sendingService: BitcoinTransactionSendingServiceAPI
     private let buildingService: BitcoinTransactionBuildingServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
@@ -87,6 +88,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        signingService: BitcoinTransactionSigningServiceAPI = resolve(),
         sendingService: BitcoinTransactionSendingServiceAPI = resolve(),
         buildingService: BitcoinTransactionBuildingServiceAPI = resolve(),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
@@ -97,6 +99,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
+        self.signingService = signingService
         self.sendingService = sendingService
         self.buildingService = buildingService
         self.bridge = bridge
@@ -238,7 +241,7 @@ extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
         guard pendingTransaction.nativeBitcoinTransactionEnabled else {
             return bridge.sign(with: secondPassword)
         }
-        return sendingService.sign(with: secondPassword).asSingle()
+        unimplemented()
     }
 
     func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {

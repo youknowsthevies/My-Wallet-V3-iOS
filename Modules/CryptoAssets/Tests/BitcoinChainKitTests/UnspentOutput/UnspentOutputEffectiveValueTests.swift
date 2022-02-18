@@ -1,18 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-@testable import BitcoinKit
+@testable import BitcoinChainKit
+import MoneyKit
 import PlatformKit
 import XCTest
 
 final class UnspentOutputEffectiveValueTests: XCTestCase {
 
     private var p2pkhCoin: UnspentOutput {
-        UnspentOutput.createP2PKH(with: .init(minor: 15000))
+        UnspentOutput.createP2PKH(with: .create(minor: 15000, currency: .bitcoin))
     }
 
     private var p2wpkhCoin: UnspentOutput {
-        UnspentOutput.createP2WPKH(with: .init(minor: 15000))
+        UnspentOutput.createP2WPKH(with: .create(minor: 15000, currency: .bitcoin))
     }
 
     func testCorrectP2PKHCoinValue() {

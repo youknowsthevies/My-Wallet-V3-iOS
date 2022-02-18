@@ -15,8 +15,6 @@ extension DependencyContainer {
 
         factory { BitcoinWalletAccountRepository() }
 
-        single { UnspentOutputRepository() }
-
         factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
 
         single { BitcoinHistoricalTransactionService() as BitcoinHistoricalTransactionServiceAPI }

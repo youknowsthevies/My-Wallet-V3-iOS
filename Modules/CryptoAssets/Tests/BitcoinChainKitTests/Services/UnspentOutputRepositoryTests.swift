@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinChainKit
-@testable import BitcoinKit
-@testable import BitcoinKitMock
+@testable import BitcoinChainKitMock
 import Combine
+import TestKit
 import ToolKit
 import XCTest
 

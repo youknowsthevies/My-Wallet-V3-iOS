@@ -1,7 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-@testable import BitcoinKit
+@testable import BitcoinChainKit
+import MoneyKit
 import PlatformKit
 import XCTest
 
@@ -33,17 +34,17 @@ class TransactionSizeCalculatorTests: XCTestCase {
             var outputs: [UnspentOutput] = []
 
             for _ in 0..<inputsP2PKH {
-                inputs.append(.createP2PKH(with: .zero))
+                inputs.append(.createP2PKH(with: .zero(currency: .bitcoin)))
             }
             for _ in 0..<inputsP2WPKH {
-                inputs.append(.createP2WPKH(with: .zero))
+                inputs.append(.createP2WPKH(with: .zero(currency: .bitcoin)))
             }
 
             for _ in 0..<outputsP2PKH {
-                outputs.append(.createP2PKH(with: .zero))
+                outputs.append(.createP2PKH(with: .zero(currency: .bitcoin)))
             }
             for _ in 0..<outputsP2WPKH {
-                outputs.append(.createP2WPKH(with: .zero))
+                outputs.append(.createP2WPKH(with: .zero(currency: .bitcoin)))
             }
 
             return subject.transactionBytes(
@@ -137,13 +138,13 @@ class TransactionSizeCalculatorTests: XCTestCase {
 
     func testEffectiveBalanceP2PKHInput() {
         let inputs: [UnspentOutput] = [
-            .createP2PKH(with: .init(minor: 15000)),
-            .createP2PKH(with: .init(minor: 10000)),
-            .createP2PKH(with: .init(minor: 20000))
+            .createP2PKH(with: .create(minor: 15000, currency: .bitcoin)),
+            .createP2PKH(with: .create(minor: 10000, currency: .bitcoin)),
+            .createP2PKH(with: .create(minor: 20000, currency: .bitcoin))
         ]
         let outputs: [UnspentOutput] = [
-            .createP2PKH(with: .zero),
-            .createP2PKH(with: .zero)
+            .createP2PKH(with: .zero(currency: .bitcoin)),
+            .createP2PKH(with: .zero(currency: .bitcoin))
         ]
         XCTAssertEqual(
             subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),
@@ -158,13 +159,13 @@ class TransactionSizeCalculatorTests: XCTestCase {
 
     func testEffectiveBalanceMixedInput() {
         let inputs: [UnspentOutput] = [
-            .createP2WPKH(with: .init(minor: 15000)),
-            .createP2WPKH(with: .init(minor: 10000)),
-            .createP2PKH(with: .init(minor: 20000))
+            .createP2WPKH(with: .create(minor: 15000, currency: .bitcoin)),
+            .createP2WPKH(with: .create(minor: 10000, currency: .bitcoin)),
+            .createP2PKH(with: .create(minor: 20000, currency: .bitcoin))
         ]
         let outputs: [UnspentOutput] = [
-            .createP2PKH(with: .zero),
-            .createP2PKH(with: .zero)
+            .createP2PKH(with: .zero(currency: .bitcoin)),
+            .createP2PKH(with: .zero(currency: .bitcoin))
         ]
         XCTAssertEqual(
             subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),
@@ -179,13 +180,13 @@ class TransactionSizeCalculatorTests: XCTestCase {
 
     func testEffectiveBalanceP2WPKHInput() {
         let inputs: [UnspentOutput] = [
-            .createP2WPKH(with: .init(minor: 15000)),
-            .createP2WPKH(with: .init(minor: 10000)),
-            .createP2WPKH(with: .init(minor: 20000))
+            .createP2WPKH(with: .create(minor: 15000, currency: .bitcoin)),
+            .createP2WPKH(with: .create(minor: 10000, currency: .bitcoin)),
+            .createP2WPKH(with: .create(minor: 20000, currency: .bitcoin))
         ]
         let outputs: [UnspentOutput] = [
-            .createP2PKH(with: .zero),
-            .createP2PKH(with: .zero)
+            .createP2PKH(with: .zero(currency: .bitcoin)),
+            .createP2PKH(with: .zero(currency: .bitcoin))
         ]
         XCTAssertEqual(
             subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),

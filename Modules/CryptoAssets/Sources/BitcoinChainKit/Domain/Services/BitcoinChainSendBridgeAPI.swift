@@ -6,6 +6,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+@available(*, deprecated, message: "Please use the native BTC chain transaction when it is ready")
 public struct BitcoinChainTransactionProposal<Token: BitcoinChainToken> {
     public let destination: BitcoinChainReceiveAddress<Token>
     public let amount: MoneyValue
@@ -32,6 +33,7 @@ public struct BitcoinChainTransactionProposal<Token: BitcoinChainToken> {
     }
 }
 
+@available(*, deprecated, message: "Please use the native BTC chain transaction when it is ready")
 public struct BitcoinChainTransactionCandidate<Token: BitcoinChainToken> {
     public let destination: BitcoinChainReceiveAddress<Token>
     public let amount: MoneyValue
@@ -72,6 +74,7 @@ public enum BitcoinChainTransactionError: Error {
     }
 }
 
+@available(*, deprecated, message: "Please use the native BTC chain transaction when it is ready")
 public protocol BitcoinChainSendBridgeAPI {
     func sign(with secondPassword: String?) -> Single<EngineTransaction>
     func buildProposal<Token: BitcoinChainToken>(

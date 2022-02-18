@@ -44,6 +44,12 @@ extension DependencyContainer {
 
         // MARK: - Asset Agnostic
 
+        factory { UnspentOutputRepository() as UnspentOutputRepositoryAPI }
+
+        factory { CoinSelection() as CoinSelector }
+
+        factory { BitcoinTransactionSigningService() as BitcoinTransactionSigningServiceAPI }
+
         factory { BitcoinTransactionSendingService() as BitcoinTransactionSendingServiceAPI }
 
         factory { BitcoinTransactionBuildingService() as BitcoinTransactionBuildingServiceAPI }

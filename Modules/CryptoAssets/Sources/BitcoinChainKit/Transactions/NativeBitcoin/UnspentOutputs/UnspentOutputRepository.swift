@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BitcoinChainKit
 import Combine
 import DIKit
 import NetworkError

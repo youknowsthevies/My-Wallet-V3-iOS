@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import BitcoinChainKit
 import PlatformKit
 
 struct UnspentOutputs: Equatable {

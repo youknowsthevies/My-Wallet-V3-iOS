@@ -2,12 +2,14 @@
 
 import RxSwift
 
+@available(*, deprecated, message: "Please remove this and use the native BTC chain transaction when it is ready")
 public protocol EngineTransaction {
     var encodedMsg: String { get }
     var msgSize: Int { get }
     var txHash: String { get }
 }
 
+@available(*, deprecated, message: "Please remove this and use the native BTC chain transaction when it is ready")
 public struct BitPayEngineTransaction: EngineTransaction {
     public let encodedMsg: String
     public let msgSize: Int
