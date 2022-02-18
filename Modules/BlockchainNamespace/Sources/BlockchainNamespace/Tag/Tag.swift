@@ -5,6 +5,9 @@ import Foundation
 
 public struct Tag {
 
+    public typealias Indices = [Tag: CustomStringConvertible]
+    public typealias Context = [Tag: CustomStringConvertible]
+
     public typealias ID = String
     public typealias Name = String
 
@@ -78,6 +81,11 @@ extension Tag {
     }
 
     public func `is`(_ types: Tag...) -> Bool {
+        for type in types where isNot(type) { return false }
+        return true
+    }
+
+    public func `is`<S: Sequence>(_ types: S) -> Bool where S.Element == Tag {
         for type in types where isNot(type) { return false }
         return true
     }

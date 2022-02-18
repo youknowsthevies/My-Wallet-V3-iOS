@@ -35,8 +35,14 @@ public final class Language {
 
 extension Language {
 
-    fileprivate static var count = 0
-    fileprivate static var id: Int { count += 1; return count }
+    private static var count: UInt = 0
+    private static let lock = NSLock()
+    private static var id: UInt {
+        lock.lock()
+        defer { lock.unlock() }
+        count += 1
+        return count
+    }
 
     private func sync<T>(execute work: () throws -> T) rethrows -> T {
         DispatchQueue.getSpecific(key: key) == nil
@@ -48,6 +54,7 @@ extension Language {
 extension Language {
 
     public subscript(id: Tag.ID) -> Tag? { tag(id) }
+    public subscript(id: L) -> Tag { tag(id(\.id))! }
 
     public func tag(_ id: Tag.ID) -> Tag? {
         sync { nodes[id] ?? root[id.dotPath(after: root.id).splitIfNotEmpty(separator: ".").string] }
