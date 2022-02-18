@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Lexicon",
+        "repositoryURL": "https://github.com/screensailor/Lexicon",
+        "state": {
+          "branch": "trunk",
+          "revision": "06c75b3cb4deaf80238d25c7352686ae0c067866",
+          "version": null
+        }
+      },
+      {
+        "package": "swift-collections",
+        "repositoryURL": "https://github.com/apple/swift-collections",
+        "state": {
+          "branch": null,
+          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
+          "version": "1.0.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

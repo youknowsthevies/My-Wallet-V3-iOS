@@ -1,4 +1,4 @@
---exclude Carthage,Submodules,SourcePackages,vendor,scripts
+--exclude Carthage,Submodules,SourcePackages,vendor,scripts,Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift
 --disable blankLinesAtStartOfScope
 --disable spaceAroundParens
 --allman false
