@@ -25,6 +25,7 @@ struct ClaimBenefitsView: View {
             .padding([.leading, .trailing], Spacing.padding3)
             .accessibility(identifier: Accessibility.ctaButton)
         }
+        .navigationBarTitleDisplayMode(.inline)
         .primaryNavigation(trailing: { closeButton })
     }
 
