@@ -70,8 +70,6 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let fuzzyAlgorithm = FuzzyAlgorithm(caseInsensitive: true)
-    let fuzzyTolerance = 0.3
 
     init(mainQueue: AnySchedulerOf<DispatchQueue>) {
         self.mainQueue = mainQueue
@@ -92,23 +90,6 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainEnvironment
     > { state, action, environment in
         switch action {
-        case .binding(\.$searchText):
-            if state.searchText.isEmpty {
-                state.filteredSearchResults = state.searchResults
-            } else {
-                state.filteredSearchResults = state.searchResults.filter {
-                    let fuzzy = environment.fuzzyAlgorithm
-                    let tolerance = environment.fuzzyTolerance
-                    return fuzzy.distance(
-                        between: $0.domainName,
-                        and: state.searchText
-                    ) < tolerance || fuzzy.distance(
-                        between: $0.domainName,
-                        and: state.searchText
-                    ) < tolerance
-                }
-            }
-            return .none
         case .binding:
             return .none
         case .selectDomain(let domain):
