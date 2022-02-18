@@ -85,7 +85,7 @@ final class PaymentMethodViewController: BaseScreenViewController,
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(ExplainedActionTableViewCell.self)
         tableView.allowsSelection = false
-        tableView.separatorInset = .zero
+        tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
