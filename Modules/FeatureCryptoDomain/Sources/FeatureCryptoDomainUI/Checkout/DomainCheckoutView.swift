@@ -18,18 +18,21 @@ struct DomainCheckoutView: View {
     }
 
     var body: some View {
-        VStack(spacing: Spacing.padding2) {
-            selectedDomains
-                .padding(.top, Spacing.padding3)
-            Spacer()
-            termsRow
-            PrimaryButton(title: LocalizedString.button) {
-                // TODO: claim action
+        WithViewStore(store) { viewStore in
+            VStack(spacing: Spacing.padding2) {
+                selectedDomains
+                    .padding(.top, Spacing.padding3)
+                Spacer()
+                termsRow
+                PrimaryButton(title: LocalizedString.button) {
+                    // TODO: claim action
+                }
+                .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
+                .accessibility(identifier: Accessibility.ctaButton)
             }
-            .accessibility(identifier: Accessibility.ctaButton)
+            .padding([.leading, .trailing], Spacing.padding3)
+            .primaryNavigation(title: LocalizedString.navigationTitle)
         }
-        .padding([.leading, .trailing], Spacing.padding3)
-        .primaryNavigation(title: LocalizedString.navigationTitle)
     }
 
     private var selectedDomains: some View {

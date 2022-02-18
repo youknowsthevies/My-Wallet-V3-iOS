@@ -94,19 +94,23 @@ struct SearchCryptoDomainView: View {
     }
 
     private func createDomainRow(result: SearchDomainResult) -> some View {
-        PrimaryRow(
-            title: result.domainName,
-            subtitle: result.domainType.statusLabel,
-            tags: [
-                Tag(
-                    text: result.domainAvailability.availabilityLabel,
-                    variant: result.domainAvailability == .availableForFree ?
-                        .success : result.domainAvailability == .unavailable ? .default : .infoAlt
-                )
-            ],
-            action: {}
-        )
-        .accessibilityIdentifier(Accessibility.domainListRow)
+        WithViewStore(store) { viewStore in
+            PrimaryRow(
+                title: result.domainName,
+                subtitle: result.domainType.statusLabel,
+                tags: [
+                    Tag(
+                        text: result.domainAvailability.availabilityLabel,
+                        variant: result.domainAvailability == .availableForFree ?
+                            .success : result.domainAvailability == .unavailable ? .default : .infoAlt
+                    )
+                ],
+                action: {
+                    viewStore.send(.selectDomain(result))
+                }
+            )
+            .accessibilityIdentifier(Accessibility.domainListRow)
+        }
     }
 }
 

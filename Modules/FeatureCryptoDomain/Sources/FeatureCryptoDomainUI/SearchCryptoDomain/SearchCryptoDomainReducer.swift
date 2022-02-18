@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import OrderedCollections
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
@@ -30,6 +31,7 @@ enum SearchCryptoDomainRoute: NavigationRoute {
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
+    case selectDomain(SearchDomainResult)
     case checkoutAction(DomainCheckoutAction)
 }
 
@@ -42,6 +44,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var isAlertCardShown: Bool
     var searchResults: [SearchDomainResult]
     var filteredSearchResults: [SearchDomainResult]
+    var selectedDomains: OrderedSet<SearchDomainResult>
     var route: RouteIntent<SearchCryptoDomainRoute>?
     var checkoutState: DomainCheckoutState?
 
@@ -58,6 +61,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         self.isAlertCardShown = isAlertCardShown
         self.searchResults = searchResults
         filteredSearchResults = searchResults
+        selectedDomains = OrderedSet([])
         self.route = route
         self.checkoutState = checkoutState
     }
@@ -107,11 +111,17 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
         case .binding:
             return .none
+        case .selectDomain(let domain):
+            state.selectedDomains.removeAll()
+            state.selectedDomains.append(domain)
+            return Effect(value: .navigate(to: .checkout))
         case .route(let route):
             if let routeValue = route?.route {
                 switch routeValue {
                 case .checkout:
-                    state.checkoutState = .init()
+                    state.checkoutState = .init(
+                        selectedDomains: state.selectedDomains
+                    )
                 }
             }
             return .none
