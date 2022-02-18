@@ -191,7 +191,7 @@ extension MoneyValue {
 
     public var shortDisplayString: String {
         let formattedMinimum: String
-        if let fiatValue = fiatValue?.displayableRounding(decimalPlaces: 0, roundingMode: .bankers) {
+        if let fiatValue = fiatValue?.displayableRounding(decimalPlaces: 0, roundingMode: .up) {
             formattedMinimum = fiatValue.toDisplayString(includeSymbol: true, format: .shortened, locale: .current)
         } else {
             formattedMinimum = displayString
