@@ -131,8 +131,14 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .checkoutAction(.removeDomain(let domain)):
+            guard let domain = domain else {
+                return .none
+            }
             state.selectedDomains.remove(domain)
             return .none
+
+        case .checkoutAction(.returnToBrowseDomains):
+            return .dismiss()
 
         case .checkoutAction:
             return .none
