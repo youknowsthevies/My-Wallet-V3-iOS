@@ -4,17 +4,32 @@ import Combine
 import Foundation
 
 public protocol AppProtocol: AnyObject, CustomStringConvertible {
+
     var language: Language { get }
+
     var events: Session.Events { get }
+    var state: Session.State { get }
 }
 
 public class App: AppProtocol, CustomStringConvertible {
 
     public let language: Language
-    public let events: Session.Events = .init()
 
-    public init(language: Language = Language.root.language) {
+    public let events: Session.Events
+    public let state: Session.State
+
+    public convenience init(language: Language = Language.root.language) {
+        self.init(language: language, events: .init(), state: .init())
+    }
+
+    init(
+        language: Language = Language.root.language,
+        events: Session.Events,
+        state: Session.State
+    ) {
         self.language = language
+        self.events = events
+        self.state = state
     }
 }
 
@@ -96,6 +111,25 @@ private let e = (
     file: blockchain.ux.type.analytics.error.file[],
     line: blockchain.ux.type.analytics.error.line[]
 )
+
+extension AppProtocol {
+
+    public func publisher(for id: L) -> AnyPublisher<FetchResult, Never> {
+        publisher(for: language[id])
+    }
+
+    public func publisher(for tag: Tag) -> AnyPublisher<FetchResult, Never> {
+        switch tag {
+        case blockchain.session.state.value, blockchain.db.collection.id:
+            return state.publisher(for: tag)
+                .map(FetchResult.create(tag.metadata()))
+                .eraseToAnyPublisher()
+        default:
+            return Just(.error(.keyDoesNotExist(tag), tag.metadata()))
+                .eraseToAnyPublisher()
+        }
+    }
+}
 
 extension App {
     public var description: String { "App \(language.id)" }
