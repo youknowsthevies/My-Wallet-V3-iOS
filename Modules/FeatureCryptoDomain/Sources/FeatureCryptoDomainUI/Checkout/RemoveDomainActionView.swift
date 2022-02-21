@@ -11,7 +11,7 @@ struct RemoveDomainActionView: View {
 
     @Binding var domain: SearchDomainResult?
     @Binding var isShown: Bool
-    var removeButtonTapped: (() -> Void)
+    var removeButtonTapped: () -> Void
 
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
