@@ -38,9 +38,33 @@ enum AccessibilityIdentifiers {
     // MARK: - Domain Checkout Screen
 
     enum DomainCheckout {
-        static let prefix = "DomainCheckoutScreen"
+        static let prefix = "DomainCheckoutScreen."
+        static let selectedDomainList = "\(prefix)selectedDomainList"
         static let termsSwitch = "\(prefix)termsSwitch"
         static let termsText = "\(prefix)termsText"
         static let ctaButton = "\(prefix)ctaButton"
+        static let emptyStateIcon = "\(prefix)emptyStateIcon"
+        static let emptyStateTitle = "\(prefix)emptyStateTitle"
+        static let emptyStateDescription = "\(prefix)emptyStateDescription"
+        static let browseButton = "\(prefix)browseButton"
+    }
+
+    enum RemoveDomainBottomSheet {
+        static let prefix = "RemoveDomainBottomSheet."
+        static let removeIcon = "\(prefix)removeIcon"
+        static let removeTitle = "\(prefix)removeTitle"
+        static let removeButton = "\(prefix)removeButton"
+        static let nevermindButton = "\(prefix)nevermindButton"
+    }
+
+    // MARK: - Checkout Confirmation Screen
+
+    enum CheckoutConfirmation {
+        static let prefix = "DomainCheckoutConfirmationScreen."
+        static let icon = "\(prefix)icon"
+        static let title = "\(prefix)title"
+        static let description = "\(prefix)description"
+        static let learnMoreButton = "\(prefix)learnMoreButton"
+        static let okayButton = "\(prefix)okayButton"
     }
 }

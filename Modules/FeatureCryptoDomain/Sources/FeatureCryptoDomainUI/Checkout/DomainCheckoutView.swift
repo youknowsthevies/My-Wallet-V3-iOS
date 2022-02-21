@@ -58,15 +58,19 @@ struct DomainCheckoutView: View {
                     Icon.cart
                         .frame(width: 54, height: 54)
                         .accentColor(.semantic.primary)
+                        .accessibility(identifier: Accessibility.emptyStateIcon)
                     Text(LocalizedString.emptyTitle)
                         .typography(.title3)
+                        .accessibility(identifier: Accessibility.emptyStateTitle)
                     Text(LocalizedString.emptyInstruction)
                         .typography(.paragraph1)
                         .foregroundColor(.semantic.overlay)
+                        .accessibility(identifier: Accessibility.emptyStateDescription)
                     Spacer()
                     PrimaryButton(title: LocalizedString.browseButton) {
                         viewStore.send(.returnToBrowseDomains)
                     }
+                    .accessibility(identifier: Accessibility.browseButton)
                 }
                 .padding([.leading, .trailing], Spacing.padding3)
             }
@@ -99,6 +103,7 @@ struct DomainCheckoutView: View {
                         )
                     }
                 }
+                .accessibility(identifier: Accessibility.selectedDomainList)
             }
         }
     }
