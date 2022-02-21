@@ -8,6 +8,7 @@ import SwiftUI
 struct BuyDomainActionView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.BuyDomain
+    private typealias Accessibilty = AccessibilityIdentifiers.BuyDomainBottomSheet
 
     @Binding var domain: SearchDomainResult?
     @Binding var isShown: Bool
@@ -17,10 +18,12 @@ struct BuyDomainActionView: View {
             Text(String(format: LocalizedString.header, domain?.domainName ?? ""))
                 .typography(.title3)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibility(identifier: Accessibilty.buyTitle)
             Text(LocalizedString.prompt)
                 .typography(.paragraph1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.semantic.overlay)
+                .accessibility(identifier: Accessibilty.buyDescription)
             Spacer()
             PrimaryButton(
                 title: LocalizedString.Button.buyDomain,
@@ -36,10 +39,12 @@ struct BuyDomainActionView: View {
                     }
                 }
             )
+            .accessibility(identifier: Accessibilty.buyButton)
             MinimalButton(title: LocalizedString.Button.noThanks) {
                 isShown.toggle()
             }
             .padding(.bottom, Spacing.padding3)
+            .accessibility(identifier: Accessibilty.goBackButton)
         }
         .multilineTextAlignment(.center)
         .padding(Spacing.padding3)
