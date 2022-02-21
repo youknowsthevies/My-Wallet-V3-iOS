@@ -223,4 +223,25 @@ extension LocalizationConstants.FeatureCryptoDomain {
             )
         }
     }
+
+    // MARK: - Checkout confirmation screen
+
+    public enum CheckoutConfirmation {
+        public static let title = NSLocalizedString(
+            "%@ is now yours!",
+            comment: "checkout confirmation titlte"
+        )
+        public static let description = NSLocalizedString(
+            "You can now share your domain to receive crypto instead of sharing your wallet addresses.",
+            comment: "checkout confirmation description"
+        )
+        public static let learnMore = NSLocalizedString(
+            "Learn More",
+            comment: "learn more button"
+        )
+        public static let okayButton = NSLocalizedString(
+            "Okay",
+            comment: "okay button"
+        )
+    }
 }

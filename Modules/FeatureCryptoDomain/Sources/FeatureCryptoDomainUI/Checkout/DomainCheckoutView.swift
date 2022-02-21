@@ -22,6 +22,7 @@ struct DomainCheckoutView: View {
         WithViewStore(store) { viewStore in
             checkoutView
                 .primaryNavigation(title: LocalizedString.navigationTitle)
+                .navigationRoute(in: store)
                 .bottomSheet(isPresented: viewStore.binding(\.$isRemoveBottomSheetShown)) {
                     createRemoveBottomSheet(
                         domain: viewStore.binding(\.$removeCandidate),
@@ -45,7 +46,7 @@ struct DomainCheckoutView: View {
                     Spacer()
                     termsRow
                     PrimaryButton(title: LocalizedString.button) {
-                        // TODO: claim action
+                        viewStore.send(.navigate(to: .confirmation))
                     }
                     .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
                     .accessibility(identifier: Accessibility.ctaButton)

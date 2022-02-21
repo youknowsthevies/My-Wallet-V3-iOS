@@ -11,9 +11,14 @@ enum DomainCheckoutRoute: NavigationRoute {
 
     @ViewBuilder
     func destination(in store: Store<DomainCheckoutState, DomainCheckoutAction>) -> some View {
+        let viewStore = ViewStore(store)
         switch self {
         case .confirmation:
-            EmptyView()
+            if let selectedDomain = viewStore.selectedDomains.first {
+                DomainCheckoutConfirmationView(
+                    domain: selectedDomain
+                )
+            }
         }
     }
 }
