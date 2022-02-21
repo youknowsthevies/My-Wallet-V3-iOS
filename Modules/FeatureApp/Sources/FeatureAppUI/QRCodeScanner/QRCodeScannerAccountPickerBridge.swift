@@ -1,11 +1,7 @@
-//
-//  QRCodeScannerAccountPickerBridge.swift
-//  Blockchain
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
 import FeatureQRCodeScannerDomain
-import Foundation
 import PlatformKit
 import PlatformUIKit
 import RxSwift

@@ -1,17 +1,12 @@
-//
-//  QRCodeScannerLinkerAdapater.swift
-//  Blockchain
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureQRCodeScannerDomain
 import FeatureQRCodeScannerUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 import UIComponentsKit
 
 final class QRCodeScannerAdapter {
@@ -21,6 +16,7 @@ final class QRCodeScannerAdapter {
     }
 
     private let accountPickerAccountProvider: AccountPickerAccountProviding
+    private let navigationRouter: NavigationRouterAPI
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
     private let qrCodeScannerRouter: QRCodeScannerRouting
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -29,13 +25,15 @@ final class QRCodeScannerAdapter {
     private var cancellables = Set<AnyCancellable>()
 
     init(
-        qrCodeScannerRouter: QRCodeScannerRouting = resolve(),
-        payloadFactory: CryptoTargetPayloadFactoryAPI = resolve(),
-        topMostViewControllerProvider: TopMostViewControllerProviding = resolve()
+        qrCodeScannerRouter: QRCodeScannerRouting,
+        payloadFactory: CryptoTargetPayloadFactoryAPI,
+        topMostViewControllerProvider: TopMostViewControllerProviding,
+        navigationRouter: NavigationRouterAPI
     ) {
         self.qrCodeScannerRouter = qrCodeScannerRouter
         self.payloadFactory = payloadFactory
         self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.navigationRouter = navigationRouter
         accountPickerAccountProvider = AccountPickerAccountProvider(
             singleAccountsOnly: true,
             action: .send,
@@ -115,7 +113,6 @@ extension QRCodeScannerAdapter: CryptoTargetQRCodeParserAdapter {
         let viewController = router.viewControllable.uiviewController
         viewController.isModalInPresentation = true
 
-        let navigationRouter: NavigationRouterAPI = resolve()
         navigationRouter.present(viewController: viewController)
 
         return accountPickerBridge.selectedTarget
