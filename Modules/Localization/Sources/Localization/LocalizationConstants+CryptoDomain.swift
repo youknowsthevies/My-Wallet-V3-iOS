@@ -196,5 +196,31 @@ extension LocalizationConstants.FeatureCryptoDomain {
             "Claim",
             comment: "Domain checkout button"
         )
+        public static let emptyTitle = NSLocalizedString(
+            "Your Cart is Empty",
+            comment: "Domain checkout empty state title"
+        )
+        public static let emptyInstruction = NSLocalizedString(
+            "Add a domain to your cart.",
+            comment: "Domain checkout empty state instruction"
+        )
+        public static let browseButton = NSLocalizedString(
+            "Browse Domains",
+            comment: "Browse domain button"
+        )
+        public enum RemoveDomain {
+            public static let removeTitle = NSLocalizedString(
+                "Remove %@ from your cart?",
+                comment: "Remove domain title"
+            )
+            public static let removeButton = NSLocalizedString(
+                "Remove",
+                comment: "Remove CTA button"
+            )
+            public static let nevermindButton = NSLocalizedString(
+                "Nevermind",
+                comment: "Nevermind CTA button"
+            )
+        }
     }
 }

@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
 
@@ -19,19 +20,55 @@ struct DomainCheckoutView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: Spacing.padding2) {
-                selectedDomains
-                    .padding(.top, Spacing.padding3)
-                Spacer()
-                termsRow
-                PrimaryButton(title: LocalizedString.button) {
-                    // TODO: claim action
+            checkoutView
+                .primaryNavigation(title: LocalizedString.navigationTitle)
+                .bottomSheet(isPresented: viewStore.binding(\.$isRemoveBottomSheetShown)) {
+                    createRemoveBottomSheet(
+                        domain: viewStore.binding(\.$removeCandidate),
+                        removeButtonTapped: {
+                            withAnimation {
+                                viewStore.send(.removeDomain(viewStore.removeCandidate))
+                            }
+                        }
+                    )
                 }
-                .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
-                .accessibility(identifier: Accessibility.ctaButton)
+        }
+    }
+
+    @ViewBuilder
+    private var checkoutView: some View {
+        WithViewStore(store) { viewStore in
+            if !viewStore.selectedDomains.isEmpty {
+                VStack(spacing: Spacing.padding2) {
+                    selectedDomains
+                        .padding(.top, Spacing.padding3)
+                    Spacer()
+                    termsRow
+                    PrimaryButton(title: LocalizedString.button) {
+                        // TODO: claim action
+                    }
+                    .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
+                    .accessibility(identifier: Accessibility.ctaButton)
+                }
+                .padding([.leading, .trailing], Spacing.padding3)
+            } else {
+                VStack(spacing: Spacing.padding3) {
+                    Spacer()
+                    Icon.cart
+                        .frame(width: 54, height: 54)
+                        .accentColor(.semantic.primary)
+                    Text(LocalizedString.emptyTitle)
+                        .typography(.title3)
+                    Text(LocalizedString.emptyInstruction)
+                        .typography(.paragraph1)
+                        .foregroundColor(.semantic.overlay)
+                    Spacer()
+                    PrimaryButton(title: LocalizedString.browseButton) {
+                        viewStore.send(.returnToBrowseDomains)
+                    }
+                }
+                .padding([.leading, .trailing], Spacing.padding3)
             }
-            .padding([.leading, .trailing], Spacing.padding3)
-            .primaryNavigation(title: LocalizedString.navigationTitle)
         }
     }
 
@@ -46,9 +83,7 @@ struct DomainCheckoutView: View {
                             trailing: {
                                 Button(
                                     action: {
-                                        withAnimation {
-                                            viewStore.send(.removeDomain(domain))
-                                        }
+                                        viewStore.send(.set(\.$removeCandidate, domain))
                                     },
                                     label: {
                                         Icon.delete
@@ -78,6 +113,19 @@ struct DomainCheckoutView: View {
                     .typography(.micro)
                     .accessibilityIdentifier(Accessibility.termsText)
             }
+        }
+    }
+
+    private func createRemoveBottomSheet(
+        domain: Binding<SearchDomainResult?>,
+        removeButtonTapped: @escaping (() -> Void)
+    ) -> some View {
+        WithViewStore(store) { viewStore in
+            RemoveDomainActionView(
+                domain: domain,
+                isShown: viewStore.binding(\.$isRemoveBottomSheetShown),
+                removeButtonTapped: removeButtonTapped
+            )
         }
     }
 }
