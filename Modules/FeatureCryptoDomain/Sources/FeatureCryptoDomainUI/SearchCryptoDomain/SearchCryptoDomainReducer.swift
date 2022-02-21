@@ -78,14 +78,9 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let externalAppOpener: ExternalAppOpener
 
-    init(
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        externalAppOpener: ExternalAppOpener
-    ) {
+    init(mainQueue: AnySchedulerOf<DispatchQueue>) {
         self.mainQueue = mainQueue
-        self.externalAppOpener = externalAppOpener
     }
 }
 
@@ -101,7 +96,7 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainState,
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
-    > { state, action, environment in
+    > { state, action, _ in
         switch action {
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
             state.selectedPremiumDomain = nil
@@ -120,9 +115,8 @@ let searchCryptoDomainReducer = Reducer.combine(
             return Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true))
 
         case .openPremiumDomainLink(let url):
-            environment
-                .externalAppOpener
-                .open(url)
+            // TODO: remove this and use ExternalAppOpener when integrated with main target
+            UIApplication.shared.open(url)
             return .none
 
         case .route(let route):
@@ -144,7 +138,6 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
         }
     }
-    .debug()
     .routing()
     .binding()
 )

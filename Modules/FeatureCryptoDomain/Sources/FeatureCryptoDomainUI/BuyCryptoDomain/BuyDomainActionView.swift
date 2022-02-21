@@ -29,7 +29,11 @@ struct BuyDomainActionView: View {
                         .frame(width: 24, height: 24)
                 },
                 action: {
-                    // TODO: open new window
+                    if case .premium(let url) = domain?.domainType {
+                        UIApplication.shared.open(url) { _ in
+                            isShown.toggle()
+                        }
+                    }
                 }
             )
             MinimalButton(title: LocalizedString.Button.noThanks) {

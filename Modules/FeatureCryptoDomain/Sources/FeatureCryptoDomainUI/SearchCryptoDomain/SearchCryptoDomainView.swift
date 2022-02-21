@@ -143,7 +143,7 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                     searchResults: [
                         SearchDomainResult(
                             domainName: "cocacola.blockchain",
-                            domainType: .premium,
+                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
                             domainAvailability: .unavailable
                         ),
                         SearchDomainResult(
@@ -158,15 +158,14 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                         ),
                         SearchDomainResult(
                             domainName: "cocola.blockchain",
-                            domainType: .premium,
+                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
                             domainAvailability: .availableForPremiumSale(price: "50")
                         )
                     ]
                 ),
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
-                    mainQueue: .main,
-                    externalAppOpener: ToLogAppOpener()
+                    mainQueue: .main
                 )
             )
         )
