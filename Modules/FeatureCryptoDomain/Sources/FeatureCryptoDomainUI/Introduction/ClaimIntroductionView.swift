@@ -6,6 +6,7 @@ import ComposableNavigation
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
+import ToolKit
 
 // MARK: - ComposableArchitecture
 
@@ -47,7 +48,10 @@ let claimIntroductionReducer = Reducer.combine(
             state: \.searchState,
             action: /ClaimIntroductionAction.searchAction,
             environment: {
-                SearchCryptoDomainEnvironment(mainQueue: .main)
+                SearchCryptoDomainEnvironment(
+                    mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener()
+                )
             }
         ),
     Reducer<ClaimIntroductionState, ClaimIntroductionAction, Void> {
@@ -78,6 +82,11 @@ let claimIntroductionReducer = Reducer.combine(
                                 domainName: "cocola.blockchain",
                                 domainType: .premium,
                                 domainAvailability: .availableForPremiumSale(price: "50")
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocola2.blockchain",
+                                domainType: .premium,
+                                domainAvailability: .availableForPremiumSale(price: "500")
                             )
                         ]
                     )

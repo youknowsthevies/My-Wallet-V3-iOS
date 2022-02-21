@@ -185,7 +185,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
 
     public enum BuyDomain {
         public static let header = NSLocalizedString(
-            "$@ is a premium domain.",
+            "%@ is a premium domain.",
             comment: "Buy domain bottom action view header"
         )
         public static let prompt = NSLocalizedString(
