@@ -8,7 +8,7 @@ public enum FetchResult {
 extension FetchResult {
 
     public enum Error: Swift.Error {
-        case keyDoesNotExist(Tag)
+        case keyDoesNotExist(Tag.Reference)
         case state(Session.State.Error)
         case other(Swift.Error)
     }
@@ -17,7 +17,7 @@ extension FetchResult {
 extension FetchResult {
 
     public struct Metadata {
-        public let tag: Tag
+        public let tag: Tag.Reference
     }
 
     public var metadata: Metadata {
@@ -73,6 +73,13 @@ extension FetchResult {
 }
 
 extension Tag {
+
+    public func metadata() -> FetchResult.Metadata {
+        FetchResult.Metadata(tag: ref())
+    }
+}
+
+extension Tag.Reference {
 
     public func metadata() -> FetchResult.Metadata {
         FetchResult.Metadata(tag: self)

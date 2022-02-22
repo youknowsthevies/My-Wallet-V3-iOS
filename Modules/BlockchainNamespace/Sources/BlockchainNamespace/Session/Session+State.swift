@@ -10,7 +10,7 @@ extension Session {
         unowned var app: AppProtocol!
         var data = Data()
 
-        public init(_ data: [Tag: Any] = [:]) {
+        public init(_ data: [Tag.Reference: Any] = [:]) {
             self.data.store = data
         }
     }
@@ -20,9 +20,9 @@ extension Session.State {
 
     public class Data {
 
-        public internal(set) var store: [Tag: Any] = [:]
-        internal var subjects: [Tag: Subject] = [:]
-        private var dirty: (data: [Tag: Any], level: UInt) = ([:], 0)
+        public internal(set) var store: [Tag.Reference: Any] = [:]
+        internal var subjects: [Tag.Reference: Subject] = [:]
+        private var dirty: (data: [Tag.Reference: Any], level: UInt) = ([:], 0)
 
         private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
         private var key: DispatchSpecificKey<Data.Type>
@@ -31,7 +31,7 @@ extension Session.State {
     }
 
     public enum Error: Swift.Error {
-        case keyDoesNotExist(Tag)
+        case keyDoesNotExist(Tag.Reference)
         case other(Swift.Error)
     }
 }
@@ -41,7 +41,7 @@ extension Session.State.Data {
     private struct Tombstone: Hashable {}
 
     public struct Computed {
-        public let key: Tag
+        public let key: Tag.Reference
         public let yield: () throws -> Any
     }
 }
@@ -58,40 +58,46 @@ extension Session.State {
         }
     }
 
-    public func contains(_ id: L) -> Bool { contains(id[]) }
-    public func contains(_ tag: Tag) -> Bool {
-        data.store.keys.contains(tag)
+    public func contains(_ key: L) -> Bool { contains(key[]) }
+    public func contains(_ key: Tag) -> Bool { contains(key.ref(in: app)) }
+    public func contains(_ key: Tag.Reference) -> Bool {
+        data.store.keys.contains(key)
     }
 
-    public func clear(_ id: L) { clear(id[]) }
-    public func clear(_ tag: Tag) {
-        if tag.is(blockchain.user.id) {
-            for key in data.store.keys where tag.isNot(blockchain.session.state.shared.value) {
+    public func clear(_ key: L) { clear(key[]) }
+    public func clear(_ key: Tag) { clear(key.ref(in: app)) }
+    public func clear(_ key: Tag.Reference) {
+        if key.tag.is(blockchain.user.id) {
+            for key in data.store.keys where key.tag.isNot(blockchain.session.state.shared.value) {
                 data.clear(key)
             }
         }
-        data.clear(tag)
+        data.clear(key)
     }
 
-    public func set(_ id: L, to value: Any) { set(id[], to: value) }
-    public func set(_ tag: Tag, to value: Any) {
-        data.set(tag, to: value)
+    public func set(_ key: L, to value: Any) { set(key[], to: value) }
+    public func set(_ key: Tag, to value: Any) { set(key.ref(in: app), to: value) }
+    public func set(_ key: Tag.Reference, to value: Any) {
+        data.set(key, to: value)
     }
 
-    public func set(_ id: L, to value: @escaping () throws -> Any) { set(id[], to: value) }
-    public func set(_ tag: Tag, to value: @escaping () throws -> Any) {
-        data.set(tag, to: Data.Computed(key: tag, yield: value))
+    public func set(_ key: L, to value: @escaping () throws -> Any) { set(key[], to: value) }
+    public func set(_ key: Tag, to value: @escaping () throws -> Any) { set(key.ref(in: app), to: value) }
+    public func set(_ key: Tag.Reference, to value: @escaping () throws -> Any) {
+        data.set(key, to: Data.Computed(key: key, yield: value))
     }
 
-    public func get(_ id: L) throws -> Any { try get(id[]) }
-    public func get(_ tag: Tag) throws -> Any {
-        try data.get(tag)
+    public func get(_ key: L) throws -> Any { try get(key[]) }
+    public func get(_ key: Tag) throws -> Any { try get(key.ref(in: app)) }
+    public func get(_ key: Tag.Reference) throws -> Any {
+        try data.get(key)
     }
 
-    public func result(for id: L) -> Result<Any, Error> { result(for: id[]) }
-    public func result(for tag: Tag) -> Result<Any, Error> {
+    public func result(for key: L) -> Result<Any, Error> { result(for: key[]) }
+    public func result(for key: Tag) -> Result<Any, Error> { result(for: key.ref(in: app)) }
+    public func result(for key: Tag.Reference) -> Result<Any, Error> {
         do {
-            return try .success(get(tag))
+            return try .success(get(key))
         } catch let error as Error {
             return .failure(error)
         } catch {
@@ -99,10 +105,11 @@ extension Session.State {
         }
     }
 
-    public func publisher(for id: L) -> AnyPublisher<Result<Any, Error>, Never> { publisher(for: id[]) }
-    public func publisher(for tag: Tag) -> AnyPublisher<Result<Any, Error>, Never> {
-        Just(result(for: tag))
-            .merge(with: data.subject(for: tag))
+    public func publisher(for key: L) -> AnyPublisher<Result<Any, Error>, Never> { publisher(for: key[]) }
+    public func publisher(for key: Tag) -> AnyPublisher<Result<Any, Error>, Never> { publisher(for: key.ref(in: app)) }
+    public func publisher(for key: Tag.Reference) -> AnyPublisher<Result<Any, Error>, Never> {
+        Just(result(for: key))
+            .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
     }
 }
@@ -112,18 +119,18 @@ extension Session.State.Data {
     public var isInTransaction: Bool { sync { dirty.level > 0 } }
     public var isNotInTransaction: Bool { !isInTransaction }
 
-    func contains(_ key: Tag) -> Bool {
+    public func contains(_ key: Tag.Reference) -> Bool {
         sync { store.keys.contains(key) }
     }
 
-    func get(_ key: Tag) throws -> Any {
+    func get(_ key: Tag.Reference) throws -> Any {
         guard let value = sync(execute: { store[key] }) else {
             throw Session.State.Error.keyDoesNotExist(key)
         }
         return try (value as? Computed)?.yield() ?? value
     }
 
-    func set(_ key: Tag, to value: Any) {
+    func set(_ key: Tag.Reference, to value: Any) {
         sync {
             dirty.data[key] = value
             if isNotInTransaction {
@@ -132,7 +139,7 @@ extension Session.State.Data {
         }
     }
 
-    func clear(_ key: Tag) {
+    func clear(_ key: Tag.Reference) {
         sync {
             if isInTransaction {
                 dirty.data[key] = Tombstone.self
@@ -174,7 +181,7 @@ extension Session.State.Data {
         }
     }
 
-    func subject(for key: Tag) -> Session.State.Subject {
+    func subject(for key: Tag.Reference) -> Session.State.Subject {
         sync {
             let subject = subjects[key, default: .init()]
             subjects[key] = subject
@@ -182,7 +189,7 @@ extension Session.State.Data {
         }
     }
 
-    private func update(_ data: [Tag: Any]) {
+    private func update(_ data: [Tag.Reference: Any]) {
         sync {
             for (key, value) in data {
                 switch value {

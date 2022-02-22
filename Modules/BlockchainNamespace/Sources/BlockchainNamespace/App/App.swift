@@ -40,7 +40,11 @@ extension AppProtocol {
     }
 
     public func post(event tag: Tag, context: Tag.Context = [:]) {
-        events.send(Session.Event(tag: tag, context: context))
+        post(event: tag.ref(in: self), context: context)
+    }
+
+    public func post(event ref: Tag.Reference, context: Tag.Context = [:]) {
+        events.send(Session.Event(ref: ref, context: context))
     }
 
     public func post<E: Error>(
@@ -75,7 +79,7 @@ extension AppProtocol {
     ) {
         events.send(
             Session.Event(
-                tag: tag,
+                ref: tag.ref(in: self),
                 context: context + [
                     e.message: "\(error)",
                     e.file: file,
@@ -102,7 +106,20 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag {
-        events.is(tags).eraseToAnyPublisher()
+        events.filter(tags).eraseToAnyPublisher()
+    }
+
+    public func on(
+        _ first: Tag.Reference,
+        _ rest: Tag.Reference...
+    ) -> AnyPublisher<Session.Event, Never> {
+        on([first] + rest)
+    }
+
+    public func on<Tags>(
+        _ tags: Tags
+    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Reference {
+        events.filter(tags).eraseToAnyPublisher()
     }
 }
 
@@ -119,13 +136,17 @@ extension AppProtocol {
     }
 
     public func publisher(for tag: Tag) -> AnyPublisher<FetchResult, Never> {
-        switch tag {
+        publisher(for: tag.ref(in: self))
+    }
+
+    public func publisher(for ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
-            return state.publisher(for: tag)
-                .map(FetchResult.create(tag.metadata()))
+            return state.publisher(for: ref)
+                .map(FetchResult.create(ref.metadata()))
                 .eraseToAnyPublisher()
         default:
-            return Just(.error(.keyDoesNotExist(tag), tag.metadata()))
+            return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
                 .eraseToAnyPublisher()
         }
     }

@@ -2,11 +2,12 @@
 // swiftlint:disable type_name
 
 import Foundation
+import SwiftLexicon
 
 public struct Tag {
 
-    public typealias Indices = [Tag: CustomStringConvertible]
-    public typealias Context = [Tag: CustomStringConvertible]
+    public typealias Indices = [Tag: String]
+    public typealias Context = [Tag: Any]
 
     public typealias ID = String
     public typealias Name = String
@@ -30,6 +31,21 @@ public struct Tag {
         self.node = node
         self.language = language
     }
+}
+
+extension L {
+    public typealias Indices = [L: String]
+    public typealias Context = [L: Any]
+}
+
+extension Tag {
+
+    var isCollection: Bool { Tag.isCollection(self) }
+    var isLeaf: Bool { Tag.isLeaf(self) }
+    var isLeafDescendant: Bool { Tag.isLeafDescendant(self) }
+
+    var template: Tag.Reference.Template { .init(self) }
+    var breadcrumb: [Tag] { lineage.reversed().prefix(while: \.isLeafDescendant.not) }
 }
 
 extension Tag {
@@ -159,7 +175,7 @@ extension Tag {
         guard `is`(other[]) else {
             throw error(message: "\(self) is not a \(other)")
         }
-        return other
+        return T(id)
     }
 }
 
@@ -180,6 +196,32 @@ extension Tag {
             result = (try? tag.node.protonym.map { try Tag(id: $0, in: language) }) ?? tag
         }
         return result
+    }
+
+    public func child(named name: Name) throws -> Tag {
+        guard let child = children[name] else {
+            throw error(message: "\(self) does not have a child '\(name)' - it has children: \(children)")
+        }
+        return child
+    }
+}
+
+extension Tag {
+
+    static func isCollection(_ tag: Tag) -> Bool {
+        tag.is(blockchain.db.collection)
+    }
+
+    static func isLeaf(_ tag: Tag) -> Bool {
+        guard tag.parent != nil else { return false }
+        return !tag.is(blockchain.session.state.value)
+            && !tag.isLeafDescendant
+            && (tag.children.isEmpty || tag.is(blockchain.db.leaf))
+    }
+
+    static func isLeafDescendant(_ tag: Tag) -> Bool {
+        guard let parent = tag.parent else { return false }
+        return parent.isLeafDescendant || parent.isLeaf
     }
 }
 

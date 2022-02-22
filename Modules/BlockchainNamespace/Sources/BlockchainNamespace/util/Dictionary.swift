@@ -20,7 +20,18 @@ extension Dictionary {
     }
 }
 
-extension Dictionary where Key == Tag, Value == CustomStringConvertible {
+extension Dictionary where Key == L, Value == String {
+    public func toTagString() -> [Tag: Value] { mapKeys(\.[]) }
+}
 
+extension Dictionary where Key == L, Value == Any {
+    public func toTagAny() -> [Tag: Value] { mapKeys(\.[]) }
+}
+
+extension Dictionary where Key == Tag, Value == String {
+    public subscript(id: L) -> Value? { self[id[]] }
+}
+
+extension Dictionary where Key == Tag, Value == Any {
     public subscript(id: L) -> Value? { self[id[]] }
 }
