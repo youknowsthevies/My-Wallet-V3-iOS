@@ -17,13 +17,6 @@ blockchain:
 			wallet:
 				options:
 				+ blockchain.session.configuration.value
-		deep_link:
-			story:
-			+ blockchain.session.state.value
-			+ blockchain.ux.type.story
-			url:
-			+ blockchain.db.type.url
-			+ blockchain.session.state.value
 		enter:
 			into:
 			+ blockchain.ux.type.story
@@ -410,10 +403,6 @@ blockchain:
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:
-				appear:
-				+ blockchain.ux.type.action
-				disappear:
-				+ blockchain.ux.type.action
 				entry:
 		user:
 			KYC:

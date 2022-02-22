@@ -30,6 +30,32 @@ extension FetchResult {
 
 extension FetchResult {
 
+    public var value: Any? {
+        switch self {
+        case .value(let any, _):
+            return any
+        case .error:
+            return nil
+        }
+    }
+
+    public var error: Error? {
+        switch self {
+        case .error(let error, _):
+            return error
+        case .value:
+            return nil
+        }
+    }
+
+    public init(_ any: Any, metadata: Metadata) {
+        self = .value(any, metadata)
+    }
+
+    public init(_ error: Error, metadata: Metadata) {
+        self = .error(error, metadata)
+    }
+
     public init(catching body: () throws -> Any, _ metadata: Metadata) {
         self.init(.init(catching: body), metadata)
     }

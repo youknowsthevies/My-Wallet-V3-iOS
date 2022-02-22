@@ -18,6 +18,8 @@ public class App: AppProtocol, CustomStringConvertible {
     public let events: Session.Events
     public let state: Session.State
 
+    internal lazy var deepLinks = DeepLink(self)
+
     public convenience init(language: Language = Language.root.language) {
         self.init(language: language, events: .init(), state: .init())
     }
@@ -27,9 +29,14 @@ public class App: AppProtocol, CustomStringConvertible {
         events: Session.Events,
         state: Session.State
     ) {
+        defer { start() }
         self.language = language
         self.events = events
         self.state = state
+    }
+
+    private func start() {
+        deepLinks.start()
     }
 }
 

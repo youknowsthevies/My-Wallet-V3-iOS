@@ -32,6 +32,6 @@ extension Dictionary where Key == Tag, Value == String {
     public subscript(id: L) -> Value? { self[id[]] }
 }
 
-extension Dictionary where Key == Tag, Value == Any {
+extension Dictionary where Key == Tag {
     public subscript(id: L) -> Value? { self[id[]] }
 }
