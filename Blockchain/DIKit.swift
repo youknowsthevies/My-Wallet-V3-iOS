@@ -653,6 +653,8 @@ extension DependencyContainer {
         single {
             PulseNetworkDebugScreenProvider() as NetworkDebugScreenProvider
         }
+
+        single { app }
     }
 }
 

@@ -1,12 +1,14 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Localization
 import SwiftUI
 import ToolKit
 
 struct FrequentAction: Hashable, Identifiable {
-    var id: Tag { tag }
+
+    var id: String { tag.id }
     let tag: Tag
     let name: String
     let icon: Icon
@@ -18,49 +20,49 @@ extension FrequentAction {
     typealias Localization = LocalizationConstants.FrequentActionItem
 
     static let swap = FrequentAction(
-        tag: blockchain.ux.user.fab.swap,
+        tag: blockchain.ux.frequent.action.swap[],
         name: Localization.swap.name,
         icon: .walletSwap,
         description: Localization.swap.description
     )
     static let send = FrequentAction(
-        tag: blockchain.ux.user.fab.send,
+        tag: blockchain.ux.frequent.action.send[],
         name: Localization.send.name,
         icon: .walletSend,
         description: Localization.send.description
     )
     static let receive = FrequentAction(
-        tag: blockchain.ux.user.fab.receive,
+        tag: blockchain.ux.frequent.action.receive[],
         name: Localization.receive.name,
         icon: .walletReceive,
         description: Localization.receive.description
     )
     static let rewards = FrequentAction(
-        tag: blockchain.ux.user.fab.rewards,
+        tag: blockchain.ux.frequent.action.rewards[],
         name: Localization.rewards.name,
         icon: .walletPercent,
         description: Localization.rewards.description
     )
     static let deposit = FrequentAction(
-        tag: blockchain.ux.user.fab.deposit,
+        tag: blockchain.ux.frequent.action.deposit[],
         name: Localization.deposit.name,
         icon: .walletDeposit,
         description: Localization.deposit.description
     )
     static let withdraw = FrequentAction(
-        tag: blockchain.ux.user.fab.withdraw,
+        tag: blockchain.ux.frequent.action.withdraw[],
         name: Localization.withdraw.name,
         icon: .walletWithdraw,
         description: Localization.withdraw.description
     )
     static let buy = FrequentAction(
-        tag: blockchain.ux.user.fab.buy,
+        tag: blockchain.ux.frequent.action.buy[],
         name: Localization.buy,
         icon: .walletBuy,
         description: Localization.buy
     )
     static let sell = FrequentAction(
-        tag: blockchain.ux.user.fab.sell,
+        tag: blockchain.ux.frequent.action.sell[],
         name: Localization.sell,
         icon: .walletSell,
         description: Localization.sell
@@ -117,7 +119,7 @@ struct FrequentActionView: View {
         HStack(spacing: 8.pt) {
             ForEach(buttons) { button in
                 switch button.tag {
-                case blockchain.ux.user.fab.buy:
+                case blockchain.ux.frequent.action.buy:
                     PrimaryButton(
                         title: button.name,
                         action: { action(button) }
@@ -140,8 +142,8 @@ struct FrequentActionView: View {
 extension FrequentActionView {
 
     init(
-        list: [Tag.Meme],
-        buttons: [Tag.Meme],
+        list: [Tag],
+        buttons: [Tag],
         action: @escaping (FrequentAction) -> Void
     ) {
         self.init(
@@ -151,19 +153,19 @@ extension FrequentActionView {
         )
     }
 
-    private static func data(_ tag: Tag.Meme) -> FrequentAction? {
+    private static func data(_ tag: Tag) -> FrequentAction? {
         switch tag {
-        case blockchain.ux.user.fab.buy[]:
+        case blockchain.ux.frequent.action.buy:
             return .buy
-        case blockchain.ux.user.fab.sell[]:
+        case blockchain.ux.frequent.action.sell:
             return .sell
-        case blockchain.ux.user.fab.swap[]:
+        case blockchain.ux.frequent.action.swap:
             return .swap
-        case blockchain.ux.user.fab.send[]:
+        case blockchain.ux.frequent.action.send:
             return .send
-        case blockchain.ux.user.fab.receive[]:
+        case blockchain.ux.frequent.action.receive:
             return .receive
-        case blockchain.ux.user.fab.rewards[]:
+        case blockchain.ux.frequent.action.rewards:
             return .rewards
         default:
             return nil

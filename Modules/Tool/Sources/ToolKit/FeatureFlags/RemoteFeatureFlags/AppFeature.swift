@@ -80,10 +80,6 @@ public enum AppFeature: Int, CaseIterable {
     /// New tour view from `FeatureTour`
     case newOnboardingTour
 
-    // MARK: - Redesign
-
-    case fab
-
     // MARK: - Native Wallet
 
     case nativeWalletCreation
@@ -133,8 +129,6 @@ extension AppFeature {
             return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
-        case .fab:
-            return "ios_fab_data"
         case .newOnboardingTour:
             return "ios_ff_new_onboarding_tour"
         case .hotWalletCustodial:
@@ -186,8 +180,6 @@ extension AppFeature {
         case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
-            return true
-        case .fab:
             return true
         case .newOnboardingTour:
             return true

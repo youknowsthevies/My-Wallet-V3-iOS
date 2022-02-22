@@ -171,16 +171,6 @@ public func isDescendant(of a: Tag) -> (Tag) -> Bool {
 
 extension Tag {
 
-    public func `as`<T: L>(_ other: T) throws -> T {
-        guard `is`(other[]) else {
-            throw error(message: "\(self) is not a \(other)")
-        }
-        return T(id)
-    }
-}
-
-extension Tag {
-
     public subscript(descendant: Name...) -> Tag? {
         self[descendant]
     }
