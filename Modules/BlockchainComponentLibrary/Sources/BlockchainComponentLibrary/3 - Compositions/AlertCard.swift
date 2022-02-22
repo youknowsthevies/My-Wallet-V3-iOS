@@ -13,7 +13,7 @@ public struct AlertCard: View {
     private let message: String
     private let variant: Variant
     private let isBordered: Bool
-    private let onCloseTapped: () -> Void
+    private let onCloseTapped: (() -> Void)?
 
     /// Create an AlertCard view
     /// - Parameters:
@@ -21,13 +21,14 @@ public struct AlertCard: View {
     ///   - message: Main text displayed on the card
     ///   - variant: Color variant. See `extension AlertCard.Variant` below for options.
     ///   - isBordered: Option to add a colored border to the card
-    ///   - onCloseTapped: Closure executed when the user types the close icon
+    ///   - onCloseTapped: Closure executed when the user types the close icon. This value
+    ///   is optional. If not provided you will not see a close button on the view.
     public init(
         title: String,
         message: String,
         variant: Variant = .default,
         isBordered: Bool = false,
-        onCloseTapped: @escaping () -> Void
+        onCloseTapped: (() -> Void)? = nil
     ) {
         self.title = title
         self.message = message
@@ -43,11 +44,11 @@ public struct AlertCard: View {
                     .typography(.paragraph2)
                     .foregroundColor(variant.titleColor)
                 Spacer()
-                Button(
-                    action: onCloseTapped,
-                    label: {
-                        Icon.closev2
-                            .circle(
+                if let tap = onCloseTapped {
+                    Button(
+                        action: tap,
+                        label: {
+                            Icon.closev2.circle(
                                 backgroundColor: Color(
                                     light: .semantic.medium,
                                     dark: .palette.grey800
@@ -55,8 +56,9 @@ public struct AlertCard: View {
                             )
                             .accentColor(.palette.grey400)
                             .frame(width: 24)
-                    }
-                )
+                        }
+                    )
+                }
             }
             Text(message)
                 .typography(.caption1)

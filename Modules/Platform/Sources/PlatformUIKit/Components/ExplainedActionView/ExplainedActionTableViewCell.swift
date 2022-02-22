@@ -13,6 +13,7 @@ public final class ExplainedActionTableViewCell: UITableViewCell {
     // MARK: - UI Properties
 
     private let explainedActionView = ExplainedActionView()
+    private let separatorView = UIView()
 
     // MARK: - Setup
 
@@ -20,7 +21,12 @@ public final class ExplainedActionTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         contentView.addSubview(explainedActionView)
-        explainedActionView.fillSuperview()
+        contentView.addSubview(separatorView)
+        explainedActionView.layoutToSuperview(.leading, .trailing, .top)
+        explainedActionView.layout(edge: .bottom, to: .top, of: separatorView)
+        separatorView.backgroundColor = .lightBorder
+        separatorView.layoutToSuperview(.leading, .trailing, .bottom)
+        separatorView.layout(dimension: .height, to: 1)
     }
 
     override public func prepareForReuse() {

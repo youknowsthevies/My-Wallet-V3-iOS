@@ -23,7 +23,7 @@ struct PrimaryPickerExamples: View {
                         title: "Begins",
                         identifier: .begin,
                         trailing: {
-                            Tag(
+                            TagView(
                                 text: "\(date)",
                                 variant: selection == .begin ? .infoAlt : .default
                             )
@@ -42,7 +42,7 @@ struct PrimaryPickerExamples: View {
                         title: "Ends",
                         identifier: .end,
                         trailing: {
-                            Tag(
+                            TagView(
                                 text: "\(date)",
                                 variant: selection == .end ? .infoAlt : .default
                             )

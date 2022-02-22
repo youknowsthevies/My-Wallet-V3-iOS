@@ -72,7 +72,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var absoluteFee: Single<CryptoValue> {
-        feeService.fees.map(\.regular)
+        feeService.fees.map(\.regular).asSingle()
     }
 
     // MARK: - Init

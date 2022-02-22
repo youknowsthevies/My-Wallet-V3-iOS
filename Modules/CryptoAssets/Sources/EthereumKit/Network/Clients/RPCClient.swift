@@ -9,12 +9,15 @@ import PlatformKit
 
 protocol LatestBlockClientAPI {
     /// Streams the latest block number.
-    var latestBlock: AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> { get }
+    func latestBlock(
+        network: EVMNetwork
+    ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
 }
 
 protocol EstimateGasClientAPI {
     /// Estimate gas (gas limit) of the given ethereum transaction.
     func estimateGas(
+        network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
 }
@@ -22,6 +25,7 @@ protocol EstimateGasClientAPI {
 protocol GetCodeClientAPI {
     /// Get contract code (if any) on the given address.
     func code(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaDataResponse, NetworkError>
 }
@@ -29,6 +33,7 @@ protocol GetCodeClientAPI {
 protocol GetTransactionCountClientAPI {
     /// Get the transaction count (nonce) of a given ethereum address.
     func transactionCount(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
 }
@@ -36,6 +41,7 @@ protocol GetTransactionCountClientAPI {
 protocol GetBalanceClientAPI {
     /// Get the ethereum balance of a given ethereum address.
     func balance(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
 }
@@ -48,15 +54,14 @@ final class RPCClient: LatestBlockClientAPI,
 {
 
     private enum Endpoint {
-        static let rpcNode: [String] = ["eth", "nodes", "rpc"]
-    }
+        private static let ethereumNode: [String] = ["eth", "nodes", "rpc"]
 
-    // MARK: - Properties
-
-    var latestBlock: AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
-        createAndPerformHexaNumberRPCRequest(
-            encodable: BlockNumberRequest()
-        )
+        static func nodePath(for network: EVMNetwork) -> [String] {
+            switch network {
+            case .ethereum:
+                return ethereumNode
+            }
+        }
     }
 
     // MARK: - Private Properties
@@ -77,42 +82,62 @@ final class RPCClient: LatestBlockClientAPI,
         self.apiCode = apiCode
     }
 
+    // MARK: - RPCClient
+
+    func latestBlock(
+        network: EVMNetwork
+    ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
+        createAndPerformHexaNumberRPCRequest(
+            network: network,
+            encodable: BlockNumberRequest()
+        )
+    }
+
     func balance(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
         createAndPerformHexaNumberRPCRequest(
+            network: network,
             encodable: GetBalanceRequest(address: address)
         )
     }
 
     func transactionCount(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
         createAndPerformHexaNumberRPCRequest(
+            network: network,
             encodable: GetTransactionCountRequest(address: address)
         )
     }
 
     func estimateGas(
+        network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
         createAndPerformHexaNumberRPCRequest(
+            network: network,
             encodable: EstimateGasRequest(transaction: transaction)
         )
     }
 
     func code(
+        network: EVMNetwork,
         address: String
     ) -> AnyPublisher<JsonRpcHexaDataResponse, NetworkError> {
         createAndPerformHexaDataRPCRequest(
+            network: network,
             encodable: GetCodeRequest(address: address)
         )
     }
 
     private func createAndPerformHexaDataRPCRequest(
+        network: EVMNetwork,
         encodable: Encodable
     ) -> AnyPublisher<JsonRpcHexaDataResponse, NetworkError> {
-        rpcRequest(encodable: encodable)
+        rpcRequest(network: network, encodable: encodable)
             .publisher
             .flatMap { [networkAdapter] networkRequest in
                 networkAdapter.perform(request: networkRequest)
@@ -121,9 +146,10 @@ final class RPCClient: LatestBlockClientAPI,
     }
 
     private func createAndPerformHexaNumberRPCRequest(
+        network: EVMNetwork,
         encodable: Encodable
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
-        rpcRequest(encodable: encodable)
+        rpcRequest(network: network, encodable: encodable)
             .publisher
             .flatMap { [networkAdapter] networkRequest in
                 networkAdapter.perform(request: networkRequest)
@@ -131,12 +157,15 @@ final class RPCClient: LatestBlockClientAPI,
             .eraseToAnyPublisher()
     }
 
-    private func rpcRequest(encodable: Encodable) -> Result<NetworkRequest, NetworkError> {
+    private func rpcRequest(
+        network: EVMNetwork,
+        encodable: Encodable
+    ) -> Result<NetworkRequest, NetworkError> {
         guard let data = try? encodable.data() else {
             return .failure(.payloadError(.emptyData))
         }
         return requestBuilder.post(
-            path: Endpoint.rpcNode,
+            path: Endpoint.nodePath(for: network),
             body: data
         )
         .flatMap { .success($0) }

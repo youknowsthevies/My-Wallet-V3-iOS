@@ -253,6 +253,8 @@ packages:
     version: 0.20.0
   Analytics:
     path: Modules/Analytics
+  BlockchainNamespace:
+    path: Modules/BlockchainNamespace
   RxAnalytics:
     path: Modules/RxAnalytics
   CommonCrypto:
@@ -422,6 +424,7 @@ targets:
 
       - package: Analytics
         product: AnalyticsKit
+      - package: BlockchainNamespace
       - package: RxAnalytics
         product: RxAnalyticsKit
       - package: CommonCrypto

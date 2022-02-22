@@ -28,7 +28,7 @@ public struct TourViewAdapter: View {
                 LoadingStateView(title: "")
             case true?:
                 WithViewStore(store) { viewStore in
-                    TourView(
+                    OnboardingCarouselView(
                         environment: TourEnvironment(
                             createAccountAction: { viewStore.send(.navigate(to: .createWallet)) },
                             restoreAction: { viewStore.send(.navigate(to: .restoreWallet)) },

@@ -34,7 +34,7 @@ struct PrimaryRowExamplesView: View {
                         PrimaryRow(
                             title: "Email Address",
                             subtitle: "satoshi@blockchain.com",
-                            tags: [Tag(text: "Confirmed", variant: .success)],
+                            tags: [TagView(text: "Confirmed", variant: .success)],
                             action: {
                                 selection = 1
                             }
@@ -53,8 +53,8 @@ struct PrimaryRowExamplesView: View {
                             subtitle: "Instant Connection",
                             description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
                             tags: [
-                                Tag(text: "Fastest", variant: .success),
-                                Tag(text: "Warning Alert", variant: .warning)
+                                TagView(text: "Fastest", variant: .success),
+                                TagView(text: "Warning Alert", variant: .warning)
                             ],
                             action: {
                                 selection = 3
@@ -95,7 +95,7 @@ struct PrimaryRowExamplesView: View {
                         PrimaryRow(
                             title: "Gold Level",
                             subtitle: "Higher Trading Limits",
-                            tags: [Tag(text: "Approved", variant: .success)],
+                            tags: [TagView(text: "Approved", variant: .success)],
                             leading: {
                                 Icon.apple
                                     .fixedSize()
@@ -127,8 +127,8 @@ struct PrimaryRowExamplesView: View {
                             subtitle: "Instant Connection",
                             description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
                             tags: [
-                                Tag(text: "Fastest", variant: .success),
-                                Tag(text: "Warning Alert", variant: .warning)
+                                TagView(text: "Fastest", variant: .success),
+                                TagView(text: "Warning Alert", variant: .warning)
                             ],
                             leading: {
                                 Icon.bank

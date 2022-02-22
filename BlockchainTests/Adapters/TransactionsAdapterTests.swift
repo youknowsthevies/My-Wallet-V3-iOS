@@ -11,15 +11,18 @@ final class TransactionsAdapterTests: XCTestCase {
 
     private var adapter: TransactionsAdapter!
     private var mockTransactionsRouter: MockTransactionsRouter!
+    private var mockCoincore: MockCoincore!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockTransactionsRouter = MockTransactionsRouter()
-        adapter = TransactionsAdapter(router: mockTransactionsRouter)
+        mockCoincore = MockCoincore()
+        adapter = TransactionsAdapter(router: mockTransactionsRouter, coincore: mockCoincore)
     }
 
     override func tearDownWithError() throws {
         adapter = nil
+        mockCoincore = nil
         mockTransactionsRouter = nil
         try super.tearDownWithError()
     }
@@ -29,11 +32,22 @@ final class TransactionsAdapterTests: XCTestCase {
     func test_routesTo_buyFlow_for_onboarding() throws {
         // WHEN: The adapter is asked to present the buy flow
         let presenter = UIViewController()
-        let _: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: presenter)
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: presenter)
+        let cancellable = publisher.sink { _ in
+            // no-op
+        }
+
+        // wait for coincore
+        let e = expectation(description: "Wait for Coincore")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: e.fulfill)
+        wait(for: [e], timeout: 10)
+
         // THEN: It delegates to the Transaction's module router to do that
         XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.count, 1)
         XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.first?.presenter, presenter)
         XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.first?.action, .buy(nil))
+
+        cancellable.cancel()
     }
 
     func test_converts_abandoned_result_for_onboarding() throws {
@@ -89,7 +103,10 @@ final class MockTransactionsRouter: FeatureTransactionUI.TransactionsRouterAPI {
         return stubbedResults.presentTransactionFlow
     }
 
-    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+    func presentTransactionFlow(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
         recordedInvocations.presentTransactionFlow.append((action, presenter))
         return stubbedResults.presentTransactionFlow
     }

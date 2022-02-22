@@ -19,6 +19,10 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
                 sessions
                     .contains(where: { $0.isEqual(session) })
             }
+            // in some cases WC tries to reconnect when Metadata is not yet available
+            // in this case we don't want to display a first connection popup
+            // the session is an existing one as it's a reconnect event
+            .replaceError(with: true)
             .eraseToAnyPublisher()
     }
 
@@ -57,13 +61,12 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
 
     func retrieve() -> AnyPublisher<[WalletConnectSession], Never> {
         loadSessions()
+            .replaceError(with: [])
             .eraseToAnyPublisher()
     }
 
-    private func loadSessions() -> AnyPublisher<[WalletConnectSession], Never> {
+    private func loadSessions() -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> {
         walletConnectMetadata.v1Sessions
-            .replaceError(with: [])
-            .eraseToAnyPublisher()
     }
 
     private func store(sessions: [WalletConnectSession]) -> AnyPublisher<Void, Never> {

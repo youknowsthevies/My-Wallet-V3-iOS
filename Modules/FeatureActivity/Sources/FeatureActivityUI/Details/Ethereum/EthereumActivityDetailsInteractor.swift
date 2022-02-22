@@ -14,6 +14,7 @@ final class EthereumActivityDetailsInteractor {
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     private let wallet: EthereumWalletBridgeAPI
+    private let cryptoCurrency: CryptoCurrency
 
     // MARK: - Init
 
@@ -21,12 +22,14 @@ final class EthereumActivityDetailsInteractor {
         wallet: EthereumWalletBridgeAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve()
+        detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
+        cryptoCurrency: CryptoCurrency
     ) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.wallet = wallet
+        self.cryptoCurrency = cryptoCurrency
     }
 
     // MARK: - Public Functions
@@ -37,7 +40,7 @@ final class EthereumActivityDetailsInteractor {
 
     func details(identifier: String, createdAt: Date) -> Observable<EthereumActivityDetailsViewModel> {
         let transaction = detailsService
-            .details(for: identifier)
+            .details(for: identifier, cryptoCurrency: cryptoCurrency)
         let note = note(for: identifier)
             .catchAndReturn(nil)
         let price = price(at: createdAt)
@@ -70,7 +73,7 @@ final class EthereumActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            of: CurrencyType.crypto(.ethereum),
+            of: cryptoCurrency,
             in: fiatCurrency,
             at: .time(date)
         )

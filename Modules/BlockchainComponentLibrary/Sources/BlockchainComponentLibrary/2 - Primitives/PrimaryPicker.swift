@@ -302,7 +302,7 @@ struct PrimaryPicker_Previews: PreviewProvider {
         PrimaryPicker(
             selection: .constant(nil),
             rows: [
-                .row(title: "One", identifier: "one", trailing: { Tag(text: "Trailing") }),
+                .row(title: "One", identifier: "one", trailing: { TagView(text: "Trailing") }),
                 .row(title: "Two", identifier: "two"),
                 .row(title: "Three", identifier: "three")
             ]

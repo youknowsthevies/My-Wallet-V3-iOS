@@ -46,9 +46,9 @@ struct BalanceRowExamplesView: View {
                     trailingTitle: "$7,926.43",
                     trailingDescription: "0.00039387 BTC",
                     tags: [
-                        Tag(text: "No Fees", variant: .success),
-                        Tag(text: "Faster", variant: .success),
-                        Tag(text: "Warning Alert", variant: .warning)
+                        TagView(text: "No Fees", variant: .success),
+                        TagView(text: "Faster", variant: .success),
+                        TagView(text: "Warning Alert", variant: .warning)
                     ],
                     isSelected: Binding(
                         get: {
@@ -70,7 +70,7 @@ struct BalanceRowExamplesView: View {
                     trailingTitle: "$44,403.13",
                     trailingDescription: "↓ 12.32%",
                     trailingDescriptionColor: .semantic.error,
-                    inlineTag: Tag(text: "Tradable", variant: .success),
+                    inlineTagView: TagView(text: "Tradable", variant: .success),
                     isSelected: Binding(
                         get: {
                             selection == 0

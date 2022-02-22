@@ -31,7 +31,7 @@ public struct EthereumTransactionCandidateCosted {
         with candidate: EthereumTransactionCandidate
     ) -> EthereumSigningInput {
         EthereumSigningInput.with { input in
-            input.chainID = Data(hexString: "01")!
+            input.chainID = Data(hexString: candidate.chainID.hexString)!
             input.nonce = Data(hexString: candidate.nonce.hexString)!
             input.gasPrice = Data(hexString: candidate.gasPrice.hexString)!
             input.gasLimit = Data(hexString: candidate.gasLimit.hexString)!

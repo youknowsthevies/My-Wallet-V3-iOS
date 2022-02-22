@@ -62,7 +62,7 @@ struct TierTradeLimitCell: View {
                 }
             }
             Spacer()
-            Tag(text: LocalizedStrings.accountApprovedBadge, variant: .success)
+            TagView(text: LocalizedStrings.accountApprovedBadge, variant: .success)
         }
         .padding(Spacing.padding3)
         .frame(maxWidth: .infinity, minHeight: 80)

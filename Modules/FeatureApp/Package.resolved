@@ -78,7 +78,7 @@
         "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
         "state": {
           "branch": null,
-          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "revision": "cbd5bc9e2dfd9720a348c09392947fd37a83b304",
           "version": null
         }
       },
@@ -146,6 +146,15 @@
         }
       },
       {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
+        "state": {
+          "branch": null,
+          "revision": "e6b65c6d9077ea48b4a7bdda8994a1d3c6969c8d",
+          "version": "3.1.1"
+        }
+      },
+      {
         "package": "stellarsdk",
         "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
         "state": {
@@ -168,8 +177,8 @@
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {
           "branch": null,
-          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
-          "version": "0.2.1"
+          "revision": "b14b7f4c528c942f121c8b860b9410b2bf57825e",
+          "version": "1.0.0"
         }
       },
       {
@@ -222,8 +231,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "21f8fdbb3226e5e28a1a2fffac3e0f3deec34bf0",
-          "version": "0.2.1"
+          "revision": "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
+          "version": "0.3.0"
         }
       },
       {
@@ -245,12 +254,21 @@
         }
       },
       {
+        "package": "swift-nio-zlib-support",
+        "repositoryURL": "https://github.com/apple/swift-nio-zlib-support.git",
+        "state": {
+          "branch": null,
+          "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "swift-numerics",
         "repositoryURL": "https://github.com/apple/swift-numerics",
         "state": {
           "branch": null,
-          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
-          "version": "0.1.0"
+          "revision": "0a5bc04095a675662cf24757cc0640aa2204253b",
+          "version": "1.0.2"
         }
       },
       {
@@ -278,6 +296,15 @@
           "branch": null,
           "revision": "5b4f031f62ad9acea38da1da30aa5678e001aa96",
           "version": "2.6.36-blockchain"
+        }
+      },
+      {
+        "package": "WalletConnectSwift",
+        "repositoryURL": "https://github.com/crucheton-bc/WalletConnectSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "708d9421413bf47f0f093793d6075714b326995d",
+          "version": "1.6.2"
         }
       },
       {

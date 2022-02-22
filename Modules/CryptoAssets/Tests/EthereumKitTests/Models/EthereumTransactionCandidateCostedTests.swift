@@ -15,6 +15,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit
+        let chainID = MockEthereumWalletTestData.Transaction.chainID
         let message = "This is a message."
         let data = Data(message.utf8)
 
@@ -24,6 +25,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasLimit: gasLimit,
             value: value,
             nonce: nonce,
+            chainID: chainID,
             transferType: .transfer(data: data)
         )
 
@@ -63,6 +65,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasLimit: 78009,
             value: 2000000000000000000,
             nonce: 0,
+            chainID: 1,
             transferType: .erc20Transfer(contract: tokenContract, addressReference: addressReference)
         )
 
@@ -105,6 +108,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasLimit: gasLimit,
             value: value,
             nonce: nonce,
+            chainID: 1,
             transferType: .transfer()
         )
 
@@ -132,6 +136,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
             gasLimit: gasLimit,
             value: value,
             nonce: nonce,
+            chainID: 1,
             transferType: .transfer()
         )
 

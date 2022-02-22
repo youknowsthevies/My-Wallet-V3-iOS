@@ -16,6 +16,7 @@ public protocol EthereumTransactionBuildingServiceAPI {
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
         nonce: BigUInt,
+        chainID: BigUInt,
         contractAddress: EthereumAddress?
     ) -> Result<EthereumTransactionCandidate, Never>
 
@@ -25,6 +26,7 @@ public protocol EthereumTransactionBuildingServiceAPI {
         gasPrice: BigUInt,
         gasLimit: BigUInt,
         nonce: BigUInt,
+        chainID: BigUInt,
         transferType: EthereumTransactionCandidate.TransferType
     ) -> Result<EthereumTransactionCandidate, Never>
 }
@@ -38,6 +40,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
         nonce: BigUInt,
+        chainID: BigUInt,
         contractAddress: EthereumAddress?
     ) -> Result<EthereumTransactionCandidate, Never> {
         let isContract = contractAddress != nil
@@ -54,6 +57,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
             gasPrice: gasPrice,
             gasLimit: gasLimit + extraGasLimit,
             nonce: nonce,
+            chainID: chainID,
             transferType: transferType(
                 addressReference: addressReference,
                 contractAddress: contractAddress
@@ -67,6 +71,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         gasPrice: BigUInt,
         gasLimit: BigUInt,
         nonce: BigUInt,
+        chainID: BigUInt,
         transferType: EthereumTransactionCandidate.TransferType
     ) -> Result<EthereumTransactionCandidate, Never> {
         .success(
@@ -76,6 +81,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 gasLimit: gasLimit,
                 value: BigUInt(amount.amount),
                 nonce: nonce,
+                chainID: chainID,
                 transferType: transferType
             )
         )

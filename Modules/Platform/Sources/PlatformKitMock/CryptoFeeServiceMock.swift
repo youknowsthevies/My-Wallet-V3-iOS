@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
-import RxSwift
 
 final class CryptoFeeServiceMock<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
 
     var underlyingFees: FeeType!
 
-    var fees: Single<FeeType> {
+    var fees: AnyPublisher<FeeType, Never> {
         .just(underlyingFees)
     }
 

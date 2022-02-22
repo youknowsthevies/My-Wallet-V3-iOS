@@ -5,6 +5,8 @@ import RIBs
 import RxCocoa
 import RxDataSources
 import RxSwift
+import ToolKit
+import UIComponentsKit
 import UIKit
 
 final class AddNewPaymentMethodViewController: BaseScreenViewController,
@@ -49,6 +51,8 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
             configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
+                case .paymentMethodTypeView(let viewModel):
+                    return self.paymentMethodTypeViewCell(for: indexPath, viewModel: viewModel)
                 case .suggestedPaymentMethod(let viewModel):
                     return self.suggestedPaymentMethodCell(for: indexPath, viewModel: viewModel)
                 }
@@ -82,8 +86,9 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
     private func setupTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(ExplainedActionTableViewCell.self)
+        tableView.register(HostingTableViewCell<PaymentMethodTypeView>.self)
         tableView.allowsSelection = false
-        tableView.separatorInset = .zero
+        tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
@@ -91,6 +96,20 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
 
         tableView.layoutToSuperview(axis: .horizontal)
         tableView.layoutToSuperview(axis: .vertical)
+    }
+
+    private func paymentMethodTypeViewCell(
+        for indexPath: IndexPath,
+        viewModel: PaymentMethodTypeView
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(HostingTableViewCell<PaymentMethodTypeView>.self, for: indexPath)
+        cell.host(
+            viewModel,
+            parent: self,
+            height: nil,
+            showSeparator: false
+        )
+        return cell
     }
 
     private func suggestedPaymentMethodCell(

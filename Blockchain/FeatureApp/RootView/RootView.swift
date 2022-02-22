@@ -1,21 +1,22 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
 import SwiftUI
 
 struct Tab: Hashable, Identifiable {
-    var id: Tag { tag }
-    var tag: Tag_blockchain_ux_user_story
+    var id: String { tag.id }
+    var tag: Tag
     var name: String
     var icon: Icon
 }
 
 extension Tab: CustomStringConvertible {
 
-    var description: String { id() }
+    var description: String { id }
 }
 
 extension Tab {
@@ -23,25 +24,29 @@ extension Tab {
     typealias Localization = LocalizationConstants.TabItems
 
     static let home = Tab(
-        tag: blockchain.ux.user.portfolio,
+        tag: blockchain.ux.user.portfolio[],
         name: Localization.home,
         icon: .home
     )
     static let prices = Tab(
-        tag: blockchain.ux.user.prices,
+        tag: blockchain.ux.prices[],
         name: Localization.prices,
         icon: .lineChartUp
     )
     static let buyAndSell = Tab(
-        tag: blockchain.ux.user.buy_and_sell,
+        tag: blockchain.ux.buy_and_sell[],
         name: Localization.buyAndSell,
         icon: .cart
     )
     static let activity = Tab(
-        tag: blockchain.ux.user.activity,
+        tag: blockchain.ux.user.activity[],
         name: Localization.activity,
         icon: .pending
     )
+
+    func entry() -> Tag {
+        tag["entry"]!
+    }
 }
 
 struct RootView: View {
@@ -81,7 +86,7 @@ struct RootView: View {
             }
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
-                    .identity(blockchain.ux.user.fab)
+                    .identity(blockchain.ux.frequent.action)
                     .background(
                         Circle()
                             .fill(Color.semantic.background)
@@ -137,7 +142,7 @@ struct RootView: View {
                 },
                 icon: { tab.icon.image }
             )
-            .identity(tab.tag.entry)
+            .identity(tab.entry())
         }
         .tag(tab)
         .identity(tab.tag)
@@ -158,7 +163,7 @@ struct RootView: View {
             IconButton(icon: .qrCode) {
                 viewStore.send(.enter(into: .QR, context: .none))
             }
-            .identity(blockchain.ux.user.scan.qr.entry)
+            .identity(blockchain.ux.scan.QR.entry)
         }
     }
 
@@ -177,5 +182,19 @@ extension Color {
     /// A workaround to ensure taps are not passed through to the view behind
     func invisible() -> Color {
         opacity(0.001)
+    }
+}
+
+extension View {
+
+    @ViewBuilder
+    func identity(_ tag: L) -> some View {
+        identity(tag[])
+    }
+
+    @ViewBuilder
+    func identity(_ tag: Tag) -> some View {
+        id(tag)
+            .accessibility(identifier: tag.id)
     }
 }
