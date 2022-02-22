@@ -103,7 +103,11 @@ extension Tag.Reference {
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
+    public func id(ignoring: Set<L>) -> String {
+        id(ignoring: ignoring.map(\.[]).set)
+    }
+
+    public func id(ignoring: Set<Tag> = []) -> String {
         Self.id(
             tag: tag,
             to: context,
@@ -116,7 +120,7 @@ extension Tag.Reference {
         tag: Tag,
         to context: Context,
         indices: Indices,
-        ignoring: Set<Tag> = [blockchain.user.id[]]
+        ignoring: Set<Tag> = []
     ) -> String {
         var ignoring = ignoring
         if tag.is(blockchain.db.collection.id) {

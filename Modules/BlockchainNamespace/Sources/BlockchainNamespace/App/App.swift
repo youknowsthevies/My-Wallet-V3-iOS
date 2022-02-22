@@ -138,6 +138,21 @@ private let e = (
 
 extension AppProtocol {
 
+    public func publisher<T>(for id: L, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: id)
+            .decode(as: T.self)
+    }
+
+    public func publisher<T>(for tag: Tag, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: tag)
+            .decode(as: T.self)
+    }
+
+    public func publisher<T>(for ref: Tag.Reference, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: ref)
+            .decode(as: T.self)
+    }
+
     public func publisher(for id: L) -> AnyPublisher<FetchResult, Never> {
         publisher(for: language[id])
     }

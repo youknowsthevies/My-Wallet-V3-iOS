@@ -111,3 +111,124 @@ extension Tag.Reference {
         FetchResult.Metadata(tag: self)
     }
 }
+
+extension FetchResult {
+
+    public enum Value<T: Decodable> {
+        case value(T, Metadata)
+        case error(Error, Metadata)
+    }
+
+    public func decode<T: Decodable>(
+        as type: T.Type = T.self,
+        decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) -> Value<T> {
+        do {
+            switch self {
+            case .value(let value, let metadata):
+                return .value(try decoder.decode(T.self, from: value), metadata)
+            case .error(let error, _):
+                throw error
+            }
+        } catch let error as FetchResult.Error {
+            return .error(error, metadata)
+        } catch {
+            return .error(.other(error), metadata)
+        }
+    }
+
+    public var result: Result<Any, Error> {
+        switch self {
+        case .value(let value, _):
+            return .success(value)
+        case .error(let error, _):
+            return .failure(error)
+        }
+    }
+
+    public func get() throws -> Any {
+        try result.get()
+    }
+}
+
+extension FetchResult.Value {
+
+    public var value: T? {
+        switch self {
+        case .value(let value, _):
+            return value
+        case .error:
+            return nil
+        }
+    }
+
+    public var error: Error? {
+        switch self {
+        case .error(let error, _):
+            return error
+        case .value:
+            return nil
+        }
+    }
+
+    public var result: Result<T, Error> {
+        switch self {
+        case .value(let value, _):
+            return .success(value)
+        case .error(let error, _):
+            return .failure(error)
+        }
+    }
+
+    public func get() throws -> T {
+        try result.get()
+    }
+}
+
+#if canImport(Combine)
+
+import Combine
+
+extension Publisher where Output == FetchResult {
+
+    public func decode<T>(
+        as _: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) -> AnyPublisher<FetchResult.Value<T>, Failure> {
+        map { result in result.decode(as: T.self, decoder: decoder) }
+            .eraseToAnyPublisher()
+    }
+}
+
+#endif
+
+extension Dictionary where Key == Tag {
+
+    public func decode<T: Decodable>(
+        _ key: L,
+        as type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try decode(key[], as: T.self, using: decoder)
+    }
+
+    public func decode<T: Decodable>(
+        _ key: Tag,
+        as type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try FetchResult.value(self[key] as Any, key.metadata())
+            .decode(as: T.self, decoder: decoder)
+            .get()
+    }
+}
+
+extension Optional where Wrapped == Any {
+
+    public func decode<T: Decodable>(
+        as type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try decoder.decode(T.self, from: self as Any)
+    }
+}

@@ -17,8 +17,8 @@ extension App {
         func start() {
             app.on(blockchain.app.process.deep_link)
                 .combineLatest(
-                    app.publisher(for: blockchain.app.is.ready.for.deep_link)
-                        .compactMap { $0.value as? Bool }
+                    app.publisher(for: blockchain.app.is.ready.for.deep_link, as: Bool.self)
+                        .compactMap(\.value)
                 )
                 .filter(\.1)
                 .map(\.0)
@@ -27,14 +27,13 @@ extension App {
         }
 
         func process(event: Session.Event) {
-            guard let url = event.context[blockchain.app.process.deep_link.url] as? URL else {
-                return app.post(
-                    error: event.tag.error(
-                        message: "Expected URL for context[\(blockchain.app.process.deep_link.url)]"
-                    )
+            do {
+                try process(
+                    url: event.context.decode(blockchain.app.process.deep_link.url, as: URL.self)
                 )
+            } catch {
+                app.post(error: error)
             }
-            process(url: url)
         }
 
         func process(url: URL) {

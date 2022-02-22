@@ -29,15 +29,23 @@ let package = Package(
         .target(
             name: "BlockchainNamespace",
             dependencies: [
+                .target(name: "AnyCoding"),
                 .product(name: "SwiftLexicon", package: "Lexicon")
             ],
             resources: [
                 .copy("blockchain.json")
             ]
         ),
+        .target(
+            name: "AnyCoding"
+        ),
         .testTarget(
             name: "BlockchainNamespaceTests",
             dependencies: ["BlockchainNamespace"]
+        ),
+        .testTarget(
+            name: "AnyCodingTests",
+            dependencies: ["AnyCoding"]
         )
     ]
 )

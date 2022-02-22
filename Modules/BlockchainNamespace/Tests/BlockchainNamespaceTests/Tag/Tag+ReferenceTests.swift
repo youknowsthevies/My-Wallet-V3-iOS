@@ -15,8 +15,8 @@ final class TagReferenceTests: XCTestCase {
         XCTAssertNil(ref.error)
         XCTAssertEqual(ref.indices[blockchain.user.id], id)
         XCTAssertEqual(ref.string, "blockchain.user[\(id)].name.first")
-        XCTAssertEqual(ref.id(), "blockchain.user.name.first")
-        XCTAssertEqual(ref.id(ignoring: []), "blockchain.user[\(id)].name.first")
+        XCTAssertEqual(ref.id(ignoring: [blockchain.user.id[]]), "blockchain.user.name.first")
+        XCTAssertEqual(ref.id(), "blockchain.user[\(id)].name.first")
     }
 
     func test_reference_with_invalid_indices() throws {
