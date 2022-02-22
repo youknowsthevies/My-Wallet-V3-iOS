@@ -16,9 +16,9 @@ import SwiftUI
 ///     trailingTitle: "$7,926.43",
 ///     trailingDescription: "0.00039387 BTC",
 ///     tags: [
-///         Tag(text: "No Fees", variant: .success),
-///         Tag(text: "Faster", variant: .success),
-///         Tag(text: "Warning Alert", variant: .warning)
+///         TagView(text: "No Fees", variant: .success),
+///         TagView(text: "Faster", variant: .success),
+///         TagView(text: "Warning Alert", variant: .warning)
 ///     ],
 ///     isSelected: Binding(
 ///         get: {
@@ -52,8 +52,8 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     private let trailingTitle: String
     private let trailingDescription: String
     private let trailingDescriptionColor: Color
-    private let inlineTag: Tag?
-    private let tags: [Tag]
+    private let inlineTagView: TagView?
+    private let tags: [TagView]
     private let mainContentSpacing: CGFloat = 6
 
     @Binding private var isSelected: Bool
@@ -71,7 +71,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     ///   - trailingTitle: Title on the trailing side of the row
     ///   - trailingDescription: Description string on the trailing side of the row view
     ///   - trailingDescriptionColor: Optional color for the trailingDescription text
-    ///   - inlineTag: Optional tag shown at the right of the leading description text
+    ///   - inlineTagView: Optional tag shown at the right of the leading description text
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
     ///   - isSelected: Binding for the selection state
     ///   - leading: View on the leading side of the row.
@@ -83,8 +83,8 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         trailingTitle: String,
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
-        inlineTag: Tag? = nil,
-        tags: [Tag] = [],
+        inlineTagView: TagView? = nil,
+        tags: [TagView] = [],
         isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading,
         @ViewBuilder graph: () -> Graph
@@ -98,7 +98,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
             light: .palette.grey600,
             dark: .palette.dark200
         )
-        self.inlineTag = inlineTag
+        self.inlineTagView = inlineTagView
         self.tags = tags
         isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
@@ -151,7 +151,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
                         dark: .palette.dark200
                     )
                 )
-            if let tag = inlineTag {
+            if let tag = inlineTagView {
                 tag
             }
         }
@@ -270,8 +270,8 @@ extension BalanceRow where Graph == EmptyView {
         trailingTitle: String,
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
-        inlineTag: Tag? = nil,
-        tags: [Tag] = [],
+        inlineTagView: TagView? = nil,
+        tags: [TagView] = [],
         isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading
     ) {
@@ -282,7 +282,7 @@ extension BalanceRow where Graph == EmptyView {
             trailingTitle: trailingTitle,
             trailingDescription: trailingDescription,
             trailingDescriptionColor: trailingDescriptionColor,
-            inlineTag: inlineTag,
+            inlineTagView: inlineTagView,
             tags: tags,
             isSelected: isSelected,
             leading: leading
@@ -338,9 +338,9 @@ struct BalanceRow_Previews: PreviewProvider {
                         trailingTitle: "$7,926.43",
                         trailingDescription: "0.00039387 BTC",
                         tags: [
-                            Tag(text: "No Fees", variant: .success),
-                            Tag(text: "Faster", variant: .success),
-                            Tag(text: "Warning Alert", variant: .warning)
+                            TagView(text: "No Fees", variant: .success),
+                            TagView(text: "Faster", variant: .success),
+                            TagView(text: "Warning Alert", variant: .warning)
                         ],
                         isSelected: Binding(
                             get: {
@@ -362,7 +362,7 @@ struct BalanceRow_Previews: PreviewProvider {
                         trailingTitle: "$44,403.13",
                         trailingDescription: "↓ 12.32%",
                         trailingDescriptionColor: .semantic.error,
-                        inlineTag: Tag(text: "Tradable", variant: .success),
+                        inlineTagView: TagView(text: "Tradable", variant: .success),
                         isSelected: Binding(
                             get: {
                                 selection == 0

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -40,7 +41,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumFeeServiceAPI
     private let ethereumAccountService: EthereumAccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
-    private let transactionsService: EthereumHistoricalTransactionServiceAPI
+    private let pendingTransactionRepository: PendingTransactionRepositoryAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
     private var ethereumCryptoAccount: EthereumCryptoAccount {
@@ -84,7 +85,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         ethereumAccountService: EthereumAccountServiceAPI = resolve(),
         hotWalletAddressService: HotWalletAddressServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
-        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
+        pendingTransactionRepository: PendingTransactionRepositoryAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
     ) {
@@ -94,7 +95,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.requireSecondPassword = requireSecondPassword
         self.ethereumAccountService = ethereumAccountService
         self.transactionBuildingService = transactionBuildingService
-        self.transactionsService = transactionsService
+        self.pendingTransactionRepository = pendingTransactionRepository
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         self.hotWalletAddressService = hotWalletAddressService
         self.receiveAddressFactory = receiveAddressFactory
@@ -105,7 +106,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: .ethereum)
+            self.feeService
+                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+                .asSingle()
         }
     }
 
@@ -286,6 +289,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                             feeLevel: pendingTransaction.feeLevel,
                             fee: fee,
                             nonce: nonce,
+                            chainID: ethereumCryptoAccount.network.chainID,
                             contractAddress: nil
                         ).publisher
                     }
@@ -418,12 +422,16 @@ extension EthereumOnChainTransactionEngine {
     }
 
     private func validateNoPendingTransaction() -> Completable {
-        transactionsService
-            .isWaitingOnTransaction
-            .map { isWaitingOnTransaction -> Void in
-                guard isWaitingOnTransaction == false else {
-                    throw TransactionValidationFailure(state: .transactionInFlight)
-                }
+        pendingTransactionRepository
+            .isWaitingOnTransaction(
+                network: ethereumCryptoAccount.network,
+                address: ethereumCryptoAccount.publicKey
+            )
+            .replaceError(with: true)
+            .flatMap { isWaitingOnTransaction in
+                isWaitingOnTransaction
+                    ? AnyPublisher.failure(TransactionValidationFailure(state: .transactionInFlight))
+                    : AnyPublisher.just(())
             }
             .asCompletable()
     }
@@ -455,10 +463,14 @@ extension EthereumOnChainTransactionEngine {
     }
 
     private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
+        let network = ethereumCryptoAccount.network
         let isContract = receiveAddress
             .flatMap { [ethereumAccountService] receiveAddress in
                 ethereumAccountService
-                    .isContract(address: receiveAddress.address)
+                    .isContract(
+                        network: network,
+                        address: receiveAddress.address
+                    )
                     .asSingle()
             }
 

@@ -14,8 +14,8 @@ import SwiftUI
 ///     subtitle: "Instant Connection",
 ///     description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
 ///     tags: [
-///         Tag(text: "Fastest", variant: .success),
-///         Tag(text: "Warning Alert", variant: .warning)
+///         TagView(text: "Fastest", variant: .success),
+///         TagView(text: "Warning Alert", variant: .warning)
 ///     ],
 ///     isSelected: $selection {
 ///         Icon.bank
@@ -37,7 +37,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     private let caption: String?
     private let subtitle: String?
     private let description: String?
-    private let tags: [Tag]
+    private let tags: [TagView]
     private let leading: Leading
     private let trailing: Trailing
 
@@ -62,7 +62,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
-        tags: [Tag] = [],
+        tags: [TagView] = [],
         highlight: Bool = true,
         @ViewBuilder leading: () -> Leading,
         @ViewBuilder trailing: () -> Trailing,
@@ -178,7 +178,7 @@ extension PrimaryRow where Leading == EmptyView {
     ///   - title: Leading title text
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
-    ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - tags: Optional TagViews displayed at the bottom of the row.
     ///   - isSelected: Binding for the selection state
     ///   - trailing: Optional view displayed at the trailing edge.
     public init(
@@ -186,7 +186,7 @@ extension PrimaryRow where Leading == EmptyView {
         caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
-        tags: [Tag] = [],
+        tags: [TagView] = [],
         @ViewBuilder trailing: () -> Trailing,
         action: (() -> Void)? = nil
     ) {
@@ -210,7 +210,7 @@ extension PrimaryRow where Trailing == ChevronRight {
     ///   - title: Leading title text
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
-    ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - tags: Optional TagViews displayed at the bottom of the row.
     ///   - isSelected: Binding for the selection state
     ///   - leading: View displayed at the leading edge.
     public init(
@@ -218,7 +218,7 @@ extension PrimaryRow where Trailing == ChevronRight {
         caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
-        tags: [Tag] = [],
+        tags: [TagView] = [],
         @ViewBuilder leading: () -> Leading,
         action: (() -> Void)? = nil
     ) {
@@ -242,14 +242,14 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
     ///   - title: Leading title text
     ///   - subtitle: Optional leading subtitle text
     ///   - description: Optional leading description
-    ///   - tags: Optional Tags displayed at the bottom of the row.
+    ///   - tags: Optional TagViews displayed at the bottom of the row.
     ///   - isSelected: Binding for the selection state
     public init(
         title: String,
         caption: String? = nil,
         subtitle: String? = nil,
         description: String? = nil,
-        tags: [Tag] = [],
+        tags: [TagView] = [],
         action: (() -> Void)? = nil
     ) {
         self.init(
@@ -318,7 +318,7 @@ struct PrimaryRow_Previews: PreviewProvider {
                 PrimaryRow(
                     title: "Email Address",
                     subtitle: "satoshi@blockchain.com",
-                    tags: [Tag(text: "Confirmed", variant: .success)],
+                    tags: [TagView(text: "Confirmed", variant: .success)],
                     action: {
                         selection = 1
                     }
@@ -338,8 +338,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     subtitle: "Instant Connection",
                     description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
                     tags: [
-                        Tag(text: "Fastest", variant: .success),
-                        Tag(text: "Warning Alert", variant: .warning)
+                        TagView(text: "Fastest", variant: .success),
+                        TagView(text: "Warning Alert", variant: .warning)
                     ],
                     action: {
                         selection = 3
@@ -376,7 +376,7 @@ struct PrimaryRow_Previews: PreviewProvider {
                 PrimaryRow(
                     title: "Gold Level",
                     subtitle: "Higher Trading Limits",
-                    tags: [Tag(text: "Approved", variant: .success)],
+                    tags: [TagView(text: "Approved", variant: .success)],
                     leading: {
                         Icon.apple
                             .fixedSize()
@@ -403,8 +403,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     subtitle: "Instant Connection",
                     description: "Securely link a bank to buy crypto, deposit cash and withdraw back to your bank at anytime.",
                     tags: [
-                        Tag(text: "Fastest", variant: .success),
-                        Tag(text: "Warning Alert", variant: .warning)
+                        TagView(text: "Fastest", variant: .success),
+                        TagView(text: "Warning Alert", variant: .warning)
                     ],
                     leading: {
                         Icon.bank

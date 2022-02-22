@@ -3,12 +3,13 @@
 import Combine
 import FeatureOnboardingUI
 import FeatureTransactionUI
+import MoneyKit
 import UIKit
 
 extension TransactionsAdapter: FeatureOnboardingUI.OnboardingTransactionsRouterAPI {
 
     func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
-        presentTransactionFlow(to: .buy(nil), from: presenter)
+        presentTransactionFlow(toBuy: .bitcoin, from: presenter)
             .map(OnboardingResult.init)
             .eraseToAnyPublisher()
     }

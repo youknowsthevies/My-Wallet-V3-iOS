@@ -50,7 +50,7 @@ public struct CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDeb
     public init?(erc20Address: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         guard let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies.first(where: { currency in
             switch currency.assetModel.kind {
-            case .erc20(let contractAddress):
+            case .erc20(let contractAddress, _):
                 return contractAddress.caseInsensitiveCompare(erc20Address) == .orderedSame
             default:
                 return false
@@ -95,10 +95,6 @@ public struct CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDeb
     /// Whether the crypto currency is an Celo Token asset.
     public var isCeloToken: Bool {
         assetModel.kind.isCeloToken
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(assetModel)
     }
 
     public func supports(product: AssetModelProduct) -> Bool {

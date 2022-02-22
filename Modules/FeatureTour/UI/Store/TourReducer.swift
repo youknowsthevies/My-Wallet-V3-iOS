@@ -15,6 +15,12 @@ let tourReducer = Reducer<TourState, TourAction, TourEnvironment>.combine(
         case .createAccount:
             environment.createAccountAction()
             return .none
+        case .didChangeStep(let newStep):
+            state.visibleStep = newStep
+            if newStep != .prices {
+                state.scrollOffset = 0
+            }
+            return .none
         case .restore:
             environment.restoreAction()
             return .none
@@ -32,10 +38,7 @@ let tourReducer = Reducer<TourState, TourAction, TourEnvironment>.combine(
         case .loadPrices:
             let currencies = environment.enabledCurrenciesService.allEnabledCryptoCurrencies
             state.items = IdentifiedArray(uniqueElements: currencies.map { Price(currency: $0) })
-            let effects = state.items.map {
-                Effect<TourAction, Never>(value: TourAction.price(id: $0.id, action: .currencyDidLoad))
-            }
-            return .merge(effects)
+            return .none
         case .none:
             return .none
         }

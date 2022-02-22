@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureTransactionUI
+import MoneyKit
 import PlatformKit
 import UIKit
 
@@ -118,10 +118,16 @@ extension TransactionResult {
 final class TransactionsAdapter: TransactionsAdapterAPI {
 
     private let router: FeatureTransactionUI.TransactionsRouterAPI
+    private let coincore: CoincoreAPI
+
     private var cancellables = Set<AnyCancellable>()
 
-    init(router: FeatureTransactionUI.TransactionsRouterAPI = resolve()) {
+    init(
+        router: FeatureTransactionUI.TransactionsRouterAPI,
+        coincore: CoincoreAPI
+    ) {
         self.router = router
+        self.coincore = coincore
     }
 
     func presentTransactionFlow(
@@ -140,6 +146,22 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
     ) -> AnyPublisher<TransactionResult, Never> {
         router.presentTransactionFlow(to: transactionToPerform.transactionFlowActionValue, from: presenter)
             .map(TransactionResult.init)
+            .eraseToAnyPublisher()
+    }
+
+    func presentTransactionFlow(
+        toBuy cryptoCurrency: CryptoCurrency,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionResult, Never> {
+        coincore.cryptoAccounts(for: .bitcoin, supporting: .buy, filter: .custodial)
+            .replaceError(with: [])
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
+                guard let self = self else {
+                    return .empty()
+                }
+                return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)
+            }
             .eraseToAnyPublisher()
     }
 }

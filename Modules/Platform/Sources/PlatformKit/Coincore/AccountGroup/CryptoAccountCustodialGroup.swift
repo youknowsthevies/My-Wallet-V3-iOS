@@ -42,6 +42,10 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         accounts.first
     }
 
+    public var currencyType: CurrencyType {
+        asset.currencyType
+    }
+
     public convenience init(asset: CryptoCurrency, account: SingleAccount) {
         self.init(asset: asset, accounts: [account])
     }

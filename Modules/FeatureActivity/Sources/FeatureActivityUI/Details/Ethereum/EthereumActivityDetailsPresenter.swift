@@ -80,7 +80,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
     init(
         event: TransactionalActivityItemEvent,
         router: ActivityRouterAPI,
-        interactor: EthereumActivityDetailsInteractor = .init(),
+        interactor: EthereumActivityDetailsInteractor,
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),

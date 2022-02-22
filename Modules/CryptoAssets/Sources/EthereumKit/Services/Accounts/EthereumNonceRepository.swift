@@ -12,14 +12,22 @@ public enum EthereumNonceRepositoryError: Error {
 
 public protocol EthereumNonceRepositoryAPI {
     func invalidateCache()
-    func nonce(for address: String) -> AnyPublisher<BigUInt, EthereumNonceRepositoryError>
+    func nonce(
+        network: EVMNetwork,
+        for address: String
+    ) -> AnyPublisher<BigUInt, EthereumNonceRepositoryError>
 }
 
 final class EthereumNonceRepository: EthereumNonceRepositoryAPI {
 
+    private struct Key: Hashable {
+        let network: EVMNetwork
+        let address: String
+    }
+
     private let client: GetTransactionCountClientAPI
     private let cachedValue: CachedValueNew<
-        String,
+        Key,
         BigUInt,
         EthereumNonceRepositoryError
     >
@@ -29,16 +37,16 @@ final class EthereumNonceRepository: EthereumNonceRepositoryAPI {
     ) {
         self.client = client
 
-        let cache: AnyCache<String, BigUInt> = InMemoryCache(
+        let cache: AnyCache<Key, BigUInt> = InMemoryCache(
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [client] address in
+            fetch: { [client] key in
                 client
-                    .transactionCount(address: address)
+                    .transactionCount(network: key.network, address: key.address)
                     .map(\.result.magnitude)
                     .mapError(EthereumNonceRepositoryError.failed)
                     .eraseToAnyPublisher()
@@ -50,7 +58,10 @@ final class EthereumNonceRepository: EthereumNonceRepositoryAPI {
         cachedValue.invalidateCache()
     }
 
-    func nonce(for address: String) -> AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
-        cachedValue.get(key: address)
+    func nonce(
+        network: EVMNetwork,
+        for address: String
+    ) -> AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
+        cachedValue.get(key: Key(network: network, address: address))
     }
 }

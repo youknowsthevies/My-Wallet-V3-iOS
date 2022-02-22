@@ -11,11 +11,11 @@ extension DependencyContainer {
 
     public static var bitcoinKit = module {
 
-        single { APIClient() as APIClientAPI }
+        single {
+            BitcoinKit.APIClient() as BitcoinKit.APIClientAPI
+        }
 
         factory { BitcoinWalletAccountRepository() }
-
-        single { UnspentOutputRepository() }
 
         factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
 

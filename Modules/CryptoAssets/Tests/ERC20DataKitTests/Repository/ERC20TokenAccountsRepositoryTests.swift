@@ -21,7 +21,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
 
     private let refreshInterval: TimeInterval = 3
 
-    private let currency: CryptoCurrency = .mockERC20(name: "ERC20 1", sortIndex: 0)
+    private let currency: CryptoCurrency = .mockERC20(symbol: "A", displaySymbol: "A", name: "ERC20 1", sortIndex: 0)
 
     private var fetchAccounts: ERC20TokenAccounts!
 

@@ -142,6 +142,7 @@ excluded:
   - Modules/*/*.generated.swift
   - SourcePackages/
   - scripts/*/.build/
+  - Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift
 file_length:
   warning: 600
   error: 800

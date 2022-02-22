@@ -20,7 +20,6 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
-import FeatureQRCodeScannerDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -273,14 +272,6 @@ extension DependencyContainer {
             return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
         }
 
-        factory { () -> QRCodeScannerLinkerAPI in
-            QRCodeScannerAdapter()
-        }
-
-        factory { () -> CryptoTargetQRCodeParserAdapter in
-            QRCodeScannerAdapter()
-        }
-
         // MARK: - WalletManager
 
         single { WalletManager() }
@@ -503,7 +494,10 @@ extension DependencyContainer {
         }
 
         factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> FeatureOnboardingUI.EmailVerificationRouterAPI in
@@ -517,7 +511,10 @@ extension DependencyContainer {
         }
 
         factory { () -> TransactionsAdapterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> PlatformUIKit.KYCRouting in
@@ -656,6 +653,8 @@ extension DependencyContainer {
         single {
             PulseNetworkDebugScreenProvider() as NetworkDebugScreenProvider
         }
+
+        single { app }
     }
 }
 

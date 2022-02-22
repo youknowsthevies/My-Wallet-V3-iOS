@@ -16,5 +16,6 @@ extension AddNewPaymentMethodCellSectionModel: SectionModelType {
 }
 
 enum AddNewPaymentMethodCellViewModelItem: Equatable {
+    case paymentMethodTypeView(PaymentMethodTypeView)
     case suggestedPaymentMethod(ExplainedActionViewModel)
 }

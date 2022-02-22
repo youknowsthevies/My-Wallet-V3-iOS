@@ -36,7 +36,7 @@ final class ERC20ActivityDetailsInteractor {
 
     func details(identifier: String, createdAt: Date) -> Observable<ERC20ActivityDetailsViewModel> {
         let transaction = detailsService
-            .details(for: identifier)
+            .details(for: identifier, cryptoCurrency: cryptoCurrency)
         let price = price(of: cryptoCurrency, at: createdAt)
             .optional()
             .catchAndReturn(nil)

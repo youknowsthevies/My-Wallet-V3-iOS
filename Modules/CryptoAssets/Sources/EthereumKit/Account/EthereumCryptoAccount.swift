@@ -10,10 +10,12 @@ import ToolKit
 
 final class EthereumCryptoAccount: CryptoNonCustodialAccount {
 
-    private(set) lazy var identifier: AnyHashable = "EthereumCryptoAccount.\(publicKey)"
+    private(set) lazy var identifier: AnyHashable = "EthereumCryptoAccount.\(asset.code).\(publicKey)"
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
+    let publicKey: String
+    let network: EVMNetwork
 
     func createTransactionEngine() -> Any {
         EthereumOnChainTransactionEngineFactory()
@@ -25,7 +27,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
 
     var balance: Single<MoneyValue> {
         ethereumBalanceRepository
-            .balance(for: publicKey)
+            .balance(
+                network: network,
+                for: publicKey
+            )
             .asSingle()
             .moneyValue
     }
@@ -39,8 +44,11 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             isFunded,
             isInterestTransferAvailable.asSingle()
         )
-        .map { isFunded, isInterestEnabled -> AvailableActions in
-            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
+        .map { [asset] isFunded, isInterestEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send]
+            if asset.supports(product: .custodialWalletBalance) {
+                base.insert(.buy)
+            }
             if isFunded {
                 base.insert(.swap)
                 base.insert(.sell)
@@ -64,7 +72,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
-        nonceRepository.nonce(for: publicKey)
+        nonceRepository.nonce(
+            network: network,
+            for: publicKey
+        )
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
@@ -81,12 +92,13 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
         transactionsService
-            .transactions
-            .map { response in
-                response
+            .transactions(network: network, address: publicKey)
+            .map { transactions in
+                transactions
                     .map(\.activityItemEvent)
             }
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .asSingle()
     }
 
     private var swapActivity: Single<[SwapActivityItemEvent]> {
@@ -104,21 +116,21 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    private let featureFlagsService: FeatureFlagsServiceAPI
-    private let publicKey: String
-    private let hdAccountIndex: Int
-    private let ethereumBalanceRepository: EthereumBalanceRepositoryAPI
-    private let priceService: PriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
-    private let transactionsService: EthereumHistoricalTransactionServiceAPI
-    private let swapTransactionsService: SwapActivityServiceAPI
+    private let ethereumBalanceRepository: EthereumBalanceRepositoryAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let hdAccountIndex: Int
     private let nonceRepository: EthereumNonceRepositoryAPI
+    private let priceService: PriceServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
+    private let transactionsService: HistoricalTransactionsRepositoryAPI
 
     init(
+        network: EVMNetwork,
         publicKey: String,
         label: String? = nil,
         hdAccountIndex: Int,
-        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
+        transactionsService: HistoricalTransactionsRepositoryAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         bridge: EthereumWalletBridgeAPI = resolve(),
         ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
@@ -127,8 +139,9 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         nonceRepository: EthereumNonceRepositoryAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
-        let asset = CryptoCurrency.ethereum
+        let asset = network.cryptoCurrency
         self.asset = asset
+        self.network = network
         self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex
         self.priceService = priceService

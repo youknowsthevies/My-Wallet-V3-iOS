@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 
@@ -18,7 +19,10 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
         self.operationsService = operationsService
     }
 
-    func details(for identifier: String) -> Observable<StellarActivityItemEventDetails> {
+    func details(
+        for identifier: String,
+        cryptoCurrency: CryptoCurrency
+    ) -> Observable<StellarActivityItemEventDetails> {
         repository.defaultAccount
             .asObservable()
             .flatMap(weak: self) { (self, account) -> Observable<StellarActivityItemEventDetails> in

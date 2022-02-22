@@ -60,6 +60,7 @@ final class EthereumSignerTests: XCTestCase {
                 gasLimit: testCase.gasLimit,
                 value: testCase.value,
                 nonce: 9,
+                chainID: 1,
                 transferType: .transfer()
             )
             guard case .success(let costed) = EthereumTransactionCandidateCosted.create(

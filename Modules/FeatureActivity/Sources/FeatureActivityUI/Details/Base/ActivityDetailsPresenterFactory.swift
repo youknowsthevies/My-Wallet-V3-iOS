@@ -28,7 +28,6 @@ enum ActivityDetailsPresenterFactory {
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):
             return Self.presenter(
-                cryptoCurrency: transactional.currency,
                 transactional: transactional,
                 router: router
             )
@@ -36,11 +35,10 @@ enum ActivityDetailsPresenterFactory {
     }
 
     private static func presenter(
-        cryptoCurrency: CryptoCurrency,
         transactional: TransactionalActivityItemEvent,
         router: ActivityRouterAPI
     ) -> DetailsScreenPresenterAPI {
-        switch cryptoCurrency {
+        switch transactional.currency {
         case .bitcoin:
             return BitcoinActivityDetailsPresenter(event: transactional, router: router)
         case .bitcoinCash:
@@ -48,7 +46,8 @@ enum ActivityDetailsPresenterFactory {
         case .stellar:
             return StellarActivityDetailsPresenter(event: transactional, router: router)
         case .ethereum:
-            return EthereumActivityDetailsPresenter(event: transactional, router: router)
+            let interactor = EthereumActivityDetailsInteractor(cryptoCurrency: transactional.currency)
+            return EthereumActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
         case let asset where asset.isERC20:
             let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
             return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)

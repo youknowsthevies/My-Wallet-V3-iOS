@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Foundation
 import ToolKit
 
 public protocol EnabledCurrenciesServiceAPI {
@@ -12,6 +13,28 @@ public protocol EnabledCurrenciesServiceAPI {
 }
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
+
+    // MARK: EnabledCurrenciesServiceAPI
+
+    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
+
+    var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
+        [.USD]
+    }
+
+    var allEnabledCurrencies: [CurrencyType] {
+        defer { allEnabledCurrenciesLock.unlock() }
+        allEnabledCurrenciesLock.lock()
+        return allEnabledCurrenciesLazy
+    }
+
+    var allEnabledCryptoCurrencies: [CryptoCurrency] {
+        defer { allEnabledCryptoCurrenciesLock.unlock() }
+        allEnabledCryptoCurrenciesLock.lock()
+        return allEnabledCryptoCurrenciesLazy
+    }
+
+    // MARK: Private Properties
 
     private var nonCustodialCryptoCurrencies: [CryptoCurrency] {
         [
@@ -38,13 +61,13 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .compactMap(\.cryptoCurrency)
     }
 
-    lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {
+    private lazy var allEnabledCryptoCurrenciesLazy: [CryptoCurrency] = {
         (nonCustodialCryptoCurrencies + custodialCurrencies + erc20Currencies)
             .unique
             .sorted()
     }()
 
-    lazy var allEnabledCurrencies: [CurrencyType] = {
+    private lazy var allEnabledCurrenciesLazy: [CurrencyType] = {
         let crypto: [CurrencyType] = allEnabledCryptoCurrencies
             .map { .crypto($0) }
         let fiat: [CurrencyType] = allEnabledFiatCurrencies
@@ -52,14 +75,12 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         return crypto + fiat
     }()
 
-    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
-
-    var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
-        [.USD]
-    }
-
+    private let allEnabledCryptoCurrenciesLock = NSLock()
+    private let allEnabledCurrenciesLock = NSLock()
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let repository: SupportedAssetsRepositoryAPI
+
+    // MARK: Init
 
     init(
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
