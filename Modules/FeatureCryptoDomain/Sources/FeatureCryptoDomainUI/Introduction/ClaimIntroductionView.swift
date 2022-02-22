@@ -16,7 +16,7 @@ enum ClaimIntroductionRoute: NavigationRoute {
     func destination(in store: Store<ClaimIntroductionState, ClaimIntroductionAction>) -> some View {
         switch self {
         case .benefits:
-            EmptyView()
+            ClaimBenefitsView()
         case .searchDomain:
             IfLetStore(
                 store.scope(

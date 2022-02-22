@@ -14,6 +14,16 @@ enum AccessibilityIdentifiers {
         static let ctaButton = "ctaButton"
     }
 
+    // MARK: - Benefits Screen
+
+    enum Benefits {
+        static let prefifx = "CryptoDomainBenefitsScreen."
+        static let headerTitle = "headerTitle"
+        static let headerDescription = "headerDescription"
+        static let benefitsList = "benefitsList"
+        static let ctaButton = "ctaButton"
+    }
+
     // MARK: - Search Domain Screen
 
     enum SearchDomain {
