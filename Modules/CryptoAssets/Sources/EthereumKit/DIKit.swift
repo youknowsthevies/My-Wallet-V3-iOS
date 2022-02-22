@@ -34,7 +34,7 @@ extension DependencyContainer {
 
         // MARK: CoinCore
 
-        factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.ethereum) { EthereumAsset(network: .ethereum) as CryptoAsset }
 
         // MARK: Other
 
@@ -44,7 +44,11 @@ extension DependencyContainer {
 
         single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
 
-        single { EthereumHistoricalTransactionService() as EthereumHistoricalTransactionServiceAPI }
+        single { LatestBlockRepository() as LatestBlockRepositoryAPI }
+
+        single { HistoricalTransactionsRepository() as HistoricalTransactionsRepositoryAPI }
+
+        single { PendingTransactionRepository() as PendingTransactionRepositoryAPI }
 
         factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
             AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())

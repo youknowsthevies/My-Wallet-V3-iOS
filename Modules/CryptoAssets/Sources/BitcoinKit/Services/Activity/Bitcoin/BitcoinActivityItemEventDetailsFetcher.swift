@@ -2,6 +2,7 @@
 
 import BitcoinChainKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 
@@ -19,7 +20,10 @@ final class BitcoinActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
         self.bridge = bridge
     }
 
-    func details(for identifier: String) -> Observable<BitcoinActivityItemEventDetails> {
+    func details(
+        for identifier: String,
+        cryptoCurrency: CryptoCurrency
+    ) -> Observable<BitcoinActivityItemEventDetails> {
         bridge.wallets
             .map { wallet -> [XPub] in
                 wallet.map(\.publicKeys).flatMap(\.xpubs)

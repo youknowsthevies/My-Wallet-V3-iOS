@@ -1,18 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
-import RxSwift
 
+/// Service that provides fees to transact EVM tokens.
 public protocol EthereumFeeServiceAPI {
-    func fees(cryptoCurrency: CryptoCurrency) -> Single<EthereumTransactionFee>
+    /// Streams a single `EthereumTransactionFee`, representing suggested fee amounts based on mempool.
+    /// Never fails, uses default Fee values if network call fails.
+    /// - Parameter cryptoCurrency: An EVM Native token or ERC20 token.
+    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never>
 }
 
 final class EthereumFeeService: EthereumFeeServiceAPI {
 
     // MARK: - CryptoFeeServiceAPI
 
-    func fees(cryptoCurrency: CryptoCurrency) -> Single<EthereumTransactionFee> {
+    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
         client
             .fees(cryptoCurrency: cryptoCurrency)
             .map { response in
@@ -24,7 +28,7 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
                 )
             }
             .replaceError(with: .default)
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Properties

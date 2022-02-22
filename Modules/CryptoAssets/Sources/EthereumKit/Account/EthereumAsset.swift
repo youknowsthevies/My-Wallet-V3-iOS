@@ -11,10 +11,10 @@ final class EthereumAsset: CryptoAsset {
 
     // MARK: - Properties
 
-    let asset: CryptoCurrency = .ethereum
+    let asset: CryptoCurrency
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        repository.defaultSingleAccount
+        repository.defaultSingleAccount(network: network)
     }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> {
@@ -28,8 +28,8 @@ final class EthereumAsset: CryptoAsset {
             asset: asset,
             errorRecorder: errorRecorder,
             kycTiersService: kycTiersService,
-            defaultAccountProvider: { [repository] in
-                repository.defaultSingleAccount
+            defaultAccountProvider: { [repository, network] in
+                repository.defaultSingleAccount(network: network)
             },
             exchangeAccountsProvider: exchangeAccountProvider,
             addressFactory: addressFactory
@@ -37,20 +37,24 @@ final class EthereumAsset: CryptoAsset {
     }()
 
     private let addressFactory: EthereumExternalAssetAddressFactory
-    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
+    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let kycTiersService: KYCTiersServiceAPI
+    private let network: EVMNetwork
+    private let repository: EthereumWalletAccountRepositoryAPI
 
     // MARK: - Setup
 
     init(
+        network: EVMNetwork,
         repository: EthereumWalletAccountRepositoryAPI = resolve(),
         addressFactory: EthereumExternalAssetAddressFactory = .init(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
+        self.network = network
+        asset = network.cryptoCurrency
         self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
@@ -61,8 +65,11 @@ final class EthereumAsset: CryptoAsset {
     // MARK: - Methods
 
     func initialize() -> AnyPublisher<Void, AssetError> {
+        guard network == .ethereum else {
+            return .just(())
+        }
         // Run wallet renaming procedure on initialization.
-        cryptoAssetRepository.nonCustodialGroup
+        return cryptoAssetRepository.nonCustodialGroup
             .map(\.accounts)
             .flatMap { [upgradeLegacyLabels] accounts in
                 upgradeLegacyLabels(accounts)
@@ -90,11 +97,12 @@ final class EthereumAsset: CryptoAsset {
 
 extension EthereumWalletAccountRepositoryAPI {
 
-    fileprivate var defaultSingleAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
+    fileprivate func defaultSingleAccount(network: EVMNetwork) -> AnyPublisher<SingleAccount, CryptoAssetError> {
         defaultAccount
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account -> SingleAccount in
                 EthereumCryptoAccount(
+                    network: network,
                     publicKey: account.publicKey,
                     label: account.label,
                     hdAccountIndex: account.index

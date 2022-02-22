@@ -14,15 +14,21 @@ public enum EthereumBalanceRepositoryError: Error {
 public protocol EthereumBalanceRepositoryAPI {
     func invalidateCache()
     func balance(
+        network: EVMNetwork,
         for address: String
     ) -> AnyPublisher<CryptoValue, EthereumBalanceRepositoryError>
 }
 
 final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
 
+    private struct Key: Hashable {
+        let network: EVMNetwork
+        let address: String
+    }
+
     private let client: GetBalanceClientAPI
     private let cachedValue: CachedValueNew<
-        String,
+        Key,
         CryptoValue,
         EthereumBalanceRepositoryError
     >
@@ -32,18 +38,24 @@ final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
     ) {
         self.client = client
 
-        let cache: AnyCache<String, CryptoValue> = InMemoryCache(
+        let cache: AnyCache<Key, CryptoValue> = InMemoryCache(
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [client] address in
+            fetch: { [client] key in
                 client
-                    .balance(address: address)
+                    .balance(
+                        network: key.network,
+                        address: key.address
+                    )
                     .map { response -> CryptoValue in
-                        CryptoValue.create(minor: response.result, currency: .ethereum)
+                        CryptoValue.create(
+                            minor: response.result,
+                            currency: key.network.cryptoCurrency
+                        )
                     }
                     .mapError(EthereumBalanceRepositoryError.failed)
                     .eraseToAnyPublisher()
@@ -56,8 +68,11 @@ final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
     }
 
     func balance(
+        network: EVMNetwork,
         for address: String
     ) -> AnyPublisher<CryptoValue, EthereumBalanceRepositoryError> {
-        cachedValue.get(key: address)
+        cachedValue.get(
+            key: Key(network: network, address: address)
+        )
     }
 }

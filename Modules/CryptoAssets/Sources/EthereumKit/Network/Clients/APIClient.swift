@@ -18,11 +18,13 @@ protocol TransactionClientAPI {
 
     /// Get a transaction detail with given hash.
     func transaction(
+        network: EVMNetwork,
         with hash: String
     ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError>
 
     /// Get a transactions for account.
     func transactions(
+        network: EVMNetwork,
         for account: String
     ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError>
 }
@@ -113,6 +115,7 @@ final class APIClient: TransactionPushClientAPI,
     }
 
     func transaction(
+        network: EVMNetwork,
         with hash: String
     ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> {
         let path = EndpointV2.transaction(with: hash)
@@ -122,6 +125,7 @@ final class APIClient: TransactionPushClientAPI,
 
     /// Fetches transactions for an address - returns an array of transactions
     func transactions(
+        network: EVMNetwork,
         for account: String
     ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError> {
         let path = EndpointV2.transactions(for: account)
@@ -139,7 +143,7 @@ final class APIClient: TransactionPushClientAPI,
 extension CryptoCurrency {
     var erc20ContractAddress: String? {
         switch assetModel.kind {
-        case .erc20(let contractAddress):
+        case .erc20(let contractAddress, _):
             return contractAddress
         default:
             return nil

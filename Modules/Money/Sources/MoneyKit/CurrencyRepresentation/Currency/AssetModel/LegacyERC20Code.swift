@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// An enumeration of Coin (L1) codes that the App supports non-custodial.
+/// An enumeration of Coin codes that the App supports non-custodial.
 public enum NonCustodialCoinCode: String, CaseIterable {
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"

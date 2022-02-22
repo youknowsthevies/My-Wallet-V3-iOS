@@ -14,6 +14,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
+    let network: EVMNetwork
+    let publicKey: String
 
     func createTransactionEngine() -> Any {
         ERC20OnChainTransactionEngineFactory(erc20Token: erc20Token)
@@ -82,12 +84,18 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     /// The nonce (transaction count) of this account.
     var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
-        nonceRepository.nonce(for: publicKey)
+        nonceRepository.nonce(
+            network: network,
+            for: publicKey
+        )
     }
 
     /// The ethereum balance of this account.
     var ethereumBalance: AnyPublisher<CryptoValue, EthereumBalanceRepositoryError> {
-        ethereumBalanceRepository.balance(for: publicKey)
+        ethereumBalanceRepository.balance(
+            network: network,
+            for: publicKey
+        )
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
@@ -145,7 +153,6 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let nonceRepository: EthereumNonceRepositoryAPI
     private let priceService: PriceServiceAPI
-    private let publicKey: String
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
@@ -163,9 +170,11 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve()
     ) {
+        precondition(erc20Token.kind.isERC20)
         self.publicKey = publicKey
         self.erc20Token = erc20Token
         asset = erc20Token.cryptoCurrency!
+        network = erc20Token.kind.evmNetwork!
         label = asset.defaultWalletName
         self.balanceService = balanceService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository

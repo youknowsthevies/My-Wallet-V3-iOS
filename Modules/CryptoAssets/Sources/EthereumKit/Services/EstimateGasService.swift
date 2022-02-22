@@ -12,6 +12,7 @@ enum GasEstimateError: Error {
 
 protocol GasEstimateServiceAPI {
     func estimateGas(
+        network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
     ) -> AnyPublisher<BigInt, GasEstimateError>
 }
@@ -25,9 +26,10 @@ final class GasEstimateService: GasEstimateServiceAPI {
     }
 
     func estimateGas(
+        network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
     ) -> AnyPublisher<BigInt, GasEstimateError> {
-        client.estimateGas(transaction: transaction)
+        client.estimateGas(network: network, transaction: transaction)
             .mapError(GasEstimateError.unableToEstimateGas)
             .map(\.result)
             .map { gasEstimate -> BigInt in
