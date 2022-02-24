@@ -99,7 +99,7 @@ struct SearchCryptoDomainView: View {
                 title: result.domainName,
                 subtitle: result.domainType.statusLabel,
                 trailing: {
-                    Tag(
+                    TagView(
                         text: result.domainAvailability.availabilityLabel,
                         variant: result.domainAvailability == .availableForFree ?
                             .success : result.domainAvailability == .unavailable ? .default : .infoAlt
