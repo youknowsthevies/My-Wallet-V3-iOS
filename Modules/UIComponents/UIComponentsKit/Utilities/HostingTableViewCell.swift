@@ -19,7 +19,12 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func host(_ rootView: Content, parent: UIViewController, height: CGFloat?) {
+    public func host(
+        _ rootView: Content,
+        parent: UIViewController,
+        height: CGFloat?,
+        showSeparator: Bool = true
+    ) {
         hostingController?.view.removeFromSuperview()
         hostingController?.rootView = nil
         hostingController = .init(rootView: rootView)
@@ -35,7 +40,15 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
 
         if !contentView.subviews.contains(hostingController.view) {
             contentView.addSubview(hostingController.view)
-            hostingController.view.constraint(edgesTo: contentView, insets: .init(top: 0, left: 0, bottom: 1, right: 0))
+            hostingController.view.constraint(
+                edgesTo: contentView,
+                insets: .init(
+                    top: 0,
+                    left: 0,
+                    bottom: showSeparator ? 1 : 0,
+                    right: 0
+                )
+            )
 
             if let height = height, heightContraint == nil {
                 heightContraint = contentView.heightAnchor.constraint(equalToConstant: height)

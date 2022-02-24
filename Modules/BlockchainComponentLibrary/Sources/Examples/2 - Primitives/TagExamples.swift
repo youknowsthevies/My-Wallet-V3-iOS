@@ -3,30 +3,30 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
-struct TagExamples: View {
+struct TagViewExamples: View {
     var body: some View {
         VStack(spacing: Spacing.baseline) {
-            Tag(text: "default") // variant: .default
-            Tag(text: "default", size: .large) // variant: .default
+            TagView(text: "default") // variant: .default
+            TagView(text: "default", size: .large) // variant: .default
 
-            Tag(text: "infoAlt", variant: .infoAlt)
-            Tag(text: "infoAlt", variant: .infoAlt, size: .large)
+            TagView(text: "infoAlt", variant: .infoAlt)
+            TagView(text: "infoAlt", variant: .infoAlt, size: .large)
 
-            Tag(text: "success", variant: .success)
-            Tag(text: "success", variant: .success, size: .large)
+            TagView(text: "success", variant: .success)
+            TagView(text: "success", variant: .success, size: .large)
 
-            Tag(text: "warning", variant: .warning)
-            Tag(text: "warning", variant: .warning, size: .large)
+            TagView(text: "warning", variant: .warning)
+            TagView(text: "warning", variant: .warning, size: .large)
 
-            Tag(text: "error", variant: .error)
-            Tag(text: "error", variant: .error, size: .large)
+            TagView(text: "error", variant: .error)
+            TagView(text: "error", variant: .error, size: .large)
         }
         .padding(Spacing.padding())
     }
 }
 
-struct TagExamples_Previews: PreviewProvider {
+struct TagViewExamples_Previews: PreviewProvider {
     static var previews: some View {
-        TagExamples()
+        TagViewExamples()
     }
 }

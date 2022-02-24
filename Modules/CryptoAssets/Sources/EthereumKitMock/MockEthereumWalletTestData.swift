@@ -29,6 +29,7 @@ enum MockEthereumWalletTestData {
         static let to = "0x3535353535353535353535353535353535353535"
         static let value: BigUInt = 1
         static let nonce: BigUInt = 9
+        static let chainID: BigUInt = 1
         static let gasPrice: BigUInt = 11000000000
         static let gasLimit: BigUInt = 21000
         static let gasLimitContract: BigUInt = 65000
@@ -44,6 +45,7 @@ extension EthereumTransactionCandidate {
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: MockEthereumWalletTestData.Transaction.value,
             nonce: MockEthereumWalletTestData.Transaction.nonce,
+            chainID: MockEthereumWalletTestData.Transaction.chainID,
             transferType: .transfer()
         )
     }

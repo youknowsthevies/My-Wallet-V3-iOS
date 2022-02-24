@@ -7,7 +7,7 @@ import XCTest
 final class MoneyValueConvertTests: XCTestCase {
 
     var mockCoin6Precision: CryptoCurrency {
-        .mockCoin(name: "MOCK", precision: 6, sortIndex: 0)
+        .mockCoin(symbol: "A", displaySymbol: "A", name: "MOCK", precision: 6, sortIndex: 0)
     }
 
     func testConvertingALGOIntoBTCUsingBTCExchangeRate() {

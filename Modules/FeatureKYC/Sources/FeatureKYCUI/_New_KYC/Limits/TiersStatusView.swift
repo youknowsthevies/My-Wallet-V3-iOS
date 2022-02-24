@@ -101,9 +101,9 @@ struct TierStatusCell: View {
                     }
                 }
                 if userTier.state == .pending {
-                    Tag(text: LocalizedStrings.accountInManualReviewBadge, variant: .infoAlt, size: .large)
+                    TagView(text: LocalizedStrings.accountInManualReviewBadge, variant: .infoAlt, size: .large)
                 } else if userTier.tier.isGold, userTier.state == .none {
-                    Tag(text: LocalizedStrings.mostPopularBadge, variant: .success, size: .large)
+                    TagView(text: LocalizedStrings.mostPopularBadge, variant: .success, size: .large)
                 }
             }
             Spacer()

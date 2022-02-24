@@ -3,13 +3,11 @@
 import BigInt
 import Foundation
 
-struct EthereumAccountTransactionsResponse: Codable {
+struct EthereumAccountTransactionsResponse: Decodable {
     let transactions: [EthereumHistoricalTransactionResponse]
-    let page: String
-    let size: Int
 }
 
-public struct EthereumHistoricalTransactionResponse: Codable {
+public struct EthereumHistoricalTransactionResponse: Decodable {
 
     public var createdAt: Date {
         guard let timeInterval = timestamp.flatMap({ TimeInterval($0) }) else {

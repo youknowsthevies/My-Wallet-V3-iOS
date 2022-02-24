@@ -15,7 +15,10 @@ public protocol EthereumAccountServiceAPI {
     /// - Parameter address: An ethereum address.
     ///
     /// - Returns: A publisher that emits a `Bool` on success, or a `NetworkError` on failure.
-    func isContract(address: String) -> AnyPublisher<Bool, EthereumAccountServiceError>
+    func isContract(
+        network: EVMNetwork,
+        address: String
+    ) -> AnyPublisher<Bool, EthereumAccountServiceError>
 }
 
 final class EthereumAccountService: EthereumAccountServiceAPI {
@@ -49,10 +52,13 @@ final class EthereumAccountService: EthereumAccountServiceAPI {
 
     // MARK: Internal Methods
 
-    func isContract(address: String) -> AnyPublisher<Bool, EthereumAccountServiceError> {
+    func isContract(
+        network: EVMNetwork,
+        address: String
+    ) -> AnyPublisher<Bool, EthereumAccountServiceError> {
         guard let isContractAddress = isContractAddressCache.value[address] else {
             return accountClient
-                .code(address: address)
+                .code(network: network, address: address)
                 .mapError(EthereumAccountServiceError.failed)
                 .map { !$0.result.isEmpty }
                 .handleEvents(receiveOutput: { [isContractAddressCache] isContract in

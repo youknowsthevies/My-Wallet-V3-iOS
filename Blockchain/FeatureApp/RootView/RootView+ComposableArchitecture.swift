@@ -35,16 +35,16 @@ extension RootViewState {
 
         struct Data: Codable, Equatable {
 
-            var list: [Tag.Meme] = [
-                blockchain.ux.user.fab.swap[],
-                blockchain.ux.user.fab.send[],
-                blockchain.ux.user.fab.receive[],
-                blockchain.ux.user.fab.rewards[]
+            var list: [Tag] = [
+                blockchain.ux.frequent.action.swap[],
+                blockchain.ux.frequent.action.send[],
+                blockchain.ux.frequent.action.receive[],
+                blockchain.ux.frequent.action.rewards[]
             ]
 
-            var buttons: [Tag.Meme] = [
-                blockchain.ux.user.fab.sell[],
-                blockchain.ux.user.fab.buy[]
+            var buttons: [Tag] = [
+                blockchain.ux.frequent.action.sell[],
+                blockchain.ux.frequent.action.buy[]
             ]
         }
     }
@@ -67,7 +67,7 @@ enum RootViewRoute: NavigationRoute {
         switch self {
         case .QR:
             QRCodeScannerView()
-                .identity(blockchain.ux.user.scan.qr)
+                .identity(blockchain.ux.scan.QR)
                 .ignoresSafeArea()
         case .account:
             AccountView()
@@ -79,14 +79,13 @@ enum RootViewRoute: NavigationRoute {
 
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
-    var featureFlagsService: FeatureFlagsServiceAPI = resolve()
 }
 
 let rootViewReducer = Reducer<
     RootViewState,
     RootViewAction,
     RootViewEnvironment
-> { state, action, environment in
+> { state, action, _ in
     switch action {
     case .tab(let tab):
         state.tab = tab
@@ -108,14 +107,7 @@ let rootViewReducer = Reducer<
         state.fab.animate = false
         return .none
     case .onAppear:
-        return environment.featureFlagsService.object(
-            for: .remote(.fab),
-            type: RootViewState.FrequentAction.Data.self
-        )
-        .replaceError(with: nil)
-        .compactMap(\.wrapped)
-        .eraseToEffect()
-        .map { .binding(.set(\.$fab.data, $0)) }
+        return .none
     case .route, .binding:
         return .none
     }

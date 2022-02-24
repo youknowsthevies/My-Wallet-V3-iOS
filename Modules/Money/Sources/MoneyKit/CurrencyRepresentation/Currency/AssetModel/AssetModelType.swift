@@ -3,17 +3,25 @@
 /// A type of an `AssetModel`.
 public enum AssetModelType: Hashable {
 
+    public enum ERC20ParentChain: String {
+        case ethereum = "ETH"
+    }
+
+    public enum CeloParentChain: String {
+        case celo = "CELO"
+    }
+
+    /// A Celo token asset.
+    case celoToken(parentChain: CeloParentChain)
+
     /// A coin asset.
     case coin(minimumOnChainConfirmations: Int)
 
     /// An Ethereum ERC-20 asset.
-    case erc20(contractAddress: String)
+    case erc20(contractAddress: String, parentChain: ERC20ParentChain)
 
     /// A fiat asset.
     case fiat
-
-    /// A Celo token asset.
-    case celoToken
 
     public var isERC20: Bool {
         switch self {

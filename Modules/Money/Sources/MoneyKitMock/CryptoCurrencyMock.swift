@@ -4,6 +4,8 @@
 
 extension AssetModel {
     static func mockERC20(
+        symbol: String,
+        displaySymbol: String,
         name: String,
         erc20Address: String = "ETH",
         precision: Int = 18,
@@ -11,8 +13,8 @@ extension AssetModel {
     ) -> AssetModel {
         AssetModel(
             assetResponse: .init(
-                symbol: name,
-                displaySymbol: name,
+                symbol: symbol,
+                displaySymbol: displaySymbol,
                 name: name,
                 precision: precision,
                 products: [],
@@ -31,14 +33,16 @@ extension AssetModel {
     }
 
     static func mockCoin(
+        symbol: String,
+        displaySymbol: String,
         name: String,
         precision: Int = 18,
         sortIndex: Int = 0
     ) -> AssetModel {
         AssetModel(
             assetResponse: .init(
-                symbol: name,
-                displaySymbol: name,
+                symbol: symbol,
+                displaySymbol: displaySymbol,
                 name: name,
                 precision: precision,
                 products: [],
@@ -60,12 +64,16 @@ extension AssetModel {
 extension CryptoCurrency {
 
     static func mockERC20(
+        symbol: String,
+        displaySymbol: String,
         name: String,
         erc20Address: String = "ETH",
         precision: Int = 18,
         sortIndex: Int = 0
     ) -> CryptoCurrency {
         AssetModel.mockERC20(
+            symbol: symbol,
+            displaySymbol: displaySymbol,
             name: name,
             erc20Address: erc20Address,
             precision: precision,
@@ -74,11 +82,15 @@ extension CryptoCurrency {
     }
 
     static func mockCoin(
+        symbol: String,
+        displaySymbol: String,
         name: String,
         precision: Int = 18,
         sortIndex: Int = 0
     ) -> CryptoCurrency {
         AssetModel.mockCoin(
+            symbol: symbol,
+            displaySymbol: displaySymbol,
             name: name,
             precision: precision,
             sortIndex: sortIndex

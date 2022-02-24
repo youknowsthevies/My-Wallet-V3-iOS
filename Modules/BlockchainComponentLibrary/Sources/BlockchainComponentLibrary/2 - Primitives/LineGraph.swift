@@ -6,105 +6,70 @@ import SwiftUI
 ///
 ///     LineGraph(
 ///         selection: $selectedIndex,
-///         selectionTitle: { i in
-///             Text("\(data[n])")
+///         selectionTitle: { i, d in
+///             Text("\(data[i])")
 ///         },
+///         minimumTitle: { i, d in
+///             Text("\(data[i])")
+///         },
+///         maximumTitle: { i, d in
+///             Text("\(data[i])")
+///         }
 ///         data: data,
-///         tolerance: 5,
-///         isLive: false
+///         tolerance: 3
 ///     )
 ///
 /// # Figma
 ///
 /// [Graph](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=1125%3A7721)
-public struct LineGraph<Title: View>: View {
-
-    let padding = (
-        highlight: 20.cg,
-        trailing: 26.cg
-    )
+public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
 
     @Binding public var selection: Int?
+
     public let isLive: Bool
-    public let selectionTitle: (Int) -> Title?
+    public let selectionTitle: (_ index: Int, _ data: Double) -> Title
+
+    public let minimumTitle: (_ index: Int, _ data: Double) -> Minimum
+    public let maximumTitle: (_ index: Int, _ data: Double) -> Maximum
 
     public var isHighlighted: Bool {
         _highlight == nil
     }
 
-    private let my: (
-        smooth: (
-            shape: LineShape,
-            integral: LineShape
-        ),
-        sharp: (
-            shape: LineShape,
-            integral: LineShape
-        )
+    let padding = (
+        highlight: 20.cg,
+        trailing: 26.cg,
+        text: 8.cg
     )
+
+    private let memoized: LineShape.Memoized
 
     @State private var _size: CGSize = .zero
     @State private var _highlight: CGFloat?
-    @State private var _title: CGFloat = 0
+    @State private var _titleWidth: CGFloat = 0
+    @State private var _minimumTitleSize: CGSize = .zero
+    @State private var _maximumTitleSize: CGSize = .zero
 
     public init(
         selection: Binding<Int?> = .constant(nil),
-        @ViewBuilder selectionTitle: @escaping (Int) -> Title?,
+        @ViewBuilder selectionTitle: @escaping (Int, Double) -> Title,
+        @ViewBuilder minimumTitle: @escaping (Int, Double) -> Minimum,
+        @ViewBuilder maximumTitle: @escaping (Int, Double) -> Maximum,
         data: [Double],
         tolerance: Int = 5,
-        density: Int = 300,
+        density: Int = 250,
         isLive: Bool = false
     ) {
         _selection = selection
         self.selectionTitle = selectionTitle
+        self.minimumTitle = minimumTitle
+        self.maximumTitle = maximumTitle
         self.isLive = isLive
-        let (min, max) = data.minAndMax() ?? (0, .greatestFiniteMagnitude)
-        let span = (max - min).d
-        let data = data.map { value in
-            1.d - (value.d - min.d) / span
-        }
-        let smooth = LineShape.vertices(
-            of: data,
+        memoized = LineShape.Memoized[
+            raw: data,
             tolerance: tolerance,
             density: density
-        )
-        let sharp = LineShape.vertices(
-            of: data,
-            tolerance: 1,
-            density: density
-        )
-        my = (
-            smooth: (
-                shape: LineShape(
-                    data: data,
-                    tolerance: tolerance,
-                    density: density,
-                    vertices: smooth
-                ),
-                integral: LineShape(
-                    data: data,
-                    tolerance: tolerance,
-                    density: density,
-                    closed: true,
-                    vertices: smooth
-                )
-            ),
-            sharp: (
-                shape: LineShape(
-                    data: data,
-                    tolerance: 1,
-                    density: density,
-                    vertices: sharp
-                ),
-                integral: LineShape(
-                    data: data,
-                    tolerance: 1,
-                    density: density,
-                    closed: true,
-                    vertices: sharp
-                )
-            )
-        )
+        ]
     }
 
     public var body: some View {
@@ -116,17 +81,25 @@ public struct LineGraph<Title: View>: View {
                         stroked()
                         faded()
                     }
+                    .drawingGroup()
+                    .contentShape(Rectangle())
                     .anchorPreference(key: GraphSizePreferenceKey.self, value: .bounds) { anchor in
                         geometry[anchor].size
                     }
                     dot(geometry)
                 }
+                .padding([.top, .bottom], padding.highlight)
+                Group {
+                    if let ((i, max), (j, min)) = memoized.minMax {
+                        minimum(index: i, value: min)
+                        maximum(index: j, value: max)
+                    }
+                }
+                .padding(.bottom, padding.text + _minimumTitleSize.height)
             }
             .onPreferenceChange(GraphSizePreferenceKey.self) { size in
                 _size = size
             }
-            .padding(.bottom, .unit)
-            .padding(.top, padding.highlight)
             Group {
                 highlight()
                     .animation(.none)
@@ -137,7 +110,7 @@ public struct LineGraph<Title: View>: View {
                 .onChanged { value in
                     let percentage = (value.location.x / _size.width).clamped(to: 0...1)
                     _highlight = percentage
-                    selection = index(from: percentage).clamped(to: 0...line.shape.data.count)
+                    selection = index(from: percentage)
                 }
                 .onEnded { _ in
                     _highlight = nil
@@ -148,11 +121,11 @@ public struct LineGraph<Title: View>: View {
     }
 
     private func index(from percentage: CGFloat) -> Int {
-        round((my.sharp.shape.data.count - 1).cg * percentage).i
+        round((memoized.raw.count - 1).cg * percentage).i.clamped(to: 0...memoized.raw.count)
     }
 
-    public var line: (shape: LineShape, integral: LineShape) {
-        _highlight == nil ? my.smooth : my.sharp
+    var line: (shape: LineShape, integral: LineShape) {
+        _highlight == nil ? memoized.smooth : memoized.sharp
     }
 
     @ViewBuilder private func fill() -> some View {
@@ -194,9 +167,9 @@ public struct LineGraph<Title: View>: View {
 
     @ViewBuilder private func dot(_ geometry: GeometryProxy) -> some View {
         if isLive {
-            if let end = line.shape.path(in: geometry.frame(in: .local)).currentPoint {
+            if let end = line.shape.vertices.last {
                 let length: CGFloat = 8
-                let offset = end - (length / 2)
+                let offset = end * _size - (length / 2)
                 Circle()
                     .fill(Color.semantic.primary)
                     .frame(width: length, height: length)
@@ -209,70 +182,101 @@ public struct LineGraph<Title: View>: View {
     }
 
     @ViewBuilder private func highlight() -> some View {
-        if let percentage = _highlight {
+        if let percentage = _highlight ?? selection.map({ $0.cg / memoized.raw.count.cg }) {
             Rectangle()
                 .fill(Color.semantic.title)
                 .frame(width: 1)
                 .padding(.top, 20)
                 .offset(x: _size.width * percentage)
-            if let title = selectionTitle(index(from: percentage)) {
-                GeometryReader { proxy in
-                    title
-                        .padding(.horizontal, 1)
-                        .offset(
-                            x: (percentage * _size.width - _title / 2)
-                                .clamped(to: 0...max(1, _size.width - _title))
+            GeometryReader { geometry in
+                let index = index(from: percentage)
+                selectionTitle(index, memoized.raw[index])
+                    .padding(.horizontal, 1)
+                    .offset(
+                        x: (percentage * _size.width - _titleWidth / 2)
+                            .clamped(to: 0...max(1, _size.width - _titleWidth))
+                    )
+                    .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
+                        geometry[anchor].size.width
+                    }
+                    .onPreferenceChange(TitleWidthPreferenceKey.self) { value in
+                        _titleWidth = value
+                    }
+            }
+        }
+    }
+
+    @ViewBuilder private func minimum(index: Int, value: Double) -> some View {
+        if selection == nil {
+            GeometryReader { geometry in
+                let offset = line.shape.min * geometry.size
+                minimumTitle(index, value)
+                    .transformEffect(
+                        CGAffineTransform(
+                            translationX: (offset.x - _minimumTitleSize.width / 2)
+                                .clamped(to: 0...max(1, _size.width - _minimumTitleSize.width)),
+                            y: (offset.y + padding.text + _minimumTitleSize.height)
+                                .clamped(to: 0...max(1, _size.height + padding.text + _minimumTitleSize.height))
                         )
-                        .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
-                            proxy[anchor].size.width
-                        }
-                }
-                .onPreferenceChange(TitleWidthPreferenceKey.self) { value in
-                    _title = value
-                }
+                    )
+                    .anchorPreference(key: MinTitleSizePreferenceKey.self, value: .bounds) { anchor in
+                        geometry[anchor].size
+                    }
+                    .onPreferenceChange(MinTitleSizePreferenceKey.self) { value in
+                        _minimumTitleSize = value
+                    }
+            }
+        }
+    }
+
+    @ViewBuilder private func maximum(index: Int, value: Double) -> some View {
+        if selection == nil {
+            GeometryReader { geometry in
+                let offset = line.shape.max * geometry.size
+                maximumTitle(index, value)
+                    .transformEffect(
+                        CGAffineTransform(
+                            translationX: (offset.x - _maximumTitleSize.width / 2)
+                                .clamped(to: 0...max(1, _size.width - _maximumTitleSize.width)),
+                            y: (offset.y - _maximumTitleSize.height).clamped(to: 0...max(1, _size.height))
+                        )
+                    )
+                    .anchorPreference(key: MaxTitleSizePreferenceKey.self, value: .bounds) { anchor in
+                        geometry[anchor].size
+                    }
+                    .onPreferenceChange(MaxTitleSizePreferenceKey.self) { value in
+                        _maximumTitleSize = value
+                    }
             }
         }
     }
 }
 
-extension LineGraph where Title == EmptyView {
+struct LineShape: Shape {
 
-    public init(
-        selection: Binding<Int?> = .constant(nil),
-        data: [Double],
-        tolerance: Int = 5,
-        density: Int = 300,
-        isLive: Bool = false
-    ) {
-        self.init(
-            selection: selection,
-            selectionTitle: { _ in EmptyView() },
-            data: data,
-            tolerance: tolerance,
-            density: density,
-            isLive: isLive
-        )
-    }
-}
+    static let empty: LineShape = .init(data: [], tolerance: 0, density: 1, vertices: [])
 
-public struct LineShape: Shape {
-
-    public var animatableData: AnimatableVertices {
-        get { .init(values: data) }
-        set { data = newValue.values }
+    var animatableData: AnimatablePoints {
+        get { .init(points: vertices.map(\.animatableData)) }
+        set { vertices = newValue.points.map(\.point) }
     }
 
-    public var data: [Double] {
+    var data: [Double] {
         didSet { vertices = LineShape.vertices(of: data, tolerance: tolerance) }
     }
 
-    var vertices: [CGPoint]
+    var vertices: [CGPoint] {
+        didSet { (min, max) = minMax() }
+    }
+
+    var min: CGPoint = .zero
+    var max: CGPoint = .zero
 
     let tolerance: Int
     let density: Int
     let isClosed: Bool
 
-    public init(
+    init(
         data: [Double],
         tolerance: Int,
         density: Int,
@@ -284,6 +288,7 @@ public struct LineShape: Shape {
         self.density = density
         self.isClosed = isClosed
         self.vertices = vertices
+        (min, max) = minMax()
     }
 
     static func vertices(of y: [Double], tolerance: Int, density: Int = 300) -> [CGPoint] {
@@ -292,14 +297,40 @@ public struct LineShape: Shape {
         let x2 = stride(from: 0.d, through: 1, by: 1 / (density - 1).d)
         let y2: [Double]
         if tolerance > 1 {
-            y2 = x2.map(scale.linear).slidingAverages(radius: tolerance, prefixAndSuffix: .reverseToFit)
+            y2 = x2.map(scale.linear).slidingAverages(radius: tolerance, prefixAndSuffix: .repeating)
         } else {
             y2 = x2.map(scale.linear)
         }
         return zip(x2, y2).map { CGPoint(x: $0, y: $1) }
     }
 
-    public func path(in rect: CGRect) -> Path {
+    func minMax() -> (min: CGPoint, max: CGPoint) {
+        guard !vertices.isEmpty, let ((min, _), (max, _)) = data.indexed().minAndMax(using: \.element, by: >) else {
+            return (.zero, .zero)
+        }
+
+        func vertex(at i: Int, function f: (Double) -> Double) -> CGPoint {
+            vertices[f((i.d / data.count.d) * density.d).i.clamped(to: 0...vertices.count - 1)]
+        }
+
+        let index = (
+            min: (
+                lower: vertex(at: min, function: floor),
+                upper: vertex(at: min, function: ceil)
+            ),
+            max: (
+                lower: vertex(at: max, function: floor),
+                upper: vertex(at: max, function: ceil)
+            )
+        )
+
+        return (
+            index.min.lower.y < index.min.upper.y ? index.min.lower : index.min.upper,
+            index.max.lower.y > index.max.upper.y ? index.max.lower : index.max.upper
+        )
+    }
+
+    func path(in rect: CGRect) -> Path {
         let vertices = vertices.map { $0 * rect.size }
         if let first = vertices.first {
             return Path { path in
@@ -321,40 +352,163 @@ public struct LineShape: Shape {
 
 extension LineShape {
 
-    public struct AnimatableVertices: VectorArithmetic {
+    public struct AnimatablePoints: VectorArithmetic {
 
-        public static var zero = AnimatableVertices(values: [0.0])
+        var points: [CGPoint.AnimatableData]
 
-        public static func + (lhs: AnimatableVertices, rhs: AnimatableVertices) -> AnimatableVertices {
-            let count = min(lhs.values.count, rhs.values.count)
-            return AnimatableVertices(values: vDSP.add(lhs.values[0..<count], rhs.values[0..<count]))
+        public static func + (lhs: Self, rhs: Self) -> Self {
+            data(lhs: lhs, rhs: rhs, applying: +)
         }
 
-        public static func += (lhs: inout AnimatableVertices, rhs: AnimatableVertices) {
-            let count = min(lhs.values.count, rhs.values.count)
-            vDSP.add(lhs.values[0..<count], rhs.values[0..<count], result: &lhs.values[0..<count])
+        public static func - (lhs: Self, rhs: Self) -> Self {
+            data(lhs: lhs, rhs: rhs, applying: -)
         }
-
-        public static func - (lhs: AnimatableVertices, rhs: AnimatableVertices) -> AnimatableVertices {
-            let count = min(lhs.values.count, rhs.values.count)
-            return AnimatableVertices(values: vDSP.subtract(lhs.values[0..<count], rhs.values[0..<count]))
-        }
-
-        public static func -= (lhs: inout AnimatableVertices, rhs: AnimatableVertices) {
-            let count = min(lhs.values.count, rhs.values.count)
-            vDSP.subtract(lhs.values[0..<count], rhs.values[0..<count], result: &lhs.values[0..<count])
-        }
-
-        public var values: [Double]
 
         public mutating func scale(by rhs: Double) {
-            values = vDSP.multiply(rhs, values)
+            for index in points.indices {
+                points[index].scale(by: rhs)
+            }
         }
 
         public var magnitudeSquared: Double {
-            vDSP.sum(vDSP.multiply(values, values))
+            points.reduce(0) { sum, point in
+                sum + point.magnitudeSquared
+            }
+        }
+
+        public static var zero: AnimatableData {
+            .init(points: [])
+        }
+
+        static func data(
+            lhs: Self,
+            rhs: Self,
+            applying function: (CGPoint.AnimatableData, CGPoint.AnimatableData) -> CGPoint.AnimatableData
+        ) -> Self {
+            var points: [CGPoint.AnimatableData] = []
+            let (min, max) = [lhs.points.count, rhs.points.count].minAndMax()!
+            for index in 0..<max {
+                if index < min {
+                    points.append(function(lhs.points[index], rhs.points[index]))
+                } else if rhs.points.count > lhs.points.count, let lastLeftPoint = lhs.points.last {
+                    points.append(function(lastLeftPoint, rhs.points[index]))
+                } else if let lastPoint = points.last, index < lhs.points.count {
+                    points.append(function(lastPoint, lhs.points[index]))
+                }
+            }
+            return .init(points: points)
         }
     }
+}
+
+private var __memoized: [LineShape.MemoizedKey: LineShape.Memoized] = [:]
+
+extension LineShape {
+
+    fileprivate struct MemoizedKey: Hashable {
+        let raw: [Double], tolerance: Int, density: Int
+    }
+
+    fileprivate struct Memoized {
+
+        typealias Key = MemoizedKey
+
+        static subscript(raw raw: [Double], tolerance tolerance: Int, density density: Int) -> Memoized {
+            self[Key(raw: raw, tolerance: tolerance, density: density)]
+        }
+
+        static subscript(key: MemoizedKey) -> Memoized {
+            guard let memoized = __memoized[key] else {
+                __memoized[key] = LineShape.memoized(
+                    raw: key.raw,
+                    tolerance: key.tolerance,
+                    density: key.density
+                )
+                return self[key]
+            }
+            return memoized
+        }
+
+        let raw: [Double]
+        let tolerance: Int
+        let density: Int
+
+        let smooth: (
+            shape: LineShape,
+            integral: LineShape
+        )
+
+        let sharp: (
+            shape: LineShape,
+            integral: LineShape
+        )
+
+        let minMax: (
+            min: (Int, Double),
+            max: (Int, Double)
+        )?
+    }
+
+    fileprivate static func memoized(raw: [Double], tolerance: Int, density: Int) -> LineShape.Memoized {
+
+        let (min, max) = raw.minAndMax() ?? (0, .greatestFiniteMagnitude)
+        let span = (max - min).d
+        let normal = raw.map { value in
+            1.d - (value.d - min.d) / span
+        }
+
+        let smooth = LineShape.vertices(
+            of: normal,
+            tolerance: tolerance,
+            density: density
+        )
+        let sharp = LineShape.vertices(
+            of: normal,
+            tolerance: 1,
+            density: density
+        )
+
+        return .init(
+            raw: raw,
+            tolerance: tolerance,
+            density: density,
+            smooth: (
+                shape: LineShape(
+                    data: normal,
+                    tolerance: tolerance,
+                    density: density,
+                    vertices: smooth
+                ),
+                integral: LineShape(
+                    data: normal,
+                    tolerance: tolerance,
+                    density: density,
+                    closed: true,
+                    vertices: smooth
+                )
+            ),
+            sharp: (
+                shape: LineShape(
+                    data: normal,
+                    tolerance: 1,
+                    density: density,
+                    vertices: sharp
+                ),
+                integral: LineShape(
+                    data: normal,
+                    tolerance: 1,
+                    density: density,
+                    closed: true,
+                    vertices: sharp
+                )
+            ),
+            minMax: raw.indexed().minAndMax(using: \.element, by: >)
+        )
+    }
+}
+
+extension AnimatablePair where First: BinaryFloatingPoint, Second: BinaryFloatingPoint {
+    var point: CGPoint { .init(x: first.cg, y: second.cg) }
 }
 
 private struct GraphSizePreferenceKey: PreferenceKey {
@@ -369,6 +523,22 @@ private struct TitleWidthPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
 
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+private struct MinTitleSizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+private struct MaxTitleSizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
         value = nextValue()
     }
 }
@@ -390,11 +560,17 @@ struct LineGraph_Previews: PreviewProvider {
             ZStack {
                 LineGraph(
                     selection: $selection,
-                    selectionTitle: { i in
-                        Text("\(i) -> \(data.count)")
+                    selectionTitle: { i, d in
+                        Text("\(i) == \(d) -> \(data.count)")
                             .typography(.caption2)
                             .foregroundColor(.semantic.title)
                             .background(Color.semantic.background)
+                    },
+                    minimumTitle: { _, _ in
+                        Text("min")
+                    },
+                    maximumTitle: { _, _ in
+                        Text("max")
                     },
                     data: data,
                     isLive: isLive

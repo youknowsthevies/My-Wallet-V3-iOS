@@ -118,7 +118,9 @@ public struct PrimaryNavigationView<Content: View>: View {
 
     public var body: some View {
         #if os(macOS)
-        NavigationView(content: content)
+        NavigationView {
+            content
+        }
         #else
         NavigationView {
             content
@@ -187,7 +189,6 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
     let leading: (() -> Leading)?
     let title: String?
     let trailing: (() -> Trailing)?
-    let titleDisplayMode: NavigationBarItem.TitleDisplayMode = .inline
 
     func body(content: Content) -> some View {
         #if os(macOS)
@@ -195,7 +196,6 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
             .ifLet(title) { view, title in
                 view
                     .navigationTitle(title)
-                    .navigationBarTitleDisplayMode(titleDisplayMode)
             }
             .toolbar {
                 ToolbarItem {
@@ -208,7 +208,7 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
             .ifLet(title) { view, title in
                 view
                     .navigationTitle(title)
-                    .navigationBarTitleDisplayMode(titleDisplayMode)
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .navigationBarItems(
                 leading: HStack(spacing: Spacing.padding3) {

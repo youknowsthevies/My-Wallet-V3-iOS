@@ -16,6 +16,8 @@ final class EIP681URITests: XCTestCase {
 
     var enabledCurrenciesService: MockEnabledCurrenciesService!
     let currency: CryptoCurrency = .mockERC20(
+        symbol: "A",
+        displaySymbol: "A",
         name: "ERC20 1",
         erc20Address: TestCase.contract,
         sortIndex: 0

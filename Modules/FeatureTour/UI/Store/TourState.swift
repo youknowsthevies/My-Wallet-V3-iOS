@@ -5,10 +5,18 @@ import SwiftUI
 
 struct TourState: Equatable {
 
+    enum Step: Hashable {
+        case brokerage
+        case earn
+        case keys
+        case prices
+    }
+
     private let scrollEffectTransitionDistance: CGFloat = 300
 
     var items = IdentifiedArrayOf<Price>()
     var scrollOffset: CGFloat = 0
+    var visibleStep: Step = .brokerage
 
     var gradientBackgroundOpacity: Double {
         switch scrollOffset {
