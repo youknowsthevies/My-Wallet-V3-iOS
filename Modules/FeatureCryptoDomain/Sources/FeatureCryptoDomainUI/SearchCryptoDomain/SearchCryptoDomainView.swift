@@ -94,19 +94,24 @@ struct SearchCryptoDomainView: View {
     }
 
     private func createDomainRow(result: SearchDomainResult) -> some View {
-        PrimaryRow(
-            title: result.domainName,
-            subtitle: result.domainType.statusLabel,
-            tags: [
-                TagView(
-                    text: result.domainAvailability.availabilityLabel,
-                    variant: result.domainAvailability == .availableForFree ?
-                        .success : result.domainAvailability == .unavailable ? .default : .infoAlt
-                )
-            ],
-            action: {}
-        )
-        .accessibilityIdentifier(Accessibility.domainListRow)
+        WithViewStore(store) { viewStore in
+            PrimaryRow(
+                title: result.domainName,
+                subtitle: result.domainType.statusLabel,
+                trailing: {
+                    TagView(
+                        text: result.domainAvailability.availabilityLabel,
+                        variant: result.domainAvailability == .availableForFree ?
+                            .success : result.domainAvailability == .unavailable ? .default : .infoAlt
+                    )
+                },
+                action: {
+                    viewStore.send(.selectDomain(result))
+                }
+            )
+            .disabled(result.domainAvailability == .unavailable)
+            .accessibilityIdentifier(Accessibility.domainListRow)
+        }
     }
 }
 
@@ -123,6 +128,11 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                         ),
                         SearchDomainResult(
                             domainName: "cocacola001.blockchain",
+                            domainType: .free,
+                            domainAvailability: .availableForFree
+                        ),
+                        SearchDomainResult(
+                            domainName: "cocacola002.blockchain",
                             domainType: .free,
                             domainAvailability: .availableForFree
                         ),

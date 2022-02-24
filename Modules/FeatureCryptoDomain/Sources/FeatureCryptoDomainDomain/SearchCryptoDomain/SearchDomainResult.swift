@@ -4,7 +4,7 @@ import Localization
 
 private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.SearchDomain
 
-public enum DomainType: Equatable {
+public enum DomainType: Equatable, Hashable {
     case free
     case premium
 
@@ -18,7 +18,7 @@ public enum DomainType: Equatable {
     }
 }
 
-public enum DomainAvailability: Equatable {
+public enum DomainAvailability: Equatable, Hashable {
     case availableForFree
     case availableForPremiumSale(price: String)
     case unavailable
@@ -35,7 +35,7 @@ public enum DomainAvailability: Equatable {
     }
 }
 
-public struct SearchDomainResult: Equatable {
+public struct SearchDomainResult: Equatable, Hashable {
     public let domainName: String
     public let domainType: DomainType
     public let domainAvailability: DomainAvailability

@@ -180,4 +180,68 @@ extension LocalizationConstants.FeatureCryptoDomain {
             )
         }
     }
+
+    // MARK: - Domain Checkout Screen
+
+    public enum DomainCheckout {
+        public static let navigationTitle = NSLocalizedString(
+            "Cart",
+            comment: "Domain checkout navigation title"
+        )
+        public static let terms = NSLocalizedString(
+            "I agree to the Terms & Conditions for claiming a free crypto domain through Blockchain.com and Unstoppable Domains.",
+            comment: "Domain checkout terms"
+        )
+        public static let button = NSLocalizedString(
+            "Claim",
+            comment: "Domain checkout button"
+        )
+        public static let emptyTitle = NSLocalizedString(
+            "Your Cart is Empty",
+            comment: "Domain checkout empty state title"
+        )
+        public static let emptyInstruction = NSLocalizedString(
+            "Add a domain to your cart.",
+            comment: "Domain checkout empty state instruction"
+        )
+        public static let browseButton = NSLocalizedString(
+            "Browse Domains",
+            comment: "Browse domain button"
+        )
+        public enum RemoveDomain {
+            public static let removeTitle = NSLocalizedString(
+                "Remove %@ from your cart?",
+                comment: "Remove domain title"
+            )
+            public static let removeButton = NSLocalizedString(
+                "Remove",
+                comment: "Remove CTA button"
+            )
+            public static let nevermindButton = NSLocalizedString(
+                "Nevermind",
+                comment: "Nevermind CTA button"
+            )
+        }
+    }
+
+    // MARK: - Checkout confirmation screen
+
+    public enum CheckoutConfirmation {
+        public static let title = NSLocalizedString(
+            "%@ is now yours!",
+            comment: "checkout confirmation titlte"
+        )
+        public static let description = NSLocalizedString(
+            "You can now share your domain to receive crypto instead of sharing your wallet addresses.",
+            comment: "checkout confirmation description"
+        )
+        public static let learnMore = NSLocalizedString(
+            "Learn More",
+            comment: "learn more button"
+        )
+        public static let okayButton = NSLocalizedString(
+            "Okay",
+            comment: "okay button"
+        )
+    }
 }

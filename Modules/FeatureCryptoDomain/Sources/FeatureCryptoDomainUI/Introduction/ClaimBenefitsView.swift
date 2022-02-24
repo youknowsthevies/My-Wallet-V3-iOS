@@ -25,6 +25,7 @@ struct ClaimBenefitsView: View {
             .padding([.leading, .trailing], Spacing.padding3)
             .accessibility(identifier: Accessibility.ctaButton)
         }
+        .navigationBarTitleDisplayMode(.inline)
         .primaryNavigation(trailing: { closeButton })
     }
 
@@ -52,49 +53,47 @@ struct ClaimBenefitsView: View {
     }
 
     private var benefitsList: some View {
-        ScrollView {
-            LazyVStack(alignment: .center, spacing: 10) {
-                PrimaryRow(
-                    title: LocalizedString.BenefitsList.SimplifyTransaction.title,
-                    subtitle: LocalizedString.BenefitsList.SimplifyTransaction.description,
-                    leading: {
-                        Icon.flashOn
-                            .frame(width: 24, height: 24)
-                            .accentColor(.semantic.primary)
-                    },
-                    trailing: { EmptyView() }
-                )
-                PrimaryRow(
-                    title: LocalizedString.BenefitsList.MultiNetwork.title,
-                    subtitle: LocalizedString.BenefitsList.MultiNetwork.description,
-                    leading: {
-                        Icon.sell
-                            .frame(width: 24, height: 24)
-                            .accentColor(.semantic.primary)
-                    },
-                    trailing: { EmptyView() }
-                )
-                PrimaryRow(
-                    title: LocalizedString.BenefitsList.Ownership.title,
-                    subtitle: LocalizedString.BenefitsList.Ownership.description,
-                    leading: {
-                        Icon.verified
-                            .frame(width: 24, height: 24)
-                            .accentColor(.semantic.primary)
-                    },
-                    trailing: { EmptyView() }
-                )
-                PrimaryRow(
-                    title: LocalizedString.BenefitsList.MuchMore.title,
-                    subtitle: LocalizedString.BenefitsList.MuchMore.description,
-                    leading: {
-                        Icon.listBullets
-                            .frame(width: 24, height: 24)
-                            .accentColor(.semantic.primary)
-                    },
-                    trailing: { EmptyView() }
-                )
-            }
+        VStack(alignment: .center, spacing: 10) {
+            PrimaryRow(
+                title: LocalizedString.BenefitsList.SimplifyTransaction.title,
+                subtitle: LocalizedString.BenefitsList.SimplifyTransaction.description,
+                leading: {
+                    Icon.flashOn
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.primary)
+                },
+                trailing: { EmptyView() }
+            )
+            PrimaryRow(
+                title: LocalizedString.BenefitsList.MultiNetwork.title,
+                subtitle: LocalizedString.BenefitsList.MultiNetwork.description,
+                leading: {
+                    Icon.sell
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.primary)
+                },
+                trailing: { EmptyView() }
+            )
+            PrimaryRow(
+                title: LocalizedString.BenefitsList.Ownership.title,
+                subtitle: LocalizedString.BenefitsList.Ownership.description,
+                leading: {
+                    Icon.verified
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.primary)
+                },
+                trailing: { EmptyView() }
+            )
+            PrimaryRow(
+                title: LocalizedString.BenefitsList.MuchMore.title,
+                subtitle: LocalizedString.BenefitsList.MuchMore.description,
+                leading: {
+                    Icon.listBullets
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.primary)
+                },
+                trailing: { EmptyView() }
+            )
         }
         .accessibility(identifier: Accessibility.benefitsList)
     }

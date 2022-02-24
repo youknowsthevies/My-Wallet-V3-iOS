@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
 
@@ -56,7 +57,30 @@ let claimIntroductionReducer = Reducer.combine(
             if let routeValue = route?.route {
                 switch routeValue {
                 case .searchDomain:
-                    state.searchState = .init()
+                    state.searchState = .init(
+                        searchResults: [
+                            SearchDomainResult(
+                                domainName: "cocacola.blockchain",
+                                domainType: .premium,
+                                domainAvailability: .unavailable
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocacola001.blockchain",
+                                domainType: .free,
+                                domainAvailability: .availableForFree
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocacola002.blockchain",
+                                domainType: .free,
+                                domainAvailability: .availableForFree
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocola.blockchain",
+                                domainType: .premium,
+                                domainAvailability: .availableForPremiumSale(price: "50")
+                            )
+                        ]
+                    )
                 case .benefits:
                     break
                 }
