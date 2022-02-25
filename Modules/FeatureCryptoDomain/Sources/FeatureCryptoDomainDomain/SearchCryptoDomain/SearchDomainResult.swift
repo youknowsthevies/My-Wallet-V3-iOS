@@ -1,12 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
 import Localization
 
 private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.SearchDomain
 
 public enum DomainType: Equatable, Hashable {
     case free
-    case premium
+    case premium(purchaseURL: URL)
 
     public var statusLabel: String {
         switch self {

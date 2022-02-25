@@ -31,7 +31,9 @@ enum SearchCryptoDomainRoute: NavigationRoute {
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
-    case selectDomain(SearchDomainResult)
+    case selectFreeDomain(SearchDomainResult)
+    case selectPremiumDomain(SearchDomainResult)
+    case openPremiumDomainLink(URL)
     case checkoutAction(DomainCheckoutAction)
 }
 
@@ -42,6 +44,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var searchText: String
     @BindableState var isSearchFieldSelected: Bool
     @BindableState var isAlertCardShown: Bool
+    @BindableState var isPremiumDomainBottomSheetShown: Bool
+    @BindableState var selectedPremiumDomain: SearchDomainResult?
     var searchResults: [SearchDomainResult]
     var filteredSearchResults: [SearchDomainResult]
     var selectedDomains: OrderedSet<SearchDomainResult>
@@ -52,6 +56,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         searchText: String = "",
         isSearchFieldSelected: Bool = false,
         isAlertCardShown: Bool = true,
+        isPremiumDomainBottomSheetShown: Bool = false,
+        selectedPremiumDomain: SearchDomainResult? = nil,
         searchResults: [SearchDomainResult] = [],
         route: RouteIntent<SearchCryptoDomainRoute>? = nil,
         checkoutState: DomainCheckoutState? = nil
@@ -59,6 +65,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         self.searchText = searchText
         self.isSearchFieldSelected = isSearchFieldSelected
         self.isAlertCardShown = isAlertCardShown
+        self.isPremiumDomainBottomSheetShown = isPremiumDomainBottomSheetShown
+        self.selectedPremiumDomain = selectedPremiumDomain
         self.searchResults = searchResults
         filteredSearchResults = searchResults
         selectedDomains = OrderedSet([])
@@ -90,12 +98,27 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainEnvironment
     > { state, action, _ in
         switch action {
+        case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
+            state.selectedPremiumDomain = nil
+            return .none
+
         case .binding:
             return .none
-        case .selectDomain(let domain):
+
+        case .selectFreeDomain(let domain):
             state.selectedDomains.removeAll()
             state.selectedDomains.append(domain)
             return Effect(value: .navigate(to: .checkout))
+
+        case .selectPremiumDomain(let domain):
+            state.selectedPremiumDomain = domain
+            return Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true))
+
+        case .openPremiumDomainLink(let url):
+            // TODO: remove this and use ExternalAppOpener when integrated with main target
+            UIApplication.shared.open(url)
+            return .none
+
         case .route(let route):
             if let routeValue = route?.route {
                 switch routeValue {
@@ -106,14 +129,17 @@ let searchCryptoDomainReducer = Reducer.combine(
                 }
             }
             return .none
+
         case .checkoutAction(.removeDomain(let domain)):
             guard let domain = domain else {
                 return .none
             }
             state.selectedDomains.remove(domain)
             return .none
+
         case .checkoutAction(.returnToBrowseDomains):
             return .dismiss()
+
         case .checkoutAction:
             return .none
         }

@@ -57,6 +57,14 @@ enum AccessibilityIdentifiers {
         static let nevermindButton = "\(prefix)nevermindButton"
     }
 
+    enum BuyDomainBottomSheet {
+        static let prefix = "BuyDomainBottomSheet."
+        static let buyTitle = "\(prefix)buyTitle"
+        static let buyDescription = "\(prefix)buyTitle"
+        static let buyButton = "\(prefix)buyButton"
+        static let goBackButton = "\(prefix)goBackButton"
+    }
+
     // MARK: - Checkout Confirmation Screen
 
     enum CheckoutConfirmation {
