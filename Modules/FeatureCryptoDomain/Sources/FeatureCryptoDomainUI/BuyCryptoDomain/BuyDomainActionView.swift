@@ -12,6 +12,7 @@ struct BuyDomainActionView: View {
 
     @Binding var domain: SearchDomainResult?
     @Binding var isShown: Bool
+    @Environment(\.openURL) var openURL
 
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
@@ -33,7 +34,7 @@ struct BuyDomainActionView: View {
                 },
                 action: {
                     if case .premium(let url) = domain?.domainType {
-                        UIApplication.shared.open(url) { _ in
+                        openURL(url) { _ in
                             isShown.toggle()
                         }
                     }
