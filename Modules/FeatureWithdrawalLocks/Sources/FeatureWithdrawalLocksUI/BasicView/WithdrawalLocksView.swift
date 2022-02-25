@@ -75,9 +75,11 @@ public let withdrawalLocksReducer = Reducer<
         state.withdrawalLocks = withdrawalLocks
         return .fireAndForget {
             if updated {
-                environment.updateViewAction?(
-                    withdrawalLocks?.items.isEmpty == false
-                )
+                environment.mainQueue.schedule {
+                    environment.updateViewAction?(
+                        withdrawalLocks?.items.isEmpty == false
+                    )
+                }
             }
         }
     case .route(let routeItent):

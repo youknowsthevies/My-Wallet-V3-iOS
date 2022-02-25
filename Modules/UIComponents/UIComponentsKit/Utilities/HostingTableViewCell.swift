@@ -61,11 +61,15 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
         }
     }
 
-    public func updateRootView(height: CGFloat) {
+    public func updateRootView(height: CGFloat) -> Bool {
+        if heightContraint?.constant == height {
+            return false
+        }
         if heightContraint != nil {
             contentView.backgroundColor = height <= 1 ? .clear : .lightBorder
             heightContraint?.constant = height
             contentView.setNeedsLayout()
         }
+        return true
     }
 }
