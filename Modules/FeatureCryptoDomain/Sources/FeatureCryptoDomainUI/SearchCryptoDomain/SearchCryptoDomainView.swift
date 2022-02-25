@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import DIKit
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
@@ -143,7 +144,7 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                     searchResults: [
                         SearchDomainResult(
                             domainName: "cocacola.blockchain",
-                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                            domainType: .premium,
                             domainAvailability: .unavailable
                         ),
                         SearchDomainResult(
@@ -158,14 +159,15 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                         ),
                         SearchDomainResult(
                             domainName: "cocola.blockchain",
-                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                            domainType: .premium,
                             domainAvailability: .availableForPremiumSale(price: "50")
                         )
                     ]
                 ),
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
-                    mainQueue: .main
+                    mainQueue: .main,
+                    searchRepository: resolve()
                 )
             )
         )

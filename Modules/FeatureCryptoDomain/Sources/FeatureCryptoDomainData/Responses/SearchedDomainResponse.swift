@@ -9,13 +9,13 @@ struct SearchedDomainResponse: Codable {
         case availability
     }
 
-    var domain: DomainResponse?
-    var availability: AvailabilityResponse?
+    var domain: DomainResponse
+    var availability: AvailabilityResponse
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        domain = try container.decodeIfPresent(DomainResponse.self, forKey: .domain)
-        availability = try container.decodeIfPresent(AvailabilityResponse.self, forKey: .availability)
+        domain = try container.decode(DomainResponse.self, forKey: .domain)
+        availability = try container.decode(AvailabilityResponse.self, forKey: .availability)
     }
 }
 
@@ -37,7 +37,7 @@ struct DomainResponse: Decodable {
     var freeToClaim: Bool?
     var id: Int?
     var networkId: Int?
-    var name: String?
+    var name: String
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -47,7 +47,7 @@ struct DomainResponse: Decodable {
         freeToClaim = try container.decodeIfPresent(Bool.self, forKey: .freeToClaim)
         id = try container.decodeIfPresent(Int.self, forKey: .id)
         networkId = try container.decodeIfPresent(Int.self, forKey: .networkId)
-        name = try container.decodeIfPresent(String.self, forKey: .name)
+        name = try container.decode(String.self, forKey: .name)
     }
 }
 
@@ -62,17 +62,17 @@ struct AvailabilityResponse: Decodable {
     }
 
     var price: Int?
-    var registered: Bool?
-    var protected: Bool?
-    var availableForFree: Bool?
+    var registered: Bool
+    var protected: Bool
+    var availableForFree: Bool
     var test: Bool?
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         price = try container.decodeIfPresent(Int.self, forKey: .price)
-        registered = try container.decodeIfPresent(Bool.self, forKey: .registered)
-        protected = try container.decodeIfPresent(Bool.self, forKey: .protected)
-        availableForFree = try container.decodeIfPresent(Bool.self, forKey: .availableForFree)
+        registered = try container.decode(Bool.self, forKey: .registered)
+        protected = try container.decode(Bool.self, forKey: .protected)
+        availableForFree = try container.decode(Bool.self, forKey: .availableForFree)
         test = try container.decodeIfPresent(Bool.self, forKey: .test)
     }
 }

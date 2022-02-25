@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import DIKit
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
@@ -49,7 +50,8 @@ let claimIntroductionReducer = Reducer.combine(
             action: /ClaimIntroductionAction.searchAction,
             environment: {
                 SearchCryptoDomainEnvironment(
-                    mainQueue: .main
+                    mainQueue: .main,
+                    searchRepository: resolve()
                 )
             }
         ),
@@ -64,7 +66,7 @@ let claimIntroductionReducer = Reducer.combine(
                         searchResults: [
                             SearchDomainResult(
                                 domainName: "cocacola.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainType: .premium,
                                 domainAvailability: .unavailable
                             ),
                             SearchDomainResult(
@@ -79,12 +81,12 @@ let claimIntroductionReducer = Reducer.combine(
                             ),
                             SearchDomainResult(
                                 domainName: "cocola.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainType: .premium,
                                 domainAvailability: .availableForPremiumSale(price: "50")
                             ),
                             SearchDomainResult(
                                 domainName: "cocola2.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainType: .premium,
                                 domainAvailability: .availableForPremiumSale(price: "500")
                             )
                         ]

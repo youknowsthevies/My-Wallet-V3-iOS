@@ -8,11 +8,11 @@ struct SuggestionResponse: Decodable {
     }
 
     var price: Int?
-    var name: String?
+    var name: String
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         price = try container.decodeIfPresent(Int.self, forKey: .price)
-        name = try container.decodeIfPresent(String.self, forKey: .name)
+        name = try container.decode(String.self, forKey: .name)
     }
 }

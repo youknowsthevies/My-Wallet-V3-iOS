@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import FeatureCryptoDomainDomain
 
 struct SearchResultResponse: Decodable {
 
@@ -16,5 +17,27 @@ struct SearchResultResponse: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         suggestions = try container.decodeIfPresent([SuggestionResponse].self, forKey: .suggestions)
         searchedDomain = try container.decodeIfPresent(SearchedDomainResponse.self, forKey: .searchedDomain)
+    }
+}
+
+extension SearchDomainResult {
+
+    init(from response: SuggestionResponse) {
+        self.init(
+            domainName: response.name,
+            domainType: .free,
+            domainAvailability: .availableForFree
+        )
+    }
+
+    init(from response: SearchedDomainResponse) {
+        let isAvailable = !response.availability.registered && !response.availability.protected
+        let isFree = response.availability.availableForFree
+        let price = response.availability.price ?? 0
+        self.init(
+            domainName: response.domain.name,
+            domainType: isFree ? .free : .premium,
+            domainAvailability: !isAvailable ? .unavailable : isFree ? .availableForFree : .availableForPremiumSale(price: price)
+        )
     }
 }

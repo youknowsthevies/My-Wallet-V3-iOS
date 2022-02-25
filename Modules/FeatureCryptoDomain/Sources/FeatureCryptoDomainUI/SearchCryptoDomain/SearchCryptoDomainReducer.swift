@@ -78,9 +78,14 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let searchRepository: SearchDomainRepositoryAPI
 
-    init(mainQueue: AnySchedulerOf<DispatchQueue>) {
+    init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        searchRepository: SearchDomainRepositoryAPI
+    ) {
         self.mainQueue = mainQueue
+        self.searchRepository = searchRepository
     }
 }
 
