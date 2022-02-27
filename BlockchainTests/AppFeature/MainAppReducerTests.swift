@@ -329,9 +329,9 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.informSecondPasswordDetected))
         testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected)))
-        testStore.receive(.onboarding(.welcomeScreen(.enter(into: .secondPassword)))) { state in
-            state.onboarding?.welcomeState?.route = RouteIntent(route: .secondPassword, action: .enterInto())
-            state.onboarding?.welcomeState?.secondPasswordNoticeState = .init()
+        testStore.receive(.onboarding(.welcomeScreen(.manualPairing(.navigate(to: .secondPasswordDetected))))) { state in
+            state.onboarding?.welcomeState?.manualCredentialsState?.route = RouteIntent(route: .secondPasswordDetected, action: .navigateTo)
+            state.onboarding?.welcomeState?.manualCredentialsState?.secondPasswordNoticeState = .init()
         }
     }
 

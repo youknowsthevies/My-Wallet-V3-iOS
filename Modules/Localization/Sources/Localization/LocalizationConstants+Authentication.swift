@@ -398,7 +398,7 @@ extension LocalizationConstants.FeatureAuthentication {
         )
 
         public static let description = NSLocalizedString(
-            "We’re moving away from 2nd passwords.\nTo use the mobile app, log in on web to enable 2FA.",
+            "We're moving away from 2nd passwords.\nTo use the mobile app, login on web to disable 2nd password. After logging on Web, tap on the User icon > Security > Advanced and tap the button named \"Remove Second Password\". You will then be able to login on the mobile app.",
             comment: "Second Password Screen description"
         )
 
@@ -410,6 +410,11 @@ extension LocalizationConstants.FeatureAuthentication {
         public static let loginOnWebButtonTitle = NSLocalizedString(
             "Log In with Browser",
             comment: "Second Password Screen button link"
+        )
+
+        public static let returnToLogin = NSLocalizedString(
+            "Return to Login",
+            comment: "Return to login button"
         )
     }
 

@@ -111,7 +111,7 @@ struct VerifyDeviceEnvironment {
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         errorRecorder: ErrorRecording,
-        externalAppOpener: ExternalAppOpener = resolve(),
+        externalAppOpener: ExternalAppOpener,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
