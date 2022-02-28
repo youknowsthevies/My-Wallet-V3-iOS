@@ -59,6 +59,8 @@ struct SearchCryptoDomainView: View {
                 text: viewStore.binding(\.$searchText),
                 isFirstResponder: viewStore.binding(\.$isSearchFieldSelected),
                 cancelButtonText: LocalizationConstants.cancel,
+                subText: viewStore.isSearchTextValid ? nil : LocalizedString.SearchBar.error,
+                subTextStyle: viewStore.isSearchTextValid ? .default : .error,
                 placeholder: LocalizedString.title,
                 onReturnTapped: {
                     viewStore.send(.set(\.$isSearchFieldSelected, false))

@@ -43,6 +43,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 
     @BindableState var searchText: String
     @BindableState var isSearchFieldSelected: Bool
+    @BindableState var isSearchTextValid: Bool
     @BindableState var isAlertCardShown: Bool
     @BindableState var isPremiumDomainBottomSheetShown: Bool
     @BindableState var selectedPremiumDomain: SearchDomainResult?
@@ -55,6 +56,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     init(
         searchText: String = "",
         isSearchFieldSelected: Bool = false,
+        isSearchTextValid: Bool = false,
         isAlertCardShown: Bool = true,
         isPremiumDomainBottomSheetShown: Bool = false,
         selectedPremiumDomain: SearchDomainResult? = nil,
@@ -64,6 +66,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     ) {
         self.searchText = searchText
         self.isSearchFieldSelected = isSearchFieldSelected
+        self.isSearchTextValid = isSearchTextValid
         self.isAlertCardShown = isAlertCardShown
         self.isPremiumDomainBottomSheetShown = isPremiumDomainBottomSheetShown
         self.selectedPremiumDomain = selectedPremiumDomain
@@ -103,6 +106,10 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainEnvironment
     > { state, action, _ in
         switch action {
+        case .binding(\.$searchText):
+            state.isSearchTextValid = state.searchText.range(of: TextRegex.noSpecialCharacters.rawValue, options: .regularExpression) != nil
+            return .none
+
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
             state.selectedPremiumDomain = nil
             return .none
