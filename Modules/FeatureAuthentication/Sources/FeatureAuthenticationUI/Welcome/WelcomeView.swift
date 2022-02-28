@@ -14,7 +14,6 @@ public enum WelcomeRoute: NavigationRoute {
     case emailLogin
     case restoreWallet
     case manualLogin
-    case secondPassword
 
     @ViewBuilder
     public func destination(
@@ -57,14 +56,6 @@ public enum WelcomeRoute: NavigationRoute {
                         store: store
                     )
                 }
-            )
-        case .secondPassword:
-            IfLetStore(
-                store.scope(
-                    state: \.secondPasswordNoticeState,
-                    action: WelcomeAction.secondPasswordNotice
-                ),
-                then: SecondPasswordNoticeView.init(store:)
             )
         }
     }

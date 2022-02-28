@@ -27,7 +27,7 @@ public enum SecondPasswordNotice {
 
     public enum Action: Equatable {
         case open(urlContent: URLContent)
-        case closeButtonTapped
+        case returnTapped
     }
 
     struct Environment {
@@ -47,7 +47,7 @@ let secondPasswordNoticeReducer = Reducer<
         }
         environment.externalAppOpener.open(url)
         return .none
-    case .closeButtonTapped:
+    case .returnTapped:
         return .none
     }
 }
@@ -66,10 +66,6 @@ public struct SecondPasswordNoticeView: View {
         static let descriptionFontSize: CGFloat = 16
         static let descriptionLineSpacing: CGFloat = 4
         static let buttonSpacing: CGFloat = 10
-        /// magic numbers from Figma file
-        static let learnMoreMinWidth: CGFloat = 100
-        static let learnMoreMaxWidth: CGFloat = 120
-        static let learnMoreIdealHeight: CGFloat = 32
     }
 
     private let store: Store<SecondPasswordNotice.State, SecondPasswordNotice.Action>
@@ -98,15 +94,9 @@ public struct SecondPasswordNoticeView: View {
                         .accessibility(
                             identifier: AccessibilityIdentifier.descriptionText
                         )
-                    SecondaryButton(title: LocalizedConstants.learnMore) {
+                    SmallMinimalButton(title: LocalizedConstants.learnMore) {
                         viewStore.send(.open(urlContent: .twoFASupport))
                     }
-                    .frame(
-                        minWidth: Layout.learnMoreMinWidth,
-                        maxWidth: Layout.learnMoreMaxWidth,
-                        idealHeight: Layout.learnMoreIdealHeight,
-                        alignment: .center
-                    )
                     .accessibility(identifier: AccessibilityIdentifier.learnMoreText)
                     Spacer()
                 }
@@ -118,6 +108,11 @@ public struct SecondPasswordNoticeView: View {
                         action: { viewStore.send(.open(urlContent: .loginOnWeb)) }
                     )
                     .accessibility(identifier: AccessibilityIdentifier.loginOnWebButton)
+                    MinimalButton(
+                        title: LocalizedConstants.returnToLogin,
+                        action: { viewStore.send(.returnTapped) }
+                    )
+                    .accessibility(identifier: AccessibilityIdentifier.returnButton)
                 }
             }
             .padding(
@@ -128,11 +123,8 @@ public struct SecondPasswordNoticeView: View {
                     trailing: Layout.trailingPadding
                 )
             )
-            .navigationBarTitleDisplayMode(.inline)
-            .whiteNavigationBarStyle()
-            .trailingNavigationButton(.close) {
-                viewStore.send(.closeButtonTapped)
-            }
+            .navigationBarBackButtonHidden(true)
+            .primaryNavigation(title: "")
         }
     }
 }

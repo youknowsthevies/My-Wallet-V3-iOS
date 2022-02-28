@@ -100,11 +100,10 @@ final class WelcomeReducerTests: XCTestCase {
             .createWallet,
             .emailLogin,
             .restoreWallet,
-            .manualLogin,
-            .secondPassword
+            .manualLogin
         ]
         routes.forEach { routeValue in
-            testStore.send(.enter(into: routeValue)) { state in
+            testStore.send(.navigate(to: routeValue)) { state in
                 switch routeValue {
                 case .createWallet:
                     state.createWalletState = .init(context: .createWallet)
@@ -114,75 +113,48 @@ final class WelcomeReducerTests: XCTestCase {
                     state.restoreWalletState = .init(context: .restoreWallet)
                 case .manualLogin:
                     state.manualCredentialsState = .init()
-                case .secondPassword:
-                    state.secondPasswordNoticeState = .init()
                 }
-                state.route = RouteIntent(route: routeValue, action: .enterInto())
+                state.route = RouteIntent(route: routeValue, action: .navigateTo)
             }
         }
     }
-
-    func test_secondPassword_modal_can_be_presented() {
-        // given (we're in a flow)
-        BuildFlag.isInternal = true
-        testStore.send(.enter(into: .manualLogin)) { state in
-            state.route = RouteIntent(route: .manualLogin, action: .enterInto())
-            state.manualCredentialsState = .init()
-        }
-
-        // when
-        testStore.send(.informSecondPasswordDetected)
-        testStore.receive(.enter(into: .secondPassword)) { state in
-            state.route = RouteIntent(route: .secondPassword, action: .enterInto())
-            state.secondPasswordNoticeState = .init()
-        }
-    }
-
-    func test_secondPassword_modal_can_be_dismissed_from_close_button() {
-        // given (we're in a flow)
-        BuildFlag.isInternal = true
-        testStore.send(.enter(into: .manualLogin)) { state in
-            state.route = RouteIntent(route: .manualLogin, action: .enterInto())
-            state.manualCredentialsState = .init()
-        }
-
-        // when
-        testStore.send(.informSecondPasswordDetected)
-        testStore.receive(.enter(into: .secondPassword)) { state in
-            state.route = RouteIntent(route: .secondPassword, action: .enterInto())
-            state.secondPasswordNoticeState = .init()
-        }
-
-        // when
-        testStore.send(.secondPasswordNotice(.closeButtonTapped))
-        testStore.receive(.dismiss()) { state in
-            state.route = nil
-            state.manualCredentialsState = nil
-            state.secondPasswordNoticeState = nil
-        }
-    }
-
-    func test_secondPassword_modal_can_be_dismissed_interactively() {
-        // given (we're in a flow)
-        BuildFlag.isInternal = true
-        testStore.send(.enter(into: .manualLogin)) { state in
-            state.route = RouteIntent(route: .manualLogin, action: .enterInto())
-            state.manualCredentialsState = .init()
-        }
-
-        // when
-        testStore.send(.informSecondPasswordDetected)
-        testStore.receive(.enter(into: .secondPassword)) { state in
-            state.route = RouteIntent(route: .secondPassword, action: .enterInto())
-            state.secondPasswordNoticeState = .init()
-        }
-
-        // when
-        testStore.send(.secondPasswordNotice(.closeButtonTapped))
-        testStore.receive(.dismiss()) { state in
-            state.route = nil
-            state.manualCredentialsState = nil
-            state.secondPasswordNoticeState = nil
-        }
-    }
+    // TODO: enable tests when "resolve()" in credentials reducer are removed
+//    func test_second_password_can_be_navigated_to_from_manual_login() {
+//        // given (we're in a flow)
+//        BuildFlag.isInternal = true
+//        testStore.send(.navigate(to: .manualLogin)) { state in
+//            state.route = RouteIntent(route: .manualLogin, action: .navigateTo)
+//            state.manualCredentialsState = .init()
+//        }
+//
+//        // when
+//        testStore.send(.informSecondPasswordDetected)
+//        testStore.receive(.manualPairing(.navigate(to: .secondPasswordDetected))) { state in
+//            state.manualCredentialsState?.route = RouteIntent(route: .secondPasswordDetected, action: .navigateTo)
+//            state.manualCredentialsState?.secondPasswordNoticeState = .init()
+//        }
+//    }
+//
+//    func test_second_password_can_be_navigated_to_from_email_login() {
+//        // given (we're in a flow)
+//        testStore.send(.navigate(to: .emailLogin)) { state in
+//            state.route = RouteIntent(route: .emailLogin, action: .navigateTo)
+//            state.emailLoginState = .init()
+//        }
+//        testStore.send(.emailLogin(.navigate(to: .verifyDevice))) { state in
+//            state.emailLoginState?.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
+//            state.emailLoginState?.verifyDeviceState = .init(emailAddress: "")
+//        }
+//        testStore.send(.emailLogin(.verifyDevice(.navigate(to: .credentials)))) { state in
+//            state.emailLoginState?.verifyDeviceState?.route = RouteIntent(route: .credentials, action: .navigateTo)
+//            state.emailLoginState?.verifyDeviceState?.credentialsState = .init()
+//        }
+//
+//        // when
+//        testStore.send(.informSecondPasswordDetected)
+//        testStore.receive(.emailLogin(.verifyDevice(.credentials(.navigate(to: .secondPasswordDetected))))) { state in
+//            state.emailLoginState?.verifyDeviceState?.credentialsState?.route = RouteIntent(route: .secondPasswordDetected, action: .navigateTo)
+//            state.emailLoginState?.verifyDeviceState?.credentialsState?.secondPasswordNoticeState = .init()
+//        }
+//    }
 }

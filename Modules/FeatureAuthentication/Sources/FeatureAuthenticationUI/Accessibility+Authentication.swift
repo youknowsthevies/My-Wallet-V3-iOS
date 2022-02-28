@@ -27,6 +27,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let descriptionText = "\(prefix)descriptionText"
         static let learnMoreText = "\(prefix)learnMoreText"
         static let loginOnWebButton = "\(prefix)loginWithWebButton"
+        static let returnButton = "\(prefix)returnButton"
     }
 
     enum EmailLoginScreen {
