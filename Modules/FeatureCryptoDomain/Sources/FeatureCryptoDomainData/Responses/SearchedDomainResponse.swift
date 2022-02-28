@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct SearchedDomainResponse: Codable {
+struct SearchedDomainResponse: Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case domain

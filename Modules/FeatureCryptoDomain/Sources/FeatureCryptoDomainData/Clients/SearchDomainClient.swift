@@ -46,7 +46,7 @@ final class SearchDomainClient: SearchDomainClientAPI {
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError> {
         let request = requestBuilder.get(
-            path: Path.search + [searchKey]
+            path: Path.search + [searchKey],
             contentType: .json
         )!
         return networkAdapter.perform(request: request)

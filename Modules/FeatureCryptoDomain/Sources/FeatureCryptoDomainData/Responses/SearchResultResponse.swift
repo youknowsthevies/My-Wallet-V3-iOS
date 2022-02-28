@@ -10,13 +10,13 @@ struct SearchResultResponse: Decodable {
         case searchedDomain
     }
 
-    var suggestions: [SuggestionResponse]?
-    var searchedDomain: SearchedDomainResponse?
+    var suggestions: [SuggestionResponse]
+    var searchedDomain: SearchedDomainResponse
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        suggestions = try container.decodeIfPresent([SuggestionResponse].self, forKey: .suggestions)
-        searchedDomain = try container.decodeIfPresent(SearchedDomainResponse.self, forKey: .searchedDomain)
+        suggestions = try container.decode([SuggestionResponse].self, forKey: .suggestions)
+        searchedDomain = try container.decode(SearchedDomainResponse.self, forKey: .searchedDomain)
     }
 }
 
@@ -33,7 +33,7 @@ extension SearchDomainResult {
     init(from response: SearchedDomainResponse) {
         let isAvailable = !response.availability.registered && !response.availability.protected
         let isFree = response.availability.availableForFree
-        let price = response.availability.price ?? 0
+        let price = String(response.availability.price ?? 0)
         self.init(
             domainName: response.domain.name,
             domainType: isFree ? .free : .premium,
