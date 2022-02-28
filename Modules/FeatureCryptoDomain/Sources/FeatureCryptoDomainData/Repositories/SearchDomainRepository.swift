@@ -1,21 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureCryptoDomainDomain
+import Foundation
 
 final class SearchDomainRepository: SearchDomainRepositoryAPI {
 
     // MARK: - Properties
 
     private let apiClient: SearchDomainClientAPI
+    private let queue: DispatchQueue = DispatchQueue(label: "SearchDomainRepository")
 
     // MARK: - Setup
 
-    init(apiClient: SearchDomainClientAPI = resolve()) {
+    init(apiClient: SearchDomainClientAPI) {
         self.apiClient = apiClient
     }
-
 
     func searchResults(searchKey: String) -> AnyPublisher<[SearchDomainResult], SearchDomainRepositoryError> {
         apiClient

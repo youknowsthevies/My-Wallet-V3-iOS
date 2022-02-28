@@ -3,7 +3,6 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
-import DIKit
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
@@ -32,14 +31,19 @@ enum ClaimIntroductionRoute: NavigationRoute {
     }
 }
 
+enum ClaimIntroductionAction: NavigationAction {
+    case route(RouteIntent<ClaimIntroductionRoute>?)
+    case searchAction(SearchCryptoDomainAction)
+}
+
 struct ClaimIntroductionState: NavigationState {
     var route: RouteIntent<ClaimIntroductionRoute>?
     var searchState: SearchCryptoDomainState?
 }
 
-enum ClaimIntroductionAction: NavigationAction {
-    case route(RouteIntent<ClaimIntroductionRoute>?)
-    case searchAction(SearchCryptoDomainAction)
+struct ClaimIntroductionEnvironment {
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let searchDomainRepository: SearchDomainRepositoryAPI
 }
 
 let claimIntroductionReducer = Reducer.combine(
@@ -50,47 +54,19 @@ let claimIntroductionReducer = Reducer.combine(
             action: /ClaimIntroductionAction.searchAction,
             environment: {
                 SearchCryptoDomainEnvironment(
-                    mainQueue: .main,
-                    searchRepository: resolve()
+                    mainQueue: $0.mainQueue,
+                    searchDomainRepository: $0.searchDomainRepository
                 )
             }
         ),
-    Reducer<ClaimIntroductionState, ClaimIntroductionAction, Void> {
+    Reducer<ClaimIntroductionState, ClaimIntroductionAction, ClaimIntroductionEnvironment> {
         state, action, _ in
         switch action {
         case .route(let route):
             if let routeValue = route?.route {
                 switch routeValue {
                 case .searchDomain:
-                    state.searchState = .init(
-                        searchResults: [
-                            SearchDomainResult(
-                                domainName: "cocacola.blockchain",
-                                domainType: .premium,
-                                domainAvailability: .unavailable
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocacola001.blockchain",
-                                domainType: .free,
-                                domainAvailability: .availableForFree
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocacola002.blockchain",
-                                domainType: .free,
-                                domainAvailability: .availableForFree
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocola.blockchain",
-                                domainType: .premium,
-                                domainAvailability: .availableForPremiumSale(price: "50")
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocola2.blockchain",
-                                domainType: .premium,
-                                domainAvailability: .availableForPremiumSale(price: "500")
-                            )
-                        ]
-                    )
+                    state.searchState = .init()
                 case .benefits:
                     break
                 }
@@ -199,14 +175,14 @@ struct ClaimIntroductionView: View {
     }
 }
 
-struct ClaimIntroductionView_Previews: PreviewProvider {
-    static var previews: some View {
-        ClaimIntroductionView(
-            store: .init(
-                initialState: .init(),
-                reducer: claimIntroductionReducer,
-                environment: ()
-            )
-        )
-    }
-}
+//struct ClaimIntroductionView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ClaimIntroductionView(
+//            store: .init(
+//                initialState: .init(),
+//                reducer: claimIntroductionReducer,
+//                environment: ()
+//            )
+//        )
+//    }
+//}

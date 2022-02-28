@@ -29,11 +29,6 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.18.0"
         ),
-        .package(
-            name: "DIKit",
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
-        ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -56,7 +51,6 @@ let package = Package(
             name: "FeatureCryptoDomainData",
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
-                .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "NetworkError", package: "NetworkErrors")
             ]
@@ -78,6 +72,9 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainData"),
                 .target(name: "FeatureCryptoDomainDomain")
+            ],
+            resources: [
+                .copy("Fixtures/search_result_response_mock.json")
             ]
         ),
         .testTarget(

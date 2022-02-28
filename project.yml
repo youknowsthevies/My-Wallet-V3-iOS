@@ -642,6 +642,8 @@ targets:
     dependencies:
       - package: FeatureCryptoDomain
         product: FeatureCryptoDomain
+      - package: FeatureCryptoDomain
+        product: FeatureCryptoDomainMock
     platform: iOS
     sources:
       - createIntermediateGroups: true

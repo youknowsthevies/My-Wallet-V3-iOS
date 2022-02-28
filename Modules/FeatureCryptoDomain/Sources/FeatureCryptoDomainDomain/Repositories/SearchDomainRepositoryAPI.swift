@@ -3,7 +3,7 @@
 import Combine
 import NetworkError
 
-public enum SearchDomainRepositoryError: Error {
+public enum SearchDomainRepositoryError: Equatable, Error {
     case networkError(NetworkError)
 }
 

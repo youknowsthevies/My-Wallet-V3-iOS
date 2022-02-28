@@ -9,5 +9,5 @@ public enum TextRegex: String {
     case walletIdentifier = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     case email = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
     case notEmpty = "^.+$"
-    case noSpecialCharacters = ".*[^A-Za-z0-9].*"
+    case noSpecialCharacters = "^[a-zA-Z0-9]*$"
 }

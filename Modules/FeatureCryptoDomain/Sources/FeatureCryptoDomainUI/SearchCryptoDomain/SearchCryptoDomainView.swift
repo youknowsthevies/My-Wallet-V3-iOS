@@ -29,6 +29,9 @@ struct SearchCryptoDomainView: View {
                     .padding([.leading, .trailing], Spacing.padding3)
                 domainList
             }
+            .onAppear {
+                viewStore.send(.searchDomains)
+            }
             .primaryNavigation(
                 title: LocalizedString.title,
                 trailing: { cartBarButton }
@@ -91,7 +94,7 @@ struct SearchCryptoDomainView: View {
         WithViewStore(store) { viewStore in
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(viewStore.filteredSearchResults, id: \.domainName) { result in
+                    ForEach(viewStore.searchResults, id: \.domainName) { result in
                         Divider()
                         createDomainRow(result: result)
                     }
@@ -138,40 +141,40 @@ struct SearchCryptoDomainView: View {
     }
 }
 
-struct SearchCryptoDomainView_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchCryptoDomainView(
-            store: .init(
-                initialState: .init(
-                    searchResults: [
-                        SearchDomainResult(
-                            domainName: "cocacola.blockchain",
-                            domainType: .premium,
-                            domainAvailability: .unavailable
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola001.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola002.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocola.blockchain",
-                            domainType: .premium,
-                            domainAvailability: .availableForPremiumSale(price: "50")
-                        )
-                    ]
-                ),
-                reducer: searchCryptoDomainReducer,
-                environment: .init(
-                    mainQueue: .main,
-                    searchRepository: resolve()
-                )
-            )
-        )
-    }
-}
+//struct SearchCryptoDomainView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SearchCryptoDomainView(
+//            store: .init(
+//                initialState: .init(
+//                    searchResults: [
+//                        SearchDomainResult(
+//                            domainName: "cocacola.blockchain",
+//                            domainType: .premium,
+//                            domainAvailability: .unavailable
+//                        ),
+//                        SearchDomainResult(
+//                            domainName: "cocacola001.blockchain",
+//                            domainType: .free,
+//                            domainAvailability: .availableForFree
+//                        ),
+//                        SearchDomainResult(
+//                            domainName: "cocacola002.blockchain",
+//                            domainType: .free,
+//                            domainAvailability: .availableForFree
+//                        ),
+//                        SearchDomainResult(
+//                            domainName: "cocola.blockchain",
+//                            domainType: .premium,
+//                            domainAvailability: .availableForPremiumSale(price: "50")
+//                        )
+//                    ]
+//                ),
+//                reducer: searchCryptoDomainReducer,
+//                environment: .init(
+//                    mainQueue: .main,
+//                    searchDomainRepository: Search
+//                )
+//            )
+//        )
+//    }
+//}

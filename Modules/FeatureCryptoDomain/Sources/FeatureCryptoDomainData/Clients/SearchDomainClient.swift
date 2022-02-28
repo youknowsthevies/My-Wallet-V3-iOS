@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import NetworkKit
 
 protocol SearchDomainClientAPI {
@@ -33,8 +32,8 @@ final class SearchDomainClient: SearchDomainClientAPI {
     // MARK: - Setup
 
     init(
-        networkAdapter: NetworkAdapterAPI = resolve(),
-        requestBuilder: RequestBuilder = resolve()
+        networkAdapter: NetworkAdapterAPI,
+        requestBuilder: RequestBuilder
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder

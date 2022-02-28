@@ -2,6 +2,8 @@
 
 import BlockchainComponentLibrary
 @testable import FeatureCryptoDomainUI
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
 import SwiftUI
 
 struct ContentView: View {
@@ -12,7 +14,12 @@ struct ContentView: View {
                     store: .init(
                         initialState: .init(),
                         reducer: claimIntroductionReducer,
-                        environment: ()
+                        environment: .init(
+                            mainQueue: .main,
+                            searchDomainRepository: SearchDomainRepository(
+                                apiClient: MockSearchDomainClient()
+                            )
+                        )
                     )
                 )
             ) {
