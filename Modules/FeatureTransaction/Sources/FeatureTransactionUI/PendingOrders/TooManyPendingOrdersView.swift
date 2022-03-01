@@ -18,10 +18,13 @@ public struct TooManyPendingOrdersView: View {
     public var body: some View {
         ActionableView(
             .init(
-                media: .image(named: "icon_cart"),
+                media: .image(named: "icon_cart", in: .platformUIKit),
                 overlay: .init(progress: true),
                 title: Localization.Error.pendingTransactionLimit,
-                subtitle: String.localizedStringWithFormat(Localization.Error.maximumPendingOrderLimitReached, "\(count)")
+                subtitle: String.localizedStringWithFormat(
+                    Localization.Error.maximumPendingOrderLimitReached,
+                    "\(count)"
+                )
             ),
             buttons: [
                 .init(
@@ -38,8 +41,7 @@ public struct TooManyPendingOrdersView: View {
                     },
                     style: .primary
                 )
-            ],
-            in: .platformUIKit
+            ]
         )
     }
 }
@@ -51,7 +53,7 @@ public struct TooManyPendingOrdersErrorView: View {
     public var body: some View {
         ActionableView(
             .init(
-                media: .image(named: "triangle-error-icon"),
+                media: .image(named: "triangle-error-icon", in: .platformUIKit),
                 title: Localization.Error.unknownErrorShort,
                 subtitle: Localization.Error.unknownError
             ),
@@ -63,8 +65,7 @@ public struct TooManyPendingOrdersErrorView: View {
                     },
                     style: .primary
                 )
-            ],
-            in: .platformUIKit
+            ]
         )
     }
 }

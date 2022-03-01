@@ -77,6 +77,14 @@ final class TransactionFlowViewController: UINavigationController,
         }
     }
 
+    func popToRoot() {
+        if presentedViewController != nil {
+            dismiss()
+        } else {
+            popToRootViewController(animated: true)
+        }
+    }
+
     func dismiss() {
         dismiss(animated: true, completion: nil)
     }

@@ -190,6 +190,11 @@ final class EnterAmountViewController: BaseScreenViewController,
         )
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        continueButtonView.viewModel.isEnabledRelay.accept(true)
+    }
+
     func connect(
         state: Driver<EnterAmountPageInteractor.State>
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects> {

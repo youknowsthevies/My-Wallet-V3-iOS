@@ -158,4 +158,10 @@ public enum NabuErrorCode: Int, Codable, Equatable {
     /// Card Payments
     case cardInsufficientFunds = 10000
     case cardBankDecline = 10001
+    case cardDuplicate = 10002
+    case cardBlockchainDecline = 10003
+    case cardAcquirerDecline = 10004
+    case cardPaymentNotSupported = 10005
+    case cardCreateFailed = 10006
+    case cardPaymentFailed = 10007
 }

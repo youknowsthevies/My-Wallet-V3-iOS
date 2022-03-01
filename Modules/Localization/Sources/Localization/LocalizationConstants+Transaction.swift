@@ -1480,6 +1480,26 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Your bank has declined this transaction, please try another bank or payment method."
     )
 
+    public static let cardDuplicate = NSLocalizedString(
+        "You've already added this card to your Blockchain.com account",
+        comment: "You've already added this card to your Blockchain.com account"
+    )
+
+    public static let cardUnsupportedPaymentMethod = NSLocalizedString(
+        "We don't support this card, please try another bank or payment method.",
+        comment: "We don't support this card, please try another bank or payment method."
+    )
+
+    public static let cardCreateFailed = NSLocalizedString(
+        "Oops! There was a problem trying to add your card, please try again later.",
+        comment: "Oops! There is a problem trying to add your card, please try again later."
+    )
+
+    public static let cardPaymentFailed = NSLocalizedString(
+        "Oops! There was a problem trying to process your card payment, please try again later.",
+        comment: "Oops! There was a problem trying to process your card payment, please try again later."
+    )
+
     public static let orderNotCancellable = NSLocalizedString(
         "Oops! This %@ order is not cancellable.",
         comment: "Oops! This %@ order is not cancellable."
@@ -1518,6 +1538,11 @@ extension LocalizationConstants.Transaction.Error {
     public static let tradingInsufficientBalance = NSLocalizedString(
         "Oops! You don’t have enough balance to %@.",
         comment: "Oops! You don’t have enough balance to %@."
+    )
+
+    public static let notFound = NSLocalizedString(
+        "Oops! We are having a problem fetching a quote, please try again later.",
+        comment: "Oops! We are having a problem fetching a quote, please try again later."
     )
 
     public static let tradingBelowMin = NSLocalizedString(

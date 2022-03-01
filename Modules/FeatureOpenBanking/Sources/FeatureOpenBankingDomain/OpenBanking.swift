@@ -164,32 +164,41 @@ public final class OpenBanking {
             .eraseToAnyPublisher()
     }
 
-    private func confirm(order: OpenBanking.Order, data: Data) -> AnyPublisher<Action, Never> {
-
+    private func confirm(
+        order: OpenBanking.Order,
+        data: Data
+    ) -> AnyPublisher<Action, Never> {
+        func isFinal(_ order: OpenBanking.Order) -> Bool {
+            [.finished, .canceled, .expired, .failed, .depositMatched].contains(order.state)
+        }
         func poll(_ order: OpenBanking.Order) -> AnyPublisher<Action, Never> {
-            banking.poll(order: order)
-                .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
-                    if let error = order.paymentError {
-                        return .failure(error)
-                    } else {
-                        return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
-                    }
+            banking.poll(
+                order: order,
+                until: isFinal
+            )
+            .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
+                if let error = order.paymentError {
+                    return .failure(error)
+                } else {
+                    return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                 }
-                .map(Action.waitingForConsent(.confirmed(order)))
-                .catch(Action.failure)
-                .eraseToAnyPublisher()
+            }
+            .map(Action.waitingForConsent(.confirmed(order)))
+            .catch(Action.failure)
+            .eraseToAnyPublisher()
         }
 
         return banking.get(order: order)
             .flatMap { [banking] order -> AnyPublisher<Action, Never> in
-                if order.attributes?.authorisationUrl != nil {
-                    return Just(.waitingForConsent(.confirmed(order)))
-                        .eraseToAnyPublisher()
-                } else {
+                if let error = order.paymentError {
+                    return .just(Action.failure(error))
+                } else if order.state == .pendingConfirmation {
                     return banking.confirm(order: order.id, using: order.paymentMethodId)
                         .flatMap(poll)
                         .catch(Action.failure)
                         .eraseToAnyPublisher()
+                } else {
+                    return poll(order)
                 }
             }
             .catch(Action.failure)
@@ -205,7 +214,7 @@ public final class OpenBanking {
 
     private func waitForAccountLinking(
         account: OpenBanking.BankAccount,
-        instiution: OpenBanking.Institution,
+        institution: OpenBanking.Institution,
         action: Action
     ) -> AnyPublisher<Action, Never> {
         banking.state.publisher(for: .is.authorised, as: Bool.self)
@@ -221,7 +230,7 @@ public final class OpenBanking {
                         return Just(Action.failure(error))
                             .eraseToAnyPublisher()
                     } else {
-                        return Just(Action.success(.linked(account, institution: instiution)))
+                        return Just(Action.success(.linked(account, institution: institution)))
                             .eraseToAnyPublisher()
                     }
                 } else {

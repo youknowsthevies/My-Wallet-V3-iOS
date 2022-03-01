@@ -86,9 +86,7 @@ final class InstitutionListTests: OpenBankingTestCase {
     }
 
     func test_approve_deny() throws {
-        store.send(.approve(.deny)) { state in
-            state.route = nil
-        }
+        store.send(.approve(.deny))
     }
 
     func test_approve_bank_cancel() throws {

@@ -311,6 +311,11 @@ extension Localization {
 
         public enum Error {
 
+            public static let timeout = NSLocalizedString(
+                "The request timed out, please try again.",
+                comment: "The request timed out, please try again."
+            )
+
             public static let bankTransferAccountNameMismatch = (
                 title: NSLocalizedString(
                     "Is this your bank?",
@@ -535,6 +540,68 @@ extension Localization {
                 subtitle: NSLocalizedString(
                     "Payment failed due to insufficient funds in your account. Try another payment method. If this keep happening, please contact support.",
                     comment: "Payment failed due to insufficient funds in your account. Try another payment method. If this keep happening, please contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardCreateDuplicate = (
+                title: NSLocalizedString(
+                    "Duplicate Card",
+                    comment: "Duplicate Card"
+                ),
+                subtitle: NSLocalizedString(
+                    "You have already added this card to your Blockchain.com account. Please try adding a different card.",
+                    comment: "You have already added this card to your Blockchain.com account. Please try adding a different card."
+                ),
+                action: Bank.Action.cancel
+            )
+
+            public static let cardPaymentFailed = (
+                title: NSLocalizedString(
+                    "Payment Failed",
+                    comment: "Payment Failed"
+                ),
+                subtitle: NSLocalizedString(
+                    "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again.",
+                    comment: "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardPaymentAbandoned = cardPaymentExpired
+
+            public static let cardPaymentExpired = (
+                title: NSLocalizedString(
+                    "Did you forget to authorise your card payment?",
+                    comment: "Did you forget to authorise your card payment?"
+                ),
+                subtitle: NSLocalizedString(
+                    "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method.",
+                    comment: "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardPaymentInsufficientFunds = (
+                title: NSLocalizedString(
+                    "Insufficient Funds",
+                    comment: "Insufficient Funds"
+                ),
+                subtitle: NSLocalizedString(
+                    "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
+                    comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardPaymentBankDeclined = (
+                title: NSLocalizedString(
+                    "It looks like you declined payment authorisation.",
+                    comment: "It looks like you declined payment authorisation."
+                ),
+                subtitle: NSLocalizedString(
+                    "Want to retry this transaction?",
+                    comment: "Want to retry this transaction?"
                 ),
                 action: Bank.Action.tryAgain
             )

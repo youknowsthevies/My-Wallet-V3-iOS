@@ -36,6 +36,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
     func push(viewController: ViewControllable?)
     func dismiss()
     func pop()
+    func popToRoot()
 }
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
@@ -366,7 +367,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 presenter?.dismiss()
             },
             cancel: { [weak presenter] in
-                presenter?.pop()
+                presenter?.popToRoot()
             },
             currency: action.currency
         )

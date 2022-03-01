@@ -50,6 +50,7 @@ public protocol OpenBankingClientAPI {
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error>
 
     func poll(
-        order: OpenBanking.Order
+        order: OpenBanking.Order,
+        until condition: @escaping (OpenBanking.Order) -> Bool
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error>
 }
