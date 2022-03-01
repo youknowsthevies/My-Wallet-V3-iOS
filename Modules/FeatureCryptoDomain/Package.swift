@@ -74,7 +74,7 @@ let package = Package(
                 .target(name: "FeatureCryptoDomainDomain")
             ],
             resources: [
-                .copy("Fixtures/search_result_response_mock.json")
+                .process("Fixtures/search_result_response_mock.json")
             ]
         ),
         .testTarget(

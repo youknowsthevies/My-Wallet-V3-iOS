@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-@testable import FeatureCryptoDomainUI
 @testable import FeatureCryptoDomainData
 @testable import FeatureCryptoDomainMock
+@testable import FeatureCryptoDomainUI
 import SwiftUI
 
 struct ContentView: View {

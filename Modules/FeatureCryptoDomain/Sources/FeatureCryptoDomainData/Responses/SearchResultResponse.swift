@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
 import FeatureCryptoDomainDomain
+import Foundation
 
-struct SearchResultResponse: Decodable {
+struct SearchResultResponse: Equatable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case suggestions

@@ -34,8 +34,14 @@ struct DomainCheckoutState: Equatable, NavigationState {
     @BindableState var termsSwitchIsOn: Bool = false
     @BindableState var isRemoveBottomSheetShown: Bool = false
     @BindableState var removeCandidate: SearchDomainResult?
-    var selectedDomains: OrderedSet<SearchDomainResult> = OrderedSet([])
+    var selectedDomains: OrderedSet<SearchDomainResult>
     var route: RouteIntent<DomainCheckoutRoute>?
+
+    init(
+        selectedDomains: OrderedSet<SearchDomainResult> = OrderedSet([])
+    ) {
+        self.selectedDomains = selectedDomains
+    }
 }
 
 let domainCheckoutReducer = Reducer<

@@ -35,6 +35,7 @@ enum SearchCryptoDomainId {
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
+    case onAppear
     case searchDomains
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
@@ -111,8 +112,9 @@ let searchCryptoDomainReducer = Reducer.combine(
     > { state, action, environment in
         switch action {
         case .binding(\.$searchText):
-            state.isSearchTextValid = state.searchText.range(of: TextRegex.noSpecialCharacters.rawValue, options: .regularExpression) != nil ||
-                state.searchText.isEmpty
+            state.isSearchTextValid = state.searchText.range(
+                of: TextRegex.noSpecialCharacters.rawValue, options: .regularExpression
+            ) != nil || state.searchText.isEmpty
             return state.isSearchTextValid ? Effect(value: .searchDomains) : .none
 
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
@@ -122,13 +124,20 @@ let searchCryptoDomainReducer = Reducer.combine(
         case .binding:
             return .none
 
+        case .onAppear:
+            return Effect(value: .searchDomains)
+
         case .searchDomains:
             return environment
                 .searchDomainRepository
                 .searchResults(searchKey: state.searchText)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .debounce(id: SearchCryptoDomainId.SearchDebounceId(), for: .milliseconds(500), scheduler: environment.mainQueue)
+                .debounce(
+                    id: SearchCryptoDomainId.SearchDebounceId(),
+                    for: .milliseconds(500),
+                    scheduler: environment.mainQueue
+                )
                 .map { result in
                     .didReceiveDomainsResult(result)
                 }
@@ -143,11 +152,19 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .selectFreeDomain(let domain):
+            guard domain.domainType == .free,
+                  domain.domainAvailability == .availableForFree
+            else {
+                return .none
+            }
             state.selectedDomains.removeAll()
             state.selectedDomains.append(domain)
             return Effect(value: .navigate(to: .checkout))
 
         case .selectPremiumDomain(let domain):
+            guard domain.domainType == .premium else {
+                return .none
+            }
             state.selectedPremiumDomain = domain
             return Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true))
 
@@ -181,7 +198,6 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
         }
     }
-    .debug()
     .routing()
     .binding()
 )

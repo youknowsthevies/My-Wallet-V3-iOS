@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct SearchedDomainResponse: Decodable {
+struct SearchedDomainResponse: Equatable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case domain
@@ -19,7 +19,7 @@ struct SearchedDomainResponse: Decodable {
     }
 }
 
-struct DomainResponse: Decodable {
+struct DomainResponse: Equatable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case node
@@ -51,7 +51,7 @@ struct DomainResponse: Decodable {
     }
 }
 
-struct AvailabilityResponse: Decodable {
+struct AvailabilityResponse: Equatable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case price

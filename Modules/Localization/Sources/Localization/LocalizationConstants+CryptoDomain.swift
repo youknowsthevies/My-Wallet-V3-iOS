@@ -160,12 +160,14 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Search Domains list view description body"
             )
         }
+
         public enum SearchBar {
             public static let error = NSLocalizedString(
                 "Please make sure the search key has no special characters.",
                 comment: "Search domains search bar error"
             )
         }
+
         public enum ListView {
             public static let freeDomain = NSLocalizedString(
                 "Free domain",

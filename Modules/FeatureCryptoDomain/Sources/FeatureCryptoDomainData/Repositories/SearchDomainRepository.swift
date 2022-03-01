@@ -9,7 +9,7 @@ final class SearchDomainRepository: SearchDomainRepositoryAPI {
     // MARK: - Properties
 
     private let apiClient: SearchDomainClientAPI
-    private let queue: DispatchQueue = DispatchQueue(label: "SearchDomainRepository")
+    private let queue = DispatchQueue(label: "SearchDomainRepository")
 
     // MARK: - Setup
 
@@ -21,7 +21,7 @@ final class SearchDomainRepository: SearchDomainRepositoryAPI {
         apiClient
             .getSearchResults(searchKey: searchKey)
             .map { response in
-                let searchedDomain = SearchDomainResult.init(from: response.searchedDomain)
+                let searchedDomain = SearchDomainResult(from: response.searchedDomain)
                 let suggestions = response.suggestions.map(SearchDomainResult.init)
                 return [searchedDomain] + suggestions
             }

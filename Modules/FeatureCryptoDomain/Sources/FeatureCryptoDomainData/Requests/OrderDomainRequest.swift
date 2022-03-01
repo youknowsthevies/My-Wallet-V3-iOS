@@ -8,7 +8,7 @@ struct OrderDomainRequest {
         let currency: String
         let address: String
     }
-    
+
     let isFree: Bool
     let domain: String
     let owner: String

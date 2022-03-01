@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-struct SuggestionResponse: Decodable {
+struct SuggestionResponse: Equatable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case price
