@@ -15,6 +15,7 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     var scanningStarted: (() -> Void)? { get set }
     var scanningStopped: (() -> Void)? { get set }
     var closeButtonTapped: (() -> Void)? { get set }
+    var showInformationSheet: (() -> Void)? { get set }
     var scanComplete: ((Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void)? { get set }
     var completed: (Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void { get set }
 
@@ -43,6 +44,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     var scanningStarted: (() -> Void)?
     var scanningStopped: (() -> Void)?
     var closeButtonTapped: (() -> Void)?
+    var showInformationSheet: (() -> Void)?
     var scanComplete: CompletionHandler?
     var completed: CompletionHandler
 
@@ -213,6 +215,10 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
 
     func handleSelectedQRImage(_ image: UIImage) {
         scanner.handleSelectedQRImage(image)
+    }
+
+    func showInformationSheet() {
+        showInformationSheet?()
     }
 }
 

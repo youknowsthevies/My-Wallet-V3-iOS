@@ -62,7 +62,9 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         sessionQueue.async { [weak self] in
             self?.captureSession.current?.commitConfiguration()
             self?.captureSession.startRunning()
-            self?.captureMetadataOutput.rectOfInterest = self?.captureVideoPreviewLayer.metadataOutputRectConverted(fromLayerRect: frame) ?? .zero
+            let rectOfInterest = self?.captureVideoPreviewLayer
+                .metadataOutputRectConverted(fromLayerRect: frame) ?? .zero
+            self?.captureMetadataOutput.rectOfInterest = rectOfInterest
 
             DispatchQueue.main.async {
                 self?.delegate?.didStartScanning()
@@ -93,7 +95,11 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             return
         }
         let ciImage = CIImage(cgImage: cgImage)
-        let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: CIContext(), options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
+        let detector = CIDetector(
+            ofType: CIDetectorTypeQRCode,
+            context: CIContext(),
+            options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        )
         let stringValue = detector?.features(in: ciImage).compactMap { feature in
             (feature as? CIQRCodeFeature)?.messageString
         }.first
@@ -124,7 +130,9 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
     // MARK: - Private static methods
 
     /// Check if the device input is accessible for scanning QR codes
-    private static func runDeviceInputChecks(alertViewPresenter: AlertViewPresenter = resolve()) -> AVCaptureDeviceInput? {
+    private static func runDeviceInputChecks(
+        alertViewPresenter: AlertViewPresenter = resolve()
+    ) -> AVCaptureDeviceInput? {
         switch QRCodeScanner.deviceInput() {
         case .success(let deviceInput):
             return deviceInput

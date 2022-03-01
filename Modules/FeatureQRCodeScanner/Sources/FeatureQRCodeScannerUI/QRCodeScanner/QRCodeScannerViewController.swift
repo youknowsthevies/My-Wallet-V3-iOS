@@ -67,6 +67,10 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         self.viewModel.overlayViewModel.cameraButtonTapped = { [weak self] in
             self?.showImagePicker()
         }
+
+        self.viewModel.showInformationSheet = { [weak self] in
+            // TODO
+        }
     }
 
     @available(*, unavailable)
@@ -95,6 +99,13 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         case .child:
             break
         }
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(named: "info"),
+            style: .plain,
+            target: self,
+            action: #selector(informationButtonClicked)
+        )
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -110,6 +121,10 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
 
     @objc func closeButtonClicked(sender: AnyObject) {
         viewModel.closeButtonPressed()
+    }
+
+    @objc func informationButtonClicked(sender: AnyObject) {
+        viewModel.showInformationSheet()
     }
 
     private func handleScanComplete(with result: Result<QRCodeScannerResultType, QRCodeScannerResultError>) {
