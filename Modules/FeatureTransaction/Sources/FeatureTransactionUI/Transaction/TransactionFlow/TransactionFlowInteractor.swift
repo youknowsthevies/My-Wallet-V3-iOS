@@ -538,8 +538,18 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     canAddMoreSources: canAddMoreSources
                 )
 
-            case .deposit,
-                 .interestTransfer,
+            case .deposit:
+                // `Deposit` can only be reached if the user has been
+                // tier two approved. If the user has been tier two approved
+                // then they can add more sources.
+                router?.routeToSourceAccountPicker(
+                    transitionType: .replaceRoot,
+                    transactionModel: transactionModel,
+                    action: action,
+                    canAddMoreSources: true
+                )
+
+            case .interestTransfer,
                  .withdraw,
                  .buy,
                  .interestWithdraw,
