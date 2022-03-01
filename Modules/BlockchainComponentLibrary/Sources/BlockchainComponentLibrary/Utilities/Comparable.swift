@@ -8,6 +8,13 @@ extension Comparable {
     }
 }
 
+extension BinaryInteger {
+
+    @inlinable public func clamped(to range: Range<Self>) -> Self {
+        (self...self).clamped(to: range.lowerBound...range.upperBound - 1).lowerBound
+    }
+}
+
 extension Comparable {
 
     @inlinable public func clamped(to range: ClosedRange<Self>) -> Self {

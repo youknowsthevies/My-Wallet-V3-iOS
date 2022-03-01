@@ -44,18 +44,19 @@ public struct AlertCard: View {
                     .typography(.paragraph2)
                     .foregroundColor(variant.titleColor)
                 Spacer()
-                if let tap = onCloseTapped {
+                if let onCloseTapped = onCloseTapped {
                     Button(
-                        action: tap,
+                        action: onCloseTapped,
                         label: {
-                            Icon.closev2.circle(
-                                backgroundColor: Color(
-                                    light: .semantic.medium,
-                                    dark: .palette.grey800
+                            Icon.closev2
+                                .circle(
+                                    backgroundColor: Color(
+                                        light: .semantic.medium,
+                                        dark: .palette.grey800
+                                    )
                                 )
-                            )
-                            .accentColor(.palette.grey400)
-                            .frame(width: 24)
+                                .accentColor(.palette.grey400)
+                                .frame(width: 24)
                         }
                     )
                 }

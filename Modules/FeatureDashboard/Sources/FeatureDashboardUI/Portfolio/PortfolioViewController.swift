@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureWithdrawalLocksUI
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -55,6 +56,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
     private var userHasCompletedOnboarding: AnyPublisher<Bool, Never>
 
     private let featureFlagService: FeatureFlagsServiceAPI
+    private let presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)?
 
     // MARK: - Setup
 
@@ -63,13 +65,15 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
         userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
         @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
         presenter: PortfolioScreenPresenter,
-        featureFlagService: FeatureFlagsServiceAPI
+        featureFlagService: FeatureFlagsServiceAPI,
+        presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)? = nil
     ) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.userHasCompletedOnboarding = userHasCompletedOnboarding
         self.onboardingChecklistViewBuilder = onboardingChecklistViewBuilder
         self.presenter = presenter
         self.featureFlagService = featureFlagService
+        self.presentRedesignCoinView = presentRedesignCoinView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -169,7 +173,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
             tableView.rx.modelSelected(PortfolioCellType.self),
             featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
         )
-        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
+        .subscribe(onNext: { [presenter, presentRedesignCoinView] model, isRedesignCoinViewEnabled in
             switch model {
             case .announcement,
                  .totalBalance,
@@ -180,7 +184,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
                 break
             case .crypto(let cryptoPresenter):
                 if isRedesignCoinViewEnabled {
-                    // Show Redesign CoinView
+                    presentRedesignCoinView?(self, cryptoPresenter.cryptoCurrency)
                 } else {
                     presenter.router.showDetailsScreen(for: cryptoPresenter.cryptoCurrency)
                 }

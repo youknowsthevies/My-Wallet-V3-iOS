@@ -138,7 +138,7 @@ class BlockchainNetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
     }
 }
 
-protocol SessionDelegateAPI: AnyObject, URLSessionDelegate {
+protocol SessionDelegateAPI: URLSessionDelegate {
     var delegate: NetworkSessionDelegateAPI? { get set }
 }
 

@@ -93,7 +93,7 @@ extension Tag {
     }
 
     public func `is`(_ tag: Tag) -> Bool {
-        type.values.contains(tag.node)
+        type[tag.node.id] != nil
     }
 
     public func `is`(_ types: Tag...) -> Bool {

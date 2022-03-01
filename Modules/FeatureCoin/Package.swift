@@ -24,18 +24,26 @@ let package = Package(
         ),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../Localization"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../Money"),
+        .package(path: "../Network"),
+        .package(path: "../NetworkErrors")
     ],
     targets: [
         .target(
             name: "FeatureCoinDomain",
             dependencies: [
+                .product(
+                    name: "MoneyKit",
+                    package: "Money"
+                )
             ]
         ),
         .target(
             name: "FeatureCoinData",
             dependencies: [
-                .target(name: "FeatureCoinDomain")
+                .target(name: "FeatureCoinDomain"),
+                .product(name: "NetworkKit", package: "Network")
             ]
         ),
         .target(
@@ -57,6 +65,14 @@ let package = Package(
                 .product(
                     name: "ToolKit",
                     package: "Tool"
+                ),
+                .product(
+                    name: "MoneyKit",
+                    package: "Money"
+                ),
+                .product(
+                    name: "NetworkError",
+                    package: "NetworkErrors"
                 )
             ]
         ),
