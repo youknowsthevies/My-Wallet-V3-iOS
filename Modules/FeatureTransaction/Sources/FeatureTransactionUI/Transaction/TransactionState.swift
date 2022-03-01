@@ -50,6 +50,8 @@ struct TransactionState: StateType {
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none
     var order: TransactionOrder?
+
+    /// `userKYCStatus` is `nil` until a transaction initializes.
     var userKYCStatus: KYCStatus?
 
     // MARK: UI Supporting Data
