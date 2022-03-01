@@ -187,7 +187,7 @@ public enum OrderPayload {
             }
 
             public struct CardProvider: Decodable {
-                public let cardAcquirerName: CardPayload.Acquirer
+                public let cardAcquirerName: CardPayload.Acquirer?
                 public let cardAcquirerAccountCode: String?
                 public let paymentLink: String?
                 public let paymentState: PaymentState
@@ -258,8 +258,8 @@ extension OrderPayload.Response.Attributes.CardProvider {
         paymentLink = try container.decodeIfPresent(String.self, forKey: .paymentLink)
         let paymentState = try container.decode(String.self, forKey: .paymentState)
         self.paymentState = OrderPayload.Response.Attributes.PaymentState(rawValue: paymentState) ?? .unknown
-        let acquirerName = try container.decode(String.self, forKey: .cardAcquirerName)
-        cardAcquirerName = CardPayload.Acquirer(acquirer: acquirerName)
+        let acquirerName = try container.decodeIfPresent(String.self, forKey: .cardAcquirerName)
+        cardAcquirerName = acquirerName.map(CardPayload.Acquirer.init(acquirer:))
         cardAcquirerAccountCode = try container.decodeIfPresent(String.self, forKey: .cardAcquirerAccountCode)
         clientSecret = try container.decodeIfPresent(String.self, forKey: .clientSecret)
         publishableApiKey = try container.decodeIfPresent(String.self, forKey: .publishableApiKey)
@@ -307,7 +307,7 @@ extension OrderPayload.Response {
                         clientSecret: cardAcquirer.clientSecret,
                         publishableApiKey: cardAcquirer.publishableApiKey
                     ))
-                case .unknown:
+                case nil, .unknown:
                     return .none
                 }
             case .abandoned, .failed, .voided, .unknown, .initial:
