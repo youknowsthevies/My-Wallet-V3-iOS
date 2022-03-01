@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FirebaseProtocol
 import Foundation
 
 public protocol AppProtocol: AnyObject, CustomStringConvertible {
@@ -9,6 +10,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
 
     var events: Session.Events { get }
     var state: Session.State { get }
+    var remoteConfiguration: Session.RemoteConfiguration { get }
 }
 
 public class App: AppProtocol, CustomStringConvertible {
@@ -17,26 +19,57 @@ public class App: AppProtocol, CustomStringConvertible {
 
     public let events: Session.Events
     public let state: Session.State
+    public let remoteConfiguration: Session.RemoteConfiguration
 
     internal lazy var deepLinks = DeepLink(self)
 
-    public convenience init(language: Language = Language.root.language) {
-        self.init(language: language, events: .init(), state: .init())
+    public convenience init<Remote: RemoteConfiguration_p>(
+        language: Language = Language.root.language,
+        remote: Remote
+    ) {
+        self.init(
+            language: language,
+            events: .init(),
+            state: .init(),
+            remoteConfiguration: Session.RemoteConfiguration(remote: remote)
+        )
     }
 
     init(
         language: Language = Language.root.language,
-        events: Session.Events,
-        state: Session.State
+        events: Session.Events = .init(),
+        state: Session.State = .init(),
+        remoteConfiguration: Session.RemoteConfiguration
     ) {
         defer { start() }
         self.language = language
         self.events = events
         self.state = state
+        self.remoteConfiguration = remoteConfiguration
     }
 
     private func start() {
+        state.app = self
         deepLinks.start()
+    }
+}
+
+extension AppProtocol {
+
+    public func signIn(userId: String) {
+        post(event: blockchain.session.event.will.sign.in)
+        state.transaction { state in
+            state.set(blockchain.user.id, to: userId)
+        }
+        post(event: blockchain.session.event.did.sign.in)
+    }
+
+    public func signOut() {
+        post(event: blockchain.session.event.will.sign.out)
+        state.transaction { state in
+            state.clear(blockchain.user.id)
+        }
+        post(event: blockchain.session.event.did.sign.out)
     }
 }
 
@@ -165,8 +198,8 @@ extension AppProtocol {
         switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.publisher(for: ref)
-                .map(FetchResult.create(ref.metadata()))
-                .eraseToAnyPublisher()
+        case blockchain.session.configuration.value:
+            return remoteConfiguration.publisher(for: ref)
         default:
             return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
                 .eraseToAnyPublisher()

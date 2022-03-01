@@ -30,6 +30,7 @@ let package = Package(
             name: "BlockchainNamespace",
             dependencies: [
                 .target(name: "AnyCoding"),
+                .target(name: "FirebaseProtocol"),
                 .product(name: "SwiftLexicon", package: "Lexicon")
             ],
             resources: [
@@ -38,6 +39,9 @@ let package = Package(
         ),
         .target(
             name: "AnyCoding"
+        ),
+        .target(
+            name: "FirebaseProtocol"
         ),
         .testTarget(
             name: "BlockchainNamespaceTests",

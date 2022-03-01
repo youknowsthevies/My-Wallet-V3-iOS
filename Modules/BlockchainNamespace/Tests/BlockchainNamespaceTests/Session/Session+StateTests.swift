@@ -32,11 +32,11 @@ final class SessionStateTests: XCTestCase {
         let it = state.publisher(for: blockchain.user.is.tier.gold)
             .sink { result in
                 switch result {
-                case .success:
+                case .value:
                     value.fulfill()
-                case .failure(.keyDoesNotExist):
+                case .error(.keyDoesNotExist, _):
                     error.fulfill()
-                case .failure(let error):
+                case .error(let error, _):
                     XCTFail("Unexpected failure case \(error)")
                 }
             }

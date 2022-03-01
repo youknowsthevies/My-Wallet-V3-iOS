@@ -29,11 +29,6 @@ extension Session.State {
 
         init() { key = .init(on: queue) }
     }
-
-    public enum Error: Swift.Error {
-        case keyDoesNotExist(Tag.Reference)
-        case other(Swift.Error)
-    }
 }
 
 extension Session.State.Data {
@@ -93,21 +88,21 @@ extension Session.State {
         try data.get(key)
     }
 
-    public func result(for key: L) -> Result<Any, Error> { result(for: key[]) }
-    public func result(for key: Tag) -> Result<Any, Error> { result(for: key.ref(in: app)) }
-    public func result(for key: Tag.Reference) -> Result<Any, Error> {
+    public func result(for key: L) -> FetchResult { result(for: key[]) }
+    public func result(for key: Tag) -> FetchResult { result(for: key.ref(in: app)) }
+    public func result(for key: Tag.Reference) -> FetchResult {
         do {
-            return try .success(get(key))
-        } catch let error as Error {
-            return .failure(error)
+            return try .value(get(key), key.metadata(.state))
+        } catch let error as FetchResult.Error {
+            return .error(error, key.metadata(.state))
         } catch {
-            return .failure(.other(error))
+            return .error(.other(error), key.metadata(.state))
         }
     }
 
-    public func publisher(for key: L) -> AnyPublisher<Result<Any, Error>, Never> { publisher(for: key[]) }
-    public func publisher(for key: Tag) -> AnyPublisher<Result<Any, Error>, Never> { publisher(for: key.ref(in: app)) }
-    public func publisher(for key: Tag.Reference) -> AnyPublisher<Result<Any, Error>, Never> {
+    public func publisher(for key: L) -> AnyPublisher<FetchResult, Never> { publisher(for: key[]) }
+    public func publisher(for key: Tag) -> AnyPublisher<FetchResult, Never> { publisher(for: key.ref(in: app)) }
+    public func publisher(for key: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
         Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
@@ -125,7 +120,7 @@ extension Session.State.Data {
 
     func get(_ key: Tag.Reference) throws -> Any {
         guard let value = sync(execute: { store[key] }) else {
-            throw Session.State.Error.keyDoesNotExist(key)
+            throw FetchResult.Error.keyDoesNotExist(key)
         }
         return try (value as? Computed)?.yield() ?? value
     }
@@ -202,9 +197,9 @@ extension Session.State.Data {
             for (key, value) in data {
                 switch value {
                 case is Tombstone.Type:
-                    subjects[key]?.send(.failure(.keyDoesNotExist(key)))
+                    subjects[key]?.send(.error(.keyDoesNotExist(key), key.metadata(.state)))
                 default:
-                    subjects[key]?.send(.success(value))
+                    subjects[key]?.send(.value(value, key.metadata(.state)))
                 }
             }
         }
@@ -219,21 +214,7 @@ extension Session.State.Data {
 }
 
 extension Session.State {
-    public typealias Subject = PassthroughSubject<Result<Any, Error>, Never>
-}
-
-extension Session.State.Error: Equatable {
-
-    public static func == (lhs: Session.State.Error, rhs: Session.State.Error) -> Bool {
-        switch (lhs, rhs) {
-        case (.keyDoesNotExist(let l), .keyDoesNotExist(let r)):
-            return l == r
-        case (.other(let e1), .other(let e2)):
-            return String(describing: e1) == String(describing: e2)
-        default:
-            return false
-        }
-    }
+    public typealias Subject = PassthroughSubject<FetchResult, Never>
 }
 
 extension DispatchSpecificKey {

@@ -83,6 +83,16 @@ extension L {
 
 extension Tag {
 
+    public func `as`<T: L>(_ other: T) throws -> T {
+        guard `is`(other[]) else {
+            throw error(message: "\(self) is not a \(other)")
+        }
+        return T(id)
+    }
+}
+
+extension Tag {
+
     public func `is`(_ type: L) -> Bool {
         `is`(type[])
     }
