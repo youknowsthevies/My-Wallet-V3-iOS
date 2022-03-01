@@ -9,6 +9,7 @@ enum AccountPickerAction {
     case rowsLoading(LoadingRowsAction)
 
     case subscribeToUpdates
+    case deselect
 
     case updateRows(_ rows: [AccountPickerRow])
     case failedToUpdateRows(Error)

@@ -101,19 +101,28 @@ public struct AccountPickerView<
         }
     }
 
+    struct HeaderScope: Equatable {
+        var header: AccountPickerState.HeaderState
+        var selected: AnyHashable?
+    }
+
     @ViewBuilder func contentView(
         successStore: Store<Rows, SuccessRowsAction>
     ) -> some View {
         VStack(spacing: .zero) {
-            WithViewStore(store.scope { $0.header }) { viewStore in
+            WithViewStore(store.scope { HeaderScope(header: $0.header, selected: $0.selected) }) { viewStore in
                 HeaderView(
-                    viewModel: viewStore.headerStyle,
+                    viewModel: viewStore.header.headerStyle,
                     searchText: Binding<String?>(
-                        get: { viewStore.searchText },
+                        get: { viewStore.header.searchText },
                         set: { viewStore.send(.search($0)) }
                     ),
                     isSearching: $isSearching
                 )
+                .onChange(of: viewStore.selected) { _ in
+                    isSearching = false
+                    viewStore.send(.deselect)
+                }
             }
             List {
                 WithViewStore(

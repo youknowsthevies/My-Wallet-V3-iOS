@@ -378,11 +378,9 @@ final class TransactionModel {
         // as this is done by the backend once the customer has authorised the payment via open banking
         // and we have submitted the consent token from the deep link
         switch source {
-        case let linkedBank as LinkedBankAccount
-            where linkedBank.isYapily:
+        case let linkedBank as LinkedBankAccount where linkedBank.isYapily:
             return Disposables.create()
-        case let paymentMethod as PaymentMethodAccount
-            where paymentMethod.isYapily:
+        case let paymentMethod as PaymentMethodAccount where paymentMethod.isYapily:
             return Disposables.create()
         default:
             break
