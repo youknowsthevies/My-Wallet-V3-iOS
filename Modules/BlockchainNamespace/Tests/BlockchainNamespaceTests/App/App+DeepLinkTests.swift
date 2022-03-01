@@ -7,6 +7,23 @@ final class AppDeepLinkTests: XCTestCase {
     var app: App = .init()
     var bag: Set<AnyCancellable> = []
     var count: [Tag: UInt] = [:]
+    var rules: [App.DeepLink.Rule] = [
+        .init(
+            pattern: "/app/qr/scan(.*?)",
+            event: "blockchain.app.deep_link.qr",
+            parameters: []
+        ),
+        .init(
+            pattern: "/app/kyc(.*?)",
+            event: "blockchain.app.deep_link.kyc",
+            parameters: [
+                .init(
+                    name: "tier",
+                    alias: "blockchain.app.deep_link.kyc.tier"
+                )
+            ]
+        )
+    ]
 
     override func setUp() {
         super.setUp()
@@ -55,5 +72,16 @@ final class AppDeepLinkTests: XCTestCase {
 
         XCTAssertEqual(count[blockchain.db.type.string], 1)
         try XCTAssertAnyEqual(app.state.get(blockchain.db.type.string), "test")
+    }
+
+    func test_deep_link_rules() throws {
+        let scanUrl = URL(string: "https://blockchain.com/app/qr/scan/")!
+        XCTAssertNotNil(rules.match(for: scanUrl))
+
+        let kycUrl = URL(string: "https://blockchain.com/app/kyc?tier=123&tag=1234")!
+        let kycMatch = rules.match(for: kycUrl)
+        XCTAssertNotNil(kycMatch)
+        XCTAssertNoThrow(try Tag.Reference(id: kycMatch!.event, in: app.language))
+        XCTAssertEqual(kycMatch!.parameters(for: kycUrl, with: app).count, 1)
     }
 }

@@ -164,6 +164,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     errorRecorder: NoOpErrorRecorder(),
+                    externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,

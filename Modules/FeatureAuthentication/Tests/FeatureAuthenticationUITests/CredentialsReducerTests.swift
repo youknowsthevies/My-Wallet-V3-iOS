@@ -67,7 +67,6 @@ final class CredentialsReducerTests: XCTestCase {
         XCTAssertNil(state.seedPhraseState)
         XCTAssertFalse(state.isManualPairing)
         XCTAssertFalse(state.isLoading)
-        XCTAssertFalse(state.isTroubleLoggingInScreenVisible)
         XCTAssertFalse(state.isWalletIdentifierIncorrect)
         XCTAssertFalse(state.isTwoFactorOTPVerified)
         XCTAssertFalse(state.isAccountLocked)
@@ -103,6 +102,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         mockMainQueue.advance()
 
@@ -184,6 +186,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
         testStore.receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
             state.isLoading = true
@@ -217,6 +222,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
 
         // authentication with email required
@@ -244,6 +252,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         testStore.receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
             state.isLoading = true
@@ -276,6 +287,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         mockMainQueue.advance()
 
@@ -342,6 +356,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
 
         // authentication with google auth required
@@ -391,6 +408,9 @@ final class CredentialsReducerTests: XCTestCase {
             state.twoFAState?.twoFACodeIncorrectContext = .none
             state.twoFAState?.isTwoFACodeIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
         testStore.receive(.walletPairing(.twoFactorOTPDidVerified)) { state in
             state.isTwoFactorOTPVerified = true
@@ -434,6 +454,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.twoFA(.showIncorrectTwoFACodeError(.none))) { state in
             state.twoFAState?.twoFACodeIncorrectContext = .none
             state.twoFAState?.isTwoFACodeIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         mockMainQueue.advance()
         testStore.receive(

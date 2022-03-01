@@ -9,16 +9,25 @@ extension FetchResult {
 
     public enum Error: Swift.Error {
         case keyDoesNotExist(Tag.Reference)
-        case state(Session.State.Error)
         case other(Swift.Error)
     }
 }
 
-extension FetchResult {
+public struct Metadata {
+    public let tag: Tag.Reference
+    public let source: Source
+}
 
-    public struct Metadata {
-        public let tag: Tag.Reference
+extension Metadata {
+
+    public enum Source {
+        case undefined
+        case state
+        case remoteConfiguration
     }
+}
+
+extension FetchResult {
 
     public var metadata: Metadata {
         switch self {
@@ -26,9 +35,6 @@ extension FetchResult {
             return metadata
         }
     }
-}
-
-extension FetchResult {
 
     public var value: Any? {
         switch self {
@@ -66,10 +72,6 @@ extension FetchResult {
             self = .value(value, metadata)
         case .failure(let error as FetchResult.Error):
             self = .error(error, metadata)
-        case .failure(.keyDoesNotExist(let tag) as Session.State.Error):
-            self = .error(.keyDoesNotExist(tag), metadata)
-        case .failure(let error as Session.State.Error):
-            self = .error(.state(error), metadata)
         case .failure(let error):
             self = .error(.other(error), metadata)
         }
@@ -100,21 +102,33 @@ extension FetchResult {
 
 extension Tag {
 
-    public func metadata() -> FetchResult.Metadata {
-        FetchResult.Metadata(tag: ref())
+    public func metadata(_ source: Metadata.Source = .undefined) -> Metadata {
+        Metadata(tag: ref(), source: source)
     }
 }
 
 extension Tag.Reference {
 
-    public func metadata() -> FetchResult.Metadata {
-        FetchResult.Metadata(tag: self)
+    public func metadata(_ source: Metadata.Source = .undefined) -> Metadata {
+        Metadata(tag: self, source: source)
     }
+}
+
+public protocol DecodedFetchResult {
+
+    associatedtype Value: Decodable
+
+    static func value(_ value: Value, _ metatata: Metadata) -> Self
+    static func error(_ error: FetchResult.Error, _ metatata: Metadata) -> Self
+
+    func get() throws -> Value
 }
 
 extension FetchResult {
 
-    public enum Value<T: Decodable> {
+    typealias Decoded = DecodedFetchResult
+
+    public enum Value<T: Decodable>: DecodedFetchResult {
         case value(T, Metadata)
         case error(Error, Metadata)
     }

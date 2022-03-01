@@ -70,6 +70,8 @@ public struct AppEnvironment {
     var buildVersionProvider: () -> String
     var externalAppOpener: ExternalAppOpener
 
+    var deepLinkCoordinator: DeepLinkCoordinatorAPI
+
     @available(*, deprecated, message: "Use featureFlagsService instead")
     var internalFeatureService: InternalFeatureFlagServiceAPI
     @available(*, deprecated, message: "Use featureFlagsService instead")
@@ -122,7 +124,8 @@ public struct AppEnvironment {
         appStoreOpener: AppStoreOpening,
         secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String,
-        externalAppOpener: ExternalAppOpener
+        externalAppOpener: ExternalAppOpener,
+        deepLinkCoordinator: DeepLinkCoordinatorAPI
     ) {
         self.loadingViewPresenter = loadingViewPresenter
         self.onboardingSettings = onboardingSettings
@@ -171,5 +174,6 @@ public struct AppEnvironment {
         self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
         self.externalAppOpener = externalAppOpener
+        self.deepLinkCoordinator = deepLinkCoordinator
     }
 }

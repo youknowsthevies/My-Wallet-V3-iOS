@@ -32,11 +32,11 @@ final class SessionStateTests: XCTestCase {
         let it = state.publisher(for: blockchain.user.is.tier.gold)
             .sink { result in
                 switch result {
-                case .success:
+                case .value:
                     value.fulfill()
-                case .failure(.keyDoesNotExist):
+                case .error(.keyDoesNotExist, _):
                     error.fulfill()
-                case .failure(let error):
+                case .error(let error, _):
                     XCTFail("Unexpected failure case \(error)")
                 }
             }
@@ -57,7 +57,7 @@ final class SessionStateTests: XCTestCase {
         let value = expectation(description: "did publish value")
         value.expectedFulfillmentCount = 2
 
-        let it = app.publisher(for: blockchain.app.deep_link.url)
+        let it = app.publisher(for: blockchain.app.process.deep_link.url)
             .sink { result in
                 switch result {
                 case .value:
@@ -69,8 +69,8 @@ final class SessionStateTests: XCTestCase {
                 }
             }
 
-        state.set(blockchain.app.deep_link.url, to: URL(string: "https://www.blockchain.com")!)
-        state.set(blockchain.app.deep_link.url, to: URL(string: "https://www.blockchain.com/app")!)
+        state.set(blockchain.app.process.deep_link.url, to: URL(string: "https://www.blockchain.com")!)
+        state.set(blockchain.app.process.deep_link.url, to: URL(string: "https://www.blockchain.com/app")!)
 
         wait(for: [value, error], timeout: 1)
 

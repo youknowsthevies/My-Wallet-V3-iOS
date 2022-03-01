@@ -64,6 +64,9 @@ public struct PrimarySegmentedControl<Selection: Hashable>: View {
                 .anchorPreference(key: ButtonPreferenceKey.self, value: .bounds, transform: { anchor in
                     [item.identifier: anchor]
                 })
+                if item.identifier != items.last?.identifier {
+                    Spacer()
+                }
             }
         }
         .fixedSize()

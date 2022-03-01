@@ -2,7 +2,6 @@
 // swiftformat:disable redundantSelf
 
 import AnalyticsKit
-import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -29,8 +28,6 @@ import PlatformDataKit
 import ToolKit
 import UIKit
 import WalletPayloadDataKit
-
-let app: AppProtocol = App()
 
 @UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {

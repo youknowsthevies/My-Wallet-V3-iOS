@@ -8,6 +8,12 @@ extension AppDelegate {
         continue userActivity: NSUserActivity,
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
+        if let url = userActivity.webpageURL {
+            app.post(
+                event: blockchain.app.process.deep_link,
+                context: [blockchain.app.process.deep_link.url[]: url]
+            )
+        }
         viewStore.send(.appDelegate(.userActivity(userActivity)))
         return viewStore.appSettings.userActivityHandled
     }

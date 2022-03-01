@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import Localization
 
 struct DoubleButtonAction: Equatable {
+
     let title: String
     let icon: Icon
 

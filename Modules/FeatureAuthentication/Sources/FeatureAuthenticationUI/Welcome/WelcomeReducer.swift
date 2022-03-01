@@ -37,7 +37,6 @@ public enum WelcomeAction: Equatable, NavigationAction {
     case restoreWallet(SeedPhraseAction)
     case setManualPairingEnabled // should only be on internal build
     case manualPairing(CredentialsAction) // should only be on internal build
-    case secondPasswordNotice(SecondPasswordNotice.Action)
     case informSecondPasswordDetected
     case informForWalletInitialization
 
@@ -60,7 +59,6 @@ public struct WelcomeState: Equatable, NavigationState {
     public var restoreWalletState: SeedPhraseState?
     public var manualPairingEnabled: Bool
     public var manualCredentialsState: CredentialsState?
-    public var secondPasswordNoticeState: SecondPasswordNotice.State?
 
     public init() {
         buildVersion = ""
@@ -70,7 +68,6 @@ public struct WelcomeState: Equatable, NavigationState {
         emailLoginState = nil
         manualPairingEnabled = false
         manualCredentialsState = nil
-        secondPasswordNoticeState = nil
     }
 }
 
@@ -153,6 +150,7 @@ public let welcomeReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
+                    externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
@@ -197,17 +195,6 @@ public let welcomeReducer = Reducer.combine(
                 )
             }
         ),
-    secondPasswordNoticeReducer
-        .optional()
-        .pullback(
-            state: \.secondPasswordNoticeState,
-            action: /WelcomeAction.secondPasswordNotice,
-            environment: {
-                SecondPasswordNotice.Environment(
-                    externalAppOpener: $0.externalAppOpener
-                )
-            }
-        ),
     Reducer<
         WelcomeState,
         WelcomeAction,
@@ -221,7 +208,6 @@ public let welcomeReducer = Reducer.combine(
                 state.emailLoginState = nil
                 state.restoreWalletState = nil
                 state.manualCredentialsState = nil
-                state.secondPasswordNoticeState = nil
                 state.route = route
                 return .none
             }
@@ -234,8 +220,6 @@ public let welcomeReducer = Reducer.combine(
                 state.restoreWalletState = .init(context: .restoreWallet)
             case .manualLogin:
                 state.manualCredentialsState = .init()
-            case .secondPassword:
-                state.secondPasswordNoticeState = .init()
             }
             state.route = route
             return .none
@@ -278,9 +262,6 @@ public let welcomeReducer = Reducer.combine(
         case .createWallet(.triggerAuthenticate):
             return Effect(value: .triggerAuthenticate)
 
-        case .secondPasswordNotice(.closeButtonTapped):
-            return Effect(value: .dismiss())
-
         // TODO: refactor this by not relying on access lower level reducers
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),
              .emailLogin(.verifyDevice(.upgradeAccount(.skipUpgrade(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
@@ -295,11 +276,12 @@ public let welcomeReducer = Reducer.combine(
         case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
             return Effect(value: .requestedToDecryptWallet(password))
 
+        case .emailLogin(.verifyDevice(.credentials(.secondPasswordNotice(.returnTapped)))),
+             .manualPairing(.secondPasswordNotice(.returnTapped)):
+            return .dismiss()
+
         case .manualPairing:
             return .none
-
-        case .informSecondPasswordDetected:
-            return .enter(into: .secondPassword)
 
         case .restoreWallet(.triggerAuthenticate):
             return Effect(value: .triggerAuthenticate)
@@ -323,6 +305,16 @@ public let welcomeReducer = Reducer.combine(
         case .createWallet(.accountCreation(.failure)):
             return Effect(value: .triggerCancelAuthenticate)
 
+        case .informSecondPasswordDetected:
+            switch state.route?.route {
+            case .emailLogin:
+                return Effect(value: .emailLogin(.verifyDevice(.credentials(.navigate(to: .secondPasswordDetected)))))
+            case .manualLogin:
+                return Effect(value: .manualPairing(.navigate(to: .secondPasswordDetected)))
+            default:
+                return .none
+            }
+
         case .triggerAuthenticate,
              .triggerCancelAuthenticate,
              .informForWalletInitialization:
@@ -331,8 +323,7 @@ public let welcomeReducer = Reducer.combine(
 
         case .createWallet,
              .emailLogin,
-             .restoreWallet,
-             .secondPasswordNotice:
+             .restoreWallet:
             return .none
 
         case .none:

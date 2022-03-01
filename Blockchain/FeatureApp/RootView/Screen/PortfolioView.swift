@@ -27,7 +27,13 @@ struct PortfolioView: UIViewControllerRepresentable {
                 onboardingViewsFactory.makeOnboardingChecklistOverview()
             },
             presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer()),
-            featureFlagService: featureFlagService
+            featureFlagService: featureFlagService,
+            presentRedesignCoinView: { vc, cryptoCurrency in
+                vc.present(
+                    CoinAdapterView(cryptoCurrency: cryptoCurrency),
+                    inNavigationController: false
+                )
+            }
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

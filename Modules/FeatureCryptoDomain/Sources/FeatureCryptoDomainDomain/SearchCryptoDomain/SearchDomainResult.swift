@@ -7,7 +7,7 @@ private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.Se
 
 public enum DomainType: Equatable, Hashable {
     case free
-    case premium
+    case premium(purchaseURL: URL)
 
     public var statusLabel: String {
         switch self {

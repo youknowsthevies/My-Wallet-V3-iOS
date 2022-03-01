@@ -57,8 +57,16 @@ struct DoubleButton: View {
     struct MainCtaView_PreviewProvider: PreviewProvider {
         static var previews: some View {
             Group {
-                DoubleButton(primaryAction: .buy, secondaryAction: .sell, action: { _ in })
-                DoubleButton(primaryAction: .send, secondaryAction: .receive, action: { _ in })
+                DoubleButton(
+                    primaryAction: .buy,
+                    secondaryAction: .sell,
+                    action: { _ in }
+                )
+                DoubleButton(
+                    primaryAction: .send,
+                    secondaryAction: .receive,
+                    action: { _ in }
+                )
             }
         }
     }

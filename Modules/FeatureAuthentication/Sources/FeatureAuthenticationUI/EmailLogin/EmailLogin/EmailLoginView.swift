@@ -128,6 +128,7 @@ struct EmailLoginView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     errorRecorder: NoOpErrorRecoder(),
+                    externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,

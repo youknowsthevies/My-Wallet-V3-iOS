@@ -47,6 +47,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
                     showSupportedPairsOnly: true
                 )
             ),
+            featureFlagService: featureFlagService,
             customSelectionActionClosure: { [weak self] currency in
                 guard let self = self else { return }
                 self.coincore.cryptoAccounts(for: currency, filter: .custodial)
@@ -54,7 +55,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
                     .receive(on: DispatchQueue.main)
                     .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
                         guard let self = self, let account = accounts.first else {
-                            return Just(.abandoned).eraseToAnyPublisher()
+                            return .just(.abandoned)
                         }
                         return self.transactionsRouter.presentTransactionFlow(to: .buy(account))
                     }
@@ -62,8 +63,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
                         "\(result)".peek("🧾 \(#function)")
                     }
                     .store(in: &self.cancellables)
-            },
-            featureFlagService: featureFlagService
+            }
         )
         buyListViewController.automaticallyApplyNavigationBarStyle = false
 

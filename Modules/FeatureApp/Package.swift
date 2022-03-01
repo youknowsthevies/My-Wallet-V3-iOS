@@ -41,7 +41,13 @@ let package = Package(
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureCards"),
         .package(path: "../FeatureQRCodeScanner"),
-        .package(path: "../FeatureTransaction")
+        .package(path: "../FeatureTransaction"),
+        .package(path: "../BlockchainNamespace"),
+        .package(path: "../FeatureActivity"),
+        .package(path: "../UIComponents"),
+        .package(path: "../Money"),
+        .package(path: "../FeatureWalletConnect"),
+        .package(path: "../BlockchainComponentLibrary")
     ],
     targets: [
         .target(
@@ -70,7 +76,14 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureCardsDomain", package: "FeatureCards"),
                 .product(name: "FeatureQRCodeScannerDomain", package: "FeatureQRCodeScanner"),
-                .product(name: "FeatureTransactionUI", package: "FeatureTransaction")
+                .product(name: "FeatureQRCodeScannerUI", package: "FeatureQRCodeScanner"),
+                .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "FeatureActivityUI", package: "FeatureActivity"),
+                .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "FeatureWalletConnectDomain", package: "FeatureWalletConnect"),
+                .product(name: "MoneyKit", package: "Money"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ]
         ),
         .target(

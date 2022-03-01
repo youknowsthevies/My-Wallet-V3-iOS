@@ -11,13 +11,23 @@ import PlatformUIKit
 import SwiftUI
 import ToolKit
 
-struct QRCodeScannerView: UIViewControllerRepresentable {
+public struct QRCodeScannerView: UIViewControllerRepresentable {
 
     var secureChannelRouter: SecureChannelRouting = resolve()
     var walletConnectService: WalletConnectServiceAPI = resolve()
     var tabSwapping: TabSwapping = resolve()
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    public init(
+        secureChannelRouter: SecureChannelRouting = resolve(),
+        walletConnectService: WalletConnectServiceAPI = resolve(),
+        tabSwapping: TabSwapping = resolve()
+    ) {
+        self.secureChannelRouter = secureChannelRouter
+        self.walletConnectService = walletConnectService
+        self.tabSwapping = tabSwapping
+    }
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
 
         let builder = QRCodeScannerViewControllerBuilder(
             completed: { result in
@@ -66,5 +76,5 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
         return viewController as UIViewController
     }
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 }

@@ -1,11 +1,13 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
 import DIKit
+import FeatureAppUI
 import Localization
 import SwiftUI
 import ToolKit
@@ -56,6 +58,7 @@ enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onAppear
+    case onDisappear
 }
 
 enum RootViewRoute: NavigationRoute {
@@ -79,13 +82,14 @@ enum RootViewRoute: NavigationRoute {
 
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
+    var app: AppProtocol
 }
 
 let rootViewReducer = Reducer<
     RootViewState,
     RootViewAction,
     RootViewEnvironment
-> { state, action, _ in
+> { state, action, environment in
     switch action {
     case .tab(let tab):
         state.tab = tab
@@ -107,7 +111,13 @@ let rootViewReducer = Reducer<
         state.fab.animate = false
         return .none
     case .onAppear:
-        return .none
+        return .fireAndForget {
+            environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
+        }
+    case .onDisappear:
+        return .fireAndForget {
+            environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: false)
+        }
     case .route, .binding:
         return .none
     }

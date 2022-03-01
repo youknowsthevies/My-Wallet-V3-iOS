@@ -1,6 +1,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import ComposableArchitecture
 import DIKit
+import FeatureCoinDomain
+import FeatureCoinUI
 import FeatureDashboardUI
 import PlatformUIKit
 import SwiftUI
@@ -13,14 +17,21 @@ struct PricesView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
+        let presenter = PricesScreenPresenter(
+            drawerRouter: NoDrawer(),
+            interactor: PricesScreenInteractor(
+                showSupportedPairsOnly: false
+            )
+        )
         let viewController = PricesViewController(
-            presenter: PricesScreenPresenter(
-                drawerRouter: NoDrawer(),
-                interactor: PricesScreenInteractor(
-                    showSupportedPairsOnly: false
+            presenter: presenter,
+            featureFlagService: featureFlagService,
+            presentRedesignCoinView: { vc, cryptoCurrency in
+                vc.present(
+                    CoinAdapterView(cryptoCurrency: cryptoCurrency),
+                    inNavigationController: false
                 )
-            ),
-            featureFlagService: featureFlagService
+            }
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

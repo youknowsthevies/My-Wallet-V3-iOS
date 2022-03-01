@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import ComposableNavigation
 import DIKit
 import FeatureAuthenticationDomain
 import Localization
@@ -9,12 +10,13 @@ import ToolKit
 
 // MARK: - Type
 
-public enum CredentialsAction: Equatable {
+public enum CredentialsAction: Equatable, NavigationAction {
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
 
+    case route(RouteIntent<CredentialsRoute>?)
     case alert(AlertAction)
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
@@ -24,7 +26,7 @@ public enum CredentialsAction: Equatable {
     case password(PasswordAction)
     case twoFA(TwoFAAction)
     case seedPhrase(SeedPhraseAction)
-    case setTroubleLoggingInScreenVisible(Bool)
+    case secondPasswordNotice(SecondPasswordNotice.Action)
     case showAccountLockedError(Bool)
     case openExternalLink(URL)
     case none
@@ -42,14 +44,15 @@ private typealias CredentialsLocalization = LocalizationConstants.FeatureAuthent
 
 // MARK: - Properties
 
-public struct CredentialsState: Equatable {
+public struct CredentialsState: Equatable, NavigationState {
+    public var route: RouteIntent<CredentialsRoute>?
     var walletPairingState: WalletPairingState
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var seedPhraseState: SeedPhraseState?
+    var secondPasswordNoticeState: SecondPasswordNotice.State?
     var nabuInfo: WalletInfo.Nabu?
     var isManualPairing: Bool
-    var isTroubleLoggingInScreenVisible: Bool
     var isTwoFactorOTPVerified: Bool
     var isWalletIdentifierIncorrect: Bool
     var isAccountLocked: Bool
@@ -62,13 +65,14 @@ public struct CredentialsState: Equatable {
     var isTwoFAPrepared: Bool
 
     init(
+        route: RouteIntent<CredentialsRoute>? = nil,
         walletPairingState: WalletPairingState = .init(),
         passwordState: PasswordState = .init(),
         twoFAState: TwoFAState? = nil,
         seedPhraseState: SeedPhraseState? = nil,
+        secondPasswordNoticeState: SecondPasswordNotice.State? = nil,
         nabuInfo: WalletInfo.Nabu? = nil,
         isManualPairing: Bool = false,
-        isTroubleLoggingInScreenVisible: Bool = false,
         isTwoFactorOTPVerified: Bool = false,
         isWalletIdentifierIncorrect: Bool = false,
         isAccountLocked: Bool = false,
@@ -76,13 +80,14 @@ public struct CredentialsState: Equatable {
         isLoading: Bool = false,
         isTwoFAPrepared: Bool = false
     ) {
+        self.route = route
         self.walletPairingState = walletPairingState
         self.passwordState = passwordState
         self.twoFAState = twoFAState
         self.seedPhraseState = seedPhraseState
+        self.secondPasswordNoticeState = secondPasswordNoticeState
         self.nabuInfo = nabuInfo
         self.isManualPairing = isManualPairing
-        self.isTroubleLoggingInScreenVisible = isTroubleLoggingInScreenVisible
         self.isTwoFactorOTPVerified = isTwoFactorOTPVerified
         self.isWalletIdentifierIncorrect = isWalletIdentifierIncorrect
         self.isAccountLocked = isAccountLocked
@@ -198,6 +203,17 @@ let credentialsReducer = Reducer.combine(
                 )
             }
         ),
+    secondPasswordNoticeReducer
+        .optional()
+        .pullback(
+            state: \CredentialsState.secondPasswordNoticeState,
+            action: /CredentialsAction.secondPasswordNotice,
+            environment: {
+                SecondPasswordNotice.Environment(
+                    externalAppOpener: $0.externalAppOpener
+                )
+            }
+        ),
     Reducer<
         CredentialsState,
         CredentialsAction,
@@ -278,7 +294,10 @@ let credentialsReducer = Reducer.combine(
         case .walletPairing(.authenticate):
             // Set loading state
             state.isLoading = true
-            return clearErrorStates(state)
+            return .merge(
+                clearErrorStates(state),
+                Effect(value: .alert(.dismiss))
+            )
 
         case .walletPairing(.authenticateDidFail(let error)):
             return authenticateDidFail(error, &state, environment)
@@ -286,7 +305,10 @@ let credentialsReducer = Reducer.combine(
         case .walletPairing(.authenticateWithTwoFactorOTP):
             // Set loading state
             state.isLoading = true
-            return clearErrorStates(state)
+            return .merge(
+                clearErrorStates(state),
+                Effect(value: .alert(.dismiss))
+            )
 
         case .walletPairing(.authenticateWithTwoFactorOTPDidFail(let error)):
             return authenticateWithTwoFactorOTPDidFail(error, environment)
@@ -351,25 +373,31 @@ let credentialsReducer = Reducer.combine(
             state.isLoading = true
             return .none
 
-        case .setTroubleLoggingInScreenVisible(let isVisible):
-            state.isTroubleLoggingInScreenVisible = isVisible
-            if isVisible {
-                state.seedPhraseState = .init(
-                    context: .troubleLoggingIn,
-                    emailAddress: state.walletPairingState.emailAddress,
-                    nabuInfo: state.nabuInfo
-                )
+        case .route(let route):
+            if let routeValue = route?.route {
+                switch routeValue {
+                case .seedPhrase:
+                    state.seedPhraseState = .init(
+                        context: .troubleLoggingIn,
+                        emailAddress: state.walletPairingState.emailAddress,
+                        nabuInfo: state.nabuInfo
+                    )
+                case .secondPasswordDetected:
+                    state.secondPasswordNoticeState = .init()
+                }
             }
             return .none
 
         case .twoFA,
              .password,
              .seedPhrase,
+             .secondPasswordNotice,
              .none:
             return .none
         }
     }
 )
+.routing()
 .analytics()
 
 // MARK: - Private Methods
@@ -568,10 +596,17 @@ extension Reducer where
                         event: .loginTwoStepVerificationDenied
                     )
                     return .none
-                case .setTroubleLoggingInScreenVisible(true):
-                    environment.analyticsRecorder.record(
-                        event: .recoveryOptionSelected
-                    )
+                case .route(let route):
+                    if let routeValue = route?.route {
+                        switch routeValue {
+                        case .seedPhrase:
+                            environment.analyticsRecorder.record(
+                                event: .recoveryOptionSelected
+                            )
+                        default:
+                            break
+                        }
+                    }
                     return .none
                 default:
                     return .none

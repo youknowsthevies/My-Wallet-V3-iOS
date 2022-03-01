@@ -1,5 +1,6 @@
-import BlockchainNamespace
+@testable import BlockchainNamespace
 import Combine
+import FirebaseProtocol
 import XCTest
 
 final class AppTests: XCTestCase {
@@ -43,5 +44,21 @@ final class AppTests: XCTestCase {
         XCTAssertEqual(count[blockchain.session.event.did.sign.out], 1)
 
         XCTAssertEqual(count[blockchain.ux.type.analytics.event], 4)
+    }
+}
+
+extension App {
+
+    public convenience init(
+        language: Language = Language.root.language,
+        state: [Tag.Reference: Any] = [:],
+        remote: [Mock.RemoteConfigurationSource: [String: Mock.RemoteConfigurationValue]] = [:]
+    ) {
+        self.init(
+            language: language,
+            events: .init(),
+            state: .init(state),
+            remoteConfiguration: Session.RemoteConfiguration(remote: Mock.RemoteConfiguration(remote))
+        )
     }
 }

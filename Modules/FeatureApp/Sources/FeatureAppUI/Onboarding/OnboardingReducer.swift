@@ -198,6 +198,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 return .none
             }
             return Effect(value: .welcomeScreen(.informSecondPasswordDetected))
+
         case .informForWalletInitialization:
             return .none
         case .handleWalletDecryptionError:

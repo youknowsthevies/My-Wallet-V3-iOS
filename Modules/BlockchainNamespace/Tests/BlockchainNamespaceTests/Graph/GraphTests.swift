@@ -9,7 +9,7 @@ final class GraphTests: XCTestCase {
 
         let graph = try Graph(json: .test)
 
-        XCTAssertEqual(graph.date, date)
+        XCTAssertEqual(graph.date.description, date.description)
         XCTAssertEqual(graph.root.id, "blockchain")
 
         let string = try graph.nodes["blockchain.type.string"].unwrap()
@@ -36,7 +36,7 @@ final class GraphTests: XCTestCase {
     func test_load_no_root() throws {
         do {
             let json = try Graph.JSON.from(
-                json: Data(#"{"classes":[],"date":666824886.181533}"#.utf8)
+                json: Data(#"{"classes":[],"date":"2022-02-17T21:08:06.000+00:00"}"#.utf8)
             )
             _ = try Graph(json: json)
         } catch let error as Graph.Error {
@@ -47,7 +47,10 @@ final class GraphTests: XCTestCase {
     func test_load_two_root() throws {
         do {
             let json = try Graph.JSON.from(
-                json: Data(#"{"classes":[{"id":"blockchain"}, {"id":"blockchain_2"}],"date":666824886.181533}"#.utf8)
+                json: Data(
+                    #"{"classes":[{"id":"blockchain"}, {"id":"blockchain_2"}],"date":"2022-02-17T21:08:06.000+00:00"}"#
+                        .utf8
+                )
             )
             _ = try Graph(json: json)
         } catch let error as Graph.Error {
@@ -133,7 +136,7 @@ let __data = Data(
           "id" : "blockchain.type.string"
         },
       ],
-      "date" : 666824886.18153298,
+      "date" : "2022-02-17T21:08:06.000+0000",
       "name" : "blockchain"
     }
     """.utf8

@@ -27,17 +27,20 @@ public final class PricesViewController: BaseScreenViewController {
     public typealias CustomSelectionActionClosure = ((CryptoCurrency) -> Void)
     private let customSelectionActionClosure: CustomSelectionActionClosure?
     private let featureFlagService: FeatureFlagsServiceAPI
+    private let presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)?
 
     // MARK: - Setup
 
     public init(
         presenter: PricesScreenPresenter,
+        featureFlagService: FeatureFlagsServiceAPI,
         customSelectionActionClosure: CustomSelectionActionClosure? = nil,
-        featureFlagService: FeatureFlagsServiceAPI
+        presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)? = nil
     ) {
         self.presenter = presenter
-        self.customSelectionActionClosure = customSelectionActionClosure
         self.featureFlagService = featureFlagService
+        self.customSelectionActionClosure = customSelectionActionClosure
+        self.presentRedesignCoinView = presentRedesignCoinView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -153,17 +156,18 @@ public final class PricesViewController: BaseScreenViewController {
             tableView.rx.modelSelected(PricesCellType.self),
             featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
         )
-        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
+        .subscribe(onNext: { [weak self] model, isRedesignCoinViewEnabled in
             switch model {
             case .emptyState:
                 break
             case .currency(let cryptoCurrency, _):
-                if let customSelectionActionClosure = self.customSelectionActionClosure {
+                if let customSelectionActionClosure = self?.customSelectionActionClosure {
                     customSelectionActionClosure(cryptoCurrency)
                 } else if isRedesignCoinViewEnabled {
-                    // Show Redesign CoinView
+                    guard let self = self else { return }
+                    self.presentRedesignCoinView?(self, cryptoCurrency)
                 } else {
-                    presenter.router.showDetailsScreen(for: cryptoCurrency)
+                    self?.presenter.router.showDetailsScreen(for: cryptoCurrency)
                 }
             }
         })

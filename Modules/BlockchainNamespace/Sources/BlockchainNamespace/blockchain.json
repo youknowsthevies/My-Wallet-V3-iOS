@@ -104,25 +104,115 @@
     },
     {
       "children" : [
-        "story",
-        "url"
+        "activity",
+        "asset",
+        "buy",
+        "kyc",
+        "qr",
+        "send"
       ],
       "id" : "blockchain.app.deep_link"
     },
     {
-      "id" : "blockchain.app.deep_link.story",
-      "supertype" : "blockchain.ux.type.story_&_blockchain.session.state.value",
+      "children" : [
+        "transaction"
+      ],
+      "id" : "blockchain.app.deep_link.activity"
+    },
+    {
+      "children" : [
+        "id"
+      ],
+      "id" : "blockchain.app.deep_link.activity.transaction"
+    },
+    {
+      "id" : "blockchain.app.deep_link.activity.transaction.id",
+      "supertype" : "blockchain.db.type.string",
       "type" : [
-        "blockchain.session.state.value",
-        "blockchain.ux.type.story"
+        "blockchain.db.type.string"
       ]
     },
     {
-      "id" : "blockchain.app.deep_link.url",
-      "supertype" : "blockchain.db.type.url_&_blockchain.session.state.value",
+      "children" : [
+        "code"
+      ],
+      "id" : "blockchain.app.deep_link.asset"
+    },
+    {
+      "id" : "blockchain.app.deep_link.asset.code",
+      "supertype" : "blockchain.db.type.string",
       "type" : [
-        "blockchain.db.type.url",
-        "blockchain.session.state.value"
+        "blockchain.db.type.string"
+      ]
+    },
+    {
+      "children" : [
+        "amount",
+        "crypto"
+      ],
+      "id" : "blockchain.app.deep_link.buy"
+    },
+    {
+      "id" : "blockchain.app.deep_link.buy.amount",
+      "supertype" : "blockchain.db.type.integer",
+      "type" : [
+        "blockchain.db.type.integer"
+      ]
+    },
+    {
+      "children" : [
+        "code"
+      ],
+      "id" : "blockchain.app.deep_link.buy.crypto"
+    },
+    {
+      "id" : "blockchain.app.deep_link.buy.crypto.code",
+      "supertype" : "blockchain.db.type.string",
+      "type" : [
+        "blockchain.db.type.string"
+      ]
+    },
+    {
+      "children" : [
+        "tier"
+      ],
+      "id" : "blockchain.app.deep_link.kyc"
+    },
+    {
+      "id" : "blockchain.app.deep_link.kyc.tier",
+      "supertype" : "blockchain.db.type.integer",
+      "type" : [
+        "blockchain.db.type.integer"
+      ]
+    },
+    {
+      "id" : "blockchain.app.deep_link.qr"
+    },
+    {
+      "children" : [
+        "amount",
+        "crypto"
+      ],
+      "id" : "blockchain.app.deep_link.send"
+    },
+    {
+      "id" : "blockchain.app.deep_link.send.amount",
+      "supertype" : "blockchain.db.type.integer",
+      "type" : [
+        "blockchain.db.type.integer"
+      ]
+    },
+    {
+      "children" : [
+        "code"
+      ],
+      "id" : "blockchain.app.deep_link.send.crypto"
+    },
+    {
+      "id" : "blockchain.app.deep_link.send.crypto.code",
+      "supertype" : "blockchain.db.type.string",
+      "type" : [
+        "blockchain.db.type.string"
       ]
     },
     {
@@ -186,9 +276,10 @@
     },
     {
       "id" : "blockchain.app.process.deep_link.url",
-      "supertype" : "blockchain.db.type.url",
+      "supertype" : "blockchain.db.type.url_&_blockchain.session.state.value",
       "type" : [
-        "blockchain.db.type.url"
+        "blockchain.db.type.url",
+        "blockchain.session.state.value"
       ]
     },
     {
@@ -209,6 +300,16 @@
         "id"
       ],
       "id" : "blockchain.db.collection"
+    },
+    {
+      "id" : "blockchain.db.collection_&_blockchain.ux.type.story",
+      "mixin" : {
+        "children" : {
+          "entry" : "blockchain.ux.type.story.entry"
+        },
+        "type" : "blockchain.ux.type.story"
+      },
+      "supertype" : "blockchain.db.collection"
     },
     {
       "id" : "blockchain.db.collection.id",
@@ -1279,7 +1380,7 @@
         "sell"
       ],
       "id" : "blockchain.ux.asset",
-      "supertype" : "blockchain.ux.type.story_&_blockchain.db.collection",
+      "supertype" : "blockchain.db.collection_&_blockchain.ux.type.story",
       "type" : [
         "blockchain.db.collection",
         "blockchain.ux.type.story"
@@ -1300,7 +1401,7 @@
         "withdraw"
       ],
       "id" : "blockchain.ux.asset.account",
-      "supertype" : "blockchain.ux.type.story_&_blockchain.db.collection",
+      "supertype" : "blockchain.db.collection_&_blockchain.ux.type.story",
       "type" : [
         "blockchain.db.collection",
         "blockchain.ux.type.story"
@@ -1452,7 +1553,7 @@
         "cancel"
       ],
       "id" : "blockchain.ux.asset.recurring.buy.summary",
-      "supertype" : "blockchain.ux.type.story_&_blockchain.db.collection",
+      "supertype" : "blockchain.db.collection_&_blockchain.ux.type.story",
       "type" : [
         "blockchain.db.collection",
         "blockchain.ux.type.story"
@@ -1675,7 +1776,7 @@
     },
     {
       "id" : "blockchain.ux.transaction.crypto.currency.swap",
-      "supertype" : "blockchain.ux.type.story_&_blockchain.db.collection",
+      "supertype" : "blockchain.db.collection_&_blockchain.ux.type.story",
       "type" : [
         "blockchain.db.collection",
         "blockchain.ux.type.story"
@@ -1845,42 +1946,9 @@
     },
     {
       "children" : [
-        "appear",
-        "disappear",
         "entry"
       ],
       "id" : "blockchain.ux.type.story"
-    },
-    {
-      "id" : "blockchain.ux.type.story_&_blockchain.db.collection",
-      "mixin" : {
-        "children" : {
-          "id" : "blockchain.db.collection.id"
-        },
-        "type" : "blockchain.db.collection"
-      },
-      "supertype" : "blockchain.ux.type.story"
-    },
-    {
-      "id" : "blockchain.ux.type.story_&_blockchain.session.state.value",
-      "mixin" : {
-        "type" : "blockchain.session.state.value"
-      },
-      "supertype" : "blockchain.ux.type.story"
-    },
-    {
-      "id" : "blockchain.ux.type.story.appear",
-      "supertype" : "blockchain.ux.type.action",
-      "type" : [
-        "blockchain.ux.type.action"
-      ]
-    },
-    {
-      "id" : "blockchain.ux.type.story.disappear",
-      "supertype" : "blockchain.ux.type.action",
-      "type" : [
-        "blockchain.ux.type.action"
-      ]
     },
     {
       "id" : "blockchain.ux.type.story.entry"
@@ -2303,6 +2371,6 @@
       ]
     }
   ],
-  "date" : 666824886.18153298,
+  "date" : "2022-02-28T17:25:03.607Z",
   "name" : "blockchain"
 }

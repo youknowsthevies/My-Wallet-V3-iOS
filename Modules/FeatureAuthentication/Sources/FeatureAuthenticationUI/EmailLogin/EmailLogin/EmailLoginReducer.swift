@@ -89,6 +89,7 @@ struct EmailLoginEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
+    let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
@@ -102,6 +103,7 @@ struct EmailLoginEnvironment {
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         errorRecorder: ErrorRecording,
+        externalAppOpener: ExternalAppOpener,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
@@ -114,6 +116,7 @@ struct EmailLoginEnvironment {
         self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
         self.errorRecorder = errorRecorder
+        self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
@@ -135,6 +138,7 @@ let emailLoginReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
+                    externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
