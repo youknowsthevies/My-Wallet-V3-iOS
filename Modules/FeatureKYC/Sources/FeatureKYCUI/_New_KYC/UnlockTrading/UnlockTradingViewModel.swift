@@ -1,73 +1,96 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import Localization
+import SwiftUI
 
 private typealias L10n = LocalizationConstants.NewKYC.UnlockTrading
 
-struct UnlockTradingViewModel: Equatable {
+struct UnlockTradingBenefit: Equatable, Identifiable {
 
-    struct Benefit: Equatable {
-        let title: String
-        let message: String
-        let iconName: String
+    enum Status: Equatable {
+        case enabled
+        case badge(String)
     }
 
-    struct Action: Equatable {
-        enum ActionStyle: Equatable {
-            case primary
-            case secondary
-        }
-
-        let title: String
-        let style: ActionStyle
-        let action: (ViewStore<UnlockTradingState, UnlockTradingAction>) -> Void
-
-        static func == (lhs: UnlockTradingViewModel.Action, rhs: UnlockTradingViewModel.Action) -> Bool {
-            lhs.title == rhs.title && lhs.style == rhs.style
-        }
-    }
-
+    let id: String
     let title: String
-    let message: String
-    let viewIconName: String
-    let topBackgroundImageName: String?
-    let benefits: [Benefit]
-    let actions: [Action]
+    let message: String?
+    let iconName: String
+    let iconTint: Color?
+    let iconRenderingMode: Image.TemplateRenderingMode
+    let status: Status
 }
 
-extension UnlockTradingViewModel {
+extension UnlockTradingBenefit {
 
-    static let unlockGoldTier = UnlockTradingViewModel(
-        title: L10n.title,
-        message: L10n.message,
-        viewIconName: "icon-bank",
-        topBackgroundImageName: "top-screen-pattern",
-        benefits: [
-            Benefit(
-                title: L10n.benefitCashAccounts_title,
-                message: L10n.benefitCashAccounts_message,
-                iconName: "icon-cash"
-            ),
-            Benefit(
-                title: L10n.benefitLinkBankAccounts_title,
-                message: L10n.benefitLinkBankAccounts_message,
-                iconName: "icon-bank"
-            ),
-            Benefit(
-                title: L10n.benefitEarnRewards_title,
-                message: L10n.benefitEarnRewards_message,
-                iconName: "icon-interest"
-            )
-        ],
-        actions: [
-            Action(
-                title: L10n.ctaApplyToUnlock,
-                style: .primary,
-                action: { viewStore in
-                    viewStore.send(.unlockButtonTapped)
-                }
-            )
-        ]
-    )
+    static let basicBenefits: [UnlockTradingBenefit] = [
+        UnlockTradingBenefit(
+            id: "kyc.tier.basic",
+            title: L10n.benefit_basicTier_title,
+            message: nil,
+            iconName: "icon-verified",
+            iconTint: .semantic.silver,
+            iconRenderingMode: .template,
+            status: .badge(L10n.benefit_basicTier_badgeTitle)
+        ),
+        UnlockTradingBenefit(
+            id: "send.receive.crypto.basic",
+            title: L10n.benefit_basic_sendAndReceive_title,
+            message: L10n.benefit_basic_sendAndReceive_info,
+            iconName: "icon-send",
+            iconTint: nil,
+            iconRenderingMode: .original,
+            status: .enabled
+        ),
+        UnlockTradingBenefit(
+            id: "swap.crypto.basic",
+            title: L10n.benefit_basic_swap_title,
+            message: L10n.benefit_basic_swap_info,
+            iconName: "icon-swap-2",
+            iconTint: nil,
+            iconRenderingMode: .original,
+            status: .enabled
+        )
+    ]
+
+    static let verifiedBenefits: [UnlockTradingBenefit] = [
+        UnlockTradingBenefit(
+            id: "kyc.tier.verified",
+            title: L10n.benefit_verifiedTier_title,
+            message: nil,
+            iconName: "icon-verified",
+            iconTint: nil,
+            iconRenderingMode: .template,
+            status: .badge(L10n.benefit_verifiedTier_badgeTitle)
+        ),
+        UnlockTradingBenefit(
+            id: "swap.crypto.verified",
+            title: L10n.benefit_verified_swap_title,
+            message: L10n.benefit_verified_swap_info,
+            iconName: "icon-swap",
+            iconTint: nil,
+            iconRenderingMode: .original,
+            status: .enabled
+        ),
+        UnlockTradingBenefit(
+            id: "buy.sell.crypto.verified",
+            title: L10n.benefit_verified_buyAndSell_title,
+            message: L10n.benefit_verified_buyAndSell_info,
+            iconName: "icon-buy",
+            iconTint: nil,
+            iconRenderingMode: .original,
+            status: .enabled
+        ),
+        UnlockTradingBenefit(
+            id: "rewards.verified",
+            title: L10n.benefit_verified_rewards_title,
+            message: L10n.benefit_verified_rewards_info,
+            iconName: "icon-interest",
+            iconTint: nil,
+            iconRenderingMode: .template,
+            status: .enabled
+        )
+    ]
 }

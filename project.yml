@@ -289,6 +289,8 @@ packages:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
+  FeatureProducts:
+    path: Modules/FeatureProducts
   FeatureQRCodeScanner:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
@@ -400,6 +402,10 @@ targets:
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
+      - package: FeatureProducts
+        product: FeatureProductsData
+      - package: FeatureProducts
+        product: FeatureProductsDomain
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction

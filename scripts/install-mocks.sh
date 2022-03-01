@@ -19,5 +19,10 @@ cd Modules/Analytics
 sh Scripts/generate_mocks.sh
 cd ../..
 
+echo "FeatureProducts mocks"
+cd Modules/FeatureProducts
+sh Scripts/generate_mocks.sh
+cd ../..
+
 echo "\n"
 echo "generate_mocks.sh end"

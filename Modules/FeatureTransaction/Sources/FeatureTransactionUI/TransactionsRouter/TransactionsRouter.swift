@@ -30,12 +30,25 @@ public protocol TransactionsRouterAPI {
     ) -> AnyPublisher<TransactionFlowResult, Never>
 }
 
+public enum UserActionServiceResult: Equatable {
+    case canPerform
+    case cannotPerform(upgradeTier: KYC.Tier?)
+}
+
+public protocol UserActionServiceAPI {
+
+    func canPresentTransactionFlow(
+        toPerform action: TransactionFlowAction
+    ) -> AnyPublisher<UserActionServiceResult, Never>
+}
+
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
     private let eligibilityService: EligibilityServiceAPI
+    private let userActionService: UserActionServiceAPI
     private let kycRouter: PlatformUIKit.KYCRouting
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -60,6 +73,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         pendingOrdersService: PendingOrderDetailsServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        userActionService: UserActionServiceAPI = resolve(),
         kycRouter: PlatformUIKit.KYCRouting = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
@@ -72,12 +87,13 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder(),
         withdrawFlowBuilder: WithdrawRootBuildable = WithdrawRootBuilder(),
         depositFlowBuilder: DepositRootBuildable = DepositRootBuilder(),
-        eligibilityService: EligibilityServiceAPI = resolve(),
         receiveCoordinator: ReceiveCoordinator = ReceiveCoordinator(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
+        self.eligibilityService = eligibilityService
+        self.userActionService = userActionService
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
@@ -91,7 +107,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.interestFlowBuilder = interestFlowBuilder
         self.withdrawFlowBuilder = withdrawFlowBuilder
         self.depositFlowBuilder = depositFlowBuilder
-        self.eligibilityService = eligibilityService
         self.receiveCoordinator = receiveCoordinator
         self.fiatCurrencyService = fiatCurrencyService
     }
@@ -106,6 +121,42 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     }
 
     func presentTransactionFlow(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        userActionService.canPresentTransactionFlow(toPerform: action)
+            .flatMap { [weak self] result -> AnyPublisher<TransactionFlowResult, Never> in
+                guard let self = self else {
+                    return .empty()
+                }
+                switch result {
+                case .canPerform:
+                    return self.continuePresentingTransactionFlow(to: action, from: presenter)
+                case .cannotPerform(let upgradeTier):
+                    return self.presentKYCUpgradeFlow(from: presenter, requiredTier: upgradeTier)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func presentKYCUpgradeFlow(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier?
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        kycRouter.presentKYCUpgradeFlow(from: presenter)
+            .map { result in
+                switch result {
+                case .abandoned:
+                    return .abandoned
+                case .completed:
+                    return .completed
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    /// Call this only after having checked that users can perform the requested action
+    private func continuePresentingTransactionFlow(
         to action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
@@ -192,7 +243,6 @@ extension TransactionsRouter {
     }
 }
 
-// swiftlint:disable:next function_body_length
 extension TransactionsRouter {
 
     // swiftlint:disable:next cyclomatic_complexity

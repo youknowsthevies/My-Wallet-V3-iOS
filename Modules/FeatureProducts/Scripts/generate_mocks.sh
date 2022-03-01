@@ -8,7 +8,13 @@ swift package describe --type json > MockingbirdProject.json
 MOCKINGBIRD_PATH="../../SourcePackages/checkouts/mockingbird/mockingbird"
 
 "${MOCKINGBIRD_PATH}" generate --project MockingbirdProject.json \
-  --output-dir Tests/AnalyticsKitTests \
-  --targets AnalyticsKit \
+  --output-dir Tests/FeatureProductsDataTests/Mocks \
+  --targets FeatureProductsData \
+  --only-protocols \
+  --disable-swiftlint
+
+"${MOCKINGBIRD_PATH}" generate --project MockingbirdProject.json \
+  --output-dir Tests/FeatureProductsDomainTests/Mocks \
+  --targets FeatureProductsDomain \
   --only-protocols \
   --disable-swiftlint

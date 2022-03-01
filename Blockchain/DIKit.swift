@@ -20,6 +20,8 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeatureProductsData
+import FeatureProductsDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -391,6 +393,7 @@ extension DependencyContainer {
                 coincore: DIKit.resolve(),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
+                productsService: DIKit.resolve(),
                 ordersService: DIKit.resolve()
             )
         }
@@ -525,6 +528,10 @@ extension DependencyContainer {
             PaymentMethodsLinkingAdapter()
         }
 
+        factory { () -> FeatureTransactionUI.UserActionServiceAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
         // MARK: FeatureAuthentication Module
 
         factory { () -> AutoWalletPairingServiceAPI in
@@ -642,6 +649,19 @@ extension DependencyContainer {
                 network: adapter.network
             )
             return OpenBanking(banking: client)
+        }
+
+        // MARK: Feature Product
+
+        factory { () -> FeatureProductsDomain.ProductsServiceAPI in
+            ProductsService(
+                repository: ProductsRepository(
+                    client: ProductsAPIClient(
+                        networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                        requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                    )
+                )
+            )
         }
 
         // MARK: Pulse Network Debugging

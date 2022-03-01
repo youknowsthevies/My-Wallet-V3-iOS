@@ -26,7 +26,7 @@ public enum TransactionFlowAction {
     case withdraw(FiatAccount)
     /// Performs a deposit.
     case deposit(FiatAccount)
-
+    /// Signs a transaction
     case sign(sourceAccount: BlockchainAccount, destination: TransactionTarget)
 }
 

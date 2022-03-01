@@ -1,9 +1,12 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureProductsDomain
+
 enum UserStateError: Error {
     case missingBalance(Error)
     case missingKYCInfo(Error)
     case missingPaymentInfo(Error)
+    case missingProductsInfo(Error)
     case missingPurchaseHistory(Error)
 }
 
@@ -49,7 +52,33 @@ struct UserState: Equatable {
     }
 
     let kycStatus: KYCStatus
+    let balanceData: BalanceData
     let linkedPaymentMethods: [PaymentMethod]
     let hasEverPurchasedCrypto: Bool
-    let balanceData: BalanceData
+    let products: [Product]
+}
+
+extension UserState {
+
+    func canUse(_ productId: Product.Identifier?) -> Bool {
+        guard let product = product(id: productId) else {
+            // Let users use products we don't have information for
+            return true
+        }
+        return product.canBeUsed
+    }
+
+    func requiredTierToUse(_ productId: Product.Identifier?) -> Int? {
+        guard let product = product(id: productId) else {
+            return nil
+        }
+        return product.suggestedUpgrade?.requiredTier
+    }
+
+    private func product(id: Product.Identifier?) -> Product? {
+        guard let id = id, let product = products.first(where: { $0.id == id }) else {
+            return nil
+        }
+        return product
+    }
 }

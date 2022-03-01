@@ -2,20 +2,44 @@
 
 import SwiftUI
 
-struct PillButtonStyle: ButtonStyle {
+public struct PillButtonStyle: ButtonStyle {
 
-    struct ColorSet {
+    public struct ColorSet {
         let foreground: Color
         let background: Color
         let border: Color
+
+        public init(
+            foreground: Color,
+            background: Color,
+            border: Color
+        ) {
+            self.foreground = foreground
+            self.background = background
+            self.border = border
+        }
     }
 
-    struct ColorCombination {
+    public struct ColorCombination {
         let enabled: ColorSet
         let pressed: ColorSet
         let disabled: ColorSet
         let progressViewRail: Color
         let progressViewTrack: Color
+
+        public init(
+            enabled: ColorSet,
+            pressed: ColorSet,
+            disabled: ColorSet,
+            progressViewRail: Color,
+            progressViewTrack: Color
+        ) {
+            self.enabled = enabled
+            self.pressed = pressed
+            self.disabled = disabled
+            self.progressViewRail = progressViewRail
+            self.progressViewTrack = progressViewTrack
+        }
     }
 
     let isLoading: Bool
@@ -42,7 +66,7 @@ struct PillButtonStyle: ButtonStyle {
         self.colorCombination = colorCombination
     }
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         VStack {
             if isLoading {
                 ProgressView()
@@ -85,6 +109,8 @@ struct PillButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: Button Size Environment Extension
+
 private struct PillButtonSizeEnvironmentKey: EnvironmentKey {
 
     static var defaultValue: PillButtonSize = .standard
@@ -102,5 +128,29 @@ extension View {
 
     public func pillButtonSize(_ size: PillButtonSize) -> some View {
         environment(\.pillButtonSize, size)
+    }
+}
+
+// MARK: Button ColorSet Environment Extension
+
+private struct ColorCombinationEnvironmentKey: EnvironmentKey {
+
+    static var defaultValue: PillButtonStyle.ColorCombination = .primary
+}
+
+extension EnvironmentValues {
+
+    var colorCombination: PillButtonStyle.ColorCombination {
+        get { self[ColorCombinationEnvironmentKey.self] }
+        set { self[ColorCombinationEnvironmentKey.self] = newValue }
+    }
+}
+
+extension View {
+
+    public func colorCombination(
+        _ colorCombination: PillButtonStyle.ColorCombination
+    ) -> some View {
+        environment(\.colorCombination, colorCombination)
     }
 }
