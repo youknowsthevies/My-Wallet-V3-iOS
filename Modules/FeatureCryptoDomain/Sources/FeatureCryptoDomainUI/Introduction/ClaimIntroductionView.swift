@@ -175,14 +175,17 @@ struct ClaimIntroductionView: View {
     }
 }
 
-// struct ClaimIntroductionView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ClaimIntroductionView(
-//            store: .init(
-//                initialState: .init(),
-//                reducer: claimIntroductionReducer,
-//                environment: ()
-//            )
-//        )
-//    }
-// }
+ struct ClaimIntroductionView_Previews: PreviewProvider {
+    static var previews: some View {
+        ClaimIntroductionView(
+            store: .init(
+                initialState: .init(),
+                reducer: claimIntroductionReducer,
+                environment: .init(
+                    mainQueue: .main,
+                    searchDomainRepository: NoOpSearchDomainRepository()
+                )
+            )
+        )
+    }
+ }
