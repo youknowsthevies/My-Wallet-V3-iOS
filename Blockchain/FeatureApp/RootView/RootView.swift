@@ -84,6 +84,9 @@ struct RootView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .onDisappear {
+                viewStore.send(.onDisappear)
+            }
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
                     .identity(blockchain.ux.frequent.action)

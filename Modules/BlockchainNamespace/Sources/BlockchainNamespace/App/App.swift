@@ -51,6 +51,29 @@ public class App: AppProtocol, CustomStringConvertible {
     private func start() {
         state.app = self
         deepLinks.start()
+        for o in observers {
+            o.store(in: &bag)
+        }
+    }
+
+    // Observers
+
+    var bag: Set<AnyCancellable> = []
+    var observers: [AnyCancellable] {
+        #if DEBUG
+        let debug: [AnyCancellable] = [logger]
+        #else
+        let debug: [AnyCancellable] = []
+        #endif
+        return debug
+    }
+
+    lazy var logger = events.sink { event in
+        if let message = event.context[e.message] as? String {
+            print("🏷 ‼️", event.tag.id, message)
+        } else {
+            print("🏷", event.tag.id)
+        }
     }
 }
 

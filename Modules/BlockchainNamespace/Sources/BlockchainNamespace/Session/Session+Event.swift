@@ -7,7 +7,6 @@ extension Session {
 
     public typealias Events = PassthroughSubject<Session.Event, Never>
 
-    @dynamicMemberLookup
     public struct Event: Identifiable {
 
         public let id: UInt
@@ -15,19 +14,13 @@ extension Session {
         public let ref: Tag.Reference
         public let context: Tag.Context
 
+        public var tag: Tag { ref.tag }
+
         init(date: Date = Date(), ref: Tag.Reference, context: Tag.Context = [:]) {
             id = Self.id
             self.date = date
             self.ref = ref
             self.context = context
-        }
-
-        public subscript<Value>(dynamicMember keyPath: KeyPath<Tag.Reference, Value>) -> Value {
-            ref[keyPath: keyPath]
-        }
-
-        public subscript<Value>(dynamicMember keyPath: KeyPath<Tag, Value>) -> Value {
-            ref.tag[keyPath: keyPath]
         }
     }
 }

@@ -12,7 +12,36 @@ extension Graph {
 
 extension Graph.JSON {
 
-    public static func from(json data: Data, using decoder: JSONDecoder = JSONDecoder()) throws -> Graph.JSON {
+    public class Decoder: JSONDecoder {
+        override public init() {
+            super.init()
+            dateDecodingStrategy = .formatted(DateFormatter.shared)
+        }
+    }
+
+    public class DateFormatter: Foundation.DateFormatter {
+
+        public static let shared = DateFormatter()
+
+        public private(set) lazy var iso: ISO8601DateFormatter = {
+            self.dateStyle = .long
+            self.timeStyle = .short
+            let o = ISO8601DateFormatter()
+            o.formatOptions.insert(.withFractionalSeconds)
+            o.timeZone = .none
+            return o
+        }()
+
+        override public func date(from string: String) -> Date? {
+            iso.date(from: string)
+        }
+
+        override public func string(from date: Date) -> String {
+            iso.string(from: date)
+        }
+    }
+
+    public static func from(json data: Data, using decoder: JSONDecoder = Graph.JSON.Decoder()) throws -> Graph.JSON {
         try decoder.decode(Graph.JSON.self, from: data)
     }
 }

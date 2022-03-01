@@ -17,6 +17,30 @@ blockchain:
 			wallet:
 				options:
 				+ blockchain.session.configuration.value
+		deep_link:
+			activity:
+				transaction:
+					id:
+					+ blockchain.db.type.string
+			asset:
+				code:
+				+ blockchain.db.type.string
+			buy:
+				amount:
+				+ blockchain.db.type.integer
+				crypto:
+					code:
+					+ blockchain.db.type.string
+			kyc:
+				tier:
+				+ blockchain.db.type.integer
+			qr:
+			send:
+				amount:
+				+ blockchain.db.type.integer
+				crypto:
+					code:
+					+ blockchain.db.type.string
 		enter:
 			into:
 			+ blockchain.ux.type.story
@@ -32,6 +56,7 @@ blockchain:
 				+ blockchain.ux.type.analytics.error
 				url:
 				+ blockchain.db.type.url
+				+ blockchain.session.state.value
 	db:
 		array:
 		collection:

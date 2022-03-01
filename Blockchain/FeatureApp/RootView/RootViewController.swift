@@ -29,7 +29,7 @@ final class RootViewController: UIHostingController<RootView> {
 
         send = ViewStore(global).send
 
-        let environment = RootViewEnvironment()
+        let environment = RootViewEnvironment(app: app)
         let store = Store(
             initialState: RootViewState(
                 fab: .init(

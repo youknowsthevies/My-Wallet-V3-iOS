@@ -57,7 +57,7 @@ final class SessionStateTests: XCTestCase {
         let value = expectation(description: "did publish value")
         value.expectedFulfillmentCount = 2
 
-        let it = app.publisher(for: blockchain.app.deep_link.url)
+        let it = app.publisher(for: blockchain.app.process.deep_link.url)
             .sink { result in
                 switch result {
                 case .value:
@@ -69,8 +69,8 @@ final class SessionStateTests: XCTestCase {
                 }
             }
 
-        state.set(blockchain.app.deep_link.url, to: URL(string: "https://www.blockchain.com")!)
-        state.set(blockchain.app.deep_link.url, to: URL(string: "https://www.blockchain.com/app")!)
+        state.set(blockchain.app.process.deep_link.url, to: URL(string: "https://www.blockchain.com")!)
+        state.set(blockchain.app.process.deep_link.url, to: URL(string: "https://www.blockchain.com/app")!)
 
         wait(for: [value, error], timeout: 1)
 
