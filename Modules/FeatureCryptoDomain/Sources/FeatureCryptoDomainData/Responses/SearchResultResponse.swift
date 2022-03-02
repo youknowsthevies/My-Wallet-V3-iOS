@@ -12,12 +12,6 @@ struct SearchResultResponse: Equatable, Decodable {
 
     var suggestions: [SuggestionResponse]
     var searchedDomain: SearchedDomainResponse
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        suggestions = try container.decode([SuggestionResponse].self, forKey: .suggestions)
-        searchedDomain = try container.decode(SearchedDomainResponse.self, forKey: .searchedDomain)
-    }
 }
 
 extension SearchDomainResult {

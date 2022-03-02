@@ -9,10 +9,4 @@ struct SuggestionResponse: Equatable, Decodable {
 
     var price: Int?
     var name: String
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        price = try container.decodeIfPresent(Int.self, forKey: .price)
-        name = try container.decode(String.self, forKey: .name)
-    }
 }
