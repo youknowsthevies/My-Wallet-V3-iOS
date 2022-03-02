@@ -28,12 +28,14 @@ extension LocalizationConstants.Settings {
         }
 
         public static let mobileNumber = NSLocalizedString("Mobile Number", comment: "Mobile Number")
+        public static let cardIssuance = NSLocalizedString("Blockchain Debit Card", comment: "Blockchain Debit Card")
         public static let email = NSLocalizedString("Email", comment: "Email")
         public static let blockchainExchange = NSLocalizedString("Blockchain Exchange", comment: "Blockchain Exchange")
         public static let recoveryPhrase = NSLocalizedString("Backup Phrase", comment: "Backup phrase")
         public static let confirmed = NSLocalizedString("Confirmed", comment: "Confirmed")
         public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
         public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
+        public static let orderCard = NSLocalizedString("Order Card", comment: "Order Card")
         public static let expired = NSLocalizedString("Expired", comment: "Expired")
         public static let pending = NSLocalizedString("Pending", comment: "Pending")
         public static let inReview = NSLocalizedString("In Review", comment: "In Review")
