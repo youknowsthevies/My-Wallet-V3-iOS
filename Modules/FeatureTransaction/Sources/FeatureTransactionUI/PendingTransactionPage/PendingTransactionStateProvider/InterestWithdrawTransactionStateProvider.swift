@@ -50,7 +50,7 @@ final class InterestWithdrawTransactionStateProvider: PendingTransactionStatePro
                     cornerRadiusRatio: 0.5
                 )
             ),
-            effect: .close,
+            effect: .complete,
             primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
         )
     }

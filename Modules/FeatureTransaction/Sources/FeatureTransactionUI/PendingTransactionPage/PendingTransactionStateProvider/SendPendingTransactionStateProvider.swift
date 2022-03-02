@@ -59,7 +59,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                     cornerRadiusRatio: 0.5
                 )
             ),
-            effect: .close,
+            effect: .complete,
             primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }

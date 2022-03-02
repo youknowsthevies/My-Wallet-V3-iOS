@@ -6,11 +6,11 @@ struct PendingTransactionPageState {
 
     enum Effect {
 
-        /// Dismiss the pending screen.
+        /// Just dismiss the pending screen.
         case close
 
-        /// Show KYC upgrade prompt
-        case upgradeKYCTier
+        /// Do any final procedure and then close the pending screen
+        case complete
 
         /// Do nothing. This is usually only
         /// present when the screen is pending

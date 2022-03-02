@@ -124,7 +124,8 @@ private struct BenefitsView: View {
                 }
 
                 if viewStore.currentUserTier < targetTier {
-                    DefaultButton(title: L10n.cta) {
+                    let ctaTitle = targetTier.isGold ? L10n.cta_verified : L10n.cta_basic
+                    DefaultButton(title: ctaTitle) {
                         viewStore.send(.unlockButtonTapped(targetTier))
                     }
                     .colorCombination(colorScheme.ctaColorCombination)

@@ -17,6 +17,10 @@ struct TransactionState: StateType {
         var canPurchaseCrypto: Bool {
             tiers.canPurchaseCrypto(isSDDVerified: isSDDVerified)
         }
+
+        var canUpgradeTier: Bool {
+            tiers.canCompleteTier2
+        }
     }
 
     // MARK: Actual Transaction Data

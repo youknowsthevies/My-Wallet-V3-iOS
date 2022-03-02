@@ -42,7 +42,6 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         guard let destinationCurrency = state.destination?.currencyType else {
             impossible("Expected a destination to there for a transaction that has succeeded")
         }
-        let canUpgradeTier = canUpgradeTier(from: state.userKYCStatus?.tiers)
         return .init(
             title: LocalizationIds.Success.title,
             subtitle: String(
@@ -60,9 +59,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                     cornerRadiusRatio: 0.5
                 )
             ),
-            effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
-            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
+            effect: .complete,
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
         )
     }
 
@@ -95,8 +93,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     }
 
     private func pending(state: TransactionState) -> PendingTransactionPageState {
-        let canUpgradeTier = canUpgradeTier(from: state.userKYCStatus?.tiers)
-        return PendingTransactionPageState(
+        PendingTransactionPageState(
             title: LocalizationIds.Pending.title,
             subtitle: LocalizationIds.Pending.description,
             compositeViewType: .composite(
@@ -110,9 +107,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                     cornerRadiusRatio: 0.5
                 )
             ),
-            effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
-            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
+            effect: .complete,
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 
@@ -137,10 +133,5 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             effect: .close,
             primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
-    }
-
-    private func canUpgradeTier(from kycTiers: KYC.UserTiers?) -> Bool {
-        // Default to Tier 2 if needed so we don't show the upgrade prompt unnecessarily
-        (kycTiers?.latestApprovedTier ?? .tier2) < .tier2
     }
 }
