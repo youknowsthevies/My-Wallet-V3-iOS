@@ -233,3 +233,14 @@ extension AppProtocol {
 extension App {
     public var description: String { "App \(language.id)" }
 }
+
+extension App {
+    public convenience init() { self.init(remote: Mock.RemoteConfiguration()) }
+}
+
+#if DEBUG
+extension App {
+    public static var test: AppProtocol { App() }
+    public static var preview: AppProtocol = App()
+}
+#endif

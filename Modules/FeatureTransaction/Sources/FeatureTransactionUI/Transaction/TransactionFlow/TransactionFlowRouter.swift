@@ -363,6 +363,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
 
         let environment = OpenBankingEnvironment(
+            app: resolve(),
             dismiss: { [weak presenter] in
                 presenter?.dismiss()
             },

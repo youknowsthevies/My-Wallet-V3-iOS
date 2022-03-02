@@ -3,7 +3,6 @@
 import Combine
 import ComposableArchitecture
 import FeatureOpenBankingDomain
-import Session
 import SwiftUI
 import ToolKit
 import UIComponentsKit

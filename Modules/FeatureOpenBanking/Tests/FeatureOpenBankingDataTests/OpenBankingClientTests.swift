@@ -13,23 +13,21 @@ import TestKit
 
 final class OpenBankingTests: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBankingClient.test()
-    }
-
-    func test_create_bank_account_set_state_id() throws {
-        _ = try banking.createBankAccount().wait()
-        try XCTAssertEqual(banking.state.get(.id), Identity<OpenBanking.BankAccount>("a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"))
+        app = App.test
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
+        (banking, network) = OpenBankingClient.test(app: app)
     }
 
     func test_handle_consent_token_without_callback_path() throws {
-        banking.state.set(.consent.token, to: "token")
-        let error: OpenBanking.Error = try banking.state.get(.consent.error)
-        XCTAssertEqual(error, .state(.keyDoesNotExist(.callback.path)))
+        app.state.set(blockchain.ux.payment.method.open.banking.consent.token, to: "token")
+        let error: OpenBanking.Error = try app.state.result(for: blockchain.ux.payment.method.open.banking.consent.error).decode().get()
+        XCTAssertEqual(error, .namespace(.keyDoesNotExist(blockchain.ux.payment.method.open.banking.callback.path[].ref())))
     }
 
     func test_handle_consent_token_error() throws {
@@ -38,19 +36,19 @@ final class OpenBankingTests: XCTestCase {
             URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token")
         )
 
-        banking.state.transaction { state in
-            state.set(.callback.path, to: "/payments/banktransfer/one-time-token")
-            state.set(.consent.token, to: "token")
+        app.state.transaction { state in
+            state.set(blockchain.ux.payment.method.open.banking.callback.path, to: "/payments/banktransfer/one-time-token")
+            state.set(blockchain.ux.payment.method.open.banking.consent.token, to: "token")
         }
 
-        XCTAssertTrue(banking.state.contains(.consent.error))
-        try XCTAssertFalse(banking.state.get(.is.authorised))
+        XCTAssertTrue(app.state.contains(blockchain.ux.payment.method.open.banking.consent.error))
+        try XCTAssertFalse(XCTUnwrap(app.state.get(blockchain.ux.payment.method.open.banking.is.authorised) as? Bool))
     }
 
     func test_handle_consent_token() throws {
 
-        banking.state.set(.callback.path, to: "payments/banktransfer/one-time-token")
-        banking.state.set(.consent.token, to: "token")
+        app.state.set(blockchain.ux.payment.method.open.banking.callback.path, to: "payments/banktransfer/one-time-token")
+        app.state.set(blockchain.ux.payment.method.open.banking.consent.token, to: "token")
 
         let request = try network.requests[
             .post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token"
@@ -58,8 +56,8 @@ final class OpenBankingTests: XCTestCase {
 
         try XCTAssertEqual(request.body, ["oneTimeToken": "token"].data())
 
-        try XCTAssertTrue(banking.state.get(.is.authorised))
-        XCTAssertFalse(banking.state.contains(.consent.error))
+        try XCTAssertTrue(XCTUnwrap(app.state.get(blockchain.ux.payment.method.open.banking.is.authorised) as? Bool))
+        XCTAssertFalse(app.state.contains(blockchain.ux.payment.method.open.banking.consent.error))
     }
 
     func test_get_all() throws {
@@ -71,6 +69,7 @@ final class OpenBankingTests: XCTestCase {
 
 final class OpenBankingBankAccountTests: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
@@ -78,7 +77,9 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBankingClient.test()
+        app = App.test
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
+        (banking, network) = OpenBankingClient.test(app: app)
         bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
@@ -109,34 +110,30 @@ final class OpenBankingBankAccountTests: XCTestCase {
         let account = try bankAccount.get(in: banking).wait()
 
         XCTAssertEqual(account.id, bankAccount.id)
-        try XCTAssertEqual(account.attributes.authorisationUrl, banking.state.get(.authorisation.url))
+        try XCTAssertCastEqual(account.attributes.authorisationUrl, app.state.get(blockchain.ux.payment.method.open.banking.authorisation.url))
 
         XCTAssertEqual(account.attributes.callbackPath, "nabu-gateway/payments/banktransfer/one-time-token")
-        try XCTAssertEqual(banking.state.get(.callback.path), "/payments/banktransfer/one-time-token")
+        try XCTAssertCastEqual(app.state.get(blockchain.ux.payment.method.open.banking.callback.path), "/payments/banktransfer/one-time-token")
     }
 
     func test_activate_institution_clear_existing_state() throws {
 
-        banking.state.set(.authorisation.url, to: "url")
-        banking.state.set(.callback.path, to: "path")
+        app.state.set(blockchain.ux.payment.method.open.banking.authorisation.url, to: "url")
+        app.state.set(blockchain.ux.payment.method.open.banking.callback.path, to: "path")
 
         _ = try bankAccount.activateBankAccount(with: institution.id, in: banking).wait()
 
-        XCTAssertThrowsError(try banking.state.get(.authorisation.url))
-        XCTAssertThrowsError(try banking.state.get(.callback.path))
+        XCTAssertThrowsError(try app.state.get(blockchain.ux.payment.method.open.banking.authorisation.url))
+        XCTAssertThrowsError(try app.state.get(blockchain.ux.payment.method.open.banking.callback.path))
     }
 
     func test_delete() throws {
-
-        XCTAssertNoThrow(try banking.state.get(.id))
 
         let promise = expectation(description: "sunk")
         let subscription = bankAccount.delete(in: banking)
             .sink(to: XCTestExpectation.fulfill, on: promise)
 
         wait(for: [promise], timeout: 1)
-
-        XCTAssertThrowsError(try banking.state.get(.id))
 
         subscription.cancel()
 
@@ -174,13 +171,14 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
         XCTAssertEqual(payment.id, "b039317d-df85-413f-932d-2719346a839a")
 
-        try XCTAssertEqual(banking.state.get(.callback.path), "/payments/banktransfer/one-time-token")
+        try XCTAssertCastEqual(app.state.get(blockchain.ux.payment.method.open.banking.callback.path), "/payments/banktransfer/one-time-token")
         XCTAssertEqual(payment.attributes.callbackPath, "nabu-gateway/payments/banktransfer/one-time-token")
     }
 }
 
 final class OpenBankingBankAccountPollTests: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
@@ -190,7 +188,9 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBankingClient.test(using: scheduler)
+        app = App.test
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
+        (banking, network) = OpenBankingClient.test(app: app, using: scheduler)
         bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
@@ -289,7 +289,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
     func x_test_poll_realtime() throws {
 
-        (banking, network) = OpenBankingClient.test(using: DispatchQueue.main)
+        (banking, network) = OpenBankingClient.test(app: app, using: DispatchQueue.main)
 
         let request = get()
 
@@ -334,6 +334,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
 final class OpenBankingPaymentTests: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
@@ -343,14 +344,16 @@ final class OpenBankingPaymentTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBankingClient.test(using: scheduler)
+        app = App.test
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
+        (banking, network) = OpenBankingClient.test(app: app, using: scheduler)
         bankAccount = try banking.fetchAllBankAccounts().wait().first.unwrap()
         payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait()
     }
 
     func test_get() throws {
         _ = try payment.get(in: banking).wait()
-        XCTAssertNoThrow(try banking.state.get(.authorisation.url))
+        XCTAssertNoThrow(try app.state.get(blockchain.ux.payment.method.open.banking.authorisation.url))
     }
 
     func get() -> URLRequest {
@@ -453,4 +456,24 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         subscription.cancel()
     }
+}
+
+public func XCTAssertCastEqual<T>(
+    _ expression1: @autoclosure () throws -> T,
+    _ expression2: Any,
+    _ message: @autoclosure () -> String = "",
+    file: StaticString = #filePath,
+    line: UInt = #line
+) throws where T: Equatable {
+    try XCTAssertEqual(expression1(), XCTUnwrap(expression2 as? T), message(), file: file, line: line)
+}
+
+public func XCTAssertCastEqual<T>(
+    _ expression1: Any,
+    _ expression2: @autoclosure () throws -> T,
+    _ message: @autoclosure () -> String = "",
+    file: StaticString = #filePath,
+    line: UInt = #line
+) throws where T: Equatable {
+    try XCTAssertEqual(expression2(), XCTUnwrap(expression1 as? T), message(), file: file, line: line)
 }

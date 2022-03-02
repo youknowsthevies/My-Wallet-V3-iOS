@@ -1,6 +1,6 @@
 import Foundation
 import Lexicon
-import SwiftLexicon
+import SwiftStandAlone
 
 @main
 enum Main {
@@ -52,7 +52,7 @@ enum Main {
         let json = await lexicon.json()
 
         do {
-            let gen = try SwiftLexicon.Generator.generate(json)
+            let gen = try SwiftStandAlone.Generator.generate(json)
             let file = directory.appendingPathComponent("blockchain.swift")
             print("📄 Writing to", file.lastPathComponent, terminator: " ")
             try gen.write(to: file)

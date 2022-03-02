@@ -361,6 +361,42 @@ blockchain:
 				+ blockchain.ux.type.story
 				withdraw:
 				+ blockchain.ux.type.story
+		payment:
+			method:
+				open:
+					banking:
+						account:
+						+ blockchain.session.state.value
+						authorisation:
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.state.value
+						callback:
+							base:
+								url:
+								+ blockchain.db.type.url
+								+ blockchain.session.state.value
+							path:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						consent:
+							error:
+							+ blockchain.session.state.value
+							+ blockchain.ux.type.analytics.error
+							token:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						currency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.value
+						error:
+							code:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						is:
+							authorised:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
 		prices:
 		+ blockchain.ux.type.story
 		scan:
