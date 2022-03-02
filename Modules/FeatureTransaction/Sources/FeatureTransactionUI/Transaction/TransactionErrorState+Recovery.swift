@@ -276,6 +276,8 @@ extension TransactionErrorState {
     // swiftlint:disable:next cyclomatic_complexity
     private func transactionErrorDescription(for code: NabuErrorCode, action: AssetAction) -> String {
         switch code {
+        case .notFound:
+            return Localization.notFound
         case .orderBelowMinLimit:
             return String(format: Localization.tradingBelowMin, action.name)
         case .orderAboveMaxLimit:
@@ -320,6 +322,18 @@ extension TransactionErrorState {
             return Localization.cardInsufficientFunds
         case .cardBankDecline:
             return Localization.cardBankDecline
+        case .cardDuplicate:
+            return Localization.cardDuplicate
+        case .cardBlockchainDecline:
+            return Localization.cardBankDecline
+        case .cardAcquirerDecline:
+            return Localization.cardBankDecline
+        case .cardPaymentNotSupported:
+            return Localization.cardUnsupportedPaymentMethod
+        case .cardCreateFailed:
+            return Localization.cardCreateFailed
+        case .cardPaymentFailed:
+            return Localization.cardPaymentFailed
         default:
             return Localization.unknownError
         }

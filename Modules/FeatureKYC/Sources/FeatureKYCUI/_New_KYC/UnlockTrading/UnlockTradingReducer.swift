@@ -1,19 +1,27 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import PlatformKit
 
 struct UnlockTradingState: Equatable {
-    let viewModel: UnlockTradingViewModel
+
+    enum UpgradePath: Hashable {
+        case basic, verified
+    }
+
+    let currentUserTier: KYC.Tier
+    @BindableState var selectedUpgradePath: UpgradePath = .verified
 }
 
-enum UnlockTradingAction: Equatable {
+enum UnlockTradingAction: Equatable, BindableAction {
+    case binding(BindingAction<UnlockTradingState>)
     case closeButtonTapped
-    case unlockButtonTapped
+    case unlockButtonTapped(KYC.Tier)
 }
 
 struct UnlockTradingEnvironment {
     let dismiss: () -> Void
-    let unlock: () -> Void
+    let unlock: (KYC.Tier) -> Void
 }
 
 let unlockTradingReducer = Reducer<
@@ -23,10 +31,17 @@ let unlockTradingReducer = Reducer<
 > { _, action, environment in
     switch action {
     case .closeButtonTapped:
-        environment.dismiss()
+        return .fireAndForget {
+            environment.dismiss()
+        }
 
-    case .unlockButtonTapped:
-        environment.unlock()
+    case .unlockButtonTapped(let requiredTier):
+        return .fireAndForget {
+            environment.unlock(requiredTier)
+        }
+
+    case .binding:
+        return .none
     }
-    return .none
 }
+.binding()

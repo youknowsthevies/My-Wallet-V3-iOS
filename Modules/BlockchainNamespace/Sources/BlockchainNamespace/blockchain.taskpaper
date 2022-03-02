@@ -377,8 +377,6 @@ blockchain:
 							fiat:
 							+ blockchain.session.state.value
 							+ blockchain.type.money
-					code:
-					= id
 					receive:
 					+ blockchain.ux.transaction.type
 					+ blockchain.ux.type.story
@@ -400,8 +398,6 @@ blockchain:
 			fiat:
 				currency:
 				+ blockchain.db.collection
-					code:
-					= id
 					deposit:
 					+ blockchain.ux.type.story
 					withdraw:

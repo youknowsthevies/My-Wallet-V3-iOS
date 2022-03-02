@@ -80,8 +80,8 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                 UIHostingController(
                     rootView: ActionableView(
                         .init(
-                            media: .image(named: "icon-card"),
-                            overlay: .init(media: .image(named: "validation-error")),
+                            media: .image(named: "icon-card", in: .platformUIKit),
+                            overlay: .image(named: "validation-error", in: .platformUIKit),
                             title: title,
                             subtitle: LocalizationConstants.ErrorScreen.subtitle
                         ),
@@ -89,8 +89,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                             .init(title: LocalizationConstants.ErrorScreen.button) { [weak self] in
                                 self?.navigationController?.popToRootViewControllerAnimated(animated: true)
                             }
-                        ],
-                        in: .platformUIKit
+                        ]
                     )
                 ),
                 animated: true

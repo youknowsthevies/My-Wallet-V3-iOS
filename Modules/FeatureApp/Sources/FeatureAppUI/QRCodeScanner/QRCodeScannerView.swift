@@ -58,11 +58,10 @@ public struct QRCodeScannerView: UIViewControllerRepresentable {
                 rootView: PrimaryNavigationView {
                     ActionableView(
                         .init(
-                            media: .image(named: "circular-error-icon"),
+                            media: .image(named: "circular-error-icon", in: .platformUIKit),
                             title: LocalizationConstants.noCameraAccessTitle,
                             subtitle: LocalizationConstants.noCameraAccessMessage
-                        ),
-                        in: .platformUIKit
+                        )
                     )
                     .primaryNavigation(title: LocalizationConstants.scanQRCode) {
                         IconButton(icon: .closeCirclev2) {

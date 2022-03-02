@@ -34,7 +34,7 @@ let package = Package(
                 .product(name: "SwiftLexicon", package: "Lexicon")
             ],
             resources: [
-                .copy("blockchain.json")
+                .copy("blockchain.taskpaper")
             ]
         ),
         .target(
@@ -45,7 +45,10 @@ let package = Package(
         ),
         .testTarget(
             name: "BlockchainNamespaceTests",
-            dependencies: ["BlockchainNamespace"]
+            dependencies: ["BlockchainNamespace"],
+            resources: [
+                .copy("test.taskpaper")
+            ]
         ),
         .testTarget(
             name: "AnyCodingTests",

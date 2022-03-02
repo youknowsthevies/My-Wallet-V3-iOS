@@ -18,9 +18,15 @@ let accountPickerReducer = Reducer<
 > { state, action, environment in
     switch action {
 
-    case .rowsLoaded(.success(.accountPickerRowDidTap(let id))):
-        environment.rowSelected(id)
+    case .deselect:
+        state.selected = nil
         return .none
+
+    case .rowsLoaded(.success(.accountPickerRowDidTap(let id))):
+        state.selected = id
+        return .fireAndForget {
+            environment.rowSelected(id)
+        }
 
     case .prefetching(.fetch(indices: let indices)):
         guard case .loaded(.success(let rows)) = state.rows else {

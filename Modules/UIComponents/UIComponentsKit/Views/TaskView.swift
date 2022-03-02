@@ -67,7 +67,6 @@ public struct TaskView: View {
 
     public let task: Task
     private let lineage: [Task]
-    private let bundle: Bundle
 
     @State private var padding: EdgeInsets = .zero
 
@@ -75,16 +74,15 @@ public struct TaskView: View {
         self.init(task, lineage: [])
     }
 
-    public init(_ task: Task, lineage: [Task] = [], in bundle: Bundle = .main) {
+    public init(_ task: Task, lineage: [Task] = []) {
         self.task = task
         self.lineage = lineage
-        self.bundle = bundle
     }
 
     public var body: some View {
         Group {
             if let section = task.section?.plain {
-                SectionView(section, lineage: lineage + [task], in: bundle)
+                SectionView(section, lineage: lineage + [task])
             } else if let group = task.group {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(group.tasks, id: \.self) {
@@ -92,7 +90,7 @@ public struct TaskView: View {
                     }
                 }
             } else if let media = task.media {
-                MediaView(media, in: bundle)
+                MediaView(media)
                     .padding(padding)
             } else if let row = task.row {
                 HStack {
@@ -141,12 +139,10 @@ extension TaskView {
 
         @State private var padding: EdgeInsets = .zero
         @State private var isExpanded = true
-        private let bundle: Bundle
 
-        init(_ section: Task.Section.Plain, lineage: [Task], in bundle: Bundle = .main) {
+        init(_ section: Task.Section.Plain, lineage: [Task]) {
             self.lineage = lineage
             self.section = section
-            self.bundle = bundle
         }
 
         var body: some View {
@@ -184,7 +180,7 @@ extension TaskView {
                             Divider()
                                 .foregroundColor(.dividerLineLight)
                             ForEach(section.tasks, id: \.self) { task in
-                                TaskView(task, lineage: lineage, in: bundle)
+                                TaskView(task, lineage: lineage)
                                 if section.tasks.last != task {
                                     Divider()
                                         .foregroundColor(.dividerLineLight)

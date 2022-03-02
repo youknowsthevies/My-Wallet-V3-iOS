@@ -214,3 +214,7 @@ extension Tag.Reference {
         }
     }
 }
+
+extension Tag.Reference: CustomStringConvertible {
+    public var description: String { string }
+}

@@ -28,7 +28,7 @@ enum Main {
         let module = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-            .deletingLastPathComponent()
+            .appendingPathComponent("BlockchainNamespace")
 
         if FileManager.default.fileExists(
             atPath: cwd.appendingPathComponent("blockchain.taskpaper").path
@@ -37,11 +37,8 @@ enum Main {
         }
 
         if input == nil, output == nil {
-            input = module
-                .appendingPathComponent("blockchain.taskpaper")
+            input = module.appendingPathComponent("blockchain.taskpaper")
             output = module
-                .appendingPathComponent("Sources")
-                .appendingPathComponent("BlockchainNamespace")
         }
 
         guard let input = input else {
@@ -55,23 +52,15 @@ enum Main {
         let json = await lexicon.json()
 
         do {
-            let gen = try JSONClasses.generate(json)
-            let file = directory.appendingPathComponent("blockchain.json")
-            print("📄 Writing to", file.path, terminator: " ")
-            try gen.write(to: file)
-            print("✅")
-        }
-
-        do {
             let gen = try SwiftLexicon.Generator.generate(json)
             let file = directory.appendingPathComponent("blockchain.swift")
-            print("📄 Writing to", file.path, terminator: " ")
+            print("📄 Writing to", file.lastPathComponent, terminator: " ")
             try gen.write(to: file)
             print("✅")
         }
 
         do {
-            print("📄 Writing to", input.path, terminator: " ")
+            print("📄 Writing to", input.lastPathComponent, terminator: " ")
             try await TaskPaper.encode(lexicon.graph)
                 .write(to: input, atomically: true, encoding: .utf8)
             print("✅")

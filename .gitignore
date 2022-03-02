@@ -10,7 +10,6 @@
 *.der
 *.dSYM
 *.dSYM.zip
-*.generated.swift
 *.hmap
 *.ipa
 *.iws
@@ -75,7 +74,6 @@
 .idea_modules/
 .lock-wscript
 .LSOverride
-.mockingbird
 .next
 .node_repl_history
 .npm
@@ -119,8 +117,6 @@ jspm_packages/
 lerna-debug.log*
 lib-cov
 logs
-MockingbirdMocks/
-MockingbirdSupport/
 Network Trash Folder
 node_modules/
 npm-debug.log*
@@ -129,7 +125,6 @@ output/
 pids
 playground.xcworkspace
 profile
-project-desc.json
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 temp/
 Temporary Items
@@ -142,3 +137,10 @@ yarn-error.log*
 .swiftpm
 SourcePackages/
 PackageCache/
+
+# Mockingbird
+.mockingbird
+*.generated.swift
+MockingbirdMocks/
+MockingbirdSupport/
+MockingbirdProject.json

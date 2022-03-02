@@ -91,9 +91,6 @@ final class OpenBankingTests: XCTestCase {
 
         banking.state.set(.is.authorised, to: true)
 
-        guard actions.count == 2 else { return XCTFail("Expected 2 actions, got \(actions.count)") }
-        XCTAssertExtract(/OpenBanking.Action.success, from: actions[1])
-
         XCTAssertNotNil(
             network.requests[
                 .get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"

@@ -26,10 +26,10 @@ import UIKit
 public struct Icon: View, Hashable {
 
     public let name: String
-    let renderingMode: Image.TemplateRenderingMode
 
-    let circle: Bool
-    let circleColor: Color
+    fileprivate var renderingMode: Image.TemplateRenderingMode
+    fileprivate var circle: Bool
+    fileprivate var circleColor: Color
 
     init(
         name: String,
@@ -83,13 +83,17 @@ public struct Icon: View, Hashable {
 
 extension Icon {
 
+    public func renderingMode(_ renderingMode: Image.TemplateRenderingMode) -> Icon {
+        var newIcon = self
+        newIcon.renderingMode = renderingMode
+        return newIcon
+    }
+
     public func circle(backgroundColor: Color = .accentColor.opacity(0.15)) -> Icon {
-        .init(
-            name: name,
-            renderingMode: renderingMode,
-            circle: true,
-            circleColor: backgroundColor
-        )
+        var newIcon = self
+        newIcon.circle = true
+        newIcon.circleColor = backgroundColor
+        return newIcon
     }
 }
 

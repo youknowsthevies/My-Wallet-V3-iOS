@@ -233,7 +233,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         XCTAssertNil(result)
 
-        for _ in 0..<60 {
+        for _ in 0..<200 {
             scheduler.advance(by: .seconds(2))
         }
 
@@ -397,7 +397,7 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         XCTAssertNil(result)
 
-        for _ in 0..<62 {
+        for _ in 0..<200 {
             scheduler.advance(by: .seconds(2))
         }
 

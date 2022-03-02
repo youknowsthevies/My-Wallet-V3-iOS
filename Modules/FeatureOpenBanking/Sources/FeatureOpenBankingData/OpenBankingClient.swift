@@ -229,7 +229,7 @@ extension OpenBanking.BankAccount {
             get(in: banking)
         }
         .poll(
-            max: 60,
+            max: 200,
             until: { account in
                 guard account.error == nil else { return true }
                 return condition(account)
@@ -313,7 +313,7 @@ extension OpenBanking.Payment {
             get(in: banking)
         }
         .poll(
-            max: 60,
+            max: 200,
             until: { payment in
                 guard payment.error == nil else { return true }
                 return payment.extraAttributes?.authorisationUrl != nil
@@ -348,15 +348,16 @@ extension OpenBanking.Order {
             .eraseToAnyPublisher()
     }
 
-    public func poll(in banking: OpenBankingClient) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> {
+    public func poll(
+        in banking: OpenBankingClient,
+        until condition: @escaping (OpenBanking.Order) -> Bool
+    ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> {
         Deferred {
             get(in: banking)
         }
         .poll(
-            max: 60,
-            until: { payment in
-                payment.attributes?.authorisationUrl != nil
-            },
+            max: 200,
+            until: condition,
             delay: .seconds(2),
             scheduler: banking.scheduler
         )
@@ -414,8 +415,9 @@ extension OpenBankingClient: OpenBankingClientAPI {
     }
 
     public func poll(
-        order: OpenBanking.Order
+        order: OpenBanking.Order,
+        until condition: @escaping (OpenBanking.Order) -> Bool
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> {
-        order.poll(in: self)
+        order.poll(in: self, until: condition)
     }
 }

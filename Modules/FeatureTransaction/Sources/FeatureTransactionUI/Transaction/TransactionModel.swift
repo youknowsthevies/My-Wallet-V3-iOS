@@ -210,8 +210,8 @@ final class TransactionModel {
                 // For Buy, though we can simply use the amount we have in `previousState`, so the transaction ca be re-validated.
                 // This also fixes an issue where the enter amount screen has the "next" button disabled after user switches source account in Buy.
                 let newAmount: MoneyValue
-                if sourceAccount.currencyType == previousState.amount.currency {
-                    newAmount = previousState.amount
+                if let amount = previousState.pendingTransaction?.amount, previousState.action != .swap {
+                    newAmount = amount
                 } else {
                     newAmount = .zero(currency: sourceAccount.currencyType)
                 }
@@ -378,11 +378,9 @@ final class TransactionModel {
         // as this is done by the backend once the customer has authorised the payment via open banking
         // and we have submitted the consent token from the deep link
         switch source {
-        case let linkedBank as LinkedBankAccount
-            where linkedBank.isYapily:
+        case let linkedBank as LinkedBankAccount where linkedBank.isYapily:
             return Disposables.create()
-        case let paymentMethod as PaymentMethodAccount
-            where paymentMethod.isYapily:
+        case let paymentMethod as PaymentMethodAccount where paymentMethod.isYapily:
             return Disposables.create()
         default:
             break
@@ -476,11 +474,11 @@ final class TransactionModel {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
-            .do(onNext: { [weak self] pendingTransaction in
+            .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
-                self.onFirstUpdate(amount: pendingTransaction.amount)
+                self.onFirstUpdate(amount: amount)
             })
             .subscribe(
                 onNext: { [weak self] transaction in

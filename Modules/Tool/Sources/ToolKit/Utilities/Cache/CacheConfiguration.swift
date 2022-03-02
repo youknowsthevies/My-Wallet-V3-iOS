@@ -46,7 +46,17 @@ extension CacheConfiguration {
         CacheConfiguration(flushNotificationNames: [.login, .logout, .transaction, .dashboardPullToRefresh])
     }
 
+    public static func onLoginLogoutTransactionAndKYCStatusChanged() -> CacheConfiguration {
+        CacheConfiguration(flushNotificationNames: [.login, .logout, .transaction, .kycStatusChanged])
+    }
+
     public static func onLoginLogoutKYCChanged() -> CacheConfiguration {
         CacheConfiguration(flushNotificationNames: [.login, .logout, .kycStatusChanged])
+    }
+
+    public static func onUserStateChanged() -> CacheConfiguration {
+        CacheConfiguration(
+            flushNotificationNames: [.login, .logout, .kycStatusChanged, .transaction, .dashboardPullToRefresh]
+        )
     }
 }

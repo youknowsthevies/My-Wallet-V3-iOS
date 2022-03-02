@@ -1,8 +1,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureProductsDomain
 import Foundation
 import PlatformKit
+import ToolKit
 
 /// A protocol to fetch and monitor changes in `UserState`
 protocol UserAdapterAPI {
@@ -13,6 +15,14 @@ protocol UserAdapterAPI {
 
 // MARK: - UserAdapterAPI concrete implementation
 
+private typealias RawUserData = (
+    kycStatus: UserState.KYCStatus,
+    balanceData: UserState.BalanceData,
+    paymentMethods: [UserState.PaymentMethod],
+    hasEverPurchasedCrypto: Bool,
+    products: [Product]
+)
+
 final class UserAdapter: UserAdapterAPI {
 
     let userState: AnyPublisher<Result<UserState, UserStateError>, Never>
@@ -21,28 +31,38 @@ final class UserAdapter: UserAdapterAPI {
         coincore: CoincoreAPI,
         kycTiersService: KYCTiersServiceAPI,
         paymentMethodsService: PaymentMethodTypesServiceAPI,
+        productsService: ProductsServiceAPI,
         ordersService: OrdersServiceAPI
     ) {
-        userState = kycTiersService.kycStatusStream
+        let streams = kycTiersService.kycStatusStream
             .combineLatest(
+                coincore.balanceStream,
                 paymentMethodsService.paymentMethodsStream,
-                ordersService.hasPurchasedAnyCryptoStream,
-                coincore.balanceStream
+                ordersService.hasPurchasedAnyCryptoStream
             )
-            .map { kycStatusResult, paymentMethodsResult, hasEverPurchasedCryptoResult, balanceDataResult in
-                kycStatusResult.zip(
+            .combineLatest(productsService.productsStream)
+
+        userState = streams
+            .map { results -> Result<RawUserData, UserStateError> in
+                let (r1, r2) = results
+                let (kycStatusResult, balanceDataResult, paymentMethodsResult, hasEverPurchasedCryptoResult) = r1
+                let products = r2
+                return kycStatusResult.zip(
+                    balanceDataResult,
                     paymentMethodsResult,
                     hasEverPurchasedCryptoResult,
-                    balanceDataResult
+                    products
                 )
+                .map { $0 } // this makes the compiler happy by making a generic tuple be casted to RawUserData
             }
             .map { zippedResult -> Result<UserState, UserStateError> in
-                zippedResult.map { kycStatus, paymentMethods, hasEverPurchasedCrypto, balanceData in
+                zippedResult.map { kycStatus, balanceData, paymentMethods, hasEverPurchasedCrypto, products in
                     UserState(
                         kycStatus: kycStatus,
+                        balanceData: balanceData,
                         linkedPaymentMethods: paymentMethods,
                         hasEverPurchasedCrypto: hasEverPurchasedCrypto,
-                        balanceData: balanceData
+                        products: products
                     )
                 }
             }
@@ -116,6 +136,16 @@ extension OrdersServiceAPI {
         hasUserMadeAnyPurchases
             .mapError(UserStateError.missingPurchaseHistory)
             .mapToResult()
+    }
+}
+
+extension ProductsServiceAPI {
+
+    fileprivate var productsStream: AnyPublisher<Result<[Product], UserStateError>, Never> {
+        streamProducts().map { result in
+            result.mapError(UserStateError.missingProductsInfo)
+        }
+        .eraseToAnyPublisher()
     }
 }
 

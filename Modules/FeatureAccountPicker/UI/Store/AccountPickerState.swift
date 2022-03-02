@@ -17,6 +17,7 @@ struct AccountPickerState: Equatable {
     var currencyCodes: [AnyHashable: String]
 
     var prefetching = PrefetchingState(debounce: 0.25)
+    var selected: AccountPickerRow.ID?
 }
 
 struct Rows: Equatable {

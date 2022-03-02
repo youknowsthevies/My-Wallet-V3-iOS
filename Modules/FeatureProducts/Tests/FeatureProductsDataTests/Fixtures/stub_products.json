@@ -1,0 +1,24 @@
+{
+  "products": [
+    {
+      "id": "SWAP",
+      "canPlaceOrder": false,
+      "maxOrdersCap": 1,
+      "pendingOrders": 0,
+      "completedOrders": 0,
+      "suggestedUpgrade": {
+        "requiredTier": 2
+      }
+    },
+    {
+      "id": "BUY",
+      "canPlaceOrder": false,
+      "maxOrdersCap": 1,
+      "pendingOrders": 0,
+      "completedOrders": 0,
+      "suggestedUpgrade": {
+        "requiredTier": 2
+      }
+    }
+  ]
+}

@@ -288,15 +288,17 @@ public class Router: Routing {
         guard requiredTier > .tier0 else {
             return .just(.completed)
         }
+        let presentClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
         return kycService
             .fetchTiers()
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
-            .flatMap { [presentPromptToUnlockMoreTrading] userTiers -> AnyPublisher<FlowResult, RouterError> in
-                guard userTiers.latestApprovedTier < requiredTier else {
+            .flatMap { userTiers -> AnyPublisher<FlowResult, RouterError> in
+                let currentTier = userTiers.latestApprovedTier
+                guard currentTier < requiredTier else {
                     return .just(.completed)
                 }
-                return presentPromptToUnlockMoreTrading(presenter)
+                return presentClosure(presenter, currentTier)
                     .mapError()
             }
             .eraseToAnyPublisher()
@@ -305,12 +307,26 @@ public class Router: Routing {
     public func presentPromptToUnlockMoreTrading(
         from presenter: UIViewController
     ) -> AnyPublisher<FlowResult, Never> {
+        let presentClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
+        return kycService
+            .fetchTiers()
+            .map(\.latestApprovedTier)
+            .replaceError(with: .tier0)
+            .receive(on: DispatchQueue.main)
+            .flatMap { currentTier -> AnyPublisher<FlowResult, Never> in
+                presentClosure(presenter, currentTier)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func presentPromptToUnlockMoreTrading(
+        from presenter: UIViewController,
+        currentUserTier: KYC.Tier
+    ) -> AnyPublisher<FlowResult, Never> {
         let publisher = PassthroughSubject<FlowResult, Never>()
         let view = UnlockTradingView(
             store: .init(
-                initialState: UnlockTradingState(
-                    viewModel: .unlockGoldTier
-                ),
+                initialState: UnlockTradingState(currentUserTier: currentUserTier),
                 reducer: unlockTradingReducer,
                 environment: UnlockTradingEnvironment(
                     dismiss: {
@@ -319,10 +335,18 @@ public class Router: Routing {
                             publisher.send(completion: .finished)
                         }
                     },
-                    unlock: { [routeToKYC] in
-                        routeToKYC(presenter, .tier2) { result in
+                    unlock: { [routeToKYC] requiredTier in
+                        routeToKYC(presenter, requiredTier) { result in
+                            // KYC is presented on top of prompt. Only dismiss KYC.
+                            // KYC id dismissed automatically.
+                            // When the kyc flow is abandoned, we don't complete
+                            // so users have another shot at going through it
+                            guard case .completed = result else {
+                                return
+                            }
                             presenter.dismiss(animated: true) {
-                                publisher.send(result)
+                                publisher.send(.completed)
+                                publisher.send(completion: .finished)
                             }
                         }
                     }

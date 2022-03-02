@@ -1,23 +1,14 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+set -eu
 
-LIB_NAME="AnalyticsKit"
+cd "$(dirname "$0")/.."
 
-# Pipe project json to file.
-echo "\n"
-echo "Generating project '${LIB_NAME}' description."
-swift package describe --type json >project-desc.json
+swift package describe --type json > MockingbirdProject.json
 
-echo "\n"
-echo "Replace 'target_dependencies' -> 'dependencies."
-sed -i '' 's/target_dependencies/dependencies/g' "project-desc.json"
+MOCKINGBIRD_PATH="../../SourcePackages/checkouts/mockingbird/mockingbird"
 
-echo "\n"
-echo "Generating project '${LIB_NAME}' mocks."
-mockingbird generate \
-  --target "${LIB_NAME}" \
-  --testbundle "${LIB_NAME}Tests" \
-  --project project-desc.json \
+"${MOCKINGBIRD_PATH}" generate --project MockingbirdProject.json \
+  --output-dir Tests/AnalyticsKitTests \
+  --targets AnalyticsKit \
+  --only-protocols \
   --disable-swiftlint
-
-mv "MockingbirdMocks/${LIB_NAME}Mocks.generated.swift" "Tests/${LIB_NAME}Tests"

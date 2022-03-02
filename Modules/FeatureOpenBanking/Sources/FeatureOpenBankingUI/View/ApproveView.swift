@@ -108,8 +108,7 @@ public struct ApproveView: View {
                             overlay: .init(media: .error),
                             title: Localization.Error.title,
                             subtitle: Localization.Error.subtitle
-                        ),
-                        in: .openBanking
+                        )
                     )
                 }
             }

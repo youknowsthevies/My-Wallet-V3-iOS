@@ -165,6 +165,8 @@ private struct SearchBar: UIViewRepresentable {
         uiView.text = text
         if isActive {
             uiView.becomeFirstResponder()
+        } else {
+            uiView.resignFirstResponder()
         }
     }
 
@@ -193,6 +195,10 @@ private struct SearchBar: UIViewRepresentable {
 
         func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
             searchBar.setShowsCancelButton(false, animated: true)
+            isActive = false
+        }
+
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
             isActive = false
         }
 

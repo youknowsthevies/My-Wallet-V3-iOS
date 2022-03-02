@@ -10,10 +10,10 @@ extension Bundle {
 
 extension Media {
     static let inherited: Media = .empty
-    static let blockchainLogo: Media = .image(named: "blockchain")
-    static let bankIcon: Media = .image(named: "bank")
-    static let success: Media = .image(named: "success")
-    static let error: Media = .image(named: "warning")
-    static let clock: Media = .image(named: "clock")
-    static let cross: Media = .image(named: "cross")
+    static let blockchainLogo: Media = .image(named: "blockchain", in: .openBanking)
+    static let bankIcon: Media = .image(named: "bank", in: .openBanking)
+    static let success: Media = .image(named: "success", in: .openBanking)
+    static let error: Media = .image(named: "warning", in: .openBanking)
+    static let clock: Media = .image(named: "clock", in: .openBanking)
+    static let cross: Media = .image(named: "cross", in: .openBanking)
 }
