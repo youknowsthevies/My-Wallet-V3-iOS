@@ -141,7 +141,7 @@ struct SearchCryptoDomainView: View {
     }
 }
 
- struct SearchCryptoDomainView_Previews: PreviewProvider {
+struct SearchCryptoDomainView_Previews: PreviewProvider {
     static var previews: some View {
         SearchCryptoDomainView(
             store: .init(
@@ -177,4 +177,4 @@ struct SearchCryptoDomainView: View {
             )
         )
     }
- }
+}

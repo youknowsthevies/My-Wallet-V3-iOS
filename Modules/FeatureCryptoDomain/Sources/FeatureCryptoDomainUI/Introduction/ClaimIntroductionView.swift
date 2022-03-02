@@ -175,7 +175,7 @@ struct ClaimIntroductionView: View {
     }
 }
 
- struct ClaimIntroductionView_Previews: PreviewProvider {
+struct ClaimIntroductionView_Previews: PreviewProvider {
     static var previews: some View {
         ClaimIntroductionView(
             store: .init(
@@ -188,4 +188,4 @@ struct ClaimIntroductionView: View {
             )
         )
     }
- }
+}
