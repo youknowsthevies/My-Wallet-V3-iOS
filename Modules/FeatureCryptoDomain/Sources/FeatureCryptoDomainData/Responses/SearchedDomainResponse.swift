@@ -3,28 +3,11 @@
 import Foundation
 
 struct SearchedDomainResponse: Equatable, Decodable {
-
-    private enum CodingKeys: String, CodingKey {
-        case domain
-        case availability
-    }
-
     var domain: DomainResponse
     var availability: AvailabilityResponse
 }
 
 struct DomainResponse: Equatable, Decodable {
-
-    private enum CodingKeys: String, CodingKey {
-        case node
-        case registryAddress
-        case blockchain
-        case freeToClaim
-        case id
-        case networkId
-        case name
-    }
-
     var node: String?
     var registryAddress: String?
     var blockchain: String?
@@ -35,15 +18,6 @@ struct DomainResponse: Equatable, Decodable {
 }
 
 struct AvailabilityResponse: Equatable, Decodable {
-
-    private enum CodingKeys: String, CodingKey {
-        case price
-        case registered
-        case protected
-        case availableForFree
-        case test
-    }
-
     var price: Int?
     var registered: Bool
     var protected: Bool

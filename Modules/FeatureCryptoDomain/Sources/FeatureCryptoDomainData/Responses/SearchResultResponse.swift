@@ -4,12 +4,6 @@ import FeatureCryptoDomainDomain
 import Foundation
 
 struct SearchResultResponse: Equatable, Decodable {
-
-    private enum CodingKeys: String, CodingKey {
-        case suggestions
-        case searchedDomain
-    }
-
     var suggestions: [SuggestionResponse]
     var searchedDomain: SearchedDomainResponse
 }
