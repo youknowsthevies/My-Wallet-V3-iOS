@@ -14,7 +14,8 @@ public enum QRCodeScannerResultError: Error {
 public final class QRCodeScannerViewControllerBuilder {
     public typealias CompletionHandler = ((Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void)
 
-    private var scanner: QRCodeScanner? = QRCodeScanner()
+    private var scanner: QRCodeScanner = QRCodeScanner()
+    private var alertViewPresenter: AlertViewPresenter = resolve()
     private var loadingViewPresenter: LoadingViewPresenting = resolve()
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
@@ -60,17 +61,19 @@ public final class QRCodeScannerViewControllerBuilder {
     /// - Returns: A `UIViewController` or `nil` if the app don't have access to the camera,
     /// an alert will show up automatically asking the user to change the app settings
     public func build() -> UIViewController? {
-        guard let scanner = scanner else { return nil }
 
         let viewModel = QRCodeScannerViewModel(
             types: types,
             additionalParsingOptions: additionalParsingOptions,
             supportsCameraRoll: supportsCameraRoll,
             scanner: scanner,
-            completed: completed
+            completed: completed,
+            requestCameraAccess: deviceInputRequest,
+            checkCameraAccess: hasAccessToCamera
         )
 
         let scannerViewController = QRCodeScannerViewController(
+            alertViewPresenter: alertViewPresenter,
             presentationType: presentationType,
             viewModel: viewModel
         )

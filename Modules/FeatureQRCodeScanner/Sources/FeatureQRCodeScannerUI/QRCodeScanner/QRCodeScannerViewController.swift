@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
 import DIKit
 import FeatureQRCodeScannerDomain
 import PlatformKit
 import PlatformUIKit
+import SwiftUI
 import ToolKit
 import UIKit
 
@@ -29,7 +31,12 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
     private let viewModel: QRCodeScannerViewModelProtocol
     private let presentationType: QRCodePresentationType
 
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting(ignoresBackgroundTouches: true)
+    }()
+
     init(
+        alertViewPresenter: AlertViewPresenter,
         presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
         viewModel: QRCodeScannerViewModelProtocol
     ) {
@@ -68,8 +75,22 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             self?.showImagePicker()
         }
 
-        self.viewModel.showInformationSheet = { [weak self] in
-            // TODO
+        self.viewModel.showInformationSheetTapped = { [weak self] informationalOnly in
+            self?.showAllowAccessSheet(informationalOnly: informationalOnly)
+        }
+
+        self.viewModel.cameraConfigured = { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.startReadingQRCode(from: self.scannerView)
+            self.scannerView?.startReadingQRCode()
+        }
+
+        self.viewModel.showCameraAccessFailure = { [weak self] title, message in
+            self?.showAlert(title: title, message: message)
+        }
+
+        self.viewModel.showCameraNotAuthorizedAlert = { [alertViewPresenter] in
+            alertViewPresenter.showNeedsCameraPermissionAlert()
         }
     }
 
@@ -101,7 +122,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         }
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "info"),
+            image: UIImage(named: "info", in: .featureQRCodeScannerUI, with: nil),
             style: .plain,
             target: self,
             action: #selector(informationButtonClicked)
@@ -110,8 +131,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.startReadingQRCode(from: scannerView)
-        scannerView?.startReadingQRCode()
+        viewModel.viewDidAppear()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -160,6 +180,36 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         pickerController.mediaTypes = ["public.image"]
         pickerController.sourceType = .photoLibrary
         present(pickerController, animated: true, completion: nil)
+    }
+
+    private func showAllowAccessSheet(informationalOnly: Bool) {
+        let environment = AllowAccessEnvironment(
+            allowCameraAccess: { [viewModel] in
+                viewModel.allowCameraAccess()
+            },
+            dismiss: { [weak self] in
+                self?.dismiss(animated: true, completion: nil)
+            }
+        )
+        let allowAccessStore = Store(
+            initialState: AllowAccessState(informationalOnly: informationalOnly),
+            reducer: qrScannerAllowAccessReducer,
+            environment: environment
+        )
+        let view = QRCodeScannerAllowAccessView(store: allowAccessStore)
+        let hostingController = UIHostingController(rootView: view)
+        hostingController.transitioningDelegate = sheetPresenter
+        hostingController.modalPresentationStyle = .custom
+        present(hostingController, animated: true, completion: nil)
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        present(alertController, animated: true, completion: nil)
     }
 }
 
