@@ -36,6 +36,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Card Issuance
     case cardIssuance
 
+    /// Enables Blockchain Domains
+    case blockchainDomains
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -50,6 +53,8 @@ public enum InternalFeature: String, CaseIterable {
              .redesignCoinView,
              .cardIssuance:
             return false
+        case .blockchainDomains:
+            return true
         }
     }
 }
@@ -83,6 +88,8 @@ extension InternalFeature {
             return "Redesign: CoinView"
         case .cardIssuance:
             return "Card Issuance"
+        case .blockchainDomains:
+            return "Blockchain Domains"
         }
     }
 }

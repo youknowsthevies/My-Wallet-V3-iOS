@@ -19,6 +19,16 @@ import WalletPayloadKit
 /// By creating a list of pending announcements, on which subscribers can be informed.
 final class AnnouncementPresenter {
 
+    // MARK: - Rx
+
+    /// Returns a driver with `.none` as default value for announcement action
+    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
+    var announcement: Driver<AnnouncementDisplayAction> {
+        announcementRelay
+            .asDriver()
+            .distinctUntilChanged()
+    }
+
     // MARK: Services
 
     private let tabSwapping: TabSwapping
@@ -43,18 +53,10 @@ final class AnnouncementPresenter {
     private let accountsRouter: AccountsRouting
     private let featureFlagService: FeatureFlagsServiceAPI
 
-    // MARK: - Rx
-
-    /// Returns a driver with `.none` as default value for announcement action
-    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
-    var announcement: Driver<AnnouncementDisplayAction> {
-        announcementRelay
-            .asDriver()
-            .distinctUntilChanged()
-    }
-
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
+
+    private var claimFreeDomainEnabled: Atomic<Bool> = .init(false)
 
     private var currentAnnouncement: Announcement?
 
@@ -114,6 +116,12 @@ final class AnnouncementPresenter {
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
+        featureFlagService
+            .enable(.local(.blockchainDomains))
+            .sink { [weak self] enabled in
+                self?.claimFreeDomainEnabled.mutate { $0 = enabled }
+            }
+            .store(in: &cancellables)
     }
 
     /// Refreshes announcements on demand
@@ -158,6 +166,10 @@ final class AnnouncementPresenter {
 
             let announcement: Announcement
             switch type {
+            case .claimFreeCryptoDomain:
+                if claimFreeDomainEnabled {
+                    announcement = claimFreeCryptoDomainAnnoucement
+                }
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
@@ -506,6 +518,18 @@ extension AnnouncementPresenter {
                     url: "https://support.blockchain.com/hc/en-us/articles/360046143432",
                     from: topMostViewController
                 )
+            }
+        )
+    }
+
+    /// Claim Free Crypto Domain Annoucement for eligible users
+    private var claimFreeCryptoDomainAnnoucement: Announcement {
+        ClaimFreeCryptoDomainAnnoucement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                guard let self = self else { return }
             }
         )
     }
