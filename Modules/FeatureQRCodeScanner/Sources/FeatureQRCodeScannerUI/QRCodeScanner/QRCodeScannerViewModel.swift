@@ -268,6 +268,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         case .success(let input):
             scanner.configure(with: input)
             cameraConfigured?()
+            // displays the informational bottom sheet
+            // if not seen before and have already auth'd the camera access
             showAllowAccessSheetIfNeeded()
         case .failure(.notAuthorized):
             showCameraNotAuthorizedAlert?()

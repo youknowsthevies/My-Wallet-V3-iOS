@@ -17,7 +17,7 @@ struct QRCodeScannerAllowAccessView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(alignment: .center, spacing: Spacing.padding3) {
+            VStack(alignment: .center) {
                 ZStack {
                     indicator
                         .padding(.vertical, Spacing.padding1)
@@ -29,12 +29,13 @@ struct QRCodeScannerAllowAccessView: View {
                 }
                 scannerHeader
                 scannerList
-                Spacer()
                 if !viewStore.informationalOnly {
+                    Spacer()
                     PrimaryButton(title: LocalizedString.buttonTitle) {
                         viewStore.send(.allowCameraAccess)
                     }
                     .padding([.leading, .trailing], Spacing.padding3)
+                    .padding([.top, .bottom], Spacing.padding2)
                     .accessibility(identifier: Accessibility.ctaButton)
                 }
             }
@@ -50,7 +51,7 @@ struct QRCodeScannerAllowAccessView: View {
     }
 
     private var scannerHeader: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .top) {
             Text(LocalizedString.title)
                 .typography(.body2)
                 .accessibility(identifier: Accessibility.headerTitle)
@@ -60,7 +61,7 @@ struct QRCodeScannerAllowAccessView: View {
     }
 
     private var scannerList: some View {
-        VStack(alignment: .center, spacing: 10) {
+        VStack(alignment: .center, spacing: 0) {
             PrimaryRow(
                 title: LocalizedString.ScanQRPoint.title,
                 subtitle: LocalizedString.ScanQRPoint.description,
