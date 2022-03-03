@@ -1,6 +1,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import DIKit
 import FeatureCoinData
@@ -15,6 +16,8 @@ import SwiftUI
 struct CoinAdapterView: View {
     let store: Store<CoinViewState, CoinViewAction>
 
+    let currency: CryptoCurrency
+    var app: AppProtocol = resolve()
     var networkAdapter: NetworkAdapterAPI = resolve()
     var userAdapter: UserAdapterAPI = resolve()
     var coincore: CoincoreAPI = resolve()
@@ -23,12 +26,14 @@ struct CoinAdapterView: View {
     var historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve()
 
     init(cryptoCurrency: CryptoCurrency) {
+        currency = cryptoCurrency
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
                 assetDetails: AssetDetails(cryptoCurrency: cryptoCurrency)
             ),
             reducer: coinViewReducer,
             environment: CoinViewEnvironment(
+                app: app,
                 kycStatusProvider: { [userAdapter] in
                     userAdapter.userState
                         .compactMap { result -> UserState.KYCStatus? in
@@ -66,6 +71,26 @@ struct CoinAdapterView: View {
     var body: some View {
         PrimaryNavigationView {
             CoinView(store: store)
+                .on(blockchain.ux.asset.buy) { event in
+                    print("🐢 BUY", event.ref)
+                }
+                .on(blockchain.ux.asset.sell) { event in
+                    print("🐢 SELL", event.ref)
+                }
+                .on(blockchain.ux.asset.receive) { event in
+                    print("🐢 RECEIVE", event.ref)
+                }
+                .on(blockchain.ux.asset.send) { event in
+                    print("🐢 SEND", event.ref)
+                }
+                .on(blockchain.ux.asset.account.receive) { event in
+                    print("🐢 ALL", event.ref)
+                }
+                .on(blockchain.ux.asset.account.receive[].ref(to: [blockchain.ux.asset.account.id: "CryptoInterestAccount.ETH"])) { event in
+                    print("🐢 INTEREST ONLY", event.ref)
+                }
+                .app(app)
+                .context([blockchain.ux.asset.id: currency.code])
         }
     }
 }

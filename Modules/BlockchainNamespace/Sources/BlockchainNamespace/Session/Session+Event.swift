@@ -7,7 +7,7 @@ extension Session {
 
     public typealias Events = PassthroughSubject<Session.Event, Never>
 
-    public struct Event: Identifiable {
+    public struct Event: Identifiable, Hashable {
 
         public let id: UInt
         public let date: Date
@@ -21,6 +21,14 @@ extension Session {
             self.date = date
             self.ref = ref
             self.context = context
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.id == rhs.id
         }
     }
 }
@@ -39,15 +47,15 @@ extension Session.Event {
 extension Publisher where Output == Session.Event {
 
     public func filter(_ type: L) -> Publishers.Filter<Self> {
-        filter { $0.tag.is(type) }
+        filter(type[])
     }
 
     public func filter(_ type: Tag) -> Publishers.Filter<Self> {
-        filter { $0.tag.is(type) }
+        filter(type.ref())
     }
 
     public func filter(_ type: Tag.Reference) -> Publishers.Filter<Self> {
-        filter { $0.ref == type }
+        filter { event in event.ref.matches(type) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
@@ -55,6 +63,34 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
-        filter { types.contains($0.ref) }
+        filter { event in types.contains(where: { type in event.ref.matches(type) }) }
+    }
+}
+
+extension Tag.Reference {
+
+    func matches(_ other: Tag.Reference) -> Bool {
+        if self == other { return true }
+        guard tag.is(other.tag) else { return false }
+        return indices.pairs().isSuperset(of: other.context.filterValues(String.self).pairs())
+    }
+}
+
+extension Dictionary {
+
+    func filterValues<T>(_ type: T.Type) -> [Key: T] {
+        compactMapValues { $0 as? T }
+    }
+}
+
+extension Dictionary where Value: Hashable {
+
+    struct Pair: Hashable {
+        let key: Key
+        let value: Value
+    }
+
+    func pairs() -> Set<Pair> {
+        map(Pair.init).set
     }
 }

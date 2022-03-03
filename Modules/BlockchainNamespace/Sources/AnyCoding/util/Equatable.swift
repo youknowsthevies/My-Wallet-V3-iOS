@@ -51,6 +51,16 @@ extension Dictionary: AnyEquatable {
 extension Array: AnyEquatable {
     fileprivate static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         guard let l = lhs as? [Element], let r = rhs as? [Element] else { return false }
-        return zip(l.array, r.array).allSatisfy(isEqual)
+        return zip(l, r).allSatisfy(isEqual)
+    }
+}
+
+extension Anything: AnyEquatable {
+
+    fileprivate static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+        isEqual(
+            (lhs as? Anything)?.__unwrapped ?? lhs,
+            (rhs as? Anything)?.__unwrapped ?? rhs
+        )
     }
 }

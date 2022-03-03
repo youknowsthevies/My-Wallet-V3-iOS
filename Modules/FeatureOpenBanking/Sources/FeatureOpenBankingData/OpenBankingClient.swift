@@ -231,7 +231,7 @@ extension OpenBanking.BankAccount {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: { account in
                 guard account.error == nil else { return true }
                 return condition(account)
@@ -312,7 +312,7 @@ extension OpenBanking.Payment {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: { payment in
                 guard payment.error == nil else { return true }
                 return payment.extraAttributes?.authorisationUrl != nil
@@ -361,7 +361,7 @@ extension OpenBanking.Order {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: condition,
             delay: .seconds(2),
             scheduler: banking.scheduler

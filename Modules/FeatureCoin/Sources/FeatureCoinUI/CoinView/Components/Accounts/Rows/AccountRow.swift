@@ -1,12 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import FeatureCoinDomain
 import MoneyKit
 import SwiftUI
 
 struct AccountRow: View {
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
+
     let account: Account
     let assetColor: Color
     let action: () -> Void
@@ -36,6 +41,9 @@ struct AccountRow: View {
             trailingTitle: fiatValue,
             trailingDescription: cryptoValue,
             trailingDescriptionColor: .semantic.muted,
+            action: {
+                app.post(event: blockchain.ux.asset.account.receive, context: context)
+            },
             leading: {
                 account.accountType.icon
                     .accentColor(assetColor)

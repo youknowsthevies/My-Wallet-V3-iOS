@@ -181,6 +181,14 @@ public final class OpenBanking {
                     return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                 }
             }
+            .catch { error -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
+                switch error {
+                case .timeout:
+                    return .just(order)
+                default:
+                    return .failure(error)
+                }
+            }
             .map(Action.waitingForConsent(.confirmed(order)))
             .catch(Action.failure)
             .eraseToAnyPublisher()

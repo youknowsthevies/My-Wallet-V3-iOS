@@ -65,7 +65,7 @@ final class BankLinkTests: OpenBankingTestCase {
         scheduler.advance(by: .seconds(1))
 
         store.send(.failure(.timeout)) { [self] state in
-            state.ui = .error(.timeout, in: environment)
+            state.ui = .pending()
             state.showActions = true
         }
         store.send(.cancel)
@@ -90,7 +90,6 @@ final class BankLinkTests: OpenBankingTestCase {
             state.ui = .linked(institution: state.name)
             state.showActions = true
         }
-        store.receive(.cancel)
 
         XCTAssertEqual(openedURL, url)
     }
@@ -180,6 +179,5 @@ final class BankPaymentTests: OpenBankingTestCase {
             state.ui = .deposit(success: details, in: environment)
             state.showActions = true
         }
-        store.receive(.cancel)
     }
 }

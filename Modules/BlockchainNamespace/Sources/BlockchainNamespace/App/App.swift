@@ -11,6 +11,10 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     var events: Session.Events { get }
     var state: Session.State { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
+
+    #if canImport(SwiftUI)
+    var environmentObject: App.EnvironmentObject { get }
+    #endif
 }
 
 public class App: AppProtocol, CustomStringConvertible {
@@ -20,6 +24,10 @@ public class App: AppProtocol, CustomStringConvertible {
     public let events: Session.Events
     public let state: Session.State
     public let remoteConfiguration: Session.RemoteConfiguration
+
+    #if canImport(SwiftUI)
+    public lazy var environmentObject = App.EnvironmentObject(self)
+    #endif
 
     internal lazy var deepLinks = DeepLink(self)
 
@@ -103,7 +111,7 @@ extension AppProtocol {
     }
 
     public func post(event tag: Tag, context: Tag.Context = [:]) {
-        post(event: tag.ref(in: self), context: context)
+        post(event: tag.ref(to: context, in: self), context: context)
     }
 
     public func post(event ref: Tag.Reference, context: Tag.Context = [:]) {
@@ -169,7 +177,7 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag {
-        events.filter(tags).eraseToAnyPublisher()
+        on(tags.map(\.ref))
     }
 
     public func on(

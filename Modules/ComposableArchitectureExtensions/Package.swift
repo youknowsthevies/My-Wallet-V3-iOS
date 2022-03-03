@@ -26,7 +26,12 @@ let package = Package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
         ),
-        .package(path: "../BlockchainComponentLibrary")
+        .package(
+            url: "https://github.com/pointfreeco/swift-custom-dump",
+            from: "0.3.0"
+        ),
+        .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace")
     ],
     targets: [
         .target(
@@ -34,7 +39,9 @@ let package = Package(
             dependencies: [
                 .target(name: "ComposableNavigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Algorithms", package: "swift-algorithms")
+                .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "CustomDump", package: "swift-custom-dump")
             ],
             exclude: [
                 "Prefetching/README.md"
@@ -44,7 +51,8 @@ let package = Package(
             name: "ComposableNavigation",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
             ],
             exclude: [
                 "README.md"

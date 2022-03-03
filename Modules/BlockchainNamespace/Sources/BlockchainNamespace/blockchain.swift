@@ -1194,6 +1194,7 @@ public extension I_blockchain_ux_asset {
 	var `receive`: L_blockchain_ux_asset_receive { .init("\(__).receive") }
 	var `recurring`: L_blockchain_ux_asset_recurring { .init("\(__).recurring") }
 	var `sell`: L_blockchain_ux_asset_sell { .init("\(__).sell") }
+	var `send`: L_blockchain_ux_asset_send { .init("\(__).send") }
 }
 public final class L_blockchain_ux_asset_account: L, I_blockchain_ux_asset_account {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account", comment: "") }
@@ -1215,15 +1216,15 @@ public extension I_blockchain_ux_asset_account {
 public final class L_blockchain_ux_asset_account_activity: L, I_blockchain_ux_asset_account_activity {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.activity", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_activity: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_activity: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_buy: L, I_blockchain_ux_asset_account_buy {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.buy", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_buy: I {}
+public protocol I_blockchain_ux_asset_account_buy: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_deposit: L, I_blockchain_ux_asset_account_deposit {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.deposit", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_deposit: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_deposit: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_explainer: L, I_blockchain_ux_asset_account_explainer {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.explainer", comment: "") }
 }
@@ -1238,7 +1239,7 @@ public protocol I_blockchain_ux_asset_account_explainer_accept: I {}
 public final class L_blockchain_ux_asset_account_receive: L, I_blockchain_ux_asset_account_receive {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.receive", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_receive: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_receive: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_require: L, I_blockchain_ux_asset_account_require {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.require", comment: "") }
 }
@@ -1253,11 +1254,11 @@ public protocol I_blockchain_ux_asset_account_require_KYC: I_blockchain_ui_type_
 public final class L_blockchain_ux_asset_account_sell: L, I_blockchain_ux_asset_account_sell {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.sell", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_sell: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_sell: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_send: L, I_blockchain_ux_asset_account_send {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.send", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_send: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_send: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_summary: L, I_blockchain_ux_asset_account_summary {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.summary", comment: "") }
 }
@@ -1265,11 +1266,11 @@ public protocol I_blockchain_ux_asset_account_summary: I_blockchain_ux_type_stor
 public final class L_blockchain_ux_asset_account_swap: L, I_blockchain_ux_asset_account_swap {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.swap", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_swap: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_swap: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_account_withdraw: L, I_blockchain_ux_asset_account_withdraw {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.withdraw", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account_withdraw: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account_withdraw: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_bio: L, I_blockchain_ux_asset_bio {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.bio", comment: "") }
 }
@@ -1291,7 +1292,7 @@ public protocol I_blockchain_ux_asset_bio_visit_website: I {}
 public final class L_blockchain_ux_asset_buy: L, I_blockchain_ux_asset_buy {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.buy", comment: "") }
 }
-public protocol I_blockchain_ux_asset_buy: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_buy: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_chart: L, I_blockchain_ux_asset_chart {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.chart", comment: "") }
 }
@@ -1306,7 +1307,7 @@ public protocol I_blockchain_ux_asset_chart_interval: I_blockchain_db_type_strin
 public final class L_blockchain_ux_asset_receive: L, I_blockchain_ux_asset_receive {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.receive", comment: "") }
 }
-public protocol I_blockchain_ux_asset_receive: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_receive: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_recurring: L, I_blockchain_ux_asset_recurring {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.recurring", comment: "") }
 }
@@ -1347,7 +1348,11 @@ public protocol I_blockchain_ux_asset_recurring_buys_notification: I {}
 public final class L_blockchain_ux_asset_sell: L, I_blockchain_ux_asset_sell {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.sell", comment: "") }
 }
-public protocol I_blockchain_ux_asset_sell: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_sell: I_blockchain_ux_type_action {}
+public final class L_blockchain_ux_asset_send: L, I_blockchain_ux_asset_send {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.send", comment: "") }
+}
+public protocol I_blockchain_ux_asset_send: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_buy__and__sell: L, I_blockchain_ux_buy__and__sell {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.buy_and_sell", comment: "") }
 }

@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
+import Combine
 import ComposableArchitecture
 import FeatureCoinDomain
 import Foundation
@@ -133,48 +135,49 @@ public struct GraphView: View {
     ) -> some View {
 
         func view(
-            for index: GraphData.Index,
-            relativeTo comparison: GraphData.Index
+            for start: GraphData.Index,
+            relativeTo end: GraphData.Index
         ) -> ChartBalance {
             let percentage = Self.percentageFormatter.string(
                 from: NSNumber(
-                    value: abs(1 - (index.price / comparison.price))
+                    value: abs(1 - (end.price / start.price))
                 )
             )!
             return ChartBalance(
                 title: selected == nil ? Localization.currentPrice : Localization.price,
                 balance: String(
-                    amount: selected == nil ? index.price : comparison.price,
+                    amount: selected == nil ? end.price : start.price,
                     currency: value.quote
                 ),
-                changeArrow: index.price.isNearlyEqual(to: comparison.price)
+                changeArrow: end.price.isRelativelyEqual(to: start.price)
                     ? "→"
-                    : index.price < comparison.price ? "↓" : "↑",
+                    : end.price < start.price ? "↓" : "↑",
                 changeAmount: String(
-                    amount: abs(index.price - comparison.price),
+                    amount: abs(end.price - start.price),
                     currency: value.quote
                 ),
                 changePercentage: "(\(percentage))",
-                changeColor: index.price.isNearlyEqual(to: comparison.price)
+                changeColor: end.price.isRelativelyEqual(to: start.price)
                     ? .semantic.primary
-                    : index.price < comparison.price ? .semantic.error : .semantic.success,
+                    : end.price < start.price ? .semantic.error : .semantic.success,
                 changeTime: Self.relativeDateFormatter.localizedString(
-                    for: comparison.timestamp, relativeTo: index.timestamp
+                    for: start.timestamp, relativeTo: end.timestamp
                 )
             )
         }
 
-        let current = value.series.last!
         if let selected = selected, value.series.indices.contains(selected) {
-            return view(for: current, relativeTo: value.series[selected])
+            return view(for: value.series[0], relativeTo: value.series[selected])
         } else {
-            return view(for: current, relativeTo: value.series[0])
+            return view(for: value.series[0], relativeTo: value.series.last!)
         }
     }
 
     private static let percentageFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
         return formatter
     }()
 
@@ -195,8 +198,8 @@ public struct GraphView: View {
 
 extension BinaryFloatingPoint {
 
-    func isNearlyEqual(to other: Self, precision: Self = .init(0.01)) -> Bool {
-        abs(self - other) <= precision
+    func isRelativelyEqual(to other: Self, precision: Self = .init(0.01)) -> Bool {
+        abs(1 - (self / other)) <= precision
     }
 }
 
@@ -207,6 +210,7 @@ struct GraphViewPreviewProvider: PreviewProvider {
                 initialState: .init(),
                 reducer: graphViewReducer,
                 environment: .init(
+                    app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
                     historicalPriceService: PreviewHelper.HistoricalPriceService()

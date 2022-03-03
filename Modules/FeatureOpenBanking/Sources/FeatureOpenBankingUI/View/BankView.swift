@@ -118,6 +118,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return .none
 
     case .launchAuthorisation(let url):
+        state.ui = .waiting(for: state.name)
         return .merge(
             .fireAndForget { environment.openURL.open(url) },
             .cancel(id: ID.LaunchBank())
@@ -129,7 +130,9 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         case .linked(let account, let institution):
             state.ui = .linked(institution: state.name)
             return .merge(
-                Effect(value: .cancel),
+                .cancel(id: ID.ConsentError()),
+                .cancel(id: ID.Request()),
+                .cancel(id: ID.LaunchBank()),
                 .fireAndForget { [state] in
                     environment.analytics.record(
                         event: .bankAccountStateTriggered(account: account, institution: state.name)
@@ -143,7 +146,11 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         case .confirmed(let order):
             state.ui = .buy(pending: order, in: environment)
         }
-        return Effect(value: .cancel)
+        return .merge(
+            .cancel(id: ID.ConsentError()),
+            .cancel(id: ID.Request()),
+            .cancel(id: ID.LaunchBank())
+        )
 
     case .dismiss:
         return .fireAndForget(environment.dismiss)
@@ -157,8 +164,14 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
 
     case .failure(let error):
         state.showActions = true
-        state.ui = .error(error, currency: state.currency, in: environment)
-        return .cancel(id: ID.ConsentError())
+        switch error {
+        case .timeout:
+            state.ui = .pending()
+            return .none
+        default:
+            state.ui = .error(error, currency: state.currency, in: environment)
+            return .cancel(id: ID.ConsentError())
+        }
     }
 }
 

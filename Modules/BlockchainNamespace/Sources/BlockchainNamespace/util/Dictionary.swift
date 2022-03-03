@@ -18,6 +18,10 @@ extension Dictionary {
     static func + (lhs: Dictionary, rhs: Dictionary) -> Dictionary {
         lhs.merging(rhs, uniquingKeysWith: { $1 })
     }
+
+    static func += (lhs: inout Dictionary, rhs: Dictionary) {
+        lhs.merge(rhs, uniquingKeysWith: { $1 })
+    }
 }
 
 extension Dictionary where Key == L, Value == String {
@@ -26,10 +30,6 @@ extension Dictionary where Key == L, Value == String {
 
 extension Dictionary where Key == L, Value == Any {
     public func toTagAny() -> [Tag: Value] { mapKeys(\.[]) }
-}
-
-extension Dictionary where Key == Tag, Value == String {
-    public subscript(id: L) -> Value? { self[id[]] }
 }
 
 extension Dictionary where Key == Tag {

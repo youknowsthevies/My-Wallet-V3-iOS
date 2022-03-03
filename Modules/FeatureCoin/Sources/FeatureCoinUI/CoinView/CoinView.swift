@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
+import ComposableArchitectureExtensions
 import FeatureCoinDomain
 import Localization
 import SwiftUI
@@ -11,6 +13,9 @@ import ToolKit
 public struct CoinView: View {
 
     let store: Store<CoinViewState, CoinViewAction>
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
 
     @Environment(\.openURL) var openURL
     @Environment(\.presentationMode) private var presentationMode
@@ -80,16 +85,7 @@ public struct CoinView: View {
                         Spacer()
                     }
                 }
-                if viewStore.primaryAction != nil || viewStore.secondaryAction != nil {
-                    PrimaryDivider()
-
-                    DoubleButton(
-                        primaryAction: viewStore.primaryAction,
-                        secondaryAction: viewStore.secondaryAction,
-                        action: { _ in }
-                    )
-                    .padding([.leading, .trailing], Spacing.padding1)
-                }
+                actions(in: viewStore)
             }
             .onAppear {
                 viewStore.send(.loadKycStatus)
@@ -144,6 +140,36 @@ public struct CoinView: View {
         }
         .frame(width: 24.pt, height: 24.pt)
     }
+
+    @ViewBuilder func actions(in viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+        VStack {
+            if viewStore.primaryAction != nil || viewStore.secondaryAction != nil {
+                PrimaryDivider()
+            }
+            HStack {
+                if let action = viewStore.primaryAction {
+                    PrimaryButton(
+                        title: action.title,
+                        leadingView: { action.icon },
+                        action: {
+                            app.post(event: action.event, context: context)
+                        }
+                    )
+                }
+                if let action = viewStore.secondaryAction {
+                    SecondaryButton(
+                        title: action.title,
+                        leadingView: { action.icon },
+                        action: {
+                            app.post(event: action.event, context: context)
+                        }
+                    )
+                }
+            }
+            .padding()
+        }
+        .padding([.leading, .trailing], 8.pt)
+    }
 }
 
 // swiftlint:disable type_name
@@ -169,6 +195,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     ),
                     reducer: coinViewReducer,
                     environment: .init(
+                        app: App.preview,
                         kycStatusProvider: { .empty() },
                         accountsProvider: { .empty() },
                         historicalPriceService: PreviewHelper.HistoricalPriceService()
@@ -190,6 +217,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                 ),
                 reducer: coinViewReducer,
                 environment: .init(
+                    app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
                     historicalPriceService: PreviewHelper.HistoricalPriceService()
@@ -208,6 +236,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                 ),
                 reducer: coinViewReducer,
                 environment: .init(
+                    app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
                     historicalPriceService: PreviewHelper.HistoricalPriceService()

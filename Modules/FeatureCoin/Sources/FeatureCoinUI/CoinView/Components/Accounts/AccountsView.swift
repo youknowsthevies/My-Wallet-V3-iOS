@@ -1,12 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
+import Combine
+import ComposableArchitecture
 import FeatureCoinDomain
 import Foundation
 import Localization
 import SwiftUI
 
 public struct AccountsView: View {
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
+
     let assetColor: Color
     let accounts: [Account]
     let apy: String
@@ -28,6 +35,7 @@ public struct AccountsView: View {
                     account: account,
                     assetColor: assetColor
                 ) {}
+                    .context([blockchain.ux.asset.account.id: account.id])
 
                 PrimaryDivider()
             }

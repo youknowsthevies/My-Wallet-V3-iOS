@@ -23,11 +23,13 @@ let package = Package(
             from: "0.32.0"
         ),
         .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace"),
+        .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
-        .package(path: "../Tool"),
         .package(path: "../Money"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors")
+        .package(path: "../NetworkErrors"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -76,6 +78,10 @@ let package = Package(
                     package: "BlockchainComponentLibrary"
                 ),
                 .product(
+                    name: "BlockchainNamespace",
+                    package: "BlockchainNamespace"
+                ),
+                .product(
                     name: "Localization",
                     package: "Localization"
                 ),
@@ -90,6 +96,10 @@ let package = Package(
                 .product(
                     name: "NetworkError",
                     package: "NetworkErrors"
+                ),
+                .product(
+                    name: "ComposableArchitectureExtensions",
+                    package: "ComposableArchitectureExtensions"
                 )
             ]
         ),
