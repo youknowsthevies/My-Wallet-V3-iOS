@@ -38,6 +38,10 @@ extension Mock {
     }
 
     public struct RemoteConfigurationValue: RemoteConfigurationValue_p {
+        public init(dataValue: Data) {
+            self.dataValue = dataValue
+        }
+
         public var dataValue: Data
     }
 

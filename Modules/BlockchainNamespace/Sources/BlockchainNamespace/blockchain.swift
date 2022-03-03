@@ -79,6 +79,7 @@ public protocol I_blockchain_app_configuration: I {}
 public extension I_blockchain_app_configuration {
 	var `announcements`: L_blockchain_app_configuration_announcements { .init("\(__).announcements") }
 	var `apple`: L_blockchain_app_configuration_apple { .init("\(__).apple") }
+	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
 	var `google`: L_blockchain_app_configuration_google { .init("\(__).google") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
@@ -111,6 +112,17 @@ public final class L_blockchain_app_configuration_apple_pay_is_enabled: L, I_blo
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.apple.pay.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_apple_pay_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_deep__link: L, I_blockchain_app_configuration_deep__link {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.deep_link", comment: "") }
+}
+public protocol I_blockchain_app_configuration_deep__link: I {}
+public extension I_blockchain_app_configuration_deep__link {
+	var `rules`: L_blockchain_app_configuration_deep__link_rules { .init("\(__).rules") }
+}
+public final class L_blockchain_app_configuration_deep__link_rules: L, I_blockchain_app_configuration_deep__link_rules {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.deep_link.rules", comment: "") }
+}
+public protocol I_blockchain_app_configuration_deep__link_rules: I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_google: L, I_blockchain_app_configuration_google {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.google", comment: "") }
 }
