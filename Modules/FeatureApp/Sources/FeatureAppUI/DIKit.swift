@@ -62,9 +62,8 @@ extension DependencyContainer {
                 kycRouter: DIKit.resolve(),
                 topMostViewControllerProvider: DIKit.resolve(),
                 exchangeProvider: DIKit.resolve(),
-                transactionRouter: DIKit.resolve(),
-                coincore: DIKit.resolve(),
                 transactionsRouter: DIKit.resolve(),
+                coincore: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
                 },

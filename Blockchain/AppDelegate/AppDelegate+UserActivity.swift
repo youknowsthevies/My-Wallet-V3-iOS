@@ -10,9 +10,8 @@ extension AppDelegate {
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         let handled = DynamicLinks.dynamicLinks()
-            .handleUniversalLink(userActivity.webpageURL!) { [weak self] dynamiclink, _ in
+            .handleUniversalLink(userActivity.webpageURL!) { dynamiclink, _ in
                 guard let url = dynamiclink?.url else {
-                    self?.handle(userActivity: userActivity)
                     return
                 }
 
