@@ -92,7 +92,7 @@ struct QRCodeScannerAllowAccessView: View {
                         .foregroundColor(.semantic.primary)
                 },
                 trailing: { EmptyView() },
-                action: { }
+                action: {}
             )
         }
         .accessibility(identifier: Accessibility.scannerList)
@@ -129,10 +129,8 @@ struct QRCodeScannerAllowAccessView_Previews: PreviewProvider {
                 ),
                 reducer: qrScannerAllowAccessReducer,
                 environment: AllowAccessEnvironment(
-                    allowCameraAccess: {
-                    },
-                    dismiss: {
-                    }
+                    allowCameraAccess: {},
+                    dismiss: {}
                 )
             )
         )

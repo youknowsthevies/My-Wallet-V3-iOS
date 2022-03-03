@@ -31,9 +31,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
     private let viewModel: QRCodeScannerViewModelProtocol
     private let presentationType: QRCodePresentationType
 
-    private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackgroundTouches: true)
-    }()
+    private lazy var sheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
     init(
         alertViewPresenter: AlertViewPresenter,

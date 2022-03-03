@@ -223,6 +223,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             }
             .store(in: &cancellables)
     }
+
     // swiftlint:enable function_body_length
 
     func viewDidAppear() {

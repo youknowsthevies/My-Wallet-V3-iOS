@@ -12,15 +12,15 @@ public enum QRCodeScannerResultError: Error {
 }
 
 public final class QRCodeScannerViewControllerBuilder {
-    public typealias CompletionHandler = ((Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void)
+    public typealias CompletionHandler = (Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void
 
-    private var scanner: QRCodeScanner = QRCodeScanner()
+    private var scanner = QRCodeScanner()
     private var alertViewPresenter: AlertViewPresenter = resolve()
     private var loadingViewPresenter: LoadingViewPresenting = resolve()
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
     private var additionalParsingOptions: QRCodeScannerParsingOptions = .strict
-    private var supportsCameraRoll: Bool = false
+    private var supportsCameraRoll = false
 
     private let types: [QRCodeScannerType]
     private let completed: CompletionHandler
