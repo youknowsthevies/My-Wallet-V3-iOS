@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
 import MoneyKit
@@ -514,8 +515,15 @@ extension AnnouncementPresenter {
 
     /// Claim Free Crypto Domain Annoucement for eligible users
     private var claimFreeCryptoDomainAnnoucement: Announcement {
-        ClaimFreeCryptoDomainAnnoucement(
-            action: {},
+        ClaimFreeCryptoDomainAnnouncement(
+            action: { [navigationRouter] in
+                let vc = ClaimIntroductionHositingController(
+                    mainQueue: .main,
+                    searchDomainRepository: DIKit.resolve()
+                )
+                let nav = UINavigationController(rootViewController: vc)
+                navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+            },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             }

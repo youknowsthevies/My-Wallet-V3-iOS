@@ -6,7 +6,7 @@ import PlatformUIKit
 import RxSwift
 import ToolKit
 
-final class ClaimFreeCryptoDomainAnnoucement: PersistentAnnouncement, ActionableAnnouncement {
+final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, ActionableAnnouncement {
 
     // MARK: - Types
 

@@ -4,7 +4,7 @@ import Combine
 import FeatureCryptoDomainDomain
 import Foundation
 
-final class SearchDomainRepository: SearchDomainRepositoryAPI {
+public final class SearchDomainRepository: SearchDomainRepositoryAPI {
 
     // MARK: - Properties
 
@@ -13,11 +13,11 @@ final class SearchDomainRepository: SearchDomainRepositoryAPI {
 
     // MARK: - Setup
 
-    init(apiClient: SearchDomainClientAPI) {
+    public init(apiClient: SearchDomainClientAPI) {
         self.apiClient = apiClient
     }
 
-    func searchResults(searchKey: String) -> AnyPublisher<[SearchDomainResult], SearchDomainRepositoryError> {
+    public func searchResults(searchKey: String) -> AnyPublisher<[SearchDomainResult], SearchDomainRepositoryError> {
         apiClient
             .getSearchResults(searchKey: searchKey)
             .map { response in
