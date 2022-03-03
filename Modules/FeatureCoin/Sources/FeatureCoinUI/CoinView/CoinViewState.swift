@@ -7,10 +7,10 @@ import SwiftUI
 public struct CoinViewState: Equatable {
     let assetDetails: AssetDetails
     var kycStatus: KYCStatus?
-    var priceDetails: PriceDetails?
-    var balanceDetails: BalanceDetails?
     var accounts: [Account]
-    var graph = CoinViewGraphState()
+    var hasPositiveBalanceForSelling: Bool?
+
+    var graph = GraphViewState()
 
     // Dynamic Actions
 
@@ -23,7 +23,7 @@ public struct CoinViewState: Equatable {
     }
 
     var secondaryAction: DoubleButtonAction? {
-        switch (assetDetails.tradeable, balanceDetails?.positiveBalance, kycStatus?.canPurchaseCrypto) {
+        switch (assetDetails.tradeable, hasPositiveBalanceForSelling, kycStatus?.canSellCrypto) {
         case (true, true, true):
             return .sell
         default:
@@ -34,14 +34,10 @@ public struct CoinViewState: Equatable {
     public init(
         assetDetails: AssetDetails,
         kycStatus: KYCStatus? = nil,
-        priceDetails: PriceDetails? = nil,
-        balanceDetails: BalanceDetails? = nil,
         accounts: [Account] = []
     ) {
         self.assetDetails = assetDetails
         self.kycStatus = kycStatus
-        self.priceDetails = priceDetails
-        self.balanceDetails = balanceDetails
         self.accounts = accounts
     }
 }

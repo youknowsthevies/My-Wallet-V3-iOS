@@ -13,7 +13,7 @@ public let coinViewReducer = Reducer<
     CoinViewAction,
     CoinViewEnvironment
 >.combine(
-    coinViewGraphReducer
+    graphViewReducer
         .pullback(
             state: \.graph,
             action: /CoinViewAction.graph,
@@ -44,6 +44,14 @@ public let coinViewReducer = Reducer<
 
         case .updateAccounts(accounts: let accounts):
             state.accounts = accounts
+            return state.accounts.hasPositiveBalanceForSelling
+                .eraseToEffect()
+                .map {
+                    .updateHasPositiveBalanceForSelling($0)
+                }
+
+        case .updateHasPositiveBalanceForSelling(let hasPositiveBalanceForSelling):
+            state.hasPositiveBalanceForSelling = hasPositiveBalanceForSelling
             return .none
 
         case .graph:

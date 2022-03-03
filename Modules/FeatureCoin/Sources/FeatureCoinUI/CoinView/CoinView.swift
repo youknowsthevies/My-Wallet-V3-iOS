@@ -25,7 +25,7 @@ public struct CoinView: View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 0) {
                 ScrollView {
-                    CoinViewGraph(
+                    GraphView(
                         store: store.scope(state: \.graph, action: CoinViewAction.graph)
                     )
 
@@ -38,12 +38,12 @@ public struct CoinView: View {
                         }
                     }
 
-                    AccountsView(
-                        assetColor: viewStore.assetDetails.brandColor,
-                        accounts: viewStore.accounts
-                    )
-
-                    if !viewStore.assetDetails.tradeable {
+                    if viewStore.assetDetails.tradeable, !viewStore.accounts.isEmpty {
+                        AccountsView(
+                            assetColor: viewStore.assetDetails.brandColor,
+                            accounts: viewStore.accounts
+                        )
+                    } else {
                         AlertCard(
                             title: Localization.Label.Title.notTradable.interpolating(
                                 viewStore.assetDetails.name,
@@ -53,7 +53,7 @@ public struct CoinView: View {
                                 viewStore.assetDetails.name
                             )
                         )
-                        .padding(Spacing.padding2)
+                        .padding([.leading, .trailing, .top], Spacing.padding2)
                     }
 
                     HStack {
@@ -80,12 +80,16 @@ public struct CoinView: View {
                         Spacer()
                     }
                 }
-                DoubleButton(
-                    primaryAction: viewStore.primaryAction,
-                    secondaryAction: viewStore.secondaryAction,
-                    action: { _ in }
-                )
-                .padding([.leading, .trailing], 8.pt)
+                if viewStore.primaryAction != nil || viewStore.secondaryAction != nil {
+                    PrimaryDivider()
+
+                    DoubleButton(
+                        primaryAction: viewStore.primaryAction,
+                        secondaryAction: viewStore.secondaryAction,
+                        action: { _ in }
+                    )
+                    .padding([.leading, .trailing], Spacing.padding1)
+                }
             }
             .onAppear {
                 viewStore.send(.loadKycStatus)
@@ -129,7 +133,8 @@ public struct CoinView: View {
                         )
                         .clipShape(Circle())
                 }
-            ).frame(width: 24.pt, height: 24.pt)
+            )
+            .frame(width: 24.pt, height: 24.pt)
         }
     }
 
@@ -148,25 +153,25 @@ struct CoinView_PreviewProvider: PreviewProvider {
             CoinView(
                 store: .init(
                     initialState: .init(
-                        assetDetails: .init(
-                            name: CoinView.PreviewHelper.name,
-                            code: CoinView.PreviewHelper.code,
-                            brandColor: .orange,
-                            about: CoinView.PreviewHelper.about,
-                            assetInfoUrl: CoinView.PreviewHelper.url,
-                            logoUrl: CoinView.PreviewHelper.logoResource,
-                            logoImage: nil,
-                            tradeable: true,
-                            onWatchlist: true
-                        ),
+                        assetDetails: PreviewHelper.assetDetails(),
                         kycStatus: .gold,
-                        accounts: []
+                        accounts: [
+                            PreviewHelper.account(),
+                            PreviewHelper.account(
+                                name: "Trading Account",
+                                accountType: .trading
+                            ),
+                            PreviewHelper.account(
+                                name: "Rewards Account",
+                                accountType: .interest
+                            )
+                        ]
                     ),
                     reducer: coinViewReducer,
                     environment: .init(
                         kycStatusProvider: { .empty() },
                         accountsProvider: { .empty() },
-                        historicalPriceService: .preview
+                        historicalPriceService: PreviewHelper.HistoricalPriceService()
                     )
                 )
             )
@@ -175,16 +180,28 @@ struct CoinView_PreviewProvider: PreviewProvider {
         CoinView(
             store: .init(
                 initialState: .init(
-                    assetDetails: .init(
-                        name: CoinView.PreviewHelper.name,
-                        code: CoinView.PreviewHelper.code,
-                        brandColor: .orange,
-                        about: CoinView.PreviewHelper.about,
-                        assetInfoUrl: CoinView.PreviewHelper.url,
-                        logoUrl: CoinView.PreviewHelper.logoResource,
-                        logoImage: nil,
-                        tradeable: false,
-                        onWatchlist: false
+                    assetDetails: PreviewHelper.assetDetails(
+                        tradeable: true
+                    ),
+                    kycStatus: .silver,
+                    accounts: [
+                        PreviewHelper.account()
+                    ]
+                ),
+                reducer: coinViewReducer,
+                environment: .init(
+                    kycStatusProvider: { .empty() },
+                    accountsProvider: { .empty() },
+                    historicalPriceService: PreviewHelper.HistoricalPriceService()
+                )
+            )
+        )
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    assetDetails: PreviewHelper.assetDetails(
+                        tradeable: false
                     ),
                     kycStatus: .unverified,
                     accounts: []
@@ -193,7 +210,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                 environment: .init(
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
-                    historicalPriceService: .preview
+                    historicalPriceService: PreviewHelper.HistoricalPriceService()
                 )
             )
         )

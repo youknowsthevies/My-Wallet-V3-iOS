@@ -1,76 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-import Combine
-import CombineSchedulers
 import ComposableArchitecture
 import FeatureCoinDomain
 import Foundation
 import Localization
 import MoneyKit
-import NetworkError
 import SwiftUI
-import ToolKit
 
-public struct CoinViewGraphState: Equatable {
-
-    @BindableState var selected: Int?
-    var interval: HistoricalPrice.Series = ._15_minutes
-
-    var result: Result<GraphData, NetworkError>?
-    var isFetching: Bool = false
-
-    var tolerance: Int = 2
-    var density: Int = 250
-    var date = Date()
-}
-
-public enum CoinViewGraphAction: BindableAction {
-    case binding(_ action: BindingAction<CoinViewGraphState>)
-    case request(HistoricalPrice.Series, force: Bool = false)
-    case fetched(Result<GraphData, NetworkError>)
-}
-
-public let coinViewGraphReducer = Reducer<
-    CoinViewGraphState,
-    CoinViewGraphAction,
-    CoinViewEnvironment
-> { state, action, environment in
-    struct FetchID: Hashable {}
-    switch action {
-    case .request(let interval, let force):
-        guard force || interval != state.interval else {
-            return .none
-        }
-        state.isFetching = true
-        state.interval = interval
-        return .merge(
-            .cancel(id: FetchID()),
-            environment.historicalPriceService.fetch(
-                series: interval,
-                relativeTo: state.date
-            )
-            .catchToEffect()
-            .map(CoinViewGraphAction.fetched)
-            .cancellable(id: FetchID())
-        )
-    case .fetched(let data):
-        state.result = data
-        state.isFetching = false
-        return .none
-    case .binding:
-        return .none
-    }
-}
-.binding()
-
-public struct CoinViewGraph: View {
+public struct GraphView: View {
 
     typealias Localization = LocalizationConstants.Coin.Graph
 
-    let store: Store<CoinViewGraphState, CoinViewGraphAction>
+    let store: Store<GraphViewState, GraphViewAction>
 
-    public init(store: Store<CoinViewGraphState, CoinViewGraphAction>) {
+    public init(store: Store<GraphViewState, GraphViewAction>) {
         self.store = store
     }
 
@@ -184,7 +128,7 @@ public struct CoinViewGraph: View {
 
     private func balance(
         in value: GraphData,
-        series: HistoricalPrice.Series,
+        series: Series,
         selected: Int?
     ) -> some View {
 
@@ -256,16 +200,16 @@ extension BinaryFloatingPoint {
     }
 }
 
-struct CoinViewGraphPreviewProvider: PreviewProvider {
+struct GraphViewPreviewProvider: PreviewProvider {
     static var previews: some View {
-        CoinViewGraph(
+        GraphView(
             store: .init(
                 initialState: .init(),
-                reducer: coinViewGraphReducer,
+                reducer: graphViewReducer,
                 environment: .init(
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
-                    historicalPriceService: .preview
+                    historicalPriceService: PreviewHelper.HistoricalPriceService()
                 )
             )
         )

@@ -79,7 +79,7 @@ extension LocalizationConstants {
             )
 
             static let rewardsAccountSubtitle = NSLocalizedString(
-                "Earn %@% APY",
+                "Earn %@%% APY",
                 comment: "Coin View: rewards account subtitle"
             )
 

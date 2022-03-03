@@ -36,14 +36,31 @@ let package = Package(
                 .product(
                     name: "MoneyKit",
                     package: "Money"
+                ),
+                .product(
+                    name: "NetworkError",
+                    package: "NetworkErrors"
                 )
             ]
         ),
         .target(
             name: "FeatureCoinData",
             dependencies: [
-                .target(name: "FeatureCoinDomain"),
-                .product(name: "NetworkKit", package: "Network")
+                .target(
+                    name: "FeatureCoinDomain"
+                ),
+                .product(
+                    name: "NetworkKit",
+                    package: "Network"
+                ),
+                .product(
+                    name: "NetworkError",
+                    package: "NetworkErrors"
+                ),
+                .product(
+                    name: "MoneyKit",
+                    package: "Money"
+                )
             ]
         ),
         .target(

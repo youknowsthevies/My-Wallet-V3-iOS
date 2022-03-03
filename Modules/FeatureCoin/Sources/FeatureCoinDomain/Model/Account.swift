@@ -72,4 +72,11 @@ extension Collection where Element == Account {
             }
             .eraseToAnyPublisher()
     }
+
+    public var hasPositiveBalanceForSelling: AnyPublisher<Bool, Never> {
+        filter { [.privateKey, .trading].contains($0.accountType) }
+            .totalFiatBalancePublisher
+            .map(\.isPositive)
+            .eraseToAnyPublisher()
+    }
 }

@@ -50,17 +50,7 @@ struct TotalBalanceView<Trailing: View>: View {
 struct TotalBalanceView_PreviewProvider: PreviewProvider {
     static var previews: some View {
         TotalBalanceView(
-            assetDetails: .init(
-                name: CoinView.PreviewHelper.name,
-                code: CoinView.PreviewHelper.code,
-                brandColor: .orange,
-                about: CoinView.PreviewHelper.about,
-                assetInfoUrl: CoinView.PreviewHelper.url,
-                logoUrl: CoinView.PreviewHelper.logoResource,
-                logoImage: nil,
-                tradeable: true,
-                onWatchlist: true
-            ),
+            assetDetails: PreviewHelper.assetDetails(),
             accounts: [],
             trailing: {}
         )

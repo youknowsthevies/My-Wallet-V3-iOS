@@ -7,5 +7,6 @@ public enum CoinViewAction {
     case updateKycStatus(KYCStatus)
     case loadAccounts
     case updateAccounts([Account])
-    case graph(CoinViewGraphAction)
+    case updateHasPositiveBalanceForSelling(Bool)
+    case graph(GraphViewAction)
 }

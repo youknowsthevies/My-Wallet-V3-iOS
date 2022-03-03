@@ -22,21 +22,7 @@ struct DoubleButton: View {
 
     var body: some View {
         VStack {
-            if primaryAction != nil || secondaryAction != nil {
-                PrimaryDivider()
-            }
             HStack {
-                if let primaryAction = primaryAction {
-                    PrimaryButton(
-                        title: primaryAction.title,
-                        leadingView: {
-                            primaryAction.icon
-                        },
-                        action: {
-                            action(primaryAction)
-                        }
-                    )
-                }
                 if let secondaryAction = secondaryAction {
                     SecondaryButton(
                         title: secondaryAction.title,
@@ -45,6 +31,17 @@ struct DoubleButton: View {
                         },
                         action: {
                             action(secondaryAction)
+                        }
+                    )
+                }
+                if let primaryAction = primaryAction {
+                    PrimaryButton(
+                        title: primaryAction.title,
+                        leadingView: {
+                            primaryAction.icon
+                        },
+                        action: {
+                            action(primaryAction)
                         }
                     )
                 }

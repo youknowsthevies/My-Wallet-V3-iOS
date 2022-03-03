@@ -1,13 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-import Combine
-import ComposableArchitecture
 import FeatureCoinDomain
 import Foundation
 import Localization
 import SwiftUI
-import ToolKit
 
 public struct AccountsView: View {
     let assetColor: Color

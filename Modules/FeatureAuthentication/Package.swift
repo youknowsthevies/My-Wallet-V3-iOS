@@ -55,6 +55,7 @@ let package = Package(
             name: "FeatureAuthenticationDomain",
             dependencies: [
                 .product(name: "HDWalletKit", package: "HDWallet"),
+                .product(name: "NetworkKit", package: "Network"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),

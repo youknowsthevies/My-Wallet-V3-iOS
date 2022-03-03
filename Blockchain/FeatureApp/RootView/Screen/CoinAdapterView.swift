@@ -20,6 +20,8 @@ struct CoinAdapterView: View {
     var coincore: CoincoreAPI = resolve()
     var fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
 
+    var historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve()
+
     init(cryptoCurrency: CryptoCurrency) {
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
@@ -53,13 +55,9 @@ struct CoinAdapterView: View {
                         .eraseToAnyPublisher()
                 },
                 historicalPriceService: HistoricalPriceService(
-                    HistoricalPriceClient(
-                        .init(base: cryptoCurrency, quote: .USD),
-                        request: RequestBuilder(
-                            config: .init(scheme: "https", host: "api.blockchain.info")
-                        ),
-                        network: networkAdapter
-                    )
+                    base: cryptoCurrency,
+                    displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
+                    historicalPriceRepository: historicalPriceRepository
                 )
             )
         )
@@ -127,8 +125,7 @@ extension AssetDetails {
             assetInfoUrl: URL(string: "https://blockchain.com")!,
             logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
             logoImage: cryptoCurrency.assetModel.logoResource.image,
-            tradeable: true,
-            onWatchlist: false
+            tradeable: cryptoCurrency.supports(product: .custodialWalletBalance)
         )
     }
 }

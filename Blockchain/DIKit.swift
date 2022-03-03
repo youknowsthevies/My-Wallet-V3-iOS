@@ -12,6 +12,8 @@ import EthereumKit
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCoinData
+import FeatureCoinDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
@@ -650,6 +652,21 @@ extension DependencyContainer {
                 network: adapter.network
             )
             return OpenBanking(app: DIKit.resolve(), banking: client)
+        }
+
+        // MARK: Coin View
+
+        single { () -> HistoricalPriceClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            return HistoricalPriceClient(
+                request: requestBuilder,
+                network: networkAdapter
+            )
+        }
+
+        single { () -> HistoricalPriceRepositoryAPI in
+            HistoricalPriceRepository(DIKit.resolve())
         }
 
         // MARK: Feature Product
