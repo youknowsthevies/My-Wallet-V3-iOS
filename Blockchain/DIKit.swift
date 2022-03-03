@@ -392,7 +392,7 @@ extension DependencyContainer {
         // so, better have a single instance of this object.
         single { () -> UserAdapterAPI in
             UserAdapter(
-                coincore: DIKit.resolve(),
+                balanceDataFetcher: BalanceDataFetcher(coincore: DIKit.resolve()),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
                 productsService: DIKit.resolve(),
