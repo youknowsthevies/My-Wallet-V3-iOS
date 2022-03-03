@@ -213,7 +213,8 @@ struct GraphViewPreviewProvider: PreviewProvider {
                     app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService()
+                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
+                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
                 )
             )
         )

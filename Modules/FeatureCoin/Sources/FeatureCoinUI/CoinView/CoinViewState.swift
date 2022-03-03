@@ -9,6 +9,7 @@ public struct CoinViewState: Equatable {
     var kycStatus: KYCStatus?
     var accounts: [Account]
     var hasPositiveBalanceForSelling: Bool?
+    var interestRate: Double?
 
     var graph = GraphViewState()
 

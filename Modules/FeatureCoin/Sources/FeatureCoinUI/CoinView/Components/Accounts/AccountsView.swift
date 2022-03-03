@@ -16,12 +16,12 @@ public struct AccountsView: View {
 
     let assetColor: Color
     let accounts: [Account]
-    let apy: String
+    let interestRate: Double?
 
-    public init(assetColor: Color, accounts: [Account], apy: String = "6.66") {
+    public init(assetColor: Color, accounts: [Account], interestRate: Double?) {
         self.assetColor = assetColor
         self.accounts = accounts
-        self.apy = apy
+        self.interestRate = interestRate
     }
 
     private typealias Localization = LocalizationConstants.Coin.Accounts
@@ -33,7 +33,8 @@ public struct AccountsView: View {
             ForEach(accounts) { account in
                 AccountRow(
                     account: account,
-                    assetColor: assetColor
+                    assetColor: assetColor,
+                    interestRate: interestRate
                 ) {}
                     .context([blockchain.ux.asset.account.id: account.id])
 
@@ -53,7 +54,7 @@ public struct AccountsView: View {
 
                 LockedAccountRow(
                     title: Localization.rewardsAccountTitle,
-                    subtitle: Localization.rewardsAccountSubtitle.interpolating(apy),
+                    subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate ?? 0),
                     icon: .interestCircle
                 ) {}
 
@@ -86,7 +87,8 @@ struct AccountsView_PreviewProvider: PreviewProvider {
                         cryptoBalancePublisher: .empty(),
                         fiatBalancePublisher: .empty()
                     )
-                ]
+                ],
+                interestRate: nil
             )
         }
     }

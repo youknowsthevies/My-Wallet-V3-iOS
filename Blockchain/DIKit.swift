@@ -669,6 +669,19 @@ extension DependencyContainer {
             HistoricalPriceRepository(DIKit.resolve())
         }
 
+        single { () -> RatesClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return RatesClient(
+                networkAdapter: networkAdapter,
+                requestBuilder: requestBuilder
+            )
+        }
+
+        single { () -> RatesRepositoryAPI in
+            RatesRepository(DIKit.resolve())
+        }
+
         // MARK: Feature Product
 
         factory { () -> FeatureProductsDomain.ProductsServiceAPI in

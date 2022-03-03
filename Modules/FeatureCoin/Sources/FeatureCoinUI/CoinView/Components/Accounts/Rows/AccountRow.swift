@@ -14,6 +14,7 @@ struct AccountRow: View {
 
     let account: Account
     let assetColor: Color
+    let interestRate: Double?
     let action: () -> Void
 
     var cryptoValuePublisher: AnyPublisher<MoneyValue, Never>
@@ -25,10 +26,12 @@ struct AccountRow: View {
     init(
         account: Account,
         assetColor: Color,
+        interestRate: Double?,
         action: @escaping () -> Void
     ) {
         self.account = account
         self.assetColor = assetColor
+        self.interestRate = interestRate
         self.action = action
         cryptoValuePublisher = account.cryptoBalancePublisher
         fiatValuePublisher = account.fiatBalancePublisher
@@ -37,7 +40,10 @@ struct AccountRow: View {
     var body: some View {
         BalanceRow(
             leadingTitle: account.name,
-            leadingDescription: account.accountType.subtitle,
+            leadingDescription: String(
+                format: account.accountType.subtitle,
+                interestRate ?? 0
+            ),
             trailingTitle: fiatValue,
             trailingDescription: cryptoValue,
             trailingDescriptionColor: .semantic.muted,
@@ -78,7 +84,7 @@ extension Account.AccountType {
         case .exchange:
             return "Pro Trading"
         case .interest:
-            return "Earning 3.5%"
+            return "Earning %.1f%%"
         case .privateKey:
             return "Non-custodial"
         case .trading:
@@ -105,6 +111,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
+                    interestRate: nil,
                     action: {}
                 )
 
@@ -121,6 +128,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
+                    interestRate: nil,
                     action: {}
                 )
 
@@ -137,6 +145,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
+                    interestRate: 2.5,
                     action: {}
                 )
 
@@ -153,6 +162,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
+                    interestRate: nil,
                     action: {}
                 )
 

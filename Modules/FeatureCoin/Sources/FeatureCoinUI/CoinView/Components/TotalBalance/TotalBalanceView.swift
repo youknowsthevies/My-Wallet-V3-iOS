@@ -25,6 +25,7 @@ struct TotalBalanceView<Trailing: View>: View {
         self.assetDetails = assetDetails
         self.accounts = accounts
         self.trailing = trailing()
+
         cryptoValuePublisher = accounts.totalCryptoBalancePublisher
         fiatValuePublisher = accounts.totalFiatBalancePublisher
     }

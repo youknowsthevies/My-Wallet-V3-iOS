@@ -46,7 +46,8 @@ public struct CoinView: View {
                     if viewStore.assetDetails.tradeable, !viewStore.accounts.isEmpty {
                         AccountsView(
                             assetColor: viewStore.assetDetails.brandColor,
-                            accounts: viewStore.accounts
+                            accounts: viewStore.accounts,
+                            interestRate: viewStore.interestRate
                         )
                     } else {
                         AlertCard(
@@ -90,6 +91,7 @@ public struct CoinView: View {
             .onAppear {
                 viewStore.send(.loadKycStatus)
                 viewStore.send(.loadAccounts)
+                viewStore.send(.loadInterestRates)
             }
             .primaryNavigation(
                 leading: {
@@ -198,7 +200,8 @@ struct CoinView_PreviewProvider: PreviewProvider {
                         app: App.preview,
                         kycStatusProvider: { .empty() },
                         accountsProvider: { .empty() },
-                        historicalPriceService: PreviewHelper.HistoricalPriceService()
+                        historicalPriceService: PreviewHelper.HistoricalPriceService(),
+                        interestRatesRepository: PreviewHelper.InterestRatesRepository()
                     )
                 )
             )
@@ -220,7 +223,8 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService()
+                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
+                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
                 )
             )
         )
@@ -239,7 +243,8 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     app: App.preview,
                     kycStatusProvider: { .empty() },
                     accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService()
+                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
+                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
                 )
             )
         )

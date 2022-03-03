@@ -24,6 +24,7 @@ struct CoinAdapterView: View {
     var fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
 
     var historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve()
+    var ratesRepository: RatesRepositoryAPI = resolve()
 
     init(cryptoCurrency: CryptoCurrency) {
         currency = cryptoCurrency
@@ -63,7 +64,8 @@ struct CoinAdapterView: View {
                     base: cryptoCurrency,
                     displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
                     historicalPriceRepository: historicalPriceRepository
-                )
+                ),
+                interestRatesRepository: ratesRepository
             )
         )
     }

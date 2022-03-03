@@ -80,6 +80,14 @@ enum PreviewHelper {
             )
         }
     }
+
+    class InterestRatesRepository: RatesRepositoryAPI {
+        func fetchRate(
+            code: String
+        ) -> AnyPublisher<Double, NetworkError> {
+            .just(5 / 3)
+        }
+    }
 }
 
 extension Series {
