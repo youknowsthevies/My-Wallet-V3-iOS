@@ -7,6 +7,7 @@ import DIKit
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCoinUI
+import FeatureTransactionUI
 import MoneyKit
 import NetworkKit
 import PlatformKit
@@ -22,6 +23,7 @@ struct CoinAdapterView: View {
     var userAdapter: UserAdapterAPI = resolve()
     var coincore: CoincoreAPI = resolve()
     var fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    var transactionsRouter: TransactionsRouterAPI = resolve()
 
     var historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve()
     var ratesRepository: RatesRepositoryAPI = resolve()
@@ -84,12 +86,6 @@ struct CoinAdapterView: View {
                 }
                 .on(blockchain.ux.asset.send) { event in
                     print("🐢 SEND", event.ref)
-                }
-                .on(blockchain.ux.asset.account.receive) { event in
-                    print("🐢 ALL", event.ref)
-                }
-                .on(blockchain.ux.asset.account.receive[].ref(to: [blockchain.ux.asset.account.id: "CryptoInterestAccount.ETH"])) { event in
-                    print("🐢 INTEREST ONLY", event.ref)
                 }
                 .app(app)
                 .context([blockchain.ux.asset.id: currency.code])

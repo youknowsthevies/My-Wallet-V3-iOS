@@ -154,7 +154,7 @@ public struct CoinView: View {
                         title: action.title,
                         leadingView: { action.icon },
                         action: {
-                            app.post(event: action.event, context: context)
+                            app.post(event: action.event[].ref(to: context), context: context)
                         }
                     )
                 }
@@ -163,7 +163,7 @@ public struct CoinView: View {
                         title: action.title,
                         leadingView: { action.icon },
                         action: {
-                            app.post(event: action.event, context: context)
+                            app.post(event: action.event[].ref(to: context), context: context)
                         }
                     )
                 }

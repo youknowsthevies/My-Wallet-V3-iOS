@@ -111,7 +111,7 @@ extension AppProtocol {
     }
 
     public func post(event tag: Tag, context: Tag.Context = [:]) {
-        post(event: tag.ref(to: context, in: self), context: context)
+        post(event: tag.ref(in: self), context: context)
     }
 
     public func post(event ref: Tag.Reference, context: Tag.Context = [:]) {
@@ -243,12 +243,14 @@ extension App {
 }
 
 extension App {
+
+    public static var preview: AppProtocol = App()
+
     public convenience init() { self.init(remote: Mock.RemoteConfiguration()) }
 }
 
 #if DEBUG
 extension App {
     public static var test: AppProtocol { App() }
-    public static var preview: AppProtocol = App()
 }
 #endif

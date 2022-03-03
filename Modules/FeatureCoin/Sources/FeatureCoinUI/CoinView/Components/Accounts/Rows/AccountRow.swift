@@ -48,7 +48,10 @@ struct AccountRow: View {
             trailingDescription: cryptoValue,
             trailingDescriptionColor: .semantic.muted,
             action: {
-                app.post(event: blockchain.ux.asset.account.receive, context: context)
+                app.post(
+                    event: blockchain.ux.asset.account.receive[].ref(to: context),
+                    context: context
+                )
             },
             leading: {
                 account.accountType.icon
