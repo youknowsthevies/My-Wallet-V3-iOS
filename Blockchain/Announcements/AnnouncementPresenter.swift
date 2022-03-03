@@ -56,8 +56,6 @@ final class AnnouncementPresenter {
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
 
-    private var claimFreeDomainEnabled: Atomic<Bool> = .init(false)
-
     private var currentAnnouncement: Announcement?
 
     // Combine
@@ -116,12 +114,6 @@ final class AnnouncementPresenter {
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
-        featureFlagService
-            .enable(.local(.blockchainDomains))
-            .sink { [weak self] enabled in
-                self?.claimFreeDomainEnabled.mutate { $0 = enabled }
-            }
-            .store(in: &cancellables)
     }
 
     /// Refreshes announcements on demand
@@ -167,9 +159,7 @@ final class AnnouncementPresenter {
             let announcement: Announcement
             switch type {
             case .claimFreeCryptoDomain:
-                if claimFreeDomainEnabled {
-                    announcement = claimFreeCryptoDomainAnnoucement
-                }
+                announcement = claimFreeCryptoDomainAnnoucement
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
@@ -525,11 +515,9 @@ extension AnnouncementPresenter {
     /// Claim Free Crypto Domain Annoucement for eligible users
     private var claimFreeCryptoDomainAnnoucement: Announcement {
         ClaimFreeCryptoDomainAnnoucement(
+            action: {},
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                guard let self = self else { return }
             }
         )
     }

@@ -51,10 +51,9 @@ public enum InternalFeature: String, CaseIterable {
              .applePay,
              .nativeWalletCreation,
              .redesignCoinView,
-             .cardIssuance:
+             .cardIssuance,
+             .blockchainDomains:
             return false
-        case .blockchainDomains:
-            return true
         }
     }
 }
