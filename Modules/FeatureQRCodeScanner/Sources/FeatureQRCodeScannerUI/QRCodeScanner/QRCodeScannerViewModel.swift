@@ -38,6 +38,8 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     func showInformationSheet()
 
     func allowCameraAccess()
+    func cameraAccessDenied() -> Bool
+    func openAppSettings()
 }
 
 public enum QRCodeScannerParsingOptions {
@@ -280,6 +282,15 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
                 String(describing: error)
             )
         }
+    }
+
+    func cameraAccessDenied() -> Bool {
+        checkCameraAccess() == .denied
+    }
+
+    func openAppSettings() {
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(settingsURL)
     }
 
     private func showAllowAccessSheetIfNeeded() {

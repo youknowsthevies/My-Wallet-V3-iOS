@@ -15,7 +15,6 @@ public final class QRCodeScannerViewControllerBuilder {
     public typealias CompletionHandler = (Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void
 
     private var scanner = QRCodeScanner()
-    private var alertViewPresenter: AlertViewPresenter = resolve()
     private var loadingViewPresenter: LoadingViewPresenting = resolve()
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
@@ -73,7 +72,6 @@ public final class QRCodeScannerViewControllerBuilder {
         )
 
         let scannerViewController = QRCodeScannerViewController(
-            alertViewPresenter: alertViewPresenter,
             presentationType: presentationType,
             viewModel: viewModel
         )

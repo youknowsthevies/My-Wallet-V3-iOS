@@ -130,7 +130,9 @@ struct QRCodeScannerAllowAccessView_Previews: PreviewProvider {
                 reducer: qrScannerAllowAccessReducer,
                 environment: AllowAccessEnvironment(
                     allowCameraAccess: {},
-                    dismiss: {}
+                    cameraAccessDenied: { false },
+                    dismiss: {},
+                    showCameraDeniedAlert: {}
                 )
             )
         )

@@ -3,6 +3,7 @@
 import ComposableArchitecture
 import DIKit
 import FeatureQRCodeScannerDomain
+import Localization
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -34,7 +35,6 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
     private lazy var sheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
     init(
-        alertViewPresenter: AlertViewPresenter,
         presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
         viewModel: QRCodeScannerViewModelProtocol
     ) {
@@ -87,8 +87,8 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             self?.showAlert(title: title, message: message)
         }
 
-        self.viewModel.showCameraNotAuthorizedAlert = { [alertViewPresenter] in
-            alertViewPresenter.showNeedsCameraPermissionAlert()
+        self.viewModel.showCameraNotAuthorizedAlert = { [weak self] in
+            self?.showNeedsCameraPermissionAlert()
         }
     }
 
@@ -185,8 +185,14 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             allowCameraAccess: { [viewModel] in
                 viewModel.allowCameraAccess()
             },
+            cameraAccessDenied: { [viewModel] in
+                viewModel.cameraAccessDenied()
+            },
             dismiss: { [weak self] in
                 self?.dismiss(animated: true, completion: nil)
+            },
+            showCameraDeniedAlert: { [viewModel] in
+                viewModel.showCameraNotAuthorizedAlert?()
             }
         )
         let allowAccessStore = Store(
@@ -208,6 +214,23 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             preferredStyle: .alert
         )
         present(alertController, animated: true, completion: nil)
+    }
+
+    private func showNeedsCameraPermissionAlert() {
+        let alert = UIAlertController(
+            title: LocalizationConstants.Errors.cameraAccessDenied,
+            message: LocalizationConstants.Errors.cameraAccessDeniedMessage,
+            preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(title: LocalizationConstants.goToSettings, style: .default) { [viewModel] _ in
+                viewModel.openAppSettings()
+            }
+        )
+        alert.addAction(
+            UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
+        )
+        present(alert, animated: true, completion: nil)
     }
 }
 
