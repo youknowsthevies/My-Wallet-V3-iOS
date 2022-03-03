@@ -24,7 +24,6 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.action()
-                self.dismiss()
             }
             .disposed(by: disposeBag)
         return AnnouncementCardViewModel(
