@@ -8,6 +8,7 @@ protocol QRCodeScannerProtocol: AnyObject {
     var videoPreviewLayer: CALayer { get }
     var qrCodePublisher: AnyPublisher<Result<String, QRScannerError>, Never> { get }
 
+    func configure(with deviceInput: CaptureInputProtocol)
     func startReadingQRCode(from scannableArea: QRCodeScannableArea)
     func restartScanning()
     func stopReadingQRCode(complete: (() -> Void)?)
