@@ -29,7 +29,8 @@ public struct WalletConnectSession: Codable, Equatable, Hashable {
     }
 
     init(session: Session) {
-        url = session.url.absoluteString
+        let absoluteString = session.url.absoluteString
+        url = absoluteString.removingPercentEncoding ?? absoluteString
         dAppInfo = DAppInfo(
             peerId: session.dAppInfo.peerId,
             peerMeta: ClientMeta(
@@ -51,5 +52,6 @@ extension WalletConnectSession {
     /// Compares two WalletConnectSession based solely on its unique identifier (url).
     public func isEqual(_ rhs: Self) -> Bool {
         url == rhs.url
+            || url.removingPercentEncoding == rhs.url.removingPercentEncoding
     }
 }
