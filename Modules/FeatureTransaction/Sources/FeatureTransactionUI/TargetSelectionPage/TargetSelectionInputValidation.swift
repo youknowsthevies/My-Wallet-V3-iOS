@@ -82,7 +82,7 @@ enum TargetSelectionInputValidation: Equatable {
     enum TextInput: Equatable {
         case inactive
         case invalid(String)
-        case valid(ReceiveAddress)
+        case valid(input: String, receiveAddress: ReceiveAddress)
 
         var textValue: String {
             switch self {
@@ -90,8 +90,8 @@ enum TargetSelectionInputValidation: Equatable {
                 return ""
             case .invalid(let value):
                 return value
-            case .valid(let receiveAddress):
-                return receiveAddress.label.isEmpty ? receiveAddress.address : receiveAddress.label
+            case .valid(let input, let receiveAddress):
+                return input
             }
         }
 
@@ -136,7 +136,7 @@ enum TargetSelectionInputValidation: Equatable {
 extension TargetSelectionInputValidation.TextInput {
     static func == (lhs: TargetSelectionInputValidation.TextInput, rhs: TargetSelectionInputValidation.TextInput) -> Bool {
         switch (lhs, rhs) {
-        case (.valid(let leftAddress), .valid(let rightAddress)):
+        case (.valid(_, let leftAddress), .valid(_, let rightAddress)):
             return leftAddress.address == rightAddress.address
         case (.invalid, .invalid),
              (.inactive, .inactive):

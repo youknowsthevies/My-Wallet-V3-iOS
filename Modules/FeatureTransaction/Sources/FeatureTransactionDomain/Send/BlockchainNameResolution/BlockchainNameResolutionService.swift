@@ -60,7 +60,7 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
     }
 
     private static func label(address: String, domain: String) -> String {
-        "\(domain) (\(address.prefix(4))...\(address.suffix(4))"
+        "\(domain) (\(address.prefix(4))...\(address.suffix(4)))"
     }
 
     private func preValidate(domainName: String) -> Bool {

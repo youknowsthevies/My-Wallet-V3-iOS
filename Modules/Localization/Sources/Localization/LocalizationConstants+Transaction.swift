@@ -1392,10 +1392,7 @@ extension LocalizationConstants.Transaction.Error {
         "Insufficient gas",
         comment: ""
     )
-    public static let addressIsContractShort = NSLocalizedString(
-        "Invalid address",
-        comment: ""
-    )
+    public static let addressIsContractShort = invalidAddressShort
     public static let optionInvalidShort = NSLocalizedString(
         "Review T&Cs",
         comment: ""

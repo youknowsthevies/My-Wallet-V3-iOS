@@ -77,10 +77,6 @@ public enum TextValidationFactory {
     }
 
     public enum Backup {
-        public static func mnemonic(words: Set<String>, mnemonicLength: Int = 12) -> MnemonicValidating {
-            MnemonicValidator(words: words, mnemonicLength: mnemonicLength)
-        }
-
         public static func word(value: String) -> TextValidating {
             WordValidator(word: value)
         }

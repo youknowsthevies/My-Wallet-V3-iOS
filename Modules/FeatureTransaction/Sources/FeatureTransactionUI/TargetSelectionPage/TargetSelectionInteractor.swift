@@ -69,7 +69,6 @@ final class TargetSelectionInteractor {
         let asset = coincore[crypto.asset]
         return asset
             .parse(address: address)
-            .asObservable()
             .asSingle()
             .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in
                 guard let validatedAddress = validatedAddress else {
@@ -82,9 +81,6 @@ final class TargetSelectionInteractor {
     private func validate(domainName: String, currency: CryptoCurrency) -> Single<Result<ReceiveAddress, Error>> {
         nameResolutionService
             .validate(domainName: domainName, currency: currency)
-            .asObservable()
-            .take(1)
-            .asSingle()
             .map { receiveAddress -> Result<ReceiveAddress, Error> in
                 switch receiveAddress {
                 case .some(let receiveAddress):
@@ -93,5 +89,6 @@ final class TargetSelectionInteractor {
                     return .failure(CryptoAssetError.addressParseFailure)
                 }
             }
+            .asSingle()
     }
 }
