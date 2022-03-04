@@ -3,7 +3,6 @@
 
 import BlockchainComponentLibrary
 
-#if DEBUG
 extension UITaskView_Previews {
 
     static func payment() -> UITask {
@@ -72,4 +71,3 @@ extension UITaskView_Previews {
         .foreground(.textDetail)
     }
 }
-#endif
