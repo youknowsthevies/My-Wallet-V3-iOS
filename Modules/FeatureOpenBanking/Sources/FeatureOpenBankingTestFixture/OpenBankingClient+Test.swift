@@ -67,13 +67,6 @@ extension OpenBankingClient {
     }
 }
 
-extension Array where Element == NetworkRequest {
-
-    public subscript(method: NetworkRequest.NetworkMethod, url: URL) -> NetworkRequest? {
-        first(where: { $0.method == method && $0.urlRequest.url == url })
-    }
-}
-
 extension URLRequest {
 
     public init(_ method: NetworkRequest.NetworkMethod, _ url: URL, _ contentType: NetworkRequest.ContentType = .json) {

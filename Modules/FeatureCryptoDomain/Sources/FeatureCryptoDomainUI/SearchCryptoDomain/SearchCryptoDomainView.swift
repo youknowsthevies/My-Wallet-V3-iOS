@@ -141,40 +141,24 @@ struct SearchCryptoDomainView: View {
     }
 }
 
+#if DEBUG
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct SearchCryptoDomainView_Previews: PreviewProvider {
     static var previews: some View {
         SearchCryptoDomainView(
             store: .init(
-                initialState: .init(
-                    searchResults: [
-                        SearchDomainResult(
-                            domainName: "cocacola.blockchain",
-                            domainType: .premium,
-                            domainAvailability: .unavailable
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola001.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola002.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocola.blockchain",
-                            domainType: .premium,
-                            domainAvailability: .availableForPremiumSale(price: "50")
-                        )
-                    ]
-                ),
+                initialState: .init(),
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
                     mainQueue: .main,
-                    searchDomainRepository: NoOpSearchDomainRepository()
+                    searchDomainRepository: SearchDomainRepository(
+                        apiClient: SearchDomainClient.mock
+                    )
                 )
             )
         )
     }
 }
+#endif
