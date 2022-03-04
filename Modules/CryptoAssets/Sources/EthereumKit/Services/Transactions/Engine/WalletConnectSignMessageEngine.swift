@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -39,6 +40,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
 
+    private var didExecute = false
+    private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumSignMessageTarget {
         transactionTarget as! EthereumSignMessageTarget
     }
@@ -154,7 +157,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        keyPairProvider
+        didExecute = true
+        return keyPairProvider
             .keyPair(with: secondPassword)
             .flatMap { [ethereumSigner, walletConnectTarget] ethereumKeyPair -> Single<Data> in
                 switch walletConnectTarget.message {
@@ -179,5 +183,17 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
         .just(pendingTransaction)
+    }
+
+    private lazy var rejectOnce: Void = {
+        walletConnectTarget.onTransactionRejected()
+            .subscribe()
+            .store(in: &self.cancellables)
+    }()
+
+    func stop(pendingTransaction: PendingTransaction) {
+        if !didExecute {
+            _ = rejectOnce
+        }
     }
 }

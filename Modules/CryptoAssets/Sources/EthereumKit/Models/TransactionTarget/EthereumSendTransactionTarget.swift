@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import MoneyKit
 import PlatformKit
@@ -14,6 +15,7 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
     // MARK: - Public Properties
 
     public let onTxCompleted: TxCompleted
+    public let onTransactionRejected: () -> AnyPublisher<Void, Never>
     public let currencyType: CurrencyType = .crypto(.ethereum)
     public var label: String {
         dAppName
@@ -35,9 +37,11 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
         dAppLogoURL: String,
         transaction: EthereumJsonRpcTransaction,
         method: Method,
-        onTxCompleted: @escaping TxCompleted
+        onTxCompleted: @escaping TxCompleted,
+        onTransactionRejected: @escaping () -> AnyPublisher<Void, Never>
     ) {
         self.onTxCompleted = onTxCompleted
+        self.onTransactionRejected = onTransactionRejected
         self.dAppAddress = dAppAddress
         self.dAppName = dAppName
         self.dAppLogoURL = dAppLogoURL

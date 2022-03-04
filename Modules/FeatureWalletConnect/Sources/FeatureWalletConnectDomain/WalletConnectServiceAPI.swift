@@ -22,6 +22,7 @@ public enum WalletConnectUserEvent {
 
 public enum WalletConnectResponseEvent {
     case invalid(Request)
+    case rejected(Request)
     case signature(String, Request)
     case transactionHash(String, Request)
 }

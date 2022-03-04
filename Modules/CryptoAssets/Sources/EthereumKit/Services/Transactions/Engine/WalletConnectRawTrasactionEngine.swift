@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -39,6 +40,8 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
 
+    private var didExecute = false
+    private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumRawTransactionTarget {
         transactionTarget as! EthereumRawTransactionTarget
     }
@@ -145,6 +148,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+        didExecute = true
         let encodedTransaction = EthereumTransactionEncoded(
             encodedTransaction: walletConnectTarget.rawTransaction
         )
@@ -163,5 +167,17 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
         .just(pendingTransaction)
+    }
+
+    private lazy var rejectOnce: Void = {
+        walletConnectTarget.onTransactionRejected()
+            .subscribe()
+            .store(in: &self.cancellables)
+    }()
+
+    func stop(pendingTransaction: PendingTransaction) {
+        if !didExecute {
+            _ = rejectOnce
+        }
     }
 }
