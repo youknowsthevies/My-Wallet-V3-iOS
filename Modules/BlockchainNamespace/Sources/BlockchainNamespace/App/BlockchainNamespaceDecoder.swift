@@ -2,7 +2,7 @@
 
 import AnyCoding
 
-public class BlockchainNamespaceDecoder: AnyDecoder {
+open class BlockchainNamespaceDecoder: AnyDecoder {
 
     var context: Tag.Context = [:]
     var language: Language {

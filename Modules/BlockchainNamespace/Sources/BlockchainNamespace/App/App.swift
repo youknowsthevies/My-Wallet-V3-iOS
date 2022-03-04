@@ -17,7 +17,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     #endif
 }
 
-public class App: AppProtocol, CustomStringConvertible {
+public class App: AppProtocol {
 
     public let language: Language
 
@@ -164,7 +164,13 @@ extension AppProtocol {
         _ first: L,
         _ rest: L...
     ) -> AnyPublisher<Session.Event, Never> {
-        on([language[first]] + rest.map { language[$0] })
+        on([first] + rest)
+    }
+
+    public func on<Tags>(
+        _ tags: Tags
+    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == L {
+        on(tags.map(\.[]))
     }
 
     public func on(
