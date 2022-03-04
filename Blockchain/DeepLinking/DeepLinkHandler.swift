@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import FeatureKYCDomain
 import FeatureOpenBankingDomain
@@ -13,16 +14,16 @@ final class DeepLinkHandler: DeepLinkHandling {
 
     private let appSettings: BlockchainSettings.App
     private let kycSettings: KYCSettingsAPI
-    private let openBanking: OpenBanking
+    private let app: AppProtocol
 
     init(
         appSettings: BlockchainSettings.App = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
-        openBanking: OpenBanking = resolve()
+        app: AppProtocol = resolve()
     ) {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
-        self.openBanking = openBanking
+        self.app = app
     }
 
     func handle(
@@ -86,12 +87,12 @@ final class DeepLinkHandler: DeepLinkHandling {
     ///          &error-source=institution
     ///          &error-description=VGhpcyByZXF1ZXN0IGhhcyBhbHJlYWR5IGJlZW4gYXV0aG9yaXNlZA%3D%3D
     private func handleOpenBanking(_ params: [String: String]) {
-        openBanking.state.transaction { state in
+        app.state.transaction { state in
             if let token = params["one-time-token"] {
-                state.set(.consent.token, to: token)
+                state.set(blockchain.ux.payment.method.open.banking.consent.token, to: token)
             }
             if let error = params["error"] {
-                state.set(.consent.error, to: OpenBanking.Error.code(error))
+                state.set(blockchain.ux.payment.method.open.banking.consent.error, to: OpenBanking.Error.code(error))
             }
         }
     }

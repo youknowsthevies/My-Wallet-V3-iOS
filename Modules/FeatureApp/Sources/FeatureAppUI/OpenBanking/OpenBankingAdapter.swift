@@ -95,13 +95,15 @@ extension FeatureOpenBankingUI.OpenBankingViewController {
         account: OpenBanking.BankAccount,
         currency: FiatCurrency,
         listener: LinkBankListener,
-        app: AppCoordinating = resolve()
+        coordinator: AppCoordinating = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.init(
             account: account,
             environment: OpenBankingEnvironment(
+                app: app,
                 showTransferDetails: {
-                    app.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
+                    coordinator.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
                 },
                 dismiss: { [weak listener] in
                     listener?.closeFlow(isInteractive: false)

@@ -11,7 +11,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             [
                 .remote: [
                     "ios_ff_apple_pay_is_enabled": true,
-                    "blockchain_app_configuration_announcements": ["1", "2", "3"]
+                    "blockchain_app_configuration_announcements": ["1", "2", "3"],
+                    "blockchain_app_configuration_deep_link_rules": []
                 ]
             ]
         )
@@ -23,6 +24,13 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             .wait()
 
         XCTAssertEqual(announcements, ["1", "2", "3"])
+    }
+
+    func test_fetch_with_underscore() async throws {
+        let deepLinkRules = try await app.publisher(for: blockchain.app.configuration.deep_link.rules, as: [App.DeepLink.Rule].self)
+            .wait()
+
+        XCTAssertEqual(deepLinkRules, [])
     }
 
     func test_fetch_fallback() async throws {
@@ -74,7 +82,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertEqual(
             app.remoteConfiguration.allKeys.set,
-            ["ios_ff_apple_pay_is_enabled", "blockchain_app_configuration_announcements"].set
+            ["ios_ff_apple_pay_is_enabled", "blockchain_app_configuration_announcements", "blockchain_app_configuration_deep_link_rules"].set
         )
     }
 

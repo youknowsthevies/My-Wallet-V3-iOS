@@ -17,6 +17,10 @@ let package = Package(
             targets: ["BlockchainComponentLibrary"]
         ),
         .library(
+            name: "BlockchainNamespace",
+            targets: ["BlockchainNamespace"]
+        ),
+        .library(
             name: "FeatureOpenBankingUI",
             targets: ["FeatureOpenBankingUI"]
         ),
@@ -43,10 +47,6 @@ let package = Package(
         .library(
             name: "ToolKit",
             targets: ["ToolKit"]
-        ),
-        .library(
-            name: "Session",
-            targets: ["Session"]
         ),
         .library(
             name: "UIComponentsKit",
@@ -83,6 +83,11 @@ let package = Package(
             name: "swift-markdown",
             url: "https://github.com/apple/swift-markdown.git",
             .revision("1023300b1d6847360ac9ceebbcff2bccacbcf2a5")
+        ),
+        .package(
+            name: "Lexicon",
+            url: "https://github.com/screensailor/Lexicon",
+            .revision("160c4c417f8490658a8396d0283fb0d6fb98c327")
         )
     ],
     targets: [
@@ -108,6 +113,26 @@ let package = Package(
         .testTarget(
             name: "BlockchainComponentLibraryTests",
             path: "Modules/BlockchainComponentLibrary/Tests/BlockchainComponentLibraryTests"
+        ),
+        .target(
+            name: "BlockchainNamespace",
+            dependencies: [
+                .target(name: "AnyCoding"),
+                .target(name: "FirebaseProtocol"),
+                .product(name: "Lexicon", package: "Lexicon")
+            ],
+            path: "Modules/BlockchainNamespace/Sources/BlockchainNamespace",
+            resources: [
+                .copy("blockchain.taskpaper")
+            ]
+        ),
+        .target(
+            name: "AnyCoding",
+            path: "Modules/BlockchainNamespace/Sources/AnyCoding",
+        ),
+        .target(
+            name: "FirebaseProtocol",
+            path: "Modules/BlockchainNamespace/Sources/FirebaseProtocol",
         ),
         .target(
             name: "ComposableNavigation",
@@ -144,10 +169,6 @@ let package = Package(
             path: "Modules/Tool/Sources/ToolKit"
         ),
         .target(
-            name: "Session",
-            path: "Modules/Session/Sources/Session"
-        ),
-        .target(
             name: "UIComponentsKit",
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
@@ -165,7 +186,7 @@ let package = Package(
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .target(name: "NetworkError"),
-                .target(name: "Session"),
+                .target(name: "BlockchainNamespace"),
                 .target(name: "ToolKit")
             ],
             path: "Modules/FeatureOpenBanking/Sources/FeatureOpenBankingDomain"
@@ -176,7 +197,7 @@ let package = Package(
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "WalletNetworkKit"),
-                .target(name: "Session"),
+                .target(name: "BlockchainNamespace"),
                 .target(name: "ToolKit")
             ],
             path: "Modules/FeatureOpenBanking/Sources/FeatureOpenBankingData"

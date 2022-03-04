@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import MoneyKit
 import SwiftUI
 
 public struct AssetDetails: Equatable {
@@ -13,7 +12,6 @@ public struct AssetDetails: Equatable {
     public let logoUrl: URL?
     public let logoImage: Image?
     public var tradeable: Bool
-    public var onWatchlist: Bool
 
     public init(
         name: String,
@@ -23,8 +21,7 @@ public struct AssetDetails: Equatable {
         assetInfoUrl: URL,
         logoUrl: URL?,
         logoImage: Image?,
-        tradeable: Bool,
-        onWatchlist: Bool
+        tradeable: Bool
     ) {
         self.name = name
         self.code = code
@@ -34,6 +31,5 @@ public struct AssetDetails: Equatable {
         self.logoUrl = logoUrl
         self.logoImage = logoImage
         self.tradeable = tradeable
-        self.onWatchlist = onWatchlist
     }
 }

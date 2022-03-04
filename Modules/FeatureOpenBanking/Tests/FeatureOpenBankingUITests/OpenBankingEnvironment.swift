@@ -11,14 +11,16 @@ import ToolKit
 extension OpenBankingEnvironment {
 
     public static func test(
+        app: AppProtocol,
         scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.test.eraseToAnyScheduler(),
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
         openURL: @escaping (URL) -> Void = { _ in }
     ) -> (environment: OpenBankingEnvironment, network: ReplayNetworkCommunicator) {
-        let (banking, network) = OpenBanking.test(using: scheduler)
+        let (banking, network) = OpenBanking.test(app: app, using: scheduler)
         return (
             OpenBankingEnvironment(
+                app: app,
                 scheduler: scheduler,
                 openBanking: banking,
                 showTransferDetails: showTransferDetails,

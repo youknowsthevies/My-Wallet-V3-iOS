@@ -6,11 +6,12 @@ import Foundation
 extension Publisher where Failure == Never {
 
     public func task<T>(
+        priority: TaskPriority? = nil,
         maxPublishers demand: Subscribers.Demand = .unlimited,
         _ yield: @escaping (Output) async -> T
     ) -> AnyPublisher<T, Never> {
         flatMap(maxPublishers: demand) { value -> Task<T, Never>.Publisher in
-            Task<T, Never>.Publisher {
+            Task<T, Never>.Publisher(priority: priority) {
                 await yield(value)
             }
         }
@@ -18,12 +19,13 @@ extension Publisher where Failure == Never {
     }
 
     public func task<T>(
+        priority: TaskPriority? = nil,
         maxPublishers demand: Subscribers.Demand = .unlimited,
         _ yield: @escaping (Output) async throws -> T
     ) -> AnyPublisher<T, Error> {
         setFailureType(to: Error.self)
             .flatMap(maxPublishers: demand) { value -> Task<T, Error>.ThrowingPublisher in
-                Task<T, Error>.ThrowingPublisher {
+                Task<T, Error>.ThrowingPublisher(priority: priority) {
                     try await yield(value)
                 }
             }
@@ -34,12 +36,13 @@ extension Publisher where Failure == Never {
 extension Publisher {
 
     public func task<T>(
+        priority: TaskPriority? = nil,
         maxPublishers demand: Subscribers.Demand = .unlimited,
         _ yield: @escaping (Output) async throws -> T
     ) -> AnyPublisher<T, Error> {
         eraseError()
             .flatMap(maxPublishers: demand) { value -> Task<T, Error>.ThrowingPublisher in
-                Task<T, Error>.ThrowingPublisher {
+                Task<T, Error>.ThrowingPublisher(priority: priority) {
                     try await yield(value)
                 }
             }
@@ -54,28 +57,32 @@ extension Task where Failure == Never {
         public typealias Output = Success
         public typealias Yield = @Sendable () async -> Output
 
+        private let priority: TaskPriority?
         private let yield: Yield
 
-        public init(_ yield: @escaping Yield) {
+        public init(priority: TaskPriority? = nil, _ yield: @escaping Yield) {
+            self.priority = priority
             self.yield = yield
         }
 
         public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
-            let subscription = Subscription(yield: yield, downstream: subscriber)
+            let subscription = Subscription(priority: priority, yield: yield, downstream: subscriber)
             subscriber.receive(subscription: subscription)
         }
 
         actor Subscription: Combine.Subscription {
 
             private let yield: Publisher.Yield
+            private let priority: TaskPriority?
+            private var task: Task<Void, Never>?
             private var downstream: AnySubscriber<Output, Failure>?
 
-            private var task: Task<Void, Never>?
-
             init<Downstream>(
+                priority: TaskPriority?,
                 yield: @escaping Publisher.Yield,
                 downstream: Downstream
             ) where Downstream: Subscriber, Output == Downstream.Input, Downstream.Failure == Failure {
+                self.priority = priority
                 self.yield = yield
                 self.downstream = AnySubscriber(downstream)
             }
@@ -120,27 +127,32 @@ extension Task where Failure: Error {
         public typealias Output = Success
         public typealias Yield = @Sendable () async throws -> Output
 
+        private let priority: TaskPriority?
         private let yield: Yield
 
-        public init(_ yield: @escaping Yield) {
+        public init(priority: TaskPriority? = nil, _ yield: @escaping Yield) {
+            self.priority = priority
             self.yield = yield
         }
 
         public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
-            let subscription = Subscription(yield: yield, downstream: subscriber)
+            let subscription = Subscription(priority: priority, yield: yield, downstream: subscriber)
             subscriber.receive(subscription: subscription)
         }
 
         actor Subscription: Combine.Subscription {
 
             private let yield: ThrowingPublisher.Yield
+            private let priority: TaskPriority?
             private var task: Task<Void, Never>?
             private var downstream: AnySubscriber<Output, Failure>?
 
             init<Downstream>(
+                priority: TaskPriority?,
                 yield: @escaping ThrowingPublisher.Yield,
                 downstream: Downstream
             ) where Downstream: Subscriber, Output == Downstream.Input, Downstream.Failure == Failure {
+                self.priority = priority
                 self.yield = yield
                 self.downstream = AnySubscriber(downstream)
             }
@@ -152,7 +164,7 @@ extension Task where Failure: Error {
             func _request(_ demand: Subscribers.Demand) {
                 guard demand > 0 else { return }
                 guard task == nil else { return }
-                task = .detached { [yield, weak self] in
+                task = .detached(priority: priority) { [yield, weak self] in
                     do {
                         let value = try await yield()
                         await self?.receive(value)

@@ -820,10 +820,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
-    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
@@ -835,10 +831,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
     )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
-    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.Pending {
@@ -849,10 +841,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.Pending {
     public static let description = NSLocalizedString(
         "This may take some time. We'll let you know when it's done.",
         comment: "Order peding message."
-    )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
     )
 }
 
@@ -1404,10 +1392,7 @@ extension LocalizationConstants.Transaction.Error {
         "Insufficient gas",
         comment: ""
     )
-    public static let addressIsContractShort = NSLocalizedString(
-        "Invalid address",
-        comment: ""
-    )
+    public static let addressIsContractShort = invalidAddressShort
     public static let optionInvalidShort = NSLocalizedString(
         "Review T&Cs",
         comment: ""

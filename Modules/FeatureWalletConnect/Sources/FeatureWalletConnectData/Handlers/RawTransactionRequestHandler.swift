@@ -72,6 +72,10 @@ final class RawTransactionRequestHandler: RequestHandler {
                             break
                         }
                         return .empty()
+                    },
+                    onTransactionRejected: {
+                        responseEvent(.rejected(request))
+                        return .just(())
                     }
                 )
                 return .sendTransaction(defaultAccount, target)

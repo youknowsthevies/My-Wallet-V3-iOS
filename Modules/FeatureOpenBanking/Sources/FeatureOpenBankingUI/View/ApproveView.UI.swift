@@ -73,38 +73,38 @@ extension ApproveState.UI {
             return .init(title: Localization.Error.title, tasks: [])
         }
 
-        let header = Task.group(
-            Task.label(Localization.Approve.Payment.approveYourPayment)
+        let header = UITask.group(
+            UITask.label(Localization.Approve.Payment.approveYourPayment)
                 .typography(.title3),
-            Task.spacer(4.vmin),
-            Task.group(
-                Task.divider(),
-                Task.row(Localization.Approve.Payment.paymentTotal, value: amount)
+            UITask.spacer(4.vmin),
+            UITask.group(
+                UITask.divider(),
+                UITask.row(Localization.Approve.Payment.paymentTotal, value: amount)
                     .padding([.top, .bottom], 8.pt),
-                Task.divider()
+                UITask.divider()
             ),
-            Task.spacer(4.vmin)
+            UITask.spacer(4.vmin)
         )
 
-        let information = Task.section(
+        let information = UITask.section(
             header: Localization.Approve.Payment.paymentInformation,
             expandable: true,
             tasks: [
-                Task.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
-                Task.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
-                Task.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
+                UITask.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
+                UITask.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
+                UITask.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
             ]
         )
 
         return .init(
             title: bankAccount.attributes.entity,
             tasks: [
-                Task.group(
+                UITask.group(
                     header,
                     information
                 )
                 .padding(),
-                Task.spacer(4.vmin),
+                UITask.spacer(4.vmin),
                 termsAndConditions(
                     entity: bankAccount.attributes.entity,
                     bankName: bankAccount.details?.bankName ?? Localization.Approve.Payment.bank,
@@ -119,7 +119,7 @@ extension ApproveState.UI {
         entity: String,
         bankName: String,
         expiry: String
-    ) -> Task {
+    ) -> UITask {
         .group(
             .section(
                 header: Localization.Approve.TermsAndConditions.dataSharing,

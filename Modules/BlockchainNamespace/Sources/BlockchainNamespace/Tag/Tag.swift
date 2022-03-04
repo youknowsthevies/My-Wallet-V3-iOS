@@ -3,7 +3,6 @@
 
 import Foundation
 import Lexicon
-import SwiftLexicon
 
 public struct Tag {
 

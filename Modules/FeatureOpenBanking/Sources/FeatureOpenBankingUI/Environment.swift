@@ -14,6 +14,7 @@ public struct OpenBankingEnvironment {
     public var environment: Self { self }
     public private(set) var eventPublisher = PassthroughSubject<Result<Void, OpenBanking.Error>, Never>()
 
+    public var app: AppProtocol
     public var scheduler: AnySchedulerOf<DispatchQueue>
     public var openBanking: OpenBanking
     public var showTransferDetails: () -> Void
@@ -25,6 +26,7 @@ public struct OpenBankingEnvironment {
     public var analytics: AnalyticsEventRecorderAPI
 
     public init(
+        app: AppProtocol,
         scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler(),
         openBanking: OpenBanking = resolve(),
         showTransferDetails: @escaping () -> Void = {},
@@ -36,6 +38,7 @@ public struct OpenBankingEnvironment {
         analytics: AnalyticsEventRecorderAPI = resolve(),
         currency: String
     ) {
+        self.app = app
         self.scheduler = scheduler
         self.openBanking = openBanking
         self.showTransferDetails = showTransferDetails
@@ -46,6 +49,6 @@ public struct OpenBankingEnvironment {
         self.cryptoCurrencyFormatter = cryptoCurrencyFormatter
         self.analytics = analytics
 
-        openBanking.state.set(.currency, to: currency)
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: currency)
     }
 }

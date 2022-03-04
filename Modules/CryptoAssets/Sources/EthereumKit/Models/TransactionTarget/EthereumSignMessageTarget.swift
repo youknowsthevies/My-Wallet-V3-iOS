@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import MoneyKit
 import PlatformKit
@@ -18,6 +19,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     // MARK: - Public Properties
 
     public let onTxCompleted: TxCompleted
+    public let onTransactionRejected: () -> AnyPublisher<Void, Never>
     public let dAppAddress: String
     public let dAppName: String
     public let dAppLogoURL: String
@@ -54,9 +56,11 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
         dAppLogoURL: String,
         account: String,
         message: Message,
-        onTxCompleted: @escaping TxCompleted
+        onTxCompleted: @escaping TxCompleted,
+        onTransactionRejected: @escaping () -> AnyPublisher<Void, Never>
     ) {
         self.onTxCompleted = onTxCompleted
+        self.onTransactionRejected = onTransactionRejected
         self.dAppAddress = dAppAddress
         self.dAppName = dAppName
         self.dAppLogoURL = dAppLogoURL

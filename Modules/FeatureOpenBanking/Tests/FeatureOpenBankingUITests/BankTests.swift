@@ -65,7 +65,7 @@ final class BankLinkTests: OpenBankingTestCase {
         scheduler.advance(by: .seconds(1))
 
         store.send(.failure(.timeout)) { [self] state in
-            state.ui = .error(.timeout, in: environment)
+            state.ui = .pending()
             state.showActions = true
         }
         store.send(.cancel)
@@ -83,14 +83,13 @@ final class BankLinkTests: OpenBankingTestCase {
             state.ui = .waiting(for: state.name)
         }
 
-        state.set(.is.authorised, to: true)
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
         scheduler.advance()
         store.receive(.launchAuthorisation(url))
         store.receive(.finalise(.linked(account, institution: institution))) { state in
             state.ui = .linked(institution: state.name)
             state.showActions = true
         }
-        store.receive(.cancel)
 
         XCTAssertEqual(openedURL, url)
     }
@@ -173,13 +172,12 @@ final class BankPaymentTests: OpenBankingTestCase {
             state.ui = .waiting(for: state.name)
         }
 
-        state.set(.is.authorised, to: true)
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
         scheduler.advance()
 
         store.receive(.finalise(.deposited(details))) { [self] state in
             state.ui = .deposit(success: details, in: environment)
             state.showActions = true
         }
-        store.receive(.cancel)
     }
 }

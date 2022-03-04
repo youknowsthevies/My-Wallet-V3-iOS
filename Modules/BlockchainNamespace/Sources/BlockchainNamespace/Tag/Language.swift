@@ -55,7 +55,17 @@ extension Language {
 extension Language {
 
     public subscript(id: Tag.ID) -> Tag? { tag(id) }
-    public subscript(id: L) -> Tag { tag(id(\.id))! }
+    public subscript(id: L) -> Tag {
+        guard let tag = tag(id(\.id)) else {
+            fatalError(
+                """
+                \(id) does not exist in the language. Check the taskpaper has been saved and generated.
+                You may have removed an id from the taskpaper but are still referencing it from the code.
+                """
+            )
+        }
+        return tag
+    }
 
     public func tag(_ id: Tag.ID) -> Tag? {
         sync { nodes[id] ?? root[id.dotPath(after: root.id).splitIfNotEmpty(separator: ".").string] }
@@ -111,7 +121,7 @@ extension Language {
     public static let root: Tag = try! Language.root(
         taskpaper: Data(
             contentsOf: URL(
-                fileURLWithPath: Bundle.module.path(
+                fileURLWithPath: Bundle.namespace.path(
                     forResource: "blockchain",
                     ofType: "taskpaper"
                 )!

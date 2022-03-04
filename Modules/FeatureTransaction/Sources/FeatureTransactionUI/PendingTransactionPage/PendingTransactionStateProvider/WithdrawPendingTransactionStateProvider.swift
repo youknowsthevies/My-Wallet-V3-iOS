@@ -61,7 +61,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                     )
                 )
             ),
-            effect: .close,
+            effect: .complete,
             primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }

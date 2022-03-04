@@ -107,10 +107,12 @@ struct AnyNetwork<N: NetworkAdapterAPI, R>: Network where R: Request & NetworkRe
         adapter.perform(request: request.networkRequest, responseType: ResponseType.self)
     }
 
-    public func perform<ResponseType>(
+    func perform<ResponseType>(
         request: Request, responseType: ResponseType.Type = ResponseType.self
     ) -> AnyPublisher<ResponseType, NetworkError> where ResponseType: Decodable {
-        guard let request = request as? R else { return Fail(error: .urlError(URLError(.badURL))).eraseToAnyPublisher() }
+        guard let request = request as? R else {
+            return Fail(error: .urlError(URLError(.badURL))).eraseToAnyPublisher()
+        }
         return perform(request: request, responseType: ResponseType.self)
     }
 }

@@ -265,7 +265,7 @@ public enum AssetType {
 
 extension CoincoreAPI {
 
-    public func hasFundedAccounts(for assetType: AssetType) -> AnyPublisher<Bool, Never> {
+    public func hasFundedAccounts(for assetType: AssetType) -> AnyPublisher<Bool, Error> {
         let accountsPublisher: AnyPublisher<[SingleAccount], Error>
         switch assetType {
         case .all:
@@ -286,10 +286,7 @@ extension CoincoreAPI {
                 }
                 .eraseToAnyPublisher()
         }
-        return accountsPublisher
-            .hasAnyFundedAccounts()
-            .replaceError(with: false)
-            .eraseToAnyPublisher()
+        return accountsPublisher.hasAnyFundedAccounts()
     }
 }
 

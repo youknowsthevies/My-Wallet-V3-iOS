@@ -215,19 +215,15 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .disposeOnDeactivate(interactor: self)
 
         sourceAccount
-            .map { account -> NSAttributedString in
-                NSAttributedString(
-                    string: String(
-                        format: LocalizationConstants.TextField.Title.cryptoAddress,
-                        account.currencyType.name
-                    ),
-                    attributes: [
-                        .foregroundColor: UIColor.textFieldPlaceholder,
-                        .font: UIFont.main(.medium, 16)
-                    ]
+            .map(\.currencyType)
+            .map { currency -> String in
+                String(
+                    format: LocalizationConstants.TextField.Title.sendToCryptoWallet,
+                    currency.displaySymbol,
+                    currency.name
                 )
             }
-            .bind(to: cryptoAddressViewModel.placeholderRelay)
+            .bind(to: cryptoAddressViewModel.titleRelay)
             .disposeOnDeactivate(interactor: self)
 
         sourceAccount
@@ -244,7 +240,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                     return state
                 }
                 guard updater.sourceAccount != nil else {
-                    /// We cannot procede to the calcuation step without a `sourceAccount`
+                    /// We cannot proceed to the calculation step without a `sourceAccount`
                     Logger.shared.debug("No sourceAccount: \(updater)")
                     return state
                 }

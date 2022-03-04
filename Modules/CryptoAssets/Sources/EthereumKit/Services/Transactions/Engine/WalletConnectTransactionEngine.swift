@@ -45,6 +45,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private let transactionSigningService: EthereumTransactionSigningServiceAPI
     private let pendingTransactionRepository: PendingTransactionRepositoryAPI
 
+    private var didExecute = false
+    private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumSendTransactionTarget {
         transactionTarget as! EthereumSendTransactionTarget
     }
@@ -250,6 +252,18 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
+    }
+
+    private lazy var rejectOnce: Void = {
+        walletConnectTarget.onTransactionRejected()
+            .subscribe()
+            .store(in: &self.cancellables)
+    }()
+
+    func stop(pendingTransaction: PendingTransaction) {
+        if !didExecute {
+            _ = rejectOnce
+        }
     }
 
     // MARK: - Private Functions

@@ -15,6 +15,7 @@ import ToolKit
 extension OpenBankingEnvironment {
 
     public static let mock = OpenBankingEnvironment(
+        app: App.preview,
         openBanking: .mock,
         openURL: ToLogAppOpener(),
         fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
@@ -26,6 +27,7 @@ extension OpenBankingEnvironment {
 extension OpenBanking {
 
     static let mock = OpenBanking(
+        app: App.preview,
         banking: OpenBankingClient.mock
     )
 }
@@ -33,6 +35,7 @@ extension OpenBanking {
 extension OpenBankingClient {
 
     static let mock = OpenBankingClient(
+        app: App.preview,
         requestBuilder: RequestBuilder(
             config: Network.Config(
                 scheme: "https",

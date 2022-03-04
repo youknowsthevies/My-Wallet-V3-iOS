@@ -68,7 +68,7 @@ private func paymentRequest(
     paymentRequest.merchantCapabilities = .capability3DS
     paymentRequest.paymentSummaryItems = [
         PKPaymentSummaryItem(
-            label: "",
+            label: "Blockchain.com",
             amount: amount as NSDecimalNumber
         )
     ]

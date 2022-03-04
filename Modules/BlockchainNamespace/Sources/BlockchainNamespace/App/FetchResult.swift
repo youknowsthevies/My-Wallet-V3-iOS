@@ -2,7 +2,7 @@
 
 public enum FetchResult {
     case value(Any, Metadata)
-    case error(Error, Metadata)
+    case error(FetchResult.Error, Metadata)
 }
 
 extension FetchResult {
@@ -45,7 +45,7 @@ extension FetchResult {
         }
     }
 
-    public var error: Error? {
+    public var error: FetchResult.Error? {
         switch self {
         case .error(let error, _):
             return error
@@ -130,7 +130,7 @@ extension FetchResult {
 
     public enum Value<T: Decodable>: DecodedFetchResult {
         case value(T, Metadata)
-        case error(Error, Metadata)
+        case error(FetchResult.Error, Metadata)
     }
 
     public func decode<T: Decodable>(
@@ -151,7 +151,7 @@ extension FetchResult {
         }
     }
 
-    public var result: Result<Any, Error> {
+    public var result: Result<Any, FetchResult.Error> {
         switch self {
         case .value(let value, _):
             return .success(value)
@@ -176,7 +176,7 @@ extension FetchResult.Value {
         }
     }
 
-    public var error: Error? {
+    public var error: FetchResult.Error? {
         switch self {
         case .error(let error, _):
             return error
@@ -185,7 +185,7 @@ extension FetchResult.Value {
         }
     }
 
-    public var result: Result<T, Error> {
+    public var result: Result<T, FetchResult.Error> {
         switch self {
         case .value(let value, _):
             return .success(value)

@@ -54,6 +54,8 @@ final class WalletConnectService {
         }
         let responseEvent: (WalletConnectResponseEvent) -> Void = { [weak server] responseEvent in
             switch responseEvent {
+            case .rejected(let request):
+                server?.send(.reject(request))
             case .invalid(let request):
                 server?.send(.invalid(request))
             case .signature(let signature, let request):

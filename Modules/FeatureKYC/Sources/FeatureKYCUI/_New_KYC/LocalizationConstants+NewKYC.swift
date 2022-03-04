@@ -157,9 +157,14 @@ extension LocalizationConstants {
                 comment: "KYC Upgrade Prompt - Navigation Bar Title"
             )
 
-            static let cta = NSLocalizedString(
+            static let cta_verified = NSLocalizedString(
                 "Get Verified",
-                comment: "KYC Upgrade Prompt - CTA Title"
+                comment: "KYC Upgrade Prompt - Upgrade to Verified CTA Title"
+            )
+
+            static let cta_basic = NSLocalizedString(
+                "Get Basic",
+                comment: "KYC Upgrade Prompt - Upgrade to Basic CTA Title"
             )
 
             static let basicTierName = NSLocalizedString(

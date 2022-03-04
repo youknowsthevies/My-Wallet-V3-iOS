@@ -318,14 +318,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         analyticsHook.onClose(action: action)
     }
 
-    func showKYCUpgradePrompt() {
-        router?.presentKYCUpgradeFlow { [weak self] didUpgrade in
-            if didUpgrade {
-                self?.closeFlow()
-            }
-        }
-    }
-
     func checkoutDidTapBack() {
         transactionModel.process(action: .returnToPreviousStep)
     }
@@ -707,6 +699,38 @@ extension TransactionFlowInteractor {
             return false
         default:
             return true
+        }
+    }
+}
+
+// MARK: - PendingTransactionPageListener
+
+extension TransactionFlowInteractor {
+
+    func pendingTransactionPageDidTapClose() {
+        closeFlow()
+    }
+
+    func pendingTransactionPageDidTapComplete() {
+        transactionModel.state
+            .take(1)
+            .asSingle()
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe { [closeFlow, presentKYCUpgradePrompt] state in
+                if let kycStatus = state.userKYCStatus, kycStatus.canUpgradeTier {
+                    presentKYCUpgradePrompt()
+                } else {
+                    closeFlow()
+                }
+            } onFailure: { [closeFlow] _ in
+                closeFlow()
+            }
+            .disposeOnDeactivate(interactor: self)
+    }
+
+    private func presentKYCUpgradePrompt() {
+        router?.presentKYCUpgradeFlow { [closeFlow] _ in
+            closeFlow()
         }
     }
 }

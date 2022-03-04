@@ -58,6 +58,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
 
     @Binding private var isSelected: Bool
     private let isSelectable: Bool
+    let action: () -> Void
 
     /// Create a Balance Row with the given data.
     ///
@@ -86,6 +87,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         inlineTagView: TagView? = nil,
         tags: [TagView] = [],
         isSelected: Binding<Bool>? = nil,
+        action: @escaping () -> Void = {},
         @ViewBuilder leading: () -> Leading,
         @ViewBuilder graph: () -> Graph
     ) {
@@ -102,6 +104,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         self.tags = tags
         isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
+        self.action = action
         self.leading = leading()
         self.graph = graph()
     }
@@ -109,6 +112,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     public var body: some View {
         Button {
             isSelected = true
+            action()
         } label: {
             HStack(alignment: .customRowVerticalAlignment, spacing: 16) {
                 leading
@@ -273,6 +277,7 @@ extension BalanceRow where Graph == EmptyView {
         inlineTagView: TagView? = nil,
         tags: [TagView] = [],
         isSelected: Binding<Bool>? = nil,
+        action: @escaping () -> Void = {},
         @ViewBuilder leading: () -> Leading
     ) {
         self.init(
@@ -285,6 +290,7 @@ extension BalanceRow where Graph == EmptyView {
             inlineTagView: inlineTagView,
             tags: tags,
             isSelected: isSelected,
+            action: action,
             leading: leading
         ) {
             EmptyView()

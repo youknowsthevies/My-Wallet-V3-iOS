@@ -9,11 +9,11 @@ public enum KYCStatus: Equatable {
     case silverPlus
     case gold
 
-    public var canPurchaseCrypto: Bool {
+    public var canSellCrypto: Bool {
         switch self {
-        case .unverified, .silver:
+        case .unverified, .silver, .inReview:
             return false
-        case .silverPlus, .gold, .inReview:
+        case .silverPlus, .gold:
             return true
         }
     }

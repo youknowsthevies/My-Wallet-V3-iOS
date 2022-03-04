@@ -13,6 +13,7 @@ public enum AVCaptureDeviceError: LocalizedError {
     case notAuthorized
     case failedToRetrieveDevice
     case inputError
+    case unknown
 
     public var errorDescription: String? {
         switch self {
@@ -21,6 +22,8 @@ public enum AVCaptureDeviceError: LocalizedError {
         case .inputError:
             return LocalizationConstants.Errors.inputError
         case .notAuthorized:
+            return nil
+        case .unknown:
             return nil
         }
     }

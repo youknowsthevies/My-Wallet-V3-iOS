@@ -73,6 +73,10 @@ final class TransactionRequestHandler: RequestHandler {
                             break
                         }
                         return .empty()
+                    },
+                    onTransactionRejected: {
+                        responseEvent(.rejected(request))
+                        return .just(())
                     }
                 )
                 return method.userEvent(

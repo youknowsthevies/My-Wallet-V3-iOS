@@ -76,6 +76,10 @@ final class SignRequestHandler: RequestHandler {
                             break
                         }
                         return .empty()
+                    },
+                    onTransactionRejected: {
+                        responseEvent(.rejected(request))
+                        return .just(())
                     }
                 )
                 return .signMessage(defaultAccount, target)

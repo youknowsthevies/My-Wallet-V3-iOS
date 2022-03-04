@@ -1,18 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import CombineSchedulers
 @testable import FeatureOpenBankingData
+import FirebaseProtocol
 @testable import NetworkKit
 import TestKit
 
 /// Used for testing without any UI
 final class OpenBankingLiveTestCase: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBankingClient!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        app = App(remote: Mock.RemoteConfiguration())
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
         banking = OpenBankingClient(
+            app: app,
             requestBuilder: RequestBuilder(
                 config: Network.Config(
                     scheme: "https",
@@ -29,8 +35,7 @@ final class OpenBankingLiveTestCase: XCTestCase {
                     directory: "/tmp/OpenBanking"
                 )
             ).network,
-            scheduler: DispatchQueue.main.eraseToAnyScheduler(),
-            state: .init([.currency: "GBP"])
+            scheduler: DispatchQueue.main.eraseToAnyScheduler()
         )
     }
 
@@ -61,21 +66,23 @@ final class OpenBankingLiveTestCase: XCTestCase {
         )
         .wait(timeout: 5)
 
-        let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
-            switch result {
-            case .success(let url):
-                var consentToken = ""
-                // Stop debugger on `print` and set `consentToken`
-                // to mutate the open banking state to finalise the transaction
-                consentToken = ""
-                print(url) // e consentToken = "..."
-                self.banking.state.set(.consent.token, to: consentToken)
-            case .failure(.keyDoesNotExist):
-                break
-            case .failure(let error):
-                XCTFail("\(error)")
+        let subscription = app.publisher(for: blockchain.ux.payment.method.open.banking.authorisation.url, as: URL.self)
+            .map(\.result)
+            .sink { result in
+                switch result {
+                case .success(let url):
+                    var consentToken = ""
+                    // Stop debugger on `print` and set `consentToken`
+                    // to mutate the open banking state to finalise the transaction
+                    consentToken = ""
+                    print(url) // e consentToken = "..."
+                    self.app.state.set(blockchain.ux.payment.method.open.banking.consent.token, to: consentToken)
+                case .failure(.keyDoesNotExist):
+                    break
+                case .failure(let error):
+                    XCTFail("\(error)")
+                }
             }
-        }
 
         let account = try activation.poll(in: banking)
             .wait(timeout: 120000)
@@ -94,21 +101,24 @@ final class OpenBankingLiveTestCase: XCTestCase {
         let payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
             .wait(timeout: 5)
 
-        let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
-            switch result {
-            case .success(let url):
-                var consentToken = ""
-                // Stop debugger on `print` and set `consentToken`
-                // to mutate the open banking state to finalise the transaction
-                consentToken = ""
-                print(url) // e consentToken = "..."
-                self.banking.state.set(.consent.token, to: consentToken)
-            case .failure(.keyDoesNotExist):
-                break
-            case .failure(let error):
-                XCTFail("\(error)")
+        let subscription = banking.app
+            .publisher(for: blockchain.ux.payment.method.open.banking.authorisation.url, as: URL.self)
+            .map(\.result)
+            .sink { result in
+                switch result {
+                case .success(let url):
+                    var consentToken = ""
+                    // Stop debugger on `print` and set `consentToken`
+                    // to mutate the open banking state to finalise the transaction
+                    consentToken = ""
+                    print(url) // e consentToken = "..."
+                    self.app.state.set(blockchain.ux.payment.method.open.banking.consent.token, to: consentToken)
+                case .failure(.keyDoesNotExist):
+                    break
+                case .failure(let error):
+                    XCTFail("\(error)")
+                }
             }
-        }
 
         let details = try payment.poll(in: banking)
             .wait(timeout: 120000)

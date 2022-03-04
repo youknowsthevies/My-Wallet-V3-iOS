@@ -12,6 +12,8 @@ import EthereumKit
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCoinData
+import FeatureCoinDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
@@ -390,7 +392,7 @@ extension DependencyContainer {
         // so, better have a single instance of this object.
         single { () -> UserAdapterAPI in
             UserAdapter(
-                coincore: DIKit.resolve(),
+                balanceDataFetcher: BalanceDataFetcher(coincore: DIKit.resolve()),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
                 productsService: DIKit.resolve(),
@@ -645,10 +647,39 @@ extension DependencyContainer {
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OpenBankingClient(
+                app: DIKit.resolve(),
                 requestBuilder: builder,
                 network: adapter.network
             )
-            return OpenBanking(banking: client)
+            return OpenBanking(app: DIKit.resolve(), banking: client)
+        }
+
+        // MARK: Coin View
+
+        single { () -> HistoricalPriceClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            return HistoricalPriceClient(
+                request: requestBuilder,
+                network: networkAdapter
+            )
+        }
+
+        single { () -> HistoricalPriceRepositoryAPI in
+            HistoricalPriceRepository(DIKit.resolve())
+        }
+
+        single { () -> RatesClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return RatesClient(
+                networkAdapter: networkAdapter,
+                requestBuilder: requestBuilder
+            )
+        }
+
+        single { () -> RatesRepositoryAPI in
+            RatesRepository(DIKit.resolve())
         }
 
         // MARK: Feature Product
