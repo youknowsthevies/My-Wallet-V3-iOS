@@ -353,7 +353,7 @@ public class Router: Routing {
                 )
             )
         )
-        presenter.present(view)
+        presenter.present(view.embeddedInNavigationView())
         return publisher.eraseToAnyPublisher()
     }
 

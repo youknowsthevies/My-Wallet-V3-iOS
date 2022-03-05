@@ -13,58 +13,57 @@ struct UnlockTradingView: View {
     let store: Store<UnlockTradingState, UnlockTradingAction>
 
     var body: some View {
-        PrimaryNavigationView {
-            WithViewStore(store) { viewStore in
-                VStack(alignment: .leading, spacing: Spacing.padding2) {
-                    HStack(alignment: .top, spacing: Spacing.padding2) {
-                        Image("icon-verified", bundle: .module)
-                            .renderingMode(.template)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .accentColor(.semantic.primary)
-                            .foregroundColor(.semantic.primary)
+        WithViewStore(store) { viewStore in
+            VStack(alignment: .leading, spacing: Spacing.padding2) {
+                HStack(alignment: .top, spacing: Spacing.padding2) {
+                    Image("icon-verified", bundle: .module)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.primary)
+                        .foregroundColor(.semantic.primary)
 
-                        VStack(alignment: .leading, spacing: Spacing.textSpacing) {
-                            Text(L10n.title)
-                                .typography(.body2)
+                    VStack(alignment: .leading, spacing: Spacing.textSpacing) {
+                        Text(L10n.title)
+                            .typography(.body2)
 
-                            Text(L10n.message)
-                                .typography(.caption1)
-                                .foregroundColor(.semantic.overlay)
-                        }
-                    }
-
-                    LargeSegmentedControl(
-                        items: [
-                            .init(
-                                title: L10n.basicTierName,
-                                identifier: UnlockTradingState.UpgradePath.basic
-                            ),
-                            .init(
-                                title: L10n.verifiedTierName,
-                                identifier: UnlockTradingState.UpgradePath.verified
-                            )
-                        ],
-                        selection: viewStore.binding(\.$selectedUpgradePath)
-                    )
-
-                    ScrollView {
-                        makeUpgradePrompt(upgradePath: viewStore.selectedUpgradePath)
+                        Text(L10n.message)
+                            .typography(.caption1)
+                            .foregroundColor(.semantic.overlay)
                     }
                 }
-                .padding(.vertical, Spacing.padding2)
-                .padding(.horizontal, Spacing.padding3)
-                .primaryNavigation(
-                    title: L10n.navigationTitle,
-                    trailing: {
-                        Icon.closeCirclev2
-                            .onTapGesture {
-                                viewStore.send(.closeButtonTapped)
-                            }
-                    }
+
+                LargeSegmentedControl(
+                    items: [
+                        .init(
+                            title: L10n.basicTierName,
+                            identifier: UnlockTradingState.UpgradePath.basic
+                        ),
+                        .init(
+                            title: L10n.verifiedTierName,
+                            identifier: UnlockTradingState.UpgradePath.verified
+                        )
+                    ],
+                    selection: viewStore.binding(\.$selectedUpgradePath)
                 )
+
+                ScrollView {
+                    makeUpgradePrompt(upgradePath: viewStore.selectedUpgradePath)
+                        .padding(.bottom, Spacing.padding2)
+                }
             }
+            .padding(.top, Spacing.padding2)
+            .padding(.horizontal, Spacing.padding3)
+            .primaryNavigation(
+                title: L10n.navigationTitle,
+                trailing: {
+                    Icon.closeCirclev2
+                        .onTapGesture {
+                            viewStore.send(.closeButtonTapped)
+                        }
+                }
+            )
         }
     }
 
@@ -97,6 +96,15 @@ struct UnlockTradingView: View {
                     removal: .move(edge: .leading)
                 )
             )
+        }
+    }
+}
+
+extension UnlockTradingView {
+
+    func embeddedInNavigationView() -> some View {
+        PrimaryNavigationView {
+            self
         }
     }
 }

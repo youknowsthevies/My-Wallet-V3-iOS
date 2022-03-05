@@ -12,7 +12,7 @@ private typealias LimitsFeatureStrings = LocalizedStrings.LimitsOverview.Feature
 extension KYC.Tier {
 
     var accentColor: Color {
-        isGold ? .semantic.gold : .semantic.silver
+        isGold ? .semantic.primary : .semantic.silver
     }
 
     var limitsTitle: String {
@@ -50,9 +50,13 @@ struct TierTradeLimitCell: View {
 
     var body: some View {
         HStack(spacing: Spacing.padding2) {
-            Icon.blockchain
+            Image("icon-verified", bundle: .module)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
                 .frame(width: 24, height: 24)
                 .accentColor(tier.accentColor)
+                .foregroundColor(tier.accentColor)
             VStack(alignment: .leading, spacing: Spacing.textSpacing) {
                 Text(tier.limitsTitle)
                     .typography(.body2)

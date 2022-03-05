@@ -139,7 +139,7 @@ extension LocalizationConstants {
             )
         }
 
-        // MARK: - Unlock Trading View (Prompt to upgrade to Gold tier)
+        // MARK: - Unlock Trading View (Prompt to upgrade to Verified tier)
 
         enum UnlockTrading {
             static let title = NSLocalizedString(

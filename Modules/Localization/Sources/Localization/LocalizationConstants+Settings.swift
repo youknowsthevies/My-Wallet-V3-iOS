@@ -21,8 +21,8 @@ extension LocalizationConstants.Settings {
 
     public enum Badge {
         public enum Limits {
-            public static let unlockGold = NSLocalizedString("Unlock Gold", comment: "Unlock Gold")
-            public static let unlockSilver = NSLocalizedString("Unlock Silver", comment: "Unlock Silver")
+            public static let unlockGold = NSLocalizedString("Get Verified", comment: "Unlock Tier 2")
+            public static let unlockSilver = NSLocalizedString("Get Basic", comment: "Unlock Tier 1")
             public static let inReview = NSLocalizedString("In Review", comment: "KYC status is under review")
             public static let failed = NSLocalizedString("Failed", comment: "Verification Failed")
         }
@@ -84,7 +84,10 @@ extension LocalizationConstants.Settings {
             comment: "You can have a maximum of five cards"
         )
         public static let remove = NSLocalizedString("Remove Card", comment: "Remove Card")
-        public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")
+        public static let unverified = NSLocalizedString(
+            "You must have Verified Level verification status to add a credit card.",
+            comment: "You must have Verified Level verification status to add a credit card."
+        )
     }
 
     public enum Bank {
@@ -96,7 +99,10 @@ extension LocalizationConstants.Settings {
             comment: "You can have a maximum of one bank per currency"
         )
         public static let remove = NSLocalizedString("Remove Bank", comment: "Remove Bank")
-        public static let unverified = NSLocalizedString("You must have Gold Level verification status to link a bank.", comment: "You must have Gold Level verification status to link a bank")
+        public static let unverified = NSLocalizedString(
+            "You must have Verified Level verification status to link a bank.",
+            comment: "You must have Verified Level verification status to link a bank"
+        )
 
         public static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
     }
