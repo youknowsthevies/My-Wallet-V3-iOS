@@ -18,10 +18,6 @@ extension DependencyContainer {
 
     public static var platformKit = module {
 
-        // MARK: - Today Extension
-
-        single { PortfolioSyncingService() as BalanceSharingSettingsServiceAPI }
-
         // MARK: - Clients
 
         factory { SettingsClient() as SettingsClientAPI }

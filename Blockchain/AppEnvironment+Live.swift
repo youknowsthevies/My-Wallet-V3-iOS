@@ -25,7 +25,6 @@ extension AppEnvironment {
             deeplinkHandler: resolve(),
             deeplinkRouter: resolve(),
             backgroundAppHandler: resolve(),
-            portfolioSyncingService: resolve(),
             mobileAuthSyncService: resolve(),
             pushNotificationsRepository: resolve(),
             resetPasswordService: resolve(),

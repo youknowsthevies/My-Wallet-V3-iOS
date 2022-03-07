@@ -11,6 +11,5 @@ extension AnalyticsEvents.New {
         case emailChangeClicked
         case biometricsUpdated(isEnabled: Bool)
         case recoveryPhraseShown
-        case syncMyWidgetPortfolioUpdated(isEnabled: Bool)
     }
 }
