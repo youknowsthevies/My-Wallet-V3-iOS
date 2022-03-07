@@ -134,7 +134,7 @@ final class AppDeepLinkTests: XCTestCase {
         let scanUrl = URL(string: "https://blockchain.com/app/qr/scan/")!
         XCTAssertNotNil(rules.match(for: scanUrl))
 
-        let assetUrl = URL(string: "https://blockchain.com/app/asset?code=BTC")!
+        let assetUrl = URL(string: "https://blockchain.com/#/app/asset?code=BTC")!
         let assetMatch = rules.match(for: assetUrl)
         XCTAssertEqual(assetMatch?.rule.event, blockchain.app.deep_link.asset[].ref())
         XCTAssertEqual(assetMatch?.parameters().first?.value, "BTC")

@@ -152,8 +152,7 @@ extension App.DeepLink.Rule {
 extension App.DeepLink.Rule.Match {
     public func parameters() -> [Tag: String] {
 
-        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-            .queryItems ?? []
+        let items = url.queryItems()
 
         return rule.parameters
             .reduce(into: [:]) { rules, parameter in
@@ -162,6 +161,21 @@ extension App.DeepLink.Rule.Match {
                     ? items[named: parameter.name]?.value
                     : NSString(string: url.absoluteString).substring(with: range)
             }
+    }
+}
+
+extension URL {
+    func queryItems() -> [URLQueryItem] {
+        let components = URLComponents(url: self, resolvingAgainstBaseURL: false)
+        let queryItems = components?.queryItems ?? []
+
+        // since the web only uses URL fragments followed by query items,
+        // it seems to be the easiest way to get the query items back
+        // ie: https://login.blockchain.com/#/app/asset?code=BTC
+        let fragmentItems = URLComponents(string: components?.fragment ?? "")?
+            .queryItems ?? []
+
+        return queryItems + fragmentItems
     }
 }
 
