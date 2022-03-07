@@ -1,10 +1,14 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import FeatureDashboardUI
 import PlatformUIKit
 import SwiftUI
+import ToolKit
 
 struct PricesView: UIViewControllerRepresentable {
+
+    var featureFlagService: FeatureFlagsServiceAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
@@ -15,7 +19,8 @@ struct PricesView: UIViewControllerRepresentable {
                 interactor: PricesScreenInteractor(
                     showSupportedPairsOnly: false
                 )
-            )
+            ),
+            featureFlagService: featureFlagService
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

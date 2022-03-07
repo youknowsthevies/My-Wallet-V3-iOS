@@ -4,6 +4,7 @@ import SwiftUI
 
 enum TourAction {
     case createAccount
+    case didChangeStep(TourState.Step)
     case restore
     case logIn
     case manualLogin

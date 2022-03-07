@@ -339,10 +339,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel.process(action: .targetAccountSelected(target))
     }
 
-    func didConfirmTransaction() {
-        transactionModel.process(action: .executeTransaction)
-    }
-
     func continueToKYCTiersScreen() {
         router?.presentKYCFlowIfNeeded { _ in
             // NOOP: this was designed for Swap where presenting KYC means replacing the root view with a KYC prompt.
@@ -383,7 +379,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             return
         }
         guard !newState.isGoingBack else {
-            guard previousState?.step.goingBackSkipsNavigation == false else {
+            guard !goingBackSkipsNavigation(previousState: previousState, newState: newState) else {
                 return
             }
 
@@ -542,8 +538,18 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     canAddMoreSources: canAddMoreSources
                 )
 
-            case .deposit,
-                 .interestTransfer,
+            case .deposit:
+                // `Deposit` can only be reached if the user has been
+                // tier two approved. If the user has been tier two approved
+                // then they can add more sources.
+                router?.routeToSourceAccountPicker(
+                    transitionType: .replaceRoot,
+                    transactionModel: transactionModel,
+                    action: action,
+                    canAddMoreSources: true
+                )
+
+            case .interestTransfer,
                  .withdraw,
                  .buy,
                  .interestWithdraw,
@@ -659,7 +665,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             }
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
-        case .funds:
+        case .funds, .applePay:
             // Nothing to link, move on to the next step
             transactionModel.process(action: .prepareTransaction)
         }
@@ -674,6 +680,33 @@ extension OpenBankingAction {
             return order.inputValue.code
         case .deposit(let order):
             return order.amount.code
+        }
+    }
+}
+
+extension TransactionFlowInteractor {
+
+    func goingBackSkipsNavigation(
+        previousState: TransactionState?,
+        newState: TransactionState
+    ) -> Bool {
+        guard let previousState = previousState,
+              previousState.step.goingBackSkipsNavigation
+        else {
+            return false
+        }
+
+        let source = newState.source as? PaymentMethodAccount
+
+        switch (previousState.step, newState.step) {
+        /// Dismiss the select payment method screen when selecting Apple Pay in the linkPaymentMethod screen
+        case (.linkPaymentMethod, .enterAmount) where source?.paymentMethod.type.isApplePay == true:
+            return false
+        /// Dismiss the selectSource screen after adding a new card
+        case (.linkACard, .selectSource):
+            return false
+        default:
+            return true
         }
     }
 }

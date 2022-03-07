@@ -127,6 +127,10 @@ public struct AssetModel: Hashable {
 
 extension AssetModel {
 
+    public var cryptoCurrency: CryptoCurrency? {
+        CryptoCurrency(assetModel: self)
+    }
+
     public static var bitcoin: AssetModel {
         AssetModel(
             code: "BTC",

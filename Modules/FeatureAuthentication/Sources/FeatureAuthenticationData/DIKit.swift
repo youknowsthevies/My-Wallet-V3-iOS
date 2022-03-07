@@ -114,11 +114,11 @@ extension DependencyContainer {
         }
 
         factory { () -> CredentialsRepositoryAPI in
-            let repository: WalletRepositoryAPI = DIKit.resolve()
+            let guidRepo: GuidRepositoryAPI = DIKit.resolve()
+            let sharedKeyRepo: SharedKeyRepositoryAPI = DIKit.resolve()
             return CredentialsRepository(
-                walletRepository: repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+                guidRepository: guidRepo,
+                sharedKeyRepository: sharedKeyRepo
             )
         }
 

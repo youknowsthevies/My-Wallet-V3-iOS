@@ -53,7 +53,7 @@ final class HorizonProxy: HorizonProxyAPI {
     }
 
     func minimumBalance(subentryCount: UInt) -> CryptoValue {
-        CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .coin(.stellar))
+        CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .stellar)
     }
 
     func accountResponse(for accountID: String) -> Single<AccountResponse> {

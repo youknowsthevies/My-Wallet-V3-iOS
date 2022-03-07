@@ -3,7 +3,8 @@
 import Foundation
 
 enum PriceAction: Equatable {
-    case currencyDidLoad
+    case currencyDidAppear
+    case currencyDidDisappear
     case priceValuesDidLoad(price: String, delta: Double)
     case none
 }

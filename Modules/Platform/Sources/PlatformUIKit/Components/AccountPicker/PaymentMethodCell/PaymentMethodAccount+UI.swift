@@ -11,6 +11,9 @@ extension PaymentMethod {
         case .card:
             return .local(name: "icon-card", bundle: .platformUIKit)
 
+        case .applePay:
+            return .local(name: "icon-applepay", bundle: .platformUIKit)
+
         case .bankAccount, .bankTransfer:
             return .local(name: "icon-bank", bundle: .platformUIKit)
 
@@ -27,6 +30,9 @@ extension PaymentMethodAccount {
         switch paymentMethodType {
         case .card(let cardData):
             return cardData.type.thumbnail ?? .local(name: "icon-card", bundle: .platformUIKit)
+
+        case .applePay:
+            return .local(name: "icon-applepay", bundle: .platformUIKit)
 
         case .linkedBank:
             return .local(name: "icon-bank", bundle: .platformUIKit)
@@ -45,11 +51,17 @@ extension PaymentMethodAccount {
         case .account:
             return .fiat
 
-        case .card,
-             .suggested:
+        case .card:
             return .background
 
-        case .linkedBank:
+        case .suggested(let paymentMethod):
+            guard !paymentMethod.type.isApplePay else {
+                return .clear
+            }
+            return .background
+
+        case .linkedBank,
+             .applePay:
             return .clear
         }
     }

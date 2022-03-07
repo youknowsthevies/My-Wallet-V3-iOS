@@ -15,6 +15,7 @@ public protocol EthereumTransactionBuildingServiceAPI {
         addressReference: EthereumAddress?,
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
+        nonce: BigUInt,
         contractAddress: EthereumAddress?
     ) -> Result<EthereumTransactionCandidate, Never>
 
@@ -23,6 +24,7 @@ public protocol EthereumTransactionBuildingServiceAPI {
         to address: EthereumAddress,
         gasPrice: BigUInt,
         gasLimit: BigUInt,
+        nonce: BigUInt,
         transferType: EthereumTransactionCandidate.TransferType
     ) -> Result<EthereumTransactionCandidate, Never>
 }
@@ -35,6 +37,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         addressReference: EthereumAddress?,
         feeLevel: FeeLevel,
         fee: EthereumTransactionFee,
+        nonce: BigUInt,
         contractAddress: EthereumAddress?
     ) -> Result<EthereumTransactionCandidate, Never> {
         let isContract = contractAddress != nil
@@ -50,6 +53,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
             to: address,
             gasPrice: gasPrice,
             gasLimit: gasLimit + extraGasLimit,
+            nonce: nonce,
             transferType: transferType(
                 addressReference: addressReference,
                 contractAddress: contractAddress
@@ -62,6 +66,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         to address: EthereumAddress,
         gasPrice: BigUInt,
         gasLimit: BigUInt,
+        nonce: BigUInt,
         transferType: EthereumTransactionCandidate.TransferType
     ) -> Result<EthereumTransactionCandidate, Never> {
         .success(
@@ -70,6 +75,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 gasPrice: gasPrice,
                 gasLimit: gasLimit,
                 value: BigUInt(amount.amount),
+                nonce: nonce,
                 transferType: transferType
             )
         )

@@ -67,7 +67,7 @@ import XCTest
 //        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.useTransactionsFlowToBuyCrypto)))
 //        let mockViewController = MockViewController()
 //        let cryptoAccount = ReceivePlaceholderCryptoAccount(
-//            asset: .coin(.bitcoin)
+//            asset: .bitcoin
 //        )
 //        let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
 //        XCTAssertPublisherCompletion(publisher)
@@ -99,13 +99,13 @@ import XCTest
 //        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.useTransactionsFlowToBuyCrypto)))
 //        let mockViewController = MockViewController()
 //        let cryptoAccount = ReceivePlaceholderCryptoAccount(
-//            asset: .coin(.bitcoin)
+//            asset: .bitcoin
 //        )
 //        let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
 //        XCTAssertPublisherCompletion(publisher)
 //        let mockRouter = mockBuyFlowBuilder.builtRouters.first
 //        let buyStartRequests = mockRouter?.recordedInvocations.start
 //        XCTAssertEqual(buyStartRequests?.count, 1)
-//        XCTAssertEqual(buyStartRequests?.first?.cryptoAccount?.asset, .coin(.bitcoin))
+//        XCTAssertEqual(buyStartRequests?.first?.cryptoAccount?.asset, .bitcoin)
 //    }
 // }

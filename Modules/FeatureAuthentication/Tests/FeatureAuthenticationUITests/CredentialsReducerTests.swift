@@ -67,7 +67,6 @@ final class CredentialsReducerTests: XCTestCase {
         XCTAssertNil(state.seedPhraseState)
         XCTAssertFalse(state.isManualPairing)
         XCTAssertFalse(state.isLoading)
-        XCTAssertFalse(state.isTroubleLoggingInScreenVisible)
         XCTAssertFalse(state.isWalletIdentifierIncorrect)
         XCTAssertFalse(state.isTwoFactorOTPVerified)
         XCTAssertFalse(state.isAccountLocked)
@@ -77,9 +76,9 @@ final class CredentialsReducerTests: XCTestCase {
     func test_did_appear_should_setup_wallet_info() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
         }
     }
 
@@ -89,9 +88,9 @@ final class CredentialsReducerTests: XCTestCase {
 
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfoWithTwoFA
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
             state.isTwoFAPrepared = true
         }
 
@@ -103,6 +102,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         mockMainQueue.advance()
 
@@ -145,7 +147,7 @@ final class CredentialsReducerTests: XCTestCase {
     }
 
     func test_wallet_identifier_fallback_did_appear_should_setup_guid_if_present() {
-        let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.guid
+        let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.wallet!.guid
         testStore.send(.didAppear(context: .walletIdentifier(guid: mockWalletGuid))) { state in
             state.walletPairingState.walletGuid = mockWalletGuid
         }
@@ -184,6 +186,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
         testStore.receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
             state.isLoading = true
@@ -217,6 +222,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
 
         // authentication with email required
@@ -244,6 +252,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         testStore.receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
             state.isLoading = true
@@ -276,6 +287,9 @@ final class CredentialsReducerTests: XCTestCase {
         }
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
+        }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
         }
         mockMainQueue.advance()
 
@@ -342,6 +356,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.receive(.password(.showIncorrectPasswordError(false))) { state in
             state.passwordState.isPasswordIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
 
         // authentication with google auth required
@@ -391,6 +408,9 @@ final class CredentialsReducerTests: XCTestCase {
             state.twoFAState?.twoFACodeIncorrectContext = .none
             state.twoFAState?.isTwoFACodeIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
         testStore.receive(.walletPairing(.twoFactorOTPDidVerified)) { state in
             state.isTwoFactorOTPVerified = true
@@ -435,6 +455,9 @@ final class CredentialsReducerTests: XCTestCase {
             state.twoFAState?.twoFACodeIncorrectContext = .none
             state.twoFAState?.isTwoFACodeIncorrect = false
         }
+        testStore.receive(.alert(.dismiss)) { state in
+            state.credentialsFailureAlert = nil
+        }
         mockMainQueue.advance()
         testStore.receive(
             .walletPairing(
@@ -460,9 +483,9 @@ final class CredentialsReducerTests: XCTestCase {
     private func setupWalletInfo() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-            state.walletPairingState.emailAddress = mockWalletInfo.email!
-            state.walletPairingState.walletGuid = mockWalletInfo.guid
-            state.walletPairingState.emailCode = mockWalletInfo.emailCode
+            state.walletPairingState.emailAddress = mockWalletInfo.wallet!.email!
+            state.walletPairingState.walletGuid = mockWalletInfo.wallet!.guid
+            state.walletPairingState.emailCode = mockWalletInfo.wallet!.emailCode
         }
     }
 }

@@ -157,17 +157,13 @@ final class TransactionModel {
             return nil
         case .updateTransactionComplete:
             return nil
-        case .fetchFiatRates:
-            return processFiatRatePairs()
-        case .fetchTargetRates:
-            return processTransactionRatePair()
+        case .fetchTransactionExchangeRates:
+            return processFetchExchangeRates()
+        case .transactionExchangeRatesFetched:
+            return nil
         case .fetchUserKYCInfo:
             return processFetchKYCStatus()
         case .userKYCInfoFetched:
-            return nil
-        case .transactionFiatRatePairs:
-            return nil
-        case .sourceDestinationPair:
             return nil
         case .fatalTransactionError:
             return nil
@@ -381,29 +377,35 @@ final class TransactionModel {
         // If we are processing an OpenBanking transaction we do not want to execute the transaction
         // as this is done by the backend once the customer has authorised the payment via open banking
         // and we have submitted the consent token from the deep link
-        if (source as? LinkedBankAccount)?.partner == .yapily {
+        switch source {
+        case let linkedBank as LinkedBankAccount
+            where linkedBank.isYapily:
             return Disposables.create()
+        case let paymentMethod as PaymentMethodAccount
+            where paymentMethod.isYapily:
+            return Disposables.create()
+        default:
+            break
         }
-        if let paymentMethod = source as? PaymentMethodAccount {
-            switch paymentMethod.paymentMethodType {
-            case .linkedBank(let data) where data.partner == .yapily:
-                return Disposables.create()
-            default:
-                break
-            }
-        }
-        return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
-            .subscribe(onSuccess: { [weak self] result in
-                switch result {
-                case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
-                    self?.process(action: .performSecurityChecksForTransaction(result))
-                default:
-                    self?.process(action: .updateTransactionComplete)
+
+        return interactor
+            .verifyAndExecute(order: order, secondPassword: secondPassword)
+            .subscribe(
+                onSuccess: { [weak self] result in
+                    switch result {
+                    case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
+                        self?.process(action: .performSecurityChecksForTransaction(result))
+                    default:
+                        self?.process(action: .updateTransactionComplete)
+                    }
+                },
+                onFailure: { [weak self] error in
+                    Logger.shared.error(
+                        "!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))"
+                    )
+                    self?.process(action: .fatalTransactionError(error))
                 }
-            }, onFailure: { [weak self] error in
-                Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
-                self?.process(action: .fatalTransactionError(error))
-            })
+            )
     }
 
     private func processPollOrderStatus(order: TransactionOrder) -> Disposable? {
@@ -474,11 +476,11 @@ final class TransactionModel {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
-            .do(onNext: { [weak self] _ in
+            .do(onNext: { [weak self] pendingTransaction in
                 guard let self = self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
-                self.onFirstUpdate(amount: amount)
+                self.onFirstUpdate(amount: pendingTransaction.amount)
             })
             .subscribe(
                 onNext: { [weak self] transaction in
@@ -493,8 +495,7 @@ final class TransactionModel {
 
     private func onFirstUpdate(amount: MoneyValue) {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
-        process(action: .fetchFiatRates)
-        process(action: .fetchTargetRates)
+        process(action: .fetchTransactionExchangeRates)
         process(action: .fetchUserKYCInfo)
         process(action: .updateAmount(amount))
     }
@@ -507,19 +508,11 @@ final class TransactionModel {
             }
     }
 
-    private func processFiatRatePairs() -> Disposable {
+    private func processFetchExchangeRates() -> Disposable {
         interactor
-            .startFiatRatePairsFetch
-            .subscribe { [weak self] transactionMoneyValuePairs in
-                self?.process(action: .transactionFiatRatePairs(transactionMoneyValuePairs))
-            }
-    }
-
-    private func processTransactionRatePair() -> Disposable {
-        interactor
-            .startCryptoRatePairFetch
-            .subscribe { [weak self] moneyValuePair in
-                self?.process(action: .sourceDestinationPair(moneyValuePair))
+            .transactionExchangeRates
+            .subscribe { [weak self] rates in
+                self?.process(action: .transactionExchangeRatesFetched(rates))
             }
     }
 
@@ -576,5 +569,43 @@ final class TransactionModel {
                 })
         }
         return nil
+    }
+}
+
+extension PaymentMethodAccount {
+    fileprivate var isYapily: Bool {
+        switch paymentMethodType {
+        case .linkedBank(let linkedBank):
+            return linkedBank.isYapily
+        case .account,
+             .applePay,
+             .card,
+             .suggested:
+            return false
+        }
+    }
+}
+
+extension LinkedBankData {
+    fileprivate var isYapily: Bool {
+        switch partner {
+        case .yapily:
+            return true
+        case .none,
+             .yodlee:
+            return false
+        }
+    }
+}
+
+extension LinkedBankAccount {
+    fileprivate var isYapily: Bool {
+        switch partner {
+        case .yapily:
+            return true
+        case .none,
+             .yodlee:
+            return false
+        }
     }
 }

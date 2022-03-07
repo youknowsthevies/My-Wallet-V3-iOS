@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureCardsDomain
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import PlatformKit
@@ -38,6 +39,15 @@ extension DependencyContainer {
 
         factory {
             FiatCurrencyCodeProviderAdapter() as FiatCurrencyCodeProviderAPI
+        }
+
+        factory {
+            ApplePayAdapter(
+                fiatCurrencyService: DIKit.resolve(),
+                featureFlagsService: DIKit.resolve(),
+                eligibleMethodsClient: DIKit.resolve(),
+                tiersService: DIKit.resolve()
+            ) as ApplePayEligibleServiceAPI
         }
     }
 }

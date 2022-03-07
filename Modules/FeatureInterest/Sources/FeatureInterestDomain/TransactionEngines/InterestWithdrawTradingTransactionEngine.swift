@@ -148,8 +148,7 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
                                     fee: pendingTransaction.feeAmount,
                                     feeInFiat: fiatFees.moneyValue
                                 )
-                            ),
-                            .total(.init(total: pendingTransaction.amount))
+                            )
                         ]
                     )
             }

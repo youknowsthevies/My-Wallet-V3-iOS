@@ -208,8 +208,6 @@ extension DependencyContainer {
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
-        factory { WithdrawalRouter() as WithdrawalRouting }
-
         // MARK: - AppCoordinator
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
@@ -505,7 +503,10 @@ extension DependencyContainer {
         }
 
         factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> FeatureOnboardingUI.EmailVerificationRouterAPI in
@@ -519,7 +520,10 @@ extension DependencyContainer {
         }
 
         factory { () -> TransactionsAdapterAPI in
-            TransactionsAdapter()
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            )
         }
 
         factory { () -> PlatformUIKit.KYCRouting in
@@ -579,6 +583,7 @@ extension DependencyContainer {
                 repository: DIKit.resolve(),
                 walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
+                credentialsRepository: DIKit.resolve(),
                 nativeWalletEnabledUse: nativeWalletEnabledUseImpl
             )
         }
@@ -596,9 +601,9 @@ extension DependencyContainer {
         }
 
         factory { () -> DeviceVerificationServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
+            let sessionTokenRepository: SessionTokenRepositoryAPI = DIKit.resolve()
             return DeviceVerificationService(
-                sessionTokenRepository: manager.repository
+                sessionTokenRepository: sessionTokenRepository
             ) as DeviceVerificationServiceAPI
         }
 

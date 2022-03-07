@@ -1,28 +1,29 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import WalletCore
+import CryptoSwift
+import Foundation
 
-struct EthereumAddressValidator {
+enum EthereumAddressValidator {
 
-    /// Converts address to checksum address
+    /// Converts address to checksum address.
+    /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
     static func toChecksumAddress(_ address: String) -> String? {
         let address = address.lowercased().withoutHex
         guard let data = address.data(using: .ascii) else { return nil }
-        let hash = WalletCore.Hash.keccak256(data: data).hexValue
-        var ret = "0x"
-        for (i, char) in address.enumerated() {
-            let startIdx = hash.index(hash.startIndex, offsetBy: i)
-            let endIdx = hash.index(hash.startIndex, offsetBy: i + 1)
-            let hashChar = String(hash[startIdx..<endIdx])
-            let c = String(char)
-            guard let int = Int(hashChar, radix: 16) else { return nil }
-            if int >= 8 {
-                ret += c.uppercased()
-            } else {
-                ret += c
+        let hash = SHA3(variant: .keccak256).calculate(for: Array(data)).toHexString()
+        return zip(address, hash)
+            .map { a, h -> String in
+                switch (a, h) {
+                case (let x, _) where "0123456789".contains(x):
+                    return String(a)
+                case (_, let x) where "89abcdef".contains(x):
+                    return String(a).uppercased()
+                default:
+                    return String(a).lowercased()
+                }
             }
-        }
-        return ret
+            .joined()
+            .withHex
     }
 
     // Check that the address only contains alphanumerics

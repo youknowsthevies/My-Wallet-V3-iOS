@@ -10,10 +10,24 @@ import ToolKit
 
 final class TradingToOnChainTransactionEngine: TransactionEngine {
 
+    let orderDirection: OrderDirection = .toUserKey
+
     /// This might need to be `1:1` as there isn't a transaction pair.
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
+
+    lazy var quote: Observable<PricedQuote> = {
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+            .asObservable()
+    }()
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
@@ -49,6 +63,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     private let feeCache: CachedValue<CustodialTransferFee>
     private let transferRepository: CustodialTransferRepositoryAPI
     private let transactionLimitsService: TransactionLimitsServiceAPI
+    private let quotesEngine: QuotesEngine
 
     // MARK: - Init
 
@@ -57,13 +72,15 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transferRepository: CustodialTransferRepositoryAPI = resolve(),
-        transactionLimitsService: TransactionLimitsServiceAPI = resolve()
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
+        quotesEngine: QuotesEngine
     ) {
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
         self.transactionLimitsService = transactionLimitsService
+        self.quotesEngine = quotesEngine
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
@@ -122,9 +139,18 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
         return transactionLimits.eraseError()
             .zip(walletCurrencyService.displayCurrencyPublisher.eraseError())
-            .map { [sourceTradingAccount, sourceAsset] transactionLimits, walletCurrency -> PendingTransaction in
+            .map { [sourceTradingAccount, sourceAsset, predefinedAmount] transactionLimits, walletCurrency
+                -> PendingTransaction in
+                let amount: MoneyValue
+                if let predefinedAmount = predefinedAmount,
+                   predefinedAmount.currencyType == sourceAsset
+                {
+                    amount = predefinedAmount.moneyValue
+                } else {
+                    amount = .zero(currency: sourceAsset)
+                }
                 var pendingTransaction = PendingTransaction(
-                    amount: .zero(currency: sourceAsset),
+                    amount: amount,
                     available: .zero(currency: sourceAsset),
                     feeAmount: .zero(currency: sourceAsset),
                     feeForFullAvailable: .zero(currency: sourceAsset),
@@ -279,7 +305,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 extension CryptoTradingAccount {
     fileprivate var isMemoSupported: Bool {
         switch asset {
-        case .coin(.stellar):
+        case .stellar:
             return true
         default:
             return false

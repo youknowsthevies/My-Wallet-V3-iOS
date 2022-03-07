@@ -111,9 +111,9 @@ let skipUpgradeReducer = Reducer.combine(
                 case .credentials:
                     state.credentialsState = .init(
                         walletPairingState: WalletPairingState(
-                            emailAddress: state.walletInfo.email ?? "",
-                            emailCode: state.walletInfo.emailCode,
-                            walletGuid: state.walletInfo.guid
+                            emailAddress: state.walletInfo.wallet?.email ?? "",
+                            emailCode: state.walletInfo.wallet?.emailCode,
+                            walletGuid: state.walletInfo.wallet?.guid ?? ""
                         )
                     )
                 }

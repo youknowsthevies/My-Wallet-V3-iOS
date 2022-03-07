@@ -13,7 +13,7 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
-    let asset: CryptoCurrency = .coin(.bitcoin)
+    let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
     let hdAccountIndex: Int
 
@@ -22,7 +22,7 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     var pendingBalance: Single<MoneyValue> {
-        .just(.zero(currency: .coin(.bitcoin)))
+        .just(.zero(currency: .bitcoin))
     }
 
     var actionableBalance: Single<MoneyValue> {
@@ -130,7 +130,7 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
     ) {
         xPub = walletAccount.publicKeys.default
         hdAccountIndex = walletAccount.index
-        label = walletAccount.label ?? CryptoCurrency.coin(.bitcoin).defaultWalletName
+        label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.balanceService = balanceService
         self.priceService = priceService

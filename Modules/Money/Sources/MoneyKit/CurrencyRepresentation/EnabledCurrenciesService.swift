@@ -15,30 +15,19 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     private var nonCustodialCryptoCurrencies: [CryptoCurrency] {
         [
-            .coin(.bitcoin),
-            .coin(.ethereum),
-            .coin(.bitcoinCash),
-            .coin(.stellar)
+            .bitcoin,
+            .ethereum,
+            .bitcoinCash,
+            .stellar
         ]
     }
 
     private var custodialCurrencies: [CryptoCurrency] {
         repository.custodialAssets
             .currencies
-            .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
             .filter(\.products.enablesCurrency)
-            .compactMap { model in
-                switch model.kind {
-                case .erc20:
-                    return .erc20(model)
-                case .coin:
-                    return .coin(model)
-                case .celoToken:
-                    return .celoToken(model)
-                case .fiat:
-                    return nil
-                }
-            }
+            .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
+            .compactMap(\.cryptoCurrency)
     }
 
     private var erc20Currencies: [CryptoCurrency] {
@@ -46,9 +35,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .currencies
             .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
             .filter(\.kind.isERC20)
-            .compactMap { model in
-                .erc20(model)
-            }
+            .compactMap(\.cryptoCurrency)
     }
 
     lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {

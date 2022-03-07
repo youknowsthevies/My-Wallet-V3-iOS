@@ -65,7 +65,7 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
     }
 
     private func isEnabled(cryptoCurrency: CryptoCurrency) -> AnyPublisher<Bool, Never> {
-        guard cryptoCurrency.isERC20 || cryptoCurrency == .coin(.ethereum) else {
+        guard cryptoCurrency.isERC20 || cryptoCurrency == .ethereum else {
             // No App support.
             return .just(false)
         }
@@ -74,6 +74,6 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
 }
 
 private func code(for cryptoCurrency: CryptoCurrency) -> String {
-    let parent: CryptoCurrency = cryptoCurrency.isERC20 ? .coin(.ethereum) : cryptoCurrency
+    let parent: CryptoCurrency = cryptoCurrency.isERC20 ? .ethereum : cryptoCurrency
     return parent.code.lowercased()
 }

@@ -32,7 +32,7 @@ struct ResetAccountWarningView: View {
     }
 
     var body: some View {
-        NavigationView {
+        PrimaryNavigationView {
             VStack {
                 Spacer()
                 Image.CircleIcon.resetAccount

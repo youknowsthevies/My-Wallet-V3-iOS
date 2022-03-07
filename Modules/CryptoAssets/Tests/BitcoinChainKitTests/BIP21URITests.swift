@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinChainKit
+import MoneyKit
 import XCTest
 
 final class BIP21URITests: XCTestCase {
@@ -16,7 +17,9 @@ final class BIP21URITests: XCTestCase {
         }
 
         enum Amount {
-            static let valid = "1.03"
+            static func valid(currency: CryptoCurrency) -> CryptoValue {
+                .create(major: "1.03", currency: currency)!
+            }
         }
     }
 
@@ -53,12 +56,12 @@ final class BIP21URITests: XCTestCase {
 
     func testBitcoinWebFormatWithAmount() {
         let url = URL(
-            string: "\(TestData.Scheme.valid):\(TestData.Address.valid)?amount=\(TestData.Amount.valid)"
+            string: "\(TestData.Scheme.valid):\(TestData.Address.valid)?amount=1.03"
         )!
         let payload = BIP21URI<BitcoinToken>(url: url)
         XCTAssertNotNil(payload)
         XCTAssertEqual(TestData.Address.valid, payload?.address)
-        XCTAssertEqual(TestData.Amount.valid, payload?.amount)
+        XCTAssertEqual(TestData.Amount.valid(currency: BitcoinToken.coin.cryptoCurrency), payload?.amount)
     }
 
     func testBitcoinAddressInHost() {
@@ -81,12 +84,12 @@ final class BIP21URITests: XCTestCase {
 
     func testBitcoinAddressAndAmount() {
         let url = URL(
-            string: "\(TestData.Scheme.valid)://\(TestData.Address.valid)?amount=\(TestData.Amount.valid)"
+            string: "\(TestData.Scheme.valid)://\(TestData.Address.valid)?amount=1.03"
         )!
         let payload = BIP21URI<BitcoinToken>(url: url)
         XCTAssertNotNil(payload)
         XCTAssertEqual(TestData.Address.valid, payload?.address)
-        XCTAssertEqual(TestData.Amount.valid, payload?.amount)
+        XCTAssertEqual(TestData.Amount.valid(currency: BitcoinToken.coin.cryptoCurrency), payload?.amount)
     }
 
     func testBitcoinPaymentRequestUrl() {

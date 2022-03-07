@@ -55,7 +55,9 @@ public struct SearchBar: View {
                 isFirstResponder: $isFirstResponder,
                 placeholder: placeholder,
                 configuration: { textField in
+                    #if canImport(UIKit)
                     textField.returnKeyType = .search
+                    #endif
                 },
                 trailing: {
                     if !text.isEmpty {

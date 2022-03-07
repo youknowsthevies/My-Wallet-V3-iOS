@@ -56,7 +56,7 @@ final class ERC20HistoricalTransactionService: ERC20HistoricalTransactionService
                 transfers.map { item in
                     ERC20HistoricalTransaction(
                         response: item,
-                        cryptoCurrency: .erc20(erc20Asset),
+                        cryptoCurrency: erc20Asset.cryptoCurrency!,
                         source: address
                     )
                 }

@@ -196,7 +196,7 @@ final class AirdropStatusScreenPresenter {
         case .sunriver:
             title = LocalizedString.Stellar.title
             description = LocalizedString.Stellar.description
-            imageResource = CryptoCurrency.coin(.stellar).logoResource
+            imageResource = CryptoCurrency.stellar.logoResource
         }
 
         titleRelay.accept(

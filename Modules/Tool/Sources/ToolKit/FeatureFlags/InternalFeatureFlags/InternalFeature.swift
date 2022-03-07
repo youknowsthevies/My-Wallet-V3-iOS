@@ -27,6 +27,15 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native bitcion transaction
     case nativeBitcoinTransaction
 
+    /// Enables Apple Pay
+    case applePay
+
+    /// Enables Redesigned CoinView
+    case redesignCoinView
+
+    /// Enables Card Issuance
+    case cardIssuance
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -36,7 +45,10 @@ public enum InternalFeature: String, CaseIterable {
              .unifiedSignIn,
              .nativeWalletPayload,
              .nativeBitcoinTransaction,
-             .nativeWalletCreation:
+             .applePay,
+             .nativeWalletCreation,
+             .redesignCoinView,
+             .cardIssuance:
             return false
         }
     }
@@ -63,8 +75,14 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .nativeBitcoinTransaction:
             return "Native Bitcoin Transaction"
+        case .applePay:
+            return "Apple Pay"
         case .nativeWalletCreation:
             return "Native Wallet Creation"
+        case .redesignCoinView:
+            return "Redesign: CoinView"
+        case .cardIssuance:
+            return "Card Issuance"
         }
     }
 }

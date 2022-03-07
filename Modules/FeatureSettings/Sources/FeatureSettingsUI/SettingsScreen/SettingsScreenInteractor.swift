@@ -104,5 +104,6 @@ public final class SettingsScreenInteractor {
         settingsService.fetch(force: true)
             .subscribe()
             .disposed(by: disposeBag)
+        bankSectionInteractor.refresh()
     }
 }

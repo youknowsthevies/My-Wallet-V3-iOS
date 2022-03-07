@@ -91,6 +91,14 @@ extension TourStep {
         return steps[i + 1]
     }
 
+    var previousStep: TourStep? {
+        let steps = TourStep.allSteps
+        guard let i = steps.firstIndex(of: self), i > 0 else {
+            return nil
+        }
+        return steps[i - 1]
+    }
+
     var isLastStep: Bool {
         nextStep == nil
     }
@@ -178,6 +186,31 @@ struct UITourView: View {
             }
             currentStep = step
         }
+        .gesture(
+            DragGesture(minimumDistance: 50, coordinateSpace: .global)
+                .onEnded { gesture in
+                    // check if the user swiped horizontally by checking the delta of
+                    // the drag direction on horizontal and vertical axis for the dominant value
+                    let horizontalTranslation = abs(gesture.translation.width)
+                    let verticalTranslation = abs(gesture.translation.height)
+                    let didSwipeHorizontally = horizontalTranslation > verticalTranslation
+                    guard didSwipeHorizontally else {
+                        return
+                    }
+                    // if the dominant drag was on the horizontal axis
+                    // move to the next or previous step based on the drag direction
+                    let didSwipeLeft = gesture.translation.width < 0
+                    if didSwipeLeft {
+                        if let nextStep = currentStep.nextStep {
+                            currentStep = nextStep
+                        }
+                    } else {
+                        if let previewStep = currentStep.previousStep {
+                            currentStep = previewStep
+                        }
+                    }
+                }
+        )
         .onChange(of: currentStep) { step in
             selectedTab = step.tab
         }
@@ -209,14 +242,9 @@ struct UITourView: View {
                 Spacer()
             }
             .primaryNavigation(
+                leading: { Icon.qrCode },
                 title: TabsLocalization.home,
-                isLargeTitle: true,
-                trailing: {
-                    HStack(spacing: Spacing.padding3) {
-                        Icon.qrCode
-                        Icon.user
-                    }
-                }
+                trailing: { Icon.user }
             )
         }
     }
@@ -432,6 +460,8 @@ private struct UITourPopup: View {
     }
 }
 
+#if DEBUG
+
 struct UITourView_Previews: PreviewProvider {
 
     struct TestView: View {
@@ -504,3 +534,5 @@ struct UITourView_Previews: PreviewProvider {
         TestView(initialStep: .onboardingChecklist)
     }
 }
+
+#endif

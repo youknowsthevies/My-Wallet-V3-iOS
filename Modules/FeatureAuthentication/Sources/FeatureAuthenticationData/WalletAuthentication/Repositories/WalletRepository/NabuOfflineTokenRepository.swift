@@ -35,6 +35,7 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                         )
                     }
                     .mapError { _ in MissingCredentialsError.offlineToken }
+                    .first()
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -53,6 +54,7 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                     )
                 )
                 .mapError { _ in CredentialWritingError.offlineToken }
+                .first()
                 .mapToVoid()
                 .eraseToAnyPublisher()
             }

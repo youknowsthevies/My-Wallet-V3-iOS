@@ -35,6 +35,6 @@ final class PortfolioEmptyStateInteractor {
     }
 
     func handleBuy() {
-        walletOperations.handleBuyCrypto(currency: .coin(.bitcoin))
+        walletOperations.handleBuyCrypto(currency: .bitcoin)
     }
 }

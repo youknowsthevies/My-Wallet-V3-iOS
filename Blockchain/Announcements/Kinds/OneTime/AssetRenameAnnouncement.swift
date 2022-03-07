@@ -110,9 +110,9 @@ struct AssetRenameAnnouncementContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> UIViewType {
         let presenter = AssetRenameAnnouncement(
             data: .init(
-                asset: .coin(.bitcoin),
+                asset: .bitcoin,
                 oldTicker: "OLD",
-                balance: .one(currency: .coin(.bitcoin))
+                balance: .one(currency: .bitcoin)
             ),
             dismiss: {},
             action: {}

@@ -9,7 +9,7 @@ import RxSwift
 protocol SellTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: SellQuotesEngine { get }
+    var quotesEngine: QuotesEngine { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
@@ -43,11 +43,11 @@ extension SellTransactionEngine {
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
-        Single.zip(sourceExchangeRatePair, destinationExchangeRatePair)
-            .map { source, destination -> TransactionMoneyValuePairs in
+        sourceExchangeRatePair
+            .map { source -> TransactionMoneyValuePairs in
                 TransactionMoneyValuePairs(
                     source: source,
-                    destination: destination
+                    destination: source.inverseExchangeRate
                 )
             }
             .asObservable()
@@ -59,11 +59,14 @@ extension SellTransactionEngine {
             .asSingle()
     }
 
-    private var destinationExchangeRatePair: Single<MoneyValuePair> {
-        transactionExchangeRatePair
-            .take(1)
-            .asSingle()
-            .map(\.inverseExchangeRate)
+    func amountInSourceCurrency(for pendingTransaction: PendingTransaction) -> Single<MoneyValue> {
+        sourceExchangeRatePair.map { exchangeRate -> MoneyValue in
+            if pendingTransaction.amount.isFiat {
+                return pendingTransaction.amount.convert(using: exchangeRate.inverseQuote.quote)
+            } else {
+                return pendingTransaction.amount
+            }
+        }
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
@@ -75,7 +78,6 @@ extension SellTransactionEngine {
                 MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
             }
             .asObservable()
-            .share(replay: 1, scope: .whileConnected)
     }
 
     func updateLimits(
@@ -111,34 +113,90 @@ extension SellTransactionEngine {
     }
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
-        currencyConversionService
-            .convert(pendingTransaction.amount, to: sourceAsset)
+        Single.zip(
+            quote.take(1).asSingle(),
+            amountInSourceCurrency(for: pendingTransaction)
+        )
+        .flatMap { [weak self] quote, convertedAmount -> Single<SellOrder> in
+            guard let self = self else { return .never() }
+            return self.orderCreationRepository.createOrder(
+                direction: self.orderDirection,
+                quoteIdentifier: quote.identifier,
+                volume: convertedAmount,
+                ccy: self.target.currencyType.code
+            )
             .asSingle()
-            .flatMap(weak: self) { (self, convertedAmount) -> Single<SellOrder> in
-                self.orderQuoteRepository.fetchQuote(
-                    direction: self.orderDirection,
-                    sourceCurrencyType: self.sourceAsset.currencyType,
-                    destinationCurrencyType: self.target.currencyType
-                )
-                .asSingle()
-                .flatMap(weak: self) { (self, quote) -> Single<SellOrder> in
-                    self.orderCreationRepository.createOrder(
-                        direction: self.orderDirection,
-                        quoteIdentifier: quote.identifier,
-                        volume: convertedAmount,
-                        ccy: self.target.currencyType.code
-                    )
-                    .asSingle()
-                }
-            }
-            .do(onDispose: { [weak self] in
-                self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
-            })
+        }
+        .do(onDispose: { [weak self] in
+            self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
+        })
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
         pendingTransaction.quoteSubscription?.dispose()
         quotesEngine.stop()
+    }
+
+    // MARK: - Exchange Rates
+
+    func amountToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        sourceExchangeRatePair.asPublisher()
+            .compactMap { ratePair in
+                let exchangeRate: MoneyValue?
+                if pendingTransaction.amount.isFiat {
+                    exchangeRate = ratePair.inverseQuote.quote
+                } else {
+                    exchangeRate = .one(currency: pendingTransaction.amount.currency)
+                }
+                return exchangeRate
+            }
+            .mapError { _ in PriceServiceError.missingPrice }
+            .eraseToAnyPublisher()
+    }
+
+    func fiatTradingCurrencyToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        sourceExchangeRatePair.asPublisher()
+            .compactMap { ratePair in
+                ratePair.inverseQuote.quote
+            }
+            .mapError { _ in PriceServiceError.missingPrice }
+            .eraseToAnyPublisher()
+    }
+
+    func sourceToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        sourceExchangeRatePair.asPublisher()
+            .map(\.quote)
+            .compactMap { $0 }
+            .mapError { _ in PriceServiceError.missingPrice }
+            .eraseToAnyPublisher()
+    }
+
+    func destinationToFiatTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        Just(.one(currency: target.fiatCurrency))
+            .setFailureType(to: PriceServiceError.self)
+            .eraseToAnyPublisher()
+    }
+
+    func sourceToDestinationTradingCurrencyRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        sourceToFiatTradingCurrencyRate(
+            pendingTransaction: pendingTransaction,
+            tradingCurrency: tradingCurrency
+        )
     }
 }
 

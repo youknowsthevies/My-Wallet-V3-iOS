@@ -4,27 +4,27 @@ import MoneyKit
 import PlatformKit
 import stellarsdk
 
-struct StellarURLPayload: SEP7URI {
+struct SEP7URI: CryptoAssetQRMetadata {
 
     private static let scheme: String = "web+stellar"
 
-    let cryptoCurrency: CryptoCurrency = .coin(.stellar)
+    let cryptoCurrency: CryptoCurrency = .stellar
     let address: String
-    let amount: String?
+    let amount: CryptoValue?
     let includeScheme: Bool = true
     let memo: String?
 
     var absoluteString: String {
-        var amountInDecimal: Decimal?
-        if let amount = amount {
-            amountInDecimal = Decimal(string: amount)
-        }
-        return URIScheme().getPayOperationURI(accountID: address, amount: amountInDecimal, memo: memo)
+        URIScheme().getPayOperationURI(
+            accountID: address,
+            amount: amount?.displayMajorValue,
+            memo: memo
+        )
     }
 
     init(address: String, amount: String?, memo: String?) {
         self.address = address
-        self.amount = amount
+        self.amount = amount.flatMap { .create(major: $0, currency: .stellar) }
         self.memo = memo
     }
 

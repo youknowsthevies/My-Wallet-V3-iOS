@@ -112,7 +112,8 @@ let package = Package(
         .target(
             name: "ComposableNavigation",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .target(name: "BlockchainComponentLibrary")
             ],
             path: "Modules/ComposableArchitectureExtensions/Sources/ComposableNavigation",
             exclude: [

@@ -151,6 +151,21 @@ extension LocalizationConstants.SimpleBuy {
             )
         }
 
+        public enum ApplePay {
+            public static let title = NSLocalizedString(
+                "Apple Pay",
+                comment: "Simple Buy: Use Apple Pay as a payment method"
+            )
+            public static let descriptionLimit = NSLocalizedString(
+                "Instantly Available",
+                comment: "Simple Buy: Use Apple Pay: description"
+            )
+            public static let descriptionInfo = NSLocalizedString(
+                "Simply tap to buy with Apple Pay",
+                comment: "Simple Buy: Use Apple Pay: description of Apple Pay"
+            )
+        }
+
         public enum DepositCash {
             public static let usTitle = NSLocalizedString(
                 "Wire Transfer",
@@ -160,9 +175,13 @@ extension LocalizationConstants.SimpleBuy {
                 "Bank Transfer",
                 comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
             )
+            public static let subtitle = NSLocalizedString(
+                "Make a Deposit",
+                comment: "Make a Deposit"
+            )
             public static let description = NSLocalizedString(
-                "Send funds directly from your bank to your Blockchain.com Wallet. Once we receive the manual transfer, use that cash to buy crypto.",
-                comment: "Simple Buy: Add Payment method selection screen: description of Deposit Funds"
+                "If you'd prefer to deposit funds directly from your bank account first, follow the instructions on the next screen. Once your deposit arrives in your Blockchain.com account you can come back here to buy crypto.",
+                comment: "If you'd prefer to deposit funds directly from your bank account first, follow the instructions on the next screen. Once your deposit arrives in your Blockchain.com account you can come back here to buy crypto."
             )
         }
 

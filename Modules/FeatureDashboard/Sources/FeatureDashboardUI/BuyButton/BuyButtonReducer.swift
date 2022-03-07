@@ -9,7 +9,7 @@ let buyButtonReducer = Reducer<
 
     switch action {
     case .buyTapped:
-        let cryptoCurrency: CryptoCurrency = state.cryptoCurrency ?? .coin(.bitcoin)
+        let cryptoCurrency: CryptoCurrency = state.cryptoCurrency ?? .bitcoin
 
         return .fireAndForget {
             environment.walletOperationsRouter.handleBuyCrypto(currency: cryptoCurrency)

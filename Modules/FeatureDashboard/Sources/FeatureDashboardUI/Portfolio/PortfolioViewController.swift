@@ -54,18 +54,22 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     private var userHasCompletedOnboarding: AnyPublisher<Bool, Never>
 
+    private let featureFlagService: FeatureFlagsServiceAPI
+
     // MARK: - Setup
 
     public init(
         fiatBalanceCellProvider: FiatBalanceCellProviding,
         userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
         @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
-        presenter: PortfolioScreenPresenter
+        presenter: PortfolioScreenPresenter,
+        featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.userHasCompletedOnboarding = userHasCompletedOnboarding
         self.onboardingChecklistViewBuilder = onboardingChecklistViewBuilder
         self.presenter = presenter
+        self.featureFlagService = featureFlagService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -161,21 +165,28 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
             }
         )
 
-        tableView.rx.modelSelected(PortfolioCellType.self)
-            .bindAndCatch(weak: self) { (self, model) in
-                switch model {
-                case .announcement,
-                     .totalBalance,
-                     .withdrawalLock,
-                     .cryptoSkeleton,
-                     .fiatCustodialBalances,
-                     .emptyState:
-                    break
-                case .crypto(let presenter):
-                    self.presenter.router.showDetailsScreen(for: presenter.cryptoCurrency)
+        Observable.combineLatest(
+            tableView.rx.modelSelected(PortfolioCellType.self),
+            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
+        )
+        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
+            switch model {
+            case .announcement,
+                 .totalBalance,
+                 .withdrawalLock,
+                 .cryptoSkeleton,
+                 .fiatCustodialBalances,
+                 .emptyState:
+                break
+            case .crypto(let cryptoPresenter):
+                if isRedesignCoinViewEnabled {
+                    // Show Redesign CoinView
+                } else {
+                    presenter.router.showDetailsScreen(for: cryptoPresenter.cryptoCurrency)
                 }
             }
-            .disposed(by: disposeBag)
+        })
+        .disposed(by: disposeBag)
 
         presenter.sections
             .observe(on: MainScheduler.asyncInstance)

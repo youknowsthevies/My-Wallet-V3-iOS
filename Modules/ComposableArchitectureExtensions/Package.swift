@@ -24,7 +24,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",
-            from: "0.2.1"
+            from: "1.0.0"
         ),
         .package(path: "../BlockchainComponentLibrary")
     ],

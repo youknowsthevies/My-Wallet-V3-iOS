@@ -103,7 +103,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
                             return .failure(
                                 .missingSessionToken(
                                     originSession: originSession,
-                                    base64Str: base64Str.paddedBase64
+                                    base64Str: base64Str.base64URLUnescaped
                                 )
                             )
                         }
@@ -113,7 +113,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
                             return .failure(
                                 .sessionTokenMismatch(
                                     originSession: originSession,
-                                    base64Str: base64Str.paddedBase64
+                                    base64Str: base64Str.base64URLUnescaped
                                 )
                             )
                         }
@@ -178,11 +178,11 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
                 if let lastPath = lastPathOrNil,
                    walletIdentifierValidator(lastPath)
                 {
-                    let walletInfo = WalletInfo(guid: lastPath)
+                    let walletInfo = WalletInfo(wallet: WalletInfo.Wallet(guid: lastPath))
                     promise(.success(walletInfo))
                     return
                 }
-                guard let base64LastPath = lastPathOrNil?.paddedBase64,
+                guard let base64LastPath = lastPathOrNil?.base64URLUnescaped,
                       let jsonData = Data(base64Encoded: base64LastPath, options: .ignoreUnknownCharacters)
                 else {
                     promise(.failure(.failToDecodeBase64Component))

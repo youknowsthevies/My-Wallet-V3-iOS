@@ -247,7 +247,7 @@ final class TransactionAnalyticsHook {
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount,
-                  let pair = state.sourceDestinationPair
+                  let exchangeRate = state.exchangeRates?.sourceToDestinationTradingCurrencyRate
             else {
                 return
             }
@@ -257,8 +257,7 @@ final class TransactionAnalyticsHook {
                     inputAmount: state.amount.displayMajorValue.doubleValue,
                     inputCurrency: source.currencyType.code,
                     inputType: .init(source),
-                    outputAmount: pair.quote.displayMajorValue.doubleValue *
-                        state.amount.displayMajorValue.doubleValue,
+                    outputAmount: state.amount.convert(using: exchangeRate).displayMajorValue.doubleValue,
                     outputCurrency: target.currencyType.code,
                     outputType: .init(target)
                 )
@@ -287,7 +286,7 @@ final class TransactionAnalyticsHook {
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount,
-                  let pair = state.sourceDestinationPair
+                  let exchangeRate = state.exchangeRates?.sourceToDestinationTradingCurrencyRate
             else {
                 return
             }
@@ -313,7 +312,7 @@ final class TransactionAnalyticsHook {
                     target: target.label
                 ),
                 NewSwapAnalyticsEvent.swapRequested(
-                    exchangeRate: pair.quote.displayMajorValue.doubleValue,
+                    exchangeRate: exchangeRate.displayMajorValue.doubleValue,
                     inputAmount: state.amount.displayMajorValue.doubleValue,
                     inputCurrency: source.currencyType.code,
                     inputType: .init(source),
@@ -321,8 +320,7 @@ final class TransactionAnalyticsHook {
                     networkFeeInputCurrency: source.currencyType.code,
                     networkFeeOutputAmount: networkFeeOutputAmount,
                     networkFeeOutputCurrency: target.currencyType.code,
-                    outputAmount: pair.quote.displayMajorValue.doubleValue *
-                        state.amount.displayMajorValue.doubleValue,
+                    outputAmount: state.amount.convert(using: exchangeRate).displayMajorValue.doubleValue,
                     outputCurrency: target.currencyType.code,
                     outputType: .init(target)
                 )

@@ -6,17 +6,37 @@ import RxSwift
 
 struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
 
-    let asset: CryptoCurrency = .coin(.ethereum)
-    let address: String
-    let label: String
-    let onTxCompleted: TxCompleted
-
-    var metadata: CryptoAssetQRMetadata {
-        EthereumURLPayload(address: address)!
+    var asset: CryptoCurrency {
+        eip681URI.cryptoCurrency
     }
 
-    init(address: String, label: String, onTxCompleted: @escaping TxCompleted) {
-        self.address = address
+    var address: String {
+        eip681URI.method.destination ?? eip681URI.address
+    }
+
+    var metadata: CryptoAssetQRMetadata {
+        eip681URI
+    }
+
+    let label: String
+    let onTxCompleted: TxCompleted
+    let eip681URI: EIP681URI
+
+    init(
+        eip681URI: EIP681URI,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) {
+        self.eip681URI = eip681URI
+        self.label = label
+        self.onTxCompleted = onTxCompleted
+    }
+
+    init?(address: String, label: String, onTxCompleted: @escaping TxCompleted) {
+        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: .ethereum) else {
+            return nil
+        }
+        self.eip681URI = eip681URI
         self.label = label
         self.onTxCompleted = onTxCompleted
     }

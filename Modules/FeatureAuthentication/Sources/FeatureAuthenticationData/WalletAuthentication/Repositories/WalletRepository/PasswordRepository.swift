@@ -28,7 +28,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
                     return walletRepository.password
                 }
                 return walletRepo
-                    .publisher
+                    .get()
                     .map(\.credentials.password)
                     .map { key in key.isEmpty ? nil : key }
                     .eraseToAnyPublisher()
@@ -41,7 +41,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
                     return walletRepository.hasPassword
                 }
                 return walletRepo
-                    .publisher
+                    .get()
                     .map(\.credentials.password)
                     .map { key in !key.isEmpty }
                     .eraseToAnyPublisher()
@@ -57,7 +57,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
                 }
                 return walletRepo
                     .set(keyPath: \.credentials.password, value: password)
-                    .publisher
+                    .get()
                     .mapToVoid()
                     .mapError()
             }

@@ -168,7 +168,7 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
                 WalletAccount(
                     index: 0,
                     publicKey: keyPair.accountID,
-                    label: CryptoCurrency.coin(.stellar).defaultWalletName,
+                    label: CryptoCurrency.stellar.defaultWalletName,
                     archived: false
                 )
             }
@@ -191,7 +191,7 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
             Future { promise in
                 bridge.save(
                     keyPair: keyPair,
-                    label: CryptoCurrency.coin(.stellar).defaultWalletName,
+                    label: CryptoCurrency.stellar.defaultWalletName,
                     completion: { result in
                         switch result {
                         case .success:

@@ -28,7 +28,7 @@ final class SyncPubKeysRepository: SyncPubKeysRepositoryAPI {
                 }
                 return walletRepo
                     .set(keyPath: \.properties.syncPubKeys, value: syncPubKeys)
-                    .publisher
+                    .get()
                     .mapToVoid()
             }
             .eraseToAnyPublisher()

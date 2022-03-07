@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureInterestDomain
@@ -39,7 +40,7 @@ struct InterestAccountListView: View {
                         viewStore.send(.setupInterestAccountListScreen)
                     })
                 } else {
-                    NavigationView {
+                    PrimaryNavigationView {
                         List {
                             if !viewStore.isKYCVerified {
                                 InterestIdentityVerificationView {
@@ -76,9 +77,9 @@ struct InterestAccountListView_Previews: PreviewProvider {
     static var testCurrencyPairs = [
         InterestAccountDetails(
             ineligibilityReason: .eligible,
-            currency: .crypto(.coin(.bitcoin)),
-            balance: MoneyValue.create(major: "12.0", currency: .crypto(.coin(.bitcoin)))!,
-            interestEarned: MoneyValue.create(major: "12.0", currency: .crypto(.coin(.bitcoin)))!,
+            currency: .crypto(.bitcoin),
+            balance: MoneyValue.create(major: "12.0", currency: .crypto(.bitcoin))!,
+            interestEarned: MoneyValue.create(major: "12.0", currency: .crypto(.bitcoin))!,
             rate: 8.0
         )
     ]

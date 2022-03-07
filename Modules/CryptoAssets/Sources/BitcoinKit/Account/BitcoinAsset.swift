@@ -15,7 +15,7 @@ private struct AccountsPayload {
 
 final class BitcoinAsset: CryptoAsset {
 
-    let asset: CryptoCurrency = .coin(.bitcoin)
+    let asset: CryptoCurrency = .bitcoin
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultAccount

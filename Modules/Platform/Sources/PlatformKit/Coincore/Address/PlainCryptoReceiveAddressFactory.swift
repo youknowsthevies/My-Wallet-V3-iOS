@@ -6,6 +6,10 @@ import MoneyKit
 /// A `CryptoReceiveAddressFactory` that doesn't know how to validate the asset/address and assumes it is correct.
 public final class PlainCryptoReceiveAddressFactory: ExternalAssetAddressFactory {
 
+    private static let knownSchemes: [String] = [
+        "bitcoin:", "bitcoincash:", "ethereum:"
+    ]
+
     private let asset: CryptoCurrency
 
     public init(asset: CryptoCurrency) {
@@ -17,6 +21,9 @@ public final class PlainCryptoReceiveAddressFactory: ExternalAssetAddressFactory
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        guard !Self.knownSchemes.contains(where: { address.hasPrefix($0) }) else {
+            return .failure(.invalidAddress)
+        }
         guard let regex = try? NSRegularExpression(pattern: "[a-zA-Z0-9]{15,}") else {
             return .failure(.invalidAddress)
         }

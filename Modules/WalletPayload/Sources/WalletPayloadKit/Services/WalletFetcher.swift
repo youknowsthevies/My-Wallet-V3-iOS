@@ -4,16 +4,22 @@ import Combine
 import Foundation
 import ToolKit
 
+public struct WalletFetchedContext: Equatable {
+    public let guid: String
+    public let sharedKey: String
+    public let passwordPartHash: String
+}
+
 // Types adopting `WalletFetcherAPI` should provide a way to load and initialize a Blockchain Wallet
 public protocol WalletFetcherAPI {
 
     /// Fetches and initializes a wallet using the given password
     /// - Parameter password: A `String` to be used as the password for fetching the wallet
-    func fetch(using password: String) -> AnyPublisher<EmptyValue, WalletError>
+    func fetch(using password: String) -> AnyPublisher<WalletFetchedContext, WalletError>
 
     /// Fetches and initializes a wallet using the given password and a second password
     /// - Parameter password: A `String` to be used as the password for fetching the wallet
-    func fetch(using password: String, secondPassword: String) -> AnyPublisher<EmptyValue, WalletError>
+    func fetch(using password: String, secondPassword: String) -> AnyPublisher<WalletFetchedContext, WalletError>
 }
 
 final class WalletFetcher: WalletFetcherAPI {
@@ -35,7 +41,7 @@ final class WalletFetcher: WalletFetcherAPI {
         self.operationsQueue = operationsQueue
     }
 
-    func fetch(using password: String) -> AnyPublisher<EmptyValue, WalletError> {
+    func fetch(using password: String) -> AnyPublisher<WalletFetchedContext, WalletError> {
         walletRepo
             .encryptedPayload
             .first()
@@ -60,13 +66,30 @@ final class WalletFetcher: WalletFetcherAPI {
                     .initialize(with: password, payload: data)
             }
             .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
-                storeSharedKey(from: walletState, on: walletRepo)
+                guard let wallet = walletState.wallet else {
+                    return .failure(.initialization(.missingWallet))
+                }
+                // the way Pin screen is currently created we need to store the password
+                // for Pin creation...
+                return walletRepo
+                    .set(keyPath: \.credentials.sharedKey, value: wallet.sharedKey)
+                    .set(keyPath: \.credentials.password, value: password)
+                    .get()
+                    .mapError()
+                    .map { _ in wallet }
+                    .eraseToAnyPublisher()
             }
-            .map { _ in .noValue }
+            .map { value -> WalletFetchedContext in
+                WalletFetchedContext(
+                    guid: value.guid,
+                    sharedKey: value.sharedKey,
+                    passwordPartHash: hashPassword(password)
+                )
+            }
             .eraseToAnyPublisher()
     }
 
-    func fetch(using password: String, secondPassword: String) -> AnyPublisher<EmptyValue, WalletError> {
+    func fetch(using password: String, secondPassword: String) -> AnyPublisher<WalletFetchedContext, WalletError> {
         walletLogic.initialize(
             with: password,
             secondPassword: secondPassword
@@ -74,11 +97,15 @@ final class WalletFetcher: WalletFetcherAPI {
         .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
             storeSharedKey(from: walletState, on: walletRepo)
         }
-        .map { _ in .noValue }
+        .map { value -> WalletFetchedContext in
+            WalletFetchedContext(
+                guid: value.guid,
+                sharedKey: value.sharedKey,
+                passwordPartHash: hashPassword(password)
+            )
+        }
         .eraseToAnyPublisher()
     }
-
-    // MARK: - Private
 }
 
 /// Stores the sharedKey to the given WalletRepo
@@ -95,7 +122,7 @@ func storeSharedKey(
     }
     return walletRepo
         .set(keyPath: \.credentials.sharedKey, value: wallet.sharedKey)
-        .publisher
+        .get()
         .mapError()
         .map { _ in wallet }
         .eraseToAnyPublisher()

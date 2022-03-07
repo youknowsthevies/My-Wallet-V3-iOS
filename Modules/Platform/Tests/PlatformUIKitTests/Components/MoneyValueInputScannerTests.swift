@@ -34,7 +34,7 @@ class MoneyValueInputScannerTests: XCTestCase {
 
     func test_CanResetValuesCorrectly_InBTC() throws {
         // Given
-        let currency = CryptoCurrency.coin(.bitcoin)
+        let currency = CryptoCurrency.bitcoin
         let decimalAccurancy = 10
         let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.precision))
 
@@ -57,7 +57,7 @@ class MoneyValueInputScannerTests: XCTestCase {
 
     func test_CanParseStringAmountValueCorrectly() throws {
         // Given
-        let currency = CryptoCurrency.coin(.bitcoin)
+        let currency = CryptoCurrency.bitcoin
         let decimalAccurancy = 10
         let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.precision))
 

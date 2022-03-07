@@ -84,7 +84,7 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
         messageRecorder: MessageRecording = resolve()
     ) {
         precondition(
-            event.currency == .coin(.bitcoin),
+            event.currency == .bitcoin,
             "Using BitcoinActivityDetailsPresenter with \(event.currency) event."
         )
         self.event = event

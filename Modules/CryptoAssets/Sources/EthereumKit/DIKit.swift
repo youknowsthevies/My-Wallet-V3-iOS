@@ -12,15 +12,35 @@ extension DependencyContainer {
 
     public static var ethereumKit = module {
 
+        // MARK: APIClient
+
         factory { APIClient() as TransactionPushClientAPI }
+
         factory { APIClient() as TransactionClientAPI }
+
         factory { APIClient() as TransactionFeeClientAPI }
-        factory { APIClient() as BalanceClientAPI }
-        factory { APIClient() as EthereumAccountClientAPI }
 
-        factory(tag: CryptoCurrency.coin(.ethereum)) { EthereumAsset() as CryptoAsset }
+        // MARK: RPCClient
 
-        single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
+        factory { RPCClient() as LatestBlockClientAPI }
+
+        factory { RPCClient() as EstimateGasClientAPI }
+
+        factory { RPCClient() as GetTransactionCountClientAPI }
+
+        factory { RPCClient() as GetBalanceClientAPI }
+
+        factory { RPCClient() as GetCodeClientAPI }
+
+        // MARK: CoinCore
+
+        factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
+
+        // MARK: Other
+
+        single { EthereumNonceRepository() as EthereumNonceRepositoryAPI }
+
+        single { EthereumBalanceRepository() as EthereumBalanceRepositoryAPI }
 
         single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
 
@@ -53,10 +73,6 @@ extension DependencyContainer {
         }
 
         factory { WalletConnectEngineFactory() as WalletConnectEngineFactoryAPI }
-
-        factory { RPCClient() as LatestBlockClientAPI }
-
-        factory { RPCClient() as EstimateGasClientAPI }
 
         factory { GasEstimateService() as GasEstimateServiceAPI }
     }

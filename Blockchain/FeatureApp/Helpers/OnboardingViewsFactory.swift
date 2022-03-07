@@ -81,8 +81,15 @@ final class OnboardingViewsFactory {
                     paymentMethodLinkingAdapter.routeToPaymentMethodLinkingFlow(
                         from: viewController,
                         completion: { result in
-                            viewController.dismiss(animated: true) {
-                                completion(result == .completed)
+                            switch result {
+                            case .completed(let method)
+                                where method?.type.isApplePay == true:
+                                completion(true)
+                            case .completed, .abandoned:
+                                viewController.dismiss(animated: true) {
+                                    // If completion true, launches the buy flow
+                                    completion(false)
+                                }
                             }
                         }
                     )

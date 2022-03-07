@@ -26,15 +26,18 @@ public final class PricesViewController: BaseScreenViewController {
     private let searchBar = UISearchBar()
     public typealias CustomSelectionActionClosure = ((CryptoCurrency) -> Void)
     private let customSelectionActionClosure: CustomSelectionActionClosure?
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
     public init(
         presenter: PricesScreenPresenter,
-        customSelectionActionClosure: CustomSelectionActionClosure? = nil
+        customSelectionActionClosure: CustomSelectionActionClosure? = nil,
+        featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.presenter = presenter
         self.customSelectionActionClosure = customSelectionActionClosure
+        self.featureFlagService = featureFlagService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -146,20 +149,25 @@ public final class PricesViewController: BaseScreenViewController {
             }
         )
 
-        tableView.rx.modelSelected(PricesCellType.self)
-            .bindAndCatch(weak: self) { (self, model) in
-                switch model {
-                case .emptyState:
-                    break
-                case .currency(let cryptoCurrency, _):
-                    if let customSelectionActionClosure = self.customSelectionActionClosure {
-                        customSelectionActionClosure(cryptoCurrency)
-                    } else {
-                        self.presenter.router.showDetailsScreen(for: cryptoCurrency)
-                    }
+        Observable.combineLatest(
+            tableView.rx.modelSelected(PricesCellType.self),
+            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
+        )
+        .subscribe(onNext: { [presenter] model, isRedesignCoinViewEnabled in
+            switch model {
+            case .emptyState:
+                break
+            case .currency(let cryptoCurrency, _):
+                if let customSelectionActionClosure = self.customSelectionActionClosure {
+                    customSelectionActionClosure(cryptoCurrency)
+                } else if isRedesignCoinViewEnabled {
+                    // Show Redesign CoinView
+                } else {
+                    presenter.router.showDetailsScreen(for: cryptoCurrency)
                 }
             }
-            .disposed(by: disposeBag)
+        })
+        .disposed(by: disposeBag)
 
         presenter.sections
             .observe(on: MainScheduler.asyncInstance)

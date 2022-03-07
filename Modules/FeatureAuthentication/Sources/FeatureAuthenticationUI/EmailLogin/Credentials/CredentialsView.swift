@@ -3,11 +3,39 @@
 import AnalyticsKit
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+public enum CredentialsRoute: NavigationRoute {
+    case seedPhrase
+    case secondPasswordDetected
+
+    @ViewBuilder
+    public func destination(in store: Store<CredentialsState, CredentialsAction>) -> some View {
+        switch self {
+        case .seedPhrase:
+            IfLetStore(
+                store.scope(
+                    state: \.seedPhraseState,
+                    action: CredentialsAction.seedPhrase
+                ),
+                then: SeedPhraseView.init(store:)
+            )
+        case .secondPasswordDetected:
+            IfLetStore(
+                store.scope(
+                    state: \.secondPasswordNoticeState,
+                    action: CredentialsAction.secondPasswordNotice
+                ),
+                then: SecondPasswordNoticeView.init(store:)
+            )
+        }
+    }
+}
 
 // swiftlint:disable type_body_length
 public struct CredentialsView: View {
@@ -88,7 +116,7 @@ public struct CredentialsView: View {
 
             Button(
                 action: {
-                    viewStore.send(.setTroubleLoggingInScreenVisible(true))
+                    viewStore.send(.navigate(to: .seedPhrase))
                 },
                 label: {
                     Text(LocalizedString.Link.troubleLogInLink)
@@ -152,23 +180,6 @@ public struct CredentialsView: View {
                 viewStore.send(.continueButtonTapped)
             }
             .disabled(viewStore.isLoading || viewStore.walletPairingState.walletGuid.isEmpty)
-
-            PrimaryNavigationLink(
-                destination: IfLetStore(
-                    store.scope(
-                        state: \.seedPhraseState,
-                        action: CredentialsAction.seedPhrase
-                    ),
-                    then: { store in
-                        SeedPhraseView(store: store)
-                    }
-                ),
-                isActive: viewStore.binding(
-                    get: \.isTroubleLoggingInScreenVisible,
-                    send: CredentialsAction.setTroubleLoggingInScreenVisible(_:)
-                ),
-                label: EmptyView.init
-            )
         }
         .padding(
             EdgeInsets(
@@ -178,6 +189,7 @@ public struct CredentialsView: View {
                 trailing: Layout.trailingPadding
             )
         )
+        .navigationRoute(in: store)
         .primaryNavigation(title: LocalizedString.navigationTitle) {
             Button {
                 viewStore.send(.continueButtonTapped)
@@ -202,15 +214,16 @@ public struct CredentialsView: View {
 
     // MARK: - Private
 
-    private func emailOrWalletIdentifierView() -> AnyView {
+    @ViewBuilder
+    private func emailOrWalletIdentifierView() -> some View {
         switch context {
         case .walletInfo(let info):
-            return AnyView(emailTextfield(info: info))
+            emailTextfield(info: info)
         case .walletIdentifier,
              .manualPairing:
-            return AnyView(walletIdentifierTextfield())
+            walletIdentifierTextfield()
         case .none:
-            return AnyView(Divider().foregroundColor(.clear))
+            Divider().foregroundColor(.clear)
         }
     }
 

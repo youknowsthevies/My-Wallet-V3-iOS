@@ -59,7 +59,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let accountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractor
     private let accountAuxiliaryViewPresenter: AccountAuxiliaryViewPresenter
 
-    /// The interactor that `SingleAmountPreseneter` uses
+    /// The interactor that `SingleAmountPresenter` uses
     private let amountViewInteractor: AmountViewInteracting
 
     private let transactionModel: TransactionModel
@@ -129,15 +129,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .map { state in
                         if let fiatValue = amount.fiatValue, !state.allowFiatInput {
                             // Fiat Input but state does not allow fiat
-                            guard let sourceToFiatPair = state.sourceToFiatPair else {
+                            guard let exchangeRate = state.exchangeRates?.fiatTradingCurrencyToSourceRate else {
                                 return .zero(currency: state.asset)
                             }
-                            return MoneyValuePair(
-                                fiatValue: fiatValue,
-                                exchangeRate: sourceToFiatPair.quote.fiatValue!,
-                                cryptoCurrency: state.asset.cryptoCurrency!,
-                                usesFiatAsBase: true
-                            ).quote
+                            return fiatValue.convert(using: exchangeRate)
                         }
                         return amount
                     }
@@ -149,6 +144,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
 
+        transactionState
+            .compactMap(\.initialAmountToSet)
+            .take(1)
+            .asSingle()
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe { [weak self] (amount: MoneyValue) in
+                // On the first time initialAmountToSet is available,
+                // we will set it to AmountViewInteractor, so the UI
+                // is up to date with the State.
+                self?.amountViewInteractor.set(amount: amount)
+            }
+            .disposeOnDeactivate(interactor: self)
+
         let spendable = Observable
             .combineLatest(
                 transactionState,
@@ -157,7 +165,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map { state, input in
                 (
                     min: state.minSpendableWithActiveAmountInputType(input),
-                    max: state.maxSpendableWithActiveAmountInputType(input)
+                    max: state.maxSpendableWithActiveAmountInputType(input),
+                    cryptoMax: state.maxSpendableWithCryptoInputType()
                 )
             }
             .share(scope: .whileConnected)
@@ -277,7 +286,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         sendAuxiliaryViewInteractor
             .resetToMaxAmount
-            .withLatestFrom(spendable.map(\.max))
+            .withLatestFrom(spendable.map(\.cryptoMax))
             .subscribe(onNext: { [weak self] maxSpendable in
                 self?.amountViewInteractor.set(amount: maxSpendable)
             })
@@ -582,7 +591,7 @@ extension TransactionState {
         case .overMaximumSourceLimit,
              .overMaximumPersonalLimit,
              .insufficientFunds:
-            return .maxLimitExceeded(maxSpendableWithActiveAmountInputType(activeInput))
+            return .maxLimitExceeded(maxSpendableWithCryptoInputType())
         case .belowMinimumLimit:
             guard !amount.isZero else {
                 return .inBounds

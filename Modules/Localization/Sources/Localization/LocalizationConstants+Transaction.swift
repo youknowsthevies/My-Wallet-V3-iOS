@@ -457,6 +457,10 @@ extension LocalizationConstants.Transaction.Buy {
         "days",
         comment: ""
     )
+    public static let applePay = NSLocalizedString(
+        "Apple Pay",
+        comment: ""
+    )
 }
 
 extension LocalizationConstants.Transaction.Sell {
@@ -520,6 +524,10 @@ extension LocalizationConstants.Transaction.Swap {
     public static let buyNow = NSLocalizedString(
         "Buy Now",
         comment: "Buy Now"
+    )
+    public static let buyWithApplePay = NSLocalizedString(
+        "Buy with  Pay",
+        comment: "Buy With Apple Pay"
     )
     public static let sellNow = NSLocalizedString(
         "Sell Now",

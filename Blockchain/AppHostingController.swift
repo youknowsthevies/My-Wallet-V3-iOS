@@ -27,7 +27,7 @@ final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
     let viewStore: ViewStore<CoreAppState, CoreAppAction>
 
-    @LazyInject var alertViewPresenter: AlertViewPresenterAPI
+    private weak var alertController: UIAlertController?
 
     private var onboardingController: OnboardingHostingController?
     private var loggedInController: RootViewController?
@@ -62,14 +62,22 @@ final class AppHostingController: UIViewController {
         loggedInDependencyBridge
             .register(bridge: dynamicBridge)
 
-        viewStore
-            .publisher
-            .alertContent
-            .compactMap { $0 }
-            .removeDuplicates()
-            .sink { [weak self] content in
-                guard let self = self else { return }
-                self.showAlert(with: content)
+        viewStore.publisher
+            .alertState
+            .sink { [weak self] alert in
+                guard let self = self else {
+                    return
+                }
+                if let alert = alert {
+                    let alertController = UIAlertController(state: alert, send: { action in
+                        self.viewStore.send(action)
+                    })
+                    self.present(alertController, animated: true, completion: nil)
+                    self.alertController = alertController
+                } else {
+                    self.alertController?.dismiss(animated: true, completion: nil)
+                    self.alertController = nil
+                }
             }
             .store(in: &cancellables)
 
@@ -134,10 +142,6 @@ final class AppHostingController: UIViewController {
                 self.topMostViewController?.present(nav, animated: true, completion: nil)
             })
             .store(in: &cancellables)
-    }
-
-    private func showAlert(with content: AlertViewContent) {
-        alertViewPresenter.notify(content: content, in: self)
     }
 }
 

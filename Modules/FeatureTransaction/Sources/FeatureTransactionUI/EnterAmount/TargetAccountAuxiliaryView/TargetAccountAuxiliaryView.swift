@@ -115,7 +115,7 @@ struct TargetAccountAuxiliaryView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading) {
             TargetAccountAuxiliaryView(
-                asset: .coin(.bitcoin),
+                asset: .bitcoin,
                 price: .init(amount: 2307477, currency: .fiat(.GBP)),
                 action: {}
             )

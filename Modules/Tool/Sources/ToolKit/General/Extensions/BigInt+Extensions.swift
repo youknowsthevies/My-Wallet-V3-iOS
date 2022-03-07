@@ -16,6 +16,19 @@ extension BigInt {
 
 extension BigInt {
 
+    /// Creates a BigInt.
+    ///
+    /// - Parameter scientificNotation: A string value in the scientific notation format.
+    public init?(scientificNotation string: String) {
+        if string.contains("e") {
+            self.init(
+                decimalLiteral: NSDecimalNumber(string: string) as Decimal
+            )
+        } else {
+            self.init(string)
+        }
+    }
+
     /// Creates a big integer.
     ///
     /// - Parameter decimal: A decimal value. Any fractional places will be trimmed.

@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "ERC20Kit", targets: ["ERC20Kit"]),
         .library(name: "ERC20DataKit", targets: ["ERC20DataKit"]),
         .library(name: "StellarKit", targets: ["StellarKit"]),
+        .library(name: "BitcoinChainKitMock", targets: ["BitcoinChainKitMock"]),
         .library(name: "BitcoinKitMock", targets: ["BitcoinKitMock"]),
         .library(name: "EthereumKitMock", targets: ["EthereumKitMock"]),
         .library(name: "ERC20KitMock", targets: ["ERC20KitMock"]),
@@ -136,6 +137,12 @@ let package = Package(
             ]
         ),
         .target(
+            name: "BitcoinChainKitMock",
+            dependencies: [
+                .target(name: "BitcoinChainKit")
+            ]
+        ),
+        .target(
             name: "BitcoinKitMock",
             dependencies: [
                 .target(name: "BitcoinKit")
@@ -180,6 +187,7 @@ let package = Package(
             name: "BitcoinChainKitTests",
             dependencies: [
                 .target(name: "BitcoinChainKit"),
+                .target(name: "BitcoinChainKitMock"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "RxBlocking", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift")
@@ -228,6 +236,7 @@ let package = Package(
             dependencies: [
                 .target(name: "EthereumKit"),
                 .target(name: "EthereumKitMock"),
+                .product(name: "MoneyKitMock", package: "Money"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "RxBlocking", package: "RxSwift"),

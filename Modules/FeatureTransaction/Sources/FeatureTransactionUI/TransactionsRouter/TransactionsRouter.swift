@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainComponentLibrary
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -320,7 +321,7 @@ extension TransactionsRouter {
         }
 
         presenter.present(
-            NavigationView {
+            PrimaryNavigationView {
                 TooManyPendingOrdersView(
                     count: count,
                     viewActivityAction: { [tabSwapping] in
@@ -424,7 +425,7 @@ extension TransactionsRouter {
         }
 
         presenter.present(
-            NavigationView {
+            PrimaryNavigationView {
                 TooManyPendingOrdersErrorView(
                     okAction: dismiss
                 )

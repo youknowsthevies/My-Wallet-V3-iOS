@@ -109,7 +109,7 @@ extension CoincoreAPI {
                         sourceAccount: account,
                         transactionTarget: target,
                         engine: OnChainSwapTransactionEngine(
-                            quotesEngine: SwapQuotesEngine(),
+                            quotesEngine: QuotesEngine(),
                             requireSecondPassword: requiresSecondPassword,
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
                         )
@@ -145,7 +145,7 @@ extension CoincoreAPI {
                         sourceAccount: account,
                         transactionTarget: target,
                         engine: NonCustodialSellTransactionEngine(
-                            quotesEngine: SellQuotesEngine(),
+                            quotesEngine: QuotesEngine(),
                             requireSecondPassword: requiresSecondPassword,
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
                         )
@@ -230,7 +230,7 @@ extension CoincoreAPI {
                 sourceAccount: account,
                 transactionTarget: target as! CryptoTradingAccount,
                 engine: TradingToTradingSwapTransactionEngine(
-                    quotesEngine: SwapQuotesEngine()
+                    quotesEngine: QuotesEngine()
                 )
             )
         )
@@ -326,7 +326,7 @@ extension CoincoreAPI {
                 TransactionProcessor(
                     sourceAccount: account,
                     transactionTarget: receiveAddress,
-                    engine: TradingToOnChainTransactionEngine()
+                    engine: TradingToOnChainTransactionEngine(quotesEngine: QuotesEngine())
                 )
             }
     }
@@ -339,7 +339,7 @@ extension CoincoreAPI {
             TransactionProcessor(
                 sourceAccount: account,
                 transactionTarget: target as! FiatAccount,
-                engine: TradingSellTransactionEngine(quotesEngine: SellQuotesEngine())
+                engine: TradingSellTransactionEngine(quotesEngine: QuotesEngine())
             )
         )
     }

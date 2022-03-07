@@ -73,6 +73,7 @@ let package = Package(
                 .target(name: "WalletPayloadDataKit"),
                 .target(name: "WalletPayloadKit"),
                 .target(name: "WalletPayloadKitMock"),
+                .product(name: "MetadataKitMock", package: "Metadata"),
                 .product(name: "KeychainKitMock", package: "Keychain"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),

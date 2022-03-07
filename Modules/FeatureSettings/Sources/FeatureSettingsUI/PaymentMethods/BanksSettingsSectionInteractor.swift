@@ -66,4 +66,8 @@ final class BanksSettingsSectionInteractor {
                 )
             }
     }
+
+    func refresh() {
+        beneficiariesService.invalidate()
+    }
 }

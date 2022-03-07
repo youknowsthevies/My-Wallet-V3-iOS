@@ -37,7 +37,9 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     // MARK: - Types
 
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
+    private typealias AnalyticsPaymentMethod = AnalyticsEvents.SimpleBuy.PaymentMethod
     private typealias NewAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
+    private typealias TrackEvent = (AnalyticsPaymentMethod) -> Void
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.PaymentMethodsScreen
 
@@ -70,15 +72,42 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let methods = paymentMethodService.suggestedMethods
+        let methods = paymentMethodService
+            .suggestedMethods
             .map { suggestedMethods in
-                suggestedMethods.sorted { lhs, _ in
+                // The payment method of type `funds` needs to be at
+                // the bottom of the list of payment methods as the
+                // cell used to display the this type of payment method
+                // is styled differently than the others.
+                let fundsPaymentMethod = suggestedMethods
+                    .first(where: { paymentMethodType in
+                        if case .suggested(let method) = paymentMethodType {
+                            return method.type.isFunds
+                        } else {
+                            return false
+                        }
+                    })
+                let paymentMethods = suggestedMethods
+                    .filter { paymentMethodType in
+                        if case .suggested(let method) = paymentMethodType {
+                            return !method.type.isFunds
+                        } else {
+                            return true
+                        }
+                    }
+
+                // Card should be at the top of the list.
+                let sorted = paymentMethods.sorted { lhs, _ in
                     if case .suggested(let method) = lhs {
-                        return method.type.isCard // bring card payment method to top
+                        return method.type.isCard
                     } else {
                         return false
                     }
                 }
+
+                // If there's a payment method of type `funds` we append
+                // this to the sorted list. If not, we just return the sorted list.
+                return fundsPaymentMethod == nil ? sorted : sorted + [fundsPaymentMethod!]
             }
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .map { [weak self] (methods: [PaymentMethodType]) -> [AddNewPaymentMethodCellViewModelItem] in
@@ -134,97 +163,147 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         }
     }
 
-    private func generateCellType(by paymentMethodType: PaymentMethodType) -> AddNewPaymentMethodCellViewModelItem? {
+    private func generateCellType(
+        by paymentMethodType: PaymentMethodType
+    ) -> AddNewPaymentMethodCellViewModelItem? {
         var cellType: AddNewPaymentMethodCellViewModelItem?
         switch paymentMethodType {
         case .suggested(let method):
-            let title = paymentMethodType.currency == .fiat(.USD)
-                ? LocalizedString.DepositCash.usTitle
-                : LocalizedString.DepositCash.europeTitle
-            let viewModel: ExplainedActionViewModel
+            let track: TrackEvent = { [eventRecorder] (event: AnalyticsPaymentMethod) in
+                eventRecorder.record(
+                    events: [
+                        AnalyticsEvent.sbPaymentMethodSelected(selection: event),
+                        NewAnalyticsEvent.buyPaymentMethodSelected(
+                            paymentType: NewAnalyticsEvent.PaymentType(paymentMethod: method)
+                        )
+                    ]
+                )
+            }
+
             switch method.type {
             case .funds:
-                viewModel = ExplainedActionViewModel(
-                    thumbImage: "icon-deposit-cash",
+                let title = paymentMethodType.currency == .fiat(.USD)
+                    ? LocalizedString.DepositCash.usTitle
+                    : LocalizedString.DepositCash.europeTitle
+                let paymentMethodTypeView = PaymentMethodTypeView(
                     title: title,
-                    descriptions: [
-                        .init(title: LocalizedString.DepositCash.description, titleColor: .descriptionText, titleFontSize: 12)
-                    ],
-                    badgeTitle: nil,
-                    uniqueAccessibilityIdentifier: AccessibilityId.depositCash
+                    subtitle: LocalizedString.DepositCash.subtitle,
+                    message: LocalizedString.DepositCash.description,
+                    accessibilityIdentifier: AccessibilityId.bankTransfer,
+                    onViewTapped: { [selectionRelay] in
+                        track(.funds)
+                        selectionRelay.accept(
+                            (method: method, methodType: paymentMethodType)
+                        )
+                    }
                 )
+                cellType = .paymentMethodTypeView(paymentMethodTypeView)
+            case .applePay:
+                let viewModel = createApplePayExplainedActionViewModel()
+                viewModel.tap
+                    .do { _ in
+                        track(.applePay)
+                    }
+                    .map { _ in (method, paymentMethodType) }
+                    .emit(to: selectionRelay)
+                    .disposeOnDeactivate(interactor: self)
+
+                cellType = .suggestedPaymentMethod(viewModel)
             case .card:
-                viewModel = ExplainedActionViewModel(
-                    thumbImage: "Icon-Creditcard",
-                    title: LocalizedString.Card.title,
-                    descriptions: [
-                        .init(title: LocalizedString.Card.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
-                        .init(
-                            title: LocalizedString.Card.descriptionInfo,
-                            titleColor: .descriptionText,
-                            titleFontSize: 12
-                        )
-                    ],
-                    badgeTitle: nil,
-                    uniqueAccessibilityIdentifier: AccessibilityId.addCard
-                )
+                let viewModel = createCardExplainedActionViewModel()
+                viewModel.tap
+                    .do { _ in
+                        track(.card)
+                    }
+                    .map { _ in (method, paymentMethodType) }
+                    .emit(to: selectionRelay)
+                    .disposeOnDeactivate(interactor: self)
+
+                cellType = .suggestedPaymentMethod(viewModel)
             case .bankTransfer:
-                viewModel = ExplainedActionViewModel(
-                    thumbImage: "icon-bank",
-                    title: LocalizedString.LinkABank.title,
-                    descriptions: [
-                        .init(
-                            title: LocalizedString.LinkABank.descriptionLimit,
-                            titleColor: .titleText,
-                            titleFontSize: 14
-                        ),
-                        .init(
-                            title: LocalizedString.LinkABank.descriptionInfo,
-                            titleColor: .descriptionText,
-                            titleFontSize: 12
-                        )
-                    ],
-                    badgeTitle: nil,
-                    uniqueAccessibilityIdentifier: AccessibilityId.linkedBank
-                )
+                let viewModel = createBankTransferExplainedActionViewModel()
+
+                viewModel.tap
+                    .do { _ in
+                        track(.bank)
+                    }
+                    .map { _ in (method, paymentMethodType) }
+                    .emit(to: selectionRelay)
+                    .disposeOnDeactivate(interactor: self)
+                cellType = .suggestedPaymentMethod(viewModel)
             case .bankAccount:
                 fatalError("Bank account is not a valid payment method any longer")
             }
-            viewModel.tap
-                .do { [weak self] _ in
-                    guard let self = self else { return }
-                    let event: AnalyticsEvents.SimpleBuy.PaymentMethod
-                    switch method.type {
-                    case .bankAccount:
-                        event = .bank
-                    case .bankTransfer:
-                        event = .bank
-                    case .funds(.fiat):
-                        event = .funds
-                    case .funds(.crypto):
-                        fatalError("Funds with crypto currency is not a possible state")
-                    case .card:
-                        event = .newCard
-                    }
-                    self.eventRecorder.record(
-                        events: [
-                            AnalyticsEvent.sbPaymentMethodSelected(selection: event),
-                            NewAnalyticsEvent.buyPaymentMethodSelected(
-                                paymentType: NewAnalyticsEvent.PaymentType(paymentMethod: method)
-                            )
-                        ]
-                    )
-                }
-                .map { _ in (method, paymentMethodType) }
-                .emit(to: selectionRelay)
-                .disposeOnDeactivate(interactor: self)
-
-            cellType = .suggestedPaymentMethod(viewModel)
         case .card,
              .account,
+             .applePay,
              .linkedBank:
-            cellType = nil
+            fatalError("Unsupported payment method type.")
         }
         return cellType
+    }
+
+    private func createBankTransferExplainedActionViewModel() -> ExplainedActionViewModel {
+        ExplainedActionViewModel(
+            thumbImage: "icon-bank",
+            title: LocalizedString.LinkABank.title,
+            descriptions: [
+                .init(
+                    title: LocalizedString.LinkABank.descriptionLimit,
+                    titleColor: .titleText,
+                    titleFontSize: 14
+                ),
+                .init(
+                    title: LocalizedString.LinkABank.descriptionInfo,
+                    titleColor: .descriptionText,
+                    titleFontSize: 12
+                )
+            ],
+            badgeTitle: nil,
+            uniqueAccessibilityIdentifier: AccessibilityId.linkedBank
+        )
+    }
+
+    private func createCardExplainedActionViewModel() -> ExplainedActionViewModel {
+        ExplainedActionViewModel(
+            thumbImage: "Icon-Creditcard",
+            title: LocalizedString.Card.title,
+            descriptions: [
+                .init(
+                    title: LocalizedString.Card.descriptionLimit,
+                    titleColor: .titleText,
+                    titleFontSize: 14
+                ),
+                .init(
+                    title: LocalizedString.Card.descriptionInfo,
+                    titleColor: .descriptionText,
+                    titleFontSize: 12
+                )
+            ],
+            badgeTitle: nil,
+            uniqueAccessibilityIdentifier: AccessibilityId.addCard
+        )
+    }
+
+    private func createApplePayExplainedActionViewModel() -> ExplainedActionViewModel {
+        ExplainedActionViewModel(
+            thumbImage: "icon-applepay",
+            title: LocalizedString.ApplePay.title,
+            descriptions: [
+                .init(
+                    title: LocalizedString.ApplePay.descriptionLimit,
+                    titleColor: .titleText,
+                    titleFontSize: 14
+                ),
+                .init(
+                    title: LocalizedString.ApplePay.descriptionInfo,
+                    titleColor: .descriptionText,
+                    titleFontSize: 12
+                )
+            ],
+            badgeTitle: LocalizedString.Card.badgeTitle,
+            uniqueAccessibilityIdentifier: AccessibilityId.useApplePay,
+            thumbRenderDefault: true
+        )
     }
 }

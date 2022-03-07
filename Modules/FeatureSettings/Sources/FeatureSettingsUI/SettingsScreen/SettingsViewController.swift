@@ -47,6 +47,7 @@ public final class SettingsViewController: BaseScreenViewController {
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
+        presenter.refresh()
     }
 
     // MARK: - Private Functions

@@ -16,7 +16,7 @@ struct InterestAccountListErrorView: View {
     }
 
     var body: some View {
-        NavigationView {
+        PrimaryNavigationView {
             VStack(alignment: .center, spacing: 8.0) {
                 Text(LocalizationId.title)
                     .textStyle(.title)

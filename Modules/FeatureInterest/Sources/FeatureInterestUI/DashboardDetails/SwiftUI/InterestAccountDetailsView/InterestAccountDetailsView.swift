@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureInterestDomain
 import Localization
@@ -28,7 +29,7 @@ struct InterestAccountDetailsView: View {
                         viewStore.send(.loadInterestAccountBalanceInfo)
                     }
             } else {
-                NavigationView {
+                PrimaryNavigationView {
                     ActionableView(
                         buttons: viewStore
                             .supportedActions
@@ -136,12 +137,10 @@ struct InterestAccountDetailsView: View {
         }
     }
 
-    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> AnyView {
-        AnyView(
-            BadgeImageViewRepresentable(
-                viewModel: viewModel,
-                size: 32
-            )
+    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> some View {
+        BadgeImageViewRepresentable(
+            viewModel: viewModel,
+            size: 32
         )
     }
 }
@@ -151,14 +150,14 @@ struct InterestAccountDetailsView_Previews: PreviewProvider {
     static let state: InterestAccountDetailsState = .init(
         interestAccountOverview: .init(
             interestAccountEligibility: .init(
-                currencyType: .crypto(.coin(.bitcoin)),
+                currencyType: .crypto(.bitcoin),
                 isEligible: true,
                 ineligibilityReason: .eligible
             ),
             interestAccountRate: .init(currencyCode: "BTC", rate: 4.9),
             interestAccountLimits: .init(
                 interestLockupDuration: 4.0,
-                cryptoCurrency: .coin(.bitcoin),
+                cryptoCurrency: .bitcoin,
                 nextInterestPayment: Date(),
                 minDepositAmount: .zero(currency: .USD),
                 maxWithdrawalAmount: .zero(currency: .USD)

@@ -8,8 +8,6 @@ import PlatformKit
 public struct BIP21URI<Token: BitcoinChainToken>: CryptoAssetQRMetadata {
 
     public let address: String
-    public let amount: String?
-    public let cryptoCurrency: CryptoCurrency
     public let includeScheme: Bool
 
     /// Conformance to `CryptoAssetQRMetadata`, this is not the BIP21URI.
@@ -18,19 +16,11 @@ public struct BIP21URI<Token: BitcoinChainToken>: CryptoAssetQRMetadata {
         return "\(prefix)\(address)"
     }
 
-    /// The BIP21URI absolute string.
-    public var bip21AbsoluteString: String {
-        var uri = "\(Token.coin.uriScheme):\(address)"
-        if let amount = amount {
-            uri.append(contentsOf: "?amount=\(amount)")
-        }
-        return uri
-    }
+    public let amount: CryptoValue?
 
     init(address: String, amount: String?, includeScheme: Bool) {
-        cryptoCurrency = Token.coin.cryptoCurrency
         self.address = address
-        self.amount = amount
+        self.amount = amount.flatMap { .create(major: $0, currency: Token.coin.cryptoCurrency) }
         self.includeScheme = includeScheme
     }
 

@@ -88,6 +88,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         disposeBag = DisposeBag()
         title = Self.screenTitle(state: state)
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
+        continueButtonViewModel.backgroundColorRelay.accept(Self.confirmCtaBackgroundColor(state: state))
         navigationBarAppearance = .custom(
             leading: state.stepsBackStack.isEmpty ? .none : .back,
             trailing: .none,
@@ -357,7 +358,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             if state.action == .buy {
                 let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
                 withdrawalLocksCheckRepository.withdrawalLocksCheck(
-                    paymentMethod: paymentMethod?.type.rawType.rawValue ?? "",
+                    paymentMethod: paymentMethod?.type.requestType.rawValue ?? "",
                     currencyCode: state.source?.currencyType.code ?? ""
                 )
                 .asObservable()
@@ -409,7 +410,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         case .send:
             return LocalizedString.Confirmation.confirm
         case .buy:
-            return LocalizedString.Swap.buyNow
+            let paymentMethod = state.source as? PaymentMethodAccount
+            let isApplePay = paymentMethod?.paymentMethodType.method.isApplePay ?? false
+            return isApplePay ? LocalizedString.Swap.buyWithApplePay : LocalizedString.Swap.buyNow
         case .sell:
             return LocalizedString.Swap.sellNow
         case .sign:
@@ -425,6 +428,16 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
              .viewActivity:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
         }
+    }
+
+    static func confirmCtaBackgroundColor(state: TransactionState) -> UIColor {
+        guard case .buy = state.action,
+              let paymentMethod = state.source as? PaymentMethodAccount,
+              paymentMethod.paymentMethodType.method.isApplePay
+        else {
+            return .primaryButton
+        }
+        return .black
     }
 
     // MARK: - Private methods

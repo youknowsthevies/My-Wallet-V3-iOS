@@ -68,7 +68,7 @@ public struct EthereumHistoricalTransaction {
             from: response.from,
             accountAddress: accountAddress
         )
-        amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .coin(.ethereum))
+        amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .ethereum)
         transactionHash = response.hash
         createdAt = response.createdAt
         fee = EthereumHistoricalTransaction.fee(
@@ -101,7 +101,7 @@ public struct EthereumHistoricalTransaction {
     }
 
     private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
-        let ethereum = CryptoCurrency.coin(.ethereum)
+        let ethereum = CryptoCurrency.ethereum
         guard let gasUsed = gasUsed else {
             return .zero(currency: ethereum)
         }

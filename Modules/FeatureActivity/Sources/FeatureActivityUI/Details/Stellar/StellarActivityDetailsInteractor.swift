@@ -57,7 +57,7 @@ final class StellarActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            of: CurrencyType.crypto(.coin(.stellar)),
+            of: CurrencyType.crypto(.stellar),
             in: fiatCurrency,
             at: .time(date)
         )

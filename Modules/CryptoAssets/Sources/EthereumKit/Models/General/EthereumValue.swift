@@ -10,9 +10,9 @@ enum EthereumValueError: Error {
 
 public struct EthereumValue: CryptoMoney {
 
-    public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
+    public let currencyType: CurrencyType = .crypto(.ethereum)
 
-    public let currency: CryptoCurrency = .coin(.ethereum)
+    public let currency: CryptoCurrency = .ethereum
 
     public var amount: BigInt {
         crypto.amount
@@ -21,7 +21,7 @@ public struct EthereumValue: CryptoMoney {
     private let crypto: CryptoMoney
 
     public init(crypto: CryptoMoney) throws {
-        guard crypto.currencyType == .coin(.ethereum) else {
+        guard crypto.currencyType == .ethereum else {
             throw EthereumValueError.invalidCryptoValue
         }
         self.crypto = crypto

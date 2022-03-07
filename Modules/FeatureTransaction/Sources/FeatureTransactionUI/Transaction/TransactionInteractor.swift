@@ -155,7 +155,7 @@ final class TransactionInteractor {
 
         case .buy:
             // TODO: the new limits API will require an amount
-            return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
+            return fetchPaymentAccounts(for: .bitcoin, amount: nil)
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
             return Single.zip(allEligibleCryptoAccounts, tradingPairs)
@@ -257,18 +257,11 @@ final class TransactionInteractor {
         transactionProcessor?.reset()
     }
 
-    var startCryptoRatePairFetch: Observable<MoneyValuePair> {
+    var transactionExchangeRates: Observable<TransactionExchangeRates> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
-        return transactionProcessor.transactionExchangeRatePair
-    }
-
-    var startFiatRatePairsFetch: Observable<TransactionMoneyValuePairs> {
-        guard let transactionProcessor = transactionProcessor else {
-            fatalError("Tx Processor is nil")
-        }
-        return transactionProcessor.fiatExchangeRatePairs
+        return transactionProcessor.transactionExchangeRates
     }
 
     var canTransactFiat: Bool {

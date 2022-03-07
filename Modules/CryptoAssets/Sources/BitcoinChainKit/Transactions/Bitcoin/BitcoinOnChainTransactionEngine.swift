@@ -43,6 +43,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
+    private let signingService: BitcoinTransactionSigningServiceAPI
     private let sendingService: BitcoinTransactionSendingServiceAPI
     private let buildingService: BitcoinTransactionBuildingServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
@@ -87,8 +88,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        sendingService: BitcoinTransactionSendingServiceAPI = resolve(),
-        buildingService: BitcoinTransactionBuildingServiceAPI = resolve(),
+        signingService: BitcoinTransactionSigningServiceAPI = resolve(tag: Token.coin),
+        sendingService: BitcoinTransactionSendingServiceAPI = resolve(tag: Token.coin),
+        buildingService: BitcoinTransactionBuildingServiceAPI = resolve(tag: Token.coin),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
         recorder: Recording = resolve(tag: "CrashlyticsRecorder")
@@ -97,6 +99,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
+        self.signingService = signingService
         self.sendingService = sendingService
         self.buildingService = buildingService
         self.bridge = bridge
@@ -145,30 +148,30 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single.zip(
-            walletCurrencyService
-                .displayCurrency
-                .asSingle(),
-            availableBalance,
-            featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
-        )
-        .map(weak: self) { _, values -> PendingTransaction in
-            let (fiatCurrency, availableBalance, _) = values
-            return .init(
-                amount: .zero(currency: Token.coin.cryptoCurrency),
-                available: availableBalance,
-                feeAmount: .zero(currency: Token.coin.cryptoCurrency),
-                feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
-                feeSelection: .init(
-                    selectedLevel: .regular,
-                    availableLevels: [.regular, .priority],
-                    asset: Token.coin.cryptoCurrency.currencyType
-                ),
-                selectedFiatCurrency: fiatCurrency,
-                // TODO: update feature flag logic when the feature is complete
-                nativeBitcoinTransactionEnabled: false
+        Single
+            .zip(
+                walletCurrencyService
+                    .displayCurrency
+                    .asSingle(),
+                availableBalance,
+                featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
             )
-        }
+            .map { [predefinedAmount] fiatCurrency, availableBalance, _ -> PendingTransaction in
+                PendingTransaction(
+                    amount: predefinedAmount?.moneyValue ?? .zero(currency: Token.coin.cryptoCurrency),
+                    available: availableBalance,
+                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
+                    feeSelection: .init(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: Token.coin.cryptoCurrency.currencyType
+                    ),
+                    selectedFiatCurrency: fiatCurrency,
+                    // TODO: update feature flag logic when the feature is complete
+                    nativeBitcoinTransactionEnabled: false
+                )
+            }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -238,7 +241,7 @@ extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
         guard pendingTransaction.nativeBitcoinTransactionEnabled else {
             return bridge.sign(with: secondPassword)
         }
-        return sendingService.sign(with: secondPassword).asSingle()
+        unimplemented()
     }
 
     func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {
@@ -303,7 +306,7 @@ extension BitcoinOnChainTransactionEngine {
         }
         let sourceAccountLabel = sourceAccount.label
         return Completable.fromCallable { [pendingTransaction] in
-            guard pendingTransaction.amount.amount > 0 else {
+            guard pendingTransaction.amount.isPositive else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
             }
             guard pendingTransaction.amount.amount >= Token.coin.dust else {

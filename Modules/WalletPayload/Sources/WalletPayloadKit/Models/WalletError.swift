@@ -3,6 +3,7 @@
 import Localization
 import ToolKit
 
+// TODO: Add Localization
 public enum WalletError: LocalizedError, Equatable {
     case unknown
     case payloadNotFound
@@ -14,7 +15,6 @@ public enum WalletError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .payloadNotFound:
-            // TODO: Add Localization
             return "We could't find wallet data to decrypt"
         case .decryption(let error):
             return error.errorDescription
@@ -66,15 +66,15 @@ public enum WalletInitializationError: LocalizedError, Equatable {
         case .unknown:
             return ""
         case .missingWallet:
-            return ""
+            return "Initializating wallet failed due to missing data"
         case .missingSeedHex:
-            return ""
+            return "Initializating wallet failed due to missing seedHex"
         case .metadataInitialization:
-            return ""
+            return "Initializating wallet failed due to metadata error"
         case .needsSecondPassword:
-            return ""
+            return "Wallet is double encrypted"
         case .invalidSecondPassword:
-            return ""
+            return "Second password is invalid"
         }
     }
 }
@@ -87,11 +87,11 @@ public enum WalletRecoverError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .unknown:
-            return ""
+            return "Recovery failure"
         case .invalidMnemonic:
-            return ""
+            return "Recovery failed due to invalid mnemonic"
         case .failedToRecoverWallet:
-            return ""
+            return "Failed to recover wallet"
         }
     }
 }

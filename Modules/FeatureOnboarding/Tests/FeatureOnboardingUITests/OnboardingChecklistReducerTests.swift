@@ -100,6 +100,10 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        // then go through buy
+        testStore.receive(.userStateDidChange(.complete)) {
+            $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
+        }
         testStore.send(.stopObservingUserState)
     }
 

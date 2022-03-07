@@ -11,23 +11,7 @@ public enum WalletInfoError: Error {
 
 public struct WalletInfo: Codable, Equatable {
 
-    // MARK: - Type
-
-    private enum CodingKeys: String, CodingKey {
-        case wallet
-        case guid
-        case email
-        case sessionId = "session_id"
-        case emailCode = "email_code"
-        case twoFAType = "two_fa_type"
-        case isMobileSetup = "is_mobile_setup"
-        case hasCloudBackup = "has_cloud_backup"
-        case nabu
-        case unified
-        case upgradeable
-        case mergeable
-        case userType = "user_type"
-    }
+    // MARK: - UserType
 
     public enum UserType: String, Codable {
         /// only wallet
@@ -46,133 +30,216 @@ public struct WalletInfo: Codable, Equatable {
         case both = "WALLET_EXCHANGE_BOTH"
     }
 
-    public struct NabuInfo: Codable, Equatable {
-        public let userId: String
-        public let recoveryToken: String
+    // MARK: - Wallet
 
-        private enum NabuInfoCodingKeys: String, CodingKey {
-            case userId = "user_id"
-            case recoveryToken = "recovery_token"
+    public struct Wallet: Codable, Equatable {
+        enum CodingKeys: String, CodingKey {
+            case guid
+            case email
+            case twoFaType = "two_fa_type"
+            case emailCode = "email_code"
+            case isMobileSetup = "is_mobile_setup"
+            case hasCloudBackup = "has_cloud_backup"
+            case sessionId = "session_id"
+            case nabu
         }
 
+        public var guid: String
+        public var email: String?
+        public var twoFaType: WalletAuthenticatorType?
+        public var emailCode: String?
+        public var isMobileSetup: Bool?
+        public var hasCloudBackup: Bool?
+        public var sessionId: String?
+        public var nabu: Nabu?
+
         public init(
-            userId: String,
-            recoveryToken: String
+            guid: String,
+            email: String? = nil,
+            twoFaType: WalletAuthenticatorType? = nil,
+            emailCode: String? = nil,
+            isMobileSetup: Bool? = nil,
+            hasCloudBackup: Bool? = nil,
+            sessionId: String? = nil,
+            nabu: Nabu? = nil
         ) {
-            self.userId = userId
-            self.recoveryToken = recoveryToken
+            self.guid = guid
+            self.email = email
+            self.twoFaType = twoFaType
+            self.emailCode = emailCode
+            self.isMobileSetup = isMobileSetup
+            self.hasCloudBackup = hasCloudBackup
+            self.sessionId = sessionId
+            self.nabu = nabu
         }
 
         public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: NabuInfoCodingKeys.self)
-            userId = try container.decode(String.self, forKey: .userId)
-            recoveryToken = try container.decode(String.self, forKey: .recoveryToken)
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            guid = try container.decode(String.self, forKey: .guid)
+            email = try container.decodeIfPresent(String.self, forKey: .email)
+            twoFaType = try container.decodeIfPresent(WalletAuthenticatorType.self, forKey: .twoFaType)
+            emailCode = try container.decodeIfPresent(String.self, forKey: .emailCode)
+            isMobileSetup = try container.decodeIfPresent(Bool.self, forKey: .isMobileSetup)
+            hasCloudBackup = try container.decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
+            sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+            nabu = try container.decodeIfPresent(Nabu.self, forKey: .nabu)
         }
 
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: NabuInfoCodingKeys.self)
-            try container.encode(userId, forKey: .userId)
-            try container.encode(recoveryToken, forKey: .recoveryToken)
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(guid, forKey: .guid)
+            try container.encodeIfPresent(email, forKey: .email)
+            try container.encodeIfPresent(twoFaType, forKey: .twoFaType)
+            try container.encodeIfPresent(emailCode, forKey: .emailCode)
+            try container.encodeIfPresent(isMobileSetup, forKey: .isMobileSetup)
+            try container.encodeIfPresent(hasCloudBackup, forKey: .hasCloudBackup)
+            try container.encodeIfPresent(sessionId, forKey: .sessionId)
+            try container.encodeIfPresent(nabu, forKey: .nabu)
         }
     }
 
-    // MARK: - Properties
+    // MARK: - Nabu
 
-    public static let empty = WalletInfo(
-        guid: "",
-        email: nil,
-        emailCode: nil,
-        sessionId: nil,
-        twoFAType: nil,
-        isMobileSetup: nil,
-        hasCloudBackup: nil,
-        nabuInfo: nil,
-        unified: nil,
-        upgradeable: nil,
-        mergeable: nil,
-        userType: nil
-    )
+    public struct Nabu: Codable, Equatable {
+        private enum CodingKeys: String, CodingKey {
+            case userId = "user_id"
+            case recoveryToken = "recovery_token"
+            case recoverable
+        }
 
-    public let guid: String
-    public let email: String?
-    public let emailCode: String?
-    public let sessionId: String?
-    public let twoFAType: WalletAuthenticatorType?
-    public let isMobileSetup: Bool?
-    public let hasCloudBackup: Bool?
-    public let nabuInfo: NabuInfo?
-    public let unified: Bool?
-    public let upgradeable: Bool?
-    public let mergeable: Bool?
-    public let userType: UserType?
+        public var userId: String
+        public var recoveryToken: String
+        public var recoverable: Bool
 
-    // MARK: - Setup
+        public init(
+            userId: String,
+            recoveryToken: String,
+            recoverable: Bool
+        ) {
+            self.userId = userId
+            self.recoveryToken = recoveryToken
+            self.recoverable = recoverable
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            userId = try container.decode(String.self, forKey: .userId)
+            recoveryToken = try container.decode(String.self, forKey: .recoveryToken)
+            recoverable = try container.decode(Bool.self, forKey: .recoverable)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(userId, forKey: .userId)
+            try container.encode(recoveryToken, forKey: .recoveryToken)
+            try container.encode(recoverable, forKey: .recoverable)
+        }
+    }
+
+    // MARK: - Exchange
+
+    public struct Exchange: Codable, Equatable {
+        enum CodingKeys: String, CodingKey {
+            case twoFaMode = "two_fa_mode"
+            case email
+        }
+
+        public var twoFaMode: Bool?
+        public var email: String?
+
+        public init(
+            twoFaMode: Bool? = nil,
+            email: String? = nil
+        ) {
+            self.twoFaMode = twoFaMode
+            self.email = email
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            twoFaMode = try container.decodeIfPresent(Bool.self, forKey: .twoFaMode)
+            email = try container.decodeIfPresent(String.self, forKey: .email)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encodeIfPresent(twoFaMode, forKey: .twoFaMode)
+            try container.encodeIfPresent(email, forKey: .email)
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case sessionId = "session_id"
+        case product
+        case exchangeAuthUrl = "exchange_auth_url"
+        case exchange
+        case userType = "user_type"
+        case unified
+        case mergeable
+        case upgradeable
+        case wallet
+    }
+
+    public var sessionId: String?
+    public var product: String?
+    public var exchangeAuthUrl: String?
+    public var exchange: Exchange?
+    public var userType: UserType?
+    public var unified: Bool?
+    public var mergeable: Bool?
+    public var upgradeable: Bool?
+    public var wallet: Wallet?
+
+    public static var empty: WalletInfo {
+        self.init()
+    }
 
     public init(
-        guid: String,
-        email: String? = nil,
-        emailCode: String? = nil,
         sessionId: String? = nil,
-        twoFAType: WalletAuthenticatorType? = nil,
-        isMobileSetup: Bool? = nil,
-        hasCloudBackup: Bool? = nil,
-        nabuInfo: NabuInfo? = nil,
+        product: String? = nil,
+        exchangeAuthUrl: String? = nil,
+        exchange: Exchange? = nil,
+        userType: UserType? = nil,
         unified: Bool? = nil,
-        upgradeable: Bool? = nil,
         mergeable: Bool? = nil,
-        userType: UserType? = nil
+        upgradeable: Bool? = nil,
+        wallet: Wallet? = nil
     ) {
-        self.guid = guid
-        self.email = email
-        self.emailCode = emailCode
         self.sessionId = sessionId
-        self.twoFAType = twoFAType
-        self.isMobileSetup = isMobileSetup
-        self.hasCloudBackup = hasCloudBackup
-        self.nabuInfo = nabuInfo
-        self.unified = unified
-        self.upgradeable = upgradeable
-        self.mergeable = mergeable
+        self.product = product
+        self.exchangeAuthUrl = exchangeAuthUrl
+        self.exchange = exchange
         self.userType = userType
+        self.unified = unified
+        self.mergeable = mergeable
+        self.upgradeable = upgradeable
+        self.wallet = wallet
     }
 
     public init(from decoder: Decoder) throws {
-        let container = try decoder
-            .container(keyedBy: CodingKeys.self)
-        let wallet = try container
-            .nestedContainer(keyedBy: CodingKeys.self, forKey: .wallet)
-        guid = try wallet.decode(String.self, forKey: .guid)
-        email = try wallet.decode(String.self, forKey: .email)
-        emailCode = try wallet.decode(String.self, forKey: .emailCode)
-        sessionId = try wallet.decodeIfPresent(String.self, forKey: .sessionId)
-        twoFAType = try wallet.decode(WalletAuthenticatorType.self, forKey: .twoFAType)
-        isMobileSetup = try wallet
-            .decodeIfPresent(Bool.self, forKey: .isMobileSetup)
-        hasCloudBackup = try wallet
-            .decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
-        nabuInfo = try wallet
-            .decodeIfPresent(NabuInfo.self, forKey: .nabu)
-        unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
-        upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
-        mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+        product = try container.decodeIfPresent(String.self, forKey: .product)
+        exchangeAuthUrl = try container.decodeIfPresent(String.self, forKey: .exchangeAuthUrl)
+        exchange = try container.decodeIfPresent(Exchange.self, forKey: .exchange)
         userType = try container.decodeIfPresent(UserType.self, forKey: .userType)
+        unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
+        mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
+        upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
+        wallet = try container.decodeIfPresent(Wallet.self, forKey: .wallet)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        var wallet = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .wallet)
-        try wallet.encode(guid, forKey: .guid)
-        try wallet.encode(email, forKey: .email)
-        try wallet.encode(emailCode, forKey: .emailCode)
-        try wallet.encode(twoFAType, forKey: .twoFAType)
-        try wallet.encodeIfPresent(sessionId, forKey: .sessionId)
-        try wallet.encodeIfPresent(isMobileSetup, forKey: .isMobileSetup)
-        try wallet.encodeIfPresent(hasCloudBackup, forKey: .hasCloudBackup)
-        try wallet.encodeIfPresent(nabuInfo, forKey: .nabu)
-        try wallet.encodeIfPresent(unified, forKey: .unified)
-        try wallet.encodeIfPresent(upgradeable, forKey: .upgradeable)
-        try wallet.encodeIfPresent(mergeable, forKey: .mergeable)
-        try wallet.encodeIfPresent(userType, forKey: .userType)
+        try container.encodeIfPresent(sessionId, forKey: .sessionId)
+        try container.encodeIfPresent(product, forKey: .product)
+        try container.encodeIfPresent(exchangeAuthUrl, forKey: .exchangeAuthUrl)
+        try container.encodeIfPresent(exchange, forKey: .exchange)
+        try container.encodeIfPresent(userType, forKey: .userType)
+        try container.encodeIfPresent(unified, forKey: .unified)
+        try container.encodeIfPresent(mergeable, forKey: .mergeable)
+        try container.encodeIfPresent(upgradeable, forKey: .upgradeable)
+        try container.encodeIfPresent(wallet, forKey: .wallet)
     }
 }
 

@@ -62,7 +62,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
             },
             cryptoCurrencyService: cryptoCurrencySelectionService,
             priceProvider: AmountTranslationPriceProvider(),
-            defaultCryptoCurrency: .coin(.bitcoin),
+            defaultCryptoCurrency: .bitcoin,
             initialActiveInput: initialActiveInput
         )
     }

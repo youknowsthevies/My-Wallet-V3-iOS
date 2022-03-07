@@ -27,7 +27,7 @@ final class TargetSelectionInteractor {
     }
 
     func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
-        BitPayInvoiceTarget.make(from: data, asset: .coin(.bitcoin))
+        BitPayInvoiceTarget.make(from: data, asset: .bitcoin)
     }
 
     func getAvailableTargetAccounts(

@@ -153,6 +153,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Credit or Debit Card",
         comment: "Simple Buy: Payment method"
     )
+    public static let applePay = NSLocalizedString(
+        "Apple Pay",
+        comment: "Simple Buy: Apple Pay"
+    )
     public static let pending = NSLocalizedString(
         "Pending",
         comment: "Pending"

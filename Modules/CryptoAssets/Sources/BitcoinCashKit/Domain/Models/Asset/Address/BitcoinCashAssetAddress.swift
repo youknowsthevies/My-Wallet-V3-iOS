@@ -7,7 +7,7 @@ public struct BitcoinCashAssetAddress: AssetAddress, Importable, Hashable {
 
     public let isImported: Bool
     public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .coin(.bitcoinCash)
+    public let cryptoCurrency: CryptoCurrency = .bitcoinCash
 
     public init(isImported: Bool = false, publicKey: String) {
         self.isImported = isImported

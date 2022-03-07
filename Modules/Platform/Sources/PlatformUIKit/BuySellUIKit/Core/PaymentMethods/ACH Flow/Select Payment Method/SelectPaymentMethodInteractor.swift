@@ -136,6 +136,22 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
                 .emit(to: selectionRelay)
                 .disposeOnDeactivate(interactor: self)
             cellType = .linkedCard(presenter)
+        case .applePay(let cardData):
+            let presenter = LinkedCardCellPresenter(
+                acceptsUserInteraction: true,
+                cardData: cardData
+            )
+            presenter.tap
+                .do(onNext: { [weak self] _ in
+                    self?.eventRecorder.record(events: [
+                        AnalyticsEvent.sbPaymentMethodSelected(selection: .applePay),
+                        AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .applePay)
+                    ])
+                })
+                .map { _ in paymentMethodType }
+                .emit(to: selectionRelay)
+                .disposeOnDeactivate(interactor: self)
+            cellType = .linkedCard(presenter)
         case .account(let data):
             let presenter = FiatCustodialBalanceViewPresenter(
                 interactor: FiatCustodialBalanceViewInteractor(balance: data.topLimit.moneyValue),

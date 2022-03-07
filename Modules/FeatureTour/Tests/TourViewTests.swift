@@ -8,17 +8,17 @@ import PlatformKit
 import SnapshotTesting
 import XCTest
 
-class TourViewTests: XCTestCase {
+final class TourViewTests: XCTestCase {
 
-    override func setUp() {
+    override static func setUp() {
         super.setUp()
         DependencyContainer.defined(by: modules {
             DependencyContainer.mockDependencyContainer
         })
     }
 
-    func testTourView() {
-        let view = TourView(
+    func testTourView_manualLogin_disabled() {
+        let view = OnboardingCarouselView(
             environment: TourEnvironment(
                 createAccountAction: {},
                 restoreAction: {},
@@ -29,20 +29,69 @@ class TourViewTests: XCTestCase {
         )
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
 
-        let brokerageView = TourView.Carousel.brokerage.makeView()
+        let brokerageView = OnboardingCarouselView.Carousel.brokerage.makeView()
         assertSnapshot(matching: brokerageView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
-        let earnView = TourView.Carousel.earn.makeView()
+        let earnView = OnboardingCarouselView.Carousel.earn.makeView()
         assertSnapshot(matching: earnView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
-        let keysView = TourView.Carousel.keys.makeView()
+        let keysView = OnboardingCarouselView.Carousel.keys.makeView()
         assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
         let items = [
-            Price(currency: .coin(.bitcoin), value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
-            Price(currency: .coin(.ethereum), value: .loaded(next: "$3,585.69"), deltaPercentage: .loaded(next: 1.82)),
-            Price(currency: .coin(.bitcoinCash), value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
-            Price(currency: .coin(.stellar), value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
+            Price(currency: .bitcoin, value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
+            Price(currency: .ethereum, value: .loaded(next: "$3,585.69"), deltaPercentage: .loaded(next: 1.82)),
+            Price(currency: .bitcoinCash, value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
+            Price(currency: .stellar, value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
+        ]
+        var tourState = TourState()
+        tourState.items = IdentifiedArray(uniqueElements: items)
+        let mockTourReducer: Reducer<TourState, TourAction, TourEnvironment> = Reducer { _, _, _ in
+            .none
+        }
+        let tourStore = Store(
+            initialState: tourState,
+            reducer: mockTourReducer,
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {},
+                manualLoginAction: {}
+            )
+        )
+        let livePricesView = LivePricesView(
+            store: tourStore,
+            list: LivePricesList(store: tourStore)
+        )
+        assertSnapshot(matching: livePricesView, as: .image(layout: .device(config: .iPhone8)), record: false)
+    }
+
+    func testTourView_manualLogin_enabled() {
+        let view = OnboardingCarouselView(
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {},
+                manualLoginAction: {}
+            ),
+            manualLoginEnabled: true
+        )
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+
+        let brokerageView = OnboardingCarouselView.Carousel.brokerage.makeView()
+        assertSnapshot(matching: brokerageView, as: .image(layout: .device(config: .iPhone8)), record: false)
+
+        let earnView = OnboardingCarouselView.Carousel.earn.makeView()
+        assertSnapshot(matching: earnView, as: .image(layout: .device(config: .iPhone8)), record: false)
+
+        let keysView = OnboardingCarouselView.Carousel.keys.makeView()
+        assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)), record: false)
+
+        let items = [
+            Price(currency: .bitcoin, value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
+            Price(currency: .ethereum, value: .loaded(next: "$3,585.69"), deltaPercentage: .loaded(next: 1.82)),
+            Price(currency: .bitcoinCash, value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
+            Price(currency: .stellar, value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
         ]
         var tourState = TourState()
         tourState.items = IdentifiedArray(uniqueElements: items)

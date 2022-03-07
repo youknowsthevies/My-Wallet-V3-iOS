@@ -40,7 +40,7 @@ final class ERC20ActivityDetailsInteractor {
         let price = price(of: cryptoCurrency, at: createdAt)
             .optional()
             .catchAndReturn(nil)
-        let feePrice = self.price(of: .coin(.ethereum), at: createdAt)
+        let feePrice = self.price(of: .ethereum, at: createdAt)
             .optional()
             .catchAndReturn(nil)
 

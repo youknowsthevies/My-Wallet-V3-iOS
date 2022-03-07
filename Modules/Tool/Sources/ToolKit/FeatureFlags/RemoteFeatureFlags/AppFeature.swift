@@ -29,9 +29,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: Onboarding (After Login)
 
-    /// Shows Email Verification insted of Simple Buy at Login
-    case showOnboardingAfterSignUp
-
     /// Shows Email Verification in Onboarding, otherwise just show the buy flow
     case showEmailVerificationInOnboarding
 
@@ -49,9 +46,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
 
-    /// Enable ACH withdraw and deposit
-    case withdrawAndDepositACH
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -63,6 +57,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable New Card Acquirers (Stripe & Checkout)
     case newCardAcquirers
+
+    /// Enable Apple Pay
+    case applePay
 
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
@@ -90,6 +87,10 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Native Wallet
 
     case nativeWalletCreation
+
+    // MARK: - Card Issuance
+
+    case cardIssuance
 }
 
 extension AppFeature {
@@ -106,12 +107,8 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .withdrawAndDepositACH:
-            return "ach_withdraw_deposit_enabled"
         case .biometry:
             return nil
-        case .showOnboardingAfterSignUp:
-            return "show_onboarding_after_sign_up_ios"
         case .showEmailVerificationInOnboarding:
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
@@ -142,8 +139,12 @@ extension AppFeature {
             return "ios_ff_new_onboarding_tour"
         case .hotWalletCustodial:
             return "ios_ff_hot_wallet_custodial"
+        case .applePay:
+            return "ios_ff_apple_pay"
         case .nativeWalletCreation:
             return "ios_ff_native_wallet_creation"
+        case .cardIssuance:
+            return "ios_ff_card_issuance"
         }
     }
 
@@ -160,11 +161,7 @@ extension AppFeature {
             return false
         case .siftScienceEnabled:
             return false
-        case .withdrawAndDepositACH:
-            return false
         case .biometry:
-            return false
-        case .showOnboardingAfterSignUp:
             return false
         case .showEmailVerificationInOnboarding:
             return false
@@ -196,7 +193,11 @@ extension AppFeature {
             return true
         case .hotWalletCustodial:
             return false
+        case .applePay:
+            return false
         case .nativeWalletCreation:
+            return false
+        case .cardIssuance:
             return false
         }
     }

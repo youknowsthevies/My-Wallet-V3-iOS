@@ -43,14 +43,25 @@ public struct ExplainedActionViewModel {
         title: String,
         descriptions: [DescriptionTitle],
         badgeTitle: String?,
-        uniqueAccessibilityIdentifier: String
+        uniqueAccessibilityIdentifier: String,
+        thumbRenderDefault: Bool = false
     ) {
-        thumbBadgeImageViewModel = .primary(
-            image: .local(name: thumbImage, bundle: .platformUIKit),
-            cornerRadius: .round,
-            accessibilityIdSuffix: uniqueAccessibilityIdentifier
-        )
-        thumbBadgeImageViewModel.marginOffsetRelay.accept(6)
+        if thumbRenderDefault {
+            thumbBadgeImageViewModel = .default(
+                image: .local(name: thumbImage, bundle: .platformUIKit),
+                backgroundColor: .clear,
+                cornerRadius: .none,
+                accessibilityIdSuffix: uniqueAccessibilityIdentifier
+            )
+        } else {
+            thumbBadgeImageViewModel = .primary(
+                image: .local(name: thumbImage, bundle: .platformUIKit),
+                cornerRadius: .round,
+                accessibilityIdSuffix: uniqueAccessibilityIdentifier
+            )
+            thumbBadgeImageViewModel.marginOffsetRelay.accept(6)
+        }
+
         titleLabelContent = .init(
             text: title,
             font: .main(.semibold, 16),
@@ -64,7 +75,9 @@ public struct ExplainedActionViewModel {
                     text: payload.element.title,
                     font: .main(.medium, 14),
                     color: payload.element.titleColor,
-                    accessibility: .id(uniqueAccessibilityIdentifier + AccessibilityId.descriptionLabel + ".\(payload.offset)")
+                    accessibility: .id(
+                        uniqueAccessibilityIdentifier + AccessibilityId.descriptionLabel + ".\(payload.offset)"
+                    )
                 )
             }
 

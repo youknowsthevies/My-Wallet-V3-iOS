@@ -61,9 +61,9 @@ import ToolKit
 extension CryptoCurrency {
     private var whiteImageName: String? {
         switch self {
-        case .coin(.bitcoin):
+        case .bitcoin:
             return "white_btc_small"
-        case .coin(.bitcoinCash):
+        case .bitcoinCash:
             return "white_bch_small"
         default:
             return nil

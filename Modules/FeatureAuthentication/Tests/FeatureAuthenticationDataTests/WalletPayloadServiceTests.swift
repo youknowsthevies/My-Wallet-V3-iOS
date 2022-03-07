@@ -39,10 +39,25 @@ class WalletPayloadServiceTests: XCTestCase {
                 }
                 return .just(Either.right(new))
             }
+        let guidRepo = GuidRepository(
+            walletRepository: walletRepository,
+            walletRepo: walletRepo,
+            nativeWalletEnabled: { .just(nativeWalletEnabled) }
+        )
+        let sharedKeyRepo = SharedKeyRepository(
+            walletRepository: walletRepository,
+            walletRepo: walletRepo,
+            nativeWalletEnabled: { .just(nativeWalletEnabled) }
+        )
+        let credentialsRepository = CredentialsRepository(
+            guidRepository: guidRepo,
+            sharedKeyRepository: sharedKeyRepo
+        )
         let service = WalletPayloadService(
             repository: repository,
             walletRepository: walletRepository,
             walletRepo: walletRepo,
+            credentialsRepository: credentialsRepository,
             nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         let serviceAuthTypePublisher = service.requestUsingSessionToken()
@@ -76,10 +91,25 @@ class WalletPayloadServiceTests: XCTestCase {
                 }
                 return .just(Either.right(new))
             }
+        let guidRepo = GuidRepository(
+            walletRepository: walletRepository,
+            walletRepo: walletRepo,
+            nativeWalletEnabled: { .just(nativeWalletEnabled) }
+        )
+        let sharedKeyRepo = SharedKeyRepository(
+            walletRepository: walletRepository,
+            walletRepo: walletRepo,
+            nativeWalletEnabled: { .just(nativeWalletEnabled) }
+        )
+        let credentialsRepository = CredentialsRepository(
+            guidRepository: guidRepo,
+            sharedKeyRepository: sharedKeyRepo
+        )
         let service = WalletPayloadService(
             repository: repository,
             walletRepository: walletRepository,
             walletRepo: walletRepo,
+            credentialsRepository: credentialsRepository,
             nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         let serviceAuthTypePublisher = service.requestUsingSessionToken()

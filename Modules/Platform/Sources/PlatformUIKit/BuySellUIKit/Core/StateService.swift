@@ -355,7 +355,7 @@ public final class StateService: StateServiceAPI {
                             }
                     default:
                         switch orderDetails.paymentMethod {
-                        case .card:
+                        case .card, .applePay:
                             if orderDetails.is3DSConfirmedCardOrder {
                                 return .just(
                                     .pendingOrderCompleted(
@@ -698,7 +698,7 @@ extension StateService {
                  (.bankTransfer, false),
                  (.funds, false):
                 state = .inactive
-            case (.card, _):
+            case (.card, _), (.applePay, _):
                 state = .authorizeCard(order: checkoutData.order)
             }
 

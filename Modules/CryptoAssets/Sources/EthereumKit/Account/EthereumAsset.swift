@@ -11,7 +11,7 @@ final class EthereumAsset: CryptoAsset {
 
     // MARK: - Properties
 
-    let asset: CryptoCurrency = .coin(.ethereum)
+    let asset: CryptoCurrency = .ethereum
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultSingleAccount

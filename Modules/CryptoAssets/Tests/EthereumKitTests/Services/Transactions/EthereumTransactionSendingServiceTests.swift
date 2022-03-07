@@ -14,7 +14,6 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
 
-    var accountDetailsService: EthereumAccountDetailsServiceAPIMock!
     var client: TransactionPushClientAPIMock!
     var subject: EthereumTransactionSendingService!
 
@@ -22,12 +21,10 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         super.setUp()
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        accountDetailsService = EthereumAccountDetailsServiceAPIMock()
         client = TransactionPushClientAPIMock()
         subject = EthereumTransactionSendingService(
             client: client,
             transactionSigner: EthereumTransactionSigningService(
-                accountDetailsService: accountDetailsService,
                 transactionSigner: EthereumSigner()
             )
         )
@@ -36,7 +33,6 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
-        accountDetailsService = nil
         client = nil
         subject = nil
         super.tearDown()

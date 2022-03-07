@@ -44,7 +44,7 @@ final class BitcoinActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            of: CurrencyType.crypto(.coin(.bitcoin)),
+            of: CurrencyType.crypto(.bitcoin),
             in: fiatCurrency,
             at: .time(date)
         )

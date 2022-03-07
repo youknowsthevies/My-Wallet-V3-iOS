@@ -21,7 +21,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     public let dAppAddress: String
     public let dAppName: String
     public let dAppLogoURL: String
-    public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
+    public let currencyType: CurrencyType = .crypto(.ethereum)
     public let account: String
     public let message: Message
     public var label: String {

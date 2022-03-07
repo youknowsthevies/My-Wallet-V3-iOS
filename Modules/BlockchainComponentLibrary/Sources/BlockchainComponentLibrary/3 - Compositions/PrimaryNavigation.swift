@@ -13,23 +13,18 @@ extension View {
     /// - Parameters:
     ///   - icon: Optional leading icon displayed in the navigation bar
     ///   - title: Optional title displayed in the navigation bar
-    ///   - byline: Optional byline displayed under the title
     ///   - trailing: Trailing views in navigation bar. Commonly `IconButton`, or `TextButton`.
     ///               Multiple views are auto distributed along an HStack.
     /// - Returns: `self`, otherwise unmodified.
-    public func primaryNavigation<LeadingIcon: View, Trailing: View>(
-        @ViewBuilder icon: @escaping () -> LeadingIcon,
-        title: String? = nil,
-        isLargeTitle: Bool = false,
-        byline: String? = nil,
+    public func primaryNavigation<Leading: View, Trailing: View>(
+        @ViewBuilder leading: @escaping () -> Leading,
+        title: String?,
         @ViewBuilder trailing: @escaping () -> Trailing
     ) -> some View {
         modifier(
-            PrimaryNavigationModifier(
-                icon: icon,
+            PrimaryNavigationModifier<Leading, Trailing>(
+                leading: leading,
                 title: title,
-                isLargeTitle: isLargeTitle,
-                byline: byline,
                 trailing: trailing
             )
         )
@@ -37,24 +32,18 @@ extension View {
 
     /// Replacement for setting navigation items using component library styling.
     /// - Parameters:
-    ///   - icon: Optional leading icon displayed in the navigation bar
     ///   - title: Optional title displayed in the navigation bar
-    ///   - byline: Optional byline displayed under the title
     ///   - trailing: Trailing views in navigation bar. Commonly `IconButton`, or `TextButton`.
     ///               Multiple views are auto distributed along an HStack.
     /// - Returns: `self`, otherwise unmodified.
     public func primaryNavigation<Trailing: View>(
         title: String? = nil,
-        isLargeTitle: Bool = false,
-        byline: String? = nil,
         @ViewBuilder trailing: @escaping () -> Trailing
     ) -> some View {
         modifier(
-            PrimaryNavigationModifier(
-                icon: EmptyView.init,
+            PrimaryNavigationModifier<EmptyView, Trailing>(
+                leading: nil,
                 title: title,
-                isLargeTitle: isLargeTitle,
-                byline: byline,
                 trailing: trailing
             )
         )
@@ -67,20 +56,30 @@ extension View {
     /// - Parameters:
     ///   - icon: Optional leading icon displayed in the navigation bar
     ///   - title: Optional title displayed in the navigation bar
-    ///   - byline: Optional byline displayed under the title
     /// - Returns: `self`, otherwise unmodified.
-    public func primaryNavigation<LeadingIcon: View>(
-        @ViewBuilder icon: @escaping () -> LeadingIcon,
-        title: String? = nil,
-        isLargeTitle: Bool = false,
-        byline: String? = nil
+    public func primaryNavigation<Leading: View>(
+        @ViewBuilder leading: @escaping () -> Leading,
+        title: String?
     ) -> some View {
         modifier(
-            PrimaryNavigationModifier<LeadingIcon, EmptyView>(
-                icon: icon,
+            PrimaryNavigationModifier<Leading, EmptyView>(
+                leading: leading,
                 title: title,
-                isLargeTitle: isLargeTitle,
-                byline: byline,
+                trailing: nil
+            )
+        )
+    }
+
+    /// Replacement for setting navigation items using component library styling.
+    ///
+    /// This function is specifically available for setting the title without changing trailing views.
+    ///
+    /// - Returns: `self`, otherwise unmodified.
+    public func primaryNavigation() -> some View {
+        modifier(
+            PrimaryNavigationModifier<EmptyView, EmptyView>(
+                leading: nil,
+                title: nil,
                 trailing: nil
             )
         )
@@ -91,21 +90,15 @@ extension View {
     /// This function is specifically available for setting the title without changing trailing views.
     ///
     /// - Parameters:
-    ///   - icon: Optional leading icon displayed in the navigation bar
     ///   - title: Optional title displayed in the navigation bar
-    ///   - byline: Optional byline displayed under the title
     /// - Returns: `self`, otherwise unmodified.
     public func primaryNavigation(
-        title: String? = nil,
-        isLargeTitle: Bool = false,
-        byline: String? = nil
+        title: String?
     ) -> some View {
         modifier(
             PrimaryNavigationModifier<EmptyView, EmptyView>(
-                icon: EmptyView.init,
+                leading: nil,
                 title: title,
-                isLargeTitle: isLargeTitle,
-                byline: byline,
                 trailing: nil
             )
         )
@@ -114,27 +107,32 @@ extension View {
 
 /// Replacement for `NavigationView` to fix a bug on iPhone
 public struct PrimaryNavigationView<Content: View>: View {
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private let content: Content
 
     /// A `NavigationView` with a custom designed navigation bar
     /// - Parameters:
     ///   - content: Content of navigation view. Use `.primaryNavigation(...)` for titles and trailing items, and `PrimaryNavigationLink` for links.
-    public init(@ViewBuilder _ content: @escaping () -> Content) {
-        self.content = content
+    public init(@ViewBuilder _ content: () -> Content) {
+        self.content = content()
     }
 
     public var body: some View {
         #if os(macOS)
-        NavigationView(content: content)
+        NavigationView {
+            content
+        }
         #else
-        NavigationView(content: content)
-            // StackNavigationViewStyle is to fix a bug on iPhone where the following
-            // console error appears, and the navigation bar goes blank.
-            //
-            // > [Assert] displayModeButtonItem is internally managed and not exposed for DoubleColumn style. Returning an empty, disconnected UIBarButtonItem to fulfill the non-null contract.
-            //
-            // If we add iPad layout, we can re-enable other styles conditionally.
-            .navigationViewStyle(StackNavigationViewStyle())
+        NavigationView {
+            content
+                .background(NavigationConfigurator())
+        }
+        // StackNavigationViewStyle is to fix a bug on iPhone where the following
+        // console error appears, and the navigation bar goes blank.
+        //
+        // > [Assert] displayModeButtonItem is internally managed and not exposed for DoubleColumn style. Returning an empty, disconnected UIBarButtonItem to fulfill the non-null contract.
+        //
+        // If we add iPad layout, we can re-enable other styles conditionally.
+        .navigationViewStyle(StackNavigationViewStyle())
         #endif
     }
 }
@@ -156,20 +154,16 @@ public struct PrimaryNavigationLink<Destination: View, Label: View>: View {
         self.label = label
     }
 
-    private var secondaryDestination: some View {
-        destination.environment(\.isSecondaryViewInNavigation, true)
-    }
-
     public var body: some View {
         if let isActive = isActive {
             NavigationLink(
-                destination: secondaryDestination,
+                destination: destination,
                 isActive: isActive,
                 label: label
             )
         } else {
             NavigationLink(
-                destination: secondaryDestination,
+                destination: destination,
                 label: label
             )
         }
@@ -190,97 +184,44 @@ extension EnvironmentValues {
 // MARK: - Private
 
 /// Modifier which applies custom navigation bar styling
-private struct PrimaryNavigationModifier<LeadingIcon: View, Trailing: View>: ViewModifier {
-    let icon: () -> LeadingIcon
+private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewModifier {
+
+    let leading: (() -> Leading)?
     let title: String?
-    let isLargeTitle: Bool
-    let byline: String?
     let trailing: (() -> Trailing)?
 
-    // Custom variable required for this because `presentationMode.wrappedValue.isPresented`
-    // is set AFTER the push animation occurs, causing an unsatisfactory transition between
-    // navigation items.
-    @Environment(\.isSecondaryViewInNavigation) var isSecondaryViewInNavigation
-    @Environment(\.presentationMode) var presentationMode
-
     func body(content: Content) -> some View {
+        #if os(macOS)
         content
-            .if(true) {
-                #if canImport(UIKit)
-                $0
-                    .navigationBarTitleDisplayMode(.inline)
-                    .background(NavigationConfigurator())
-                #else
-                $0
-                #endif
-            }
             .ifLet(title) { view, title in
                 view
                     .navigationTitle(title)
-                    .if(true) {
-                        #if os(macOS)
-                        $0
-                        #else
-                        $0.toolbar {
-                            ToolbarItem(placement: isSecondaryViewInNavigation ? .principal : .navigationBarLeading) {
-                                HStack(spacing: 8) {
-                                    icon()
-                                        .frame(width: 24, height: 24)
-
-                                    VStack(alignment: isSecondaryViewInNavigation ? .center : .leading, spacing: 0) {
-                                        Text(title)
-                                            .typography(titleTypography)
-                                            .foregroundColor(.semantic.title)
-
-                                        byline.map(Text.init)?
-                                            .typography(isSecondaryViewInNavigation ? .caption1 : .paragraph2)
-                                            .foregroundColor(
-                                                Color(light: .palette.grey600, dark: .palette.dark200)
-                                            )
-                                    }
-                                }
-                                .padding(.leading, Spacing.padding1)
-                            }
-                        }
-                        #endif
-                    }
             }
-            .ifLet(trailing) { view, trailing in
-                #if os(macOS)
-                view
-                    .toolbar {
-                        ToolbarItem {
-                            trailing()
-                        }
-                    }
-                #else
-                view
-                    .navigationBarItems(
-                        trailing: HStack(spacing: Spacing.padding3) {
-                            trailing()
-                        }
-                        .padding(.trailing, Spacing.padding1)
-                        .accentColor(.semantic.muted)
-                    )
-                #endif
+            .toolbar {
+                ToolbarItem {
+                    leading?()
+                    trailing?()
+                }
             }
+        #else
+        content
+            .ifLet(title) { view, title in
+                view
+                    .navigationTitle(title)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .navigationBarItems(
+                leading: HStack(spacing: Spacing.padding3) {
+                    leading?()
+                },
+                trailing: HStack(spacing: Spacing.padding3) {
+                    trailing?()
+                }
+                .padding(.trailing, Spacing.padding1)
+                .accentColor(.semantic.muted)
+            )
+        #endif
     }
-
-    private var titleTypography: Typography {
-        switch (byline, isSecondaryViewInNavigation) {
-        case (.none, false):
-            return isLargeTitle ? .title2 : .title3 // First view, no byline
-        case (.none, true):
-            return .title3 // Back button visible, no byline
-        case (.some, _):
-            return .body2 // with byline in any view
-        }
-    }
-}
-
-/// Environment key set by `PrimaryNavigationLink`
-private struct IsSecondaryViewInNavigation: EnvironmentKey {
-    static var defaultValue = false
 }
 
 /// Environment key set by `PrimaryNavigation`
@@ -288,32 +229,28 @@ private struct NavigationBackButtonColor: EnvironmentKey {
     static var defaultValue = Color.semantic.primary
 }
 
-extension EnvironmentValues {
-    fileprivate var isSecondaryViewInNavigation: Bool {
-        get { self[IsSecondaryViewInNavigation.self] }
-        set { self[IsSecondaryViewInNavigation.self] = newValue }
-    }
-}
-
 #if canImport(UIKit)
+public private(set) var currentNavigationController: UINavigationController?
 /// Customizing `UINavigationController` without using `UIAppearance`
 private struct NavigationConfigurator: UIViewControllerRepresentable {
+
     @Environment(\.navigationBackButtonColor) var navigationBackButtonColor
 
     func makeUIViewController(context: Context) -> NavigationConfiguratorViewController {
-        let controller = NavigationConfiguratorViewController(navigationBackButtonColor: navigationBackButtonColor)
-        return controller
+        NavigationConfiguratorViewController(
+            navigationBackButtonColor: navigationBackButtonColor
+        )
     }
 
     func updateUIViewController(_ uiViewController: NavigationConfiguratorViewController, context: Context) {
         uiViewController.navigationBackButtonColor = navigationBackButtonColor
     }
 
-    final class NavigationConfiguratorViewController: UIViewController {
+    // swiftlint:disable line_length
+    final class NavigationConfiguratorViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+
         var navigationBackButtonColor: Color {
-            didSet {
-                styleNavigationBar()
-            }
+            didSet { styleNavigationBar() }
         }
 
         init(navigationBackButtonColor: Color) {
@@ -326,24 +263,32 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
             fatalError("init(coder:) has not been implemented")
         }
 
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            currentNavigationController = navigationController
+        }
+
         // Must wait until the view controller is added to the hierarchy to customize the navigation bar.
         // Otherwise `navigationController?` is nil.
         override func didMove(toParent parent: UIViewController?) {
             super.didMove(toParent: parent)
 
-            // Parent being the content hosting controller
             if let navigationItem = parent?.navigationItem {
-                // Hide the back button title
                 navigationItem.backButtonDisplayMode = .minimal
-
-                // If we're the root view, hide the title view since we have a custom one.
-                // If we do this for every view it screws up the animation when pushing
-                if navigationController?.children.first == parent {
-                    navigationItem.titleView = UIView()
-                }
             }
-
             styleNavigationBar()
+
+            guard navigationController?.delegate !== self else {
+                return
+            }
+            __proxy = __proxy ?? navigationController?.delegate
+            navigationController?.delegate = self
+            navigationController?.interactivePopGestureRecognizer?.delegate = self
+        }
+
+        func styleChildViewController(_ viewController: UIViewController) {
+            // Hide the back button title
+            viewController.navigationItem.backButtonDisplayMode = .minimal
         }
 
         // Customize the styling of the navigation bar
@@ -365,8 +310,76 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
                 navigationBar.backIndicatorTransitionMaskImage = image
                 navigationBar.tintColor = UIColor(navigationBackButtonColor)
 
+                navigationBar.largeTitleTextAttributes = [
+                    .foregroundColor: UIColor(.semantic.title),
+                    .font: Typography.title2.uiFont as Any
+                ]
+
+                navigationBar.titleTextAttributes = [
+                    .foregroundColor: UIColor(.semantic.title),
+                    .font: Typography.title3.uiFont as Any
+                ]
+
                 UITableView.appearance().backgroundColor = .clear
             }
+        }
+
+        weak var __proxy: UINavigationControllerDelegate?
+
+        func navigationController(
+            _ navigationController: UINavigationController,
+            willShow viewController: UIViewController,
+            animated: Bool
+        ) {
+            __proxy?.navigationController?(navigationController, willShow: viewController, animated: animated)
+            styleChildViewController(viewController)
+        }
+
+        func navigationController(
+            _ navigationController: UINavigationController,
+            didShow viewController: UIViewController,
+            animated: Bool
+        ) {
+            __proxy?.navigationController?(navigationController, didShow: viewController, animated: animated)
+        }
+
+        func navigationControllerSupportedInterfaceOrientations(
+            _ navigationController: UINavigationController
+        ) -> UIInterfaceOrientationMask {
+            __proxy?.navigationControllerSupportedInterfaceOrientations?(navigationController) ?? .all
+        }
+
+        func navigationControllerPreferredInterfaceOrientationForPresentation(
+            _ navigationController: UINavigationController
+        ) -> UIInterfaceOrientation {
+            __proxy?.navigationControllerPreferredInterfaceOrientationForPresentation?(
+                navigationController
+            ) ?? .portrait
+        }
+
+        func navigationController(
+            _ navigationController: UINavigationController,
+            interactionControllerFor animationController: UIViewControllerAnimatedTransitioning
+        ) -> UIViewControllerInteractiveTransitioning? {
+            __proxy?.navigationController?(navigationController, interactionControllerFor: animationController)
+        }
+
+        func navigationController(
+            _ navigationController: UINavigationController,
+            animationControllerFor operation: UINavigationController.Operation,
+            from fromVC: UIViewController,
+            to toVC: UIViewController
+        ) -> UIViewControllerAnimatedTransitioning? {
+            __proxy?.navigationController?(
+                navigationController,
+                animationControllerFor: operation,
+                from: fromVC,
+                to: toVC
+            )
+        }
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            (navigationController?.viewControllers.count ?? 0) > 1
         }
     }
 }
@@ -402,13 +415,12 @@ struct PrimaryNavigation_Previews: PreviewProvider {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.green)
             .primaryNavigation(
-                icon: { Icon.placeholder },
+                leading: {
+                    IconButton(icon: .user) {}
+                },
                 title: "Foo",
-                byline: "Byline",
                 trailing: {
                     IconButton(icon: .qrCode) {}
-
-                    IconButton(icon: .user) {}
                 }
             )
         }
@@ -423,7 +435,7 @@ struct PrimaryNavigation_Previews: PreviewProvider {
                     }
                 }
             }
-            .primaryNavigation(title: "Bar", byline: "Byline") {
+            .primaryNavigation(title: "Bar") {
                 IconButton(icon: .chat) {}
             }
         }

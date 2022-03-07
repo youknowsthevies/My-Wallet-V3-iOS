@@ -53,12 +53,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let featureFetching: RxFeatureFetching
     private var disposeBag = DisposeBag()
 
-    /// Represents a reference of the `WithdrawFlowRouter` object
-    /// - note: This is needed in order for the reference to be kept in memory,
-    ///         will be release on the dismissal of the flow.
-    private var withdrawFiatRouter: WithdrawFlowStarter?
-    private var withdrawRouter: WithdrawalRouting
-
     public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
@@ -76,10 +70,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
         featureFetching: RxFeatureFetching = resolve(),
-        analyticsRecoder: AnalyticsEventRecorderAPI = resolve(),
-        withdrawRouter: WithdrawalRouting = resolve()
+        analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        self.withdrawRouter = withdrawRouter
         self.featureFetching = featureFetching
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
@@ -166,7 +158,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         case .deposit(isKYCApproved: let value):
             switch value {
             case true:
-                showPaymentMethods()
+                showDepositFlow()
             case false:
                 showCashIdentityViewController()
             }
@@ -247,23 +239,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         }
     }
 
-    private func showPaymentMethods() {
-        guard case .fiat(let fiatCurrency) = currency else { return }
-        featureFetching
-            .fetchBool(for: .withdrawAndDepositACH)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
-                guard let self = self else { return }
-                switch withdrawAndDepositACHEnabled {
-                case true:
-                    self.showDepositFlow()
-                case false:
-                    self.showFundTransferDetails(fiatCurrency)
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-
     private func showDepositFlow() {
         dismiss { [weak self] in
             guard let self = self else { return }
@@ -313,19 +288,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showWithdrawFiatScreen(currency: FiatCurrency) {
-        featureFetching
-            .fetchBool(for: .withdrawAndDepositACH)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
-                guard let self = self else { return }
-                switch withdrawAndDepositACHEnabled {
-                case true:
-                    self.showWithdrawTransactionFlow(currency)
-                case false:
-                    self.showLegacyWithdrawFlow(currency)
-                }
-            })
-            .disposed(by: disposeBag)
+        showWithdrawTransactionFlow(currency)
     }
 
     private func showWithdrawTransactionFlow(_ currency: FiatCurrency) {
@@ -339,19 +302,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                     self?.tabSwapping.withdraw(from: account)
                 })
                 .disposed(by: self.disposeBag)
-        }
-    }
-
-    private func showLegacyWithdrawFlow(_ currency: FiatCurrency) {
-        let withdrawBuilder = withdrawRouter.withdrawalBuilder(for: currency)
-        let (router, controller) = withdrawBuilder.build()
-        withdrawFiatRouter = router
-        withdrawFiatRouter?.startFlow { [weak self] in
-            guard let self = self else { return }
-            self.withdrawFiatRouter = nil
-        }
-        dismiss { [weak navigationRouter] in
-            navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
         }
     }
 

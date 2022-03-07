@@ -35,7 +35,8 @@ extension APIClient {
                     subTypes: [],
                     currency: "GBP",
                     eligible: true,
-                    visible: true
+                    visible: true,
+                    mobilePayment: [.applePay]
                 ),
                 .init(
                     type: "CARD",
@@ -43,7 +44,8 @@ extension APIClient {
                     subTypes: [],
                     currency: "GBP",
                     eligible: true,
-                    visible: true
+                    visible: true,
+                    mobilePayment: [.applePay]
                 )
             ]
         )

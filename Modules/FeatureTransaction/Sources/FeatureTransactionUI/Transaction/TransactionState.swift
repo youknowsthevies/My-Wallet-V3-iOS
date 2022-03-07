@@ -29,10 +29,7 @@ struct TransactionState: StateType {
     var source: BlockchainAccount?
     var destination: TransactionTarget?
 
-    var sourceDestinationPair: MoneyValuePair?
-
-    var sourceToFiatPair: MoneyValuePair?
-    var destinationToFiatPair: MoneyValuePair?
+    var exchangeRates: TransactionExchangeRates?
 
     // MARK: Execution Supporting Data
 
@@ -53,6 +50,8 @@ struct TransactionState: StateType {
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none
     var order: TransactionOrder?
+
+    /// `userKYCStatus` is `nil` until a transaction initializes.
     var userKYCStatus: KYCStatus?
 
     // MARK: UI Supporting Data
@@ -83,6 +82,24 @@ struct TransactionState: StateType {
 
     var stepsBackStack: [TransactionFlowStep] = []
 
+    /// The predefined MoneyValue that should be used.
+    var initialAmountToSet: MoneyValue? {
+        switch destination {
+        case let target as CryptoAssetQRMetadata:
+            // The predefined amount is only used if the PendingTransaction has
+            // it already set. This means the engine chose to use it.
+            let amount = target.amount?.moneyValue
+            return amount == pendingTransaction?.amount ? amount : nil
+        case let target as CryptoAssetQRMetadataProviding:
+            // The predefined amount is only used if the PendingTransaction has
+            // it already set. This means the engine chose to use it.
+            let amount = target.metadata.amount?.moneyValue
+            return amount == pendingTransaction?.amount ? amount : nil
+        default:
+            return nil
+        }
+    }
+
     init(
         action: AssetAction,
         source: BlockchainAccount? = nil,
@@ -100,13 +117,55 @@ struct TransactionState: StateType {
     }
 }
 
+extension TransactionState {
+
+    private var sourceToFiatPair: MoneyValuePair? {
+        guard let sourceCurrencyType = source?.currencyType else {
+            return nil
+        }
+        guard let exchangeRate = exchangeRates?.sourceToFiatTradingCurrencyRate else {
+            return nil
+        }
+        return MoneyValuePair(
+            base: .one(currency: sourceCurrencyType),
+            exchangeRate: exchangeRate
+        )
+    }
+
+    private var sourceToDestinationPair: MoneyValuePair? {
+        guard let sourceCurrencyType = source?.currencyType else {
+            return nil
+        }
+        guard let exchangeRate = exchangeRates?.sourceToDestinationTradingCurrencyRate else {
+            return nil
+        }
+        return MoneyValuePair(
+            base: .one(currency: sourceCurrencyType),
+            exchangeRate: exchangeRate
+        )
+    }
+
+    private var destinationToFiatPair: MoneyValuePair? {
+        guard let destinationCurrencyType = destination?.currencyType else {
+            return nil
+        }
+        guard let exchangeRate = exchangeRates?.destinationToFiatTradingCurrencyRate else {
+            return nil
+        }
+        return MoneyValuePair(
+            base: .one(currency: destinationCurrencyType),
+            exchangeRate: exchangeRate
+        )
+    }
+}
+
 extension TransactionState: Equatable {
 
     static func == (lhs: TransactionState, rhs: TransactionState) -> Bool {
         lhs.action == rhs.action
             && lhs.allowFiatInput == rhs.allowFiatInput
             && lhs.destination?.label == rhs.destination?.label
-            && lhs.destinationToFiatPair == rhs.destinationToFiatPair
+            && lhs.exchangeRates == rhs.exchangeRates
             && lhs.errorState == rhs.errorState
             && lhs.executionStatus == rhs.executionStatus
             && lhs.isGoingBack == rhs.isGoingBack
@@ -115,8 +174,6 @@ extension TransactionState: Equatable {
             && lhs.pendingTransaction == rhs.pendingTransaction
             && lhs.secondPassword == rhs.secondPassword
             && lhs.source?.identifier == rhs.source?.identifier
-            && lhs.sourceDestinationPair == rhs.sourceDestinationPair
-            && lhs.sourceToFiatPair == rhs.sourceToFiatPair
             && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
@@ -154,6 +211,10 @@ extension TransactionState {
     /// The balance in `MoneyValue` based on the `PendingTransaction`
     var availableBalance: MoneyValue {
         normalizedValue(for: pendingTransaction?.available)
+    }
+
+    func maxSpendableWithCryptoInputType() -> MoneyValue {
+        maxSpendableWithActiveAmountInputType(.crypto)
     }
 
     func maxSpendableWithActiveAmountInputType(
@@ -243,7 +304,8 @@ extension TransactionState {
         guard let quote = rate.quote.fiatValue else {
             return .failure(.unexpectedMoneyValueType(rate.quote))
         }
-        switch (amount.cryptoValue, amount.fiatValue) {
+        let pendingTransactionAmount = pendingTransaction?.amount
+        switch (pendingTransactionAmount?.cryptoValue, pendingTransactionAmount?.fiatValue) {
         case (.some(let amount), .none):
             /// Just show the `CryptoValue` that the user entered
             /// as this is the `source` currency.
@@ -275,43 +337,34 @@ extension TransactionState {
         default:
             return .failure(.unexpectedDestinationAccountType)
         }
-        guard let exchange = sourceDestinationPair else {
+        guard let exchange = sourceToDestinationPair else {
             return .success(.zero(currency: currencyType))
         }
         guard case .crypto(let currency) = exchange.quote.currency else {
             return .failure(.unexpectedCurrencyType(exchange.quote.currency))
         }
-        guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
+        guard let fiatToSource = sourceToFiatPair?.inverseQuote.quote else {
             return .failure(.emptySourceExchangeRate)
         }
-        guard let destinationQuote = destinationToFiatPair?.quote.fiatValue else {
-            return .failure(.emptyDestinationExchangeRate)
-        }
-
+        let pendingTransactionAmount = pendingTransaction?.amount
         switch (
-            amount.cryptoValue,
-            amount.fiatValue,
-            exchange.quote.cryptoValue
+            pendingTransactionAmount?.cryptoValue,
+            pendingTransactionAmount?.fiatValue
         ) {
-        case (.none, .some(let fiat), .some(let cryptoPrice)):
-            /// Convert the `fiatValue` amount entered into
-            /// a `CryptoValue`
+        case (.none, .some(let fiat)):
+            // Convert the `FiatValue` amount entered into
+            // a `CryptoValue` of source
+            // then convert the `CryptoValue` of source to destination
+            // using the `quote` of the `sourceToDestinationPair`.
             return .success(
-                fiat.convert(
-                    usingInverse: destinationQuote,
-                    currency: cryptoPrice.currency.currencyType
-                )
+                fiat.convert(using: fiatToSource)
+                    .convert(using: exchange.quote)
             )
-        case (.some(let crypto), .none, _):
-            /// Convert the `cryptoValue` input into a `fiatValue` type.
-            let fiat = crypto.convert(using: sourceQuote)
-            /// Convert the `fiatValue` input into a `cryptoValue` type
-            /// given the `quote` of the `destinationCurrencyType`.
+        case (.some(let crypto), .none):
+            // Convert the `CryptoValue` amount entered to destination
+            // using the `quote` of the `sourceToDestinationPair`.
             return .success(
-                fiat.convert(
-                    usingInverse: destinationQuote,
-                    currency: currency.currencyType
-                )
+                crypto.convert(using: exchange.quote)
             )
         default:
             return .success(.zero(currency: currency))

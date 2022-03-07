@@ -38,6 +38,12 @@ struct PriceView: View {
             }
             .padding([.top, .bottom], 10)
             .padding(.horizontal)
+            .onAppear {
+                viewStore.send(.currencyDidAppear)
+            }
+            .onDisappear {
+                viewStore.send(.currencyDidDisappear)
+            }
         }
     }
 }

@@ -11,5 +11,12 @@ extension DependencyContainer {
         single { CardListService() as CardListServiceAPI }
         factory { CardUpdateService() as CardUpdateServiceAPI }
         factory { CardActivationService() as CardActivationServiceAPI }
+        single { ApplePayAuthorizationService() as ApplePayAuthorizationServiceAPI }
+        single {
+            ApplePayService(
+                repository: DIKit.resolve(),
+                authorizationService: DIKit.resolve()
+            ) as ApplePayServiceAPI
+        }
     }
 }

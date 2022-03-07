@@ -34,9 +34,9 @@ class BitPayLinkRouter: DeepLinkRouting {
         guard let bitpayURL: URL = service.contentRelay.value else { return false }
 
         let data = bitpayURL.absoluteString
-        let asset = coincore[.coin(.bitcoin)]
+        let asset = coincore[.bitcoin]
         let transactionPair = Single.zip(
-            BitPayInvoiceTarget.make(from: data, asset: .coin(.bitcoin)),
+            BitPayInvoiceTarget.make(from: data, asset: .bitcoin),
             asset.defaultAccount.asSingle()
         )
         BitPayInvoiceTarget

@@ -24,7 +24,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             .displayCurrencyPublisher
             .map { fiatCurrency -> MoneyValuePair in
                 MoneyValuePair(
-                    base: .one(currency: .crypto(.coin(.ethereum))),
+                    base: .one(currency: .crypto(.ethereum)),
                     quote: .one(currency: fiatCurrency)
                 )
             }
@@ -63,7 +63,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
-        precondition(sourceCryptoCurrency == .coin(.ethereum))
+        precondition(sourceCryptoCurrency == .ethereum)
         precondition(transactionTarget is EthereumSignMessageTarget)
     }
 
@@ -113,14 +113,14 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             .displayCurrency
             .map { fiatCurrency -> PendingTransaction in
                 .init(
-                    amount: MoneyValue(amount: 1, currency: .crypto(.coin(.ethereum))),
-                    available: .zero(currency: .coin(.ethereum)),
-                    feeAmount: .zero(currency: .coin(.ethereum)),
-                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                    amount: MoneyValue(amount: 1, currency: .crypto(.ethereum)),
+                    available: .zero(currency: .ethereum),
+                    feeAmount: .zero(currency: .ethereum),
+                    feeForFullAvailable: .zero(currency: .ethereum),
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular],
-                        asset: .crypto(.coin(.ethereum))
+                        asset: .crypto(.ethereum)
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )

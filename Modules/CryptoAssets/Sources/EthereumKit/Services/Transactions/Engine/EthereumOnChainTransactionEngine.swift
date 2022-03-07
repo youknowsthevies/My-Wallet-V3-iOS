@@ -43,6 +43,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
+    private var ethereumCryptoAccount: EthereumCryptoAccount {
+        sourceAccount as! EthereumCryptoAccount
+    }
+
     /// The current transactionTarget receive address.
     private var receiveAddress: Single<ReceiveAddress> {
         switch transactionTarget {
@@ -101,13 +105,14 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: .coin(.ethereum))
+            self.feeService.fees(cryptoCurrency: .ethereum)
         }
     }
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceCryptoCurrency == .coin(.ethereum))
+        precondition(sourceAccount is EthereumCryptoAccount)
+        precondition(sourceCryptoCurrency == .ethereum)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -117,16 +122,24 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             availableBalance
         )
-        .map { fiatCurrency, availableBalance -> PendingTransaction in
-            .init(
-                amount: .zero(currency: .coin(.ethereum)),
+        .map { [predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+            let amount: MoneyValue
+            if let predefinedAmount = predefinedAmount,
+               predefinedAmount.currency == .ethereum
+            {
+                amount = predefinedAmount.moneyValue
+            } else {
+                amount = .zero(currency: .ethereum)
+            }
+            return PendingTransaction(
+                amount: amount,
                 available: availableBalance,
-                feeAmount: .zero(currency: .coin(.ethereum)),
-                feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                feeAmount: .zero(currency: .ethereum),
+                feeForFullAvailable: .zero(currency: .ethereum),
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(.coin(.ethereum))
+                    asset: .crypto(.ethereum)
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -196,7 +209,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         guard let crypto = amount.cryptoValue else {
             preconditionFailure("Not a `CryptoValue`")
         }
-        guard crypto.currencyType == .coin(.ethereum) else {
+        guard crypto.currencyType == .ethereum else {
             preconditionFailure("Not an ethereum value")
         }
         return Single.zip(
@@ -254,7 +267,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currency == .crypto(.coin(.ethereum)) else {
+        guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
             fatalError("Not an ethereum value.")
         }
 
@@ -263,15 +276,20 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 feeCache.valueSingle,
                 destinationAddresses
             )
-            .flatMap { [transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
-                transactionBuildingService.buildTransaction(
-                    amount: pendingTransaction.amount,
-                    to: destinationAddresses.destination,
-                    addressReference: destinationAddresses.referenceAddress,
-                    feeLevel: pendingTransaction.feeLevel,
-                    fee: fee,
-                    contractAddress: nil
-                ).single
+            .flatMap { [ethereumCryptoAccount, transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
+                ethereumCryptoAccount.nonce
+                    .flatMap { nonce in
+                        transactionBuildingService.buildTransaction(
+                            amount: pendingTransaction.amount,
+                            to: destinationAddresses.destination,
+                            addressReference: destinationAddresses.referenceAddress,
+                            feeLevel: pendingTransaction.feeLevel,
+                            fee: fee,
+                            nonce: nonce,
+                            contractAddress: nil
+                        ).publisher
+                    }
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher
@@ -467,8 +485,8 @@ extension EthereumOnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .coin(.ethereum))),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .coin(.ethereum)))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .ethereum)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .ethereum))
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

@@ -14,7 +14,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let quotesEngine: SwapQuotesEngine
+    let quotesEngine: QuotesEngine
     let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -22,7 +22,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     var transactionTarget: TransactionTarget!
 
     init(
-        quotesEngine: SwapQuotesEngine,
+        quotesEngine: QuotesEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
@@ -43,10 +43,22 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         precondition((target as! CryptoTradingAccount).asset != sourceAsset)
     }
 
+    lazy var quote: Observable<PricedQuote> = {
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+            .asObservable()
+    }()
+
     func initializeTransaction() -> Single<PendingTransaction> {
         Single
             .zip(
-                quotesEngine.getRate(direction: orderDirection, pair: pair).take(1).asSingle(),
+                quote.take(1).asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
                 sourceAccount.actionableBalance
             )
@@ -93,7 +105,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             pendingTransaction.update(amount: normalized, available: balance)
         }
         .do(onSuccess: { [weak self] transaction in
-            self?.quotesEngine.updateAmount(transaction.amount.amount)
+            self?.quotesEngine.update(amount: transaction.amount.amount)
         })
         .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
             self.clearConfirmations(pendingTransaction: pendingTransaction)

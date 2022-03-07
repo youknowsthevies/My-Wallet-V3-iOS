@@ -95,7 +95,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceCryptoCurrency == .coin(.stellar))
+        precondition(sourceCryptoCurrency == .stellar)
     }
 
     func restart(
@@ -172,7 +172,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 textMemo: memo,
                 required: isMemoRequired
             )
-            let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
+            let zeroStellar: MoneyValue = .zero(currency: .stellar)
             var transaction = PendingTransaction(
                 amount: zeroStellar,
                 available: availableBalance,
@@ -181,7 +181,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular],
-                    asset: .crypto(.coin(.stellar))
+                    asset: .crypto(.stellar)
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: nil,
@@ -193,7 +193,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        precondition(amount.currency == .crypto(.coin(.stellar)))
+        precondition(amount.currency == .crypto(.stellar))
         let actionableBalance = sourceAccount.actionableBalance.map(\.cryptoValue)
         return Single
             .zip(actionableBalance, absoluteFee)
@@ -201,7 +201,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 guard let actionableBalance = actionableBalance else {
                     throw PlatformKitError.illegalStateException(message: "actionableBalance not CryptoValue")
                 }
-                let zeroStellar: CryptoValue = .zero(currency: .coin(.stellar))
+                let zeroStellar: CryptoValue = .zero(currency: .stellar)
                 let total = try actionableBalance - fees
                 let available = (try total < zeroStellar) ? zeroStellar : total
                 var pendingTransaction = pendingTransaction

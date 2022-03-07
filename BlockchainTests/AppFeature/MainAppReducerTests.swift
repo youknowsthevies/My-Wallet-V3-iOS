@@ -54,6 +54,7 @@ final class MainAppReducerTests: XCTestCase {
 
     var mockWalletService: WalletService!
     var mockWalletPayloadService: MockWalletPayloadService!
+    var mockForgetWalletService: ForgetWalletService!
 
     var testStore: TestStore<
         CoreAppState,
@@ -108,6 +109,7 @@ final class MainAppReducerTests: XCTestCase {
             recoverFromMetadata: { _ in .empty() }
         )
         mockWalletPayloadService = MockWalletPayloadService()
+        mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         testStore = TestStore(
             initialState: CoreAppState(),
@@ -143,7 +145,9 @@ final class MainAppReducerTests: XCTestCase {
                 appStoreOpener: mockAppStoreOpener,
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
+                forgetWalletService: mockForgetWalletService,
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
+                nativeWalletFlagEnabled: { .just(false) },
                 buildVersionProvider: { "" }
             )
         )
@@ -325,9 +329,9 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.informSecondPasswordDetected))
         testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected)))
-        testStore.receive(.onboarding(.welcomeScreen(.enter(into: .secondPassword)))) { state in
-            state.onboarding?.welcomeState?.route = RouteIntent(route: .secondPassword, action: .enterInto())
-            state.onboarding?.welcomeState?.secondPasswordNoticeState = .init()
+        testStore.receive(.onboarding(.welcomeScreen(.manualPairing(.navigate(to: .secondPasswordDetected))))) { state in
+            state.onboarding?.welcomeState?.manualCredentialsState?.route = RouteIntent(route: .secondPasswordDetected, action: .navigateTo)
+            state.onboarding?.welcomeState?.manualCredentialsState?.secondPasswordNoticeState = .init()
         }
     }
 
@@ -709,21 +713,19 @@ final class MainAppReducerTests: XCTestCase {
             details: DeviceVerificationDetails(originLocation: "", originIP: "", originBrowser: ""),
             timestamp: Date(timeIntervalSince1970: 1000)
         )
-        testStore.assert(
-            .send(.loginRequestReceived(
-                deeplink: MockDeviceVerificationService.validDeeplink
-            )),
-            .do { self.mockMainQueue.advance() },
-            .receive(
-                .checkIfConfirmationRequired(
-                    sessionId: "",
-                    base64Str: ""
-                )
-            ),
-            .receive(.proceedToDeviceAuthorization(requestInfo)) { state in
-                state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
-            }
+        testStore.send(.loginRequestReceived(
+            deeplink: MockDeviceVerificationService.validDeeplink
+        ))
+        mockMainQueue.advance()
+        testStore.receive(
+            .checkIfConfirmationRequired(
+                sessionId: "",
+                base64Str: ""
+            )
         )
+        testStore.receive(.proceedToDeviceAuthorization(requestInfo)) { state in
+            state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
+        }
     }
 }
 

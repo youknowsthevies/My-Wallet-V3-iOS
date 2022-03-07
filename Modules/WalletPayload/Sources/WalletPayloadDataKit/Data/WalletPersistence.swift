@@ -35,7 +35,7 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
 
     func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
         repo
-            .publisher
+            .stream()
             .removeDuplicates()
             .setFailureType(to: WalletRepoPersistenceError.self)
             .receive(on: persistenceQueue)

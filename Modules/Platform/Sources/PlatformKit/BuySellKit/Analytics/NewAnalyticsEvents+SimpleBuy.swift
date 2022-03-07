@@ -38,6 +38,7 @@ extension AnalyticsEvents.New {
             case bankTransfer = "BANK_TRANSFER"
             case funds = "FUNDS"
             case paymentCard = "PAYMENT_CARD"
+            case applePay = "APPLE_PAY"
 
             public init(paymentMethod: PaymentMethod) {
                 switch paymentMethod.type {
@@ -49,6 +50,8 @@ extension AnalyticsEvents.New {
                     self = .bankTransfer
                 case .funds:
                     self = .funds
+                case .applePay:
+                    self = .applePay
                 }
             }
         }

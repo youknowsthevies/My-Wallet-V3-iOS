@@ -8,6 +8,7 @@ import PlatformKit
 
 protocol TransactionPushClientAPI: AnyObject {
 
+    /// Push transaction.
     func push(
         transaction: EthereumTransactionEncoded
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
@@ -15,20 +16,15 @@ protocol TransactionPushClientAPI: AnyObject {
 
 protocol TransactionClientAPI {
 
+    /// Get a transaction detail with given hash.
     func transaction(
         with hash: String
     ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError>
 
+    /// Get a transactions for account.
     func transactions(
         for account: String
     ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError>
-}
-
-protocol BalanceClientAPI {
-
-    func balanceDetails(
-        from address: String
-    ) -> AnyPublisher<BalanceDetailsResponse, ClientError>
 }
 
 protocol TransactionFeeClientAPI {
@@ -38,34 +34,9 @@ protocol TransactionFeeClientAPI {
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError>
 }
 
-/// Potential errors
-enum ClientError: Error {
-
-    /// A `Network` layer error
-    case networkError(NetworkError)
-
-    /// Balance is missing for address
-    case missingBalanceResponseForAddress
-
-    /// Account is missing for
-    case missingAccountResponseForAddress
-}
-
-protocol EthereumAccountClientAPI {
-
-    /// Checks if a given ethereum address is associated with an ethereum contract.
-    ///
-    /// - Parameter address: The ethereum address to check.
-    ///
-    /// - Returns: A publisher that emits a `EthereumIsContractResponse` on success, or a `NetworkError` on failure.
-    func isContract(address: String) -> AnyPublisher<EthereumIsContractResponse, NetworkError>
-}
-
 final class APIClient: TransactionPushClientAPI,
     TransactionClientAPI,
-    BalanceClientAPI,
-    TransactionFeeClientAPI,
-    EthereumAccountClientAPI
+    TransactionFeeClientAPI
 {
 
     // MARK: - Types
@@ -73,23 +44,12 @@ final class APIClient: TransactionPushClientAPI,
     /// Privately used endpoint data
     private enum Endpoint {
         static let fees: [String] = ["mempool", "fees", "eth"]
-        static let base: [String] = ["eth"]
-        static let pushTx: [String] = base + ["pushtx"]
-
-        static func balance(for address: String) -> [String] {
-            base + ["account", address, "balance"]
-        }
-
-        static func isContract(address: String) -> [String] {
-            base + ["account", address, "isContract"]
-        }
+        static let pushTx: [String] = ["eth", "pushtx"]
     }
 
     /// Privately used endpoint data
     private enum EndpointV2 {
         private static let base: [String] = ["v2", "eth", "data"]
-
-        static let latestBlock: [String] = base + ["block", "latest", "number"]
 
         static func transactions(for address: String) -> [String] {
             base + ["account", address, "transactions"]
@@ -121,7 +81,7 @@ final class APIClient: TransactionPushClientAPI,
     func fees(
         cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
-        guard cryptoCurrency == .coin(.ethereum) || cryptoCurrency.isERC20 else {
+        guard cryptoCurrency == .ethereum || cryptoCurrency.isERC20 else {
             fatalError("Using Ethereum APIClient for incompatible CryptoCurrency")
         }
         var parameters: [URLQueryItem] = []
@@ -174,42 +134,13 @@ final class APIClient: TransactionPushClientAPI,
             .map(\.transactions)
             .eraseToAnyPublisher()
     }
-
-    /// Fetches the balance for an address
-    func balanceDetails(
-        from address: String
-    ) -> AnyPublisher<BalanceDetailsResponse, ClientError> {
-        let path = Endpoint.balance(for: address)
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter.perform(request: request)
-            .mapError(ClientError.networkError)
-            .flatMap { (payload: [String: BalanceDetailsResponse])
-                -> AnyPublisher<BalanceDetailsResponse, ClientError> in
-                guard let details = payload[address] else {
-                    return .failure(.missingBalanceResponseForAddress)
-                }
-                return .just(details)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    func isContract(address: String) -> AnyPublisher<EthereumIsContractResponse, NetworkError> {
-        let path = Endpoint.isContract(address: address)
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter.perform(request: request)
-    }
 }
 
 extension CryptoCurrency {
-    fileprivate var erc20ContractAddress: String? {
-        switch self {
-        case .erc20(let model):
-            switch model.kind {
-            case .erc20(let contractAddress):
-                return contractAddress
-            default:
-                return nil
-            }
+    var erc20ContractAddress: String? {
+        switch assetModel.kind {
+        case .erc20(let contractAddress):
+            return contractAddress
         default:
             return nil
         }

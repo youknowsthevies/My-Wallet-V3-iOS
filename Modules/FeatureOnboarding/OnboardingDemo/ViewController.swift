@@ -13,7 +13,6 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         resetRouter()
-        featureFlagsService.enable(.showOnboardingAfterSignUp)
         featureFlagsService.enable(.showEmailVerificationInOnboarding)
     }
 

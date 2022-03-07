@@ -43,17 +43,8 @@ extension EthereumTransactionCandidate {
             gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: MockEthereumWalletTestData.Transaction.value,
+            nonce: MockEthereumWalletTestData.Transaction.nonce,
             transferType: .transfer()
-        )
-    }
-}
-
-extension EthereumAssetAccountDetails {
-    static var defaultMock: EthereumAssetAccountDetails {
-        .init(
-            account: .defaultMock,
-            balance: .zero(currency: .coin(.ethereum)),
-            nonce: UInt64(MockEthereumWalletTestData.Transaction.nonce)
         )
     }
 }

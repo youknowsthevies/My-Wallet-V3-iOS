@@ -12,7 +12,7 @@ final class MoneyValueConversionTests: XCTestCase {
             base: .one(currency: .USD),
             exchangeRate: MoneyValue(
                 amount: 000003357,
-                currency: .crypto(.coin(.bitcoin))
+                currency: .crypto(.bitcoin)
             )
         )
         // WHEN: The amount is converted
@@ -27,7 +27,7 @@ final class MoneyValueConversionTests: XCTestCase {
         let exchangeRate = MoneyValuePair(
             base: MoneyValue(
                 amount: 000003357,
-                currency: .crypto(.coin(.bitcoin))
+                currency: .crypto(.bitcoin)
             ),
             exchangeRate: .one(currency: .USD)
         )
@@ -45,7 +45,7 @@ final class MoneyValueConversionTests: XCTestCase {
             base: .one(currency: .EUR),
             exchangeRate: MoneyValue(
                 amount: 000003357,
-                currency: .crypto(.coin(.bitcoin))
+                currency: .crypto(.bitcoin)
             )
         )
         // WHEN: The amount is converted

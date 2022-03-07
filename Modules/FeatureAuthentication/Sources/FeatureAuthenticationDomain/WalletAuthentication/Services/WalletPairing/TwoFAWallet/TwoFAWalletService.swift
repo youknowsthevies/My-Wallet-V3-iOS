@@ -108,9 +108,10 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
             .flatMap { [walletRepo] rawPayload -> AnyPublisher<Void, TwoFAWalletServiceError> in
                 walletRepo
                     .set(keyPath: \.encryptedPayload, value: rawPayload)
-                    .publisher
+                    .get()
                     .mapToVoid()
                     .mapError()
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

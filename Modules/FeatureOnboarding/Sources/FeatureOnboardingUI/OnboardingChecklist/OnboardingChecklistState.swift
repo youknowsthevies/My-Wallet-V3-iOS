@@ -170,8 +170,11 @@ extension OnboardingChecklist.Environment {
 
         case .linkPaymentMethods:
             if completedItems.contains(.verifyIdentity) {
-                presentPaymentMethodLinkingFlow { _ in
-                    // no-op: flow ends here
+                presentPaymentMethodLinkingFlow { [presentBuyFlow] didCompleteLinking in
+                    guard didCompleteLinking else { return }
+                    presentBuyFlow { _ in
+                        // no-op: flow ends here
+                    }
                 }
             } else {
                 presentKYCFlow { [presentPaymentMethodLinkingFlow] didCompleteKYC in

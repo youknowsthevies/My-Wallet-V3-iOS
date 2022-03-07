@@ -10,17 +10,8 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
     // MARK: - Private Types
 
     private enum EndpointV2 {
-        private static func base() -> [String] { ["eth"] }
-        private static func account(for address: String) -> [String] {
-            base() + ["account", address]
-        }
-
-        private static var account: [String] {
-            ["v2", "eth", "data", "account"]
-        }
-
         static func transactions(for address: String, contractAddress: String) -> [String] {
-            account + [address, "token", contractAddress, "transfers"]
+            ["v2", "eth", "data", "account", address, "token", contractAddress, "transfers"]
         }
     }
 

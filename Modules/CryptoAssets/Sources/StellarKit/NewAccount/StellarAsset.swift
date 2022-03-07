@@ -12,7 +12,7 @@ final class StellarAsset: CryptoAsset {
 
     // MARK: - Properties
 
-    let asset: CryptoCurrency = .coin(.stellar)
+    let asset: CryptoCurrency = .stellar
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         Just(())

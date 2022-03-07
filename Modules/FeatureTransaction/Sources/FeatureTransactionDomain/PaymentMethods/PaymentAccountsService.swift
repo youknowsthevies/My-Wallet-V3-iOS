@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Localization
 import MoneyKit
 import NetworkError
 import PlatformKit
@@ -98,8 +99,10 @@ final class PaymentAccountsService: PaymentAccountsServiceAPI {
                 if paymentAccounts.contains(where: { !$0.paymentMethodType.isSuggested }) {
                     // Filter out "suggested" (linkable) account types, so the user only sees accounts that are already linked.
                     // In this case, users can link new accounts by selecting the "Add" option in the source selection screen.
-                    return paymentAccounts.filter { !$0.paymentMethodType.isSuggested }
+                    return paymentAccounts
+                        .filter { !$0.paymentMethodType.isSuggested || $0.paymentMethod.type.isApplePay }
                 }
+
                 return paymentAccounts
             }
             .mapError { error in

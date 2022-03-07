@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Localization
 import SwiftUI
 
@@ -12,26 +13,21 @@ struct LivePricesHeader: View {
     private let titleHeight: CGFloat = 64
     private var clippedTitleHeight: CGFloat {
         let calculatedHeight = titleHeight + offset
-        switch calculatedHeight {
-        case _ where calculatedHeight <= 0:
-            return 0
-        case _ where calculatedHeight >= titleHeight:
-            return titleHeight
-        default:
-            return calculatedHeight
-        }
+        return calculatedHeight.clamped(to: 0...titleHeight)
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .zero) {
             VStack {
                 Text(LocalizationConstants.Tour.carouselPricesScreenTitle)
+                    .typography(.title3)
                     .multilineTextAlignment(.center)
-                    .frame(width: 180.0, height: titleHeight)
-                    .textStyle(.title)
+                    .frame(height: titleHeight)
             }
+            .padding(.bottom, Spacing.padding2)
             .frame(width: 180.0, height: clippedTitleHeight)
             .clipped()
+
             HStack(alignment: .firstTextBaseline) {
                 Circle()
                     .fill(Color.green)

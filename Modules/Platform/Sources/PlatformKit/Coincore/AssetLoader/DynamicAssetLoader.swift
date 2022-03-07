@@ -62,12 +62,14 @@ final class DynamicAssetLoader: AssetLoader {
 
                 // Crypto Assets for any currency with Custodial support.
                 let custodialAssets: [CryptoAsset] = custodialCryptoCurrencies
-                    .map { [erc20AssetFactory] cryptoCurrency -> CryptoAsset in
-                        switch cryptoCurrency {
+                    .compactMap { [erc20AssetFactory] cryptoCurrency -> CryptoAsset? in
+                        switch cryptoCurrency.assetModel.kind {
                         case .coin, .celoToken:
                             return CustodialCryptoAsset(asset: cryptoCurrency)
-                        case .erc20(let erc20AssetModel):
-                            return erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)
+                        case .erc20:
+                            return erc20AssetFactory.erc20Asset(erc20AssetModel: cryptoCurrency.assetModel)
+                        case .fiat:
+                            impossible()
                         }
                     }
 
@@ -92,11 +94,13 @@ final class DynamicAssetLoader: AssetLoader {
         storage.mutateAndReturn { [erc20AssetFactory] storage in
             guard let cryptoAsset = storage[cryptoCurrency] else {
                 let cryptoAsset: CryptoAsset
-                switch cryptoCurrency {
+                switch cryptoCurrency.assetModel.kind {
                 case .coin, .celoToken:
                     cryptoAsset = CustodialCryptoAsset(asset: cryptoCurrency)
-                case .erc20(let erc20AssetModel):
-                    cryptoAsset = erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)
+                case .erc20:
+                    cryptoAsset = erc20AssetFactory.erc20Asset(erc20AssetModel: cryptoCurrency.assetModel)
+                case .fiat:
+                    impossible()
                 }
                 storage[cryptoCurrency] = cryptoAsset
                 return cryptoAsset

@@ -228,7 +228,7 @@ workflows:
 
             xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages
         title: Resolve Package Dependencies
-    - cache-push@2.5:
+    - cache-push@2.6:
         inputs:
         - cache_paths: |-
             $BITRISE_CACHE_DIR
@@ -392,6 +392,18 @@ workflows:
     - opts:
         is_expand: false
       APPCENTER_DISTRIBUTE_RELEASE_NOTES: staging-builds
+  TEST-JIRA-COMMENT:
+    steps:
+    - find-jira-issue@0:
+        is_skippable: true
+        inputs:
+        - find_issue_content: "$BITRISE_GIT_BRANCH"
+    - post-jira-comment-with-build-details@1:
+        inputs:
+        - api_token: "$JIRA_ACCESS_TOKEN"
+        - issue_keys: "$JIRA_ISSUE_LIST"
+        - base_url: "$JIRA_BASE_URL"
+        - user_name: "$JIRA_USER_NAME"
   TEST-SLACK:
     steps:
     - script@1:
