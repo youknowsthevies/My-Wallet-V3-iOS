@@ -1526,8 +1526,8 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let notFound = NSLocalizedString(
-        "Oops! We are having a problem fetching a quote, please try again later.",
-        comment: "Oops! We are having a problem fetching a quote, please try again later."
+        "Oops! We are having problems fetching a quote, please try again later.",
+        comment: "Oops! We are having problems fetching a quote, please try again later."
     )
 
     public static let tradingBelowMin = NSLocalizedString(

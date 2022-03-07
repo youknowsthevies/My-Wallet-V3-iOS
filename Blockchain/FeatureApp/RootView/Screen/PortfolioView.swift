@@ -1,5 +1,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
+import ComposableArchitectureExtensions
 import DIKit
 import FeatureDashboardUI
 import PlatformKit
@@ -9,10 +11,16 @@ import ToolKit
 
 struct PortfolioView: UIViewControllerRepresentable {
 
-    var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
-    var onboardingViewsFactory = OnboardingViewsFactory()
-    var userAdapter: UserAdapterAPI = resolve()
-    var featureFlagService: FeatureFlagsServiceAPI = resolve()
+    let store: Store<Void, RootViewAction>
+
+    init(store: Store<Void, RootViewAction>) {
+        self.store = store
+    }
+
+    private var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
+    private var onboardingViewsFactory = OnboardingViewsFactory()
+    private var userAdapter: UserAdapterAPI = resolve()
+    private var featureFlagService: FeatureFlagsServiceAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
@@ -28,11 +36,8 @@ struct PortfolioView: UIViewControllerRepresentable {
             },
             presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer()),
             featureFlagService: featureFlagService,
-            presentRedesignCoinView: { vc, cryptoCurrency in
-                vc.present(
-                    CoinAdapterView(cryptoCurrency: cryptoCurrency),
-                    inNavigationController: false
-                )
+            presentRedesignCoinView: { _, cryptoCurrency in
+                ViewStore(store).send(.enter(into: .coinView(cryptoCurrency)))
             }
         )
         viewController.automaticallyApplyNavigationBarStyle = false

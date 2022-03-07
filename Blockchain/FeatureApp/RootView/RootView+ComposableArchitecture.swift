@@ -9,6 +9,7 @@ import ComposableNavigation
 import DIKit
 import FeatureAppUI
 import Localization
+import MoneyKit
 import SwiftUI
 import ToolKit
 
@@ -65,6 +66,7 @@ enum RootViewRoute: NavigationRoute {
 
     case account
     case QR
+    case coinView(CryptoCurrency)
 
     @ViewBuilder func destination(in store: Store<RootViewState, RootViewAction>) -> some View {
         switch self {
@@ -76,6 +78,9 @@ enum RootViewRoute: NavigationRoute {
             AccountView()
                 .identity(blockchain.ux.user.account)
                 .ignoresSafeArea(.container, edges: .bottom)
+        case .coinView(let currency):
+            CoinAdapterView(cryptoCurrency: currency)
+                .identity(blockchain.ux.asset)
         }
     }
 }

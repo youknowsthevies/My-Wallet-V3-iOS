@@ -15,11 +15,11 @@ extension Dictionary {
 
 extension Dictionary {
 
-    static func + (lhs: Dictionary, rhs: Dictionary) -> Dictionary {
+    public static func + (lhs: Dictionary, rhs: Dictionary) -> Dictionary {
         lhs.merging(rhs, uniquingKeysWith: { $1 })
     }
 
-    static func += (lhs: inout Dictionary, rhs: Dictionary) {
+    public static func += (lhs: inout Dictionary, rhs: Dictionary) {
         lhs.merge(rhs, uniquingKeysWith: { $1 })
     }
 }
@@ -28,10 +28,22 @@ extension Dictionary where Key == L, Value == String {
     public func toTagString() -> [Tag: Value] { mapKeys(\.[]) }
 }
 
-extension Dictionary where Key == L, Value == Any {
+extension Dictionary where Key == L {
     public func toTagAny() -> [Tag: Value] { mapKeys(\.[]) }
 }
 
 extension Dictionary where Key == Tag {
+
     public subscript(id: L) -> Value? { self[id[]] }
+}
+
+extension Tag.Context {
+
+    public static func + (lhs: Dictionary, rhs: L.Context) -> Dictionary {
+        lhs.merging(rhs.toTagAny(), uniquingKeysWith: { $1 })
+    }
+
+    public static func += (lhs: inout Dictionary, rhs: L.Context) {
+        lhs.merge(rhs.toTagAny(), uniquingKeysWith: { $1 })
+    }
 }

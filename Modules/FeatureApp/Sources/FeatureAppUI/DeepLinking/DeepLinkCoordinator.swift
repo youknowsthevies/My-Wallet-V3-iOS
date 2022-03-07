@@ -118,10 +118,9 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
 
     func showAsset(_ event: Session.Event) {
 
-        let code = (try? event.context.decode(blockchain.app.deep_link.asset.code, as: String.self)) ?? "BTC"
-        guard let cryptoCurrency = CryptoCurrency(code: code) else {
-            return
-        }
+        let cryptoCurrency = (
+            try? event.context.decode(blockchain.app.deep_link.asset.code, as: CryptoCurrency.self)
+        ) ?? .bitcoin
 
         let builder = AssetDetailsBuilder(
             accountsRouter: accountsRouter(),
