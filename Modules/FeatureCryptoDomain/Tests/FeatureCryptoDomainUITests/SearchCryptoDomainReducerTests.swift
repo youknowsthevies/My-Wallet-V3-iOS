@@ -11,6 +11,8 @@ import OrderedCollections
 import TestKit
 import XCTest
 
+// swiftlint:disable all
+
 final class SearchCryptoDomainReducerTests: XCTestCase {
 
     private var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
@@ -75,7 +77,11 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_select_free_domain_should_go_to_checkout() {
-        let testDomain = SearchDomainResult(domainName: "free.blockchain", domainType: .free, domainAvailability: .availableForFree)
+        let testDomain = SearchDomainResult(
+            domainName: "free.blockchain",
+            domainType: .free,
+            domainAvailability: .availableForFree
+        )
         testStore.send(.selectFreeDomain(testDomain)) { state in
             state.selectedDomains = OrderedSet([testDomain])
         }
@@ -88,7 +94,11 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_select_premium_domain_should_open_bottom_sheet() {
-        let testDomain = SearchDomainResult(domainName: "premium.blockchain", domainType: .premium, domainAvailability: .availableForPremiumSale(price: "50"))
+        let testDomain = SearchDomainResult(
+            domainName: "premium.blockchain",
+            domainType: .premium,
+            domainAvailability: .availableForPremiumSale(price: "50")
+        )
         testStore.send(.selectPremiumDomain(testDomain)) { state in
             state.selectedPremiumDomain = testDomain
         }
@@ -98,7 +108,11 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_remove_at_checkout_should_update_state() {
-        let testDomain = SearchDomainResult(domainName: "free.blockchain", domainType: .free, domainAvailability: .availableForFree)
+        let testDomain = SearchDomainResult(
+            domainName: "free.blockchain",
+            domainType: .free,
+            domainAvailability: .availableForFree
+        )
         testStore.send(.selectFreeDomain(testDomain)) { state in
             state.selectedDomains = OrderedSet([testDomain])
         }

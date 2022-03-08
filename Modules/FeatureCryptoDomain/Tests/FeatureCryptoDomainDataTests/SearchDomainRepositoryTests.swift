@@ -7,6 +7,8 @@ import NetworkKit
 import TestKit
 import XCTest
 
+// swiftlint:disable all
+
 class SearchDomainRepositoryTests: XCTestCase {
 
     var client: SearchDomainClientAPI!
