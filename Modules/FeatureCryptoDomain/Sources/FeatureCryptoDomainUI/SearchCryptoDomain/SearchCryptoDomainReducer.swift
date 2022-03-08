@@ -125,7 +125,7 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .onAppear:
-            return Effect(value: .searchDomains)
+            return .none
 
         case .searchDomains:
             return environment
