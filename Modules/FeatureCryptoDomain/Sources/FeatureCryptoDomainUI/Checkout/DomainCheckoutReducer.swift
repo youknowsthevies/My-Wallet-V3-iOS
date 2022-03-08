@@ -3,8 +3,10 @@
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
+import Foundation
 import OrderedCollections
 import SwiftUI
+import ToolKit
 
 enum DomainCheckoutRoute: NavigationRoute {
     case confirmation
@@ -27,6 +29,8 @@ enum DomainCheckoutAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<DomainCheckoutRoute>?)
     case binding(BindingAction<DomainCheckoutState>)
     case removeDomain(SearchDomainResult?)
+    case claimDomain
+    case didClaimDomain(Result<EmptyValue, OrderDomainRepositoryError>)
     case returnToBrowseDomains
 }
 
@@ -44,11 +48,16 @@ struct DomainCheckoutState: Equatable, NavigationState {
     }
 }
 
+struct DomainCheckoutEnvironment {
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let orderDomainRepository: OrderDomainRepositoryAPI
+}
+
 let domainCheckoutReducer = Reducer<
     DomainCheckoutState,
     DomainCheckoutAction,
-    Void
-> { state, action, _ in
+    DomainCheckoutEnvironment
+> { state, action, environment in
     switch action {
     case .route:
         return .none
@@ -65,6 +74,38 @@ let domainCheckoutReducer = Reducer<
         }
         state.selectedDomains.remove(domain)
         return Effect(value: .set(\.$isRemoveBottomSheetShown, false))
+    case .claimDomain:
+        guard let domain = state.selectedDomains.first else {
+            return .none
+        }
+        return environment
+            .orderDomainRepository
+            .createDomainOrder(
+                isFree: true,
+                domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
+                walletAddress: "0xEA5BEEe527B6836E355A8f05835A86Fc003E6e73",
+                nabuUserId: "0xEA5BEEe527B6836E355A8f05835A86Fc003E6e73"
+            )
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map { result in
+                switch result {
+                case .success:
+                    return .didClaimDomain(.success(.noValue))
+                case .failure(let error):
+                    return .didClaimDomain(.failure(error))
+                }
+            }
+
+    case .didClaimDomain(let result):
+        switch result {
+        case .success:
+            return .navigate(to: .confirmation)
+        case .failure(let error):
+            print(error.localizedDescription)
+            return .none
+        }
+
     case .returnToBrowseDomains:
         return .none
     }

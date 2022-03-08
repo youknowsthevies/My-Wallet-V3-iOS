@@ -140,6 +140,7 @@ struct SearchCryptoDomainView: View {
         WithViewStore(store) { viewStore in
             BuyDomainActionView(
                 domain: viewStore.binding(\.$selectedPremiumDomain),
+                redirectUrl: viewStore.binding(\.$selectedPremiumDomainRedirectUrl),
                 isShown: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
             )
         }
@@ -160,6 +161,9 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                     mainQueue: .main,
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
+                    ),
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
                     )
                 )
             )

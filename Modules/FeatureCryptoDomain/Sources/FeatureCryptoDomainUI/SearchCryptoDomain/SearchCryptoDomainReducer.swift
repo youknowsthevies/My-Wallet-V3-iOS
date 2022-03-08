@@ -40,6 +40,7 @@ enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
     case selectPremiumDomain(SearchDomainResult)
+    case didSelectPremiumDomain(Result<OrderDomainResult, OrderDomainRepositoryError>)
     case openPremiumDomainLink(URL)
     case checkoutAction(DomainCheckoutAction)
 }
@@ -54,6 +55,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var isAlertCardShown: Bool
     @BindableState var isPremiumDomainBottomSheetShown: Bool
     @BindableState var selectedPremiumDomain: SearchDomainResult?
+    @BindableState var selectedPremiumDomainRedirectUrl: String?
     var isSearchResultsLoading: Bool
     var searchResults: [SearchDomainResult]
     var selectedDomains: OrderedSet<SearchDomainResult>
@@ -90,13 +92,16 @@ struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let searchDomainRepository: SearchDomainRepositoryAPI
+    let orderDomainRepository: OrderDomainRepositoryAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        searchDomainRepository: SearchDomainRepositoryAPI
+        searchDomainRepository: SearchDomainRepositoryAPI,
+        orderDomainRepository: OrderDomainRepositoryAPI
     ) {
         self.mainQueue = mainQueue
         self.searchDomainRepository = searchDomainRepository
+        self.orderDomainRepository = orderDomainRepository
     }
 }
 
@@ -106,7 +111,12 @@ let searchCryptoDomainReducer = Reducer.combine(
         .pullback(
             state: \.checkoutState,
             action: /SearchCryptoDomainAction.checkoutAction,
-            environment: { _ in () }
+            environment: {
+                DomainCheckoutEnvironment(
+                    mainQueue: $0.mainQueue,
+                    orderDomainRepository: $0.orderDomainRepository
+                )
+            }
         ),
     Reducer<
         SearchCryptoDomainState,
@@ -171,7 +181,37 @@ let searchCryptoDomainReducer = Reducer.combine(
                 return .none
             }
             state.selectedPremiumDomain = domain
-            return Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true))
+            return .merge(
+                Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true)),
+                environment
+                    .orderDomainRepository
+                    .createDomainOrder(
+                        isFree: false,
+                        domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
+                        walletAddress: "",
+                        nabuUserId: ""
+                    )
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map { result in
+                        switch result {
+                        case .success(let orderResult):
+                            return .didSelectPremiumDomain(.success(orderResult))
+                        case .failure(let error):
+                            return .didSelectPremiumDomain(.failure(error))
+                        }
+                    }
+            )
+
+        case .didSelectPremiumDomain(let result):
+            switch result {
+            case .success(let orderResult):
+                state.selectedPremiumDomainRedirectUrl = orderResult.redirectUrl
+                return .none
+            case .failure(let error):
+                print(error.localizedDescription)
+                return .none
+            }
 
         case .openPremiumDomainLink(let url):
             // TODO: remove this and use ExternalAppOpener when integrated with main target

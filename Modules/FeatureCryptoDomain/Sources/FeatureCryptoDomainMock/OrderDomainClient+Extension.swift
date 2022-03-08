@@ -5,11 +5,14 @@
 import Foundation
 import NetworkKit
 
-extension SearchDomainClient {
+extension OrderDomainClient {
 
-    static let mock = SearchDomainClient(
+    static let mock = OrderDomainClient(
         networkAdapter: NetworkAdapter(
-            communicator: EphemeralNetworkCommunicator()
+            communicator: EphemeralNetworkCommunicator(
+                isRecording: true,
+                directory: "tmp/orderdomain"
+            )
         ),
         requestBuilder: RequestBuilder(
             config: Network.Config(
@@ -22,12 +25,12 @@ extension SearchDomainClient {
     public static func test(
         _ requests: [URLRequest: Data] = [:]
     ) -> (
-        client: SearchDomainClient,
+        client: OrderDomainClient,
         communicator: ReplayNetworkCommunicator
     ) {
         let communicator = ReplayNetworkCommunicator(requests, in: Bundle.module)
         return (
-            SearchDomainClient(
+            OrderDomainClient(
                 networkAdapter: NetworkAdapter(
                     communicator: communicator
                 ),

@@ -44,6 +44,7 @@ struct ClaimIntroductionState: NavigationState {
 struct ClaimIntroductionEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let searchDomainRepository: SearchDomainRepositoryAPI
+    let orderDomainRepository: OrderDomainRepositoryAPI
 }
 
 let claimIntroductionReducer = Reducer.combine(
@@ -55,7 +56,8 @@ let claimIntroductionReducer = Reducer.combine(
             environment: {
                 SearchCryptoDomainEnvironment(
                     mainQueue: $0.mainQueue,
-                    searchDomainRepository: $0.searchDomainRepository
+                    searchDomainRepository: $0.searchDomainRepository,
+                    orderDomainRepository: $0.orderDomainRepository
                 )
             }
         ),
@@ -85,31 +87,39 @@ public final class ClaimIntroductionHositingController: UIViewController {
 
     private let mainQueue: AnySchedulerOf<DispatchQueue>
     private let searchDomainRepository: SearchDomainRepositoryAPI
+    private let orderDomainRepository: OrderDomainRepositoryAPI
     private let contentView: UIHostingController<ClaimIntroductionView>
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        searchDomainRepository: SearchDomainRepositoryAPI
+        searchDomainRepository: SearchDomainRepositoryAPI,
+        orderDomainRepository: OrderDomainRepositoryAPI
     ) {
         self.mainQueue = mainQueue
         self.searchDomainRepository = searchDomainRepository
+        self.orderDomainRepository = orderDomainRepository
         contentView = UIHostingController(
             rootView: ClaimIntroductionView(
                 store: .init(
                     initialState: .init(),
                     reducer: claimIntroductionReducer,
-                    environment: .init(mainQueue: mainQueue, searchDomainRepository: searchDomainRepository)
+                    environment: .init(
+                        mainQueue: mainQueue,
+                        searchDomainRepository: searchDomainRepository,
+                        orderDomainRepository: orderDomainRepository
+                    )
                 )
             )
         )
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(contentView.view)
         addChild(contentView)
@@ -120,7 +130,7 @@ public final class ClaimIntroductionHositingController: UIViewController {
         contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         navigationController?.isNavigationBarHidden = true
     }
 }
@@ -235,6 +245,9 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                     mainQueue: .main,
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
+                    ),
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
                     )
                 )
             )

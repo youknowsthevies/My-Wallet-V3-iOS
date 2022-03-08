@@ -46,7 +46,7 @@ struct DomainCheckoutView: View {
                     Spacer()
                     termsRow
                     PrimaryButton(title: LocalizedString.button) {
-                        viewStore.send(.navigate(to: .confirmation))
+                        viewStore.send(.claimDomain)
                     }
                     .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
                     .accessibility(identifier: Accessibility.ctaButton)
@@ -136,14 +136,25 @@ struct DomainCheckoutView: View {
     }
 }
 
+#if DEBUG
+
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct DomainCheckView_Previews: PreviewProvider {
     static var previews: some View {
         DomainCheckoutView(
             store: .init(
                 initialState: .init(),
                 reducer: domainCheckoutReducer,
-                environment: ()
+                environment: DomainCheckoutEnvironment(
+                    mainQueue: .main,
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
+                    )
+                )
             )
         )
     }
 }
+#endif

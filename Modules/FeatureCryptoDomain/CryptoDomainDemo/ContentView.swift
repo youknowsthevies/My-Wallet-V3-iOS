@@ -7,24 +7,31 @@ import BlockchainComponentLibrary
 import SwiftUI
 
 struct ContentView: View {
+
+    @State var claimFlowShown = false
+
     var body: some View {
-        PrimaryNavigationView {
-            PrimaryNavigationLink(
-                destination: ClaimIntroductionView(
-                    store: .init(
-                        initialState: .init(),
-                        reducer: claimIntroductionReducer,
-                        environment: .init(
-                            mainQueue: .main,
-                            searchDomainRepository: SearchDomainRepository(
-                                apiClient: SearchDomainClient.mock
-                            )
+        VStack {
+            Button("Let's claim a domain!") {
+                claimFlowShown.toggle()
+            }
+        }
+        .sheet(isPresented: $claimFlowShown) {
+            ClaimIntroductionView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: claimIntroductionReducer,
+                    environment: .init(
+                        mainQueue: .main,
+                        searchDomainRepository: SearchDomainRepository(
+                            apiClient: SearchDomainClient.mock
+                        ),
+                        orderDomainRepository: OrderDomainRepository(
+                            apiClient: OrderDomainClient.mock
                         )
                     )
                 )
-            ) {
-                Text("Let's claim a domain!")
-            }
+            )
         }
     }
 }
