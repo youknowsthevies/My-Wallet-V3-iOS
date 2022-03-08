@@ -80,7 +80,8 @@ let package = Package(
                 .target(name: "FeatureCryptoDomainDomain")
             ],
             resources: [
-                .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json")
+                .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json"),
+                .process("Fixtures/POST/explorer-gateway/resolution/ud/orders/POST_explorer-gateway_resolution_ud_orders.json")
             ]
         ),
         .testTarget(

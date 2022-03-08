@@ -519,7 +519,8 @@ extension AnnouncementPresenter {
             action: { [navigationRouter] in
                 let vc = ClaimIntroductionHositingController(
                     mainQueue: .main,
-                    searchDomainRepository: DIKit.resolve()
+                    searchDomainRepository: DIKit.resolve(),
+                    orderDomainRepository: DIKit.resolve()
                 )
                 let nav = UINavigationController(rootViewController: vc)
                 navigationRouter.present(viewController: nav, using: .modalOverTopMost)

@@ -21,12 +21,13 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
     >!
-    private var client: SearchDomainClientAPI!
-    private var network: ReplayNetworkCommunicator!
+    private var searchClient: SearchDomainClientAPI!
+    private var orderClient: OrderDomainClientAPI!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (client, network) = SearchDomainClient.test()
+        (searchClient, _) = SearchDomainClient.test()
+        (orderClient, _) = OrderDomainClient.test()
         mockMainQueue = DispatchQueue.immediate
         testStore = TestStore(
             initialState: .init(),
@@ -34,7 +35,10 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             environment: SearchCryptoDomainEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 searchDomainRepository: SearchDomainRepository(
-                    apiClient: client
+                    apiClient: searchClient
+                ),
+                orderDomainRepository: OrderDomainRepository(
+                    apiClient: orderClient
                 )
             )
         )
@@ -52,9 +56,12 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             state.isSearchTextValid = true
             state.searchText = "Searchkey"
         }
-        testStore.receive(.searchDomains)
+        testStore.receive(.searchDomains) { state in
+            state.isSearchResultsLoading = true
+        }
         testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
             state.searchResults = expectedResults
+            state.isSearchResultsLoading = false
         }
     }
 
@@ -82,7 +89,13 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         }
     }
 
-    func test_select_premium_domain_should_open_bottom_sheet() {
+    func test_select_premium_domain_should_open_bottom_sheet() throws {
+        let expectedResult = try testStore.environment.orderDomainRepository.createDomainOrder(
+            isFree: false,
+            domainName: "premium",
+            walletAddress: "",
+            nabuUserId: ""
+        ).wait()
         let testDomain = SearchDomainResult(
             domainName: "premium.blockchain",
             domainType: .premium,
@@ -93,6 +106,9 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         }
         testStore.receive(.set(\.$isPremiumDomainBottomSheetShown, true)) { state in
             state.isPremiumDomainBottomSheetShown = true
+        }
+        testStore.receive(.didSelectPremiumDomain(.success(expectedResult))) { state in
+            state.selectedPremiumDomainRedirectUrl = expectedResult.redirectUrl ?? ""
         }
     }
 

@@ -30,7 +30,7 @@ public final class OrderDomainClient: OrderDomainClientAPI {
 
     // MARK: - Setup
 
-    init(
+    public init(
         networkAdapter: NetworkAdapterAPI,
         requestBuilder: RequestBuilder
     ) {
