@@ -79,7 +79,7 @@ final class CustodialCryptoAsset: CryptoAsset {
             .makeExternalAssetAddress(
                 address: address,
                 label: address,
-                onTxCompleted: { _ in Completable.empty() }
+                onTxCompleted: { _ in .empty() }
             )
             .publisher
             .map { address -> ReceiveAddress? in

@@ -153,11 +153,13 @@ let package = Package(
             name: "FeatureTransactionDomainTests",
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
+                .target(name: "FeatureTransactionDomainMock"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),
-                .product(name: "PlatformKit", package: "Platform")
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "PlatformKitMock", package: "Platform")
             ]
         ),
         .testTarget(

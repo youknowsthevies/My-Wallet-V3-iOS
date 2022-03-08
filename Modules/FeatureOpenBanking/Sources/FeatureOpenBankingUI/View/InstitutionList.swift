@@ -8,6 +8,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+// swiftlint:disable:next type_name
 typealias BlockchainComponentLibrarySecondaryButton = BlockchainComponentLibrary.SecondaryButton
 
 public struct InstitutionListState: Equatable, NavigationState {

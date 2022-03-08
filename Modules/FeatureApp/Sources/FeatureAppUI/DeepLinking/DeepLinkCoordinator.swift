@@ -25,9 +25,8 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
     private let kycRouter: KYCRouting
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let exchangeProvider: ExchangeProviding
-    private let transactionRouter: TransactionsRouterAPI
-    private let coincore: CoincoreAPI
     private let transactionsRouter: TransactionsRouterAPI
+    private let coincore: CoincoreAPI
 
     private var bag: Set<AnyCancellable> = []
 
@@ -40,9 +39,8 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
         kycRouter: KYCRouting,
         topMostViewControllerProvider: TopMostViewControllerProviding,
         exchangeProvider: ExchangeProviding,
-        transactionRouter: TransactionsRouterAPI,
-        coincore: CoincoreAPI,
         transactionsRouter: TransactionsRouterAPI,
+        coincore: CoincoreAPI,
         accountsRouter: @escaping () -> AccountsRouting,
         tabSwapper: @escaping () -> TabSwapping
     ) {
@@ -50,9 +48,8 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.exchangeProvider = exchangeProvider
-        self.transactionRouter = transactionRouter
-        self.coincore = coincore
         self.transactionsRouter = transactionsRouter
+        self.coincore = coincore
         self.accountsRouter = accountsRouter
         self.tabSwapper = tabSwapper
     }
@@ -121,10 +118,9 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
 
     func showAsset(_ event: Session.Event) {
 
-        let code = (try? event.context.decode(blockchain.app.deep_link.asset.code, as: String.self)) ?? "BTC"
-        guard let cryptoCurrency = CryptoCurrency(code: code) else {
-            return
-        }
+        let cryptoCurrency = (
+            try? event.context.decode(blockchain.app.deep_link.asset.code, as: CryptoCurrency.self)
+        ) ?? .bitcoin
 
         let builder = AssetDetailsBuilder(
             accountsRouter: accountsRouter(),
@@ -149,13 +145,13 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
                         return .just(.abandoned)
                     }
                     return self
-                        .transactionRouter
+                        .transactionsRouter
                         .presentTransactionFlow(to: .buy(accounts.first))
                 }
                 .subscribe()
                 .store(in: &bag)
         } catch {
-            transactionRouter.presentTransactionFlow(to: .buy(nil))
+            transactionsRouter.presentTransactionFlow(to: .buy(nil))
                 .subscribe()
                 .store(in: &bag)
         }

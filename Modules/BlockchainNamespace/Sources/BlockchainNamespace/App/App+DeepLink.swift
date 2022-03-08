@@ -7,78 +7,19 @@ extension App {
 
     public class DeepLink {
 
-        private let rules: [Rule]
-
         private(set) unowned var app: AppProtocol
         private var bag: Set<AnyCancellable> = []
 
         init(_ app: AppProtocol) {
             self.app = app
-            rules = [
-                Rule(
-                    pattern: "/app/asset/buy(.*?)",
-                    event: "blockchain.app.deep_link.buy",
-                    parameters: [
-                        .init(
-                            name: "code",
-                            alias: "blockchain.app.deep_link.buy.crypto.code"
-                        )
-                    ]
-                ),
-                Rule(
-                    pattern: "/app/asset/send(.*?)",
-                    event: "blockchain.app.deep_link.send",
-                    parameters: [
-                        .init(
-                            name: "code",
-                            alias: "blockchain.app.deep_link.send.crypto.code"
-                        )
-                    ]
-                ),
-                Rule(
-                    pattern: "/app/asset(.*?)",
-                    event: "blockchain.app.deep_link.asset",
-                    parameters: [
-                        .init(
-                            name: "code",
-                            alias: "blockchain.app.deep_link.asset.code"
-                        )
-                    ]
-                ),
-                Rule(
-                    pattern: "/app/activity(.*?)",
-                    event: "blockchain.app.deep_link.activity",
-                    parameters: []
-                ),
-                Rule(
-                    pattern: "/app/transaction(.*?)",
-                    event: "blockchain.app.deep_link.activity",
-                    parameters: [
-                        .init(
-                            name: "transactionId",
-                            alias: "blockchain.app.deep_link.activity.transaction.id"
-                        )
-                    ]
-                ),
-                Rule(
-                    pattern: "/app/qr/scan(.*?)",
-                    event: "blockchain.app.deep_link.qr",
-                    parameters: []
-                ),
-                Rule(
-                    pattern: "/app/kyc(.*?)",
-                    event: "blockchain.app.deep_link.kyc",
-                    parameters: [
-                        .init(
-                            name: "tier",
-                            alias: "blockchain.app.deep_link.kyc.tier"
-                        )
-                    ]
-                )
-            ]
         }
 
         func start() {
+            let rules = app
+                .publisher(for: blockchain.app.configuration.deep_link.rules, as: [Rule].self)
+                .compactMap(\.value)
+                .removeDuplicates()
+
             app.on(blockchain.app.process.deep_link)
                 .combineLatest(
                     app.publisher(for: blockchain.app.is.ready.for.deep_link, as: Bool.self)
@@ -87,30 +28,31 @@ extension App {
                 )
                 .filter(\.1)
                 .map(\.0)
-                .sink { [weak self] event in self?.process(event: event) }
+                .combineLatest(rules)
+                .sink { [weak self] event, rules in
+                    self?.process(event: event, with: rules)
+                }
                 .store(in: &bag)
         }
 
-        func process(event: Session.Event) {
+        func process(event: Session.Event, with rules: [Rule]) {
             do {
                 try process(
-                    url: event.context.decode(blockchain.app.process.deep_link.url, as: URL.self)
+                    url: event.context.decode(blockchain.app.process.deep_link.url, as: URL.self),
+                    with: rules
                 )
             } catch {
                 app.post(error: error)
             }
         }
 
-        func process(url: URL) {
+        func process(url: URL, with rules: [Rule]) {
             do {
                 guard let match = rules.match(for: url) else {
                     throw ParsingError.nomatch
                 }
 
-                let event = try Tag.Reference(id: match.event, in: app.language)
-                let context = match.parameters(for: url, with: app)
-
-                app.post(event: event, context: context)
+                app.post(event: match.rule.event, context: match.parameters())
             } catch {
                 #if DEBUG
                 do {
@@ -175,69 +117,75 @@ extension App.DeepLink.DSL {
 }
 
 extension App.DeepLink {
-    public struct Rule: Decodable {
-        public init(pattern: String, event: String, parameters: [App.DeepLink.Rule.Parameter]) {
+    public struct Rule: Codable, Equatable {
+        public init(pattern: String, event: Tag.Reference, parameters: [App.DeepLink.Rule.Parameter]) {
             self.pattern = pattern
             self.event = event
             self.parameters = parameters
         }
 
         public let pattern: String
-        public let event: String
+        public let event: Tag.Reference
         public let parameters: [Parameter]
     }
 }
 
 extension App.DeepLink.Rule {
-    public struct Parameter: Decodable {
-        public init(name: String, alias: String) {
+
+    public struct Parameter: Codable, Equatable {
+        public init(name: String, alias: Tag) {
             self.name = name
             self.alias = alias
         }
 
         public let name: String
-        public let alias: String
+        public let alias: Tag
+    }
+
+    public struct Match {
+        public let url: URL
+        public let rule: App.DeepLink.Rule
+        public let result: NSTextCheckingResult
     }
 }
 
-extension App.DeepLink.Rule {
-    public func parameters(for url: URL, with app: AppProtocol) -> [Tag: String] {
+extension App.DeepLink.Rule.Match {
+    public func parameters() -> [Tag: String] {
+
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems ?? []
 
-        let params = parameters
-            .compactMap { param -> [Tag: String]? in
-                guard let item = items[named: param.name],
-                      let value = item.value,
-                      let tag = try? Tag(id: param.alias, in: app.language)
-                else {
-                    return nil
-                }
-
-                return [tag: value]
+        return rule.parameters
+            .reduce(into: [:]) { rules, parameter in
+                let range = result.range(withName: parameter.name)
+                rules[parameter.alias] = range.location == NSNotFound
+                    ? items[named: parameter.name]?.value
+                    : NSString(string: url.absoluteString).substring(with: range)
             }
-            .flatMap { $0 }
-
-        return Dictionary(params, uniquingKeysWith: { $1 })
     }
 }
 
 extension Collection where Element == App.DeepLink.Rule {
 
-    public func match(for url: URL) -> App.DeepLink.Rule? {
-        compactMap { rule -> (App.DeepLink.Rule, NSRange)? in
-            guard let range = url
-                .absoluteString
-                .range(of: rule.pattern, options: .regularExpression)
-            else {
+    public func match(for url: URL) -> App.DeepLink.Rule.Match? {
+        lazy.compactMap { rule -> App.DeepLink.Rule.Match? in
+            guard let pattern = try? NSRegularExpression(pattern: rule.pattern) else {
                 return nil
             }
-            return (rule, NSRange(range, in: url.absoluteString))
+            let string = url.absoluteString
+            guard let match = pattern.firstMatch(
+                in: string,
+                range: NSRange(string.startIndex..., in: string)
+            ) else {
+                return nil
+            }
+            return App.DeepLink.Rule.Match(
+                url: url,
+                rule: rule,
+                result: match
+            )
         }
-        .min(by: { r1, r2 in
-            r1.1.length > r2.1.length
-        })
-        .map(\.0)
+        .first
     }
 }
 

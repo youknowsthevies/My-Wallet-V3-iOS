@@ -9,6 +9,9 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			deep_link:
+				rules:
+				+ blockchain.session.configuration.value
 			google:
 				pay:
 					is:
@@ -293,39 +296,48 @@ blockchain:
 			+ blockchain.db.collection
 			+ blockchain.ux.type.story
 				activity:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				buy:
-				deposit:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
+				exchange:
+					deposit:
+					+ blockchain.ux.type.action
+					withdraw:
+					+ blockchain.ux.type.action
 				explainer:
 				+ blockchain.ux.type.story
 					accept:
 				receive:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				require:
 					KYC:
 					+ blockchain.ui.type.action
+				rewards:
+					deposit:
+					+ blockchain.ux.type.action
+					summary:
+					+ blockchain.ux.type.action
+					withdraw:
+					+ blockchain.ux.type.action
 				sell:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				send:
-				+ blockchain.ux.type.story
-				summary:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
+				sheet:
+				+ blockchain.ux.type.action
 				swap:
-				+ blockchain.ux.type.story
-				withdraw:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 			bio:
 				visit:
 					website:
 			buy:
-			+ blockchain.ux.type.story
+			+ blockchain.ux.type.action
 			chart:
 				interval:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
 			receive:
-			+ blockchain.ux.type.story
+			+ blockchain.ux.type.action
 			recurring:
 				buy:
 					summary:
@@ -335,7 +347,9 @@ blockchain:
 				buys:
 					notification:
 			sell:
-			+ blockchain.ux.type.story
+			+ blockchain.ux.type.action
+			send:
+			+ blockchain.ux.type.action
 		buy_and_sell:
 		+ blockchain.ux.type.story
 			buy:
@@ -361,6 +375,42 @@ blockchain:
 				+ blockchain.ux.type.story
 				withdraw:
 				+ blockchain.ux.type.story
+		payment:
+			method:
+				open:
+					banking:
+						account:
+						+ blockchain.session.state.value
+						authorisation:
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.state.value
+						callback:
+							base:
+								url:
+								+ blockchain.db.type.url
+								+ blockchain.session.state.value
+							path:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						consent:
+							error:
+							+ blockchain.session.state.value
+							+ blockchain.ux.type.analytics.error
+							token:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						currency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.value
+						error:
+							code:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+						is:
+							authorised:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
 		prices:
 		+ blockchain.ux.type.story
 		scan:

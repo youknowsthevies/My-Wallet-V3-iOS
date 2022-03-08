@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import ComposableArchitectureExtensions
 import DIKit
 import FeatureCoinDomain
 import FeatureCoinUI
@@ -12,7 +13,13 @@ import ToolKit
 
 struct PricesView: UIViewControllerRepresentable {
 
-    var featureFlagService: FeatureFlagsServiceAPI = resolve()
+    let store: Store<Void, RootViewAction>
+
+    init(store: Store<Void, RootViewAction>) {
+        self.store = store
+    }
+
+    private var featureFlagService: FeatureFlagsServiceAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
@@ -26,11 +33,8 @@ struct PricesView: UIViewControllerRepresentable {
         let viewController = PricesViewController(
             presenter: presenter,
             featureFlagService: featureFlagService,
-            presentRedesignCoinView: { vc, cryptoCurrency in
-                vc.present(
-                    CoinAdapterView(cryptoCurrency: cryptoCurrency),
-                    inNavigationController: false
-                )
+            presentRedesignCoinView: { _, cryptoCurrency in
+                ViewStore(store).send(.enter(into: .coinView(cryptoCurrency)))
             }
         )
         viewController.automaticallyApplyNavigationBarStyle = false

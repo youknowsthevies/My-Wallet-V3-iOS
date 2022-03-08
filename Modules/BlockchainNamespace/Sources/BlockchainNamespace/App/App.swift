@@ -11,15 +11,23 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     var events: Session.Events { get }
     var state: Session.State { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
+
+    #if canImport(SwiftUI)
+    var environmentObject: App.EnvironmentObject { get }
+    #endif
 }
 
-public class App: AppProtocol, CustomStringConvertible {
+public class App: AppProtocol {
 
     public let language: Language
 
     public let events: Session.Events
     public let state: Session.State
     public let remoteConfiguration: Session.RemoteConfiguration
+
+    #if canImport(SwiftUI)
+    public lazy var environmentObject = App.EnvironmentObject(self)
+    #endif
 
     internal lazy var deepLinks = DeepLink(self)
 
@@ -156,7 +164,13 @@ extension AppProtocol {
         _ first: L,
         _ rest: L...
     ) -> AnyPublisher<Session.Event, Never> {
-        on([language[first]] + rest.map { language[$0] })
+        on([first] + rest)
+    }
+
+    public func on<Tags>(
+        _ tags: Tags
+    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == L {
+        on(tags.map(\.[]))
     }
 
     public func on(
@@ -169,7 +183,7 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag {
-        events.filter(tags).eraseToAnyPublisher()
+        on(tags.map(\.ref))
     }
 
     public func on(
@@ -233,3 +247,16 @@ extension AppProtocol {
 extension App {
     public var description: String { "App \(language.id)" }
 }
+
+extension App {
+
+    public static var preview: AppProtocol = App()
+
+    public convenience init() { self.init(remote: Mock.RemoteConfiguration()) }
+}
+
+#if DEBUG
+extension App {
+    public static var test: AppProtocol { App() }
+}
+#endif

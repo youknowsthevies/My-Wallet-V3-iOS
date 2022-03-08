@@ -3,10 +3,15 @@
 import ComposableArchitecture
 import ComposableNavigation
 @testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainDomain
 @testable import FeatureCryptoDomainMock
 @testable import FeatureCryptoDomainUI
+import NetworkKit
 import OrderedCollections
+import TestKit
 import XCTest
+
+// swiftlint:disable all
 
 final class SearchCryptoDomainReducerTests: XCTestCase {
 
@@ -18,9 +23,12 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
     >!
+    private var client: SearchDomainClientAPI!
+    private var network: ReplayNetworkCommunicator!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        (client, network) = SearchDomainClient.test()
         mockMainQueue = DispatchQueue.immediate
         testStore = TestStore(
             initialState: .init(),
@@ -28,7 +36,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             environment: SearchCryptoDomainEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 searchDomainRepository: SearchDomainRepository(
-                    apiClient: MockSearchDomainClient()
+                    apiClient: client
                 )
             )
         )
@@ -41,21 +49,23 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_on_appear_should_search_domains() {
+        let expectedResults = try! testStore.environment.searchDomainRepository.searchResults(searchKey: "").wait()
         testStore.send(.onAppear)
         testStore.receive(.searchDomains)
-        testStore.receive(.didReceiveDomainsResult(.success(mockSearchDomainResults))) { state in
-            state.searchResults = mockSearchDomainResults
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+            state.searchResults = expectedResults
         }
     }
 
     func test_valid_search_text_should_search_domains() {
+        let expectedResults = try! testStore.environment.searchDomainRepository.searchResults(searchKey: "valid").wait()
         testStore.send(.set(\.$searchText, "valid")) { state in
             state.isSearchTextValid = true
             state.searchText = "valid"
         }
         testStore.receive(.searchDomains)
-        testStore.receive(.didReceiveDomainsResult(.success(mockSearchDomainResults))) { state in
-            state.searchResults = mockSearchDomainResults
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+            state.searchResults = expectedResults
         }
     }
 
@@ -67,20 +77,30 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_select_free_domain_should_go_to_checkout() {
-        testStore.send(.selectFreeDomain(mockSearchDomainResults[1])) { state in
-            state.selectedDomains = OrderedSet([mockSearchDomainResults[1]])
+        let testDomain = SearchDomainResult(
+            domainName: "free.blockchain",
+            domainType: .free,
+            domainAvailability: .availableForFree
+        )
+        testStore.send(.selectFreeDomain(testDomain)) { state in
+            state.selectedDomains = OrderedSet([testDomain])
         }
         testStore.receive(.navigate(to: .checkout)) { state in
             state.route = RouteIntent(route: .checkout, action: .navigateTo)
             state.checkoutState = .init(
-                selectedDomains: OrderedSet([mockSearchDomainResults[1]])
+                selectedDomains: OrderedSet([testDomain])
             )
         }
     }
 
     func test_select_premium_domain_should_open_bottom_sheet() {
-        testStore.send(.selectPremiumDomain(mockSearchDomainResults[0])) { state in
-            state.selectedPremiumDomain = mockSearchDomainResults[0]
+        let testDomain = SearchDomainResult(
+            domainName: "premium.blockchain",
+            domainType: .premium,
+            domainAvailability: .availableForPremiumSale(price: "50")
+        )
+        testStore.send(.selectPremiumDomain(testDomain)) { state in
+            state.selectedPremiumDomain = testDomain
         }
         testStore.receive(.set(\.$isPremiumDomainBottomSheetShown, true)) { state in
             state.isPremiumDomainBottomSheetShown = true
@@ -88,16 +108,21 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_remove_at_checkout_should_update_state() {
-        testStore.send(.selectFreeDomain(mockSearchDomainResults[1])) { state in
-            state.selectedDomains = OrderedSet([mockSearchDomainResults[1]])
+        let testDomain = SearchDomainResult(
+            domainName: "free.blockchain",
+            domainType: .free,
+            domainAvailability: .availableForFree
+        )
+        testStore.send(.selectFreeDomain(testDomain)) { state in
+            state.selectedDomains = OrderedSet([testDomain])
         }
         testStore.receive(.navigate(to: .checkout)) { state in
             state.route = RouteIntent(route: .checkout, action: .navigateTo)
             state.checkoutState = .init(
-                selectedDomains: OrderedSet([mockSearchDomainResults[1]])
+                selectedDomains: OrderedSet([testDomain])
             )
         }
-        testStore.send(.checkoutAction(.removeDomain(mockSearchDomainResults[1]))) { state in
+        testStore.send(.checkoutAction(.removeDomain(testDomain))) { state in
             state.checkoutState?.selectedDomains = OrderedSet([])
             state.selectedDomains = OrderedSet([])
         }

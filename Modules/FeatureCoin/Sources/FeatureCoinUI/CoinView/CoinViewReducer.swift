@@ -13,7 +13,7 @@ public let coinViewReducer = Reducer<
     CoinViewAction,
     CoinViewEnvironment
 >.combine(
-    coinViewGraphReducer
+    graphViewReducer
         .pullback(
             state: \.graph,
             action: /CoinViewAction.graph,
@@ -42,8 +42,30 @@ public let coinViewReducer = Reducer<
                     .updateAccounts(assetDetails)
                 }
 
+        case .loadInterestRates:
+            return environment.interestRatesRepository
+                .fetchRate(code: state.assetDetails.code)
+                .ignoreFailure()
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .map { interestRate in
+                    .updateInterestRates(interestRate)
+                }
+
+        case .updateInterestRates(let interestRate):
+            state.interestRate = interestRate
+            return .none
+
         case .updateAccounts(accounts: let accounts):
             state.accounts = accounts
+            return state.accounts.hasPositiveBalanceForSelling
+                .eraseToEffect()
+                .map {
+                    .updateHasPositiveBalanceForSelling($0)
+                }
+
+        case .updateHasPositiveBalanceForSelling(let hasPositiveBalanceForSelling):
+            state.hasPositiveBalanceForSelling = hasPositiveBalanceForSelling
             return .none
 
         case .graph:

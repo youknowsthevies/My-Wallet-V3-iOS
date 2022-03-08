@@ -79,7 +79,7 @@ final class TargetSelectionPageModel {
             .map { result -> TargetSelectionInputValidation.TextInput in
                 switch result {
                 case .success(let receiveAddress):
-                    return .valid(receiveAddress)
+                    return .valid(input: address, receiveAddress: receiveAddress)
                 case .failure:
                     return .invalid(address)
                 }

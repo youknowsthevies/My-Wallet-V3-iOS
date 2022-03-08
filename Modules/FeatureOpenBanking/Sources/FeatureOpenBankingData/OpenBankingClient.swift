@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import CombineSchedulers
 import FeatureOpenBankingDomain
 import Foundation
-import Session
 import ToolKit
 
 // swiftlint:disable force_try
@@ -16,8 +16,7 @@ import ToolKit
 
 public class OpenBankingClient {
 
-    public typealias State = FeatureOpenBankingDomain.OpenBanking.State
-    public private(set) var state: State
+    public private(set) var app: AppProtocol
 
     public var scheduler: AnySchedulerOf<DispatchQueue>
     private var bag: Set<AnyCancellable> = []
@@ -29,49 +28,55 @@ public class OpenBankingClient {
     let network: Network
 
     public convenience init(
+        app: AppProtocol,
         requestBuilder: RequestBuilder,
         network: Network,
         scheduler: DispatchQueue = .main
     ) {
         self.init(
+            app: app,
             requestBuilder: requestBuilder,
             network: network,
-            scheduler: scheduler.eraseToAnyScheduler(),
-            state: .init()
+            scheduler: scheduler.eraseToAnyScheduler()
         )
     }
 
     init(
+        app: AppProtocol,
         requestBuilder: RequestBuilder,
         network: Network,
-        scheduler: AnySchedulerOf<DispatchQueue>,
-        state: State
+        scheduler: AnySchedulerOf<DispatchQueue>
     ) {
+        self.app = app
         self.requestBuilder = requestBuilder
         self.network = network
         self.scheduler = scheduler
-        self.state = state
 
-        state.publisher(for: .consent.token, as: String.self)
+        app.publisher(for: blockchain.ux.payment.method.open.banking.consent.token, as: String.self)
             .sink(to: OpenBankingClient.handle(consent:), on: self)
             .store(in: &bag)
     }
 
-    func handle(consent: Result<String, State.Error>) {
+    func handle(consent: FetchResult.Value<String>) {
 
-        if case .failure(.keyDoesNotExist) = consent {
+        if case .failure(.keyDoesNotExist) = consent.result {
             return
         }
 
         let callbackPath: String
-        switch state.result(for: .callback.path, as: String.self) {
+        switch app.state.result(for: blockchain.ux.payment.method.open.banking.callback.path)
+            .decode(as: String.self).result
+        {
         case .success(let output):
             callbackPath = output
         case .failure(let error):
-            return state.set(.consent.error, to: OpenBanking.Error.state(error))
+            return app.state.set(
+                blockchain.ux.payment.method.open.banking.consent.error,
+                to: OpenBanking.Error.namespace(error)
+            )
         }
 
-        switch consent {
+        switch consent.result {
         case .success(let oneTimeToken):
             let request = try! requestBuilder.post(
                 path: callbackPath,
@@ -86,29 +91,32 @@ public class OpenBankingClient {
                 .sink(to: OpenBankingClient.handle(updateConsent:), on: self)
                 .store(in: &bag)
         case .failure(let error):
-            state.set(.consent.error, to: OpenBanking.Error.state(error))
+            app.state.set(
+                blockchain.ux.payment.method.open.banking.consent.error,
+                to: OpenBanking.Error.namespace(error)
+            )
         }
     }
 
     func handle(updateConsent result: Result<Void, Error>) {
 
-        state.transaction { state in
-            state.clear(.authorisation.url)
-            state.clear(.consent.token)
+        app.state.transaction { state in
+            state.clear(blockchain.ux.payment.method.open.banking.authorisation.url)
+            state.clear(blockchain.ux.payment.method.open.banking.consent.token)
             switch result {
             case .success:
-                state.clear(.consent.error)
-                state.set(.is.authorised, to: true)
+                state.clear(blockchain.ux.payment.method.open.banking.consent.error)
+                state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
             case .failure(let error):
-                state.set(.consent.error, to: error)
-                state.set(.is.authorised, to: false)
+                state.set(blockchain.ux.payment.method.open.banking.consent.error, to: error)
+                state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: false)
             }
         }
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
 
-        switch state.result(for: .currency) {
+        switch app.state.result(for: blockchain.ux.payment.method.open.banking.currency).result {
         case .success(let currency):
             let request = try! requestBuilder.post(
                 path: ["payments", "banktransfer"],
@@ -119,12 +127,6 @@ public class OpenBankingClient {
             )
 
             return network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-                .handleEvents(receiveOutput: { [state] account in
-                    state.transaction { state in
-                        state.set(.id, to: account.id)
-                        state.set(.account, to: account)
-                    }
-                })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
         case .failure(let error):
@@ -172,9 +174,9 @@ extension OpenBanking.BankAccount {
         with institution: Identity<OpenBanking.Institution>,
         in banking: OpenBankingClient
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
-        banking.state.transaction { state in
-            state.clear(.authorisation.url)
-            state.clear(.callback.path)
+        banking.app.state.transaction { state in
+            state.clear(blockchain.ux.payment.method.open.banking.authorisation.url)
+            state.clear(blockchain.ux.payment.method.open.banking.callback.path)
         }
 
         let request = try! banking.requestBuilder.post(
@@ -189,11 +191,6 @@ extension OpenBanking.BankAccount {
         )
 
         return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-            .handleEvents(receiveOutput: { [banking] account in
-                banking.state.transaction { state in
-                    state.set(.account, to: account)
-                }
-            })
             .mapError(OpenBanking.Error.init)
             .eraseToAnyPublisher()
     }
@@ -211,10 +208,15 @@ extension OpenBanking.BankAccount {
             .handleEvents(receiveOutput: { [banking] account in
                 guard let url = account.attributes.authorisationUrl else { return }
                 guard let path = account.attributes.callbackPath else { return }
-                banking.state.transaction { state in
-                    state.set(.account, to: account)
-                    state.set(.authorisation.url, to: url)
-                    state.set(.callback.path, to: path.dropPrefix("nabu-gateway").string)
+                banking.app.state.transaction { state in
+                    state.set(
+                        blockchain.ux.payment.method.open.banking.authorisation.url,
+                        to: url
+                    )
+                    state.set(
+                        blockchain.ux.payment.method.open.banking.callback.path,
+                        to: path.dropPrefix("nabu-gateway").string
+                    )
                 }
             })
             .mapError(OpenBanking.Error.init)
@@ -229,7 +231,7 @@ extension OpenBanking.BankAccount {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: { account in
                 guard account.error == nil else { return true }
                 return condition(account)
@@ -250,9 +252,6 @@ extension OpenBanking.BankAccount {
         )
 
         return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-            .handleEvents(receiveOutput: { [banking] _ in
-                banking.state.clear(.id)
-            })
             .mapError(OpenBanking.Error.init)
             .eraseToAnyPublisher()
     }
@@ -262,7 +261,7 @@ extension OpenBanking.BankAccount {
         product: String,
         in banking: OpenBankingClient
     ) -> AnyPublisher<OpenBanking.Payment, OpenBanking.Error> {
-        switch banking.state.result(for: .currency) {
+        switch banking.app.state.result(for: blockchain.ux.payment.method.open.banking.currency).result {
         case .success(let currency):
             let request = try! banking.requestBuilder.post(
                 path: ["payments", "banktransfer", id.value, "payment"],
@@ -280,7 +279,7 @@ extension OpenBanking.BankAccount {
             return banking.network.perform(request: request, responseType: OpenBanking.Payment.self)
                 .handleEvents(receiveOutput: { [banking] payment in
                     let path = payment.attributes.callbackPath.dropPrefix("nabu-gateway").string
-                    banking.state.set(.callback.path, to: path)
+                    banking.app.state.set(blockchain.ux.payment.method.open.banking.callback.path, to: path)
                 })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
@@ -302,7 +301,7 @@ extension OpenBanking.Payment {
         return banking.network.perform(request: request, responseType: OpenBanking.Payment.Details.self)
             .handleEvents(receiveOutput: { [banking] details in
                 guard let url = details.extraAttributes?.authorisationUrl else { return }
-                banking.state.set(.authorisation.url, to: url)
+                banking.app.state.set(blockchain.ux.payment.method.open.banking.authorisation.url, to: url)
             })
             .mapError(OpenBanking.Error.init)
             .eraseToAnyPublisher()
@@ -313,7 +312,7 @@ extension OpenBanking.Payment {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: { payment in
                 guard payment.error == nil else { return true }
                 return payment.extraAttributes?.authorisationUrl != nil
@@ -337,10 +336,16 @@ extension OpenBanking.Order {
 
         return banking.network.perform(request: request, responseType: OpenBanking.Order.self)
             .handleEvents(receiveOutput: { [banking] order in
-                banking.state.transaction { state in
+                banking.app.state.transaction { state in
                     if let url = order.attributes?.authorisationUrl, let callback = order.attributes?.callbackPath {
-                        state.set(.authorisation.url, to: url)
-                        state.set(.callback.path, to: callback.dropPrefix("nabu-gateway").string)
+                        state.set(
+                            blockchain.ux.payment.method.open.banking.authorisation.url,
+                            to: url
+                        )
+                        state.set(
+                            blockchain.ux.payment.method.open.banking.callback.path,
+                            to: callback.dropPrefix("nabu-gateway").string
+                        )
                     }
                 }
             })
@@ -356,7 +361,7 @@ extension OpenBanking.Order {
             get(in: banking)
         }
         .poll(
-            max: 200,
+            max: 100,
             until: condition,
             delay: .seconds(2),
             scheduler: banking.scheduler

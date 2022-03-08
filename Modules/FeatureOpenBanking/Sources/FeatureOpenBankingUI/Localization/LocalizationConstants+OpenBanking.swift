@@ -252,6 +252,19 @@ extension Localization {
             )
         }
 
+        public enum Pending {
+
+            public static let title = NSLocalizedString(
+                "Order is being processed, we will let you know when its done.",
+                comment: "Order is being processed, we will let you know when its done."
+            )
+
+            public static let subtitle = NSLocalizedString(
+                "You can safely close this sheet while we update the order in the background.",
+                comment: "You can safely close this sheet while we update the order in the background."
+            )
+        }
+
         public enum Linked {
 
             public static let title = NSLocalizedString(

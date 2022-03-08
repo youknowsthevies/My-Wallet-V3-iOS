@@ -383,6 +383,11 @@ extension Reducer where
                         )
                     }
                     return .none
+                case .accountCreation(.success):
+                    environment.analyticsRecorder.record(
+                        event: AnalyticsEvents.New.SignUpFlow.walletSignedUp
+                    )
+                    return .none
                 default:
                     return .none
                 }

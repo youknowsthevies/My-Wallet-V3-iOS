@@ -115,12 +115,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     case .appDelegate(.didFinishLaunching):
         return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
-        guard state.coreState.isLoggedIn else {
-            return .none
-        }
-        return .fireAndForget {
-            environment.portfolioSyncingService.sync()
-        }
+        return .none
     case .appDelegate(.willEnterForeground):
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):

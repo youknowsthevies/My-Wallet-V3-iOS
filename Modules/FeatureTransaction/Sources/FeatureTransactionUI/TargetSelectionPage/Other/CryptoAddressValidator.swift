@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformUIKit
 import RxCocoa
 import RxSwift
 
 final class CryptoAddressValidator: TextValidating {
+
+    private typealias LocalizedString = LocalizationConstants.Transaction.Error
+
     var validationState: Observable<TextValidationState> {
         validationStateRelay
             .asObservable()
@@ -29,7 +33,7 @@ final class CryptoAddressValidator: TextValidating {
                 switch validation {
                 case .invalid,
                      .inactive:
-                    return .invalid(reason: "Invalid Address")
+                    return .invalid(reason: LocalizedString.invalidAddressShort)
                 case .valid:
                     return .valid
                 }

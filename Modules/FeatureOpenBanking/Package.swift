@@ -43,8 +43,8 @@ let package = Package(
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../Network"),
-        .package(path: "../Session"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents")
@@ -55,8 +55,8 @@ let package = Package(
             dependencies: [
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
-                .product(name: "Session", package: "Session"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
             ]
         ),
         .target(
@@ -65,8 +65,8 @@ let package = Package(
                 .target(name: "FeatureOpenBankingDomain"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "Session", package: "Session"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
             ]
         ),
         .target(

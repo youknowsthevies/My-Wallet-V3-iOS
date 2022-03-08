@@ -17,7 +17,7 @@ struct ContentView: View {
                         environment: .init(
                             mainQueue: .main,
                             searchDomainRepository: SearchDomainRepository(
-                                apiClient: MockSearchDomainClient()
+                                apiClient: SearchDomainClient.mock
                             )
                         )
                     )

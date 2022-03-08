@@ -4,6 +4,8 @@ import Foundation
 
 extension Tag {
 
+    public var ref: Tag.Reference { ref() }
+
     public func ref(to indices: L.Context = [:]) -> Tag.Reference {
         ref(to: indices, in: nil)
     }
@@ -18,6 +20,25 @@ extension Tag {
 
     public func ref(to indices: Tag.Context, in app: AppProtocol?) -> Tag.Reference {
         Tag.Reference(self, to: indices, in: app)
+    }
+}
+
+extension Tag.Reference {
+
+    public func ref(to indices: L.Context = [:]) -> Tag.Reference {
+        ref(to: indices, in: nil)
+    }
+
+    public func ref(to indices: L.Context = [:], in app: AppProtocol?) -> Tag.Reference {
+        Tag.Reference(tag, to: context + indices.mapKeys(\.[]), in: app)
+    }
+
+    public func ref(to indices: Tag.Context) -> Tag.Reference {
+        ref(to: indices, in: nil)
+    }
+
+    public func ref(to indices: Tag.Context, in app: AppProtocol?) -> Tag.Reference {
+        Tag.Reference(tag, to: context + indices, in: app)
     }
 }
 

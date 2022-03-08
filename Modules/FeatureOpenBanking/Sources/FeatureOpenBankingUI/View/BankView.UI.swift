@@ -165,4 +165,16 @@ extension BankState.UI {
             action: [.ok]
         )
     }
+
+    static func pending() -> Self {
+        Self(
+            info: .init(
+                media: .blockchainLogo,
+                overlay: .init(progress: true),
+                title: Localization.Bank.Pending.title,
+                subtitle: Localization.Bank.Pending.subtitle
+            ),
+            action: [.ok]
+        )
+    }
 }

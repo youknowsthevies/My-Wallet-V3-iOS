@@ -185,7 +185,11 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     private func walletTextfieldCell(for indexPath: IndexPath, viewModel: TextFieldViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(TextFieldTableViewCell.self, for: indexPath)
-        cell.setup(viewModel: viewModel, keyboardInteractionController: keyboardInteractionController, scrollView: tableView)
+        cell.setup(
+            viewModel: viewModel,
+            keyboardInteractionController: keyboardInteractionController,
+            scrollView: tableView
+        )
         return cell
     }
 

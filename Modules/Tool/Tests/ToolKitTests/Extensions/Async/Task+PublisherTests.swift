@@ -56,7 +56,7 @@ final class TaskPublisherTests: XCTestCase {
     }
 
     func test_values_first() async throws {
-        let value = await (1...10).publisher.async().first
+        let value = await (1...10).publisher.values.first
         XCTAssertEqual(value, 1)
     }
 
@@ -71,7 +71,7 @@ final class TaskPublisherTests: XCTestCase {
             .task(maxPublishers: .max(1)) { number in
                 await double(number)
             }
-            .async()
+            .values
 
         let result = await sequence.reduce(into: []) { s, n in
             s.append(n)

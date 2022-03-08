@@ -16,6 +16,7 @@ struct TradingLimitsState: Equatable {
         features: [],
         kycTiers: .init(tiers: [])
     )
+    var unlockTradingState: UnlockTradingState?
 }
 
 enum TradingLimitsAction: Equatable {
@@ -23,6 +24,7 @@ enum TradingLimitsAction: Equatable {
     case fetchLimits
     case didFetchLimits(Result<KYCLimitsOverview, KYCTierServiceError>)
     case listAction(LimitedFeaturesListAction)
+    case unlockTrading(UnlockTradingAction)
 }
 
 struct TradingLimitsEnvironment {
@@ -60,6 +62,16 @@ let tradingLimitsReducer = Reducer.combine(
             )
         }
     ),
+    unlockTradingReducer.optional().pullback(
+        state: \TradingLimitsState.unlockTradingState,
+        action: /TradingLimitsAction.unlockTrading,
+        environment: {
+            UnlockTradingEnvironment(
+                dismiss: $0.close,
+                unlock: $0.presentKYCFlow
+            )
+        }
+    ),
     Reducer<TradingLimitsState, TradingLimitsAction, TradingLimitsEnvironment> { state, action, environment in
         switch action {
         case .close:
@@ -84,6 +96,9 @@ let tradingLimitsReducer = Reducer.combine(
                 state.featuresList = .init(
                     features: overview.features,
                     kycTiers: overview.tiers
+                )
+                state.unlockTradingState = UnlockTradingState(
+                    currentUserTier: overview.tiers.latestApprovedTier
                 )
             } else {
                 state.featuresList = .init(
@@ -112,7 +127,9 @@ struct TradingLimitsView: View {
     }
 
     var body: some View {
-        ModalContainer(title: LocalizedStrings.pageTitle, onClose: viewStore.send(.close)) {
+        let canUpgradeTier = viewStore.userTiers?.canCompleteTier2 == true
+        let pageTitle = canUpgradeTier ? LocalizedStrings.upgradePageTitle : LocalizedStrings.pageTitle
+        ModalContainer(title: pageTitle, onClose: viewStore.send(.close)) {
             VStack {
                 if viewStore.loading {
                     VStack {
@@ -136,6 +153,22 @@ struct TradingLimitsView: View {
                         .padding(Spacing.padding3)
                         Spacer()
                     }
+                } else if let userTiers = viewStore.userTiers, canUpgradeTier {
+                    IfLetStore(
+                        store.scope(
+                            state: \.unlockTradingState,
+                            action: TradingLimitsAction.unlockTrading
+                        ),
+                        then: UnlockTradingView.init(store:),
+                        else: {
+                            LimitedFeaturesListView(
+                                store: store.scope(
+                                    state: \.featuresList,
+                                    action: TradingLimitsAction.listAction
+                                )
+                            )
+                        }
+                    )
                 } else {
                     LimitedFeaturesListView(
                         store: store.scope(

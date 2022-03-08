@@ -47,7 +47,7 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
                     .makeExternalAssetAddress(
                         asset: currency,
                         address: response.address,
-                        label: domainName,
+                        label: Self.label(address: response.address, domain: domainName),
                         onTxCompleted: { _ in .empty() }
                     )
                     .map { $0 as ReceiveAddress }
@@ -59,17 +59,22 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
             .eraseToAnyPublisher()
     }
 
+    private static func label(address: String, domain: String) -> String {
+        "\(domain) (\(address.prefix(4))...\(address.suffix(4)))"
+    }
+
     private func preValidate(domainName: String) -> Bool {
+        // Separated by '.' (period)
         let components = domainName.components(separatedBy: ".")
-        guard components.count == 2 else {
+        // Must have more than one component
+        guard components.count > 1 else {
             return false
         }
-        guard !components[0].isEmpty else {
+        // No component may be empty
+        guard !components.contains(where: \.isEmpty) else {
             return false
         }
-        guard !components[1].isEmpty else {
-            return false
-        }
+        // Pre validation passes
         return true
     }
 }

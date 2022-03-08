@@ -83,9 +83,13 @@ struct TierStatusCell: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.padding2) {
-            Icon.blockchain
+            Image("icon-verified", bundle: .module)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
                 .frame(width: 24, height: 24)
                 .accentColor(userTier.tier.accentColor)
+                .foregroundColor(userTier.tier.accentColor)
             VStack(alignment: .leading, spacing: Spacing.padding2) {
                 VStack(alignment: .leading, spacing: Spacing.baseline) {
                     Text(userTier.tier.limitsTitle)

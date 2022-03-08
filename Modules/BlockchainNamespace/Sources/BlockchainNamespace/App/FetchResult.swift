@@ -2,7 +2,7 @@
 
 public enum FetchResult {
     case value(Any, Metadata)
-    case error(Error, Metadata)
+    case error(FetchResult.Error, Metadata)
 }
 
 extension FetchResult {
@@ -45,7 +45,7 @@ extension FetchResult {
         }
     }
 
-    public var error: Error? {
+    public var error: FetchResult.Error? {
         switch self {
         case .error(let error, _):
             return error
@@ -118,6 +118,8 @@ public protocol DecodedFetchResult {
 
     associatedtype Value: Decodable
 
+    var identity: FetchResult.Value<Value> { get }
+
     static func value(_ value: Value, _ metatata: Metadata) -> Self
     static func error(_ error: FetchResult.Error, _ metatata: Metadata) -> Self
 
@@ -130,7 +132,7 @@ extension FetchResult {
 
     public enum Value<T: Decodable>: DecodedFetchResult {
         case value(T, Metadata)
-        case error(Error, Metadata)
+        case error(FetchResult.Error, Metadata)
     }
 
     public func decode<T: Decodable>(
@@ -151,7 +153,7 @@ extension FetchResult {
         }
     }
 
-    public var result: Result<Any, Error> {
+    public var result: Result<Any, FetchResult.Error> {
         switch self {
         case .value(let value, _):
             return .success(value)
@@ -166,9 +168,13 @@ extension FetchResult {
 }
 
 extension FetchResult.Value {
+    public var identity: FetchResult.Value<T> { self }
+}
 
-    public var value: T? {
-        switch self {
+extension DecodedFetchResult {
+
+    public var value: Value? {
+        switch identity {
         case .value(let value, _):
             return value
         case .error:
@@ -176,8 +182,8 @@ extension FetchResult.Value {
         }
     }
 
-    public var error: Error? {
-        switch self {
+    public var error: FetchResult.Error? {
+        switch identity {
         case .error(let error, _):
             return error
         case .value:
@@ -185,8 +191,8 @@ extension FetchResult.Value {
         }
     }
 
-    public var result: Result<T, Error> {
-        switch self {
+    public var result: Result<Value, FetchResult.Error> {
+        switch identity {
         case .value(let value, _):
             return .success(value)
         case .error(let error, _):
@@ -194,7 +200,7 @@ extension FetchResult.Value {
         }
     }
 
-    public func get() throws -> T {
+    public func get() throws -> Value {
         try result.get()
     }
 }
@@ -211,6 +217,23 @@ extension Publisher where Output == FetchResult {
     ) -> AnyPublisher<FetchResult.Value<T>, Failure> {
         map { result in result.decode(as: T.self, decoder: decoder) }
             .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher where Output: DecodedFetchResult {
+
+    public func replaceError(
+        with value: Output.Value
+    ) -> AnyPublisher<Output.Value, Failure> {
+        flatMap { output -> Just<Output.Value> in
+            switch output.result {
+            case .failure:
+                return Just(value)
+            case .success(let value):
+                return Just(value)
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }
 

@@ -1,15 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import FeatureCoinDomain
 import MoneyKit
 import SwiftUI
 
 struct AccountRow: View {
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
+
     let account: Account
     let assetColor: Color
-    let action: () -> Void
+    let interestRate: Double?
 
     var cryptoValuePublisher: AnyPublisher<MoneyValue, Never>
     @State private var cryptoValue: String = ""
@@ -20,11 +25,11 @@ struct AccountRow: View {
     init(
         account: Account,
         assetColor: Color,
-        action: @escaping () -> Void
+        interestRate: Double?
     ) {
         self.account = account
         self.assetColor = assetColor
-        self.action = action
+        self.interestRate = interestRate
         cryptoValuePublisher = account.cryptoBalancePublisher
         fiatValuePublisher = account.fiatBalancePublisher
     }
@@ -32,10 +37,21 @@ struct AccountRow: View {
     var body: some View {
         BalanceRow(
             leadingTitle: account.name,
-            leadingDescription: account.accountType.subtitle,
+            leadingDescription: String(
+                format: account.accountType.subtitle,
+                interestRate ?? 0
+            ),
             trailingTitle: fiatValue,
             trailingDescription: cryptoValue,
             trailingDescriptionColor: .semantic.muted,
+            action: {
+                app.post(
+                    event: blockchain.ux.asset.account.sheet[].ref(to: context),
+                    context: context + [
+                        blockchain.ux.asset.account: account
+                    ]
+                )
+            },
             leading: {
                 account.accountType.icon
                     .accentColor(assetColor)
@@ -70,7 +86,7 @@ extension Account.AccountType {
         case .exchange:
             return "Pro Trading"
         case .interest:
-            return "Earning 3.5%"
+            return "Earning %.1f%%"
         case .privateKey:
             return "Non-custodial"
         case .trading:
@@ -97,7 +113,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()
@@ -113,7 +129,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()
@@ -129,7 +145,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    action: {}
+                    interestRate: 2.5
                 )
 
                 PrimaryDivider()
@@ -145,7 +161,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()

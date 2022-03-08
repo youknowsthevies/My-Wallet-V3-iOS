@@ -53,13 +53,6 @@ public protocol VerifyMobileSettingsServiceAPI {
     func verify(with code: String) -> Completable
 }
 
-public protocol BalanceSharingSettingsServiceAPI {
-    var isEnabled: Observable<Bool> { get }
-
-    func balanceSharing(enabled: Bool) -> Completable
-    func sync()
-}
-
 public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {
     func smsTwoFactorAuthentication(enabled: Bool) -> Completable
 }

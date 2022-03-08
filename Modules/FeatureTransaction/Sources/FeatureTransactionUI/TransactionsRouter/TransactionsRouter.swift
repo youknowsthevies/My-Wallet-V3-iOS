@@ -125,6 +125,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         userActionService.canPresentTransactionFlow(toPerform: action)
+            .receive(on: DispatchQueue.main)
             .flatMap { [weak self] result -> AnyPublisher<TransactionFlowResult, Never> in
                 guard let self = self else {
                     return .empty()

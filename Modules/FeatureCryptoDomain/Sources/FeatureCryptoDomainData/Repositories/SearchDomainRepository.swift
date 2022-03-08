@@ -3,6 +3,7 @@
 import Combine
 import FeatureCryptoDomainDomain
 import Foundation
+import OrderedCollections
 
 public final class SearchDomainRepository: SearchDomainRepositoryAPI {
 
@@ -23,7 +24,8 @@ public final class SearchDomainRepository: SearchDomainRepositoryAPI {
             .map { response in
                 let searchedDomain = SearchDomainResult(from: response.searchedDomain)
                 let suggestions = response.suggestions.map(SearchDomainResult.init)
-                return [searchedDomain] + suggestions
+                let results = OrderedSet([searchedDomain] + suggestions)
+                return Array(results)
             }
             .mapError(SearchDomainRepositoryError.networkError)
             .eraseToAnyPublisher()

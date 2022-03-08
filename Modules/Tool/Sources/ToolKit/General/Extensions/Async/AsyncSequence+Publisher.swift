@@ -14,7 +14,7 @@ extension Publisher where Failure == Never {
 
     @available(iOS, deprecated: 15.0, message: "Use publisher.values directly")
     @available(macOS, deprecated: 12.0, message: "Use publisher.values directly")
-    public func async() -> AsyncPublisher<Self> {
+    public var values: AsyncPublisher<Self> {
         AsyncPublisher(self)
     }
 }
@@ -23,43 +23,43 @@ extension Publisher {
 
     @available(iOS, deprecated: 15.0, message: "Use publisher.values directly")
     @available(macOS, deprecated: 12.0, message: "Use publisher.values directly")
-    public func async() -> AsyncThrowingPublisher<Self> {
+    public var values: AsyncThrowingPublisher<Self> {
         AsyncThrowingPublisher(self)
     }
 }
 
 extension AsyncPublisher {
 
-    public var first: P.Output {
+    public var first: P.Output? {
         get async {
             for await o in self {
                 return o
             }
-            fatalError("Unexpected escape from AsyncPublisher")
+            return nil
         }
     }
 }
 
 extension AsyncThrowingPublisher {
 
-    public var first: P.Output {
+    public var first: P.Output? {
         get async throws {
             for try await o in self {
                 return o
             }
-            fatalError("Unexpected escape from AsyncThrowingPublisher")
+            return nil
         }
     }
 }
 
 extension AsyncSequence {
 
-    public var first: Element {
+    public var first: Element? {
         get async throws {
             for try await o in self {
                 return o
             }
-            fatalError("Unexpected escape from AsyncSequence")
+            return nil
         }
     }
 }
@@ -149,12 +149,12 @@ public struct AsyncThrowingSequencePublisher<S: AsyncSequence>: Combine.Publishe
 @available(macOS 12.0, iOS 15.0, *)
 extension Combine.AsyncPublisher {
 
-    public var first: P.Output {
+    public var first: P.Output? {
         get async {
             for await o in self {
                 return o
             }
-            fatalError("Unexpected escape from AsyncPublisher")
+            return nil
         }
     }
 }
@@ -162,12 +162,12 @@ extension Combine.AsyncPublisher {
 @available(macOS 12.0, iOS 15.0, *)
 extension Combine.AsyncThrowingPublisher {
 
-    public var first: P.Output {
+    public var first: P.Output? {
         get async throws {
             for try await o in self {
                 return o
             }
-            fatalError("Unexpected escape from AsyncThrowingPublisher")
+            return nil
         }
     }
 }

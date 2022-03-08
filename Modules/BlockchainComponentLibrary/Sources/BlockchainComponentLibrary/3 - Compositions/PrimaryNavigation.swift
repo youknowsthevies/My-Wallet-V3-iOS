@@ -216,7 +216,6 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
                 trailing: HStack(spacing: Spacing.padding3) {
                     trailing?()
                 }
-                .padding(.trailing, Spacing.padding1)
                 .accentColor(.semantic.muted)
             )
         #endif

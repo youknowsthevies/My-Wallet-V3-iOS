@@ -139,7 +139,7 @@ extension LocalizationConstants {
             )
         }
 
-        // MARK: - Unlock Trading View (Prompt to upgrade to Gold tier)
+        // MARK: - Unlock Trading View (Prompt to upgrade to Verified tier)
 
         enum UnlockTrading {
             static let title = NSLocalizedString(
@@ -157,9 +157,14 @@ extension LocalizationConstants {
                 comment: "KYC Upgrade Prompt - Navigation Bar Title"
             )
 
-            static let cta = NSLocalizedString(
+            static let cta_verified = NSLocalizedString(
                 "Get Verified",
-                comment: "KYC Upgrade Prompt - CTA Title"
+                comment: "KYC Upgrade Prompt - Upgrade to Verified CTA Title"
+            )
+
+            static let cta_basic = NSLocalizedString(
+                "Get Basic",
+                comment: "KYC Upgrade Prompt - Upgrade to Basic CTA Title"
             )
 
             static let basicTierName = NSLocalizedString(

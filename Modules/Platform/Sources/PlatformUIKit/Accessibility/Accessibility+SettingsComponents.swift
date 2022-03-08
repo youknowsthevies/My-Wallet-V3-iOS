@@ -52,10 +52,6 @@ extension Accessibility.Identifier {
                 public static let title = "\(SettingsCell.prefix)TwoStepVerification"
             }
 
-            public enum BalanceSharing {
-                public static let title = "\(SettingsCell.prefix)BalanceSharing"
-            }
-
             public enum CloudBackup {
                 public static let title = "\(SettingsCell.prefix)CloudBackup"
             }
@@ -83,7 +79,6 @@ extension Accessibility.Identifier {
             public static let SMSSwitchView = "\(prefix)SMSSwitchView"
             public static let BioSwitchView = "\(prefix)BioSwitchView"
             public static let twoFactorSwitchView = "\(prefix)twoFactorSwitchView"
-            public static let balanceSync = "\(prefix)balanceSyncSwitchView"
             public static let cloudBackup = "\(prefix)cloudBackup"
         }
 

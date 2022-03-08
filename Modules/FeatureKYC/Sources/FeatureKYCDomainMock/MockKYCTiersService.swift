@@ -4,55 +4,55 @@ import Combine
 import PlatformKit
 import RxSwift
 
-final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
+public final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
 
-    struct RecordedInvocations {
-        var fetchTiers: [Void] = []
-        var fetchOverview: [Void] = []
-        var simplifiedDueDiligenceEligibility: [KYC.Tier] = []
-        var checkSimplifiedDueDiligenceEligibility: [KYC.Tier] = []
-        var checkSimplifiedDueDiligenceVerification: [KYC.Tier] = []
+    public struct RecordedInvocations {
+        public var fetchTiers: [Void] = []
+        public var fetchOverview: [Void] = []
+        public var simplifiedDueDiligenceEligibility: [KYC.Tier] = []
+        public var checkSimplifiedDueDiligenceEligibility: [KYC.Tier] = []
+        public var checkSimplifiedDueDiligenceVerification: [KYC.Tier] = []
     }
 
-    struct StubbedResponses {
-        var fetchTiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> = .empty()
-        var simplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, Never> = .empty()
-        var checkSimplifiedDueDiligenceEligibility: AnyPublisher<Bool, Never> = .empty()
-        var checkSimplifiedDueDiligenceVerification: AnyPublisher<Bool, Never> = .empty()
-        var fetchOverview: AnyPublisher<KYCLimitsOverview, KYCTierServiceError> = .empty()
+    public struct StubbedResponses {
+        public var fetchTiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> = .empty()
+        public var simplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, Never> = .empty()
+        public var checkSimplifiedDueDiligenceEligibility: AnyPublisher<Bool, Never> = .empty()
+        public var checkSimplifiedDueDiligenceVerification: AnyPublisher<Bool, Never> = .empty()
+        public var fetchOverview: AnyPublisher<KYCLimitsOverview, KYCTierServiceError> = .empty()
     }
 
-    private(set) var recordedInvocations = RecordedInvocations()
-    var stubbedResponses = StubbedResponses()
+    public private(set) var recordedInvocations = RecordedInvocations()
+    public var stubbedResponses = StubbedResponses()
 
-    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    public var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         fetchTiers()
     }
 
-    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    public var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         fetchTiers()
     }
 
-    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    public func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         recordedInvocations.fetchTiers.append(())
         return stubbedResponses.fetchTiers
     }
 
-    func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> {
+    public func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> {
         recordedInvocations.simplifiedDueDiligenceEligibility.append(tier)
         return stubbedResponses.simplifiedDueDiligenceEligibility
     }
 
-    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
+    public func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
         checkSimplifiedDueDiligenceEligibility(for: .tier0)
     }
 
-    func checkSimplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<Bool, Never> {
+    public func checkSimplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<Bool, Never> {
         recordedInvocations.checkSimplifiedDueDiligenceEligibility.append(tier)
         return stubbedResponses.checkSimplifiedDueDiligenceEligibility
     }
 
-    func checkSimplifiedDueDiligenceVerification(
+    public func checkSimplifiedDueDiligenceVerification(
         for tier: KYC.Tier,
         pollUntilComplete: Bool
     ) -> AnyPublisher<Bool, Never> {
@@ -60,11 +60,11 @@ final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
         return stubbedResponses.checkSimplifiedDueDiligenceVerification
     }
 
-    func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
+    public func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
         checkSimplifiedDueDiligenceVerification(for: .tier0, pollUntilComplete: pollUntilComplete)
     }
 
-    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError> {
+    public func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError> {
         recordedInvocations.fetchOverview.append(())
         return stubbedResponses.fetchOverview
     }

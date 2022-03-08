@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import MoneyKit
 import RxSwift
 
@@ -13,14 +14,14 @@ public protocol TransactionTarget: Account {
 
     typealias TxCompleted = (TransactionResult) -> Completable
 
-    /// onTxCompleted should be used by CryptoInterestAccount and CustodialTradingAccount,
-    /// it should POST to "payments/deposits/pending", check Android
+    /// A target may require an action to be taken after its transaction is completed.
+    /// onTxCompleted must be called by the engine after the transaction is executed.
     var onTxCompleted: TxCompleted { get }
 }
 
 extension TransactionTarget {
     public var onTxCompleted: TxCompleted {
-        { _ in Completable.empty() }
+        { _ in .empty() }
     }
 }
 
@@ -48,4 +49,17 @@ public protocol StaticTransactionTarget: TransactionTarget {}
 public protocol RawStaticTransactionTarget: StaticTransactionTarget {}
 
 /// A Wallet Connect Transaction Target.
-public protocol WalletConnectTarget: StaticTransactionTarget {}
+public protocol WalletConnectTarget: StaticTransactionTarget {
+
+    /// A Wallet Connect target may require an action to be taken after its transaction is rejected.
+    /// onTransactionRejected must be called by the engine if the transaction flow ends before the transactions is executed.
+    var onTransactionRejected: () -> AnyPublisher<Void, Never> { get }
+}
+
+extension WalletConnectTarget {
+    public var onTransactionRejected: (TransactionResult) -> AnyPublisher<Void, Never> {
+        { _ in
+            AnyPublisher<Void, Never>.just(())
+        }
+    }
+}

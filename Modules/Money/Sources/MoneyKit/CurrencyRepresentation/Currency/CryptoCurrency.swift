@@ -139,6 +139,11 @@ extension CryptoCurrency {
     }
 }
 
+extension CryptoCurrency: Identifiable {
+
+    public var id: String { code }
+}
+
 extension CryptoCurrency {
 
     public static let bitcoin = AssetModel.bitcoin.cryptoCurrency!

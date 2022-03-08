@@ -221,6 +221,10 @@ public struct ClaimIntroductionView: View {
     }
 }
 
+#if DEBUG
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct ClaimIntroductionView_Previews: PreviewProvider {
     static var previews: some View {
         ClaimIntroductionView(
@@ -229,9 +233,12 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                 reducer: claimIntroductionReducer,
                 environment: .init(
                     mainQueue: .main,
-                    searchDomainRepository: NoOpSearchDomainRepository()
+                    searchDomainRepository: SearchDomainRepository(
+                        apiClient: SearchDomainClient.mock
+                    )
                 )
             )
         )
     }
 }
+#endif
