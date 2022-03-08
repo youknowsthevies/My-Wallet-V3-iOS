@@ -7,20 +7,16 @@
 
 # Define app identifier groups for each type of app we have
 app_identifiers_alpha = [
-  "com.rainydayapps.Blockchain.alpha",
-  "com.rainydayapps.Blockchain.alpha.TodayExtension"
+  "com.rainydayapps.Blockchain.alpha"
 ]
 app_identifiers_dev = [
-  "com.rainydayapps.Blockchain.dev",
-  "com.rainydayapps.Blockchain.dev.TodayExtension"
+  "com.rainydayapps.Blockchain.dev"
 ]
 app_identifiers_staging = [
-  "com.rainydayapps.Blockchain.staging",
-  "com.rainydayapps.Blockchain.staging.TodayExtension"
+  "com.rainydayapps.Blockchain.staging"
 ]
 app_identifiers_production = [
-  "com.rainydayapps.Blockchain",
-  "com.rainydayapps.Blockchain.TodayExtension"
+  "com.rainydayapps.Blockchain"
 ]
 # The '|' operator combines multiple arrays together merging them as a set of unique entries
 app_identifiers_all = app_identifiers_dev | app_identifiers_staging | app_identifiers_alpha | app_identifiers_production
