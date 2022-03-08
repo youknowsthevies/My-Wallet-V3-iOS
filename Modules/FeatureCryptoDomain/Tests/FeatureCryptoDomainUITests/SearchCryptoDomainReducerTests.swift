@@ -46,15 +46,6 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore = nil
     }
 
-    func test_on_appear_should_search_domains() throws {
-        let expectedResults = try testStore.environment.searchDomainRepository.searchResults(searchKey: "Searchkey").wait()
-        testStore.send(.onAppear)
-        testStore.receive(.searchDomains)
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
-            state.searchResults = expectedResults
-        }
-    }
-
     func test_valid_search_text_should_search_domains() throws {
         let expectedResults = try testStore.environment.searchDomainRepository.searchResults(searchKey: "Searchkey").wait()
         testStore.send(.set(\.$searchText, "Searchkey")) { state in
