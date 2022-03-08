@@ -14,20 +14,31 @@ struct LimitedTradeFeatureCell: View {
         HStack(spacing: Spacing.padding2) {
             feature.icon
                 .frame(width: 24, height: 24)
-                .accentColor(.semantic.title)
+                .accentColor(.semantic.body)
+
             VStack(alignment: .leading, spacing: Spacing.textSpacing) {
                 Text(feature.title)
                     .typography(.body2)
                 if let message = feature.message {
                     Text(message)
                         .typography(.caption1)
+                        .foregroundColor(.semantic.body)
                 }
             }
+
             Spacer()
-            Text(feature.valueDisplayString)
-                .typography(.body2)
-                .accentColor(Color.semantic.body)
-                .foregroundColor(Color.semantic.body)
+
+            VStack(alignment: .trailing, spacing: Spacing.textSpacing) {
+                Text(feature.valueDisplayString)
+                    .typography(.body2)
+
+                if let timeframeDisplayString = feature.timeframeDisplayString {
+                    Text(timeframeDisplayString)
+                        .typography(.caption1)
+                }
+            }
+            .accentColor(Color.semantic.body)
+            .foregroundColor(Color.semantic.body)
         }
         .padding(Spacing.padding3)
         .frame(maxWidth: .infinity, minHeight: 80)

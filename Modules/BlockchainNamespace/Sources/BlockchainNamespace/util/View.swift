@@ -136,7 +136,7 @@ public struct OnReceiveSessionEvents: ViewModifier {
 
     public func body(content: Content) -> some View {
         if removed {
-            content
+            content.onAppear { removed = false }
         } else {
             content
                 .onDisappear { removed = true }

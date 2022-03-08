@@ -8,6 +8,7 @@ import DIKit
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCoinUI
+import FeatureInterestUI
 import FeatureTransactionUI
 import MoneyKit
 import NetworkKit
@@ -17,20 +18,19 @@ import SwiftUI
 import ToolKit
 
 struct CoinAdapterView: View {
+
     let store: Store<CoinViewState, CoinViewAction>
-
     let currency: CryptoCurrency
-    var app: AppProtocol = resolve()
-    var networkAdapter: NetworkAdapterAPI = resolve()
-    var userAdapter: UserAdapterAPI = resolve()
-    var coincore: CoincoreAPI = resolve()
-    var fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
-    var transactionsRouter: TransactionsRouterAPI = resolve()
 
-    var historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve()
-    var ratesRepository: RatesRepositoryAPI = resolve()
-
-    init(cryptoCurrency: CryptoCurrency) {
+    init(
+        cryptoCurrency: CryptoCurrency,
+        app: AppProtocol = resolve(),
+        userAdapter: UserAdapterAPI = resolve(),
+        coincore: CoincoreAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
+        ratesRepository: RatesRepositoryAPI = resolve()
+    ) {
         currency = cryptoCurrency
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
@@ -75,59 +75,110 @@ struct CoinAdapterView: View {
     }
 
     var body: some View {
-        PrimaryNavigationView {
-            CoinView(store: store)
-                .on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { event in
-                    try await transactionsRouter
-                        .presentTransactionFlow(to: .buy(crypto(action: .buy, in: event)))
+        CoinView(store: store)
+            .context([blockchain.ux.asset.id: currency.code])
+    }
+}
+
+struct CoinViewObserver: AppSessionObserver {
+
+    var transactionsRouter: TransactionsRouterAPI = resolve()
+    var coincore: CoincoreAPI = resolve()
+
+    func body(content: Content) -> some View {
+        content
+            .on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .buy(cryptoAccount(for: .buy, from: event))
+                )
+            }
+            .on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .sell(cryptoAccount(for: .sell, from: event))
+                )
+            }
+            .on(blockchain.ux.asset.receive, blockchain.ux.asset.account.receive) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .receive(cryptoAccount(for: .receive, from: event))
+                )
+            }
+            .on(blockchain.ux.asset.send, blockchain.ux.asset.account.send) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .send(cryptoAccount(for: .send, from: event), nil)
+                )
+            }
+            .on(blockchain.ux.asset.account.swap) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .swap(cryptoAccount(for: .swap, from: event))
+                )
+            }
+            .on(blockchain.ux.asset.account.rewards.withdraw) { event in
+                switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+                case let account as CryptoInterestAccount:
+                    await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
+                default:
+                    throw event.tag.error("Withdrawing from rewards requires CryptoInterestAccount")
                 }
-                .on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { event in
-                    try await transactionsRouter
-                        .presentTransactionFlow(to: .sell(crypto(action: .sell, in: event)))
+            }
+            .on(blockchain.ux.asset.account.rewards.deposit) { event in
+                switch try await cryptoAccount(for: .interestTransfer, from: event) {
+                case let account as CryptoInterestAccount:
+                    await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
+                default:
+                    throw event.tag.error("Transferring to rewards requires CryptoInterestAccount")
                 }
-                .on(blockchain.ux.asset.receive, blockchain.ux.asset.account.receive) { event in
-                    try await transactionsRouter
-                        .presentTransactionFlow(to: .receive(crypto(action: .receive, in: event)))
-                }
-                .on(blockchain.ux.asset.send, blockchain.ux.asset.account.send) { event in
-                    try await transactionsRouter
-                        .presentTransactionFlow(to: .send(crypto(action: .send, in: event), nil))
-                }
-                .on(blockchain.ux.asset.account.swap) { event in
-                    try await transactionsRouter
-                        .presentTransactionFlow(to: .swap(crypto(action: .swap, in: event)))
-                }
-                .on(blockchain.ux.asset.account.withdraw) { event in
-                    fatalError("\(event.ref) withdraw")
-                }
-                .on(blockchain.ux.asset.account.deposit) { event in
-                    fatalError("\(event.ref) deposit")
-                }
-                .on(blockchain.ux.asset.account.require.KYC) { event in
-                    fatalError("\(event.ref) KYC")
-                }
-                .on(blockchain.ux.asset.account.activity) { event in
-                    fatalError("\(event.ref) activity")
-                }
-                .app(app)
-                .context([blockchain.ux.asset.id: currency.code])
-        }
+            }
+            .on(blockchain.ux.asset.account.rewards.summary) { event in
+                let account = try await cryptoAccount(for: .interestTransfer, from: event)
+                let interactor = InterestAccountDetailsScreenInteractor(account: account)
+                let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
+                let controller = InterestAccountDetailsViewController(presenter: presenter)
+                let navigationRouter: NavigationRouterAPI = resolve()
+                navigationRouter.present(viewController: controller, using: .modalOverTopMost)
+            }
+            .on(blockchain.ux.asset.account.exchange.withdraw) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .send(cryptoAccount(for: .send, from: event), tradingAccount(from: event))
+                )
+            }
+            .on(blockchain.ux.asset.account.exchange.deposit) { event in
+                try await transactionsRouter.presentTransactionFlow(
+                    to: .send(tradingAccount(from: event), cryptoAccount(for: .send, from: event))
+                )
+            }
+            .on(blockchain.ux.asset.account.require.KYC) { event in
+                fatalError("\(event.ref) KYC")
+            }
+            .on(blockchain.ux.asset.account.activity) { event in
+                fatalError("\(event.ref) activity")
+            }
     }
 
-    func crypto(
-        action: AssetAction,
-        in event: Session.Event
+    // swiftlint:disable first_where
+    func tradingAccount(from event: Session.Event) async throws -> CryptoTradingAccount {
+        try await coincore.cryptoAccounts(
+            for: event.context.decode(blockchain.ux.asset.id),
+            filter: .custodial
+        )
+        .filter(CryptoTradingAccount.self)
+        .first
+        .or(throw: event.tag.error(message: "No trading account found for \(event.ref)"))
+    }
+
+    func cryptoAccount(
+        for action: AssetAction? = nil,
+        from event: Session.Event
     ) async throws -> CryptoAccount {
         let accounts = try await coincore.cryptoAccounts(
-            for: event.ref.context.decode(blockchain.ux.asset.id),
+            for: event.context.decode(blockchain.ux.asset.id),
             supporting: action
         )
-        if let id = try? event.ref.context.decode(blockchain.ux.asset.account.id, as: String.self) {
+        if let id = try? event.context.decode(blockchain.ux.asset.account.id, as: String.self) {
             return try accounts.first(where: { account in account.identifier == id as AnyHashable })
                 .or(throw: event.tag.error(message: "No account found with id \(id)"))
         } else {
             return try (accounts.first(where: { account in account is TradingAccount }) ?? accounts.first)
-                .or(throw: event.tag.error(message: "\(event) has no valid accounts for \(action)"))
+                .or(throw: event.tag.error(message: "\(event) has no valid accounts for \(String(describing: action))"))
         }
     }
 }

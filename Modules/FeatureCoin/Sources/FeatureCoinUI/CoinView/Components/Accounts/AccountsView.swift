@@ -35,8 +35,8 @@ public struct AccountsView: View {
                     account: account,
                     assetColor: assetColor,
                     interestRate: interestRate
-                ) {}
-                    .context([blockchain.ux.asset.account.id: account.id])
+                )
+                .context([blockchain.ux.asset.account.id: account.id])
 
                 PrimaryDivider()
             }
@@ -48,7 +48,9 @@ public struct AccountsView: View {
                     title: Localization.tradingAccountTitle,
                     subtitle: Localization.tradingAccountSubtitle,
                     icon: .trade
-                ) {}
+                ) {
+                    app.post(event: blockchain.ux.asset.account.require.KYC[].ref(to: context))
+                }
 
                 PrimaryDivider()
 
@@ -56,7 +58,9 @@ public struct AccountsView: View {
                     title: Localization.rewardsAccountTitle,
                     subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate ?? 0),
                     icon: .interestCircle
-                ) {}
+                ) {
+                    app.post(event: blockchain.ux.asset.account.require.KYC[].ref(to: context))
+                }
 
                 PrimaryDivider()
 
@@ -64,7 +68,9 @@ public struct AccountsView: View {
                     title: Localization.exchangeAccountTitle,
                     subtitle: Localization.exchangeAccountSubtitle,
                     icon: .walletExchange
-                ) {}
+                ) {
+                    app.post(event: blockchain.ux.asset.account.require.KYC[].ref(to: context))
+                }
                 PrimaryDivider()
             }
         }

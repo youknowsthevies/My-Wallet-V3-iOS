@@ -5,6 +5,7 @@ import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
+import MoneyKit
 import SwiftUI
 
 struct Tab: Hashable, Identifiable {
@@ -68,10 +69,10 @@ struct RootView: View {
         WithViewStore(store) { viewStore in
             TabView(selection: viewStore.binding(\.$tab)) {
                 tab(.home) {
-                    PortfolioView()
+                    PortfolioView(store: store.stateless)
                 }
                 tab(.prices) {
-                    PricesView()
+                    PricesView(store: store.stateless)
                 }
                 fab()
                 tab(.buyAndSell) {
@@ -112,7 +113,9 @@ struct RootView: View {
                 }
             }
         }
+        .observer(CoinViewObserver())
         .navigationRoute(in: store)
+        .app(Blockchain.app)
     }
 
     func fab() -> some View {
@@ -197,7 +200,12 @@ extension View {
 
     @ViewBuilder
     func identity(_ tag: Tag) -> some View {
-        id(tag)
-            .accessibility(identifier: tag.id)
+        identity(tag.ref)
+    }
+
+    @ViewBuilder
+    func identity(_ tag: Tag.Reference) -> some View {
+        id(tag.string)
+            .accessibility(identifier: tag.string)
     }
 }

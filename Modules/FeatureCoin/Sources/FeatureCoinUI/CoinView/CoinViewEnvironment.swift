@@ -3,11 +3,12 @@
 import BlockchainNamespace
 import Combine
 import ComposableArchitecture
+import ComposableArchitectureExtensions
 import FeatureCoinDomain
 
-public struct CoinViewEnvironment {
+public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
 
-    let app: AppProtocol
+    public let app: AppProtocol
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let kycStatusProvider: () -> AnyPublisher<KYCStatus, Never>
     let accountsProvider: () -> AnyPublisher<[Account], Never>

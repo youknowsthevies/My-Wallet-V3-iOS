@@ -15,7 +15,6 @@ struct AccountRow: View {
     let account: Account
     let assetColor: Color
     let interestRate: Double?
-    let action: () -> Void
 
     var cryptoValuePublisher: AnyPublisher<MoneyValue, Never>
     @State private var cryptoValue: String = ""
@@ -26,13 +25,11 @@ struct AccountRow: View {
     init(
         account: Account,
         assetColor: Color,
-        interestRate: Double?,
-        action: @escaping () -> Void
+        interestRate: Double?
     ) {
         self.account = account
         self.assetColor = assetColor
         self.interestRate = interestRate
-        self.action = action
         cryptoValuePublisher = account.cryptoBalancePublisher
         fiatValuePublisher = account.fiatBalancePublisher
     }
@@ -49,8 +46,10 @@ struct AccountRow: View {
             trailingDescriptionColor: .semantic.muted,
             action: {
                 app.post(
-                    event: blockchain.ux.asset.account.receive[].ref(to: context),
-                    context: context
+                    event: blockchain.ux.asset.account.sheet[].ref(to: context),
+                    context: context + [
+                        blockchain.ux.asset.account: account
+                    ]
                 )
             },
             leading: {
@@ -114,8 +113,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    interestRate: nil,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()
@@ -131,8 +129,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    interestRate: nil,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()
@@ -148,8 +145,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    interestRate: 2.5,
-                    action: {}
+                    interestRate: 2.5
                 )
 
                 PrimaryDivider()
@@ -165,8 +161,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatBalancePublisher: .just(.one(currency: .USD))
                     ),
                     assetColor: .orange,
-                    interestRate: nil,
-                    action: {}
+                    interestRate: nil
                 )
 
                 PrimaryDivider()

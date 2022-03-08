@@ -146,7 +146,7 @@ public struct GraphView: View {
             return ChartBalance(
                 title: selected == nil ? Localization.currentPrice : Localization.price,
                 balance: String(
-                    amount: selected == nil ? end.price : start.price,
+                    amount: selected == nil ? start.price : end.price,
                     currency: value.quote
                 ),
                 changeArrow: end.price.isRelativelyEqual(to: start.price)
@@ -161,7 +161,8 @@ public struct GraphView: View {
                     ? .semantic.primary
                     : end.price < start.price ? .semantic.error : .semantic.success,
                 changeTime: Self.relativeDateFormatter.localizedString(
-                    for: start.timestamp, relativeTo: end.timestamp
+                    for: (selected.map { value.series[$0] } ?? value.series[0]).timestamp,
+                    relativeTo: value.series.last!.timestamp
                 )
             )
         }
@@ -198,7 +199,7 @@ public struct GraphView: View {
 
 extension BinaryFloatingPoint {
 
-    func isRelativelyEqual(to other: Self, precision: Self = .init(0.01)) -> Bool {
+    func isRelativelyEqual(to other: Self, precision: Self = .init(0.001)) -> Bool {
         abs(1 - (self / other)) <= precision
     }
 }

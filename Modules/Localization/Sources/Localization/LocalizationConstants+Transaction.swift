@@ -175,7 +175,7 @@ extension LocalizationConstants.Transaction.Receive.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to the Trading Account in seconds by completing your profile and getting Silver access.",
+        "Get access to the Trading Account in seconds by completing your profile and getting Basic access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -219,7 +219,7 @@ extension LocalizationConstants.Transaction.Swap.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to swap in seconds by completing your profile and getting Silver access.",
+        "Get access to swap in seconds by completing your profile and getting Basic access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -1295,11 +1295,11 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Error recovery message - input over the user's personal maximum limit"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_single = NSLocalizedString(
-        "You can buy up to **%@** per transaction. Upgrade to Gold & buy larger amounts with your bank or card.",
+        "You can buy up to **%@** per transaction. Upgrade to Verified & buy larger amounts with your bank or card.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_gold = NSLocalizedString(
-        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Gold to buy more.",
+        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Verified to buy more.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_other = NSLocalizedString(
@@ -1526,8 +1526,8 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let notFound = NSLocalizedString(
-        "Oops! We are having a problem fetching a quote, please try again later.",
-        comment: "Oops! We are having a problem fetching a quote, please try again later."
+        "Oops! We are having problems fetching a quote, please try again later.",
+        comment: "Oops! We are having problems fetching a quote, please try again later."
     )
 
     public static let tradingBelowMin = NSLocalizedString(

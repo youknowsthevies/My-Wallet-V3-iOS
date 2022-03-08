@@ -299,8 +299,11 @@ blockchain:
 				+ blockchain.ux.type.action
 				buy:
 				+ blockchain.ux.type.action
-				deposit:
-				+ blockchain.ux.type.action
+				exchange:
+					deposit:
+					+ blockchain.ux.type.action
+					withdraw:
+					+ blockchain.ux.type.action
 				explainer:
 				+ blockchain.ux.type.story
 					accept:
@@ -309,15 +312,20 @@ blockchain:
 				require:
 					KYC:
 					+ blockchain.ui.type.action
+				rewards:
+					deposit:
+					+ blockchain.ux.type.action
+					summary:
+					+ blockchain.ux.type.action
+					withdraw:
+					+ blockchain.ux.type.action
 				sell:
 				+ blockchain.ux.type.action
 				send:
 				+ blockchain.ux.type.action
-				summary:
-				+ blockchain.ux.type.story
-				swap:
+				sheet:
 				+ blockchain.ux.type.action
-				withdraw:
+				swap:
 				+ blockchain.ux.type.action
 			bio:
 				visit:

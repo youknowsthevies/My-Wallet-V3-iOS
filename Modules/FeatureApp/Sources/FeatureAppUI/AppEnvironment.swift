@@ -31,7 +31,6 @@ public struct AppEnvironment {
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandlerAPI
-    var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var resetPasswordService: ResetPasswordServiceAPI
@@ -90,7 +89,6 @@ public struct AppEnvironment {
         deeplinkHandler: DeepLinkHandling,
         deeplinkRouter: DeepLinkRouting,
         backgroundAppHandler: BackgroundAppHandlerAPI,
-        portfolioSyncingService: BalanceSharingSettingsServiceAPI,
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
         resetPasswordService: ResetPasswordServiceAPI,
@@ -139,7 +137,6 @@ public struct AppEnvironment {
         self.deeplinkHandler = deeplinkHandler
         self.deeplinkRouter = deeplinkRouter
         self.backgroundAppHandler = backgroundAppHandler
-        self.portfolioSyncingService = portfolioSyncingService
         self.mobileAuthSyncService = mobileAuthSyncService
         self.pushNotificationsRepository = pushNotificationsRepository
         self.resetPasswordService = resetPasswordService
