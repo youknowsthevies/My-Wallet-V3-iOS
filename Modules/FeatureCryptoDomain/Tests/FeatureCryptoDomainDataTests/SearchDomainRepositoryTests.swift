@@ -7,8 +7,6 @@ import NetworkKit
 import TestKit
 import XCTest
 
-// swiftlint:disable all
-
 class SearchDomainRepositoryTests: XCTestCase {
 
     var client: SearchDomainClientAPI!
@@ -27,9 +25,9 @@ class SearchDomainRepositoryTests: XCTestCase {
         repository = nil
     }
 
-    func test_get_search_results() {
-        _ = try! repository.searchResults(searchKey: "Searchkey").wait()
-        _ = try! network.requests[
+    func test_get_search_results() throws {
+        _ = try repository.searchResults(searchKey: "Searchkey").wait()
+        _ = try network.requests[
             .get, "https://api.dev.blockchain.info/explorer-gateway/resolution/ud/search/Searchkey"
         ].unwrap()
     }
