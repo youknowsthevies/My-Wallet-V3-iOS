@@ -52,8 +52,11 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             state.isSearchTextValid = true
             state.searchText = "Searchkey"
         }
-        testStore.receive(.searchDomains)
+        testStore.receive(.searchDomains) { state in
+            state.isSearchResultsLoading = true
+        }
         testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+            state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
     }
