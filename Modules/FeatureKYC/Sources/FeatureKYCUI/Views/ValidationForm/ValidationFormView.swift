@@ -47,7 +47,7 @@ extension ValidationFormView where Self: UIViewController {
         for field in validationFields {
             guard case .valid = field.validate(withStyling: true) else {
                 valid = false
-                guard !validationFields.contains(where: { $0.isFocused() == true }) else { continue }
+                guard !validationFields.contains(where: { $0.isFocused == true }) else { continue }
                 field.becomeFocused()
                 continue
             }
