@@ -34,6 +34,10 @@ public struct EIP681URI: CryptoAssetQRMetadata {
         }
     }
 
+    public var destinationAddress: String {
+        method.destination ?? address
+    }
+
     public let cryptoCurrency: CryptoCurrency
     public let address: String
     public let method: Method
