@@ -60,6 +60,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             state.isSearchResultsLoading = true
         }
         testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+            state.isSearchResultsLoading = false
             state.searchResults = expectedResults
             state.isSearchResultsLoading = false
         }
