@@ -61,7 +61,7 @@ private enum TargetDestinationTitle {
     }
 }
 
-// MARK: - Non Trading Source DestinationStrategy
+// MARK: - Any Source DestinationStrategy
 
 struct AnySourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
@@ -75,24 +75,26 @@ struct AnySourceDestinationStrategy: TargetDestinationsStrategyAPI {
         interactors: [TargetSelectionPageCellItem.Interactor],
         action: AssetAction
     ) -> [TargetSelectionPageSectionModel] {
-
-        let additionalWallets = interactors.compactMap { interactor -> TargetSelectionPageCellItem? in
-            if !interactor.isWalletInputField {
-                return TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
-            }
-            return nil
-        }
-
-        var sections: [TargetSelectionPageSectionModel] = []
-        if !additionalWallets.isEmpty {
-            sections.append(
-                .destination(
-                    header: provideSectionHeader(action: action, title: .orSelect),
-                    items: additionalWallets
+        // Known wallets the user can send to (eg Trading/Private Key Wallet/Exchange)
+        var items: [TargetSelectionPageCellItem] = interactors
+            .compactMap { interactor -> TargetSelectionPageCellItem? in
+                guard !interactor.isWalletInputField else {
+                    return nil
+                }
+                return TargetSelectionPageCellItem(
+                    interactor: interactor,
+                    assetAction: action
                 )
-            )
+            }
+        guard !items.isEmpty else {
+            return []
         }
-        return sections
+        return [
+            .destination(
+                header: provideSectionHeader(action: action, title: .orSelect),
+                items: items
+            )
+        ]
     }
 }
 

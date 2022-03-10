@@ -98,6 +98,8 @@ final class AnalyticsUserPropertyInteractor {
     ) {
         if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
+            let property = HashedUserProperty(key: .nabuID, value: identifier)
+            recorder.record(property)
         }
 
         if let guid = guid {
