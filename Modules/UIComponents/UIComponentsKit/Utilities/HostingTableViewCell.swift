@@ -6,11 +6,10 @@ import UIKit
 
 public final class HostingTableViewCell<Content: View>: UITableViewCell {
     private var hostingController: UIHostingController<Content?>?
-    private var heightContraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        hostingController?.view.backgroundColor = .background
         contentView.backgroundColor = .lightBorder
     }
 
@@ -23,8 +22,11 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
         _ rootView: Content,
         parent: UIViewController,
         height: CGFloat?,
-        showSeparator: Bool = true
+        insets: UIEdgeInsets = .zero,
+        showSeparator: Bool = true,
+        backgroundColor: UIColor = .lightBorder
     ) {
+        contentView.backgroundColor = backgroundColor
         hostingController?.view.removeFromSuperview()
         hostingController?.rootView = nil
         hostingController = .init(rootView: rootView)
@@ -40,19 +42,17 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
 
         if !contentView.subviews.contains(hostingController.view) {
             contentView.addSubview(hostingController.view)
+            var insets = insets
+            insets.bottom += showSeparator ? 1 : 0
             hostingController.view.constraint(
                 edgesTo: contentView,
-                insets: .init(
-                    top: 0,
-                    left: 0,
-                    bottom: showSeparator ? 1 : 0,
-                    right: 0
-                )
+                insets: insets
             )
 
-            if let height = height, heightContraint == nil {
-                heightContraint = contentView.heightAnchor.constraint(equalToConstant: height)
-                heightContraint?.isActive = true
+            if let height = height, heightConstraint == nil {
+                heightConstraint = contentView.heightAnchor
+                    .constraint(equalToConstant: height)
+                heightConstraint?.isActive = true
             }
         }
 
@@ -61,13 +61,14 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
         }
     }
 
+    @discardableResult
     public func updateRootView(height: CGFloat) -> Bool {
-        if heightContraint?.constant == height {
+        if heightConstraint?.constant == height {
             return false
         }
-        if heightContraint != nil {
+        if heightConstraint != nil {
             contentView.backgroundColor = height <= 1 ? .clear : .lightBorder
-            heightContraint?.constant = height
+            heightConstraint?.constant = height
             contentView.setNeedsLayout()
         }
         return true

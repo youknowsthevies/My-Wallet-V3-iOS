@@ -10,7 +10,6 @@ public final class SearchDomainRepository: SearchDomainRepositoryAPI {
     // MARK: - Properties
 
     private let apiClient: SearchDomainClientAPI
-    private let queue = DispatchQueue(label: "SearchDomainRepository")
 
     // MARK: - Setup
 

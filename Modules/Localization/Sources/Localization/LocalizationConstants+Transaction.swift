@@ -9,7 +9,7 @@ extension LocalizationConstants {
     public enum Transaction {
         public enum TargetSource {
             public enum Radio {}
-            public enum Card {}
+            public enum SendToDomainCard {}
         }
 
         public enum Confirmation {
@@ -403,12 +403,14 @@ extension LocalizationConstants.Transaction.Send {
     )
 }
 
-extension LocalizationConstants.Transaction.TargetSource.Card {
-    public static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
-
-    public static let description = NSLocalizedString(
-        "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses.",
-        comment: "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses."
+extension LocalizationConstants.Transaction.TargetSource.SendToDomainCard {
+    public static let title = NSLocalizedString(
+        "Send to a blockchain domain",
+        comment: "Send to domain card title."
+    )
+    public static let subtitle = NSLocalizedString(
+        "You can now send crypto to domains like satoshi.blockchain, satoshi.eth, and y.at/💎👐",
+        comment: "Send to domain card subtitle."
     )
 }
 

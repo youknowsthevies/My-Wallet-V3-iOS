@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import PlatformUIKit
 import RIBs
 import RxCocoa
@@ -32,14 +33,18 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     private lazy var dataSource: RxDataSource = {
         RxDataSource(
-            animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none),
+            animationConfiguration: AnimationConfiguration(
+                insertAnimation: .none,
+                reloadAnimation: .none,
+                deleteAnimation: .none
+            ),
             configureCell: { [weak self] _, _, indexPath, item in
                 guard let self = self else { return UITableViewCell() }
 
                 let cell: UITableViewCell
                 switch item.presenter {
-                case .cardView(let viewModel):
-                    cell = self.cardCell(for: indexPath, viewModel: viewModel)
+                case .cardView(let model):
+                    cell = self.cardCell(for: indexPath, model: model)
                 case .radioSelection(let presenter):
                     cell = self.radioCell(for: indexPath, presenter: presenter)
                 case .singleAccount(let presenter):
@@ -168,7 +173,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.register(RadioAccountTableViewCell.self)
-        tableView.register(CardTableViewCell.self)
+        tableView.register(HostingTableViewCell<AlertCard>.self)
         tableView.register(TextFieldTableViewCell.self)
 
         view.addSubview(tableView)
@@ -205,9 +210,20 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         return cell
     }
 
-    private func cardCell(for indexPath: IndexPath, viewModel: CardViewViewModel) -> UITableViewCell {
-        let cell = tableView.dequeue(CardTableViewCell.self, for: indexPath)
-        cell.viewModel = viewModel
+    private func cardCell(for indexPath: IndexPath, model: TargetSelectionCardModel) -> UITableViewCell {
+        let cell = tableView.dequeue(HostingTableViewCell<AlertCard>.self, for: indexPath)
+        let alertCard = AlertCard(
+            title: model.title,
+            message: model.subtitle
+        )
+        cell.host(
+            alertCard,
+            parent: self,
+            height: nil,
+            insets: UIEdgeInsets(top: 24, left: 24, bottom: 7, right: 24),
+            showSeparator: false,
+            backgroundColor: .white
+        )
         return cell
     }
 }
@@ -221,7 +237,25 @@ extension TargetSelectionViewController: UITableViewDelegate {
         dataSource[section].header.defaultHeight
     }
 
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch dataSource[indexPath.section].items[indexPath.row].presenter {
+        case .cardView:
+            return UITableView.automaticDimension
+        case .radioSelection,
+             .singleAccount,
+             .walletInputField:
+            return 80
+        }
+    }
+
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        80.0
+        switch dataSource[indexPath.section].items[indexPath.row].presenter {
+        case .cardView:
+            return UITableView.automaticDimension
+        case .radioSelection,
+             .singleAccount,
+             .walletInputField:
+            return 80
+        }
     }
 }
