@@ -40,6 +40,7 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     func allowCameraAccess()
     func cameraAccessDenied() -> Bool
     func openAppSettings()
+    func showsWalletConnectRow() -> AnyPublisher<Bool, Never>
 }
 
 public enum QRCodeScannerParsingOptions {
@@ -81,6 +82,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     private let deepLinkParser: DeepLinkQRCodeParser
     private let secureChannelParser: SecureChannelQRCodeParser
     private let walletConnectParser: WalletConnectQRCodeParser
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let cacheSuite: CacheSuite
     private let parsingSubject = CurrentValueSubject<Bool, Never>(false)
     private var cancellables = [AnyCancellable]()
@@ -127,6 +129,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
 
         self.requestCameraAccess = requestCameraAccess
         self.checkCameraAccess = checkCameraAccess
+        self.featureFlagsService = featureFlagsService
         self.cacheSuite = cacheSuite
 
         cryptoTargetParser = CryptoTargetQRCodeParser(
@@ -289,6 +292,10 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     func openAppSettings() {
         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(settingsURL)
+    }
+
+    func showsWalletConnectRow() -> AnyPublisher<Bool, Never> {
+        featureFlagsService.isEnabled(.remote(.walletConnectEnabled))
     }
 
     private func showAllowAccessSheetIfNeeded() {
