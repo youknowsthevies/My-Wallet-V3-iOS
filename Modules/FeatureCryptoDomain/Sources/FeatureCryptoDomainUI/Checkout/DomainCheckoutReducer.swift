@@ -83,7 +83,7 @@ let domainCheckoutReducer = Reducer<
         return environment
             .userInfoProvider()
             .ignoreFailure(setFailureType: OrderDomainRepositoryError.self)
-            .map { userInfo in
+            .flatMap { userInfo -> AnyPublisher<OrderDomainResult, OrderDomainRepositoryError> in
                 environment
                     .orderDomainRepository
                     .createDomainOrder(
