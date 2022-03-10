@@ -544,7 +544,7 @@ extension AnnouncementPresenter {
                                 .just(
                                     OrderDomainUserInfo(
                                         nabuUserId: user.identifier,
-                                        nabuUserName: user.userName,
+                                        nabuUserName: user.personalDetails.firstName,
                                         ethereumAddress: receiveAddress.address
                                     )
                                 )
