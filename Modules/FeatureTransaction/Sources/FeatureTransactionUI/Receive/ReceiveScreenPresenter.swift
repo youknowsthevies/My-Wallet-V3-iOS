@@ -136,7 +136,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         qrCodeMetadata
-            .map(\.address)
+            .map(\.destinationAddress)
             .catchAndReturn("")
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
@@ -180,7 +180,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .withLatestFrom(qrCodeMetadata.map(\.address))
+            .withLatestFrom(qrCodeMetadata.map(\.destinationAddress))
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 
