@@ -8,6 +8,8 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
+// swiftformat:disable all
+
 /// Provides a state of `PortfolioBalanceChange` indicating the total balance change.
 public protocol PortfolioBalanceChangeProviding {
     var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> { get }
@@ -29,11 +31,23 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
 
     // MARK: - Private Properties
 
+    private var fiatCurrency: Observable<FiatCurrency> {
+        fiatCurrencyService.displayCurrencyPublisher.asObservable()
+    }
+
+    private var didRefresh: Observable<Void> {
+        refreshRelay
+            .debounce(
+                .milliseconds(500),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated)
+            )
+    }
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
-                refreshRelay
+                fiatCurrency,
+                didRefresh
             )
             .map(\.0)
             .flatMapLatest { [coincore] fiatCurrency in

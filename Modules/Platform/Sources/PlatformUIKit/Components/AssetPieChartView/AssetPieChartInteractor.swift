@@ -5,6 +5,8 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
+// swiftformat:disable all
+
 public final class AssetPieChartInteractor: AssetPieChartInteracting {
 
     // MARK: - Properties
@@ -16,11 +18,23 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
 
     // MARK: - Private Accessors
 
+    private var fiatCurrency: Observable<FiatCurrency> {
+        fiatCurrencyService.displayCurrencyPublisher.asObservable()
+    }
+
+    private var didRefresh: Observable<Void> {
+        refreshRelay
+            .debounce(
+                .milliseconds(500),
+                scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated)
+            )
+    }
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
-                refreshRelay.asObservable()
+                fiatCurrency,
+                didRefresh
             )
             .map(\.0)
             .flatMapLatest { [coincore] fiatCurrency -> Observable<AssetPieChart.State.Interaction> in

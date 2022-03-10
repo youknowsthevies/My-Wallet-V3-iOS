@@ -6,6 +6,8 @@ import MoneyKit
 import RxSwift
 import ToolKit
 
+// swiftformat:disable all
+
 /// An account group error.
 public enum AccountGroupError: Error {
 
@@ -69,9 +71,10 @@ extension AccountGroup {
                     }
                     .zip()
             }
-            .merge()
-            .tryMap { balances -> MoneyValue in
-                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            .zip()
+            .tryMap { (balances: [[MoneyValue]]) -> MoneyValue in
+                try balances.flatMap { $0 }
+                .reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
             .eraseToAnyPublisher()
     }
@@ -92,9 +95,10 @@ extension AccountGroup {
                     }
                     .zip()
             }
-            .merge()
-            .tryMap { balancePairs in
-                try balancePairs.reduce(
+            .zip()
+            .tryMap { (balancePairs: [[MoneyValuePair]]) in
+                try balancePairs.flatMap { $0 }
+                .reduce(
                     .zero(
                         baseCurrency: currencyType,
                         quoteCurrency: fiatCurrency.currencyType

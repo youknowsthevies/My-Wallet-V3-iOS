@@ -16,7 +16,7 @@ final class TransactionModel {
 
     private var mviModel: MviModel<TransactionState, TransactionAction>!
     private let interactor: TransactionInteractor
-    private var hasInitializedTransaction: Bool = false
+    private var hasInitializedTransaction = false
 
     // MARK: - Public Properties
 
@@ -233,7 +233,8 @@ final class TransactionModel {
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .performSecurityChecksForTransaction:
             return nil
-        case .securityChecksCompleted:
+        case .securityChecksCompleted,
+             .startPollingOrderStatus:
             guard let order = previousState.order else {
                 return perform(
                     previousState: previousState,
@@ -393,8 +394,10 @@ final class TransactionModel {
                     switch result {
                     case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                         self?.process(action: .performSecurityChecksForTransaction(result))
-                    default:
-                        self?.process(action: .updateTransactionComplete)
+                    case .unHashed,
+                         .signed,
+                         .hashed:
+                        self?.process(action: .startPollingOrderStatus)
                     }
                 },
                 onFailure: { [weak self] error in

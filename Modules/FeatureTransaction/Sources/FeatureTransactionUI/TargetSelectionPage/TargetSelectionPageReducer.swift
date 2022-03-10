@@ -12,7 +12,9 @@ import ToolKit
 protocol TargetSelectionPageReducerAPI {
     /// Provides a stream of `TargetSelectionPagePresenter.State` from the given `TargetSelectionPageInteractor.State`
     /// - Parameter interactorState: A stream of `TargetSelectionPageInteractor.State` as defined by `TargetSelectionPageInteractor`
-    func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State>
+    func presentableState(
+        for interactorState: Driver<TargetSelectionPageInteractor.State>
+    ) -> Driver<TargetSelectionPagePresenter.State>
 }
 
 final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
@@ -32,7 +34,9 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
         self.featureFetcher = featureFetcher
     }
 
-    func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State> {
+    func presentableState(
+        for interactorState: Driver<TargetSelectionPageInteractor.State>
+    ) -> Driver<TargetSelectionPagePresenter.State> {
         let action = action
         let sourceSection = interactorState
             .compactMap(\.sourceInteractor)
@@ -74,7 +78,12 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
                 let section = TargetSelectionPageSectionModel.destination(
                     header: header,
-                    items: [.init(interactor: item, assetAction: action)]
+                    items: [
+                        TargetSelectionPageCellItem(interactor: item, assetAction: action),
+                        TargetSelectionPageCellItem(
+                            cardView: .sendToDomains
+                        )
+                    ]
                 )
                 return [section]
             }

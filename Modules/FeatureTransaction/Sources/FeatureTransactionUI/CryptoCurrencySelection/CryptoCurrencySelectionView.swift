@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-typealias LocalizedStrings = LocalizationConstants.CryptoCurrencySelection
+private typealias LocalizedStrings = LocalizationConstants.CryptoCurrencySelection
 
 public struct CryptoCurrencySelectionState: Equatable {
     public init(
