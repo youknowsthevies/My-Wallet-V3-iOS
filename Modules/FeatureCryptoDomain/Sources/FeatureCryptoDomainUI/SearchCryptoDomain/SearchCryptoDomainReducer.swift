@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
@@ -36,13 +37,14 @@ enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
     case onAppear
-    case searchDomains
+    case searchDomains(key: String)
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
     case selectPremiumDomain(SearchDomainResult)
     case didSelectPremiumDomain(Result<OrderDomainResult, OrderDomainRepositoryError>)
     case openPremiumDomainLink(URL)
     case checkoutAction(DomainCheckoutAction)
+    case noop
 }
 
 // MARK: - Properties
@@ -93,15 +95,18 @@ struct SearchCryptoDomainEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
+    let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         searchDomainRepository: SearchDomainRepositoryAPI,
-        orderDomainRepository: OrderDomainRepositoryAPI
+        orderDomainRepository: OrderDomainRepositoryAPI,
+        userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
+        self.userInfoProvider = userInfoProvider
     }
 }
 
@@ -114,7 +119,8 @@ let searchCryptoDomainReducer = Reducer.combine(
             environment: {
                 DomainCheckoutEnvironment(
                     mainQueue: $0.mainQueue,
-                    orderDomainRepository: $0.orderDomainRepository
+                    orderDomainRepository: $0.orderDomainRepository,
+                    userInfoProvider: $0.userInfoProvider
                 )
             }
         ),
@@ -128,7 +134,7 @@ let searchCryptoDomainReducer = Reducer.combine(
             state.isSearchTextValid = state.searchText.range(
                 of: TextRegex.noSpecialCharacters.rawValue, options: .regularExpression
             ) != nil || state.searchText.isEmpty
-            return state.isSearchTextValid ? Effect(value: .searchDomains) : .none
+            return state.isSearchTextValid ? Effect(value: .searchDomains(key: state.searchText)) : .none
 
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
             state.selectedPremiumDomain = nil
@@ -138,13 +144,23 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .onAppear:
-            return .none
+            return environment
+                .userInfoProvider()
+                .compactMap(\.nabuUserName)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result in
+                    if case .success(let username) = result {
+                        return .searchDomains(key: username)
+                    }
+                    return .noop
+                }
 
-        case .searchDomains:
+        case .searchDomains(let key):
             state.isSearchResultsLoading = true
             return environment
                 .searchDomainRepository
-                .searchResults(searchKey: state.searchText)
+                .searchResults(searchKey: key)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .debounce(
@@ -241,8 +257,12 @@ let searchCryptoDomainReducer = Reducer.combine(
 
         case .checkoutAction:
             return .none
+
+        case .noop:
+            return .none
         }
     }
+    .debug()
     .routing()
     .binding()
 )

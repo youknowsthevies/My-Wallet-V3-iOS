@@ -32,7 +32,7 @@ struct DomainCheckoutConfirmationView: View {
             .accessibility(identifier: Accessibility.learnMoreButton)
             Spacer()
             PrimaryButton(title: LocalizedString.okayButton) {
-                // TODO: okay action
+                // TODO: dismiss view
             }
             .accessibility(identifier: Accessibility.okayButton)
         }

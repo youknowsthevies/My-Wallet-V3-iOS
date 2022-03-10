@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
@@ -45,6 +46,7 @@ struct ClaimIntroductionEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
+    let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 }
 
 let claimIntroductionReducer = Reducer.combine(
@@ -57,7 +59,8 @@ let claimIntroductionReducer = Reducer.combine(
                 SearchCryptoDomainEnvironment(
                     mainQueue: $0.mainQueue,
                     searchDomainRepository: $0.searchDomainRepository,
-                    orderDomainRepository: $0.orderDomainRepository
+                    orderDomainRepository: $0.orderDomainRepository,
+                    userInfoProvider: $0.userInfoProvider
                 )
             }
         ),
@@ -89,15 +92,18 @@ public final class ClaimIntroductionHositingController: UIViewController {
     private let searchDomainRepository: SearchDomainRepositoryAPI
     private let orderDomainRepository: OrderDomainRepositoryAPI
     private let contentView: UIHostingController<ClaimIntroductionView>
+    private let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         searchDomainRepository: SearchDomainRepositoryAPI,
-        orderDomainRepository: OrderDomainRepositoryAPI
+        orderDomainRepository: OrderDomainRepositoryAPI,
+        userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
+        self.userInfoProvider = userInfoProvider
         contentView = UIHostingController(
             rootView: ClaimIntroductionView(
                 store: .init(
@@ -106,7 +112,8 @@ public final class ClaimIntroductionHositingController: UIViewController {
                     environment: .init(
                         mainQueue: mainQueue,
                         searchDomainRepository: searchDomainRepository,
-                        orderDomainRepository: orderDomainRepository
+                        orderDomainRepository: orderDomainRepository,
+                        userInfoProvider: userInfoProvider
                     )
                 )
             )
@@ -248,7 +255,8 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                     ),
                     orderDomainRepository: OrderDomainRepository(
                         apiClient: OrderDomainClient.mock
-                    )
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )

@@ -151,7 +151,8 @@ struct DomainCheckView_Previews: PreviewProvider {
                     mainQueue: .main,
                     orderDomainRepository: OrderDomainRepository(
                         apiClient: OrderDomainClient.mock
-                    )
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )

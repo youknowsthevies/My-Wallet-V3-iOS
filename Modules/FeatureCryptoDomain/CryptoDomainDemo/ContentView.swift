@@ -28,7 +28,8 @@ struct ContentView: View {
                         ),
                         orderDomainRepository: OrderDomainRepository(
                             apiClient: OrderDomainClient.mock
-                        )
+                        ),
+                        userInfoProvider: { .empty() }
                     )
                 )
             )

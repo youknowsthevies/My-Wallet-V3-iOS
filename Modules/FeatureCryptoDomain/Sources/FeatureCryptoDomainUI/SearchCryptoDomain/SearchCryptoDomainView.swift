@@ -164,7 +164,8 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                     ),
                     orderDomainRepository: OrderDomainRepository(
                         apiClient: OrderDomainClient.mock
-                    )
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )

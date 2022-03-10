@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
@@ -51,6 +52,7 @@ struct DomainCheckoutState: Equatable, NavigationState {
 struct DomainCheckoutEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let orderDomainRepository: OrderDomainRepositoryAPI
+    let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 }
 
 let domainCheckoutReducer = Reducer<
@@ -79,13 +81,18 @@ let domainCheckoutReducer = Reducer<
             return .none
         }
         return environment
-            .orderDomainRepository
-            .createDomainOrder(
-                isFree: true,
-                domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                walletAddress: "0xEA5BEEe527B6836E355A8f05835A86Fc003E6e73",
-                nabuUserId: "0xEA5BEEe527B6836E355A8f05835A86Fc003E6e73"
-            )
+            .userInfoProvider()
+            .ignoreFailure(setFailureType: OrderDomainRepositoryError.self)
+            .map { userInfo in
+                environment
+                    .orderDomainRepository
+                    .createDomainOrder(
+                        isFree: true,
+                        domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
+                        walletAddress: userInfo.ethereumAddress,
+                        nabuUserId: userInfo.nabuUserId
+                    )
+            }
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .map { result in
@@ -110,5 +117,6 @@ let domainCheckoutReducer = Reducer<
         return .none
     }
 }
+.debug()
 .binding()
 .routing()
