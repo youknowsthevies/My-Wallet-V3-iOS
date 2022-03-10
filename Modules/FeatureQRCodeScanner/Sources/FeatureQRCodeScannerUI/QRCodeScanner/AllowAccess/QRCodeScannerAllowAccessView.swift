@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import Combine
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -28,7 +29,7 @@ struct QRCodeScannerAllowAccessView: View {
                     }
                 }
                 scannerHeader
-                scannerList
+                scannerList(viewStore: viewStore)
                 if !viewStore.informationalOnly {
                     Spacer()
                     PrimaryButton(title: LocalizedString.buttonTitle) {
@@ -38,6 +39,9 @@ struct QRCodeScannerAllowAccessView: View {
                     .padding([.top, .bottom], Spacing.padding2)
                     .accessibility(identifier: Accessibility.ctaButton)
                 }
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
             }
             .gesture(
                 DragGesture(minimumDistance: 20, coordinateSpace: .global)
@@ -60,7 +64,7 @@ struct QRCodeScannerAllowAccessView: View {
         }
     }
 
-    private var scannerList: some View {
+    private func scannerList(viewStore: ViewStore<AllowAccessState, AllowAccessAction>) -> some View {
         VStack(alignment: .center, spacing: 0) {
             PrimaryRow(
                 title: LocalizedString.ScanQRPoint.title,
@@ -82,18 +86,20 @@ struct QRCodeScannerAllowAccessView: View {
                 },
                 trailing: { EmptyView() }
             )
-            PrimaryRow(
-                title: LocalizedString.ConnectToDapps.title,
-                subtitle: LocalizedString.ConnectToDapps.description,
-                leading: {
-                    Image("WalletConnect", bundle: .featureQRCodeScannerUI)
-                        .renderingMode(.template)
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(.semantic.primary)
-                },
-                trailing: { EmptyView() },
-                action: {}
-            )
+            if viewStore.showWalletConnectRow {
+                PrimaryRow(
+                    title: LocalizedString.ConnectToDapps.title,
+                    subtitle: LocalizedString.ConnectToDapps.description,
+                    leading: {
+                        Image("WalletConnect", bundle: .featureQRCodeScannerUI)
+                            .renderingMode(.template)
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(.semantic.primary)
+                    },
+                    trailing: { EmptyView() },
+                    action: {}
+                )
+            }
         }
         .accessibility(identifier: Accessibility.scannerList)
     }
@@ -125,14 +131,16 @@ struct QRCodeScannerAllowAccessView_Previews: PreviewProvider {
         QRCodeScannerAllowAccessView(
             store: .init(
                 initialState: AllowAccessState(
-                    informationalOnly: false
+                    informationalOnly: false,
+                    showWalletConnectRow: true
                 ),
                 reducer: qrScannerAllowAccessReducer,
                 environment: AllowAccessEnvironment(
                     allowCameraAccess: {},
                     cameraAccessDenied: { false },
                     dismiss: {},
-                    showCameraDeniedAlert: {}
+                    showCameraDeniedAlert: {},
+                    showsWalletConnectRow: { .just(true) }
                 )
             )
         )
