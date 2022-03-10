@@ -262,7 +262,6 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
         }
     }
-    .debug()
     .routing()
     .binding()
 )

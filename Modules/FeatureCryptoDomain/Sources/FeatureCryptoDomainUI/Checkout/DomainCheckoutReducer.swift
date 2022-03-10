@@ -117,6 +117,5 @@ let domainCheckoutReducer = Reducer<
         return .none
     }
 }
-.debug()
 .binding()
 .routing()
