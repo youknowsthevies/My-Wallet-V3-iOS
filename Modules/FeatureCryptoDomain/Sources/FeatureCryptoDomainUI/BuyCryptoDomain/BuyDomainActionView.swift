@@ -26,8 +26,8 @@ struct BuyDomainActionView: View {
                     .typography(.paragraph1)
                     .fixedSize(horizontal: false, vertical: true)
                     .foregroundColor(.semantic.overlay)
+                    .padding(.bottom, Spacing.padding3)
                     .accessibility(identifier: Accessibilty.buyDescription)
-                Spacer()
                 PrimaryButton(
                     title: LocalizedString.Button.buyDomain,
                     leadingView: {
