@@ -315,13 +315,21 @@ public final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc
         public var custodySendInterstitialViewed: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
+            }
+        }
+
+        public var sendToDomainAnnouncementViewed: Bool {
+            get {
+                defaults.bool(forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
+            }
+            set {
+                defaults.set(newValue, forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
             }
         }
 
@@ -363,9 +371,8 @@ public final class BlockchainSettings: NSObject {
          This function will not reset any settings which are derived from wallet options.
          */
         public func reset() {
-            // TICKET: IOS-1365 - Finish UserDefaults refactor (tickets, documentation, linter issues)
-            // TODO: - reset all appropriate settings upon logging out
             clearPin()
+            sendToDomainAnnouncementViewed = false
             custodySendInterstitialViewed = false
             didTapOnAirdropDeepLink = false
             didTapOnExchangeDeepLink = false

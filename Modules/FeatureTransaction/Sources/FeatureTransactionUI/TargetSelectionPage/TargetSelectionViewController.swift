@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftformat:disable all
+
 import BlockchainComponentLibrary
 import PlatformUIKit
 import RIBs
@@ -214,7 +216,8 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         let cell = tableView.dequeue(HostingTableViewCell<AlertCard>.self, for: indexPath)
         let alertCard = AlertCard(
             title: model.title,
-            message: model.subtitle
+            message: model.subtitle,
+            onCloseTapped: model.didClose
         )
         cell.host(
             alertCard,

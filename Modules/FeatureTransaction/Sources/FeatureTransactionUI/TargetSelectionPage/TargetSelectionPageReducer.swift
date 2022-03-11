@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -19,19 +20,44 @@ protocol TargetSelectionPageReducerAPI {
 
 final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
 
+    // MARK: - Types
+
+    private enum Constant {
+        static let sendToDomainAnnouncementViewed = "sendToDomainAnnouncementViewed"
+    }
+
     private typealias LocalizationIds = LocalizationConstants.Transaction.TargetSource
+
+    // MARK: - Private Properties
+
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
-    private let featureFetcher: FeatureFetching
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let cacheSuite: CacheSuite
+    private let didCloseSendToDomainsAnnouncement = CurrentValueSubject<Void, Never>(())
+
+    private var shouldShowSendToDomainsAnnouncement: AnyPublisher<Bool, Never> {
+        didCloseSendToDomainsAnnouncement
+            .eraseToAnyPublisher()
+            .flatMap { [cacheSuite, featureFlagsService] _ -> AnyPublisher<Bool, Never> in
+                guard !cacheSuite.bool(forKey: Constant.sendToDomainAnnouncementViewed) else {
+                    return .just(false)
+                }
+                return featureFlagsService.isEnabled(.remote(.sendToDomainsAnnouncement))
+            }
+            .eraseToAnyPublisher()
+    }
 
     init(
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
-        featureFetcher: FeatureFetching = resolve()
+        cacheSuite: CacheSuite,
+        featureFlagsService: FeatureFlagsServiceAPI
     ) {
         self.action = action
         self.navigationModel = navigationModel
-        self.featureFetcher = featureFetcher
+        self.featureFlagsService = featureFlagsService
+        self.cacheSuite = cacheSuite
     }
 
     func presentableState(
@@ -66,24 +92,40 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 strategy.sections(interactors: items, action: action)
             }
 
-        let inputFieldSection = interactorState
-            .map(\.inputFieldInteractor)
-            .distinctUntilChanged()
-            .map { item -> [TargetSelectionPageSectionModel] in
+        let cacheSuite = cacheSuite
+        let didCloseSendToDomainsAnnouncement = didCloseSendToDomainsAnnouncement
+        let inputFieldSection = Driver
+            .combineLatest(
+                interactorState
+                    .map(\.inputFieldInteractor)
+                    .distinctUntilChanged(),
+                shouldShowSendToDomainsAnnouncement
+                    .asObservable()
+                    .asDriver(onErrorJustReturn: false)
+            )
+            .map { item, sendToDomainsAnnouncement -> [TargetSelectionPageSectionModel] in
                 guard let item = item else {
                     return []
                 }
                 let header = TargetSelectionHeaderBuilder(
                     headerType: .section(.init(sectionTitle: LocalizationConstants.Transaction.to))
                 )
+                var items = [
+                    TargetSelectionPageCellItem(interactor: item, assetAction: action)
+                ]
+                if sendToDomainsAnnouncement {
+                    items.append(TargetSelectionPageCellItem(
+                        cardView: .sendToDomains(
+                            didClose: {
+                                cacheSuite.set(true, forKey: Constant.sendToDomainAnnouncementViewed)
+                                didCloseSendToDomainsAnnouncement.send(())
+                            }
+                        )
+                    ))
+                }
                 let section = TargetSelectionPageSectionModel.destination(
                     header: header,
-                    items: [
-                        TargetSelectionPageCellItem(interactor: item, assetAction: action),
-                        TargetSelectionPageCellItem(
-                            cardView: .sendToDomains
-                        )
-                    ]
+                    items: items
                 )
                 return [section]
             }
