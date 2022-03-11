@@ -9,12 +9,20 @@ struct TargetSelectionCardModel: Equatable {
     let identifier: String
     let title: String
     let subtitle: String
+    let didClose: () -> Void
 
-    static var sendToDomains: TargetSelectionCardModel {
+    static func sendToDomains(didClose: @escaping () -> Void) -> TargetSelectionCardModel {
         TargetSelectionCardModel(
             identifier: "transaction-flow.target.domain-card",
             title: LocalizedString.title,
-            subtitle: LocalizedString.subtitle
+            subtitle: LocalizedString.subtitle,
+            didClose: didClose
         )
+    }
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.identifier == rhs.identifier
+            && lhs.title == rhs.title
+            && lhs.subtitle == rhs.subtitle
     }
 }
