@@ -137,7 +137,13 @@ public final class ClaimIntroductionHositingController: UIViewController {
         contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 
-    override public func viewDidLayoutSubviews() {
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+
+    public override func viewDidLayoutSubviews() {
         navigationController?.isNavigationBarHidden = true
     }
 }

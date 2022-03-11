@@ -5,10 +5,7 @@ import CryptoKit
 extension String {
 
     public var sha256: String {
-        guard let data = data(using: .utf8) else {
-            fatalError("Could not instantiate Data from String: \(self)")
-        }
-        return digestCryptoHex(input: data)
+        digestCryptoHex(input: Data(utf8))
     }
 
     private func digestCryptoHex(input: Data) -> String {
