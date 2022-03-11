@@ -3,7 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import NabuNetworkError
 
 /// Used to execute the order once created

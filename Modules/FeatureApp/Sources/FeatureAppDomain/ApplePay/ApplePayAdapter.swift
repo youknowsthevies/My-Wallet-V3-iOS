@@ -1,5 +1,5 @@
 import Combine
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import PassKit
 import PlatformKit
 import ToolKit

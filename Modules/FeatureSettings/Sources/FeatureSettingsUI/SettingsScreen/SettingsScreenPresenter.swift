@@ -89,8 +89,8 @@ public final class SettingsScreenPresenter {
             tiersLimitsProvider: interactor.tiersProviding,
             emailVerificationInteractor: interactor.emailVerificationBadgeInteractor,
             mobileVerificationInteractor: interactor.mobileVerificationBadgeInteractor,
-            cardIssuanceInteractor: interactor.cardIssuanceBadgeInteractor,
-            featureFlagsService: interactor.featureFlagsService
+            cardIssuingInteractor: interactor.cardIssuingBadgeInteractor,
+            cardIssuingAdapter: interactor.cardIssuingAdapter
         )
 
         preferencesSectionPresenter = .init(

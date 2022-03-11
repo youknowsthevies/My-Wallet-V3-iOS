@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import RxSwift
 import RxToolKit
 import ToolKit

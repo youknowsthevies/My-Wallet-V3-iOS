@@ -4,7 +4,7 @@ import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization

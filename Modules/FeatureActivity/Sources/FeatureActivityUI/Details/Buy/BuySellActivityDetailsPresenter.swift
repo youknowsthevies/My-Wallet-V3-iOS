@@ -2,7 +2,7 @@
 
 import AnalyticsKit
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import Localization
 import MoneyKit
 import PlatformKit
