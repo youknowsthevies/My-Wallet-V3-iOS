@@ -10,16 +10,18 @@ import SwiftUI
 import ToolKit
 
 enum DomainCheckoutRoute: NavigationRoute {
-    case confirmation
+    case confirmation(DomainCheckoutConfirmationStatus)
 
     @ViewBuilder
     func destination(in store: Store<DomainCheckoutState, DomainCheckoutAction>) -> some View {
         let viewStore = ViewStore(store)
         switch self {
-        case .confirmation:
+        case .confirmation(let status):
             if let selectedDomain = viewStore.selectedDomains.first {
                 DomainCheckoutConfirmationView(
-                    domain: selectedDomain
+                    status: status,
+                    domain: selectedDomain,
+                    completion: { viewStore.send(.dismissFlow) }
                 )
             }
         }
@@ -33,12 +35,14 @@ enum DomainCheckoutAction: Equatable, NavigationAction, BindableAction {
     case claimDomain
     case didClaimDomain(Result<EmptyValue, OrderDomainRepositoryError>)
     case returnToBrowseDomains
+    case dismissFlow
 }
 
 struct DomainCheckoutState: Equatable, NavigationState {
     @BindableState var termsSwitchIsOn: Bool = false
     @BindableState var isRemoveBottomSheetShown: Bool = false
     @BindableState var removeCandidate: SearchDomainResult?
+    var isLoading: Bool = false
     var selectedDomains: OrderedSet<SearchDomainResult>
     var route: RouteIntent<DomainCheckoutRoute>?
 
@@ -80,6 +84,7 @@ let domainCheckoutReducer = Reducer<
         guard let domain = state.selectedDomains.first else {
             return .none
         }
+        state.isLoading = true
         return environment
             .userInfoProvider()
             .ignoreFailure(setFailureType: OrderDomainRepositoryError.self)
@@ -105,15 +110,18 @@ let domainCheckoutReducer = Reducer<
             }
 
     case .didClaimDomain(let result):
+        state.isLoading = false
         switch result {
         case .success:
-            return .navigate(to: .confirmation)
+            return .navigate(to: .confirmation(.success))
         case .failure(let error):
-            print(error.localizedDescription)
-            return .none
+            return .navigate(to: .confirmation(.error))
         }
 
     case .returnToBrowseDomains:
+        return .none
+
+    case .dismissFlow:
         return .none
     }
 }

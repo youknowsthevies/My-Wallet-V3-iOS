@@ -40,6 +40,7 @@ enum ClaimIntroductionAction: NavigationAction {
 struct ClaimIntroductionState: NavigationState {
     var route: RouteIntent<ClaimIntroductionRoute>?
     var searchState: SearchCryptoDomainState?
+    var isModalOpen: Bool = true
 }
 
 struct ClaimIntroductionEnvironment {
@@ -77,6 +78,9 @@ let claimIntroductionReducer = Reducer.combine(
                 }
             }
             return .none
+        case .searchAction(.checkoutAction(.dismissFlow)):
+            state.isModalOpen = false
+            return .none
         case .searchAction:
             return .none
         }
@@ -88,11 +92,17 @@ let claimIntroductionReducer = Reducer.combine(
 
 public final class ClaimIntroductionHositingController: UIViewController {
 
+    private let store: Store<ClaimIntroductionState, ClaimIntroductionAction>
+    private let viewStore: ViewStore<ClaimIntroductionState, ClaimIntroductionAction>
+
     private let mainQueue: AnySchedulerOf<DispatchQueue>
     private let searchDomainRepository: SearchDomainRepositoryAPI
     private let orderDomainRepository: OrderDomainRepositoryAPI
-    private let contentView: UIHostingController<ClaimIntroductionView>
     private let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
+
+    private let contentView: UIHostingController<ClaimIntroductionView>
+
+    private var cancellables = Set<AnyCancellable>()
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -104,20 +114,18 @@ public final class ClaimIntroductionHositingController: UIViewController {
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
         self.userInfoProvider = userInfoProvider
-        contentView = UIHostingController(
-            rootView: ClaimIntroductionView(
-                store: .init(
-                    initialState: .init(),
-                    reducer: claimIntroductionReducer,
-                    environment: .init(
-                        mainQueue: mainQueue,
-                        searchDomainRepository: searchDomainRepository,
-                        orderDomainRepository: orderDomainRepository,
-                        userInfoProvider: userInfoProvider
-                    )
-                )
+        store = .init(
+            initialState: .init(),
+            reducer: claimIntroductionReducer,
+            environment: .init(
+                mainQueue: mainQueue,
+                searchDomainRepository: searchDomainRepository,
+                orderDomainRepository: orderDomainRepository,
+                userInfoProvider: userInfoProvider
             )
         )
+        viewStore = ViewStore(store)
+        contentView = UIHostingController(rootView: ClaimIntroductionView(store: store))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -135,6 +143,16 @@ public final class ClaimIntroductionHositingController: UIViewController {
         contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         contentView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+        viewStore
+            .publisher
+            .isModalOpen
+            .sink { [weak self] shouldOpen in
+                if !shouldOpen {
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            }
+            .store(in: &cancellables)
     }
 
 

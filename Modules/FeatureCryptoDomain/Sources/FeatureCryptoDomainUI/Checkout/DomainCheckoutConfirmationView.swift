@@ -5,12 +5,30 @@ import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
 
+enum DomainCheckoutConfirmationStatus {
+    case success
+    case error
+}
+
 struct DomainCheckoutConfirmationView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.CheckoutConfirmation
     private typealias Accessibility = AccessibilityIdentifiers.CheckoutConfirmation
 
-    var domain: SearchDomainResult
+    private let status: DomainCheckoutConfirmationStatus
+    private let domain: SearchDomainResult
+    private let completion: () -> Void
+    @Environment(\.presentationMode) private var presentationMode
+
+    init(
+        status: DomainCheckoutConfirmationStatus,
+        domain: SearchDomainResult,
+        completion: @escaping () -> Void
+    ) {
+        self.status = status
+        self.domain = domain
+        self.completion = completion
+    }
 
     var body: some View {
         VStack(spacing: Spacing.padding3) {
@@ -19,20 +37,27 @@ struct DomainCheckoutConfirmationView: View {
                 .frame(width: 54, height: 54)
                 .accentColor(.semantic.primary)
                 .accessibility(identifier: Accessibility.icon)
-            Text(String(format: LocalizedString.title, domain.domainName))
+            Text(String(format: title, domain.domainName))
                 .typography(.title3)
                 .accessibility(identifier: Accessibility.title)
-            Text(LocalizedString.description)
+            Text(description)
                 .typography(.paragraph1)
                 .foregroundColor(.semantic.overlay)
                 .accessibility(identifier: Accessibility.description)
-            SmallMinimalButton(title: LocalizedString.learnMore) {
-                // TODO: open learn more link
+            if status == .success {
+                SmallMinimalButton(title: LocalizedString.Success.learnMore) {
+                    // TODO: open learn more link
+                }
+                .accessibility(identifier: Accessibility.learnMoreButton)
             }
-            .accessibility(identifier: Accessibility.learnMoreButton)
             Spacer()
-            PrimaryButton(title: LocalizedString.okayButton) {
-                // TODO: dismiss view
+            PrimaryButton(title: buttonLabel) {
+                switch status {
+                case .success:
+                    break
+                case .error:
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
             .accessibility(identifier: Accessibility.okayButton)
         }
@@ -40,16 +65,45 @@ struct DomainCheckoutConfirmationView: View {
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], Spacing.padding3)
     }
+
+    private var title: String {
+        switch status {
+        case .success:
+            return LocalizedString.Success.title
+        case .error:
+            return LocalizedString.Error.title
+        }
+    }
+
+    private var description: String {
+        switch status {
+        case .success:
+            return LocalizedString.Success.description
+        case .error:
+            return LocalizedString.Error.description
+        }
+    }
+
+    private var buttonLabel: String {
+        switch status {
+        case .success:
+            return LocalizedString.Success.okayButton
+        case .error:
+            return LocalizedString.Error.tryAgainButton
+        }
+    }
 }
 
 struct DomainCheckoutConfirmationView_Previews: PreviewProvider {
     static var previews: some View {
         DomainCheckoutConfirmationView(
+            status: .success,
             domain: SearchDomainResult(
                 domainName: "example.blockchain",
                 domainType: .free,
                 domainAvailability: .availableForFree
-            )
+            ),
+            completion: {}
         )
     }
 }

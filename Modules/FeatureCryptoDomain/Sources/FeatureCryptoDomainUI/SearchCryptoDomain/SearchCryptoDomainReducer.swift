@@ -144,6 +144,9 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .onAppear:
+            if !state.searchText.isEmpty {
+                return Effect(value: .searchDomains(key: state.searchText))
+            }
             return environment
                 .userInfoProvider()
                 .compactMap(\.nabuUserName)

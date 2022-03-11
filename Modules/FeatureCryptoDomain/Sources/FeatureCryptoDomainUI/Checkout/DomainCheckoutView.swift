@@ -45,7 +45,10 @@ struct DomainCheckoutView: View {
                         .padding(.top, Spacing.padding3)
                     Spacer()
                     termsRow
-                    PrimaryButton(title: LocalizedString.button) {
+                    PrimaryButton(
+                        title: LocalizedString.button,
+                        isLoading: viewStore.isLoading
+                    ) {
                         viewStore.send(.claimDomain)
                     }
                     .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
