@@ -28,9 +28,16 @@ enum SearchCryptoDomainRoute: NavigationRoute {
     }
 }
 
+enum SearchCryptoDomainId {
+    struct SearchDebounceId: Hashable {}
+}
+
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
+    case onAppear
+    case searchDomains
+    case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
     case selectPremiumDomain(SearchDomainResult)
     case openPremiumDomainLink(URL)
@@ -43,11 +50,11 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 
     @BindableState var searchText: String
     @BindableState var isSearchFieldSelected: Bool
+    @BindableState var isSearchTextValid: Bool
     @BindableState var isAlertCardShown: Bool
     @BindableState var isPremiumDomainBottomSheetShown: Bool
     @BindableState var selectedPremiumDomain: SearchDomainResult?
     var searchResults: [SearchDomainResult]
-    var filteredSearchResults: [SearchDomainResult]
     var selectedDomains: OrderedSet<SearchDomainResult>
     var route: RouteIntent<SearchCryptoDomainRoute>?
     var checkoutState: DomainCheckoutState?
@@ -55,6 +62,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     init(
         searchText: String = "",
         isSearchFieldSelected: Bool = false,
+        isSearchTextValid: Bool = true,
         isAlertCardShown: Bool = true,
         isPremiumDomainBottomSheetShown: Bool = false,
         selectedPremiumDomain: SearchDomainResult? = nil,
@@ -64,11 +72,11 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     ) {
         self.searchText = searchText
         self.isSearchFieldSelected = isSearchFieldSelected
+        self.isSearchTextValid = isSearchTextValid
         self.isAlertCardShown = isAlertCardShown
         self.isPremiumDomainBottomSheetShown = isPremiumDomainBottomSheetShown
         self.selectedPremiumDomain = selectedPremiumDomain
         self.searchResults = searchResults
-        filteredSearchResults = searchResults
         selectedDomains = OrderedSet([])
         self.route = route
         self.checkoutState = checkoutState
@@ -78,9 +86,14 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let searchDomainRepository: SearchDomainRepositoryAPI
 
-    init(mainQueue: AnySchedulerOf<DispatchQueue>) {
+    init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        searchDomainRepository: SearchDomainRepositoryAPI
+    ) {
         self.mainQueue = mainQueue
+        self.searchDomainRepository = searchDomainRepository
     }
 }
 
@@ -96,8 +109,14 @@ let searchCryptoDomainReducer = Reducer.combine(
         SearchCryptoDomainState,
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
-    > { state, action, _ in
+    > { state, action, environment in
         switch action {
+        case .binding(\.$searchText):
+            state.isSearchTextValid = state.searchText.range(
+                of: TextRegex.noSpecialCharacters.rawValue, options: .regularExpression
+            ) != nil || state.searchText.isEmpty
+            return state.isSearchTextValid ? Effect(value: .searchDomains) : .none
+
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
             state.selectedPremiumDomain = nil
             return .none
@@ -105,12 +124,47 @@ let searchCryptoDomainReducer = Reducer.combine(
         case .binding:
             return .none
 
+        case .onAppear:
+            return .none
+
+        case .searchDomains:
+            return environment
+                .searchDomainRepository
+                .searchResults(searchKey: state.searchText)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .debounce(
+                    id: SearchCryptoDomainId.SearchDebounceId(),
+                    for: .milliseconds(500),
+                    scheduler: environment.mainQueue
+                )
+                .map { result in
+                    .didReceiveDomainsResult(result)
+                }
+
+        case .didReceiveDomainsResult(let result):
+            switch result {
+            case .success(let searchedDomains):
+                state.searchResults = searchedDomains
+            case .failure(let error):
+                print(error)
+            }
+            return .none
+
         case .selectFreeDomain(let domain):
+            guard domain.domainType == .free,
+                  domain.domainAvailability == .availableForFree
+            else {
+                return .none
+            }
             state.selectedDomains.removeAll()
             state.selectedDomains.append(domain)
             return Effect(value: .navigate(to: .checkout))
 
         case .selectPremiumDomain(let domain):
+            guard domain.domainType == .premium else {
+                return .none
+            }
             state.selectedPremiumDomain = domain
             return Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true))
 

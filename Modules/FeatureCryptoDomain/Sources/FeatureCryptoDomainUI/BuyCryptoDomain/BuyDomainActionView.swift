@@ -33,8 +33,8 @@ struct BuyDomainActionView: View {
                         .frame(width: 24, height: 24)
                 },
                 action: {
-                    if case .premium(let url) = domain?.domainType {
-                        openURL(url) { _ in
+                    if domain?.domainType == .premium {
+                        openURL("https://www.blockchain.com") { _ in
                             isShown.toggle()
                         }
                     }
