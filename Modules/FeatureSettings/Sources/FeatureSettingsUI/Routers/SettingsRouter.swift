@@ -4,7 +4,8 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureCardsDomain
+import FeatureCardIssuingDomain
+import FeatureCardPaymentDomain
 import FeatureSettingsDomain
 import Localization
 import MoneyKit
@@ -53,13 +54,9 @@ final class SettingsRouter: SettingsRouterAPI {
 
     // MARK: - Routers
 
-    private lazy var updateMobileRouter: UpdateMobileRouter = {
-        UpdateMobileRouter(navigationRouter: navigationRouter)
-    }()
+    private lazy var updateMobileRouter = UpdateMobileRouter(navigationRouter: navigationRouter)
 
-    private lazy var backupRouterAPI: BackupFundsRouterAPI = {
-        BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
-    }()
+    private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
 
     // MARK: - Private
 
@@ -78,7 +75,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let pitConnectionAPI: PITConnectionStatusProviding
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
     private let externalActionsProvider: ExternalActionsProviderAPI
 
     private let kycRouter: KYCRouterAPI
@@ -115,7 +111,6 @@ final class SettingsRouter: SettingsRouterAPI {
         repository: DataRepositoryAPI = resolve(),
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve()
     ) {
         self.wallet = wallet
@@ -135,7 +130,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.repository = repository
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
-        self.featureFlagsService = featureFlagsService
         self.externalActionsProvider = externalActionsProvider
 
         previousRelay
@@ -327,14 +321,14 @@ final class SettingsRouter: SettingsRouterAPI {
             externalActionsProvider.handleSupport()
         case .showWebLogin:
             externalActionsProvider.handleSecureChannel()
-        case .showCardIssuance:
-            showCardIssuanceFlow()
+        case .showCardIssuing:
+            showCardIssuingFlow()
         case .none:
             break
         }
     }
 
-    private func showCardIssuanceFlow() {}
+    private func showCardIssuingFlow() {}
 
     private func showCardLinkingFlow() {
         let presenter = topViewController
@@ -400,7 +394,5 @@ final class SettingsRouter: SettingsRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting()
-    }()
+    private lazy var sheetPresenter = BottomSheetPresenting()
 }

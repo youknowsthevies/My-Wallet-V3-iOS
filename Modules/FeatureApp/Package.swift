@@ -39,7 +39,7 @@ let package = Package(
         .package(path: "../WalletPayload"),
         .package(path: "../RemoteNotifications"),
         .package(path: "../FeatureWithdrawalLocks"),
-        .package(path: "../FeatureCards"),
+        .package(path: "../FeatureCardPayment"),
         .package(path: "../FeatureQRCodeScanner"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../BlockchainNamespace"),
@@ -74,7 +74,7 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards"),
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
                 .product(name: "FeatureQRCodeScannerDomain", package: "FeatureQRCodeScanner"),
                 .product(name: "FeatureQRCodeScannerUI", package: "FeatureQRCodeScanner"),
                 .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
@@ -93,7 +93,8 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureWithdrawalLocksData", package: "FeatureWithdrawalLocks"),
-                .product(name: "FeatureWithdrawalLocksDomain", package: "FeatureWithdrawalLocks")
+                .product(name: "FeatureWithdrawalLocksDomain", package: "FeatureWithdrawalLocks"),
+                .product(name: "FeatureSettingsDomain", package: "FeatureSettings")
             ]
         )
     ]

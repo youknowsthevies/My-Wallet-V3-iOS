@@ -39,8 +39,8 @@ enum DomainCheckoutAction: Equatable, NavigationAction, BindableAction {
 }
 
 struct DomainCheckoutState: Equatable, NavigationState {
-    @BindableState var termsSwitchIsOn: Bool = false
-    @BindableState var isRemoveBottomSheetShown: Bool = false
+    @BindableState var termsSwitchIsOn = false
+    @BindableState var isRemoveBottomSheetShown = false
     @BindableState var removeCandidate: SearchDomainResult?
     var isLoading: Bool = false
     var selectedDomains: OrderedSet<SearchDomainResult>

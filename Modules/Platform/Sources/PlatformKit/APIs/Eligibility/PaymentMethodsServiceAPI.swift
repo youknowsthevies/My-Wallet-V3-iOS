@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import MoneyKit
 import RxSwift
 

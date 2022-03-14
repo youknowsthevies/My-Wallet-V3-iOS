@@ -208,8 +208,10 @@ packages:
     path: Modules/FeatureActivity
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
-  FeatureCards:
-    path: Modules/FeatureCards
+  FeatureCardPayment:
+    path: Modules/FeatureCardPayment
+  FeatureCardIssuing:
+    path: Modules/FeatureCardIssuing
   FeatureDashboard:
     path: Modules/FeatureDashboard
   FeatureCryptoDomain:
@@ -329,7 +331,8 @@ targets:
       - package: FeatureActivity
       - package: FeatureApp
       - package: FeatureAuthentication
-      - package: FeatureCards
+      - package: FeatureCardPayment
+      - package: FeatureCardIssuing
       - package: FeatureDashboard
       - package: FeatureCryptoDomain
       - package: FeatureCoin

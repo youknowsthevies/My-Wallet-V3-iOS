@@ -33,8 +33,8 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Redesigned CoinView
     case redesignCoinView
 
-    /// Enables Card Issuance
-    case cardIssuance
+    /// Enables Card Issuing
+    case cardIssuing
 
     /// Enables Blockchain Domains
     case blockchainDomains
@@ -51,8 +51,8 @@ public enum InternalFeature: String, CaseIterable {
              .applePay,
              .nativeWalletCreation,
              .redesignCoinView,
-             .cardIssuance,
-             .blockchainDomains:
+             .blockchainDomains,
+             .cardIssuing:
             return false
         }
     }
@@ -85,10 +85,10 @@ extension InternalFeature {
             return "Native Wallet Creation"
         case .redesignCoinView:
             return "Redesign: CoinView"
-        case .cardIssuance:
-            return "Card Issuance"
         case .blockchainDomains:
             return "Blockchain Domains"
+        case .cardIssuing:
+            return "Card Issuing"
         }
     }
 }

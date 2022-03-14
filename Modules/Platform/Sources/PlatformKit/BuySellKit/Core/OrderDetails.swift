@@ -2,7 +2,7 @@
 
 import AnalyticsKit
 import BigInt
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import FeatureOpenBankingDomain
 import Localization
 import MoneyKit

@@ -8,11 +8,14 @@ enum AllowAccessAction: Equatable {
     case allowCameraAccess
     case dismiss
     case showCameraDeniedAlert
+    case onAppear
+    case showsWalletConnectRow(Bool)
 }
 
 struct AllowAccessState: Equatable {
     /// Hides the action button
     let informationalOnly: Bool
+    var showWalletConnectRow: Bool
 }
 
 struct AllowAccessEnvironment {
@@ -20,14 +23,22 @@ struct AllowAccessEnvironment {
     let cameraAccessDenied: () -> Bool
     let dismiss: () -> Void
     let showCameraDeniedAlert: () -> Void
+    let showsWalletConnectRow: () -> AnyPublisher<Bool, Never>
 }
 
 let qrScannerAllowAccessReducer = Reducer<
     AllowAccessState,
     AllowAccessAction,
     AllowAccessEnvironment
-> { _, action, environment in
+> { state, action, environment in
     switch action {
+    case .onAppear:
+        return environment.showsWalletConnectRow()
+            .eraseToEffect()
+            .map(AllowAccessAction.showsWalletConnectRow)
+    case .showsWalletConnectRow(let display):
+        state.showWalletConnectRow = display
+        return .none
     case .allowCameraAccess:
         guard !environment.cameraAccessDenied() else {
             return .concatenate(

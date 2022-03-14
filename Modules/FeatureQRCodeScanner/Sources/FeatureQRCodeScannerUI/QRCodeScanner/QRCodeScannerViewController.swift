@@ -120,7 +120,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         }
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "info", in: .featureQRCodeScannerUI, with: nil),
+            image: UIImage(named: "Info", in: .featureQRCodeScannerUI, with: nil),
             style: .plain,
             target: self,
             action: #selector(informationButtonClicked)
@@ -193,10 +193,16 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             },
             showCameraDeniedAlert: { [viewModel] in
                 viewModel.showCameraNotAuthorizedAlert?()
+            },
+            showsWalletConnectRow: { [viewModel] in
+                viewModel.showsWalletConnectRow()
             }
         )
         let allowAccessStore = Store(
-            initialState: AllowAccessState(informationalOnly: informationalOnly),
+            initialState: AllowAccessState(
+                informationalOnly: informationalOnly,
+                showWalletConnectRow: false
+            ),
             reducer: qrScannerAllowAccessReducer,
             environment: environment
         )

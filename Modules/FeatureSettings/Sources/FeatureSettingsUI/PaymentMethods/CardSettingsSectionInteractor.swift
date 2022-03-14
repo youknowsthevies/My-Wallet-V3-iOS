@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import FeatureSettingsDomain
 import PlatformKit
 import RxRelay
@@ -19,11 +19,9 @@ final class CardSettingsSectionInteractor {
 
     let addPaymentMethodInteractor: AddPaymentMethodInteractor
 
-    private lazy var setup: Void = {
-        cardsState
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
-    }()
+    private lazy var setup: Void = cardsState
+        .bindAndCatch(to: stateRelay)
+        .disposed(by: disposeBag)
 
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
