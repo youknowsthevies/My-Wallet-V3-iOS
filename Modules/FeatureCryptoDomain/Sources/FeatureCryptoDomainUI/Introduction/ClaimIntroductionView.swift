@@ -129,12 +129,7 @@ public final class ClaimIntroductionHositingController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override public func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(contentView.view)
         addChild(contentView)
@@ -155,7 +150,6 @@ public final class ClaimIntroductionHositingController: UIViewController {
             .store(in: &cancellables)
     }
 
-
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.isNavigationBarHidden = true
@@ -163,6 +157,10 @@ public final class ClaimIntroductionHositingController: UIViewController {
 
     public override func viewDidLayoutSubviews() {
         navigationController?.isNavigationBarHidden = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
