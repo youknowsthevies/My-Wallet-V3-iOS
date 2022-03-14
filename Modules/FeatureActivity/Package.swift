@@ -31,7 +31,7 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
-        .package(path: "../FeatureCards")
+        .package(path: "../FeatureCardPayment")
     ],
     targets: [
         .target(
@@ -70,7 +70,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureActivityDomain"),
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ]
         ),
         .testTarget(

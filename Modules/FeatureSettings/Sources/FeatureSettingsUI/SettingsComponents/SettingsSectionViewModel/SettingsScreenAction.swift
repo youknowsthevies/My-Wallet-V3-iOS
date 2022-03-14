@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import MoneyKit
 import PlatformKit
 
@@ -27,6 +27,6 @@ public enum SettingsScreenAction {
     case showAirdrops
     case showContactSupport
     case showWebLogin
-    case showCardIssuance
+    case showCardIssuing
     case none
 }

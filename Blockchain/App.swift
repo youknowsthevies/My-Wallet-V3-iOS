@@ -9,8 +9,10 @@ import ERC20DataKit
 import FeatureActivityData
 import FeatureAppDomain
 import FeatureAppUI
-import FeatureCardsData
-import FeatureCardsUI
+import FeatureCardIssuingData
+import FeatureCardIssuingDomain
+import FeatureCardPaymentData
+import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsData
@@ -136,9 +138,11 @@ func defineDependencies() {
         DependencyContainer.featureAppDomain
         DependencyContainer.withdrawalLocksData
         DependencyContainer.withdrawalLocksDomain
-        DependencyContainer.featureCardsDomain
-        DependencyContainer.featureCardsUI
-        DependencyContainer.featureCardsData
+        DependencyContainer.featureCardPaymentDomain
+        DependencyContainer.featureCardIssuingDomain
+        DependencyContainer.featureCardIssuingData
+        DependencyContainer.featureCardPaymentUI
+        DependencyContainer.featureCardPaymentData
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

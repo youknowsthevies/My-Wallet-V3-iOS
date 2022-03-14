@@ -2,7 +2,7 @@
 
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import MoneyKit
 import NetworkKit
 import ToolKit

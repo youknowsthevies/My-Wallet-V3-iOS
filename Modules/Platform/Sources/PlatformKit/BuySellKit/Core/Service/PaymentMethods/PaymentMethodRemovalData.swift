@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 
 public struct PaymentMethodRemovalData {
     public enum MethodType {

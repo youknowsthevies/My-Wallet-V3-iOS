@@ -70,6 +70,8 @@ public enum AppFeature: Int, CaseIterable {
     /// Enables the use of the hot wallet address for custodial transactions.
     case hotWalletCustodial
 
+    case sendToDomainsAnnouncement
+
     // MARK: - Account Picker
 
     /// New SwiftUI account picker from `FeatureAccountPicker`
@@ -84,9 +86,9 @@ public enum AppFeature: Int, CaseIterable {
 
     case nativeWalletCreation
 
-    // MARK: - Card Issuance
+    // MARK: - Card Issuing
 
-    case cardIssuance
+    case cardIssuing
 }
 
 extension AppFeature {
@@ -137,8 +139,10 @@ extension AppFeature {
             return "ios_ff_apple_pay"
         case .nativeWalletCreation:
             return "ios_ff_native_wallet_creation"
-        case .cardIssuance:
-            return "ios_ff_card_issuance"
+        case .cardIssuing:
+            return "ios_ff_card_issuing"
+        case .sendToDomainsAnnouncement:
+            return "ios_ff_send_to_domains_announcement"
         }
     }
 
@@ -189,8 +193,10 @@ extension AppFeature {
             return false
         case .nativeWalletCreation:
             return false
-        case .cardIssuance:
+        case .cardIssuing:
             return false
+        case .sendToDomainsAnnouncement:
+            return true
         }
     }
 }

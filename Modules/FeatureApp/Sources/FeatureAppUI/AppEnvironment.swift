@@ -7,7 +7,7 @@ import ERC20Kit
 import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain

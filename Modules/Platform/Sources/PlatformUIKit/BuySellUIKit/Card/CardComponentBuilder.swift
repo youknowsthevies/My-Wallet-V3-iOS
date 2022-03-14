@@ -2,7 +2,7 @@
 
 import AnalyticsKit
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import PlatformKit
 import ToolKit
 import UIKit

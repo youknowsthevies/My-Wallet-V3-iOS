@@ -4,6 +4,7 @@ import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
+import ToolKit
 
 // MARK: - Listener Bridge
 
@@ -36,15 +37,21 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
 
     private let accountProvider: SourceAndTargetAccountProviding
     private let action: AssetAction
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let cacheSuite: CacheSuite
 
     // MARK: - Init
 
     init(
         accountProvider: SourceAndTargetAccountProviding,
-        action: AssetAction
+        action: AssetAction,
+        cacheSuite: CacheSuite,
+        featureFlagsService: FeatureFlagsServiceAPI
     ) {
         self.accountProvider = accountProvider
         self.action = action
+        self.featureFlagsService = featureFlagsService
+        self.cacheSuite = cacheSuite
     }
 
     // MARK: - Public Methods
@@ -64,7 +71,12 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
         let viewController = TargetSelectionViewController(
             shouldOverrideNavigationEffects: shouldOverrideNavigationEffects
         )
-        let reducer = TargetSelectionPageReducer(action: action, navigationModel: navigationModel)
+        let reducer = TargetSelectionPageReducer(
+            action: action,
+            navigationModel: navigationModel,
+            cacheSuite: cacheSuite,
+            featureFlagsService: featureFlagsService
+        )
         let presenter = TargetSelectionPagePresenter(
             viewController: viewController,
             action: action,

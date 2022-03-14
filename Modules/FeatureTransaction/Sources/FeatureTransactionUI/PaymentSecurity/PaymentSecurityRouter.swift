@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import PlatformKit
 import PlatformUIKit
 import UIKit
