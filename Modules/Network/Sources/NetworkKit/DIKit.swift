@@ -156,7 +156,10 @@ extension URLSessionConfiguration {
             HttpHeaderField.userAgent: userAgentProvider.userAgent!
         ]
         sessionConfiguration.waitsForConnectivity = true
+        sessionConfiguration.httpMaximumConnectionsPerHost = 10
+        sessionConfiguration.timeoutIntervalForRequest = 30
         sessionConfiguration.timeoutIntervalForResource = 300
+
         return sessionConfiguration
     }
 }
