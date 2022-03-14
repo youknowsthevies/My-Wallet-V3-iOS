@@ -12,10 +12,10 @@ import EthereumKit
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
-import FeatureCryptoDomainData
-import FeatureCryptoDomainDomain
 import FeatureCoinData
 import FeatureCoinDomain
+import FeatureCryptoDomainData
+import FeatureCryptoDomainDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain

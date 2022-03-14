@@ -105,10 +105,6 @@ public final class ClaimIntroductionHositingController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     public override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(contentView.view)
@@ -127,6 +123,10 @@ public final class ClaimIntroductionHositingController: UIViewController {
 
     public override func viewDidLayoutSubviews() {
         navigationController?.isNavigationBarHidden = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
