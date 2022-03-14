@@ -36,6 +36,7 @@ enum SearchCryptoDomainId {
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
+    case onAppear
     case searchDomainsWithUsername
     case searchDomains(key: String, freeOnly: Bool = false)
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
@@ -143,6 +144,9 @@ let searchCryptoDomainReducer = Reducer.combine(
 
         case .binding:
             return .none
+
+        case .onAppear:
+            return Effect(value: .searchDomainsWithUsername)
 
         case .searchDomainsWithUsername:
             guard state.searchText.isEmpty else {

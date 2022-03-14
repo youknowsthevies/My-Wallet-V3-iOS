@@ -30,7 +30,7 @@ struct SearchCryptoDomainView: View {
                 domainList
             }
             .onAppear {
-                viewStore.send(.searchDomainsWithUsername)
+                viewStore.send(.onAppear)
             }
             .primaryNavigation(title: LocalizedString.title)
             .bottomSheet(

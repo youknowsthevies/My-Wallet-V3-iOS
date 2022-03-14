@@ -29,7 +29,15 @@ struct ContentView: View {
                         orderDomainRepository: OrderDomainRepository(
                             apiClient: OrderDomainClient.mock
                         ),
-                        userInfoProvider: { .empty() }
+                        userInfoProvider: {
+                            .just(
+                                OrderDomainUserInfo(
+                                    nabuUserId: "mockUserId",
+                                    nabuUserName: "Firstname",
+                                    ethereumAddress: "mockAddress"
+                                )
+                            )
+                        }
                     )
                 )
             )

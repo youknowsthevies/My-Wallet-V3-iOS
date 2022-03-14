@@ -39,7 +39,16 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
                 ),
                 orderDomainRepository: OrderDomainRepository(
                     apiClient: orderClient
-                )
+                ),
+                userInfoProvider: {
+                    .just(
+                        OrderDomainUserInfo(
+                            nabuUserId: "mockUserId",
+                            nabuUserName: "Firstname",
+                            ethereumAddress: "mockAddress"
+                        )
+                    )
+                }
             )
         )
     }
@@ -50,19 +59,60 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore = nil
     }
 
-    func test_valid_search_text_should_search_domains() throws {
-        let expectedResults = try testStore.environment.searchDomainRepository.searchResults(searchKey: "Searchkey").wait()
-        testStore.send(.set(\.$searchText, "Searchkey")) { state in
-            state.isSearchTextValid = true
-            state.searchText = "Searchkey"
-        }
-        testStore.receive(.searchDomains) { state in
+    func test_on_appear_should_search_domains_by_firstname() throws {
+        let expectedResults = try testStore
+            .environment
+            .searchDomainRepository
+            .searchResults(searchKey: "Firstname", freeOnly: true)
+            .wait()
+        testStore.send(.onAppear)
+        testStore.receive(.searchDomainsWithUsername)
+        testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
             state.isSearchResultsLoading = true
         }
         testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
+        }
+    }
+
+    func test_empty_search_text_should_search_domains_by_username() throws {
+        let expectedResults = try testStore
+            .environment
+            .searchDomainRepository
+            .searchResults(searchKey: "Firstname", freeOnly: true)
+            .wait()
+        testStore.send(.set(\.$searchText, "")) { state in
+            state.isSearchTextValid = true
+            state.searchText = ""
+        }
+        testStore.receive(.searchDomains(key: "", freeOnly: false))
+        testStore.receive(.searchDomainsWithUsername)
+        testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
+            state.isSearchResultsLoading = true
+        }
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
             state.isSearchResultsLoading = false
+            state.searchResults = expectedResults
+        }
+    }
+
+    func test_valid_search_text_should_search_domains() throws {
+        let expectedResults = try testStore
+            .environment
+            .searchDomainRepository
+            .searchResults(searchKey: "Searchkey", freeOnly: false)
+            .wait()
+        testStore.send(.set(\.$searchText, "Searchkey")) { state in
+            state.isSearchTextValid = true
+            state.searchText = "Searchkey"
+        }
+        testStore.receive(.searchDomains(key: "Searchkey", freeOnly: false)) { state in
+            state.isSearchResultsLoading = true
+        }
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+            state.isSearchResultsLoading = false
+            state.searchResults = expectedResults
         }
     }
 
@@ -91,12 +141,16 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     }
 
     func test_select_premium_domain_should_open_bottom_sheet() throws {
-        let expectedResult = try testStore.environment.orderDomainRepository.createDomainOrder(
-            isFree: false,
-            domainName: "premium",
-            walletAddress: "",
-            nabuUserId: ""
-        ).wait()
+        let expectedResult = try testStore
+            .environment
+            .orderDomainRepository
+            .createDomainOrder(
+                isFree: false,
+                domainName: "premium",
+                walletAddress: "",
+                nabuUserId: ""
+            )
+            .wait()
         let testDomain = SearchDomainResult(
             domainName: "premium.blockchain",
             domainType: .premium,

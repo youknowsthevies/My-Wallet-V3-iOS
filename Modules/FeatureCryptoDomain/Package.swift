@@ -80,8 +80,10 @@ let package = Package(
                 .target(name: "FeatureCryptoDomainDomain")
             ],
             resources: [
+                // swiftlint:disable line_length
                 .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json"),
-                .process("Fixtures/POST/explorer-gateway/resolution/ud/orders/POST_explorer-gateway_resolution_ud_orders.json")
+                .process("Fixtures/POST/explorer-gateway/resolution/ud/orders/POST_explorer-gateway_resolution_ud_orders.json"),
+                .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Firstname/GET_explorer-gateway_resolution_ud_suggestions_Firstname.json")
             ]
         ),
         .testTarget(
