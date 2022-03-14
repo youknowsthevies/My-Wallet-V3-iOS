@@ -36,7 +36,7 @@ enum SearchCryptoDomainId {
 enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
-    case onAppear
+    case searchDomainsWithUsername
     case searchDomains(key: String)
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
@@ -56,8 +56,8 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var isSearchTextValid: Bool
     @BindableState var isAlertCardShown: Bool
     @BindableState var isPremiumDomainBottomSheetShown: Bool
-    @BindableState var selectedPremiumDomain: SearchDomainResult?
-    @BindableState var selectedPremiumDomainRedirectUrl: String?
+    var selectedPremiumDomain: SearchDomainResult?
+    var selectedPremiumDomainRedirectUrl: String?
     var isSearchResultsLoading: Bool
     var searchResults: [SearchDomainResult]
     var selectedDomains: OrderedSet<SearchDomainResult>
@@ -138,14 +138,15 @@ let searchCryptoDomainReducer = Reducer.combine(
 
         case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
             state.selectedPremiumDomain = nil
+            state.selectedPremiumDomainRedirectUrl = nil
             return .none
 
         case .binding:
             return .none
 
-        case .onAppear:
-            if !state.searchText.isEmpty {
-                return Effect(value: .searchDomains(key: state.searchText))
+        case .searchDomainsWithUsername:
+            guard state.searchText.isEmpty else {
+                return .none
             }
             return environment
                 .userInfoProvider()
@@ -160,6 +161,9 @@ let searchCryptoDomainReducer = Reducer.combine(
                 }
 
         case .searchDomains(let key):
+            if key.isEmpty {
+                return Effect(value: .searchDomainsWithUsername)
+            }
             state.isSearchResultsLoading = true
             return environment
                 .searchDomainRepository
