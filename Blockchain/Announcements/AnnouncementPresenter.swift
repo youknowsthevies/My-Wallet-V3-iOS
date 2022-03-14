@@ -231,6 +231,8 @@ final class AnnouncementPresenter {
                 )
             case .ukEntitySwitch:
                 announcement = ukEntitySwitch(user: preliminaryData.user)
+            case .walletConnect:
+                announcement = walletConnect()
             }
 
             // Return the first different announcement that should show
@@ -454,6 +456,23 @@ extension AnnouncementPresenter {
                 }
                 webViewServiceAPI.openSafari(
                     url: "https://support.blockchain.com/hc/en-us/articles/4418431131668",
+                    from: topMostViewController
+                )
+            }
+        )
+    }
+
+    private func walletConnect() -> Announcement {
+        WalletConnectAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [topMostViewControllerProvider, webViewServiceAPI] in
+                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                webViewServiceAPI.openSafari(
+                    url: "https://support.blockchain.com/hc/en-us/articles/4572777318548",
                     from: topMostViewController
                 )
             }

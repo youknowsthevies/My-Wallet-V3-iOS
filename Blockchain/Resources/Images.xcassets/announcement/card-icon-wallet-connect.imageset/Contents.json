@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "card-icon-wallet-connect.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

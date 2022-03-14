@@ -279,6 +279,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum WalletConnect {
+            public static let title = NSLocalizedString(
+                "WalletConnect is Now Available!",
+                comment: "WalletConnect announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Securely connect your wallet to any web 3.0 application. ",
+                comment: "WalletConnect announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Learn more",
+                comment: "WalletConnect announcement card CTA button title"
+            )
+        }
+
         // MARK: - Periodic
 
         public enum BuyBitcoin {
