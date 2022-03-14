@@ -107,6 +107,10 @@ blockchain:
 				none:
 			url:
 			+ blockchain.db.leaf
+	namespace:
+		language:
+			error:
+			+ blockchain.ux.type.analytics.error
 	session:
 		configuration:
 			value:
@@ -171,6 +175,7 @@ blockchain:
 	ui:
 		type:
 			action:
+			+ blockchain.ux.type.analytics.action
 				policy:
 					discard:
 						if:
@@ -299,7 +304,11 @@ blockchain:
 				+ blockchain.ux.type.action
 				buy:
 				+ blockchain.ux.type.action
+				error:
+				+ blockchain.ux.type.analytics.error
 				exchange:
+					connect:
+					+ blockchain.ux.type.action
 					deposit:
 					+ blockchain.ux.type.action
 					withdraw:
@@ -307,6 +316,7 @@ blockchain:
 				explainer:
 				+ blockchain.ux.type.story
 					accept:
+					reset:
 				receive:
 				+ blockchain.ux.type.action
 				require:
@@ -330,12 +340,16 @@ blockchain:
 			bio:
 				visit:
 					website:
+						url:
+						+ blockchain.db.type.url
 			buy:
 			+ blockchain.ux.type.action
 			chart:
 				interval:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
+			error:
+			+ blockchain.ux.type.analytics.error
 			receive:
 			+ blockchain.ux.type.action
 			recurring:
@@ -375,6 +389,11 @@ blockchain:
 				+ blockchain.ux.type.story
 				withdraw:
 				+ blockchain.ux.type.story
+		home:
+			tab:
+			+ blockchain.db.collection
+				select:
+				+ blockchain.ux.type.action
 		payment:
 			method:
 				open:
@@ -464,13 +483,11 @@ blockchain:
 					+ blockchain.session.state.value
 				error:
 				+ blockchain.ux.type.analytics.event
-					file:
-					+ blockchain.db.type.string
-					line:
-					+ blockchain.db.type.integer
 					message:
-					+ blockchain.db.type.string
 				event:
+					source:
+						file:
+						line:
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:

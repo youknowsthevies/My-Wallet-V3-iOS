@@ -9,80 +9,30 @@ struct BottomSheetExamples: View {
 
     var body: some View {
         Button("Tap to open") {
-            isPresented.toggle()
+            withAnimation(.spring()) {
+                isPresented.toggle()
+            }
         }
-        .bottomSheet(isPresented: $isPresented) {
-            Group {
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .bottomSheet(isPresented: $isPresented.animation(.spring())) {
+            ForEach(1..<6) { i in
                 PrimaryRow(
-                    title: "Swap",
-                    subtitle: "Exchange for Another Crypto",
+                    title: "\(i)",
+                    subtitle: (0...i).map(String.init).joined(separator: ", "),
                     leading: {
-                        Icon.send.frame(width: 30, height: 30)
-                    }
+                        Icon.allIcons
+                            .randomElement()!
+                            .circle()
+                            .accentColor(.semantic.primary)
+                            .frame(maxHeight: 24.pt)
+                    },
+                    action: {}
                 )
-
+                .frame(maxHeight: 8.vh)
                 PrimaryDivider()
             }
-
-            Group {
-                PrimaryRow(
-                    title: "Send",
-                    subtitle: "Send to Any Wallet",
-                    leading: {
-                        Icon.send.frame(width: 30, height: 30)
-                    }
-                )
-
-                PrimaryDivider()
-            }
-
-            Group {
-                PrimaryRow(
-                    title: "Receive",
-                    subtitle: "Copy Your Address & QR Codes",
-                    leading: {
-                        Icon.send.frame(width: 30, height: 30)
-                    }
-                )
-
-                PrimaryDivider()
-            }
-
-            Group {
-                PrimaryRow(
-                    title: "Rewards",
-                    subtitle: "Earn Rewards on Your Crypto",
-                    leading: {
-                        Icon.send.frame(width: 30, height: 30)
-                    }
-                )
-
-                PrimaryDivider()
-            }
-
-            Group {
-                PrimaryRow(
-                    title: "Add Cash",
-                    subtitle: "Add Cash from Your Bank",
-                    leading: {
-                        Icon.send.frame(width: 30, height: 30)
-                    }
-                )
-
-                PrimaryDivider()
-            }
-
-            PrimaryRow(
-                title: "Cash Out",
-                subtitle: "Withdraw Cash to Your Bank",
-                leading: {
-                    Icon.send.frame(width: 30, height: 30)
-                }
-            )
-
             HStack {
                 PrimaryButton(title: "Buy", action: {})
-
                 SecondaryButton(title: "Sell", action: {})
             }
             .padding(Spacing.padding())

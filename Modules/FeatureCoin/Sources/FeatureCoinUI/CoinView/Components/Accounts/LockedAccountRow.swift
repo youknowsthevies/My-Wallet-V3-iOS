@@ -1,25 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import SwiftUI
 
 struct LockedAccountRow: View {
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
+
     let title: String
     let subtitle: String
     let icon: Icon
-    let action: () -> Void
-
-    init(
-        title: String,
-        subtitle: String,
-        icon: Icon,
-        action: @escaping () -> Void
-    ) {
-        self.title = title
-        self.subtitle = subtitle
-        self.icon = icon
-        self.action = action
-    }
 
     var body: some View {
         PrimaryRow(
@@ -36,7 +28,7 @@ struct LockedAccountRow: View {
                     .accentColor(.semantic.muted)
             },
             action: {
-                action()
+                app.post(event: blockchain.ux.asset.account.require.KYC[].ref(to: context))
             }
         )
     }
@@ -49,8 +41,7 @@ struct LockedAccountRow_PreviewProvider: PreviewProvider {
             LockedAccountRow(
                 title: "Trading Account",
                 subtitle: "Buy and Sell Bitcoin",
-                icon: .trade,
-                action: {}
+                icon: .trade
             )
         }
     }

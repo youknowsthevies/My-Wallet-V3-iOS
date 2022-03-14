@@ -111,7 +111,6 @@ public final class TransactionProcessor {
 
     public func updateAmount(amount: MoneyValue) -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `updateAmount: \(amount.displayString)`")
-
         if !canTransactFiat, amount.isFiat {
             return .error(
                 PlatformKitError.illegalStateException(

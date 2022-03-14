@@ -47,7 +47,7 @@ extension Tag {
     public struct Reference {
 
         public typealias Indices = [Tag: String]
-        public typealias Context = [Tag: Any]
+        public typealias Context = [Tag: AnyHashable]
 
         public let tag: Tag
 
@@ -56,7 +56,7 @@ extension Tag {
 
         public let string: String
 
-        var error: Swift.Error?
+        private var error: Swift.Error?
 
         init(_ tag: Tag, to context: Context, in app: AppProtocol?) {
             self.tag = tag

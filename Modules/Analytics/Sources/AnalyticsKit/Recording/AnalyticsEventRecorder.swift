@@ -14,18 +14,22 @@ public final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
         self.analyticsServiceProviders = analyticsServiceProviders
     }
 
+    public static var isLogging = false
+
     public func record(event: AnalyticsEvent) {
         for provider in analyticsServiceProviders where provider.isEventSupported(event) {
             provider.trackEvent(title: event.name, parameters: event.params)
             #if DEBUG
-            print("📡", event.name, terminator: " ")
-            if let parameters = event.params {
-                print("parameters:")
-                for parameter in parameters {
-                    print("\t", parameter.key, "=", parameter.value)
+            if Self.isLogging {
+                print(event.type == .nabu ? "📡[nabu]" : "☄️[firebase]", event.name, terminator: " ")
+                if let parameters = event.params, !parameters.isEmpty {
+                    print("parameters:")
+                    for parameter in parameters {
+                        print("\t", parameter.key, "=", parameter.value as Any? ?? "nil")
+                    }
                 }
+                print()
             }
-            print()
             #endif
         }
     }

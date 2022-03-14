@@ -17,7 +17,7 @@ extension AppDelegate {
 
                 app.post(
                     event: blockchain.app.process.deep_link,
-                    context: [blockchain.app.process.deep_link.url[]: url]
+                    context: [blockchain.app.process.deep_link.url: url]
                 )
             }
 
@@ -32,7 +32,7 @@ extension AppDelegate {
         if let url = userActivity.webpageURL {
             app.post(
                 event: blockchain.app.process.deep_link,
-                context: [blockchain.app.process.deep_link.url[]: url]
+                context: [blockchain.app.process.deep_link.url: url]
             )
         }
         viewStore.send(.appDelegate(.userActivity(userActivity)))

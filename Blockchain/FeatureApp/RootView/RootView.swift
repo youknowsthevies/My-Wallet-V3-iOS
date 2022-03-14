@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
+import DIKit
 import Localization
 import MoneyKit
 import SwiftUI
@@ -24,26 +25,28 @@ extension Tab {
 
     typealias Localization = LocalizationConstants.TabItems
 
-    static let home = Tab(
-        tag: blockchain.ux.user.portfolio[],
-        name: Localization.home,
-        icon: .home
-    )
-    static let prices = Tab(
-        tag: blockchain.ux.prices[],
-        name: Localization.prices,
-        icon: .lineChartUp
-    )
-    static let buyAndSell = Tab(
-        tag: blockchain.ux.buy_and_sell[],
-        name: Localization.buyAndSell,
-        icon: .cart
-    )
-    static let activity = Tab(
-        tag: blockchain.ux.user.activity[],
-        name: Localization.activity,
-        icon: .pending
-    )
+    static let allTabs: [L: Tab] = [
+        blockchain.ux.user.portfolio: Tab(
+            tag: blockchain.ux.user.portfolio[],
+            name: Localization.home,
+            icon: .home
+        ),
+        blockchain.ux.prices: Tab(
+            tag: blockchain.ux.prices[],
+            name: Localization.prices,
+            icon: .lineChartUp
+        ),
+        blockchain.ux.buy_and_sell: Tab(
+            tag: blockchain.ux.buy_and_sell[],
+            name: Localization.buyAndSell,
+            icon: .cart
+        ),
+        blockchain.ux.user.activity: Tab(
+            tag: blockchain.ux.user.activity[],
+            name: Localization.activity,
+            icon: .pending
+        )
+    ]
 
     func entry() -> Tag {
         tag["entry"]!
@@ -67,50 +70,56 @@ struct RootView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            TabView(selection: viewStore.binding(\.$tab)) {
-                tab(.home) {
-                    PortfolioView(store: store.stateless)
+            Group {
+                TabView(selection: viewStore.binding(\.$tab)) {
+                    tab(blockchain.ux.user.portfolio) {
+                        PortfolioView(store: store.stateless)
+                    }
+                    tab(blockchain.ux.prices) {
+                        PricesView(store: store.stateless)
+                    }
+                    fab()
+                    tab(blockchain.ux.buy_and_sell) {
+                        BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
+                    }
+                    tab(blockchain.ux.user.activity) {
+                        ActivityView()
+                    }
                 }
-                tab(.prices) {
-                    PricesView(store: store.stateless)
-                }
-                fab()
-                tab(.buyAndSell) {
-                    BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
-                }
-                tab(.activity) {
-                    ActivityView()
-                }
+                .overlay(
+                    FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
+                        .identity(blockchain.ux.frequent.action)
+                        .background(
+                            Circle()
+                                .fill(Color.semantic.background)
+                                .padding(8)
+                        )
+                        .pulse(enabled: viewStore.fab.animate, inset: 8)
+                        .padding([.leading, .trailing], 24.pt)
+                        .offset(y: 6.pt)
+                        .contentShape(Rectangle())
+                        .background(Color.white.invisible()),
+                    alignment: .bottom
+                )
+                .ignoresSafeArea(.keyboard, edges: .bottom)
             }
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
-            .onDisappear {
-                viewStore.send(.onDisappear)
-            }
-            .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
-                    .identity(blockchain.ux.frequent.action)
-                    .background(
-                        Circle()
-                            .fill(Color.semantic.background)
-                            .padding(8)
-                    )
-                    .pulse(enabled: viewStore.fab.animate, inset: 8)
-                    .padding([.leading, .trailing], 24.pt)
-                    .offset(y: 6.pt)
-                    .contentShape(Rectangle())
-                    .background(Color.white.invisible()),
-                alignment: .bottom
-            )
-            .ignoresSafeArea(.keyboard, edges: .bottom)
-            .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn)) {
+            .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
                 FrequentActionView(
                     list: viewStore.fab.data.list,
                     buttons: viewStore.fab.data.buttons
                 ) { action in
                     viewStore.send(.frequentAction(action))
                 }
+            }
+            .on(blockchain.ux.home.tab.select) { event in
+                try viewStore.send(.tab(event.ref.context.decode(blockchain.ux.home.tab.id, as: Tag.self)))
+                viewStore.send(.dismiss())
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .onDisappear {
+                viewStore.send(.onDisappear)
             }
         }
         .observer(CoinViewObserver())
@@ -124,10 +133,11 @@ struct RootView: View {
             .tabItem { Color.clear }
     }
 
-    func tab<Content>(
-        _ tab: Tab,
+    @ViewBuilder func tab<Content>(
+        _ id: L,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View where Content: View {
+        let tab = Tab.allTabs[id]!
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
@@ -150,17 +160,17 @@ struct RootView: View {
             )
             .identity(tab.entry())
         }
-        .tag(tab)
+        .tag(tab.tag)
         .identity(tab.tag)
     }
 
     func tab<Content, Scope>(
-        _ tab: Tab,
+        _ id: L,
         state: @escaping (RootViewState) -> Scope,
         @ViewBuilder content: @escaping (Scope) -> Content
     ) -> some View where Content: View, Scope: Equatable {
         WithViewStore(store.scope(state: state)) { viewStore in
-            self.tab(tab) { content(viewStore.state) }
+            self.tab(id) { content(viewStore.state) }
         }
     }
 

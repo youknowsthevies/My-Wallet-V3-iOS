@@ -8,8 +8,16 @@ import XCTest
 final class BottomSheetTests: XCTestCase {
 
     func testBottomSheet() {
-        let view = BottomSheetView_Previews.previews
-            .frame(width: 320, height: 650)
+
+        let view = BottomSheetView {
+            VStack {
+                ForEach(1...10, id: \.self) { i in
+                    Text("\(i * 2)")
+                }
+            }
+        }
+        .frame(width: 378, height: 768)
+        .background(Color.gray)
 
         assertSnapshots(
             matching: view,

@@ -92,7 +92,7 @@ extension RootViewController: LoggedInBridge {
 
     func switchTabToDashboard() {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.home))
+            viewStore.send(.tab(blockchain.ux.user.portfolio[]))
         }
     }
 
@@ -110,13 +110,13 @@ extension RootViewController: LoggedInBridge {
 
     func switchToActivity() {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.activity))
+            viewStore.send(.tab(blockchain.ux.user.activity[]))
         }
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.activity))
+            viewStore.send(.tab(blockchain.ux.user.activity[]))
         }
     }
 

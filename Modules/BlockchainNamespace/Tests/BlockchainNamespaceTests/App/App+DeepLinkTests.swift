@@ -98,7 +98,7 @@ final class AppDeepLinkTests: XCTestCase {
         app.post(
             event: blockchain.app.process.deep_link,
             context: [
-                blockchain.app.process.deep_link.url[]: URL(
+                blockchain.app.process.deep_link.url: URL(
                     string: "https://blockchain.com/app?blockchain.db.type.string=test#blockchain.db.type.string"
                 )!
             ]
@@ -115,7 +115,7 @@ final class AppDeepLinkTests: XCTestCase {
         app.post(
             event: blockchain.app.process.deep_link,
             context: [
-                blockchain.app.process.deep_link.url[]: URL(
+                blockchain.app.process.deep_link.url: URL(
                     string: "https://blockchain.com/app?blockchain.db.type.string=test#blockchain.db.type.string"
                 )!
             ]

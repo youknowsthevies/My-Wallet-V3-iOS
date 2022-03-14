@@ -4,7 +4,7 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
-import DIKit
+@_exported import DIKit
 import ERC20DataKit
 import FeatureActivityData
 import FeatureAppDomain
@@ -177,6 +177,8 @@ private func bootstrap() {
         recordingOn: resolve(),
         didCrashOnPreviousExecution: FirebaseCrashlytics.Crashlytics.crashlytics().didCrashDuringPreviousExecution
     )
+
+    app.bootstrap()
 }
 
 private func eraseWalletForUITestsIfNeeded() {

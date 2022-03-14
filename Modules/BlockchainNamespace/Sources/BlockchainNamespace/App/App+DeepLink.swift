@@ -47,14 +47,8 @@ extension App {
         }
 
         func process(url: URL, with rules: [Rule]) {
-            do {
-                guard let match = rules.match(for: url) else {
-                    throw ParsingError.nomatch
-                }
-
-                app.post(event: match.rule.event, context: match.parameters())
-            } catch {
-                #if DEBUG
+            #if DEBUG
+            if DSL.isDSL(url) {
                 do {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
@@ -68,9 +62,16 @@ extension App {
                 } catch {
                     app.post(error: error)
                 }
-                #else
+                return
+            }
+            #endif
+            do {
+                guard let match = rules.match(for: url) else {
+                    throw ParsingError.nomatch
+                }
+                app.post(event: match.rule.event, context: match.parameters())
+            } catch {
                 app.post(error: error)
-                #endif
             }
         }
     }
