@@ -3,6 +3,10 @@
 import FeatureCryptoDomainDomain
 import Foundation
 
+public struct FreeSearchResultResponse: Equatable, Decodable {
+    var suggestions: [SuggestionResponse]
+}
+
 public struct SearchResultResponse: Equatable, Decodable {
     var suggestions: [SuggestionResponse]
     var searchedDomain: SearchedDomainResponse

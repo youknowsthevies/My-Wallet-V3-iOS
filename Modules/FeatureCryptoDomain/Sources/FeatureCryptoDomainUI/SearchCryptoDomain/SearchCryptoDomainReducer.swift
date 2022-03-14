@@ -37,7 +37,7 @@ enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<SearchCryptoDomainRoute>?)
     case binding(BindingAction<SearchCryptoDomainState>)
     case searchDomainsWithUsername
-    case searchDomains(key: String)
+    case searchDomains(key: String, freeOnly: Bool = false)
     case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
     case selectFreeDomain(SearchDomainResult)
     case selectPremiumDomain(SearchDomainResult)
@@ -155,19 +155,19 @@ let searchCryptoDomainReducer = Reducer.combine(
                 .catchToEffect()
                 .map { result in
                     if case .success(let username) = result {
-                        return .searchDomains(key: username)
+                        return .searchDomains(key: username, freeOnly: true)
                     }
                     return .noop
                 }
 
-        case .searchDomains(let key):
+        case .searchDomains(let key, let isFreeOnly):
             if key.isEmpty {
                 return Effect(value: .searchDomainsWithUsername)
             }
             state.isSearchResultsLoading = true
             return environment
                 .searchDomainRepository
-                .searchResults(searchKey: key)
+                .searchResults(searchKey: key, freeOnly: isFreeOnly)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .debounce(
