@@ -158,7 +158,7 @@ public struct GraphView: View {
             return ChartBalance(
                 title: selected == nil ? Localization.currentPrice : Localization.price,
                 balance: String(
-                    amount: selected == nil ? start.price : end.price,
+                    amount: end.price,
                     currency: value.quote
                 ),
                 changeArrow: end.price.isRelativelyEqual(to: start.price)
