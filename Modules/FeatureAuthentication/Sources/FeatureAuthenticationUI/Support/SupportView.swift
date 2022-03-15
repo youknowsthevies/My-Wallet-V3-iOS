@@ -1,3 +1,4 @@
+import ComposableArchitecture
 import Localization
 import SwiftUI
 import UIComponentsKit
@@ -5,6 +6,12 @@ import UIComponentsKit
 struct SupportView: View {
 
     private typealias LocalizationIds = LocalizationConstants.Authentication.Support
+
+    private let store: Store<SupportViewState, SupportViewAction>
+
+    init(store: Store<SupportViewState, SupportViewAction>) {
+        self.store = store
+    }
 
     var body: some View {
         ActionableView(buttons: [
@@ -33,8 +40,8 @@ struct SupportView: View {
     }
 }
 
-struct SupportView_Previews: PreviewProvider {
-    static var previews: some View {
-        SupportView()
-    }
-}
+//struct SupportView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SupportView()
+//    }
+//}
