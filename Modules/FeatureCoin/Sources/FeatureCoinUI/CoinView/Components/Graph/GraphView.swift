@@ -225,5 +225,7 @@ struct GraphViewPreviewProvider: PreviewProvider {
                 environment: .preview
             )
         )
+        .app(App.preview)
+        .frame(height: 300.pt)
     }
 }
