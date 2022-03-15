@@ -13,7 +13,7 @@ public protocol OrderDomainRepositoryAPI {
     /// - Parameters
     ///   - isFree: whether the domain is free or not (if not free, will have redirection to a purchase site instead)
     ///   - domainName: the domain name to be claimed
-    ///   - walletAddress: the wallet address where the domain is to be minted to
+    ///   - resolutionRecords: the resolution records for keeping the relationship of wallet address and domain
     ///   - nabuUserId: to update eligibiltiy status for the user after the claim
     /// - Returns
     ///   - if the domain is free, it will return an order number
@@ -21,7 +21,7 @@ public protocol OrderDomainRepositoryAPI {
     func createDomainOrder(
         isFree: Bool,
         domainName: String,
-        walletAddress: String,
-        nabuUserId: String
+        resolutionRecords: [ResolutionRecord]?,
+        nabuUserId: String?
     ) -> AnyPublisher<OrderDomainResult, OrderDomainRepositoryError>
 }

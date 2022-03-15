@@ -40,15 +40,13 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
                 orderDomainRepository: OrderDomainRepository(
                     apiClient: orderClient
                 ),
-                userInfoProvider: {
-                    .just(
-                        OrderDomainUserInfo(
-                            nabuUserId: "mockUserId",
-                            nabuUserName: "Firstname",
-                            ethereumAddress: "mockAddress"
-                        )
+                userInfoProvider: .just(
+                    OrderDomainUserInfo(
+                        nabuUserId: "mockUserId",
+                        nabuUserName: "Firstname",
+                        resolutionRecords: []
                     )
-                }
+                )
             )
         )
     }
@@ -147,8 +145,8 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             .createDomainOrder(
                 isFree: false,
                 domainName: "premium",
-                walletAddress: "",
-                nabuUserId: ""
+                resolutionRecords: nil,
+                nabuUserId: nil
             )
             .wait()
         let testDomain = SearchDomainResult(

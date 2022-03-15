@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCryptoDomainDomain
 import Foundation
 
 public struct PostOrderRequest: Encodable {
@@ -13,4 +14,13 @@ public struct PostOrderRequest: Encodable {
 struct Record: Encodable {
     var currency: String?
     var address: String?
+}
+
+extension Record {
+    init(from resolutionRecord: ResolutionRecord) {
+        self.init(
+            currency: resolutionRecord.symbol,
+            address: resolutionRecord.walletAddress
+        )
+    }
 }

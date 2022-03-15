@@ -94,7 +94,7 @@ let domainCheckoutReducer = Reducer<
                     .createDomainOrder(
                         isFree: true,
                         domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                        walletAddress: userInfo.ethereumAddress,
+                        resolutionRecords: userInfo.resolutionRecords,
                         nabuUserId: userInfo.nabuUserId
                     )
             }
