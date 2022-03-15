@@ -10,7 +10,7 @@ enum SupportViewAction: Equatable, BindableAction {
 //    case route(RouteIntent<>?)
 }
 
-struct SupportViewState {
+struct SupportViewState: Equatable {
     @BindableState var isSupportViewSheetShown = false
 }
 

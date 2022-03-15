@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureAuthenticationUI
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -214,7 +215,18 @@ final class PinScreenViewController: BaseScreenViewController {
     }
 
     override func navigationBarTrailingButtonPressed() {
-        presenter.trailingButtonPressed()
+        let supportViewController = SupportViewHostingController()
+        let navigationController = UINavigationController(rootViewController: supportViewController)
+        supportViewController.modalPresentationStyle = .pageSheet
+        if #available(iOS 15.0, *) {
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
+            }
+        } else {
+            // TODO
+        }
+        present(navigationController, animated: true, completion: nil)
     }
 }
 

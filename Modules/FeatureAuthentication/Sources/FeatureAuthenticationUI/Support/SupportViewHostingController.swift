@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
+import ComposableArchitecture
 import SwiftUI
 import UIKit
 
@@ -20,7 +20,7 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
                 store: .init(
                     initialState: .init(isSupportViewSheetShown: true),
                     reducer: supportViewReducer,
-                    environment: SupportViewEnvironment.default
+                    environment: Void()
                 )
             )
         )
@@ -41,7 +41,12 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
 
     private func setupConstraints() {
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
-        contentView.view.fillSuperview()
+        NSLayoutConstraint.activate([
+            contentView.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            contentView.view.heightAnchor.constraint(equalTo: view.heightAnchor),
+            contentView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            contentView.view.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 
     // MARK: - SupportViewHostingControllerDelegate
