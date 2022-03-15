@@ -174,6 +174,11 @@ extension Collection where Element == String {
 
 extension Optional where Wrapped == Any {
 
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
+
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }
         set { self[string.splitDotPath()] = newValue }
@@ -187,6 +192,11 @@ extension Optional where Wrapped == Any {
 
 extension Dictionary where Key == String, Value == Any {
 
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
+
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }
         set { self[string.splitDotPath()] = newValue }
@@ -199,6 +209,11 @@ extension Dictionary where Key == String, Value == Any {
 }
 
 extension Array where Element == Any {
+
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
 
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }

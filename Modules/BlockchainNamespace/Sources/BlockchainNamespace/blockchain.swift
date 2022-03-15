@@ -82,6 +82,7 @@ public extension I_blockchain_app_configuration {
 	var `apple`: L_blockchain_app_configuration_apple { .init("\(__).apple") }
 	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
 	var `google`: L_blockchain_app_configuration_google { .init("\(__).google") }
+	var `is`: L_blockchain_app_configuration_is { .init("\(__).is") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
 public final class L_blockchain_app_configuration_announcements: L, I_blockchain_app_configuration_announcements {
@@ -149,6 +150,24 @@ public final class L_blockchain_app_configuration_google_pay_is_enabled: L, I_bl
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.google.pay.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_google_pay_is_enabled: I_blockchain_db_type_boolean {}
+public final class L_blockchain_app_configuration_is: L, I_blockchain_app_configuration_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_is: I {}
+public extension I_blockchain_app_configuration_is {
+	var `biometric`: L_blockchain_app_configuration_is_biometric { .init("\(__).biometric") }
+}
+public final class L_blockchain_app_configuration_is_biometric: L, I_blockchain_app_configuration_is_biometric {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.is.biometric", comment: "") }
+}
+public protocol I_blockchain_app_configuration_is_biometric: I {}
+public extension I_blockchain_app_configuration_is_biometric {
+	var `enabled`: L_blockchain_app_configuration_is_biometric_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_is_biometric_enabled: L, I_blockchain_app_configuration_is_biometric_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.is.biometric.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_is_biometric_enabled: I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_configuration_wallet: L, I_blockchain_app_configuration_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet", comment: "") }
 }
@@ -570,6 +589,7 @@ public final class L_blockchain_session_state: L, I_blockchain_session_state {
 public protocol I_blockchain_session_state: I {}
 public extension I_blockchain_session_state {
 	var `key`: L_blockchain_session_state_key { .init("\(__).key") }
+	var `preference`: L_blockchain_session_state_preference { .init("\(__).preference") }
 	var `shared`: L_blockchain_session_state_shared { .init("\(__).shared") }
 	var `stored`: L_blockchain_session_state_stored { .init("\(__).stored") }
 	var `value`: L_blockchain_session_state_value { .init("\(__).value") }
@@ -604,6 +624,17 @@ public final class L_blockchain_session_state_key_value_pair_value: L, I_blockch
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.key.value.pair.value", comment: "") }
 }
 public protocol I_blockchain_session_state_key_value_pair_value: I_blockchain_db_type_any {}
+public final class L_blockchain_session_state_preference: L, I_blockchain_session_state_preference {
+	public override class var localized: String { NSLocalizedString("blockchain.session.state.preference", comment: "") }
+}
+public protocol I_blockchain_session_state_preference: I {}
+public extension I_blockchain_session_state_preference {
+	var `value`: L_blockchain_session_state_preference_value { .init("\(__).value") }
+}
+public final class L_blockchain_session_state_preference_value: L, I_blockchain_session_state_preference_value {
+	public override class var localized: String { NSLocalizedString("blockchain.session.state.preference.value", comment: "") }
+}
+public protocol I_blockchain_session_state_preference_value: I {}
 public final class L_blockchain_session_state_shared: L, I_blockchain_session_state_shared {
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.shared", comment: "") }
 }
