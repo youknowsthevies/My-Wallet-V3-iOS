@@ -29,3 +29,13 @@ let supportViewReducer = Reducer<
     }
 }
 .binding()
+
+struct SupportViewEnvironment {
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+}
+
+extension SupportViewEnvironment {
+    static let `default`: SupportViewEnvironment = .init(
+        mainQueue: .main
+    )
+}
