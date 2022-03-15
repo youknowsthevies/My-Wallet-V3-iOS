@@ -13,6 +13,8 @@ extension AppEnvironment {
 
     static var live: AppEnvironment {
         AppEnvironment(
+            app: resolve(),
+            nabuUserService: resolve(),
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: resolve(),

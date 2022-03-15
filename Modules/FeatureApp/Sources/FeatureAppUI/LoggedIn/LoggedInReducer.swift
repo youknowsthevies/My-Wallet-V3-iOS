@@ -27,6 +27,7 @@ public enum LoggedIn {
     public enum Action: Equatable {
         case none
         case start(LoggedIn.Context)
+        case login(Result<NabuUser, NabuUserServiceError>)
         case stop
         case logout
         case deeplink(URIContent)
@@ -34,8 +35,11 @@ public enum LoggedIn {
         // wallet related actions
         case wallet(WalletAction)
         case handleNewWalletCreation
-        case showOnboarding
-        case showLegacyBuyFlow
+        case handleExistingWalletSignIn
+        case showPostSignUpOnboardingFlow
+        case didShowPostSignUpOnboardingFlow
+        case showPostSignInOnboardingFlow
+        case didShowPostSignInOnboardingFlow
         // symbol change actions, used by old address screen
         case symbolChanged
         case symbolChangedHandled
@@ -45,18 +49,20 @@ public enum LoggedIn {
         public var reloadAfterSymbolChanged: Bool = false
         public var reloadAfterMultiAddressResponse: Bool = false
         public var displaySendCryptoScreen: Bool = false
-        public var displayOnboardingFlow: Bool = false
-        public var displayLegacyBuyFlow: Bool = false
+        public var displayPostSignUpOnboardingFlow: Bool = false
+        public var displayPostSignInOnboardingFlow: Bool = false
         public var displayWalletAlertContent: AlertViewContent?
     }
 
     public struct Environment {
         var mainQueue: AnySchedulerOf<DispatchQueue>
+        var app: AppProtocol
         var analyticsRecorder: AnalyticsEventRecorderAPI
         var loadingViewPresenter: LoadingViewPresenting
         var exchangeRepository: ExchangeAccountRepositoryAPI
         var remoteNotificationTokenSender: RemoteNotificationTokenSending
         var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
+        var nabuUserService: NabuUserServiceAPI
         var walletManager: WalletManagerAPI
         var appSettings: BlockchainSettingsAppAPI
         var deeplinkRouter: DeepLinkRouting
@@ -133,8 +139,16 @@ let loggedInReducer = Reducer<
                     event: AnalyticsEvents.New.Navigation.signedIn
                 )
             },
+            environment.nabuUserService.fetchUser()
+                .catchToEffect()
+                .map(LoggedIn.Action.login),
             handleStartup(context: context)
         )
+    case .login(let result):
+        guard let user = try? result.get() else { return .none }
+        return .fireAndForget {
+            environment.app.signIn(userId: user.identifier)
+        }
     case .deeplink(let content):
         let context = content.context
         guard context == .executeDeeplinkRouting else {
@@ -152,16 +166,30 @@ let loggedInReducer = Reducer<
         state.displaySendCryptoScreen = false
         return .none
     case .handleNewWalletCreation:
-        return Effect(value: .showOnboarding)
-    case .showOnboarding:
+        return Effect(value: .showPostSignUpOnboardingFlow)
+    case .handleExistingWalletSignIn:
+        return Effect(value: .showPostSignInOnboardingFlow)
+    case .showPostSignUpOnboardingFlow:
         // display new onboarding flow
-        state.displayOnboardingFlow = true
+        state.displayPostSignUpOnboardingFlow = true
         return .none
-    case .showLegacyBuyFlow:
-        state.displayLegacyBuyFlow = true
+    case .didShowPostSignUpOnboardingFlow:
+        state.displayPostSignUpOnboardingFlow = false
+        return .none
+    case .showPostSignInOnboardingFlow:
+        state.displayPostSignInOnboardingFlow = true
+        return .none
+    case .didShowPostSignInOnboardingFlow:
+        state.displayPostSignInOnboardingFlow = false
         return .none
     case .logout:
-        return .cancel(id: LoggedInIdentifier())
+        state = LoggedIn.State()
+        return .merge(
+            .cancel(id: LoggedInIdentifier()),
+            .fireAndForget {
+                environment.app.signOut()
+            }
+        )
     case .stop:
         // We need to cancel any running operations if we require pin entry.
         // Although this is the same as logout and .wallet(.authenticateForBiometrics)
@@ -222,6 +250,6 @@ private func handleStartup(context: LoggedIn.Context) -> Effect<LoggedIn.Action,
     case .deeplink(let deeplinkContent):
         return Effect(value: .deeplink(deeplinkContent))
     case .none:
-        return .none
+        return Effect(value: .handleExistingWalletSignIn)
     }
 }

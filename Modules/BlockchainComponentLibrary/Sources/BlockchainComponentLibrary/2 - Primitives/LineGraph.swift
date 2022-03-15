@@ -39,7 +39,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
     let padding = (
         highlight: 20.cg,
         trailing: 26.cg,
-        text: 8.cg
+        text: 16.cg
     )
 
     private let memoized: LineShape.Memoized
@@ -90,7 +90,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
                 }
                 .padding([.top, .bottom], padding.highlight)
                 Group {
-                    if let ((i, max), (j, min)) = memoized.minMax {
+                    if let ((i, max), (j, min)) = memoized.minMax, min != max {
                         minimum(index: i, value: min)
                         maximum(index: j, value: max)
                     }
@@ -186,15 +186,16 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
             Rectangle()
                 .fill(Color.semantic.title)
                 .frame(width: 1)
-                .padding(.top, 20)
+                .padding(.top, Spacing.padding3)
                 .offset(x: _size.width * percentage)
             GeometryReader { geometry in
                 let index = index(from: percentage)
+                let width = _size.width - _titleWidth
                 selectionTitle(index, memoized.raw[index])
                     .padding(.horizontal, 1)
                     .offset(
                         x: (percentage * _size.width - _titleWidth / 2)
-                            .clamped(to: 0...max(1, _size.width - _titleWidth))
+                            .clamped(to: Spacing.padding1...max(Spacing.padding1, width - Spacing.padding1))
                     )
                     .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
                         geometry[anchor].size.width
@@ -210,13 +211,13 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
         if selection == nil {
             GeometryReader { geometry in
                 let offset = line.shape.min * geometry.size
+                let width = _size.width - _minimumTitleSize.width
                 minimumTitle(index, value)
                     .transformEffect(
                         CGAffineTransform(
                             translationX: (offset.x - _minimumTitleSize.width / 2)
-                                .clamped(to: 0...max(1, _size.width - _minimumTitleSize.width)),
-                            y: (offset.y + padding.text + _minimumTitleSize.height)
-                                .clamped(to: 0...max(1, _size.height + padding.text + _minimumTitleSize.height))
+                                .clamped(to: Spacing.padding1...max(Spacing.padding1, width - Spacing.padding1)),
+                            y: _size.height + padding.text + _minimumTitleSize.height
                         )
                     )
                     .anchorPreference(key: MinTitleSizePreferenceKey.self, value: .bounds) { anchor in
@@ -233,12 +234,14 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
         if selection == nil {
             GeometryReader { geometry in
                 let offset = line.shape.max * geometry.size
+                let width = _size.width - _maximumTitleSize.width
                 maximumTitle(index, value)
                     .transformEffect(
                         CGAffineTransform(
                             translationX: (offset.x - _maximumTitleSize.width / 2)
-                                .clamped(to: 0...max(1, _size.width - _maximumTitleSize.width)),
-                            y: (offset.y - _maximumTitleSize.height).clamped(to: 0...max(1, _size.height))
+                                .clamped(to: Spacing.padding1...max(Spacing.padding1, width - Spacing.padding1)),
+                            y: offset.y
+                                .clamped(to: 0...) - _maximumTitleSize.height
                         )
                     )
                     .anchorPreference(key: MaxTitleSizePreferenceKey.self, value: .bounds) { anchor in

@@ -124,11 +124,7 @@ extension Tag.Reference {
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<L>) -> String {
-        id(ignoring: ignoring.map(\.[]).set)
-    }
-
-    public func id(ignoring: Set<Tag> = []) -> String {
+    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
         Self.id(
             tag: tag,
             to: context,

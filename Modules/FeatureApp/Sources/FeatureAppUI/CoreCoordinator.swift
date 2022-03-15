@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -100,6 +101,8 @@ public enum CoreAppAction: Equatable {
 }
 
 struct CoreAppEnvironment {
+    var app: AppProtocol
+    var nabuUserService: NabuUserServiceAPI
     var loadingViewPresenter: LoadingViewPresenting
     var externalAppOpener: ExternalAppOpener
     var deeplinkHandler: DeepLinkHandling
@@ -168,11 +171,13 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
                     mainQueue: environment.mainQueue,
+                    app: environment.app,
                     analyticsRecorder: environment.analyticsRecorder,
                     loadingViewPresenter: environment.loadingViewPresenter,
                     exchangeRepository: environment.exchangeRepository,
                     remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
+                    nabuUserService: environment.nabuUserService,
                     walletManager: environment.walletManager,
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,

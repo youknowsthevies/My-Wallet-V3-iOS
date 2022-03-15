@@ -61,9 +61,30 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                 case .nabuError(let nabu) as NabuNetworkError:
                     switch nabu.code {
                     case .cardInsufficientFunds:
-                        self.presentError(LocalizationConstants.Transaction.Error.cardInsufficientFunds)
-                    case .cardBankDecline:
-                        self.presentError(LocalizationConstants.Transaction.Error.cardBankDecline)
+                        self.presentError(
+                            title: LocalizationConstants.Transaction.Error.cardInsufficientFundsTitle,
+                            subtitle: LocalizationConstants.Transaction.Error.cardInsufficientFunds
+                        )
+                    case .cardBankDecline, .cardBlockchainDecline:
+                        self.presentError(
+                            title: LocalizationConstants.Transaction.Error.cardBankDeclineTitle,
+                            subtitle: LocalizationConstants.Transaction.Error.cardBankDecline
+                        )
+                    case .cardDuplicate:
+                        self.presentError(
+                            title: LocalizationConstants.Transaction.Error.cardDuplicateTitle,
+                            subtitle: LocalizationConstants.Transaction.Error.cardDuplicate
+                        )
+                    case .cardCreateFailed:
+                        self.presentError(
+                            title: LocalizationConstants.Transaction.Error.cardCreateFailedTitle,
+                            subtitle: LocalizationConstants.Transaction.Error.cardCreateFailed
+                        )
+                    case .cardAcquirerDecline:
+                        self.presentError(
+                            title: LocalizationConstants.Transaction.Error.cardAcquirerDeclineTitle,
+                            subtitle: LocalizationConstants.Transaction.Error.cardAcquirerDecline
+                        )
                     default:
                         self.alertViewPresenter.error(in: self, action: nil)
                     }
@@ -74,7 +95,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .disposed(by: disposeBag)
     }
 
-    private func presentError(_ title: String) {
+    private func presentError(title: String, subtitle: String? = nil) {
         navigationController?
             .pushViewController(
                 UIHostingController(
@@ -83,7 +104,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                             media: .image(named: "icon-card", in: .platformUIKit),
                             overlay: .image(named: "validation-error", in: .platformUIKit),
                             title: title,
-                            subtitle: LocalizationConstants.ErrorScreen.subtitle
+                            subtitle: subtitle ?? LocalizationConstants.ErrorScreen.subtitle
                         ),
                         buttons: [
                             .init(title: LocalizationConstants.ErrorScreen.button) { [weak self] in
