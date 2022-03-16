@@ -36,9 +36,14 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Card Issuing
     case cardIssuing
 
+    /// Enables customer support chat
+    case customerSupportChat
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
+        case .customerSupportChat:
+            return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .disableSSLPinning,
@@ -83,6 +88,8 @@ extension InternalFeature {
             return "Redesign: CoinView"
         case .cardIssuing:
             return "Card Issuing"
+        case .customerSupportChat:
+            return "Customer Support Chat"
         }
     }
 }
