@@ -51,7 +51,7 @@ class WalletEncoderTests: XCTestCase {
         let expectation = expectation(description: "provide an encoded payload")
 
         let encoder = WalletEncoder()
-        encoder.trasform(wrapper: wrapper)
+        encoder.transform(wrapper: wrapper)
             .sink { completion in
                 guard case .failure = completion else {
                     return

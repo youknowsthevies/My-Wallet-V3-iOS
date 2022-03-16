@@ -79,6 +79,7 @@ public struct SeedPhraseState: Equatable {
     var lostFundsWarningState: LostFundsWarningState?
     var importWalletState: ImportWalletState?
     var failureAlert: AlertState<SeedPhraseAction>?
+    var isLoading: Bool
 
     var accountResettable: Bool {
         nabuInfo != nil
@@ -95,6 +96,7 @@ public struct SeedPhraseState: Equatable {
         isLostFundsWarningScreenVisible = false
         isImportWalletScreenVisible = false
         failureAlert = nil
+        isLoading = false
     }
 }
 
@@ -363,6 +365,7 @@ let seedPhraseReducer = Reducer.combine(
             return .none
 
         case .restoreWallet(.metadataRecovery(let mnemonic)):
+            state.isLoading = true
             return .concatenate(
                 Effect(value: .triggerAuthenticate),
                 environment.walletRecoveryService
@@ -377,9 +380,11 @@ let seedPhraseReducer = Reducer.combine(
             return .none
 
         case .restored(.success):
+            state.isLoading = false
             return .cancel(id: WalletRecoveryIds.RecoveryId())
 
         case .restored(.failure):
+            state.isLoading = false
             return .merge(
                 .cancel(id: WalletRecoveryIds.RecoveryId()),
                 Effect(value: .setImportWalletScreenVisible(true))

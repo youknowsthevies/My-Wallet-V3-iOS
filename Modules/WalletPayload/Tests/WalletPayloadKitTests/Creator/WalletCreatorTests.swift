@@ -35,7 +35,8 @@ class WalletCreatorTests: XCTestCase {
                 mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon cactus",
                 guid: "guid-value",
                 sharedKey: "sharedKey-value",
-                accountName: "Private Key Wallet"
+                accountName: "Private Key Wallet",
+                totalAccounts: 1
             )
         ).successData!
         var generateWalletCalled = false
@@ -58,7 +59,7 @@ class WalletCreatorTests: XCTestCase {
         mockEncryptor.decryptWalletBase64StringResult = .success("")
 
         let mockWalletEncoder = MockWalletEncoder()
-        mockWalletEncoder.trasformValue = .just(
+        mockWalletEncoder.transformValue = .just(
             EncodedWalletPayload(
                 payloadContext: .encoded("".data(using: .utf8)!),
                 wrapper: generatedWrapper
@@ -73,11 +74,15 @@ class WalletCreatorTests: XCTestCase {
             )
         )
 
+        let mockUsedAccountFinder = MockUsedAccountsFinder()
+        mockUsedAccountFinder.findUsedAccountResult = .success(0)
+
         let creator = WalletCreator(
             entropyService: rngService,
             walletEncoder: mockWalletEncoder,
             encryptor: mockEncryptor,
             createWalletRepository: mockCreateRepository,
+            usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
@@ -104,6 +109,111 @@ class WalletCreatorTests: XCTestCase {
                     XCTAssertTrue(mockEncryptor.encryptDataCalled)
                     XCTAssertTrue(mockEncryptor.decryptWalletBase64StringCalled)
                     XCTAssertTrue(mockServerEntropy.getServerEntropyCalled)
+                    XCTAssertTrue(uuidProviderCalled)
+                    XCTAssertTrue(generateWalletCalled)
+                    XCTAssertTrue(generateWrapperCalled)
+                    XCTAssertTrue(mockCreateRepository.createWalletCalled)
+                    expectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 4)
+    }
+
+    func test_wallet_creator_can_import_a_wallet() throws {
+        let mockServerEntropy = MockServerEntropyRepository()
+        mockServerEntropy.serverEntropyResult = .success("00000000000000000000000000000011")
+        let rngService = RNGService(
+            serverEntropyRepository: mockServerEntropy,
+            localEntropyProvider: { _ in .just(Data(hex: "00000000000000000000000000000001")) },
+            operationQueue: DispatchQueue(label: "rng.service.op.queue")
+        )
+        var uuidProviderCalled = false
+        let uuidProvider: UUIDProvider = {
+            uuidProviderCalled = true
+            return .just(("guid-value", "sharedKey-value"))
+        }
+        let generatedWallet = generateWallet(
+            context: WalletCreationContext(
+                mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon cactus",
+                guid: "guid-value",
+                sharedKey: "sharedKey-value",
+                accountName: "Private Key Wallet",
+                totalAccounts: 2
+            )
+        ).successData!
+        var generateWalletCalled = false
+        let generateWalletMock: GenerateWalletProvider = { _ in
+            generateWalletCalled = true
+            return .success(generatedWallet)
+        }
+        let generatedWrapper = generateWrapper(wallet: generatedWallet, language: "en", version: .v4)
+        var generateWrapperCalled = false
+        let generateWrapperMock: GenerateWrapperProvider = { _, language, version in
+            generateWrapperCalled = true
+            return generateWrapper(wallet: generatedWallet, language: language, version: version)
+        }
+        let mockCreateRepository = MockCreateWalletRepository()
+        let dispatchQueue = DispatchQueue(label: "wallet.creator.temp.op.queue")
+        mockCreateRepository.createWallerResult = .just(())
+
+        let mockEncryptor = MockPayloadCrypto()
+        mockEncryptor.encryptDataResult = .success("")
+        mockEncryptor.decryptWalletBase64StringResult = .success("")
+
+        let mockWalletEncoder = MockWalletEncoder()
+        mockWalletEncoder.transformValue = .just(
+            EncodedWalletPayload(
+                payloadContext: .encoded("".data(using: .utf8)!),
+                wrapper: generatedWrapper
+            )
+        )
+
+        mockWalletEncoder.encodeValue = .just(
+            WalletCreationPayload(
+                data: "".data(using: .utf8)!,
+                wrapper: generatedWrapper,
+                applyChecksum: { _ in "" }
+            )
+        )
+
+        let mockUsedAccountFinder = MockUsedAccountsFinder()
+        mockUsedAccountFinder.findUsedAccountResult = .success(2)
+
+        let creator = WalletCreator(
+            entropyService: rngService,
+            walletEncoder: mockWalletEncoder,
+            encryptor: mockEncryptor,
+            createWalletRepository: mockCreateRepository,
+            usedAccountsFinder: mockUsedAccountFinder,
+            operationQueue: dispatchQueue,
+            uuidProvider: uuidProvider,
+            generateWallet: generateWalletMock,
+            generateWrapper: generateWrapperMock,
+            checksumProvider: { _ in "" }
+        )
+
+        let expectation = expectation(description: "should create wallet")
+
+        let expectedValue = WalletCreation(guid: "guid-value", sharedKey: "sharedKey-value", password: "1234")
+        let email = "some@some.com"
+        let password = "1234"
+        let accountName = "Private Key Wallet"
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon cactus"
+        creator.importWallet(mnemonic: mnemonic, email: email, password: password, accountName: accountName, language: "en")
+            .sink(
+                receiveCompletion: { completion in
+                    guard case .failure(let error) = completion else {
+                        return
+                    }
+                    XCTFail("should not fail: \(error)")
+                },
+                receiveValue: { value in
+                    XCTAssertEqual(value, expectedValue)
+                    XCTAssertTrue(mockEncryptor.encryptDataCalled)
+                    XCTAssertTrue(mockEncryptor.decryptWalletBase64StringCalled)
+                    XCTAssertFalse(mockServerEntropy.getServerEntropyCalled)
                     XCTAssertTrue(uuidProviderCalled)
                     XCTAssertTrue(generateWalletCalled)
                     XCTAssertTrue(generateWrapperCalled)
