@@ -44,6 +44,10 @@ extension DependencyContainer {
 
         factory { NabuUserResidentialInfoClient() as NabuUserResidentialInfoClientAPI }
 
+        // MARK: - AppStore
+
+        factory { AppStoreInformationClient() as AppStoreInformationClientAPI }
+
         // MARK: - Repositories
 
         factory { JWTRepository() as JWTRepositoryAPI }
@@ -65,6 +69,8 @@ extension DependencyContainer {
         factory { MobileAuthSyncRepository() as MobileAuthSyncRepositoryAPI }
 
         factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }
+
+        factory { AppStoreInformationRepository() as AppStoreInformationRepositoryAPI }
 
         // MARK: - Wallet Repositories
 
