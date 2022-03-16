@@ -2,6 +2,7 @@
 
 import XCTest
 
+import BlockchainNamespace
 import CasePaths
 import Combine
 import CombineSchedulers
@@ -15,6 +16,7 @@ import TestKit
 
 final class OpenBankingTests: XCTestCase {
 
+    var app: AppProtocol!
     var banking: OpenBanking!
     var network: ReplayNetworkCommunicator!
     var scheduler: TestSchedulerOf<DispatchQueue>!
@@ -32,7 +34,9 @@ final class OpenBankingTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBanking.test(using: scheduler)
+        app = App.test
+        app.state.set(blockchain.ux.payment.method.open.banking.currency, to: "GBP")
+        (banking, network) = OpenBanking.test(app: app, using: scheduler)
         actions = []
     }
 
@@ -64,10 +68,7 @@ final class OpenBankingTests: XCTestCase {
         guard actions.count == 1 else { return XCTFail("Expected 1 action") }
         XCTAssertExtract(/OpenBanking.Action.waitingForConsent, from: actions[0])
 
-        banking.state.set(.is.authorised, to: true)
-
-        guard actions.count == 2 else { return XCTFail("Expected 2 actions") }
-        XCTAssertExtract(/OpenBanking.Action.success, from: actions[1])
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
 
         XCTAssertNotNil(
             network.requests[
@@ -89,10 +90,7 @@ final class OpenBankingTests: XCTestCase {
         guard actions.count == 1 else { return XCTFail("Expected 1 action, got \(actions.count)") }
         XCTAssertExtract(/OpenBanking.Action.waitingForConsent, from: actions[0])
 
-        banking.state.set(.is.authorised, to: true)
-
-        guard actions.count == 2 else { return XCTFail("Expected 2 actions, got \(actions.count)") }
-        XCTAssertExtract(/OpenBanking.Action.success, from: actions[1])
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
 
         XCTAssertNotNil(
             network.requests[

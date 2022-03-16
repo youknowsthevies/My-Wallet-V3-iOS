@@ -12,7 +12,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     enum Presenter: Equatable {
         case radioSelection(RadioAccountCellPresenter)
-        case cardView(CardViewViewModel)
+        case cardView(TargetSelectionCardModel)
         case singleAccount(AccountCurrentBalanceCellPresenter)
         case walletInputField(TextFieldViewModel)
     }
@@ -79,7 +79,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     let account: BlockchainAccount?
     let presenter: Presenter
 
-    init(cardView: CardViewViewModel) {
+    init(cardView: TargetSelectionCardModel) {
         account = nil
         presenter = .cardView(cardView)
     }

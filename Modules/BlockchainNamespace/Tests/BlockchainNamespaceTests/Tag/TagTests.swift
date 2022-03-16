@@ -109,9 +109,4 @@ final class TagBlockchainSchemaTests: XCTestCase {
     func test_isDescendant() throws {
         XCTAssertTrue(blockchain.user.email.address[].isDescendant(of: blockchain.user[]))
     }
-
-    func test_as() throws {
-        XCTAssertNoThrow(try blockchain.user.email.address[].as(blockchain.db.type.string))
-        XCTAssertThrowsError(try blockchain.user.email.address[].as(blockchain.db.type.boolean))
-    }
 }

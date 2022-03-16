@@ -130,7 +130,7 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
         let secondaryButtonTapped = state
             .compactMap(\.secondaryButtonViewModel)
             .flatMap(\.tap)
-            .map { PendingTransactionPageState.Effect.upgradeKYCTier }
+            .map { PendingTransactionPageState.Effect.close }
             .asObservable()
 
         return Observable

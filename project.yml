@@ -253,6 +253,8 @@ packages:
     version: 0.20.0
   Analytics:
     path: Modules/Analytics
+  BlockchainNamespace:
+    path: Modules/BlockchainNamespace
   RxAnalytics:
     path: Modules/RxAnalytics
   CommonCrypto:
@@ -287,6 +289,8 @@ packages:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
+  FeatureProducts:
+    path: Modules/FeatureProducts
   FeatureQRCodeScanner:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
@@ -398,6 +402,10 @@ targets:
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
+      - package: FeatureProducts
+        product: FeatureProductsData
+      - package: FeatureProducts
+        product: FeatureProductsDomain
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
@@ -422,6 +430,7 @@ targets:
 
       - package: Analytics
         product: AnalyticsKit
+      - package: BlockchainNamespace
       - package: RxAnalytics
         product: RxAnalyticsKit
       - package: CommonCrypto

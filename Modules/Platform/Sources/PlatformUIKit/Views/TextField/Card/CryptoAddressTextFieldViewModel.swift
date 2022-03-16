@@ -1,14 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import Localization
 import RxSwift
 import ToolKit
 
 public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
-
-    // MARK: - Properties
-
-    private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
@@ -21,8 +18,17 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
             validator: validator,
             messageRecorder: messageRecorder
         )
+
+        // BadgeImageViewModel
+        accessoryContentTypeRelay.accept(.badgeImageView(badgeImageViewModel))
+    }
+
+    private var badgeImageViewModel: BadgeImageViewModel {
         let content = ImageViewContent(
-            imageResource: .local(name: Icon.qrCode.name, bundle: .componentLibrary)
+            imageResource: .local(
+                name: Icon.qrCode.name,
+                bundle: .componentLibrary
+            )
         )
         let theme = BadgeImageViewModel.Theme(
             backgroundColor: .white,
@@ -31,10 +37,8 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
             marginOffset: 0,
             sizingType: .constant(CGSize(width: 32, height: 20))
         )
-        let viewModel = BadgeImageViewModel(theme: theme)
-
-        Observable.just(.badgeImageView(viewModel))
-            .bindAndCatch(to: accessoryContentTypeRelay)
-            .disposed(by: disposeBag)
+        return BadgeImageViewModel(
+            theme: theme
+        )
     }
 }

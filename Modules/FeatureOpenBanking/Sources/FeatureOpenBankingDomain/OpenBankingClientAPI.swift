@@ -1,14 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import CombineSchedulers
-import Session
 import ToolKit
 
 public protocol OpenBankingClientAPI {
 
     var scheduler: AnySchedulerOf<DispatchQueue> { get }
-    var state: Session.State<OpenBanking.Key> { get }
+    var app: AppProtocol { get }
 
     func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error>
 
@@ -50,6 +50,7 @@ public protocol OpenBankingClientAPI {
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error>
 
     func poll(
-        order: OpenBanking.Order
+        order: OpenBanking.Order,
+        until condition: @escaping (OpenBanking.Order) -> Bool
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error>
 }

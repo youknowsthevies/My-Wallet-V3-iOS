@@ -2,7 +2,9 @@
 
 import DIKit
 import FeatureOpenBankingUI
+import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
+import FeatureTransactionUI
 import PlatformUIKit
 import ToolKit
 import UIKit
@@ -33,5 +35,42 @@ extension DependencyContainer {
         }
 
         factory { LaunchOpenBankingFlow() as StartOpenBanking }
+
+        // MARK: QR Code Scanner
+
+        factory { () -> CryptoTargetQRCodeParserAdapter in
+            QRCodeScannerAdapter(
+                qrCodeScannerRouter: DIKit.resolve(),
+                payloadFactory: DIKit.resolve(),
+                topMostViewControllerProvider: DIKit.resolve(),
+                navigationRouter: DIKit.resolve()
+            )
+        }
+
+        factory { () -> QRCodeScannerLinkerAPI in
+            QRCodeScannerAdapter(
+                qrCodeScannerRouter: DIKit.resolve(),
+                payloadFactory: DIKit.resolve(),
+                topMostViewControllerProvider: DIKit.resolve(),
+                navigationRouter: DIKit.resolve()
+            )
+        }
+
+        single {
+            DeepLinkCoordinator(
+                app: DIKit.resolve(),
+                kycRouter: DIKit.resolve(),
+                topMostViewControllerProvider: DIKit.resolve(),
+                exchangeProvider: DIKit.resolve(),
+                transactionsRouter: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                accountsRouter: {
+                    DIKit.resolve()
+                },
+                tabSwapper: {
+                    DIKit.resolve()
+                }
+            ) as DeepLinkCoordinatorAPI
+        }
     }
 }

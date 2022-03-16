@@ -252,6 +252,8 @@ extension TextFieldType {
             return LocalizedString.noDescription
         case .memo:
             return LocalizedString.noMemo
+        case .cryptoAddress:
+            return LocalizedString.addressOrDomain
         case .password,
              .currentPassword,
              .newPassword,
@@ -266,8 +268,7 @@ extension TextFieldType {
              .state,
              .mobile,
              .cardholderName,
-             .cardNumber,
-             .cryptoAddress:
+             .cardNumber:
             return ""
         }
     }

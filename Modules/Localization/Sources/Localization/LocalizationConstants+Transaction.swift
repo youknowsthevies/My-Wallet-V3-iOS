@@ -9,7 +9,7 @@ extension LocalizationConstants {
     public enum Transaction {
         public enum TargetSource {
             public enum Radio {}
-            public enum Card {}
+            public enum SendToDomainCard {}
         }
 
         public enum Confirmation {
@@ -175,7 +175,7 @@ extension LocalizationConstants.Transaction.Receive.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to the Trading Account in seconds by completing your profile and getting Silver access.",
+        "Get access to the Trading Account in seconds by completing your profile and getting Basic access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -219,7 +219,7 @@ extension LocalizationConstants.Transaction.Swap.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to swap in seconds by completing your profile and getting Silver access.",
+        "Get access to swap in seconds by completing your profile and getting Basic access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -403,12 +403,14 @@ extension LocalizationConstants.Transaction.Send {
     )
 }
 
-extension LocalizationConstants.Transaction.TargetSource.Card {
-    public static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
-
-    public static let description = NSLocalizedString(
-        "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses.",
-        comment: "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses."
+extension LocalizationConstants.Transaction.TargetSource.SendToDomainCard {
+    public static let title = NSLocalizedString(
+        "Send to a blockchain domain",
+        comment: "Send to domain card title."
+    )
+    public static let subtitle = NSLocalizedString(
+        "You can now send crypto to domains like satoshi.blockchain, satoshi.eth, and y.at/💎👐",
+        comment: "Send to domain card subtitle."
     )
 }
 
@@ -820,10 +822,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
-    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
@@ -835,10 +833,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
     )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
-    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.Pending {
@@ -849,10 +843,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.Pending {
     public static let description = NSLocalizedString(
         "This may take some time. We'll let you know when it's done.",
         comment: "Order peding message."
-    )
-    public static let upgrade = NSLocalizedString(
-        "Want to buy more?",
-        comment: "Prompt to upgrade to a higher KYC Tier"
     )
 }
 
@@ -1307,11 +1297,11 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Error recovery message - input over the user's personal maximum limit"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_single = NSLocalizedString(
-        "You can buy up to **%@** per transaction. Upgrade to Gold & buy larger amounts with your bank or card.",
+        "You can buy up to **%@** per transaction. Upgrade to Verified & buy larger amounts with your bank or card.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_gold = NSLocalizedString(
-        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Gold to buy more.",
+        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Verified to buy more.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_other = NSLocalizedString(
@@ -1404,10 +1394,7 @@ extension LocalizationConstants.Transaction.Error {
         "Insufficient gas",
         comment: ""
     )
-    public static let addressIsContractShort = NSLocalizedString(
-        "Invalid address",
-        comment: ""
-    )
+    public static let addressIsContractShort = invalidAddressShort
     public static let optionInvalidShort = NSLocalizedString(
         "Review T&Cs",
         comment: ""
@@ -1480,6 +1467,26 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Your bank has declined this transaction, please try another bank or payment method."
     )
 
+    public static let cardDuplicate = NSLocalizedString(
+        "You've already added this card to your Blockchain.com account",
+        comment: "You've already added this card to your Blockchain.com account"
+    )
+
+    public static let cardUnsupportedPaymentMethod = NSLocalizedString(
+        "We don't support this card, please try another bank or payment method.",
+        comment: "We don't support this card, please try another bank or payment method."
+    )
+
+    public static let cardCreateFailed = NSLocalizedString(
+        "Oops! There was a problem trying to add your card, please try again later.",
+        comment: "Oops! There is a problem trying to add your card, please try again later."
+    )
+
+    public static let cardPaymentFailed = NSLocalizedString(
+        "Oops! There was a problem trying to process your card payment, please try again later.",
+        comment: "Oops! There was a problem trying to process your card payment, please try again later."
+    )
+
     public static let orderNotCancellable = NSLocalizedString(
         "Oops! This %@ order is not cancellable.",
         comment: "Oops! This %@ order is not cancellable."
@@ -1518,6 +1525,11 @@ extension LocalizationConstants.Transaction.Error {
     public static let tradingInsufficientBalance = NSLocalizedString(
         "Oops! You don’t have enough balance to %@.",
         comment: "Oops! You don’t have enough balance to %@."
+    )
+
+    public static let notFound = NSLocalizedString(
+        "Oops! We are having problems fetching a quote, please try again later.",
+        comment: "Oops! We are having problems fetching a quote, please try again later."
     )
 
     public static let tradingBelowMin = NSLocalizedString(

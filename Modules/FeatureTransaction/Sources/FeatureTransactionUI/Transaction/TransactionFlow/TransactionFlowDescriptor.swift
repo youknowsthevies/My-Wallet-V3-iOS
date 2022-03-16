@@ -69,13 +69,7 @@ enum TransactionFlowDescriptor {
                 guard let destination = state.destination else {
                     return prefix
                 }
-                if let address = destination as? CryptoReceiveAddress {
-                    return prefix + address.address
-                }
-                guard let account = destination as? BlockchainAccount else {
-                    return prefix
-                }
-                return prefix + account.label
+                return prefix + destination.label
             case .withdraw:
                 return formatForHeader(moneyValue: state.maxSpendable)
             case .interestTransfer,
@@ -88,7 +82,7 @@ enum TransactionFlowDescriptor {
                 }
                 return LocalizedString.to + ": \(account.label)"
             case .deposit:
-                return "\(state.maxDaily.displayString)"
+                return state.maxDaily.displayString
             case .buy:
                 let prefix = "\(LocalizedString.Buy.title):"
                 guard let destination = state.destination else {

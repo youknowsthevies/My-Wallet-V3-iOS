@@ -13,8 +13,8 @@ import RxSwift
 protocol PendingTransactionPageRouting: Routing {}
 
 protocol PendingTransactionPageListener: AnyObject {
-    func closeFlow()
-    func showKYCUpgradePrompt()
+    func pendingTransactionPageDidTapClose()
+    func pendingTransactionPageDidTapComplete()
 }
 
 protocol PendingTransactionPagePresentable: Presentable, PendingTransactionPageViewControllable {
@@ -87,9 +87,9 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     private func handle(effect: PendingTransactionPageState.Effect) {
         switch effect {
         case .close:
-            listener?.closeFlow()
-        case .upgradeKYCTier:
-            listener?.showKYCUpgradePrompt()
+            listener?.pendingTransactionPageDidTapClose()
+        case .complete:
+            listener?.pendingTransactionPageDidTapComplete()
         case .none:
             break
         }

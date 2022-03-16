@@ -12,6 +12,8 @@ import EthereumKit
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCoinData
+import FeatureCoinDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
@@ -20,7 +22,8 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
-import FeatureQRCodeScannerDomain
+import FeatureProductsData
+import FeatureProductsDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -273,14 +276,6 @@ extension DependencyContainer {
             return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
         }
 
-        factory { () -> QRCodeScannerLinkerAPI in
-            QRCodeScannerAdapter()
-        }
-
-        factory { () -> CryptoTargetQRCodeParserAdapter in
-            QRCodeScannerAdapter()
-        }
-
         // MARK: - WalletManager
 
         single { WalletManager() }
@@ -397,9 +392,10 @@ extension DependencyContainer {
         // so, better have a single instance of this object.
         single { () -> UserAdapterAPI in
             UserAdapter(
-                coincore: DIKit.resolve(),
+                balanceDataFetcher: BalanceDataFetcher(coincore: DIKit.resolve()),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
+                productsService: DIKit.resolve(),
                 ordersService: DIKit.resolve()
             )
         }
@@ -534,6 +530,10 @@ extension DependencyContainer {
             PaymentMethodsLinkingAdapter()
         }
 
+        factory { () -> FeatureTransactionUI.UserActionServiceAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
         // MARK: FeatureAuthentication Module
 
         factory { () -> AutoWalletPairingServiceAPI in
@@ -647,10 +647,52 @@ extension DependencyContainer {
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OpenBankingClient(
+                app: DIKit.resolve(),
                 requestBuilder: builder,
                 network: adapter.network
             )
-            return OpenBanking(banking: client)
+            return OpenBanking(app: DIKit.resolve(), banking: client)
+        }
+
+        // MARK: Coin View
+
+        single { () -> HistoricalPriceClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            return HistoricalPriceClient(
+                request: requestBuilder,
+                network: networkAdapter
+            )
+        }
+
+        single { () -> HistoricalPriceRepositoryAPI in
+            HistoricalPriceRepository(DIKit.resolve())
+        }
+
+        single { () -> RatesClientAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return RatesClient(
+                networkAdapter: networkAdapter,
+                requestBuilder: requestBuilder
+            )
+        }
+
+        single { () -> RatesRepositoryAPI in
+            RatesRepository(DIKit.resolve())
+        }
+
+        // MARK: Feature Product
+
+        factory { () -> FeatureProductsDomain.ProductsServiceAPI in
+            ProductsService(
+                repository: ProductsRepository(
+                    client: ProductsAPIClient(
+                        networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                        requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                    )
+                )
+            )
         }
 
         // MARK: Pulse Network Debugging
@@ -662,6 +704,8 @@ extension DependencyContainer {
         single {
             PulseNetworkDebugScreenProvider() as NetworkDebugScreenProvider
         }
+
+        single { app }
     }
 }
 

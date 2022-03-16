@@ -319,4 +319,11 @@ extension OpenBanking.Error {
     public static let bankTransferPaymentUserAccountInvalid: Self = .code("BANK_TRANSFER_PAYMENT_USER_ACCOUNT_INVALID")
     public static let bankTransferPaymentFailedInternal: Self = .code("BANK_TRANSFER_PAYMENT_FAILED_INTERNAL")
     public static let bankTransferPaymentInsufficientFunds: Self = .code("BANK_TRANSFER_PAYMENT_INSUFFICIENT_FUNDS")
+
+    public static let cardCreateDuplicate: Self = .code("CARD_CREATE_DUPLICATE")
+    public static let cardPaymentFailed: Self = .code("CARD_PAYMENT_FAILED")
+    public static let cardPaymentAbandoned: Self = .code("CARD_PAYMENT_ABANDONED")
+    public static let cardPaymentExpired: Self = .code("CARD_PAYMENT_EXPIRED")
+    public static let cardPaymentInsufficientFunds: Self = .code("CARD_PAYMENT_INSUFFICIENT_FUNDS")
+    public static let cardPaymentBankDeclined: Self = .code("CARD_PAYMENT_BANK_DECLINED")
 }

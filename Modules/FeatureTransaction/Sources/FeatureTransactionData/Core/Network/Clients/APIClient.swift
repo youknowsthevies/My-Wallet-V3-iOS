@@ -454,7 +454,7 @@ extension APIClient {
     }
 }
 
-// MARK: - BlockchainNameResolutionRepositoryAPI
+// MARK: - BlockchainNameResolutionClientAPI
 
 extension APIClient {
 

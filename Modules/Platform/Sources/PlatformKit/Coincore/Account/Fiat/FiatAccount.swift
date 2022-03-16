@@ -15,27 +15,6 @@ extension FiatAccount {
         fiatCurrency.currencyType
     }
 
-    public var pendingBalance: Single<MoneyValue> {
-        balance
-    }
-
-    public var actionableBalance: Single<MoneyValue> {
-        balance
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        .just(
-            .zero(
-                baseCurrency: fiatCurrency.currencyType,
-                quoteCurrency: fiatCurrency.currencyType
-            )
-        )
-    }
-
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }

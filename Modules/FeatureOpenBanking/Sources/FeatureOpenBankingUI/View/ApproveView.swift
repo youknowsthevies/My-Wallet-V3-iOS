@@ -12,7 +12,7 @@ public struct ApproveState: Equatable, NavigationState {
     // swiftlint:disable:next type_name
     public struct UI: Codable, Hashable {
         public var title: String
-        public var tasks: [Task]
+        public var tasks: [UITask]
     }
 
     public var route: RouteIntent<ApproveRoute>?
@@ -108,8 +108,7 @@ public struct ApproveView: View {
                             overlay: .init(media: .error),
                             title: Localization.Error.title,
                             subtitle: Localization.Error.subtitle
-                        ),
-                        in: .openBanking
+                        )
                     )
                 }
             }

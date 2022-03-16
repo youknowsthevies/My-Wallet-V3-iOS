@@ -4,7 +4,7 @@ import BlockchainComponentLibrary
 import SwiftUI
 import ToolKit
 
-public struct Task: Codable, Hashable {
+public struct UITask: Codable, Hashable {
 
     public struct Row: Codable, Hashable {
         var title: String
@@ -20,7 +20,7 @@ public struct Task: Codable, Hashable {
         public struct Plain: Codable, Hashable {
             var header: String
             var expandable: Bool?
-            var tasks: [Task]
+            var tasks: [UITask]
         }
 
         var plain: Plain?
@@ -31,7 +31,7 @@ public struct Task: Codable, Hashable {
     }
 
     public struct Group: Codable, Hashable {
-        var tasks: [Task]
+        var tasks: [UITask]
     }
 
     var section: Section?
@@ -65,26 +65,24 @@ public struct Style: Codable, Hashable {
 
 public struct TaskView: View {
 
-    public let task: Task
-    private let lineage: [Task]
-    private let bundle: Bundle
+    public let task: UITask
+    private let lineage: [UITask]
 
     @State private var padding: EdgeInsets = .zero
 
-    public init(_ task: Task) {
+    public init(_ task: UITask) {
         self.init(task, lineage: [])
     }
 
-    public init(_ task: Task, lineage: [Task] = [], in bundle: Bundle = .main) {
+    public init(_ task: UITask, lineage: [UITask] = []) {
         self.task = task
         self.lineage = lineage
-        self.bundle = bundle
     }
 
     public var body: some View {
         Group {
             if let section = task.section?.plain {
-                SectionView(section, lineage: lineage + [task], in: bundle)
+                SectionView(section, lineage: lineage + [task])
             } else if let group = task.group {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(group.tasks, id: \.self) {
@@ -92,7 +90,7 @@ public struct TaskView: View {
                     }
                 }
             } else if let media = task.media {
-                MediaView(media, in: bundle)
+                MediaView(media)
                     .padding(padding)
             } else if let row = task.row {
                 HStack {
@@ -133,20 +131,18 @@ extension TaskView {
 
     struct SectionView: View {
 
-        let lineage: [Task]
-        let section: Task.Section.Plain
+        let lineage: [UITask]
+        let section: UITask.Section.Plain
 
         var isExpandable: Bool { section.expandable ?? false }
         var isShowingContent: Bool { !isExpandable || isExpanded }
 
         @State private var padding: EdgeInsets = .zero
         @State private var isExpanded = true
-        private let bundle: Bundle
 
-        init(_ section: Task.Section.Plain, lineage: [Task], in bundle: Bundle = .main) {
+        init(_ section: UITask.Section.Plain, lineage: [UITask]) {
             self.lineage = lineage
             self.section = section
-            self.bundle = bundle
         }
 
         var body: some View {
@@ -184,7 +180,7 @@ extension TaskView {
                             Divider()
                                 .foregroundColor(.dividerLineLight)
                             ForEach(section.tasks, id: \.self) { task in
-                                TaskView(task, lineage: lineage, in: bundle)
+                                TaskView(task, lineage: lineage)
                                 if section.tasks.last != task {
                                     Divider()
                                         .foregroundColor(.dividerLineLight)
@@ -210,7 +206,7 @@ extension TaskView {
 
     struct SpacerView: View {
 
-        let spacer: Task.Spacer
+        let spacer: UITask.Spacer
         @State private var length: CGFloat = .zero
 
         var body: some View {
@@ -236,15 +232,15 @@ private var layout = (
     verticalTextPadding: 10.cg
 )
 
-extension Task {
+extension UITask {
 
-    public static var none: Task { .init() }
+    public static var none: UITask { .init() }
 
-    public static func label(_ text: String) -> Task {
-        Task(label: .init(text: text))
+    public static func label(_ text: String) -> UITask {
+        UITask(label: .init(text: text))
     }
 
-    public func typography(_ typography: Typography) -> Task {
+    public func typography(_ typography: Typography) -> UITask {
         with(self, at: \.style, default: .init()) { style in
             style.text = .init(typography: typography)
         }
@@ -253,7 +249,7 @@ extension Task {
     public func padding(
         _ edges: Edge.Set = [.leading, .trailing],
         _ length: Length? = 6.5.vmin
-    ) -> Task {
+    ) -> UITask {
         with(self, at: \.style, default: .init()) { style in
             style.padding = .init(length, edges: edges)
         }
@@ -261,37 +257,37 @@ extension Task {
 
     public func foreground(
         _ color: Color
-    ) -> Task {
+    ) -> UITask {
         with(self, at: \.style, default: .init()) { style in
             style.foreground = color.texture
         }
     }
 
-    public static func media(_ media: Media) -> Task {
-        Task(media: media)
+    public static func media(_ media: Media) -> UITask {
+        UITask(media: media)
     }
 
-    public static func spacer(_ length: Length? = nil) -> Task {
-        Task(spacer: .init(length: length))
+    public static func spacer(_ length: Length? = nil) -> UITask {
+        UITask(spacer: .init(length: length))
     }
 
-    public static func divider() -> Task {
-        Task(divider: true, style: .init(foreground: Color.dividerLineLight.texture))
+    public static func divider() -> UITask {
+        UITask(divider: true, style: .init(foreground: Color.dividerLineLight.texture))
     }
 
-    public static func group(_ tasks: Task...) -> Task {
-        Task(group: .init(tasks: tasks))
+    public static func group(_ tasks: UITask...) -> UITask {
+        UITask(group: .init(tasks: tasks))
     }
 
-    public static func group(_ tasks: [Task]) -> Task {
-        Task(group: .init(tasks: tasks))
+    public static func group(_ tasks: [UITask]) -> UITask {
+        UITask(group: .init(tasks: tasks))
     }
 
     public static func section(
         header: String,
         expandable: Bool = false,
-        task tasks: Task...
-    ) -> Task {
+        task tasks: UITask...
+    ) -> UITask {
         section(
             header: header,
             expandable: expandable,
@@ -302,9 +298,9 @@ extension Task {
     public static func section(
         header: String,
         expandable: Bool = false,
-        tasks: [Task]
-    ) -> Task {
-        Task(
+        tasks: [UITask]
+    ) -> UITask {
+        UITask(
             section: .init(
                 plain: .init(
                     header: header,
@@ -315,12 +311,12 @@ extension Task {
         )
     }
 
-    public static func row(_ title: String, value: String) -> Task {
+    public static func row(_ title: String, value: String) -> UITask {
         .init(row: .init(title: title, value: value))
     }
 }
 
-extension Collection where Element == Task {
+extension Collection where Element == UITask {
 
     fileprivate func padding(in geometry: GeometryProxy) -> EdgeInsets {
         reduce(.zero) { sum, next in
@@ -357,17 +353,16 @@ extension Style.Padding {
     }
 }
 
-#if DEBUG
-struct TaskView_Previews: PreviewProvider {
+struct UITaskView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack {
             PrimaryNavigationView {
                 ScrollView {
                     TaskView(
-                        Task.group(
+                        UITask.group(
                             payment(),
-                            Task.spacer(4.vmin),
+                            UITask.spacer(4.vmin),
                             safeconnect()
                         )
                         .padding()
@@ -377,4 +372,3 @@ struct TaskView_Previews: PreviewProvider {
         }
     }
 }
-#endif

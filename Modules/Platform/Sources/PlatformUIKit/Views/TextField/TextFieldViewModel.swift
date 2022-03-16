@@ -189,11 +189,12 @@ public class TextFieldViewModel {
             .distinctUntilChanged()
     }
 
-    let showHintIfNeededRelay = BehaviorRelay(value: false)
-
+    /// The content of the title field
+    public let titleRelay: BehaviorRelay<String>
     let titleFont = UIFont.main(.medium, 14)
     let textFont = UIFont.main(.medium, 16)
-    let titleRelay: BehaviorRelay<String>
+
+    let showHintIfNeededRelay = BehaviorRelay(value: false)
 
     /// Used for equality
     private var internalText: String?

@@ -8,6 +8,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+// swiftlint:disable:next type_name
 typealias BlockchainComponentLibrarySecondaryButton = BlockchainComponentLibrary.SecondaryButton
 
 public struct InstitutionListState: Equatable, NavigationState {
@@ -146,8 +147,7 @@ public struct InstitutionList: View {
                             overlay: .init(media: .error),
                             title: Localization.Error.title,
                             subtitle: "\(error.description)"
-                        ),
-                        in: .openBanking
+                        )
                     )
                 default:
                     ProgressView(value: 0.25)

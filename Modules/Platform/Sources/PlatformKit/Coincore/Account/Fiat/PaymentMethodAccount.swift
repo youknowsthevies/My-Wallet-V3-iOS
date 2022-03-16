@@ -6,6 +6,8 @@ import MoneyKit
 import RxSwift
 import ToolKit
 
+// swiftformat:disable all
+
 /// A type that represents a payment method as a `BlockchainAccount`.
 public final class PaymentMethodAccount: FiatAccount {
 
@@ -62,6 +64,18 @@ public final class PaymentMethodAccount: FiatAccount {
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         .just(action == .buy)
+    }
+
+    public var pendingBalance: Single<MoneyValue> {
+        balance
+    }
+
+    public var actionableBalance: Single<MoneyValue> {
+        balance
+    }
+
+    public var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
     }
 
     public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {

@@ -2,13 +2,19 @@
 
 import Foundation
 
-public enum KYCStatus: Int, Comparable {
-    case noKyc = 0
-    case silver = 1
-    case gold = 2
-    case platinum = 3
+public enum KYCStatus: Equatable {
+    case unverified
+    case inReview
+    case silver
+    case silverPlus
+    case gold
 
-    public static func < (lhs: KYCStatus, rhs: KYCStatus) -> Bool {
-        lhs.rawValue < rhs.rawValue
+    public var canSellCrypto: Bool {
+        switch self {
+        case .unverified, .silver, .inReview:
+            return false
+        case .silverPlus, .gold:
+            return true
+        }
     }
 }

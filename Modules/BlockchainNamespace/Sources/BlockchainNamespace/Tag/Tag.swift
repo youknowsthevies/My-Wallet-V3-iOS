@@ -2,11 +2,12 @@
 // swiftlint:disable type_name
 
 import Foundation
+import Lexicon
 
 public struct Tag {
 
-    public typealias Indices = [Tag: CustomStringConvertible]
-    public typealias Context = [Tag: CustomStringConvertible]
+    public typealias Indices = [Tag: String]
+    public typealias Context = [Tag: Any]
 
     public typealias ID = String
     public typealias Name = String
@@ -14,22 +15,45 @@ public struct Tag {
     public let id: ID
     public var name: Name { node.name }
 
-    public let node: Graph.Node
+    public let node: Lexicon.Graph.Node
     public unowned let language: Language
 
     public var parent: Tag? { parentID.flatMap(language.tag) }
     private let parentID: ID?
 
+    public var protonym: Tag? { Tag.protonym(of: self) }
+    public let ownChildren: [Name: Tag]
     public var children: [Name: Tag] { Tag.children(of: self) }
-    public var type: [Graph.Node.ID: Graph.Node] { Tag.type(of: self) }
+    public var ownType: [ID: Tag] { Tag.ownType(self) }
+    public var type: [ID: Tag] { Tag.type(of: self) }
     public var lineage: UnfoldFirstSequence<Tag> { Tag.lineage(of: self) }
 
-    init(parent: ID?, node: Graph.Node, in language: Language) {
+    init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
         parentID = parent
         id = parent?.dot(node.name) ?? node.name
         self.node = node
         self.language = language
+        var ownChildren: [Name: Tag] = [:]
+        for (name, node) in node.children {
+            ownChildren[name] = Tag.add(parent: id, node: node, to: language)
+        }
+        self.ownChildren = ownChildren
     }
+}
+
+extension L {
+    public typealias Indices = [L: String]
+    public typealias Context = [L: Any]
+}
+
+extension Tag {
+
+    var isCollection: Bool { Tag.isCollection(self) }
+    var isLeaf: Bool { Tag.isLeaf(self) }
+    var isLeafDescendant: Bool { Tag.isLeafDescendant(self) }
+
+    var template: Tag.Reference.Template { .init(self) }
+    var breadcrumb: [Tag] { lineage.reversed().prefix(while: \.isLeafDescendant.not) }
 }
 
 extension Tag {
@@ -53,16 +77,23 @@ extension Tag {
         } else if let tag = language.tag(id) {
             self = tag
         } else {
-            throw Graph.Error(
-                language: language.graph.date,
-                description: "'\(id)' does not exist in language"
-            )
+            throw blockchain[].error(message: "'\(id)' does not exist in language")
         }
     }
 }
 
 extension L {
     public subscript() -> Tag { Tag(self, in: Language.root.language) }
+}
+
+extension Tag {
+
+    public func `as`<T: L>(_ other: T) throws -> T {
+        guard `is`(other[]) else {
+            throw error(message: "\(self) is not a \(other)")
+        }
+        return T(id)
+    }
 }
 
 extension Tag {
@@ -77,7 +108,7 @@ extension Tag {
     }
 
     public func `is`(_ tag: Tag) -> Bool {
-        type.values.contains(tag.node)
+        type[tag.id] != nil
     }
 
     public func `is`(_ types: Tag...) -> Bool {
@@ -155,16 +186,6 @@ public func isDescendant(of a: Tag) -> (Tag) -> Bool {
 
 extension Tag {
 
-    public func `as`<T: L>(_ other: T) throws -> T {
-        guard `is`(other[]) else {
-            throw error(message: "\(self) is not a \(other)")
-        }
-        return other
-    }
-}
-
-extension Tag {
-
     public subscript(descendant: Name...) -> Tag? {
         self[descendant]
     }
@@ -181,12 +202,38 @@ extension Tag {
         }
         return result
     }
+
+    public func child(named name: Name) throws -> Tag {
+        guard let child = children[name] else {
+            throw error(message: "\(self) does not have a child '\(name)' - it has children: \(children)")
+        }
+        return child
+    }
+}
+
+extension Tag {
+
+    static func isCollection(_ tag: Tag) -> Bool {
+        tag.is(blockchain.db.collection)
+    }
+
+    static func isLeaf(_ tag: Tag) -> Bool {
+        guard tag.parent != nil else { return false }
+        return !tag.is(blockchain.session.state.value)
+            && !tag.isLeafDescendant
+            && (tag.children.isEmpty || tag.is(blockchain.db.leaf))
+    }
+
+    static func isLeafDescendant(_ tag: Tag) -> Bool {
+        guard let parent = tag.parent else { return false }
+        return parent.isLeafDescendant || parent.isLeaf
+    }
 }
 
 extension Tag {
 
     @discardableResult
-    static func add(parent: ID?, node: Graph.Node, to language: Language) -> Tag {
+    static func add(parent: ID?, node: Lexicon.Graph.Node, to language: Language) -> Tag {
         let id = parent?.dot(node.name) ?? node.name
         if let node = language.nodes[id] { return node }
         let tag = Tag(parent: parent, node: node, in: language)
@@ -198,48 +245,60 @@ extension Tag {
         sequence(first: id, next: \.parent)
     }
 
+    static func protonym(of tag: Tag) -> Tag? {
+        guard let suffix = tag.node.protonym else {
+            return nil
+        }
+        guard let parent = tag.parent else {
+            assertionFailure("Synonym '\(suffix)', tag '\(tag.id)', does not have a parent.")
+            return nil
+        }
+        guard let protonym = parent[suffix.components(separatedBy: ".")] else {
+            assertionFailure("Could not find protonym '\(suffix)' of \(tag.id)")
+            return nil
+        }
+
+        tag.language.nodes[tag.id] = protonym // MARK: always map synonym to its protonym
+
+        return .init(protonym)
+    }
+
     static func children(of tag: Tag) -> [Name: Tag] {
-        tag.type.values.reduce(into: [:]) { nodes, type in
-            for name in type.children {
-                let nodeID = type.id.dot(name)
-                do {
-                    guard let node = tag.language.graph.nodes[nodeID] else {
-                        throw Graph.Error(
-                            language: tag.language.graph.date,
-                            description: "Missing node id '\(nodeID)' of child '\(name)' of \(tag)"
-                        )
-                    }
-                    nodes[name] = Tag.add(parent: tag.id, node: node, to: tag.language)
-                } catch {
-                    tag.language.post(error: error)
-                    continue
+        if let protonym = tag.protonym {
+            var children: [Name: Tag] = [:]
+            for (name, child) in protonym.children {
+                children[name] = Tag.add(parent: tag.id, node: child.node, to: tag.language)
+            }
+            return children
+        } else {
+            var ownChildren = tag.ownChildren
+            for (_, type) in tag.ownType {
+                for (name, child) in type.children {
+                    ownChildren[name] = Tag.add(parent: tag.id, node: child.node, to: tag.language)
                 }
             }
+            return ownChildren
         }
     }
 
-    static func type(of tag: Tag) -> [Graph.Node.ID: Graph.Node] {
-        var type: Set<Graph.Node> = []
-        var ids = tag.node.type
-        while !ids.isEmpty {
-            let id = ids.removeFirst()
-            do {
-                guard let node = tag.language.graph.nodes[id] else {
-                    throw Graph.Error(
-                        language: tag.language.graph.date,
-                        description: "Type '\(id)' does not exist"
-                    )
-                }
-                type.insert(node)
-                ids.formUnion(node.type)
-            } catch {
-                tag.language.post(error: error)
-                continue
-            }
+    static func ownType(_ tag: Tag) -> [ID: Tag] {
+        var type: [ID: Tag] = [:]
+        for id in tag.node.type {
+            type[id] = tag.language.tag(id)
         }
-        return type.reduce(
-            into: [tag.node.id: tag.node] + [tag.id: tag.node]
-        ) { types, node in types[node.id] = node }
+        return type
+    }
+
+    static func type(of tag: Tag) -> [ID: Tag] {
+        if let protonym = tag.node.protonym, let tag = tag.language.tag(protonym) {
+            return tag.type
+        }
+        var type = tag.ownType
+        type[tag.id] = tag
+        for (_, tag) in tag.ownType {
+            type.merge(tag.type) { o, _ in o }
+        }
+        return type
     }
 }
 
@@ -271,4 +330,8 @@ extension Tag: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(id)
     }
+}
+
+extension Tag: CustomStringConvertible {
+    public var description: String { id }
 }

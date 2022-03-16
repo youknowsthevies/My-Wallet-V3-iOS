@@ -2,10 +2,11 @@
 
 import Combine
 import Foundation
+import Lexicon
 
 public final class Language {
 
-    public let graph: Graph
+    public let graph: Lexicon.Graph
     public var date: Date { graph.date }
 
     public private(set) var root: Tag!
@@ -19,7 +20,7 @@ public final class Language {
         set { sync { _nodes = newValue } }
     }
 
-    private init(graph: Graph) throws {
+    private init(graph: Lexicon.Graph) throws {
         self.graph = graph
         queue = DispatchQueue(
             label: "com.blockchain.namespace.language.queue.\(Language.id)",
@@ -54,7 +55,17 @@ extension Language {
 extension Language {
 
     public subscript(id: Tag.ID) -> Tag? { tag(id) }
-    public subscript(id: L) -> Tag { tag(id(\.id))! }
+    public subscript(id: L) -> Tag {
+        guard let tag = tag(id(\.id)) else {
+            fatalError(
+                """
+                \(id) does not exist in the language. Check the taskpaper has been saved and generated.
+                You may have removed an id from the taskpaper but are still referencing it from the code.
+                """
+            )
+        }
+        return tag
+    }
 
     public func tag(_ id: Tag.ID) -> Tag? {
         sync { nodes[id] ?? root[id.dotPath(after: root.id).splitIfNotEmpty(separator: ".").string] }
@@ -63,36 +74,35 @@ extension Language {
 
 extension Language {
 
-    public static func root(of json: Graph.JSON) throws -> Tag {
-        let graph = try Graph(json: json)
-        return try Language(graph: graph).root
+    public static func root(of graph: Lexicon.Graph) throws -> Tag {
+        try Language(graph: graph).root
     }
 
-    public static func root(of json: Data) throws -> Tag {
-        try root(of: Graph.JSON.from(json: json))
+    public static func root(taskpaper: Data) throws -> Tag {
+        try root(of: TaskPaper(taskpaper).decode())
     }
 }
 
 extension Language {
 
-    public static let errors: AnyPublisher<Graph.Error, Never> = subject
+    public static let errors: AnyPublisher<Tag.Error, Never> = subject
         .receive(on: RunLoop.main)
         .eraseToAnyPublisher()
 
-    private static let subject = PassthroughSubject<Graph.Error, Never>()
+    private static let subject = PassthroughSubject<Tag.Error, Never>()
 
     public func post(
         error description: String,
-        function: StaticString = #function,
-        file: StaticString = #file,
-        line: UInt = #line
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
     ) {
-        let error = Graph.Error(
-            language: graph.date,
-            description: description,
-            function: function,
-            file: file,
-            line: line
+        let error = Tag.Error(
+            tag: blockchain[],
+            message: description,
+            function,
+            file,
+            line
         )
         Language.subject.send(error)
         #if DEBUG
@@ -100,7 +110,7 @@ extension Language {
         #endif
     }
 
-    public func post(error: Error, function: StaticString = #function, file: StaticString = #file, line: UInt = #line) {
+    public func post(error: Error, function: String = #function, file: String = #file, line: Int = #line) {
         post(error: String(describing: error), function: function, file: file, line: line)
     }
 }
@@ -109,7 +119,14 @@ extension Language {
 
     // swiftlint:disable force_try
     public static let root: Tag = try! Language.root(
-        of: Data(contentsOf: URL(fileURLWithPath: Bundle.module.path(forResource: "blockchain", ofType: "json")!))
+        taskpaper: Data(
+            contentsOf: URL(
+                fileURLWithPath: Bundle.namespace.path(
+                    forResource: "blockchain",
+                    ofType: "taskpaper"
+                )!
+            )
+        )
     )
 
     static var unownedLanguageReferences: [Language] = []

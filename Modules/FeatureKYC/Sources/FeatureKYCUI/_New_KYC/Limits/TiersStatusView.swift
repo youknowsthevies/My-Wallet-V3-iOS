@@ -83,9 +83,13 @@ struct TierStatusCell: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.padding2) {
-            Icon.blockchain
+            Image("icon-verified", bundle: .module)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
                 .frame(width: 24, height: 24)
                 .accentColor(userTier.tier.accentColor)
+                .foregroundColor(userTier.tier.accentColor)
             VStack(alignment: .leading, spacing: Spacing.padding2) {
                 VStack(alignment: .leading, spacing: Spacing.baseline) {
                     Text(userTier.tier.limitsTitle)
@@ -101,9 +105,9 @@ struct TierStatusCell: View {
                     }
                 }
                 if userTier.state == .pending {
-                    Tag(text: LocalizedStrings.accountInManualReviewBadge, variant: .infoAlt, size: .large)
+                    TagView(text: LocalizedStrings.accountInManualReviewBadge, variant: .infoAlt, size: .large)
                 } else if userTier.tier.isGold, userTier.state == .none {
-                    Tag(text: LocalizedStrings.mostPopularBadge, variant: .success, size: .large)
+                    TagView(text: LocalizedStrings.mostPopularBadge, variant: .success, size: .large)
                 }
             }
             Spacer()

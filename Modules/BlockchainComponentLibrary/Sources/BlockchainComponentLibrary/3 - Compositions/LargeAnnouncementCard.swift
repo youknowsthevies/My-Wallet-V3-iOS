@@ -95,7 +95,11 @@ public struct LargeAnnouncementCard<Leading: View>: View {
                 .frame(height: 16)
             PrimaryButton(
                 title: control.title,
-                colorCombination: PillButtonStyle.ColorCombination(
+                leadingView: { EmptyView() },
+                action: control.action
+            )
+            .colorCombination(
+                PillButtonStyle.ColorCombination(
                     enabled: buttonColorSet,
                     pressed: PillButtonStyle.ColorSet(
                         foreground: .palette.white,
@@ -105,9 +109,7 @@ public struct LargeAnnouncementCard<Leading: View>: View {
                     disabled: buttonColorSet,
                     progressViewRail: mainColor,
                     progressViewTrack: mainColor
-                ),
-                leadingView: { EmptyView() },
-                action: control.action
+                )
             )
         }
         .padding(Spacing.padding2)

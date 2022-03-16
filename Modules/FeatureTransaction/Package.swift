@@ -78,6 +78,7 @@ let package = Package(
             from: "0.12.1"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
@@ -118,6 +119,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "FeatureKYCDomain", package: "FeatureKYC"),
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
@@ -153,11 +155,13 @@ let package = Package(
             name: "FeatureTransactionDomainTests",
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
+                .target(name: "FeatureTransactionDomainMock"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),
-                .product(name: "PlatformKit", package: "Platform")
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "PlatformKitMock", package: "Platform")
             ]
         ),
         .testTarget(

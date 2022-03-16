@@ -20,9 +20,14 @@ extension Media {
         }
 
         public var name: String?
+        public var bundle: String?
         public var systemName: String?
         public var url: URL?
         public var placeholder: Placeholder?
+    }
+
+    var bundle: String? {
+        video?.bundle ?? image?.bundle
     }
 
     public static let empty: Media = .init()
@@ -31,8 +36,12 @@ extension Media {
         Media(image: Media.Image(url: url, placeholder: placeholder))
     }
 
-    public static func image(named name: String) -> Self {
-        Media(image: Media.Image(name: name))
+    public static func image(named name: String, in bundle: Bundle) -> Self {
+        .image(named: name, in: bundle.bundleIdentifier)
+    }
+
+    public static func image(named name: String, in bundle: String? = "Platform-PlatformUIKit-resources") -> Self {
+        Media(image: Media.Image(name: name, bundle: bundle))
     }
 
     public static func image(systemName name: String) -> Self {
@@ -55,6 +64,7 @@ extension Media {
 
     public struct Video: Codable, Hashable {
         public var name: String?
+        public var bundle: String?
         public var url: URL?
     }
 
@@ -62,8 +72,8 @@ extension Media {
         Media(video: Media.Video(url: url))
     }
 
-    public static func video(named name: String) -> Self {
-        Media(video: Media.Video(name: name))
+    public static func video(named name: String, in bundle: String) -> Self {
+        Media(video: Media.Video(name: name, bundle: bundle))
     }
 }
 
@@ -71,24 +81,20 @@ public struct MediaView<Failure: View>: View {
 
     public var media: Media
 
-    public let bundle: Bundle
     public let failure: () -> Failure
 
     public init(
         _ media: Media,
-        in bundle: Bundle = .main,
         failure: @autoclosure @escaping () -> Failure
     ) {
-        self.init(media, in: bundle, failure: failure)
+        self.init(media, failure: failure)
     }
 
     public init(
         _ media: Media,
-        in bundle: Bundle = .main,
         @ViewBuilder failure: @escaping () -> Failure
     ) {
         self.media = media
-        self.bundle = bundle
         self.failure = failure
     }
 
@@ -100,6 +106,10 @@ public struct MediaView<Failure: View>: View {
         } else {
             failure()
         }
+    }
+
+    var bundle: Bundle {
+        media.bundle.flatMap(Bundle.init(identifier:)) ?? .module
     }
 
     @ViewBuilder
@@ -145,8 +155,8 @@ public struct MediaView<Failure: View>: View {
 
 extension MediaView where Failure == EmptyView {
 
-    public init(_ media: Media, in bundle: Bundle = .main) {
-        self.init(media, in: bundle, failure: EmptyView.init)
+    public init(_ media: Media) {
+        self.init(media, failure: EmptyView.init)
     }
 }
 

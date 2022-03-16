@@ -1,16 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@_exported import BlockchainNamespace
 import CasePaths
 import Combine
 import CombineSchedulers
 import DIKit
 import Foundation
-import Session
 import ToolKit
 
 public final class OpenBanking {
-
-    public typealias State = Session.State<Key>
 
     public struct Data: Hashable {
 
@@ -44,23 +42,25 @@ public final class OpenBanking {
         case failure(OpenBanking.Error)
     }
 
-    public private(set) var banking: OpenBankingClientAPI
+    public let banking: OpenBankingClientAPI
+    public let app: AppProtocol
 
-    public var state: State { banking.state }
     private var scheduler: AnySchedulerOf<DispatchQueue> { banking.scheduler }
 
-    public init(banking: OpenBankingClientAPI) {
+    public init(app: AppProtocol, banking: OpenBankingClientAPI) {
         self.banking = banking
+        self.app = app
     }
 
     public var authorisationURLPublisher: AnyPublisher<URL, Never> {
-        state.publisher(for: .authorisation.url, as: URL.self)
+        app.publisher(for: blockchain.ux.payment.method.open.banking.authorisation.url, as: URL.self)
+            .map(\.result)
             .ignoreResultFailure()
             .eraseToAnyPublisher()
     }
 
     public var isAuthorising: Bool {
-        state.result(for: .authorisation.url).isSuccess
+        app.state.result(for: blockchain.ux.payment.method.open.banking.authorisation.url).error == nil
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {
@@ -68,15 +68,13 @@ public final class OpenBanking {
     }
 
     public func reset() {
-        state.transaction { state in
-            state.clear(.id)
-            state.clear(.callback.path)
-            state.clear(.is.authorised)
-            state.clear(.authorisation.url)
-            state.clear(.account)
-            state.clear(.error.code)
-            state.clear(.consent.error)
-            state.clear(.consent.token)
+        app.state.transaction { state in
+            state.clear(blockchain.ux.payment.method.open.banking.callback.path)
+            state.clear(blockchain.ux.payment.method.open.banking.is.authorised)
+            state.clear(blockchain.ux.payment.method.open.banking.authorisation.url)
+            state.clear(blockchain.ux.payment.method.open.banking.error.code)
+            state.clear(blockchain.ux.payment.method.open.banking.consent.error)
+            state.clear(blockchain.ux.payment.method.open.banking.consent.token)
         }
     }
 
@@ -164,40 +162,58 @@ public final class OpenBanking {
             .eraseToAnyPublisher()
     }
 
-    private func confirm(order: OpenBanking.Order, data: Data) -> AnyPublisher<Action, Never> {
-
+    private func confirm(
+        order: OpenBanking.Order,
+        data: Data
+    ) -> AnyPublisher<Action, Never> {
+        func isFinal(_ order: OpenBanking.Order) -> Bool {
+            [.finished, .canceled, .expired, .failed, .depositMatched].contains(order.state)
+        }
         func poll(_ order: OpenBanking.Order) -> AnyPublisher<Action, Never> {
-            banking.poll(order: order)
-                .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
-                    if let error = order.paymentError {
-                        return .failure(error)
-                    } else {
-                        return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
-                    }
+            banking.poll(
+                order: order,
+                until: isFinal
+            )
+            .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
+                if let error = order.paymentError {
+                    return .failure(error)
+                } else {
+                    return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                 }
-                .map(Action.waitingForConsent(.confirmed(order)))
-                .catch(Action.failure)
-                .eraseToAnyPublisher()
+            }
+            .catch { error -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
+                switch error {
+                case .timeout:
+                    return .just(order)
+                default:
+                    return .failure(error)
+                }
+            }
+            .map(Action.waitingForConsent(.confirmed(order)))
+            .catch(Action.failure)
+            .eraseToAnyPublisher()
         }
 
         return banking.get(order: order)
             .flatMap { [banking] order -> AnyPublisher<Action, Never> in
-                if order.attributes?.authorisationUrl != nil {
-                    return Just(.waitingForConsent(.confirmed(order)))
-                        .eraseToAnyPublisher()
-                } else {
+                if let error = order.paymentError {
+                    return .just(Action.failure(error))
+                } else if order.state == .pendingConfirmation {
                     return banking.confirm(order: order.id, using: order.paymentMethodId)
                         .flatMap(poll)
                         .catch(Action.failure)
                         .eraseToAnyPublisher()
+                } else {
+                    return poll(order)
                 }
             }
             .catch(Action.failure)
             .eraseToAnyPublisher()
     }
 
-    private lazy var consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
-        .publisher
+    private lazy var consentErrorPublisher = app
+        .publisher(for: blockchain.ux.payment.method.open.banking.consent.error, as: OpenBanking.Error.self)
+        .map(\.result)
         .mapError(OpenBanking.Error.init)
         .map(Action.failure)
         .catch(Action.failure)
@@ -205,10 +221,11 @@ public final class OpenBanking {
 
     private func waitForAccountLinking(
         account: OpenBanking.BankAccount,
-        instiution: OpenBanking.Institution,
+        institution: OpenBanking.Institution,
         action: Action
     ) -> AnyPublisher<Action, Never> {
-        banking.state.publisher(for: .is.authorised, as: Bool.self)
+        app.publisher(for: blockchain.ux.payment.method.open.banking.is.authorised, as: Bool.self)
+            .map(\.result)
             .ignoreResultFailure()
             .flatMap { [banking] authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
                 banking.poll(account: account, until: \.isNotPending)
@@ -221,11 +238,11 @@ public final class OpenBanking {
                         return Just(Action.failure(error))
                             .eraseToAnyPublisher()
                     } else {
-                        return Just(Action.success(.linked(account, institution: instiution)))
+                        return Just(Action.success(.linked(account, institution: institution)))
                             .eraseToAnyPublisher()
                     }
                 } else {
-                    return consentErrorPublisher
+                    return consentErrorPublisher.first().eraseToAnyPublisher()
                 }
             }
             .catch(Action.failure)
@@ -234,7 +251,8 @@ public final class OpenBanking {
     }
 
     private func waitForConsent(output consent: Output, action: Action) -> AnyPublisher<Action, Never> {
-        banking.state.publisher(for: .is.authorised, as: Bool.self)
+        app.publisher(for: blockchain.ux.payment.method.open.banking.is.authorised, as: Bool.self)
+            .map(\.result)
             .ignoreResultFailure()
             .flatMap { [consentErrorPublisher] authorised -> AnyPublisher<Action, Never> in
                 if authorised {

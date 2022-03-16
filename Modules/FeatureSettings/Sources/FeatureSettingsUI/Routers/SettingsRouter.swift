@@ -327,10 +327,14 @@ final class SettingsRouter: SettingsRouterAPI {
             externalActionsProvider.handleSupport()
         case .showWebLogin:
             externalActionsProvider.handleSecureChannel()
+        case .showCardIssuance:
+            showCardIssuanceFlow()
         case .none:
             break
         }
     }
+
+    private func showCardIssuanceFlow() {}
 
     private func showCardLinkingFlow() {
         let presenter = topViewController

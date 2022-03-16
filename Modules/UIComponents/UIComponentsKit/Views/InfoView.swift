@@ -28,6 +28,13 @@ public struct InfoView: View {
             self.title = title
             self.subtitle = subtitle
         }
+
+        public init(media: Media, overlay: Media, title: String, subtitle: String) {
+            self.media = media
+            self.overlay = .init(media: overlay)
+            self.title = title
+            self.subtitle = subtitle
+        }
     }
 
     public struct Layout: Equatable, Codable {
@@ -52,7 +59,6 @@ public struct InfoView: View {
 
     public var model: Model
     public var layout: Layout
-    public var bundle: Bundle
 
     public init(
         _ model: Model,
@@ -61,12 +67,10 @@ public struct InfoView: View {
             overlay: Size(length: 7.5.vmin),
             margin: 6.vmin,
             spacing: LayoutConstants.VerticalSpacing.betweenContentGroups.pt
-        ),
-        in bundle: Bundle = .main
+        )
     ) {
         self.model = model
         self.layout = layout
-        self.bundle = bundle
     }
 
     private struct ComputedLayout: Equatable {
@@ -82,7 +86,6 @@ public struct InfoView: View {
         VStack(spacing: computed.spacing) {
             MediaView(
                 model.media,
-                in: bundle,
                 failure: {
                     Color.red
                         .opacity(0.25)
@@ -149,7 +152,7 @@ public struct InfoView: View {
 
     @ViewBuilder var overlayView: some View {
         if let icon = model.overlay?.media {
-            MediaView(icon, in: bundle, failure: Color.clear)
+            MediaView(icon, failure: Color.clear)
         } else if model.overlay?.progress == true {
             ProgressView(value: 0.25)
                 .progressViewStyle(IndeterminateProgressStyle())

@@ -72,6 +72,13 @@ extension LimitedTradeFeature {
         }
         return limit.displayString
     }
+
+    var timeframeDisplayString: String? {
+        guard enabled, limit?.value != nil else {
+            return nil
+        }
+        return limit?.timeframeDisplayString
+    }
 }
 
 extension LimitedTradeFeature.PeriodicLimit {
@@ -80,6 +87,10 @@ extension LimitedTradeFeature.PeriodicLimit {
         guard let value = value else {
             return LocalizedStrings.unlimited
         }
+        return value.shortDisplayString
+    }
+
+    var timeframeDisplayString: String {
         let format: String
         switch period {
         case .day:
@@ -89,6 +100,6 @@ extension LimitedTradeFeature.PeriodicLimit {
         case .year:
             format = LocalizedStrings.limitedPerYear
         }
-        return String.localizedStringWithFormat(format, value.shortDisplayString)
+        return format
     }
 }

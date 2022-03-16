@@ -1,0 +1,14 @@
+blockchain:
+	test:
+		schema:
+			boolean:
+			+ blockchain.type.boolean
+			stored:
+			stored_boolean:
+			+ blockchain.test.schema.stored
+			+ blockchain.type.boolean
+			string:
+			+ blockchain.type.string
+	type:
+		boolean:
+		string:

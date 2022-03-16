@@ -187,7 +187,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                 .sheet(
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
-                        if options.contains(.destinationEmbeddedIntoNavigationView) {
+                        if context.contains(.destinationEmbeddedIntoNavigationView) {
                             PrimaryNavigationView { intent.value.route.destination(in: store) }
                         } else {
                             intent.value.route.destination(in: store)

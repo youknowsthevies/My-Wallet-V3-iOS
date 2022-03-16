@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import EthereumKit
 import FeatureTransactionDomain
@@ -44,7 +45,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumKit.EthereumFeeServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
-    private let transactionsService: EthereumHistoricalTransactionServiceAPI
+    private let pendingTransactionRepository: PendingTransactionRepositoryAPI
 
     private lazy var cryptoCurrency = erc20Token.cryptoCurrency!
 
@@ -90,7 +91,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         hotWalletAddressService: HotWalletAddressServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
-        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
+        pendingTransactionRepository: PendingTransactionRepositoryAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.currencyConversionService = currencyConversionService
@@ -101,7 +102,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.receiveAddressFactory = receiveAddressFactory
         self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
-        self.transactionsService = transactionsService
+        self.pendingTransactionRepository = pendingTransactionRepository
         self.walletCurrencyService = walletCurrencyService
 
         feeCache = CachedValue(
@@ -110,7 +111,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: self.sourceCryptoCurrency)
+            self.feeService
+                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+                .asSingle()
         }
     }
 
@@ -263,6 +266,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                             feeLevel: pendingTransaction.feeLevel,
                             fee: fee,
                             nonce: nonce,
+                            chainID: erc20CryptoAccount.network.chainID,
                             contractAddress: erc20Token.contractAddress
                         ).publisher
                     }
@@ -391,12 +395,16 @@ extension ERC20OnChainTransactionEngine {
     }
 
     private func validateNoPendingTransaction() -> Completable {
-        transactionsService
-            .isWaitingOnTransaction
-            .map { isWaitingOnTransaction -> Void in
-                guard isWaitingOnTransaction == false else {
-                    throw TransactionValidationFailure(state: .transactionInFlight)
-                }
+        pendingTransactionRepository
+            .isWaitingOnTransaction(
+                network: erc20CryptoAccount.network,
+                address: erc20CryptoAccount.publicKey
+            )
+            .replaceError(with: true)
+            .flatMap { isWaitingOnTransaction in
+                isWaitingOnTransaction
+                    ? AnyPublisher.failure(TransactionValidationFailure(state: .transactionInFlight))
+                    : AnyPublisher.just(())
             }
             .asCompletable()
     }

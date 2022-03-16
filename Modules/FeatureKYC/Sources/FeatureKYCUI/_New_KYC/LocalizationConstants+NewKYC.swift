@@ -139,52 +139,112 @@ extension LocalizationConstants {
             )
         }
 
-        // MARK: - Unlock Trading View (Prompt to upgrade to Gold tier)
+        // MARK: - Unlock Trading View (Prompt to upgrade to Verified tier)
 
         enum UnlockTrading {
             static let title = NSLocalizedString(
-                "Unlock Gold Level Trading",
-                comment: ""
+                "Upgrade Your Profile.\nBuy, Sell & Swap More Crypto",
+                comment: "KYC Upgrade Prompt - Title"
             )
 
             static let message = NSLocalizedString(
-                "Verify your identity, earn rewards and trade up to $10,000 a day.",
-                comment: ""
+                "Verify to unlock access to Buying, Selling, Swapping & Rewards Accounts.",
+                comment: "KYC Upgrade Prompt - Message"
             )
 
-            static let benefitCashAccounts_title = NSLocalizedString(
-                "Cash Accounts",
-                comment: ""
+            static let navigationTitle = NSLocalizedString(
+                "Upgrade Now",
+                comment: "KYC Upgrade Prompt - Navigation Bar Title"
             )
 
-            static let benefitCashAccounts_message = NSLocalizedString(
-                "Store USD, GBP or EUR in your wallet. Use the balance to buy crypto. Sell crypto for cash at anytime.",
-                comment: ""
+            static let cta_verified = NSLocalizedString(
+                "Get Verified",
+                comment: "KYC Upgrade Prompt - Upgrade to Verified CTA Title"
             )
 
-            static let benefitEarnRewards_title = NSLocalizedString(
+            static let cta_basic = NSLocalizedString(
+                "Get Basic",
+                comment: "KYC Upgrade Prompt - Upgrade to Basic CTA Title"
+            )
+
+            static let basicTierName = NSLocalizedString(
+                "Basic",
+                comment: "KYC Upgrade Prompt - Basic Tier Name"
+            )
+
+            static let verifiedTierName = NSLocalizedString(
+                "Verified",
+                comment: "KYC Upgrade Prompt - Verified Tier Name"
+            )
+
+            static let benefit_basicTier_title = NSLocalizedString(
+                "Basic Level",
+                comment: "KYC Upgrade Prompt - Basic Tier Benefit Title"
+            )
+
+            static let benefit_basicTier_badgeTitle = NSLocalizedString(
+                "Limited Access",
+                comment: "KYC Upgrade Prompt - Basic Tier Benefit Badge Title"
+            )
+
+            static let benefit_basic_sendAndReceive_title = NSLocalizedString(
+                "Send & Receive Crypto",
+                comment: "KYC Upgrade Prompt - Send & Receive Benefit Title"
+            )
+
+            static let benefit_basic_sendAndReceive_info = NSLocalizedString(
+                "Between Private Key Wallets",
+                comment: "KYC Upgrade Prompt - Send & Receive Benefit Badge Detail"
+            )
+
+            static let benefit_basic_swap_title = NSLocalizedString(
+                "Swap Crypto",
+                comment: "KYC Upgrade Prompt - Swap Benefit Basic Title"
+            )
+
+            static let benefit_basic_swap_info = NSLocalizedString(
+                "1-Time Between Private Key Wallets",
+                comment: "KYC Upgrade Prompt - Swap Benefit Basic Badge Detail"
+            )
+
+            static let benefit_verifiedTier_title = NSLocalizedString(
+                "Verified Level",
+                comment: "KYC Upgrade Prompt - Verified Tier Benefit Title"
+            )
+
+            static let benefit_verifiedTier_badgeTitle = NSLocalizedString(
+                "Full Access",
+                comment: "KYC Upgrade Prompt - Verified Tier Benefit Badge Title"
+            )
+
+            static let benefit_verified_swap_title = NSLocalizedString(
+                "Swap Crypto",
+                comment: "KYC Upgrade Prompt - Swap Verified Benefit Title"
+            )
+
+            static let benefit_verified_swap_info = NSLocalizedString(
+                "Between All Wallets & Accounts",
+                comment: "KYC Upgrade Prompt - Swap Verified Benefit Info"
+            )
+
+            static let benefit_verified_buyAndSell_title = NSLocalizedString(
+                "Buying & Selling",
+                comment: "KYC Upgrade Prompt - Buy & Sell Verified Benefit Title"
+            )
+
+            static let benefit_verified_buyAndSell_info = NSLocalizedString(
+                "Card or Banking Methods",
+                comment: "KYC Upgrade Prompt - Buy & Sell Verified Benefit Info"
+            )
+
+            static let benefit_verified_rewards_title = NSLocalizedString(
                 "Earn Rewards",
-                comment: ""
+                comment: "KYC Upgrade Prompt - Rewards Verified Benefit Title"
             )
 
-            static let benefitEarnRewards_message = NSLocalizedString(
-                "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning.",
-                comment: ""
-            )
-
-            static let benefitLinkBankAccounts_title = NSLocalizedString(
-                "Link a Bank",
-                comment: ""
-            )
-
-            static let benefitLinkBankAccounts_message = NSLocalizedString(
-                "Connect your Wallet to any bank or credit union. Deposit and Withdraw Cash at anytyime.",
-                comment: ""
-            )
-
-            static let ctaApplyToUnlock = NSLocalizedString(
-                "Apply & Unlock Now",
-                comment: ""
+            static let benefit_verified_rewards_info = NSLocalizedString(
+                "Earn Rewards On Your Crypto",
+                comment: "KYC Upgrade Prompt - Rewards Verified Benefit Info"
             )
         }
     }

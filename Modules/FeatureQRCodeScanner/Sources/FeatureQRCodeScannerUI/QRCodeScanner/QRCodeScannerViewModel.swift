@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AVKit
 import Combine
 import DIKit
 import FeatureQRCodeScannerData
@@ -15,6 +16,11 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     var scanningStarted: (() -> Void)? { get set }
     var scanningStopped: (() -> Void)? { get set }
     var closeButtonTapped: (() -> Void)? { get set }
+    var cameraConfigured: (() -> Void)? { get set }
+    /// Displays a bottom sheet with optionally an Allow Camera Access button
+    var showInformationSheetTapped: ((Bool) -> Void)? { get set }
+    var showCameraAccessFailure: ((_ title: String, _ message: String) -> Void)? { get set }
+    var showCameraNotAuthorizedAlert: (() -> Void)? { get set }
     var scanComplete: ((Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void)? { get set }
     var completed: (Result<QRCodeScannerResultType, QRCodeScannerResultError>) -> Void { get set }
 
@@ -25,8 +31,17 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     func closeButtonPressed()
     func startReadingQRCode(from scannableArea: QRCodeScannableArea)
 
+    func viewDidAppear()
     func viewWillDisappear()
     func handleSelectedQRImage(_ image: UIImage)
+
+    func showInformationSheet()
+
+    func allowCameraAccess()
+    func cameraAccessDenied() -> Bool
+    func openAppSettings()
+    func showsWalletConnectRow() -> AnyPublisher<Bool, Never>
+    func openWalletConnectArticle(url: String)
 }
 
 public enum QRCodeScannerParsingOptions {
@@ -43,6 +58,10 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     var scanningStarted: (() -> Void)?
     var scanningStopped: (() -> Void)?
     var closeButtonTapped: (() -> Void)?
+    var showInformationSheetTapped: ((Bool) -> Void)?
+    var cameraConfigured: (() -> Void)?
+    var showCameraNotAuthorizedAlert: (() -> Void)?
+    var showCameraAccessFailure: ((_ title: String, _ message: String) -> Void)?
     var scanComplete: CompletionHandler?
     var completed: CompletionHandler
 
@@ -56,28 +75,38 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         LocalizationConstants.scanQRCode
     }
 
+    private let requestCameraAccess: RequestCameraAccess
+    private let checkCameraAccess: () -> AVAuthorizationStatus
     private let types: [QRCodeScannerType]
     private let scanner: QRCodeScannerProtocol
     private let cryptoTargetParser: CryptoTargetQRCodeParser
     private let deepLinkParser: DeepLinkQRCodeParser
     private let secureChannelParser: SecureChannelQRCodeParser
     private let walletConnectParser: WalletConnectQRCodeParser
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let cacheSuite: CacheSuite
+    private let urlOpener: URLOpener
     private let parsingSubject = CurrentValueSubject<Bool, Never>(false)
     private var cancellables = [AnyCancellable]()
 
+    // swiftlint:disable function_body_length
     init(
         types: [QRCodeScannerType],
         additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
         supportsCameraRoll: Bool,
         scanner: QRCodeScannerProtocol,
         completed: @escaping CompletionHandler,
+        requestCameraAccess: @escaping RequestCameraAccess,
+        checkCameraAccess: @escaping () -> AVAuthorizationStatus,
         deepLinkHandler: DeepLinkHandling = resolve(),
         deepLinkRouter: DeepLinkRouting = resolve(),
         secureChannelService: SecureChannelAPI = resolve(),
         adapter: CryptoTargetQRCodeParserAdapter = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         walletConnectSessionRepository: SessionRepositoryAPI = resolve(),
-        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
+        cacheSuite: CacheSuite = resolve(),
+        urlOpener: URLOpener = resolve()
     ) {
         let additionalLinkRoutes: [DeepLinkRoute]
         switch additionalParsingOptions {
@@ -100,6 +129,12 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
                     return nil
                 }
             }
+
+        self.requestCameraAccess = requestCameraAccess
+        self.checkCameraAccess = checkCameraAccess
+        self.featureFlagsService = featureFlagsService
+        self.cacheSuite = cacheSuite
+        self.urlOpener = urlOpener
 
         cryptoTargetParser = CryptoTargetQRCodeParser(
             account: sourceAccount,
@@ -198,6 +233,22 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             .store(in: &cancellables)
     }
 
+    func viewDidAppear() {
+        switch checkCameraAccess() {
+        case .notDetermined:
+            showInformationSheetTapped?(false)
+        case .authorized,
+             .denied,
+             .restricted:
+            allowCameraAccess()
+        @unknown default:
+            showCameraAccessFailure?(
+                LocalizationConstants.Errors.error,
+                LocalizationConstants.Errors.genericError
+            )
+        }
+    }
+
     func viewWillDisappear() {
         scanner.stopReadingQRCode(complete: nil)
     }
@@ -213,6 +264,57 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
 
     func handleSelectedQRImage(_ image: UIImage) {
         scanner.handleSelectedQRImage(image)
+    }
+
+    func showInformationSheet() {
+        let shouldShowAllowAccessButton = checkCameraAccess() == .authorized
+        showInformationSheetTapped?(shouldShowAllowAccessButton)
+    }
+
+    func allowCameraAccess() {
+        switch requestCameraAccess() {
+        case .success(let input):
+            scanner.configure(with: input)
+            cameraConfigured?()
+            // displays the informational bottom sheet
+            // if not seen before and have already auth'd the camera access
+            showAllowAccessSheetIfNeeded()
+        case .failure(.notAuthorized):
+            showCameraNotAuthorizedAlert?()
+        case .failure(let error):
+            showCameraAccessFailure?(
+                LocalizationConstants.Errors.error,
+                String(describing: error)
+            )
+        }
+    }
+
+    func cameraAccessDenied() -> Bool {
+        checkCameraAccess() == .denied
+    }
+
+    func openAppSettings() {
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(settingsURL)
+    }
+
+    func showsWalletConnectRow() -> AnyPublisher<Bool, Never> {
+        featureFlagsService.isEnabled(.remote(.walletConnectEnabled))
+    }
+
+    func openWalletConnectArticle(url: String) {
+        guard let url = URL(string: url) else {
+            return
+        }
+        urlOpener.open(url)
+    }
+
+    private func showAllowAccessSheetIfNeeded() {
+        guard !cacheSuite.bool(forKey: UserDefaults.Keys.hasSeenAllowAccessInformationSheetKey) else {
+            return
+        }
+        showInformationSheetTapped?(true)
+        cacheSuite.set(true, forKey: UserDefaults.Keys.hasSeenAllowAccessInformationSheetKey)
     }
 }
 

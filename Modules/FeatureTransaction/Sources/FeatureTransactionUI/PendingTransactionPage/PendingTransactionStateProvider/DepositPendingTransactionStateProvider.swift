@@ -61,7 +61,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                     )
                 )
             ),
-            effect: .close,
+            effect: .complete,
             primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }

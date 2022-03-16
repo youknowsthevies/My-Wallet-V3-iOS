@@ -41,7 +41,7 @@ final class BitcoinCashActivityDetailsInteractor {
 
     func details(identifier: String, createdAt: Date) -> Observable<BitcoinCashActivityDetailsViewModel> {
         let transaction = detailsService
-            .details(for: identifier)
+            .details(for: identifier, cryptoCurrency: .bitcoinCash)
         let note = note(for: identifier)
             .catchAndReturn(nil)
         let price = price(at: createdAt)

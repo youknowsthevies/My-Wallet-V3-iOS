@@ -79,6 +79,7 @@ struct AppDelegateEnvironment {
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var deepLinkCoordinator: DeepLinkCoordinatorAPI
 }
 
 /// The state of the app delegate
@@ -99,6 +100,7 @@ public struct AppDelegateState: Equatable {
 }
 
 /// The reducer of the app delegate that describes the effects for each action.
+// swiftlint:disable closure_body_length
 let appDelegateReducer = Reducer<
     AppDelegateState, AppDelegateAction, AppDelegateEnvironment
 > { state, action, environment in
@@ -136,7 +138,9 @@ let appDelegateReducer = Reducer<
                 .map(.applyCertificatePinning)
                 .eraseToEffect(),
 
-            enableSift(using: environment.siftService)
+            enableSift(using: environment.siftService),
+
+            enableDeepLinking(using: environment.deepLinkCoordinator)
         )
     case .willResignActive:
         return applyBlurFilter(
@@ -242,5 +246,13 @@ private func enableSift(
 ) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.enable()
+    }
+}
+
+private func enableDeepLinking(
+    using coordinator: DeepLinkCoordinatorAPI
+) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        coordinator.start()
     }
 }

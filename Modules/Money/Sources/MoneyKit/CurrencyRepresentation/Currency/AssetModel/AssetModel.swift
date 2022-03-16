@@ -45,28 +45,11 @@ public struct AssetModel: Hashable {
         logoPngUrl = assetResponse.type.logoPngUrl
         spotColor = assetResponse.type.spotColor
 
-        switch assetResponse.type.name {
-        case SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue:
-            self.sortIndex = 10 + sortIndex
-            kind = .coin(minimumOnChainConfirmations: assetResponse.type.minimumOnChainConfirmations ?? 0)
-        case SupportedAssetsResponse.Asset.AssetType.Name.celoToken.rawValue:
-            self.sortIndex = 1000 + sortIndex
-            kind = .celoToken
-        case SupportedAssetsResponse.Asset.AssetType.Name.erc20.rawValue:
-            guard assetResponse.type.parentChain == NonCustodialCoinCode.ethereum.rawValue else {
-                return nil
-            }
-            guard let erc20Address = assetResponse.type.erc20Address else {
-                return nil
-            }
-            self.sortIndex = 10000 + sortIndex
-            kind = .erc20(contractAddress: erc20Address)
-        case SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue:
-            self.sortIndex = sortIndex
-            kind = .fiat
-        default:
+        guard let assetModelType = assetResponse.type.assetModelType else {
             return nil
         }
+        kind = assetModelType
+        self.sortIndex = assetModelType.baseSortIndex + sortIndex
     }
 
     init(
@@ -112,12 +95,10 @@ public struct AssetModel: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(code)
-        hasher.combine(kind)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.code == rhs.code
-            && lhs.kind == rhs.kind
     }
 
     public func supports(product: AssetModelProduct) -> Bool {
@@ -131,59 +112,96 @@ extension AssetModel {
         CryptoCurrency(assetModel: self)
     }
 
-    public static var bitcoin: AssetModel {
-        AssetModel(
-            code: "BTC",
-            displayCode: "BTC",
-            kind: .coin(minimumOnChainConfirmations: 2),
-            name: "Bitcoin",
-            precision: 8,
-            products: AssetModelProduct.allCases,
-            logoPngUrl: nil,
-            spotColor: "FF9B22",
-            sortIndex: 1
-        )
-    }
+    public static let bitcoin = AssetModel(
+        code: "BTC",
+        displayCode: "BTC",
+        kind: .coin(minimumOnChainConfirmations: 2),
+        name: "Bitcoin",
+        precision: 8,
+        products: AssetModelProduct.allCases,
+        logoPngUrl: nil,
+        spotColor: "FF9B22",
+        sortIndex: 1
+    )
 
-    public static var bitcoinCash: AssetModel {
-        AssetModel(
-            code: "BCH",
-            displayCode: "BCH",
-            kind: .coin(minimumOnChainConfirmations: 3),
-            name: "Bitcoin Cash",
-            precision: 8,
-            products: AssetModelProduct.allCases,
-            logoPngUrl: nil,
-            spotColor: "8DC351",
-            sortIndex: 3
-        )
-    }
+    public static let bitcoinCash = AssetModel(
+        code: "BCH",
+        displayCode: "BCH",
+        kind: .coin(minimumOnChainConfirmations: 3),
+        name: "Bitcoin Cash",
+        precision: 8,
+        products: AssetModelProduct.allCases,
+        logoPngUrl: nil,
+        spotColor: "8DC351",
+        sortIndex: 3
+    )
 
-    public static var ethereum: AssetModel {
-        AssetModel(
-            code: "ETH",
-            displayCode: "ETH",
-            kind: .coin(minimumOnChainConfirmations: 30),
-            name: "Ethereum",
-            precision: 18,
-            products: AssetModelProduct.allCases,
-            logoPngUrl: nil,
-            spotColor: "473BCB",
-            sortIndex: 2
-        )
-    }
+    public static let ethereum = AssetModel(
+        code: "ETH",
+        displayCode: "ETH",
+        kind: .coin(minimumOnChainConfirmations: 30),
+        name: "Ethereum",
+        precision: 18,
+        products: AssetModelProduct.allCases,
+        logoPngUrl: nil,
+        spotColor: "473BCB",
+        sortIndex: 2
+    )
 
-    public static var stellar: AssetModel {
-        AssetModel(
-            code: "XLM",
-            displayCode: "XLM",
-            kind: .coin(minimumOnChainConfirmations: 3),
-            name: "Stellar",
-            precision: 7,
-            products: AssetModelProduct.allCases,
-            logoPngUrl: nil,
-            spotColor: "000000",
-            sortIndex: 4
-        )
+    public static let stellar = AssetModel(
+        code: "XLM",
+        displayCode: "XLM",
+        kind: .coin(minimumOnChainConfirmations: 3),
+        name: "Stellar",
+        precision: 7,
+        products: AssetModelProduct.allCases,
+        logoPngUrl: nil,
+        spotColor: "000000",
+        sortIndex: 4
+    )
+}
+
+extension AssetModelType {
+    fileprivate var baseSortIndex: Int {
+        switch self {
+        case .celoToken:
+            return 100
+        case .coin:
+            return 10
+        case .erc20:
+            return 10000
+        case .fiat:
+            return 0
+        }
+    }
+}
+
+extension SupportedAssetsResponse.Asset.AssetType {
+    fileprivate var assetModelType: AssetModelType? {
+        switch name {
+        case Self.Name.fiat.rawValue:
+            return .fiat
+        case Self.Name.celoToken.rawValue:
+            return .celoToken(parentChain: .celo)
+        case Self.Name.coin.rawValue:
+            return .coin(
+                minimumOnChainConfirmations: minimumOnChainConfirmations ?? 0
+            )
+        case Self.Name.erc20.rawValue:
+            guard let erc20Address = erc20Address else {
+                return nil
+            }
+            guard let parentChain = parentChain
+                .flatMap(AssetModelType.ERC20ParentChain.init(rawValue:))
+            else {
+                return nil
+            }
+            return .erc20(
+                contractAddress: erc20Address,
+                parentChain: parentChain
+            )
+        default:
+            return nil
+        }
     }
 }

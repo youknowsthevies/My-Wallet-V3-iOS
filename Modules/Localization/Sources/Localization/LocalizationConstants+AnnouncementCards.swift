@@ -115,7 +115,7 @@ extension LocalizationConstants {
 
         public enum BlockstackAirdropRegisteredMini {
             public static let title = NSLocalizedString(
-                "A Reward for Being Gold Level",
+                "A Reward for Being Verified Level",
                 comment: "STX airdrop registered announcement mini card title"
             )
             public static let description = NSLocalizedString(
@@ -279,6 +279,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum WalletConnect {
+            public static let title = NSLocalizedString(
+                "WalletConnect is Now Available!",
+                comment: "WalletConnect announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Securely connect your wallet to any web 3.0 application. ",
+                comment: "WalletConnect announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Learn more",
+                comment: "WalletConnect announcement card CTA button title"
+            )
+        }
+
         // MARK: - Periodic
 
         public enum BuyBitcoin {
@@ -303,7 +318,7 @@ extension LocalizationConstants {
                     comment: ""
                 )
                 public static let description = NSLocalizedString(
-                    "Upgrade to Gold and Swap faster, with higher limits, lower fees, and a better experience.",
+                    "Upgrade to Verified and Swap faster, with higher limits, lower fees, and a better experience.",
                     comment: ""
                 )
                 public static let ctaButton = NSLocalizedString(

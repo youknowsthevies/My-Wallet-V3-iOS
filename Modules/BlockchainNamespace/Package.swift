@@ -16,28 +16,43 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/screensailor/Lexicon", .branch("trunk"))
+        .package(url: "https://github.com/screensailor/Lexicon", .revision("160c4c417f8490658a8396d0283fb0d6fb98c327"))
     ],
     targets: [
         .executableTarget(
             name: "gen",
             dependencies: [
                 .product(name: "Lexicon", package: "Lexicon"),
-                .product(name: "SwiftLexicon", package: "Lexicon")
+                .product(name: "SwiftStandAlone", package: "Lexicon")
             ]
         ),
         .target(
             name: "BlockchainNamespace",
             dependencies: [
-                .product(name: "SwiftLexicon", package: "Lexicon")
+                .target(name: "AnyCoding"),
+                .target(name: "FirebaseProtocol"),
+                .product(name: "Lexicon", package: "Lexicon")
             ],
             resources: [
-                .copy("blockchain.json")
+                .copy("blockchain.taskpaper")
             ]
+        ),
+        .target(
+            name: "AnyCoding"
+        ),
+        .target(
+            name: "FirebaseProtocol"
         ),
         .testTarget(
             name: "BlockchainNamespaceTests",
-            dependencies: ["BlockchainNamespace"]
+            dependencies: ["BlockchainNamespace"],
+            resources: [
+                .copy("test.taskpaper")
+            ]
+        ),
+        .testTarget(
+            name: "AnyCodingTests",
+            dependencies: ["AnyCoding"]
         )
     ]
 )

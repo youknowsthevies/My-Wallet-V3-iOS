@@ -297,7 +297,7 @@ struct LineShape: Shape {
         let x2 = stride(from: 0.d, through: 1, by: 1 / (density - 1).d)
         let y2: [Double]
         if tolerance > 1 {
-            y2 = x2.map(scale.linear).slidingAverages(radius: tolerance, prefixAndSuffix: .repeating)
+            y2 = x2.map(scale.linear).slidingAverages(radius: tolerance, prefixAndSuffix: .reverseToFit)
         } else {
             y2 = x2.map(scale.linear)
         }
@@ -309,24 +309,31 @@ struct LineShape: Shape {
             return (.zero, .zero)
         }
 
-        func vertex(at i: Int, function f: (Double) -> Double) -> CGPoint {
-            vertices[f((i.d / data.count.d) * density.d).i.clamped(to: 0...vertices.count - 1)]
+        func find(_ i: Int, using comparator: (CGFloat, CGFloat) -> Bool) -> CGPoint {
+
+            var iterator = (
+                left: vertices.reversed().makeIterator(),
+                right: vertices.makeIterator()
+            )
+
+            let normalised = ((i.d / data.count.d) * density.d).i.clamped(to: 0..<vertices.count)
+            var current = vertices[normalised]
+
+            let left = iterator.left.next() ?? current
+            let right = iterator.right.next() ?? current
+
+            let itr = comparator(left.y, right.y) ? AnyIterator(iterator.left) : AnyIterator(iterator.right)
+
+            while let next = itr.next(), comparator(next.y, current.y) {
+                current = next
+            }
+
+            return current
         }
 
-        let index = (
-            min: (
-                lower: vertex(at: min, function: floor),
-                upper: vertex(at: min, function: ceil)
-            ),
-            max: (
-                lower: vertex(at: max, function: floor),
-                upper: vertex(at: max, function: ceil)
-            )
-        )
-
         return (
-            index.min.lower.y < index.min.upper.y ? index.min.lower : index.min.upper,
-            index.max.lower.y > index.max.upper.y ? index.max.lower : index.max.upper
+            find(min, using: >),
+            find(max, using: <)
         )
     }
 
@@ -453,9 +460,9 @@ extension LineShape {
 
         let (min, max) = raw.minAndMax() ?? (0, .greatestFiniteMagnitude)
         let span = (max - min).d
-        let normal = raw.map { value in
+        let normal = span > 0 ? raw.map { value in
             1.d - (value.d - min.d) / span
-        }
+        } : Array(repeating: 1, count: raw.count)
 
         let smooth = LineShape.vertices(
             of: normal,

@@ -1,6 +1,6 @@
 import Foundation
 import Lexicon
-import SwiftLexicon
+import SwiftStandAlone
 
 @main
 enum Main {
@@ -24,29 +24,45 @@ enum Main {
             }
         }
 
+        let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        let module = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("BlockchainNamespace")
+
+        if FileManager.default.fileExists(
+            atPath: cwd.appendingPathComponent("blockchain.taskpaper").path
+        ) {
+            input = cwd.appendingPathComponent("blockchain.taskpaper")
+        }
+
+        if input == nil, output == nil {
+            input = module.appendingPathComponent("blockchain.taskpaper")
+            output = module
+        }
+
         guard let input = input else {
             exit(EXIT_FAILURE)
         }
 
         let directory = output ?? input.deletingLastPathComponent()
 
-        let taskpaper = try TaskPaper(String(contentsOfFile: input.path)).decode()
-        let lexicon = await Lexicon.from(taskpaper)
+        let taskpaper = try TaskPaper(String(contentsOfFile: input.path))
+        let lexicon = try await Lexicon.from(taskpaper.decode())
         let json = await lexicon.json()
 
         do {
-            let gen = try JSONClasses.generate(json)
-            let file = directory.appendingPathComponent("blockchain.json")
-            print("📄 Writing to", file.path, terminator: " ")
+            let gen = try SwiftStandAlone.Generator.generate(json)
+            let file = directory.appendingPathComponent("blockchain.swift")
+            print("📄 Writing to", file.lastPathComponent, terminator: " ")
             try gen.write(to: file)
             print("✅")
         }
 
         do {
-            let gen = try SwiftLexicon.Generator.generate(json)
-            let file = directory.appendingPathComponent("blockchain.swift")
-            print("📄 Writing to", file.path, terminator: " ")
-            try gen.write(to: file)
+            print("📄 Writing to", input.lastPathComponent, terminator: " ")
+            try await TaskPaper.encode(lexicon.graph)
+                .write(to: input, atomically: true, encoding: .utf8)
             print("✅")
         }
     }

@@ -18,7 +18,7 @@ extension View {
     /// - Returns: `self`, otherwise unmodified.
     public func primaryNavigation<Leading: View, Trailing: View>(
         @ViewBuilder leading: @escaping () -> Leading,
-        title: String?,
+        title: String? = nil,
         @ViewBuilder trailing: @escaping () -> Trailing
     ) -> some View {
         modifier(
@@ -205,10 +205,9 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
             }
         #else
         content
+            .navigationBarTitleDisplayMode(.inline)
             .ifLet(title) { view, title in
-                view
-                    .navigationTitle(title)
-                    .navigationBarTitleDisplayMode(.inline)
+                view.navigationTitle(title)
             }
             .navigationBarItems(
                 leading: HStack(spacing: Spacing.padding3) {
@@ -217,7 +216,6 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
                 trailing: HStack(spacing: Spacing.padding3) {
                     trailing?()
                 }
-                .padding(.trailing, Spacing.padding1)
                 .accentColor(.semantic.muted)
             )
         #endif
@@ -294,6 +292,7 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
         // Customize the styling of the navigation bar
         private func styleNavigationBar() {
             if let navigationBar = navigationController?.navigationBar {
+
                 navigationBar.tintColor = UIColor(
                     Color(
                         light: .palette.grey400,
@@ -301,7 +300,7 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
                     )
                 )
                 navigationBar.barTintColor = UIColor(.semantic.background)
-                navigationBar.shadowImage = UIImage()
+                navigationBar.backgroundColor = UIColor(.semantic.background)
 
                 let image = Icon.chevronLeft.uiImage?
                     .padded(by: UIEdgeInsets(top: 0, left: Spacing.padding1, bottom: 0, right: 0))

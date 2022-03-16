@@ -112,7 +112,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
             )
         )
         feeCache.setFetch(weak: self) { (self) in
-            self.feeService.fees
+            self.feeService.fees.asSingle()
         }
     }
 }

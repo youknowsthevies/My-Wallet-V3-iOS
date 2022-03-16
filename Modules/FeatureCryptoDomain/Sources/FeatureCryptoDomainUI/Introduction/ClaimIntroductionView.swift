@@ -1,16 +1,210 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
+import ComposableArchitecture
+import ComposableNavigation
+import FeatureCryptoDomainDomain
+import Localization
 import SwiftUI
+import ToolKit
+
+// MARK: - ComposableArchitecture
+
+enum ClaimIntroductionRoute: NavigationRoute {
+    case benefits
+    case searchDomain
+
+    @ViewBuilder
+    func destination(in store: Store<ClaimIntroductionState, ClaimIntroductionAction>) -> some View {
+        switch self {
+        case .benefits:
+            ClaimBenefitsView()
+        case .searchDomain:
+            IfLetStore(
+                store.scope(
+                    state: \.searchState,
+                    action: ClaimIntroductionAction.searchAction
+                ),
+                then: SearchCryptoDomainView.init(store:)
+            )
+        }
+    }
+}
+
+struct ClaimIntroductionState: NavigationState {
+    var route: RouteIntent<ClaimIntroductionRoute>?
+    var searchState: SearchCryptoDomainState?
+}
+
+enum ClaimIntroductionAction: NavigationAction {
+    case route(RouteIntent<ClaimIntroductionRoute>?)
+    case searchAction(SearchCryptoDomainAction)
+}
+
+let claimIntroductionReducer = Reducer.combine(
+    searchCryptoDomainReducer
+        .optional()
+        .pullback(
+            state: \.searchState,
+            action: /ClaimIntroductionAction.searchAction,
+            environment: {
+                SearchCryptoDomainEnvironment(
+                    mainQueue: .main
+                )
+            }
+        ),
+    Reducer<ClaimIntroductionState, ClaimIntroductionAction, Void> {
+        state, action, _ in
+        switch action {
+        case .route(let route):
+            if let routeValue = route?.route {
+                switch routeValue {
+                case .searchDomain:
+                    state.searchState = .init(
+                        searchResults: [
+                            SearchDomainResult(
+                                domainName: "cocacola.blockchain",
+                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainAvailability: .unavailable
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocacola001.blockchain",
+                                domainType: .free,
+                                domainAvailability: .availableForFree
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocacola002.blockchain",
+                                domainType: .free,
+                                domainAvailability: .availableForFree
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocola.blockchain",
+                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainAvailability: .availableForPremiumSale(price: "50")
+                            ),
+                            SearchDomainResult(
+                                domainName: "cocola2.blockchain",
+                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
+                                domainAvailability: .availableForPremiumSale(price: "500")
+                            )
+                        ]
+                    )
+                case .benefits:
+                    break
+                }
+            }
+            return .none
+        case .searchAction:
+            return .none
+        }
+    }
+    .routing()
+)
+
+// MARK: - ClaimIntroductionView
 
 struct ClaimIntroductionView: View {
 
+    private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimIntroduction
+    private typealias Accessibility = AccessibilityIdentifiers.HowItWorks
+
+    private let store: Store<ClaimIntroductionState, ClaimIntroductionAction>
+
+    init(store: Store<ClaimIntroductionState, ClaimIntroductionAction>) {
+        self.store = store
+    }
+
     var body: some View {
-        EmptyView()
+        WithViewStore(store) { viewStore in
+            VStack(alignment: .center, spacing: Spacing.padding3) {
+                introductionHeader
+                    .padding([.top, .leading, .trailing], Spacing.padding3)
+                introductionList
+                Spacer()
+                SmallMinimalButton(title: LocalizedString.promptButton) {
+                    viewStore.send(.enter(into: .benefits))
+                }
+                .accessibility(identifier: Accessibility.smallButton)
+                Spacer()
+                Text(LocalizedString.instruction)
+                    .typography(.caption1)
+                    .foregroundColor(.semantic.overlay)
+                    .multilineTextAlignment(.center)
+                    .padding([.leading, .trailing], Spacing.padding3)
+                    .accessibility(identifier: Accessibility.instructionText)
+                PrimaryButton(title: LocalizedString.goButton) {
+                    viewStore.send(.navigate(to: .searchDomain))
+                }
+                .padding([.leading, .trailing], Spacing.padding3)
+                .accessibility(identifier: Accessibility.ctaButton)
+            }
+            .navigationRoute(in: store)
+            .primaryNavigation(title: LocalizedString.title)
+        }
+    }
+
+    private var introductionHeader: some View {
+        VStack(alignment: .center, spacing: Spacing.padding2) {
+            Text(LocalizedString.Header.title)
+                .typography(.title3)
+                .accessibility(identifier: Accessibility.headerTitle)
+            Text(LocalizedString.Header.description)
+                .typography(.paragraph1)
+                .foregroundColor(.semantic.overlay)
+                .multilineTextAlignment(.center)
+                .accessibility(identifier: Accessibility.headerDescription)
+        }
+    }
+
+    private var introductionList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PrimaryDivider()
+            PrimaryRow(
+                title: LocalizedString.ListView.ChooseDomain.title,
+                subtitle: LocalizedString.ListView.ChooseDomain.description,
+                leading: {
+                    Image("number-one")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
+            PrimaryDivider()
+            PrimaryRow(
+                title: LocalizedString.ListView.ClaimDomain.title,
+                subtitle: LocalizedString.ListView.ClaimDomain.description,
+                leading: {
+                    Image("number-two")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
+            PrimaryDivider()
+            PrimaryRow(
+                title: LocalizedString.ListView.ReceiveCrypto.title,
+                subtitle: LocalizedString.ListView.ReceiveCrypto.description,
+                leading: {
+                    Image("number-three")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                },
+                trailing: { EmptyView() }
+            ).padding([.top, .bottom], 10)
+            PrimaryDivider()
+        }
+        .accessibility(identifier: Accessibility.introductionList)
     }
 }
 
 struct ClaimIntroductionView_Previews: PreviewProvider {
     static var previews: some View {
-        ClaimIntroductionView()
+        ClaimIntroductionView(
+            store: .init(
+                initialState: .init(),
+                reducer: claimIntroductionReducer,
+                environment: ()
+            )
+        )
     }
 }

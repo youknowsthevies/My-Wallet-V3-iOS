@@ -3,7 +3,6 @@
 import Combine
 import ComposableArchitecture
 import FeatureOpenBankingDomain
-import Session
 import SwiftUI
 import ToolKit
 import UIComponentsKit
@@ -27,6 +26,7 @@ public struct BankState: Equatable {
 
     public internal(set) var ui: UI?
     public internal(set) var data: OpenBanking.Data
+    public var showActions: Bool = false
 
     var account: OpenBanking.BankAccount { data.account }
 
@@ -52,6 +52,7 @@ public struct BankState: Equatable {
 public enum BankAction: Hashable, FailureAction {
     case retry
     case request
+    case showActions
     case launchAuthorisation(URL)
     case waitingForConsent
     case finalise(OpenBanking.Output)
@@ -79,7 +80,12 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         )
     case .request:
         state.ui = .communicating(to: state.name)
+        state.showActions = false
         return .merge(
+            Just(())
+                .delay(for: .seconds(10), scheduler: environment.scheduler)
+                .eraseToEffect()
+                .map { BankAction.showActions },
             .fireAndForget {
                 environment.openBanking.reset()
             },
@@ -96,15 +102,20 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 }
                 .receive(on: environment.scheduler)
                 .eraseToEffect()
-                .cancellable(id: ID.Request())
+                .cancellable(id: ID.Request()),
+            environment.openBanking.authorisationURLPublisher
+                .map(BankAction.launchAuthorisation)
+                .receive(on: environment.scheduler)
+                .eraseToEffect()
+                .cancellable(id: ID.LaunchBank())
         )
+    case .showActions:
+        state.showActions = true
+        return .none
 
     case .waitingForConsent:
-        return environment.openBanking.authorisationURLPublisher
-            .map(BankAction.launchAuthorisation)
-            .receive(on: environment.scheduler)
-            .eraseToEffect()
-            .cancellable(id: ID.LaunchBank())
+        state.ui = .waiting(for: state.name)
+        return .none
 
     case .launchAuthorisation(let url):
         state.ui = .waiting(for: state.name)
@@ -114,15 +125,14 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         )
 
     case .finalise(let output):
-        let cancel: Effect<BankAction, Never> = .merge(
-            .cancel(id: ID.ConsentError()),
-            .cancel(id: ID.Request())
-        )
+        state.showActions = true
         switch output {
         case .linked(let account, let institution):
             state.ui = .linked(institution: state.name)
             return .merge(
-                cancel,
+                .cancel(id: ID.ConsentError()),
+                .cancel(id: ID.Request()),
+                .cancel(id: ID.LaunchBank()),
                 .fireAndForget { [state] in
                     environment.analytics.record(
                         event: .bankAccountStateTriggered(account: account, institution: state.name)
@@ -136,7 +146,11 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         case .confirmed(let order):
             state.ui = .buy(pending: order, in: environment)
         }
-        return cancel
+        return .merge(
+            .cancel(id: ID.ConsentError()),
+            .cancel(id: ID.Request()),
+            .cancel(id: ID.LaunchBank())
+        )
 
     case .dismiss:
         return .fireAndForget(environment.dismiss)
@@ -144,12 +158,20 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
     case .finished, .cancel:
         return .merge(
             .cancel(id: ID.ConsentError()),
-            .cancel(id: ID.Request())
+            .cancel(id: ID.Request()),
+            .cancel(id: ID.LaunchBank())
         )
 
     case .failure(let error):
-        state.ui = .error(error, currency: state.currency, in: environment)
-        return .cancel(id: ID.ConsentError())
+        state.showActions = true
+        switch error {
+        case .timeout:
+            state.ui = .pending()
+            return .none
+        default:
+            state.ui = .error(error, currency: state.currency, in: environment)
+            return .cancel(id: ID.ConsentError())
+        }
     }
 }
 
@@ -166,8 +188,7 @@ public struct BankView: View {
             if let ui = viewStore.ui {
                 ActionableView(
                     ui.info,
-                    buttons: buttons(from: ui.action, in: viewStore),
-                    in: .openBanking
+                    buttons: viewStore.showActions ? buttons(from: ui.action, in: viewStore) : []
                 )
                 .trailingNavigationButton(.close) {
                     viewStore.send(.dismiss)

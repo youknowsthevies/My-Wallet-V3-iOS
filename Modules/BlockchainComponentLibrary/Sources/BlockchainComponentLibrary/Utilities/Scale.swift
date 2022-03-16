@@ -38,7 +38,9 @@ public struct Scale<X: BinaryFloatingPoint> {
             for to in map[1..<map.count] {
                 if x < to.domain {
                     let y = f((x - from.domain) / (to.domain - from.domain))
-                    return (1 - y) * from.range + y * to.range
+                    let a = (1 - y) * from.range + y * to.range
+                    precondition(!a.isNaN)
+                    return a
                 }
                 from = to
             }

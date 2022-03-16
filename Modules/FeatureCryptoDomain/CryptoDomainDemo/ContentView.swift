@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-@testable import FeatureCryptoDomainDomain
 @testable import FeatureCryptoDomainUI
 import SwiftUI
 
@@ -9,33 +8,15 @@ struct ContentView: View {
     var body: some View {
         PrimaryNavigationView {
             PrimaryNavigationLink(
-                destination: SearchCryptoDomainView(
+                destination: ClaimIntroductionView(
                     store: .init(
-                        initialState: .init(
-                            searchResults: [
-                                SearchDomainResult(
-                                    domainName: "cocacola.blockchain",
-                                    domainType: .premium,
-                                    domainAvailability: .unavailable
-                                ),
-                                SearchDomainResult(
-                                    domainName: "cocacola001.blockchain",
-                                    domainType: .free,
-                                    domainAvailability: .availableForFree
-                                ),
-                                SearchDomainResult(
-                                    domainName: "cocola.blockchain",
-                                    domainType: .premium,
-                                    domainAvailability: .availableForPremiumSale(price: "50")
-                                )
-                            ]
-                        ),
-                        reducer: searchCryptoDomainReducer,
-                        environment: .init(mainQueue: .main)
+                        initialState: .init(),
+                        reducer: claimIntroductionReducer,
+                        environment: ()
                     )
                 )
             ) {
-                Text("Tap to search domains")
+                Text("Let's claim a domain!")
             }
         }
     }

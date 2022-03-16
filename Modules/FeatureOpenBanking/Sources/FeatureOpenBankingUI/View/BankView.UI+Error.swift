@@ -7,8 +7,8 @@ extension ImageResource {
 
     var media: Media {
         switch self {
-        case .local(name: let name, bundle: _):
-            return .image(named: name)
+        case .local(name: let name, bundle: let bundle):
+            return .image(named: name, in: bundle)
         case .systemName(let name):
             return .image(systemName: name)
         case .remote(url: let url):
@@ -25,6 +25,8 @@ extension BankState.UI {
         in environment: OpenBankingEnvironment
     ) -> Self {
         switch error {
+        case .timeout:
+            return .errorMessage(Localization.Bank.Error.timeout)
         case .message(let message):
             return .errorMessage(message)
         default:
@@ -268,6 +270,78 @@ extension BankState.UI {
             ),
             action: [
                 .retry(label: Localization.Bank.Error.bankTransferPaymentInsufficientFunds.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardCreateDuplicate: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateDuplicate.title,
+                subtitle: Localization.Bank.Error.cardCreateDuplicate.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateDuplicate.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentFailed: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentFailed.title,
+                subtitle: Localization.Bank.Error.cardPaymentFailed.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentFailed.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentAbandoned: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentAbandoned.title,
+                subtitle: Localization.Bank.Error.cardPaymentAbandoned.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentAbandoned.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentExpired: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.cardPaymentExpired.title,
+                subtitle: Localization.Bank.Error.cardPaymentExpired.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentExpired.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentInsufficientFunds: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.cardPaymentInsufficientFunds.title,
+                subtitle: Localization.Bank.Error.cardPaymentInsufficientFunds.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentInsufficientFunds.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentBankDeclined: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentBankDeclined.title,
+                subtitle: Localization.Bank.Error.cardPaymentBankDeclined.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentBankDeclined.action, action: .request),
                 .cancel
             ]
         )

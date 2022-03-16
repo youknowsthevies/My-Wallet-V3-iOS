@@ -36,6 +36,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
     func push(viewController: ViewControllable?)
     func dismiss()
     func pop()
+    func popToRoot()
 }
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
@@ -53,6 +54,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private var securityRouter: PaymentSecurityRouter?
     private let kycRouter: PlatformUIKit.KYCRouting
     private let transactionsRouter: TransactionsRouterAPI
+    private let cacheSuite: CacheSuite
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
@@ -75,7 +77,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        cacheSuite: CacheSuite = resolve()
     ) {
         self.paymentMethodLinker = paymentMethodLinker
         self.bankWireLinker = bankWireLinker
@@ -86,6 +89,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         self.alertViewPresenter = alertViewPresenter
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
+        self.cacheSuite = cacheSuite
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -226,7 +230,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 transactionModel: transactionModel,
                 transform: { $0.availableTargets as? [BlockchainAccount] ?? [] }
             ),
-            action: action
+            action: action,
+            cacheSuite: cacheSuite,
+            featureFlagsService: featureFlagsService
         )
         let router = builder.build(
             listener: .listener(interactor),
@@ -362,11 +368,12 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
 
         let environment = OpenBankingEnvironment(
+            app: resolve(),
             dismiss: { [weak presenter] in
                 presenter?.dismiss()
             },
             cancel: { [weak presenter] in
-                presenter?.pop()
+                presenter?.popToRoot()
             },
             currency: action.currency
         )

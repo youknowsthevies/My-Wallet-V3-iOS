@@ -1,12 +1,15 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
 import DIKit
+import FeatureAppUI
 import Localization
+import MoneyKit
 import SwiftUI
 import ToolKit
 
@@ -35,16 +38,16 @@ extension RootViewState {
 
         struct Data: Codable, Equatable {
 
-            var list: [Tag.Meme] = [
-                blockchain.ux.user.fab.swap[],
-                blockchain.ux.user.fab.send[],
-                blockchain.ux.user.fab.receive[],
-                blockchain.ux.user.fab.rewards[]
+            var list: [Tag] = [
+                blockchain.ux.frequent.action.swap[],
+                blockchain.ux.frequent.action.send[],
+                blockchain.ux.frequent.action.receive[],
+                blockchain.ux.frequent.action.rewards[]
             ]
 
-            var buttons: [Tag.Meme] = [
-                blockchain.ux.user.fab.sell[],
-                blockchain.ux.user.fab.buy[]
+            var buttons: [Tag] = [
+                blockchain.ux.frequent.action.sell[],
+                blockchain.ux.frequent.action.buy[]
             ]
         }
     }
@@ -56,30 +59,35 @@ enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onAppear
+    case onDisappear
 }
 
 enum RootViewRoute: NavigationRoute {
 
     case account
     case QR
+    case coinView(CryptoCurrency)
 
     @ViewBuilder func destination(in store: Store<RootViewState, RootViewAction>) -> some View {
         switch self {
         case .QR:
             QRCodeScannerView()
-                .identity(blockchain.ux.user.scan.qr)
+                .identity(blockchain.ux.scan.QR)
                 .ignoresSafeArea()
         case .account:
             AccountView()
                 .identity(blockchain.ux.user.account)
                 .ignoresSafeArea(.container, edges: .bottom)
+        case .coinView(let currency):
+            CoinAdapterView(cryptoCurrency: currency)
+                .identity(blockchain.ux.asset)
         }
     }
 }
 
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
-    var featureFlagsService: FeatureFlagsServiceAPI = resolve()
+    var app: AppProtocol
 }
 
 let rootViewReducer = Reducer<
@@ -108,14 +116,13 @@ let rootViewReducer = Reducer<
         state.fab.animate = false
         return .none
     case .onAppear:
-        return environment.featureFlagsService.object(
-            for: .remote(.fab),
-            type: RootViewState.FrequentAction.Data.self
-        )
-        .replaceError(with: nil)
-        .compactMap(\.wrapped)
-        .eraseToEffect()
-        .map { .binding(.set(\.$fab.data, $0)) }
+        return .fireAndForget {
+            environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
+        }
+    case .onDisappear:
+        return .fireAndForget {
+            environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: false)
+        }
     case .route, .binding:
         return .none
     }

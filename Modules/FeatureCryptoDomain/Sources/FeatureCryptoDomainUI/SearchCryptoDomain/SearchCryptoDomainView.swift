@@ -6,6 +6,7 @@ import ComposableNavigation
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
+import ToolKit
 
 struct SearchCryptoDomainView: View {
 
@@ -19,18 +20,23 @@ struct SearchCryptoDomainView: View {
     }
 
     var body: some View {
-        VStack(spacing: Spacing.padding2) {
-            searchBar
-                .padding([.top, .leading, .trailing], Spacing.padding3)
-            alertCardDescription
-                .padding([.leading, .trailing], Spacing.padding3)
-            domainList
+        WithViewStore(store) { viewStore in
+            VStack(spacing: Spacing.padding2) {
+                searchBar
+                    .padding([.top, .leading, .trailing], Spacing.padding3)
+                alertCardDescription
+                    .padding([.leading, .trailing], Spacing.padding3)
+                domainList
+            }
+            .primaryNavigation(
+                title: LocalizedString.title,
+                trailing: { cartBarButton }
+            )
+            .bottomSheet(isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)) {
+                createPremiumDomainBottomSheet()
+            }
+            .navigationRoute(in: store)
         }
-        .primaryNavigation(
-            title: LocalizedString.title,
-            trailing: { cartBarButton }
-        )
-        .navigationRoute(in: store)
     }
 
     private var cartBarButton: some View {
@@ -94,19 +100,38 @@ struct SearchCryptoDomainView: View {
     }
 
     private func createDomainRow(result: SearchDomainResult) -> some View {
-        PrimaryRow(
-            title: result.domainName,
-            subtitle: result.domainType.statusLabel,
-            tags: [
-                Tag(
-                    text: result.domainAvailability.availabilityLabel,
-                    variant: result.domainAvailability == .availableForFree ?
-                        .success : result.domainAvailability == .unavailable ? .default : .infoAlt
-                )
-            ],
-            action: {}
-        )
-        .accessibilityIdentifier(Accessibility.domainListRow)
+        WithViewStore(store) { viewStore in
+            PrimaryRow(
+                title: result.domainName,
+                subtitle: result.domainType.statusLabel,
+                trailing: {
+                    TagView(
+                        text: result.domainAvailability.availabilityLabel,
+                        variant: result.domainAvailability == .availableForFree ?
+                            .success : result.domainAvailability == .unavailable ? .default : .infoAlt
+                    )
+                },
+                action: {
+                    switch result.domainType {
+                    case .free:
+                        viewStore.send(.selectFreeDomain(result))
+                    case .premium:
+                        viewStore.send(.selectPremiumDomain(result))
+                    }
+                }
+            )
+            .disabled(result.domainAvailability == .unavailable)
+            .accessibilityIdentifier(Accessibility.domainListRow)
+        }
+    }
+
+    private func createPremiumDomainBottomSheet() -> some View {
+        WithViewStore(store) { viewStore in
+            BuyDomainActionView(
+                domain: viewStore.binding(\.$selectedPremiumDomain),
+                isShown: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
+            )
+        }
     }
 }
 
@@ -118,7 +143,7 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                     searchResults: [
                         SearchDomainResult(
                             domainName: "cocacola.blockchain",
-                            domainType: .premium,
+                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
                             domainAvailability: .unavailable
                         ),
                         SearchDomainResult(
@@ -127,14 +152,21 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                             domainAvailability: .availableForFree
                         ),
                         SearchDomainResult(
+                            domainName: "cocacola002.blockchain",
+                            domainType: .free,
+                            domainAvailability: .availableForFree
+                        ),
+                        SearchDomainResult(
                             domainName: "cocola.blockchain",
-                            domainType: .premium,
+                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
                             domainAvailability: .availableForPremiumSale(price: "50")
                         )
                     ]
                 ),
                 reducer: searchCryptoDomainReducer,
-                environment: .init(mainQueue: .main)
+                environment: .init(
+                    mainQueue: .main
+                )
             )
         )
     }

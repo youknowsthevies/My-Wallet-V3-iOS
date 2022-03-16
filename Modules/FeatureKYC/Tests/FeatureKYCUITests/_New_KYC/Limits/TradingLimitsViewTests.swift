@@ -48,142 +48,110 @@ final class TradingLimitsViewTests: XCTestCase {
     }
 
     func test_initial_load_success() throws {
-        testStore.assert(
-            .send(.fetchLimits) {
-                $0.loading = true
-            },
-            .do { [testScheduler] in
-                testScheduler.advance()
-            },
-            .receive(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
-                $0.loading = false
-                $0.userTiers = stubOverview.tiers
-                $0.featuresList = LimitedFeaturesListState(
-                    features: stubOverview.features,
-                    kycTiers: stubOverview.tiers
-                )
-            }
-        )
+        testStore.send(.fetchLimits) {
+            $0.loading = true
+        }
+        testScheduler.advance()
+        testStore.receive(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
+            $0.loading = false
+            $0.userTiers = stubOverview.tiers
+            $0.unlockTradingState = UnlockTradingState(currentUserTier: stubOverview.tiers.latestApprovedTier)
+            $0.featuresList = LimitedFeaturesListState(
+                features: stubOverview.features,
+                kycTiers: stubOverview.tiers
+            )
+        }
     }
 
     func test_initial_load_failure() throws {
         resetStore(failCalls: true)
-        testStore.assert(
-            .send(.fetchLimits) {
-                $0.loading = true
-            },
-            .do { [testScheduler] in
-                testScheduler.advance(by: .seconds(2))
-            },
-            .receive(.didFetchLimits(.failure(KYCTierServiceError.other(MockError.unknown)))) {
-                $0.loading = false
-                $0.featuresList = LimitedFeaturesListState(
-                    features: [],
-                    kycTiers: .init(tiers: [])
-                )
-            }
-        )
+        testStore.send(.fetchLimits) {
+            $0.loading = true
+        }
+        testScheduler.advance(by: .seconds(2))
+        testStore.receive(.didFetchLimits(.failure(KYCTierServiceError.other(MockError.unknown)))) {
+            $0.loading = false
+            $0.featuresList = LimitedFeaturesListState(
+                features: [],
+                kycTiers: .init(tiers: [])
+            )
+        }
     }
 
     func test_initial_load_emptyResult() throws {
         resetOverviewForEmptyState()
-        testStore.assert(
-            .send(.fetchLimits) {
-                $0.loading = true
-            },
-            .do { [testScheduler] in
-                testScheduler.advance(by: .seconds(2))
-            },
-            .receive(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
-                $0.loading = false
-                $0.userTiers = stubOverview.tiers
-                $0.featuresList = LimitedFeaturesListState(
-                    features: stubOverview.features,
-                    kycTiers: stubOverview.tiers
-                )
-            }
-        )
+        testStore.send(.fetchLimits) {
+            $0.loading = true
+        }
+        testScheduler.advance(by: .seconds(2))
+        testStore.receive(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
+            $0.loading = false
+            $0.userTiers = stubOverview.tiers
+            $0.unlockTradingState = UnlockTradingState(currentUserTier: stubOverview.tiers.latestApprovedTier)
+            $0.featuresList = LimitedFeaturesListState(
+                features: stubOverview.features,
+                kycTiers: stubOverview.tiers
+            )
+        }
     }
 
     func test_close() throws {
-        testStore.assert(
-            .send(.close),
-            .do { [unowned self] in
-                XCTAssertEqual(self.recordedInvocations.close.count, 1)
-            }
-        )
+        testStore.send(.close)
+        XCTAssertEqual(recordedInvocations.close.count, 1)
     }
 
     func test_present_support_center() throws {
-        testStore.assert(
-            .send(.listAction(.supportCenterLinkTapped)),
-            .do { [unowned self] in
-                XCTAssertEqual(self.recordedInvocations.openURL, [.customerSupport])
-            }
-        )
+        testStore.send(.listAction(.supportCenterLinkTapped))
+        XCTAssertEqual(recordedInvocations.openURL, [.customerSupport])
     }
 
     func test_apply_for_gold() throws {
-        testStore.assert(
-            .send(.listAction(.applyForGoldTierTapped)),
-            .do { [unowned self] in
-                XCTAssertEqual(self.recordedInvocations.presentKYC, [.tier2])
-            }
-        )
+        testStore.send(.listAction(.applyForGoldTierTapped))
+        XCTAssertEqual(recordedInvocations.presentKYC, [.tier2])
     }
 
     func test_view_tiers() throws {
-        testStore.assert(
-            .send(.listAction(.viewTiersTapped)),
-            .receive(.listAction(.enter(into: .viewTiers, context: .none))) {
-                $0.featuresList.route = .init(route: .viewTiers, action: .enterInto(.none))
-            }
-        )
+        testStore.send(.listAction(.viewTiersTapped))
+        testStore.receive(.listAction(.enter(into: .viewTiers, context: .none))) {
+            $0.featuresList.route = .init(route: .viewTiers, action: .enterInto(.none))
+        }
     }
 
     func test_view_tiers_close_modal() throws {
-        testStore.assert(
-            .send(.listAction(.tiersStatusViewAction(.close))),
-            .receive(.listAction(.dismiss())) {
-                $0.featuresList.route = nil
-            }
-        )
+        testStore.send(.listAction(.tiersStatusViewAction(.close)))
+        testStore.receive(.listAction(.dismiss())) {
+            $0.featuresList.route = nil
+        }
     }
 
     func test_presentKYC_tier1() throws {
         XCTAssertEqual(stubOverview.tiers.latestApprovedTier, .tier1)
-        testStore.assert(
-            .send(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
-                $0.loading = false
-                $0.userTiers = stubOverview.tiers
-                $0.featuresList = LimitedFeaturesListState(
-                    features: stubOverview.features,
-                    kycTiers: stubOverview.tiers
-                )
-            },
-            .send(.listAction(.tiersStatusViewAction(.tierTapped(.tier1)))),
-            .do { [unowned self] in
-                XCTAssertEqual(self.recordedInvocations.presentKYC, [])
-            }
-        )
+        testStore.send(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
+            $0.loading = false
+            $0.userTiers = stubOverview.tiers
+            $0.unlockTradingState = UnlockTradingState(currentUserTier: stubOverview.tiers.latestApprovedTier)
+            $0.featuresList = LimitedFeaturesListState(
+                features: stubOverview.features,
+                kycTiers: stubOverview.tiers
+            )
+        }
+        testStore.send(.listAction(.tiersStatusViewAction(.tierTapped(.tier1))))
+        XCTAssertEqual(recordedInvocations.presentKYC, [])
     }
 
     func test_presentKYC_tier2() throws {
         XCTAssertEqual(stubOverview.tiers.latestApprovedTier, .tier1)
-        testStore.assert(
-            .send(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
-                $0.loading = false
-                $0.userTiers = stubOverview.tiers
-                $0.featuresList = LimitedFeaturesListState(
-                    features: stubOverview.features,
-                    kycTiers: stubOverview.tiers
-                )
-            },
-            .send(.listAction(.tiersStatusViewAction(.tierTapped(.tier2)))),
-            .do { [unowned self] in
-                XCTAssertEqual(self.recordedInvocations.presentKYC, [.tier2])
-            }
-        )
+        testStore.send(.didFetchLimits(.success(stubOverview))) { [stubOverview] in
+            $0.loading = false
+            $0.userTiers = stubOverview.tiers
+            $0.unlockTradingState = UnlockTradingState(currentUserTier: stubOverview.tiers.latestApprovedTier)
+            $0.featuresList = LimitedFeaturesListState(
+                features: stubOverview.features,
+                kycTiers: stubOverview.tiers
+            )
+        }
+        testStore.send(.listAction(.tiersStatusViewAction(.tierTapped(.tier2))))
+        XCTAssertEqual(recordedInvocations.presentKYC, [.tier2])
     }
 
     // MARK: - Helpers

@@ -15,11 +15,9 @@ class OpenBankingTestCase: XCTestCase {
     private(set) var dismiss: Bool = false
     private(set) var openedURL: URL?
 
+    private(set) var app: AppProtocol!
     private(set) var environment: OpenBankingEnvironment!
     private(set) var network: ReplayNetworkCommunicator!
-    var state: OpenBanking.State {
-        environment.openBanking.state
-    }
 
     // swiftlint:disable:next force_try
     lazy var createAccount = try! network[
@@ -40,7 +38,9 @@ class OpenBankingTestCase: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
+        app = App.test
         (environment, network) = OpenBankingEnvironment.test(
+            app: app,
             scheduler: scheduler.eraseToAnyScheduler(),
             showTransferDetails: { [self] in showTransferDetails = true },
             dismiss: { [self] in dismiss = true },

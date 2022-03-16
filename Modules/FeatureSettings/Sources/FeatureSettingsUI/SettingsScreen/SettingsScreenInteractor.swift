@@ -17,6 +17,7 @@ public final class SettingsScreenInteractor {
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
+    let cardIssuanceBadgeInteractor: CardIssuanceBadgeInteractor
 
     // MARK: - Services
 
@@ -27,6 +28,7 @@ public final class SettingsScreenInteractor {
     let settingsService: SettingsServiceAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: EmailNotificationSettingsServiceAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
 
     let pitConnnectionProviding: PITConnectionStatusProviding
     let balanceSharingService: BalanceSharingSettingsServiceAPI
@@ -54,6 +56,7 @@ public final class SettingsScreenInteractor {
         pitConnectionAPI: PITConnectionStatusProviding,
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         wallet: WalletRecoveryVerifing,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
         authenticationCoordinator: AuthenticationCoordinating
@@ -64,6 +67,7 @@ public final class SettingsScreenInteractor {
         emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.balanceSharingService = balanceSharingService
+        self.featureFlagsService = featureFlagsService
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
@@ -87,6 +91,9 @@ public final class SettingsScreenInteractor {
         preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor(
             settingsService: settingsService,
             fiatCurrencyService: fiatCurrencyService
+        )
+        cardIssuanceBadgeInteractor = CardIssuanceBadgeInteractor(
+            service: settingsService
         )
 
         biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)

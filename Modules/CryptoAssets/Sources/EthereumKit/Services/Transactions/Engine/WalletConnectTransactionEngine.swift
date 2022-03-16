@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -42,8 +43,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private let priceService: PriceServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSigningService: EthereumTransactionSigningServiceAPI
-    private let transactionsService: EthereumHistoricalTransactionServiceAPI
+    private let pendingTransactionRepository: PendingTransactionRepositoryAPI
 
+    private var didExecute = false
+    private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumSendTransactionTarget {
         transactionTarget as! EthereumSendTransactionTarget
     }
@@ -64,7 +67,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         priceService: PriceServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         transactionSigningService: EthereumTransactionSigningServiceAPI = resolve(),
-        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
+        pendingTransactionRepository: PendingTransactionRepositoryAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.currencyConversionService = currencyConversionService
@@ -76,7 +79,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
         self.transactionSigningService = transactionSigningService
-        self.transactionsService = transactionsService
+        self.pendingTransactionRepository = pendingTransactionRepository
         self.walletCurrencyService = walletCurrencyService
         feeCache = CachedValue(
             configuration: .periodic(
@@ -85,7 +88,9 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             )
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: .ethereum)
+            self.feeService
+                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+                .asSingle()
         }
     }
 
@@ -182,6 +187,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         let address = walletConnectTarget.transaction.to
             .flatMap { EthereumAddress(address: $0) }
 
+        let chainID = ethereumCryptoAccount.network.chainID
         let transactionPublisher = ethereumCryptoAccount.nonce
             .eraseError()
             .flatMap { [transactionBuildingService, walletConnectTarget] nonce in
@@ -192,6 +198,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                         gasPrice: BigUInt(pendingTransaction.gasPrice.amount),
                         gasLimit: BigUInt(pendingTransaction.gasLimit),
                         nonce: nonce,
+                        chainID: chainID,
                         transferType: .transfer(data: Data(hex: walletConnectTarget.transaction.data))
                     )
                     .eraseError()
@@ -245,6 +252,18 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
+    }
+
+    private lazy var rejectOnce: Void = {
+        walletConnectTarget.onTransactionRejected()
+            .subscribe()
+            .store(in: &self.cancellables)
+    }()
+
+    func stop(pendingTransaction: PendingTransaction) {
+        if !didExecute {
+            _ = rejectOnce
+        }
     }
 
     // MARK: - Private Functions
@@ -307,7 +326,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         }
         func estimateGas() -> Single<BigInt> {
             gasEstimateService
-                .estimateGas(transaction: walletConnectTarget.transaction)
+                .estimateGas(
+                    network: ethereumCryptoAccount.network,
+                    transaction: walletConnectTarget.transaction
+                )
                 .asSingle()
         }
         return transactionGas() ?? estimateGas()
@@ -352,12 +374,16 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     private func validateNoPendingTransaction() -> Completable {
-        transactionsService
-            .isWaitingOnTransaction
-            .map { isWaitingOnTransaction -> Void in
-                guard isWaitingOnTransaction == false else {
-                    throw TransactionValidationFailure(state: .transactionInFlight)
-                }
+        pendingTransactionRepository
+            .isWaitingOnTransaction(
+                network: ethereumCryptoAccount.network,
+                address: ethereumCryptoAccount.publicKey
+            )
+            .replaceError(with: true)
+            .flatMap { isWaitingOnTransaction in
+                isWaitingOnTransaction
+                    ? AnyPublisher.failure(TransactionValidationFailure(state: .transactionInFlight))
+                    : AnyPublisher.just(())
             }
             .asCompletable()
     }

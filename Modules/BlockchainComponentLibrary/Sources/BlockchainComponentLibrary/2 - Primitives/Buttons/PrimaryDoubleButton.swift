@@ -32,7 +32,7 @@ public struct PrimaryDoubleButton: View {
     private let leadingButton: ButtonData
     private let trailingButton: ButtonData
 
-    private let colorCombination = primaryButtonColorCombination
+    private let colorCombination: PillButtonStyle.ColorCombination = .primary
 
     @Environment(\.isEnabled) private var isEnabled
 

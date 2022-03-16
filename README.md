@@ -171,16 +171,6 @@ We are integrating XcodeGen and, despite still committing project files in git, 
 
     $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
-## Install mocks for testing:
-
-Install mockingbird mock generator CLI:
-
-    $ sh scripts/install-mockingbird.sh
-
-Install mock generation script in targets. It will generate mocks first time the test are run:
-
-    $ sh scripts/install-mocks.sh
-
 ## Build the project
 
     cmd-r

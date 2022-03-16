@@ -23,6 +23,8 @@ extension SettingsSectionType.CellType {
                 return .launchPIT
             case .recoveryPhrase:
                 return .showBackupScreen
+            case .cardIssuance:
+                return .showCardIssuance
             }
         case .cards(let type):
             switch type {

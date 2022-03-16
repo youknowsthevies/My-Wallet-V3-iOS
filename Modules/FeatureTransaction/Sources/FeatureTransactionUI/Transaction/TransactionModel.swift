@@ -16,7 +16,7 @@ final class TransactionModel {
 
     private var mviModel: MviModel<TransactionState, TransactionAction>!
     private let interactor: TransactionInteractor
-    private var hasInitializedTransaction: Bool = false
+    private var hasInitializedTransaction = false
 
     // MARK: - Public Properties
 
@@ -52,7 +52,7 @@ final class TransactionModel {
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
-                amount: .zero(currency: sourceAccount.currencyType),
+                amount: nil,
                 action: action
             )
 
@@ -60,7 +60,7 @@ final class TransactionModel {
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
-                amount: .zero(currency: sourceAccount.currencyType),
+                amount: nil,
                 action: action
             )
 
@@ -120,7 +120,7 @@ final class TransactionModel {
             }
             let sourceCurrency = source.currencyType
             let isAmountValid = previousState.amount.currency == sourceCurrency
-            let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
+            let amount: MoneyValue? = isAmountValid ? previousState.amount : nil
             // If the `amount` `currencyType` differs from the source, we should
             // use `zero` as the amount. If not, it is safe to use the
             // `previousState.amount`.
@@ -209,11 +209,11 @@ final class TransactionModel {
                 // This makes sense for transaction types like Swap where changing the source would invalidate the amount entirely.
                 // For Buy, though we can simply use the amount we have in `previousState`, so the transaction ca be re-validated.
                 // This also fixes an issue where the enter amount screen has the "next" button disabled after user switches source account in Buy.
-                let newAmount: MoneyValue
-                if sourceAccount.currencyType == previousState.amount.currency {
-                    newAmount = previousState.amount
+                let newAmount: MoneyValue?
+                if let amount = previousState.pendingTransaction?.amount, previousState.action != .swap {
+                    newAmount = amount
                 } else {
-                    newAmount = .zero(currency: sourceAccount.currencyType)
+                    newAmount = nil
                 }
                 // The user has already selected a destination such as through `Deposit`. In this case we want to
                 // go straight to the Enter Amount screen, since we have both target and source.
@@ -233,7 +233,8 @@ final class TransactionModel {
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .performSecurityChecksForTransaction:
             return nil
-        case .securityChecksCompleted:
+        case .securityChecksCompleted,
+             .startPollingOrderStatus:
             guard let order = previousState.order else {
                 return perform(
                     previousState: previousState,
@@ -378,11 +379,9 @@ final class TransactionModel {
         // as this is done by the backend once the customer has authorised the payment via open banking
         // and we have submitted the consent token from the deep link
         switch source {
-        case let linkedBank as LinkedBankAccount
-            where linkedBank.isYapily:
+        case let linkedBank as LinkedBankAccount where linkedBank.isYapily:
             return Disposables.create()
-        case let paymentMethod as PaymentMethodAccount
-            where paymentMethod.isYapily:
+        case let paymentMethod as PaymentMethodAccount where paymentMethod.isYapily:
             return Disposables.create()
         default:
             break
@@ -395,8 +394,10 @@ final class TransactionModel {
                     switch result {
                     case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                         self?.process(action: .performSecurityChecksForTransaction(result))
-                    default:
-                        self?.process(action: .updateTransactionComplete)
+                    case .unHashed,
+                         .signed,
+                         .hashed:
+                        self?.process(action: .startPollingOrderStatus)
                     }
                 },
                 onFailure: { [weak self] error in
@@ -451,7 +452,7 @@ final class TransactionModel {
     private func processTargetSelectionConfirmed(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        amount: MoneyValue,
+        amount: MoneyValue?,
         action: AssetAction
     ) -> Disposable {
         // since we have both source and destination we can simply initialize a `PendingTransaction`
@@ -470,7 +471,7 @@ final class TransactionModel {
     private func initializeTransaction(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        amount: MoneyValue,
+        amount: MoneyValue?,
         action: AssetAction
     ) -> Disposable {
         hasInitializedTransaction = false
@@ -480,7 +481,9 @@ final class TransactionModel {
                 guard let self = self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
-                self.onFirstUpdate(amount: pendingTransaction.amount)
+                self.onFirstUpdate(
+                    amount: amount ?? pendingTransaction.amount
+                )
             })
             .subscribe(
                 onNext: { [weak self] transaction in

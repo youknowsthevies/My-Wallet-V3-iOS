@@ -39,18 +39,15 @@ public class TextFieldView: UIView {
 
     // MARK: - UI Properties
 
-    @IBOutlet var textField: UITextField!
-    @IBOutlet private(set) var textFieldBackgroundView: UIView!
-    @IBOutlet fileprivate var titleLabel: UILabel!
-    @IBOutlet private(set) var accessoryView: UIView!
-    @IBOutlet private(set) var accessoryViewWidthConstraint: NSLayoutConstraint!
-
-    private var keyboardInteractionController: KeyboardInteractionController!
-
-    @IBOutlet private var topInsetConstraint: NSLayoutConstraint!
-    @IBOutlet private var bottomInsetConstraint: NSLayoutConstraint!
+    let accessoryView = UIView()
+    let textFieldBackgroundView = UIView()
 
     private let button = UIButton()
+    private let textField = UITextField()
+    private let titleLabel = UILabel()
+    private var bottomInsetConstraint: NSLayoutConstraint!
+    private var topInsetConstraint: NSLayoutConstraint!
+    private var keyboardInteractionController: KeyboardInteractionController!
 
     /// Scroll view container.
     /// To being the text field into focus when it becomes first responder
@@ -80,7 +77,33 @@ public class TextFieldView: UIView {
 
     /// Should be called once upon instantiation
     func setup() {
-        fromNib(named: TextFieldView.objectName, in: .module)
+        addSubview(titleLabel)
+        addSubview(textFieldBackgroundView)
+        addSubview(accessoryView)
+        addSubview(button)
+        addSubview(textField)
+
+        textField.delegate = self
+
+        titleLabel.layout(dimension: .height, to: 24)
+        titleLabel.layoutToSuperview(axis: .horizontal)
+        topInsetConstraint = titleLabel.layoutToSuperview(.top, offset: 8)
+        titleLabel.layout(edge: .bottom, to: .top, of: textFieldBackgroundView, priority: .penultimateHigh)
+
+        textFieldBackgroundView.layoutToSuperview(axis: .horizontal)
+        bottomInsetConstraint = bottomAnchor.constraint(equalTo: textFieldBackgroundView.bottomAnchor)
+        bottomInsetConstraint.isActive = true
+        textFieldBackgroundView.layout(dimension: .height, to: 48)
+
+        textField.layout(edges: .leading, to: textFieldBackgroundView, offset: 16)
+        textField.layout(edges: .bottom, .top, to: textFieldBackgroundView)
+        textField.layout(edge: .trailing, to: .leading, of: accessoryView)
+
+        textFieldBackgroundView.layout(edges: .trailing, to: accessoryView)
+        textFieldBackgroundView.layout(edges: .centerY, to: accessoryView)
+        accessoryView.layout(dimension: .height, to: 30, priority: .init(rawValue: 251))
+        accessoryView.layout(dimension: .width, to: 0.5, priority: .defaultLow)
+
         textField.textAlignment = .left
         titleLabel.font = .main(.medium, 12)
         titleLabel.textColor = .destructive

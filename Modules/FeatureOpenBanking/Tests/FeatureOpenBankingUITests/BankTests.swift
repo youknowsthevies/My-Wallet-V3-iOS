@@ -65,34 +65,39 @@ final class BankLinkTests: OpenBankingTestCase {
         scheduler.advance(by: .seconds(1))
 
         store.send(.failure(.timeout)) { [self] state in
-            state.ui = .error(.timeout, in: environment)
+            state.ui = .pending()
+            state.showActions = true
         }
         store.send(.cancel)
     }
 
     func test_request() throws {
 
+        let url = try account.attributes.authorisationUrl.unwrap()
+
         store.send(.request) { state in
             state.ui = .communicating(to: state.name)
         }
         scheduler.advance()
-        store.receive(.waitingForConsent)
-        try store.receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
+        store.receive(.waitingForConsent) { state in
             state.ui = .waiting(for: state.name)
         }
-        state.set(.is.authorised, to: true)
+
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
         scheduler.advance()
+        store.receive(.launchAuthorisation(url))
         store.receive(.finalise(.linked(account, institution: institution))) { state in
             state.ui = .linked(institution: state.name)
+            state.showActions = true
         }
-        store.send(.cancel)
 
-        try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())
+        XCTAssertEqual(openedURL, url)
     }
 
     func test_fail() throws {
         store.send(.failure(.bankTransferAccountAlreadyLinked)) { [self] state in
             state.ui = .error(.bankTransferAccountAlreadyLinked, in: environment)
+            state.showActions = true
         }
     }
 
@@ -163,19 +168,16 @@ final class BankPaymentTests: OpenBankingTestCase {
 
         scheduler.advance()
 
-        store.receive(.waitingForConsent)
-        try store.receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
+        store.receive(.waitingForConsent) { state in
             state.ui = .waiting(for: state.name)
         }
 
-        state.set(.is.authorised, to: true)
+        app.state.set(blockchain.ux.payment.method.open.banking.is.authorised, to: true)
         scheduler.advance()
 
         store.receive(.finalise(.deposited(details))) { [self] state in
             state.ui = .deposit(success: details, in: environment)
+            state.showActions = true
         }
-        store.send(.cancel)
-
-        try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())
     }
 }

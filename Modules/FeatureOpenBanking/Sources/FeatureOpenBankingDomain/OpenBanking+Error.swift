@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Foundation
 import ToolKit
 
@@ -8,7 +9,7 @@ extension OpenBanking {
     public enum Error: Swift.Error, Equatable, Hashable {
         case message(String)
         case code(String)
-        case state(State.Error)
+        case namespace(FetchResult.Error)
         case other(Swift.Error)
         case timeout
     }
@@ -20,8 +21,8 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         switch error {
         case let error as OpenBanking.Error:
             self = error
-        case let error as OpenBanking.State.Error:
-            self = .state(error)
+        case let error as FetchResult.Error:
+            self = .namespace(error)
         case let error:
             self = .other(error)
         }
@@ -31,7 +32,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         switch self {
         case .message, .code, .timeout:
             return self
-        case .state(let error):
+        case .namespace(let error):
             return error
         case .other(let error):
             return error
@@ -52,7 +53,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
             return "timeout"
         case .message(let description), .code(let description):
             return description
-        case .state(let error):
+        case .namespace(let error):
             return String(describing: error)
         case .other(let error):
             switch error {

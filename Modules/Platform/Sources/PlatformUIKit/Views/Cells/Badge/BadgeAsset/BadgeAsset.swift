@@ -110,6 +110,11 @@ extension BadgeAsset.Value.Interaction.BadgeItem {
         type: .default(accessibilitySuffix: "Connected"),
         description: LocalizationConstants.Exchange.connected
     )
+
+    public static let orderCard: BadgeAsset.Value.Interaction.BadgeItem = .init(
+        type: .verified,
+        description: LocalizationConstants.Settings.Badge.orderCard
+    )
 }
 
 extension LoadingState where Content == BadgeAsset.Value.Presentation.BadgeItem {

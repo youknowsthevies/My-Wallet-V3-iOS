@@ -27,5 +27,6 @@ public enum SettingsScreenAction {
     case showAirdrops
     case showContactSupport
     case showWebLogin
+    case showCardIssuance
     case none
 }

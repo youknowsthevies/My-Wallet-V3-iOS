@@ -50,7 +50,9 @@ public struct LargeSegmentedControl<Selection: Hashable>: View {
                             selection == item.identifier
                         },
                         set: { _ in
-                            selection = item.identifier
+                            withAnimation(.easeInOut) {
+                                selection = item.identifier
+                            }
                         }
                     )
                 )

@@ -1,8 +1,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureProductsDomain
 import Foundation
 import PlatformKit
+import ToolKit
 
 /// A protocol to fetch and monitor changes in `UserState`
 protocol UserAdapterAPI {
@@ -13,36 +15,62 @@ protocol UserAdapterAPI {
 
 // MARK: - UserAdapterAPI concrete implementation
 
+protocol BalanceDataFetcherAPI {
+
+    func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError>
+}
+
+private typealias RawUserData = (
+    kycStatus: UserState.KYCStatus,
+    balanceData: UserState.BalanceData,
+    paymentMethods: [UserState.PaymentMethod],
+    hasEverPurchasedCrypto: Bool,
+    products: [Product]
+)
+
 final class UserAdapter: UserAdapterAPI {
 
     let userState: AnyPublisher<Result<UserState, UserStateError>, Never>
 
+    private let balanceDataStreamer: BalanceDataStreamer
+
     init(
-        coincore: CoincoreAPI,
+        balanceDataFetcher: BalanceDataFetcherAPI,
         kycTiersService: KYCTiersServiceAPI,
         paymentMethodsService: PaymentMethodTypesServiceAPI,
+        productsService: ProductsServiceAPI,
         ordersService: OrdersServiceAPI
     ) {
-        userState = kycTiersService.kycStatusStream
+        balanceDataStreamer = BalanceDataStreamer(balanceDataFetcher: balanceDataFetcher)
+        let streams = kycTiersService.kycStatusStream
             .combineLatest(
+                balanceDataStreamer.balanceDataStream,
                 paymentMethodsService.paymentMethodsStream,
-                ordersService.hasPurchasedAnyCryptoStream,
-                coincore.balanceStream
+                ordersService.hasPurchasedAnyCryptoStream
             )
-            .map { kycStatusResult, paymentMethodsResult, hasEverPurchasedCryptoResult, balanceDataResult in
-                kycStatusResult.zip(
+            .combineLatest(productsService.productsStream)
+
+        userState = streams
+            .map { results -> Result<RawUserData, UserStateError> in
+                let (r1, r2) = results
+                let (kycStatusResult, balanceDataResult, paymentMethodsResult, hasEverPurchasedCryptoResult) = r1
+                let products = r2
+                return kycStatusResult.zip(
+                    balanceDataResult,
                     paymentMethodsResult,
                     hasEverPurchasedCryptoResult,
-                    balanceDataResult
+                    products
                 )
+                .map { $0 } // this makes the compiler happy by making a generic tuple be casted to RawUserData
             }
             .map { zippedResult -> Result<UserState, UserStateError> in
-                zippedResult.map { kycStatus, paymentMethods, hasEverPurchasedCrypto, balanceData in
+                zippedResult.map { kycStatus, balanceData, paymentMethods, hasEverPurchasedCrypto, products in
                     UserState(
                         kycStatus: kycStatus,
+                        balanceData: balanceData,
                         linkedPaymentMethods: paymentMethods,
                         hasEverPurchasedCrypto: hasEverPurchasedCrypto,
-                        balanceData: balanceData
+                        products: products
                     )
                 }
             }
@@ -119,13 +147,29 @@ extension OrdersServiceAPI {
     }
 }
 
-extension CoincoreAPI {
+extension ProductsServiceAPI {
 
-    fileprivate var balanceStream: AnyPublisher<Result<UserState.BalanceData, UserStateError>, Never> {
+    fileprivate var productsStream: AnyPublisher<Result<[Product], UserStateError>, Never> {
+        streamProducts().map { result in
+            result.mapError(UserStateError.missingProductsInfo)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+class BalanceDataFetcher: BalanceDataFetcherAPI {
+
+    private let coincore: CoincoreAPI
+
+    init(coincore: CoincoreAPI) {
+        self.coincore = coincore
+    }
+
+    func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError> {
         var randomNumberGenerator = SystemRandomNumberGenerator()
-        return hasFundedAccounts(for: .fiat)
+        return coincore.hasFundedAccounts(for: .fiat)
             .zip(
-                hasFundedAccounts(for: .crypto)
+                coincore.hasFundedAccounts(for: .crypto)
             )
             // retry a few times on errors
             .retry(5, delay: .exponential(using: &randomNumberGenerator), scheduler: DispatchQueue.main)
@@ -137,6 +181,33 @@ extension CoincoreAPI {
                 )
             }
             .mapError(UserStateError.missingBalance)
-            .mapToResult()
+            .eraseToAnyPublisher()
+    }
+}
+
+/// This class helps caching the user's balance data and, most importantly, invalidate and refetch it when it certain events are fired.
+private class BalanceDataStreamer {
+
+    private enum CacheKey: Hashable {
+        case balanceData
+    }
+
+    private let balanceCache: CachedValueNew<CacheKey, UserState.BalanceData, UserStateError>
+
+    init(balanceDataFetcher: BalanceDataFetcherAPI) {
+        let cache: AnyCache<CacheKey, UserState.BalanceData> = InMemoryCache(
+            configuration: .onUserStateChanged(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+        balanceCache = CachedValueNew(
+            cache: cache,
+            fetch: { _ in
+                balanceDataFetcher.fetchBalanceData()
+            }
+        )
+    }
+
+    var balanceDataStream: AnyPublisher<Result<UserState.BalanceData, UserStateError>, Never> {
+        balanceCache.stream(key: .balanceData)
     }
 }
