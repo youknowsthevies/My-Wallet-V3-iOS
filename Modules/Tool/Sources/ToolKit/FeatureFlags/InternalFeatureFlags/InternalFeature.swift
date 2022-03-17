@@ -33,15 +33,20 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Redesigned CoinView
     case redesignCoinView
 
+    /// Enables Blockchain Domains
+    case blockchainDomains
+
     /// Enables Card Issuing
     case cardIssuing
 
-    /// Enables Blockchain Domains
-    case blockchainDomains
+    /// Enables customer support chat
+    case customerSupportChat
 
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
+        case .customerSupportChat:
+            return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .disableSSLPinning,
@@ -89,6 +94,8 @@ extension InternalFeature {
             return "Blockchain Domains"
         case .cardIssuing:
             return "Card Issuing"
+        case .customerSupportChat:
+            return "Customer Support Chat"
         }
     }
 }

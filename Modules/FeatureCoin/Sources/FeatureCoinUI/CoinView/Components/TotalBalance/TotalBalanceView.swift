@@ -3,57 +3,48 @@
 import BlockchainComponentLibrary
 import Combine
 import FeatureCoinDomain
+import Localization
 import MoneyKit
 import SwiftUI
 
 struct TotalBalanceView<Trailing: View>: View {
-    let assetDetails: AssetDetails
-    let accounts: [Account]
-    let trailing: Trailing
 
-    var cryptoValuePublisher: AnyPublisher<MoneyValue, Never>
-    @State private var cryptoValue: String = ""
+    private typealias Localization = LocalizationConstants.Coin.Accounts
 
-    var fiatValuePublisher: AnyPublisher<MoneyValue, Never>
-    @State private var fiatValue: String = ""
-
-    init(
-        assetDetails: AssetDetails,
-        accounts: [Account],
-        @ViewBuilder trailing: @escaping () -> Trailing
-    ) {
-        self.assetDetails = assetDetails
-        self.accounts = accounts
-        self.trailing = trailing()
-
-        cryptoValuePublisher = accounts.totalCryptoBalancePublisher
-        fiatValuePublisher = accounts.totalFiatBalancePublisher
-    }
+    let asset: AssetDetails
+    let accounts: [Account.Snapshot]
+    let trailing: () -> Trailing
 
     var body: some View {
         BalanceSectionHeader(
-            header: "Your Total \(assetDetails.code)",
-            title: fiatValue,
-            subtitle: cryptoValue
-        ) {
-            trailing
+            header: Localization.totalBalance.interpolating(asset.code),
+            title: accounts.fiatBalance?.displayString ?? 6.of(".").joined(),
+            subtitle: accounts.cryptoBalance?.displayString ?? 10.of(".").joined(),
+            trailing: trailing
+        )
+        .if(accounts.isEmpty || accounts.fiatBalance == nil || accounts.cryptoBalance == nil) { view in
+            view.redacted(reason: .placeholder)
         }
-        .onReceive(cryptoValuePublisher) {
-            cryptoValue = $0.displayString
-        }
-        .onReceive(fiatValuePublisher) {
-            fiatValue = $0.displayString
-        }
+    }
+}
+
+extension TotalBalanceView where Trailing == EmptyView {
+
+    init(
+        asset: AssetDetails,
+        accounts: [Account.Snapshot]
+    ) {
+        self.init(asset: asset, accounts: accounts, trailing: EmptyView.init)
     }
 }
 
 // swiftlint:disable type_name
 struct TotalBalanceView_PreviewProvider: PreviewProvider {
+
     static var previews: some View {
         TotalBalanceView(
-            assetDetails: PreviewHelper.assetDetails(),
-            accounts: [],
-            trailing: {}
+            asset: .preview(),
+            accounts: []
         )
     }
 }

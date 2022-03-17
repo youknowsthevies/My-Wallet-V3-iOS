@@ -12,12 +12,12 @@ public protocol BlockchainNamespaceObservationAction {
 }
 
 public protocol BlockchainNamespacePostAction {
-    static func post(_ ref: Tag.Reference, context: Tag.Reference.Context.Equatable) -> Self
+    static func post(_ ref: Tag.Reference, context: Tag.Reference.Context) -> Self
 }
 
 public enum BlockchainNamespaceObservation: Equatable {
     case start, stop
-    case event(Tag.Reference, context: Tag.Reference.Context.Equatable = [:])
+    case event(Tag.Reference, context: Tag.Reference.Context = [:])
 }
 
 extension BlockchainNamespaceObservation {
@@ -31,18 +31,18 @@ extension BlockchainNamespaceObservation {
     }
 
     public static func on(_ event: Tag.Reference, context: Tag.Reference.Context = [:]) -> Self {
-        .event(event, context: context.equatable())
+        .event(event, context: context)
     }
 }
 
 public struct BlockchainNamespaceEvent: Equatable {
 
     public let ref: Tag.Reference
-    public let context: Tag.Context.Equatable
+    public let context: Tag.Context
 
     public init(event ref: Tag.Reference, context: Tag.Context) {
         self.ref = ref
-        self.context = context.equatable()
+        self.context = context
     }
 }
 
@@ -57,7 +57,7 @@ extension BlockchainNamespacePostAction {
     }
 
     public static func post(event ref: Tag.Reference, context: Tag.Reference.Context = [:]) -> Self {
-        .post(ref, context: context.equatable())
+        .post(ref, context: context)
     }
 }
 
@@ -83,7 +83,7 @@ extension Reducer where Action: BlockchainNamespaceObservationAction, Environmen
                     let observers = events.map { event in
                         environment.app.on(event)
                             .eraseToEffect()
-                            .map { Action.observation(.event($0.ref, context: $0.context.equatable())) }
+                            .map { Action.observation(.event($0.ref, context: $0.context)) }
                             .cancellable(id: event)
                     }
                     return .merge(observers)
@@ -105,7 +105,7 @@ extension Reducer where Action: BlockchainNamespacePostAction, Environment: Bloc
         Reducer { _, action, environment in
             if let (event, context) = (/Action.post).extract(from: action) {
                 return .fireAndForget {
-                    environment.app.post(event: event, context: context.unwrapped())
+                    environment.app.post(event: event, context: context)
                 }
             }
             return .none
@@ -125,14 +125,7 @@ extension Effect where Output: BlockchainNamespacePostAction {
     }
 
     public func post(event ref: Tag.Reference, context: Tag.Reference.Context = [:]) -> Effect {
-        Effect(value: .post(event: ref, context: context.mapValues(Anything.init)))
-    }
-}
-
-extension Dictionary {
-
-    func mapKeys<A>(_ transform: (Key) throws -> A) rethrows -> [A: Value] {
-        try reduce(into: [:]) { a, e in try a[transform(e.key)] = e.value }
+        Effect(value: .post(event: ref, context: context))
     }
 }
 
@@ -161,21 +154,5 @@ extension Language {
 
     public var customDumpMirror: Mirror {
         .init(self, children: ["id": id], displayStyle: .struct)
-    }
-}
-
-extension Tag.Context {
-
-    public typealias Equatable = [Key: Anything]
-
-    public func equatable() -> [Key: Anything] {
-        mapValues(Anything.init)
-    }
-}
-
-extension Dictionary where Key == Tag, Value == Anything {
-
-    public func unwrapped() -> Tag.Context {
-        mapValues(\.wrapped)
     }
 }

@@ -47,7 +47,7 @@ extension Tag {
     public struct Reference {
 
         public typealias Indices = [Tag: String]
-        public typealias Context = [Tag: Any]
+        public typealias Context = [Tag: AnyHashable]
 
         public let tag: Tag
 
@@ -56,7 +56,7 @@ extension Tag {
 
         public let string: String
 
-        var error: Swift.Error?
+        private var error: Swift.Error?
 
         init(_ tag: Tag, to context: Context, in app: AppProtocol?) {
             self.tag = tag
@@ -124,11 +124,7 @@ extension Tag.Reference {
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<L>) -> String {
-        id(ignoring: ignoring.map(\.[]).set)
-    }
-
-    public func id(ignoring: Set<Tag> = []) -> String {
+    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
         Self.id(
             tag: tag,
             to: context,

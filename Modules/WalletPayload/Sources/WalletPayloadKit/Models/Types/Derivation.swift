@@ -84,14 +84,26 @@ func generateDerivations(
 ///   - index: An `Int` representing the _account_index_ to be used
 ///   - seedHex: A `String` to be used as a seed hex
 ///   - type: A `DerivationType` to extract its _purpose_
-/// - Returns: A `Result<PrivateKey, WalletCreateError>`
+/// - Returns: A `PrivateKey`
 func deriveAccountKey(
     at index: Int,
+    seedHex: String,
+    type: DerivationType
+) -> PrivateKey {
+    deriveMasterAccountKey(seedHex: seedHex, type: type)
+        .derive(at: .hardened(UInt32(index)))
+}
+
+/// Derives a `PrivateKey` of path `m/(purpose)'/0'`
+/// - Parameters:
+///   - seedHex: A `String` to be used as a seed hex
+///   - type: A `DerivationType` to extract its _purpose_
+/// - Returns: A `PrivateKey`
+func deriveMasterAccountKey(
     seedHex: String,
     type: DerivationType
 ) -> PrivateKey {
     PrivateKey.bitcoinKeyFrom(seedHex: seedHex)
         .derive(at: .hardened(UInt32(type.purpose)))
         .derive(at: .hardened(0))
-        .derive(at: .hardened(UInt32(index)))
 }

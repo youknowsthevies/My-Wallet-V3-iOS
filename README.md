@@ -4,6 +4,15 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/blockchain/My-Wallet-V3-iOS.svg)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/blockchain/My-Wallet-V3-iOS.svg)
 
+# Tooling
+
+Homebrew: 3.4.1+
+Xcode: 13.2.1+
+Ruby: 2.6.5
+Ruby-Gems: 3.0.3
+Swiftlint: 0.46.5+
+Swiftformat: 0.49.5+
+
 # Building
 
 ## Install Xcode

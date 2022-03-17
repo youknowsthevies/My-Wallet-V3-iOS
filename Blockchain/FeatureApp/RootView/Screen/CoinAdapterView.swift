@@ -1,7 +1,9 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import BlockchainNamespace
+import Collections
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -9,6 +11,7 @@ import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCoinUI
 import FeatureInterestUI
+import FeatureKYCUI
 import FeatureTransactionUI
 import MoneyKit
 import NetworkKit
@@ -19,8 +22,10 @@ import ToolKit
 
 struct CoinAdapterView: View {
 
+    let app: AppProtocol
     let store: Store<CoinViewState, CoinViewAction>
     let currency: CryptoCurrency
+    let analytics: AnalyticsEventRecorderAPI
 
     init(
         cryptoCurrency: CryptoCurrency,
@@ -29,12 +34,15 @@ struct CoinAdapterView: View {
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
-        ratesRepository: RatesRepositoryAPI = resolve()
+        ratesRepository: RatesRepositoryAPI = resolve(),
+        analytics: AnalyticsEventRecorderAPI = resolve()
     ) {
         currency = cryptoCurrency
+        self.app = app
+        self.analytics = analytics
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
-                assetDetails: AssetDetails(cryptoCurrency: cryptoCurrency)
+                asset: AssetDetails(cryptoCurrency: cryptoCurrency)
             ),
             reducer: coinViewReducer,
             environment: CoinViewEnvironment(
@@ -52,6 +60,7 @@ struct CoinAdapterView: View {
                 },
                 accountsProvider: { [fiatCurrencyService, coincore] in
                     fiatCurrencyService.displayCurrencyPublisher
+                        .setFailureType(to: Error.self)
                         .flatMap { [coincore] fiatCurrency in
                             coincore.cryptoAccounts(for: cryptoCurrency)
                                 .map { accounts in
@@ -59,7 +68,6 @@ struct CoinAdapterView: View {
                                         .filter { !($0 is ExchangeAccount) }
                                         .map { Account($0, fiatCurrency) }
                                 }
-                                .replaceError(with: [])
                                 .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()
@@ -69,7 +77,8 @@ struct CoinAdapterView: View {
                     displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
                     historicalPriceRepository: historicalPriceRepository
                 ),
-                interestRatesRepository: ratesRepository
+                interestRatesRepository: ratesRepository,
+                explainerService: .init(app: app)
             )
         )
     }
@@ -82,8 +91,12 @@ struct CoinAdapterView: View {
 
 struct CoinViewObserver: AppSessionObserver {
 
+    @Environment(\.openURL) var openURL
+
     var transactionsRouter: TransactionsRouterAPI = resolve()
     var coincore: CoincoreAPI = resolve()
+    var kycRouter: FeatureKYCUI.Routing = resolve()
+    var defaults: UserDefaults = .standard
 
     func body(content: Content) -> some View {
         content
@@ -113,23 +126,25 @@ struct CoinViewObserver: AppSessionObserver {
                 )
             }
             .on(blockchain.ux.asset.account.rewards.withdraw) { event in
-                switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+                switch try await cryptoAccount(from: event) {
                 case let account as CryptoInterestAccount:
                     await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
                 default:
-                    throw event.tag.error("Withdrawing from rewards requires CryptoInterestAccount")
+                    throw blockchain.ux.asset.account.error[]
+                        .error(message: "Withdrawing from rewards requires CryptoInterestAccount")
                 }
             }
             .on(blockchain.ux.asset.account.rewards.deposit) { event in
-                switch try await cryptoAccount(for: .interestTransfer, from: event) {
+                switch try await cryptoAccount(from: event) {
                 case let account as CryptoInterestAccount:
                     await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
                 default:
-                    throw event.tag.error("Transferring to rewards requires CryptoInterestAccount")
+                    throw blockchain.ux.asset.account.error[]
+                        .error(message: "Transferring to rewards requires CryptoInterestAccount")
                 }
             }
             .on(blockchain.ux.asset.account.rewards.summary) { event in
-                let account = try await cryptoAccount(for: .interestTransfer, from: event)
+                let account = try await cryptoAccount(from: event)
                 let interactor = InterestAccountDetailsScreenInteractor(account: account)
                 let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
                 let controller = InterestAccountDetailsViewController(presenter: presenter)
@@ -146,11 +161,21 @@ struct CoinViewObserver: AppSessionObserver {
                     to: .send(tradingAccount(from: event), cryptoAccount(for: .send, from: event))
                 )
             }
-            .on(blockchain.ux.asset.account.require.KYC) { event in
-                fatalError("\(event.ref) KYC")
+            .on(blockchain.ux.asset.account.require.KYC) { _ in
+                let topViewController = (resolve() as TopMostViewControllerProviding).topMostViewController!
+                _ = try await kycRouter.presentKYCIfNeeded(from: topViewController, requiredTier: .tier2).values.first
             }
-            .on(blockchain.ux.asset.account.activity) { event in
-                fatalError("\(event.ref) activity")
+            .on(blockchain.ux.asset.account.activity) { _ in
+                app.post(
+                    event: blockchain.ux.home.tab.select[]
+                        .ref(to: [blockchain.ux.home.tab.id: blockchain.ux.user.activity[]])
+                )
+            }
+            .on(blockchain.ux.asset.bio.visit.website) { event in
+                try openURL(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
+            }
+            .on(blockchain.ux.asset.account.explainer.reset) { _ in
+                defaults.removeObject(forKey: blockchain.ux.asset.account.explainer(\.id))
             }
     }
 
@@ -162,7 +187,10 @@ struct CoinViewObserver: AppSessionObserver {
         )
         .filter(CryptoTradingAccount.self)
         .first
-        .or(throw: event.tag.error(message: "No trading account found for \(event.ref)"))
+        .or(
+            throw: blockchain.ux.asset.error[]
+                .error(message: "No trading account found for \(event.ref)")
+        )
     }
 
     func cryptoAccount(
@@ -170,20 +198,27 @@ struct CoinViewObserver: AppSessionObserver {
         from event: Session.Event
     ) async throws -> CryptoAccount {
         let accounts = try await coincore.cryptoAccounts(
-            for: event.context.decode(blockchain.ux.asset.id),
+            for: event.ref.context.decode(blockchain.ux.asset.id),
             supporting: action
         )
-        if let id = try? event.context.decode(blockchain.ux.asset.account.id, as: String.self) {
-            return try accounts.first(where: { account in account.identifier == id as AnyHashable })
-                .or(throw: event.tag.error(message: "No account found with id \(id)"))
+        if let id = try? event.ref.context.decode(blockchain.ux.asset.account.id, as: String.self) {
+            return try accounts.first(where: { account in account.identifier as? String == id })
+                .or(
+                    throw: blockchain.ux.asset.error[]
+                        .error(message: "No account found with id \(id)")
+                )
         } else {
             return try (accounts.first(where: { account in account is TradingAccount }) ?? accounts.first)
-                .or(throw: event.tag.error(message: "\(event) has no valid accounts for \(String(describing: action))"))
+                .or(
+                    throw: blockchain.ux.asset.error[]
+                        .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                )
         }
     }
 }
 
 extension FeatureCoinDomain.Account {
+
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
         self.init(
             id: account.identifier,
@@ -191,13 +226,48 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
+            actionsPublisher: account.actionsPublisher()
+                .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
+                .eraseToAnyPublisher(),
             cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),
             fiatBalancePublisher: account.fiatBalance(fiatCurrency: fiatCurrency).ignoreFailure()
         )
     }
 }
 
+extension FeatureCoinDomain.Account.Action {
+
+    // swiftlint:disable cyclomatic_complexity
+    init?(_ action: AssetAction) {
+        switch action {
+        case .buy:
+            self = .buy
+        case .deposit:
+            self = .exchange.deposit
+        case .interestTransfer:
+            self = .rewards.deposit
+        case .interestWithdraw:
+            self = .rewards.withdraw
+        case .receive:
+            self = .receive
+        case .sell:
+            self = .sell
+        case .send:
+            self = .send
+        case .sign:
+            return nil
+        case .swap:
+            self = .swap
+        case .viewActivity:
+            self = .activity
+        case .withdraw:
+            self = .exchange.withdraw
+        }
+    }
+}
+
 extension FeatureCoinDomain.Account.AccountType {
+
     init(_ account: CryptoAccount) {
         if account is TradingAccount {
             self = .trading
@@ -212,6 +282,7 @@ extension FeatureCoinDomain.Account.AccountType {
 }
 
 extension FeatureCoinDomain.KYCStatus {
+
     init(_ kycStatus: UserState.KYCStatus) {
         switch kycStatus {
         case .unverified:
@@ -229,16 +300,17 @@ extension FeatureCoinDomain.KYCStatus {
 }
 
 extension AssetDetails {
+
     init(cryptoCurrency: CryptoCurrency) {
         self.init(
             name: cryptoCurrency.name,
             code: cryptoCurrency.code,
             brandColor: cryptoCurrency.brandColor,
-            about: "About Test",
-            assetInfoUrl: URL(string: "https://blockchain.com")!,
+            about: nil,
+            website: nil,
             logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
             logoImage: cryptoCurrency.assetModel.logoResource.image,
-            tradeable: cryptoCurrency.supports(product: .custodialWalletBalance)
+            isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
         )
     }
 }

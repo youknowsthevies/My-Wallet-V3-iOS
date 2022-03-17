@@ -19,5 +19,7 @@ func registerFont(fileName: String, bundle: Bundle = Bundle.componentLibrary) {
 
     var error: Unmanaged<CFError>?
     CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
-    print(error ?? "Successfully registered font: \(fileName)")
+    if error == nil {
+        print("Successfully registered font: \(fileName)")
+    }
 }

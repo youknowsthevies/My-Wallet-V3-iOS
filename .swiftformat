@@ -1,6 +1,8 @@
 --exclude Carthage,Submodules,SourcePackages,vendor,scripts,Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift
 --disable blankLinesAtStartOfScope
 --disable spaceAroundParens
+--disable redundanttype
+--disable redundantvoidreturntype
 --allman false
 --assetliterals visual-width
 --beforemarks 
@@ -45,7 +47,6 @@
 --organizetypes class,enum,struct
 --patternlet inline
 --ranges spaced
---redundanttype inferred
 --self remove
 --selfrequired 
 --semicolons inline
@@ -67,3 +68,5 @@
 --wrapreturntype preserve
 --xcodeindentation disabled
 --yodaswap always
+--disable redundanttype
+--disable redundantvoidreturntype

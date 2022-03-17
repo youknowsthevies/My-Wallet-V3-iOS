@@ -12,4 +12,9 @@ extension Collection {
         }
         return self[index]
     }
+
+    /// Returns a Boolean value indicating whether any element of a sequence satisfies a given predicate.
+    @inlinable public func anySatisfy(_ predicate: (Element) -> Bool) -> Bool {
+        !allSatisfy { !predicate($0) }
+    }
 }

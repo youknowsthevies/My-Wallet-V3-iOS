@@ -82,6 +82,7 @@ public enum WalletInitializationError: LocalizedError, Equatable {
 public enum WalletRecoverError: LocalizedError, Equatable {
     case unknown
     case invalidMnemonic
+    case unableToRecoverFromMetadata
     case failedToRecoverWallet
 
     public var errorDescription: String? {
@@ -92,6 +93,11 @@ public enum WalletRecoverError: LocalizedError, Equatable {
             return "Recovery failed due to invalid mnemonic"
         case .failedToRecoverWallet:
             return "Failed to recover wallet"
+        case .unableToRecoverFromMetadata:
+            // Intentionally nil
+            // This error indicates that the wallet from a mnemonic was not previously created by Blockchain.com
+            // but another wallet provider, so in this case we will import a wallet and create a new account.
+            return nil
         }
     }
 }

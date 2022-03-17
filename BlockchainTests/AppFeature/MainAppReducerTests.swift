@@ -24,6 +24,7 @@ import XCTest
 // swiftlint:disable type_body_length
 final class MainAppReducerTests: XCTestCase {
 
+    var mockNabuUserService: MockNabuUserService!
     var mockWalletManager: WalletManager!
     var mockMobileAuthSyncService: MockMobileAuthSyncService!
     var mockResetPasswordService: MockResetPasswordService!
@@ -68,6 +69,7 @@ final class MainAppReducerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
 
+        mockNabuUserService = MockNabuUserService()
         mockSettingsApp = MockBlockchainSettingsApp()
         mockWalletManager = WalletManager(
             wallet: mockWallet,
@@ -115,6 +117,8 @@ final class MainAppReducerTests: XCTestCase {
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
+                app: App.test,
+                nabuUserService: mockNabuUserService,
                 loadingViewPresenter: LoadingViewPresenter(),
                 externalAppOpener: mockExternalAppOpener,
                 deeplinkHandler: mockDeepLinkHandler,
@@ -435,20 +439,8 @@ final class MainAppReducerTests: XCTestCase {
             state.onboarding = nil
             state.loggedIn = .init()
         }
-        let context = LoggedIn.Context.none
-        testStore.receive(.loggedIn(.start(context)))
-        testStore.receive(.mobileAuthSync(isLogin: true))
-
-        mockMainQueue.advance()
-        // send logout to clear pending effects after logged in.
-        testStore.send(.loggedIn(.logout)) { state in
-            state.loggedIn = nil
-            state.onboarding = .init()
-            state.onboarding?.pinState = nil
-            state.onboarding?.passwordRequiredState = .init(
-                walletIdentifier: self.mockSettingsApp.guid ?? ""
-            )
-        }
+        assertDidPerformSignIn()
+        logout()
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
 
@@ -459,20 +451,8 @@ final class MainAppReducerTests: XCTestCase {
         }
         mockMainQueue.advance()
 
-        testStore.receive(.loggedIn(.start(.none)))
-        testStore.receive(.mobileAuthSync(isLogin: true))
-        mockMainQueue.advance()
-
-        testStore.send(.loggedIn(.logout)) { state in
-            state.loggedIn = nil
-            state.onboarding = .init(
-                pinState: nil,
-                walletUpgradeState: nil,
-                passwordRequiredState: .init(
-                    walletIdentifier: self.mockSettingsApp.guid ?? ""
-                )
-            )
-        }
+        assertDidPerformSignIn()
+        logout()
 
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
         XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
@@ -548,17 +528,8 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start(.none)))
-        testStore.receive(.mobileAuthSync(isLogin: true))
-
-        testStore.send(.loggedIn(.logout)) { state in
-            state.loggedIn = nil
-            state.onboarding = .init()
-            state.onboarding?.pinState = nil
-            state.onboarding?.passwordRequiredState = .init(
-                walletIdentifier: self.mockSettingsApp.guid ?? ""
-            )
-        }
+        assertDidPerformSignIn()
+        logout()
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
@@ -573,17 +544,8 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start(.none)))
-        testStore.receive(.mobileAuthSync(isLogin: true))
-
-        testStore.send(.loggedIn(.logout)) { state in
-            state.loggedIn = nil
-            state.onboarding = .init()
-            state.onboarding?.pinState = nil
-            state.onboarding?.passwordRequiredState = .init(
-                walletIdentifier: self.mockSettingsApp.guid ?? ""
-            )
-        }
+        assertDidPerformSignIn()
+        logout()
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
@@ -603,8 +565,7 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start(.none)))
-        testStore.receive(.mobileAuthSync(isLogin: true))
+        assertDidPerformSignIn()
 
         // when
         mockWallet.mockIsInitialized = false
@@ -725,6 +686,32 @@ final class MainAppReducerTests: XCTestCase {
         )
         testStore.receive(.proceedToDeviceAuthorization(requestInfo)) { state in
             state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func assertDidPerformSignIn(file: StaticString = #file, line: UInt = #line) {
+        testStore.receive(.loggedIn(.start(.none)), file: file, line: line)
+        testStore.receive(.mobileAuthSync(isLogin: true), file: file, line: line)
+        mockMainQueue.advance()
+        testStore.receive(.loggedIn(.handleExistingWalletSignIn), file: file, line: line)
+        testStore.receive(.loggedIn(.showPostSignInOnboardingFlow), file: file, line: line) {
+            $0.loggedIn?.displayPostSignInOnboardingFlow = true
+        }
+    }
+
+    /// send logout to clear pending effects after logged in.
+    private func logout(file: StaticString = #file, line: UInt = #line) {
+        testStore.send(.loggedIn(.logout)) { state in
+            state.loggedIn = nil
+            state.onboarding = .init(
+                pinState: nil,
+                walletUpgradeState: nil,
+                passwordRequiredState: .init(
+                    walletIdentifier: self.mockSettingsApp.guid ?? ""
+                )
+            )
         }
     }
 }
