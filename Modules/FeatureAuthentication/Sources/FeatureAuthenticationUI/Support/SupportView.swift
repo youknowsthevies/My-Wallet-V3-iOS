@@ -1,3 +1,4 @@
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -15,29 +16,32 @@ struct SupportView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            ActionableView(buttons: [
-                .init(
-                    title: LocalizationIds.emailUs,
-                    action: {
+            VStack(spacing: 40.0) {
+                VStack(spacing: 24.0) {
+                    VStack(alignment: .leading, spacing: 10.0, content: {
+                        Text(LocalizationIds.title)
+                            .typography(.title3)
+                        Text(LocalizationIds.description)
+                            .typography(.paragraph1)
+                        VStack(alignment: .center, spacing: 16.0) {
+                            MinimalDoubleButton(
+                                leadingTitle: LocalizationIds.chatNow,
+                                leadingAction: {
 
-                    },
-                    style: .secondary
-                ),
-                .init(
-                    title: LocalizationIds.viewFAQ,
-                    action: {
+                                },
+                                trailingTitle: LocalizationIds.emailUs,
+                                trailingAction: {
 
-                    },
-                    style: .secondary
-                )
-            ], content: {
-                VStack(spacing: 10.0, content: {
-                    Text(LocalizationIds.title)
-                        .typography(.title3)
-                    Text(LocalizationIds.description)
-                        .typography(.paragraph1)
-                })
-            })
+                                }
+                            )
+                        }
+                    })
+                }
+                .padding(24.0)
+            }
+            .onAppear {
+                viewStore.send(.loadAppStoreVersionInformation)
+            }
         }
     }
 }

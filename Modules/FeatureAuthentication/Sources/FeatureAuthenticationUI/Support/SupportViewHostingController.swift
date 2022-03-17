@@ -18,9 +18,12 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
         contentView = UIHostingController(
             rootView: SupportView(
                 store: .init(
-                    initialState: .init(isSupportViewSheetShown: true),
+                    initialState: .init(
+                        applicationVersion: Bundle.applicationVersion ?? "",
+                        bundleIdentifier: Bundle.main.bundleIdentifier ?? ""
+                    ),
                     reducer: supportViewReducer,
-                    environment: Void()
+                    environment: .default
                 )
             )
         )

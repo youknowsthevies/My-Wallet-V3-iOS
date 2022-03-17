@@ -19,18 +19,20 @@ final class AppStoreInformationRepository: AppStoreInformationRepositoryAPI {
     func verifyTheCurrentAppVersionIsTheLatestVersion(
         _ version: String,
         bundleId: String
-    ) -> AnyPublisher<Bool, AppStoreServiceError> {
+    ) -> AnyPublisher<AppStoreApplicationInfo, AppStoreServiceError> {
         client
             .fetchAppStoreResponseForBundleId(bundleId)
             .eraseError()
-            .map(\.applications)
+            .map(\.results)
             .tryMap { applications in
                 guard let result = applications.first else {
                     throw AppStoreServiceError.failedToRetrieveAppStoreInfo
                 }
-                return result.version
+                return AppStoreApplicationInfo(
+                    version: result.version,
+                    isApplicationUpToDate: version == result.version
+                )
             }
-            .map { version == $0 }
             .mapError(AppStoreServiceError.networkError)
             .eraseToAnyPublisher()
     }

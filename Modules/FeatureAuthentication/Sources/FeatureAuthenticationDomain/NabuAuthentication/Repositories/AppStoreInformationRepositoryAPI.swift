@@ -13,9 +13,9 @@ public protocol AppStoreInformationRepositoryAPI {
     /// - Parameters:
     ///   - version: The wallet GUID
     ///   - bundleId: The wallet sharedKey
-    /// - Returns: A `Bool`
+    /// - Returns: `AppStoreApplicationInfo`
     func verifyTheCurrentAppVersionIsTheLatestVersion(
         _ version: String,
         bundleId: String
-    ) -> AnyPublisher<Bool, AppStoreServiceError>
+    ) -> AnyPublisher<AppStoreApplicationInfo, AppStoreServiceError>
 }

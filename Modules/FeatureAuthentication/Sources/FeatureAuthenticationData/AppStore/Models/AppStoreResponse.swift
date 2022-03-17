@@ -8,5 +8,5 @@ struct AppStoreResponse: Decodable {
         let version: String
     }
 
-    let applications: [Application]
+    let results: [Application]
 }
