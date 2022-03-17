@@ -144,6 +144,7 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
                     mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
                     ),

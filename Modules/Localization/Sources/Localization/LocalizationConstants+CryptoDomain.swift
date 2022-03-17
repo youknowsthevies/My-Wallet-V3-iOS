@@ -275,6 +275,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Success okay button"
             )
         }
+
         public enum Error {
             public static let title = NSLocalizedString(
                 "Failed to claim %@",

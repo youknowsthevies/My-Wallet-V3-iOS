@@ -45,6 +45,7 @@ struct ClaimIntroductionState: NavigationState {
 
 struct ClaimIntroductionEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let externalAppOpener: ExternalAppOpener
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
     let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
@@ -59,6 +60,7 @@ let claimIntroductionReducer = Reducer.combine(
             environment: {
                 SearchCryptoDomainEnvironment(
                     mainQueue: $0.mainQueue,
+                    externalAppOpener: $0.externalAppOpener,
                     searchDomainRepository: $0.searchDomainRepository,
                     orderDomainRepository: $0.orderDomainRepository,
                     userInfoProvider: $0.userInfoProvider
@@ -96,6 +98,7 @@ public final class ClaimIntroductionHositingController: UIViewController {
     private let viewStore: ViewStore<ClaimIntroductionState, ClaimIntroductionAction>
 
     private let mainQueue: AnySchedulerOf<DispatchQueue>
+    private let externalAppOpener: ExternalAppOpener
     private let searchDomainRepository: SearchDomainRepositoryAPI
     private let orderDomainRepository: OrderDomainRepositoryAPI
     private let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
@@ -106,11 +109,13 @@ public final class ClaimIntroductionHositingController: UIViewController {
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        externalAppOpener: ExternalAppOpener,
         searchDomainRepository: SearchDomainRepositoryAPI,
         orderDomainRepository: OrderDomainRepositoryAPI,
         userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
+        self.externalAppOpener = externalAppOpener
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
         self.userInfoProvider = userInfoProvider
@@ -119,6 +124,7 @@ public final class ClaimIntroductionHositingController: UIViewController {
             reducer: claimIntroductionReducer,
             environment: .init(
                 mainQueue: mainQueue,
+                externalAppOpener: externalAppOpener,
                 searchDomainRepository: searchDomainRepository,
                 orderDomainRepository: orderDomainRepository,
                 userInfoProvider: userInfoProvider
@@ -273,6 +279,7 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                 reducer: claimIntroductionReducer,
                 environment: .init(
                     mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
                     ),

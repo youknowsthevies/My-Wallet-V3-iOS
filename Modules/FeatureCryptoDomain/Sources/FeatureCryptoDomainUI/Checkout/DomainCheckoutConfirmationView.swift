@@ -54,7 +54,7 @@ struct DomainCheckoutConfirmationView: View {
             PrimaryButton(title: buttonLabel) {
                 switch status {
                 case .success:
-                    break
+                    completion()
                 case .error:
                     presentationMode.wrappedValue.dismiss()
                 }

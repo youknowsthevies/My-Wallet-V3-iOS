@@ -9,6 +9,7 @@ import ComposableNavigation
 import NetworkKit
 import OrderedCollections
 import TestKit
+import ToolKit
 import XCTest
 
 final class SearchCryptoDomainReducerTests: XCTestCase {
@@ -34,19 +35,22 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             reducer: searchCryptoDomainReducer,
             environment: SearchCryptoDomainEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                externalAppOpener: ToLogAppOpener(),
                 searchDomainRepository: SearchDomainRepository(
                     apiClient: searchClient
                 ),
                 orderDomainRepository: OrderDomainRepository(
                     apiClient: orderClient
                 ),
-                userInfoProvider: .just(
-                    OrderDomainUserInfo(
-                        nabuUserId: "mockUserId",
-                        nabuUserName: "Firstname",
-                        resolutionRecords: []
+                userInfoProvider: {
+                    .just(
+                        OrderDomainUserInfo(
+                            nabuUserId: "mockUserId",
+                            nabuUserName: "Firstname",
+                            resolutionRecords: []
+                        )
                     )
-                )
+                }
             )
         )
     }

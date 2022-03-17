@@ -253,14 +253,14 @@ extension Binding where Value == Bool {
 extension Reducer where Action: NavigationAction, State: NavigationState {
     /// Returns a reducer that applies ``NavigationAction`` mutations to `NavigationState` after running this
     /// reducer's logic.
-    public func routing() -> Self {
+    public func routing() -> Self where Action.RouteType == State.RouteType {
         Self { state, action, environment in
             guard let route = (/Action.route).extract(from: action)
             else {
                 return self.run(&state, action, environment)
             }
 
-            defer { state.route = route as? RouteIntent<State.RouteType> }
+            defer { state.route = route }
             return self.run(&state, action, environment)
         }
     }

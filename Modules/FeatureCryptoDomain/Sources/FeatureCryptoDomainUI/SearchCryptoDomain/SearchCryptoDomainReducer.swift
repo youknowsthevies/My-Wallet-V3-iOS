@@ -94,17 +94,20 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let externalAppOpener: ExternalAppOpener
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
     let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        externalAppOpener: ExternalAppOpener,
         searchDomainRepository: SearchDomainRepositoryAPI,
         orderDomainRepository: OrderDomainRepositoryAPI,
         userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
+        self.externalAppOpener = externalAppOpener
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
         self.userInfoProvider = userInfoProvider
@@ -241,8 +244,9 @@ let searchCryptoDomainReducer = Reducer.combine(
             }
 
         case .openPremiumDomainLink(let url):
-            // TODO: remove this and use ExternalAppOpener when integrated with main target
-            UIApplication.shared.open(url)
+            environment
+                .externalAppOpener
+                .open(url)
             return .none
 
         case .route(let route):

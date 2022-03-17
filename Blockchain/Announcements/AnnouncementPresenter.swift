@@ -527,6 +527,7 @@ extension AnnouncementPresenter {
             action: { [coincore, nabuUserService, navigationRouter] in
                 let vc = ClaimIntroductionHositingController(
                     mainQueue: .main,
+                    externalAppOpener: DIKit.resolve(),
                     searchDomainRepository: DIKit.resolve(),
                     orderDomainRepository: DIKit.resolve(),
                     userInfoProvider: {
@@ -563,7 +564,7 @@ extension AnnouncementPresenter {
                             )
                             .eraseToAnyPublisher()
                         }
-                        .flatMap { (symbols, addresses, nabuUser) -> AnyPublisher<OrderDomainUserInfo, Error> in
+                        .flatMap { symbols, addresses, nabuUser -> AnyPublisher<OrderDomainUserInfo, Error> in
                             var records: [ResolutionRecord] = []
                             for (symbol, receiveAddress) in zip(symbols, addresses) {
                                 records.append(ResolutionRecord(symbol: symbol, walletAddress: receiveAddress.address))

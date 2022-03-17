@@ -7,6 +7,7 @@ public struct PostOrderRequest: Encodable {
     var domain: String?
     var records: [Record]?
     var isFree: Bool?
+    // TODO: rename walletId to nabuUserId when backend changes are ready
     var walletId: String?
     var owner: String?
 }

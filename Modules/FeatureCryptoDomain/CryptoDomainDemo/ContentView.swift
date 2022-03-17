@@ -23,6 +23,7 @@ struct ContentView: View {
                     reducer: claimIntroductionReducer,
                     environment: .init(
                         mainQueue: .main,
+                        externalAppOpener: UIApplication.shared,
                         searchDomainRepository: SearchDomainRepository(
                             apiClient: SearchDomainClient.mock
                         ),
@@ -34,7 +35,7 @@ struct ContentView: View {
                                 OrderDomainUserInfo(
                                     nabuUserId: "mockUserId",
                                     nabuUserName: "Firstname",
-                                    ethereumAddress: "mockAddress"
+                                    resolutionRecords: []
                                 )
                             )
                         }
