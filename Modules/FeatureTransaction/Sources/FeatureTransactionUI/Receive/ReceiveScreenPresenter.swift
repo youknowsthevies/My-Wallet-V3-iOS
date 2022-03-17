@@ -20,8 +20,10 @@ final class ReceiveScreenPresenter {
 
     let nameLabelContentPresenting: LabelContentPresenting
     let balanceLabelContentPresenting: LabelContentPresenting
+    let domainLabelContentPresenting: LabelContentPresenting
     let addressLabelContentPresenting: LabelContentPresenting
     let memoLabelContentPresenting: LabelContentPresenting
+    let walletDomainLabelContent: LabelContent
     let walletAddressLabelContent: LabelContent
     let memoLabelContent: LabelContent
     let memoNoteViewModel: InteractableTextViewModel
@@ -62,6 +64,11 @@ final class ReceiveScreenPresenter {
     ) {
         self.interactor = interactor
         self.eventsRecorder = eventsRecorder
+        walletDomainLabelContent = LabelContent(
+            text: LocalizedString.Text.domainName,
+            font: .main(.semibold, 12),
+            color: .titleText
+        )
         walletAddressLabelContent = LabelContent(
             text: LocalizedString.Text.walletAddress,
             font: .main(.semibold, 12),
@@ -96,6 +103,15 @@ final class ReceiveScreenPresenter {
                 contentColor: .descriptionText,
                 fontSize: 14,
                 accessibility: .id(AccessibilityID.balanceLabel)
+            )
+        )
+        domainLabelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: "",
+            descriptors: .init(
+                fontWeight: .medium,
+                contentColor: .darkTitleText,
+                fontSize: 14,
+                accessibility: .id(AccessibilityID.domainLabel)
             )
         )
         addressLabelContentPresenting = DefaultLabelContentPresenter(
@@ -159,6 +175,15 @@ final class ReceiveScreenPresenter {
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
             .bindAndCatch(to: memoLabelContentPresenting.interactor.stateRelay)
+            .disposed(by: disposeBag)
+
+        state
+            .map(\.domainNames)
+            .map(\.first)
+            .compactMap { $0 }
+            .map { LabelContent.Value.Interaction.Content(text: $0) }
+            .map { .loaded(next: $0) }
+            .bindAndCatch(to: domainLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         memoNoteViewModel.tap

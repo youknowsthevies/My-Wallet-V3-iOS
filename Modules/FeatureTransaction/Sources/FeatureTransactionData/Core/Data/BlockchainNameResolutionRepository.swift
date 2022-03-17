@@ -27,4 +27,15 @@ final class BlockchainNameResolutionRepository: BlockchainNameResolutionReposito
             .map(DomainResolution.init)
             .eraseToAnyPublisher()
     }
+
+    func reverseResolve(
+        address: String
+    ) -> AnyPublisher<[ReverseResolution], NetworkError> {
+        client
+            .reverseResolve(address: address)
+            .map(\.domains)
+            .map { $0.filter(\.isBlockchainDomain) }
+            .map { $0.map(ReverseResolution.init) }
+            .eraseToAnyPublisher()
+    }
 }
