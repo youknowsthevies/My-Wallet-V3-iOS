@@ -105,7 +105,7 @@ public final class ClaimIntroductionHositingController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(contentView.view)
         addChild(contentView)
@@ -116,15 +116,16 @@ public final class ClaimIntroductionHositingController: UIViewController {
         contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.isNavigationBarHidden = true
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         navigationController?.isNavigationBarHidden = true
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
