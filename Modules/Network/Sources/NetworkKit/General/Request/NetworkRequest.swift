@@ -83,7 +83,10 @@ public struct NetworkRequest {
     )
 
     private var defaultHeaders: HTTPHeaders {
-        [HttpHeaderField.requestId: requestId.uuidString]
+        [
+            HttpHeaderField.requestId: requestId.uuidString,
+            HttpHeaderField.acceptLanguage: Locale.preferredLanguages.prefix(3).qualityEncoded()
+        ]
     }
 
     public init(
@@ -187,5 +190,15 @@ extension NSMutableURLRequest {
         return stringToEscape
             .addingPercentEncoding(withAllowedCharacters: characterSet as CharacterSet)?
             .replacingOccurrences(of: " ", with: "+", options: [], range: nil) ?? stringToEscape
+    }
+}
+
+extension Collection where Element == String {
+
+    func qualityEncoded() -> String {
+        enumerated().map { index, encoding in
+            let quality = 1.0 - (Double(index) * 0.1)
+            return "\(encoding);q=\(quality)"
+        }.joined(separator: ", ")
     }
 }
