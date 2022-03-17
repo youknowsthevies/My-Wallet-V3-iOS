@@ -317,7 +317,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         domainSeparator.layout(edge: .leading, to: .trailing, of: domainHeaderLabel, offset: 8)
         domainSeparator.layoutToSuperview(.trailing)
         domainSeparator.layout(edge: .bottom, to: .lastBaseline, of: domainHeaderLabel)
-        domainSeparator.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -50).isActive = true
+        domainSeparator.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -56).isActive = true
 
         // MARK: Domain Header
 
