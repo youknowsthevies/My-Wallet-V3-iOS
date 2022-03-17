@@ -93,16 +93,13 @@ extension Language {
 
     public func post(
         error description: String,
-        function: String = #function,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line
     ) {
-        let error = Tag.Error(
-            tag: blockchain[],
+        let error = blockchain.namespace.language.error[].error(
             message: description,
-            function,
-            file,
-            line
+            file: file,
+            line: line
         )
         Language.subject.send(error)
         #if DEBUG
@@ -110,8 +107,8 @@ extension Language {
         #endif
     }
 
-    public func post(error: Error, function: String = #function, file: String = #file, line: Int = #line) {
-        post(error: String(describing: error), function: function, file: file, line: line)
+    public func post(error: Error, file: String = #fileID, line: Int = #line) {
+        post(error: error.localizedDescription, file: file, line: line)
     }
 }
 

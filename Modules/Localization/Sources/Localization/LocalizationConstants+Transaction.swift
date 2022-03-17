@@ -1457,19 +1457,49 @@ extension LocalizationConstants.Transaction.Error {
         comment: "You have too many pending %@ transactions. Once those complete you can create a new one."
     )
 
+    public static let cardInsufficientFundsTitle = NSLocalizedString(
+        "Insufficient Funds",
+        comment: "Insufficient Funds"
+    )
+
     public static let cardInsufficientFunds = NSLocalizedString(
-        "Your bank tells us you don't have enough funds in your account, check and try again.",
-        comment: "Your bank tells us you don't have enough funds in your account, check and try again."
+        "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
+        comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
+    )
+
+    public static let cardBankDeclineTitle = NSLocalizedString(
+        "Failed To Add Card",
+        comment: "Failed To Add Card"
     )
 
     public static let cardBankDecline = NSLocalizedString(
-        "Your bank has declined this transaction, please try another bank or payment method.",
-        comment: "Your bank has declined this transaction, please try another bank or payment method."
+        "The card you tried to add has failed, please try again or another payment method.",
+        comment: "The card you tried to add has failed, please try again or another payment method."
+    )
+
+    public static let cardAcquirerDeclineTitle = NSLocalizedString(
+        "Blocked By Card Issuer",
+        comment: "Blocked By Card Issuer"
+    )
+
+    public static let cardAcquirerDecline = NSLocalizedString(
+        "Unfortunately your card issuer does not allow payments in the form of cryptocurrencies.",
+        comment: "Unfortunately your card issuer does not allow payments in the form of cryptocurrencies."
+    )
+
+    public static let cardDuplicateTitle = NSLocalizedString(
+        "This Card Already Exists",
+        comment: "This Card Already Exists"
     )
 
     public static let cardDuplicate = NSLocalizedString(
-        "You've already added this card to your Blockchain.com account",
-        comment: "You've already added this card to your Blockchain.com account"
+        "It looks like the card you tried to add is already an existing linked card with your account.",
+        comment: "It looks like the card you tried to add is already an existing linked card with your account."
+    )
+
+    public static let cardUnsupportedPaymentMethodTitle = NSLocalizedString(
+        "Unsupported Payment Method",
+        comment: "Unsupported Payment Method"
     )
 
     public static let cardUnsupportedPaymentMethod = NSLocalizedString(
@@ -1477,14 +1507,24 @@ extension LocalizationConstants.Transaction.Error {
         comment: "We don't support this card, please try another bank or payment method."
     )
 
+    public static let cardCreateFailedTitle = NSLocalizedString(
+        "This Card Already Exists",
+        comment: "This Card Already Exists"
+    )
+
     public static let cardCreateFailed = NSLocalizedString(
-        "Oops! There was a problem trying to add your card, please try again later.",
-        comment: "Oops! There is a problem trying to add your card, please try again later."
+        "The card you tried to add has failed, please try again or another payment method.",
+        comment: "The card you tried to add has failed, please try again or another payment method."
+    )
+
+    public static let cardPaymentFailedTitle = NSLocalizedString(
+        "Payment Failed",
+        comment: "Payment Failed"
     )
 
     public static let cardPaymentFailed = NSLocalizedString(
-        "Oops! There was a problem trying to process your card payment, please try again later.",
-        comment: "Oops! There was a problem trying to process your card payment, please try again later."
+        "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again.",
+        comment: "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again."
     )
 
     public static let orderNotCancellable = NSLocalizedString(
@@ -1493,8 +1533,8 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let pendingWithdraw = NSLocalizedString(
-        "Oops! You’ve already got an existing pending withdrawal, please try again once that completes.",
-        comment: "Oops! You’ve already got an existing pending withdrawal, please try again once that completes."
+        "Oops! You’ve already got an existing pending withdrawal.",
+        comment: "Oops! You’ve already got an existing pending withdrawal."
     )
 
     public static let withdrawBalanceLocked = NSLocalizedString(

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
 import FirebaseAnalytics
 import Foundation
@@ -78,4 +79,47 @@ class FirebaseAnalyticsServiceProvider: AnalyticsServiceProviderAPI {
     private func isReservedKey(_ key: String) -> Bool {
         FirebaseConstants.reservedKeys.contains(key)
     }
+}
+
+public final class FirebaseAnalytics: Session.Observer {
+
+    private unowned var app: AppProtocol
+    private let analytics: AnalyticsEventRecorderAPI
+
+    public init(
+        app: AppProtocol = resolve(),
+        analytics: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        self.app = app
+        self.analytics = analytics
+        start()
+    }
+
+    private var subscription: BlockchainEventSubscription? {
+        didSet { subscription?.start() }
+    }
+
+    public func start() {
+        subscription = app.on(blockchain.ux.type.analytics.event) { @MainActor [analytics] event in
+            analytics.record(
+                event: FirebaseEvent(
+                    name: event.tag.id,
+                    params: event.ref.context.filter { key, _ in
+                        key != blockchain.user.id[]
+                    }
+                    .mapKeys(\.id)
+                )
+            )
+        }
+    }
+
+    public func stop() {
+        subscription?.stop()
+    }
+}
+
+public struct FirebaseEvent: AnalyticsEvent {
+    public var name: String
+    public var params: [String: Any]?
+    public let type: AnalyticsEventType = .firebase
 }

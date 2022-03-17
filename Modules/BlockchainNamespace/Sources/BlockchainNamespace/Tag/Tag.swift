@@ -7,7 +7,7 @@ import Lexicon
 public struct Tag {
 
     public typealias Indices = [Tag: String]
-    public typealias Context = [Tag: Any]
+    public typealias Context = [Tag: AnyHashable]
 
     public typealias ID = String
     public typealias Name = String
@@ -43,7 +43,7 @@ public struct Tag {
 
 extension L {
     public typealias Indices = [L: String]
-    public typealias Context = [L: Any]
+    public typealias Context = [L: AnyHashable]
 }
 
 extension Tag {

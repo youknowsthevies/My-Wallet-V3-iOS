@@ -13,6 +13,7 @@ extension App {
         public var language: Language { app.language }
         public var events: Session.Events { app.events }
         public var state: Session.State { app.state }
+        public var observers: Session.Observers { app.observers }
         public var remoteConfiguration: Session.RemoteConfiguration { app.remoteConfiguration }
         public var environmentObject: App.EnvironmentObject { self }
 
@@ -54,63 +55,79 @@ extension View {
     public func on(
         _ event: L,
         _ rest: L...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) throws -> Void
     ) -> some View {
-        on(([event] + rest).map(\.[].ref), perform: action)
+        on(([event] + rest).map(\.[].ref), file: file, line: line, perform: action)
     }
 
     public func on(
         _ event: Tag,
         _ rest: Tag...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) throws -> Void
     ) -> some View {
-        on(([event] + rest).map(\.ref), perform: action)
+        on(([event] + rest).map(\.ref), file: file, line: line, perform: action)
     }
 
     public func on(
         _ event: Tag.Reference,
         _ rest: Tag.Reference...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) throws -> Void
     ) -> some View {
-        on([event] + rest, perform: action)
+        on([event] + rest, file: file, line: line, perform: action)
     }
 
     public func on<C: Collection>(
         _ events: C,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) throws -> Void
     ) -> some View where C.Element == Tag.Reference {
-        modifier(OnReceiveSessionEvents(events: events.set, action: action))
+        modifier(OnReceiveSessionEvents(events: events.set, action: action, file: file, line: line))
     }
 
     public func on(
         _ event: L,
         _ rest: L...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) async throws -> Void
     ) -> some View {
-        on(([event] + rest).map(\.[].ref), perform: action)
+        on(([event] + rest).map(\.[].ref), file: file, line: line, perform: action)
     }
 
     public func on(
         _ event: Tag,
         _ rest: Tag...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) async throws -> Void
     ) -> some View {
-        on(([event] + rest).map(\.ref), perform: action)
+        on(([event] + rest).map(\.ref), file: file, line: line, perform: action)
     }
 
     public func on(
         _ event: Tag.Reference,
         _ rest: Tag.Reference...,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) async throws -> Void
     ) -> some View {
-        on([event] + rest, perform: action)
+        on([event] + rest, file: file, line: line, perform: action)
     }
 
     public func on<C: Collection>(
         _ events: C,
+        file: String = #fileID,
+        line: Int = #line,
         perform action: @escaping (Session.Event) async throws -> Void
     ) -> some View where C.Element == Tag.Reference {
-        modifier(AsyncOnReceiveSessionEvents(events: events.set, action: action))
+        modifier(AsyncOnReceiveSessionEvents(events: events.set, action: action, file: file, line: line))
     }
 }
 
@@ -121,6 +138,9 @@ public struct OnReceiveSessionEvents: ViewModifier {
 
     public let events: Set<Tag.Reference>
     let action: (Session.Event) throws -> Void
+
+    let file: String
+    let line: Int
 
     private var __events: [Tag.Reference] {
         events.map { event in
@@ -145,7 +165,7 @@ public struct OnReceiveSessionEvents: ViewModifier {
                     do {
                         try action(event)
                     } catch {
-                        app?.post(error: error)
+                        app?.post(error: error, file: file, line: line)
                     }
                 }
         }
@@ -159,6 +179,9 @@ public struct AsyncOnReceiveSessionEvents: ViewModifier {
 
     public let events: Set<Tag.Reference>
     let action: (Session.Event) async throws -> Void
+
+    let file: String
+    let line: Int
 
     private var __events: [Tag.Reference] {
         events.map { event in
@@ -184,7 +207,7 @@ public struct AsyncOnReceiveSessionEvents: ViewModifier {
                         do {
                             try await action(event)
                         } catch {
-                            app?.post(error: error)
+                            app?.post(error: error, file: file, line: line)
                         }
                     }
                 }

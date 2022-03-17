@@ -57,7 +57,6 @@ only_rules:
 - legacy_hashing
 - legacy_nsgeometry_functions
 - legacy_random
-- let_var_whitespace
 - line_length
 - literal_expression_end_indentation
 - lower_acl_than_parent

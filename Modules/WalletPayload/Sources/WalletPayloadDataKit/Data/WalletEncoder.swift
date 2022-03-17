@@ -38,7 +38,7 @@ final class WalletEncoder: WalletEncodingAPI {
     }
 
     // `Wrapper.Wallet` > `WalletResponse` > `Data` stored in `EncodedWalletPayload`
-    func trasform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError> {
+    func transform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError> {
         encodeValue(of: wrapper.wallet.toWalletResponse)
             .map { data in
                 EncodedWalletPayload(

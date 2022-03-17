@@ -55,7 +55,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             return .failure(.recovery(.invalidMnemonic))
         }
         return walletLogic
-            .initialize(with: mnemonic)
+            .initialize(with: mnemonic, on: operationsQueue)
             .receive(on: operationsQueue)
             .flatMap { [storeCredentials] credentials -> AnyPublisher<MetadataRecoveryCredentials, WalletError> in
                 storeCredentials(credentials)

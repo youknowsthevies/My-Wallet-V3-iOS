@@ -3,6 +3,8 @@ import ComposableArchitectureExtensions
 import FirebaseProtocol
 import XCTest
 
+// swiftlint:disable line_length
+
 final class BlockchainNamespaceTests: XCTestCase {
 
     var app: AppProtocol!
@@ -30,39 +32,51 @@ final class BlockchainNamespaceTests: XCTestCase {
         app.post(event: blockchain.db.type.string)
         store.receive(
             .observation(
-                .on(blockchain.db.type.string)
+                .event(blockchain.db.type.string[].ref, context: [
+                    blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                    blockchain.ux.type.analytics.event.source.line[]: 32
+                ])
             )
         ) { state in
             state.event = blockchain.db.type.string[].ref
-            state.context = [:]
+            state.context = [
+                blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                blockchain.ux.type.analytics.event.source.line[]: 32
+            ]
         }
 
-        store.send(.post(event: blockchain.db.type.boolean))
+        app.post(event: blockchain.db.type.boolean)
         store.receive(
             .observation(
-                .on(blockchain.db.type.boolean)
+                .event(blockchain.db.type.boolean[].ref, context: [
+                    blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                    blockchain.ux.type.analytics.event.source.line[]: 48
+                ])
             )
         ) { state in
             state.event = blockchain.db.type.boolean[].ref
-            state.context = [:]
+            state.context = [
+                blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                blockchain.ux.type.analytics.event.source.line[]: 48
+            ]
         }
 
-        store.send(
-            .post(
-                event: blockchain.db.type.integer,
-                context: [blockchain.db.type.string: "context"]
-            )
-        )
+        app.post(event: blockchain.db.type.integer, context: [blockchain.db.type.string: "context"])
         store.receive(
             .observation(
-                .on(
-                    blockchain.db.type.integer,
-                    context: [blockchain.db.type.string: "context"]
-                )
+                .event(blockchain.db.type.integer[].ref, context: [
+                    blockchain.db.type.string[]: "context",
+                    blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                    blockchain.ux.type.analytics.event.source.line[]: 64
+                ])
             )
         ) { state in
             state.event = blockchain.db.type.integer[].ref
-            state.context = [blockchain.db.type.string[]: "context"]
+            state.context = [
+                blockchain.db.type.string[]: "context",
+                blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
+                blockchain.ux.type.analytics.event.source.line[]: 64
+            ]
         }
 
         store.send(.observation(.stop))
@@ -77,12 +91,12 @@ struct TestEnvironment: BlockchainNamespaceAppEnvironment {
 
 struct TestState: Equatable {
     var event: Tag.Reference?
-    var context: [Tag: Anything]?
+    var context: [Tag: AnyHashable]?
 }
 
 enum TestAction: BlockchainNamespaceObservationAction, BlockchainNamespacePostAction, Equatable {
     case observation(BlockchainNamespaceObservation)
-    case post(Tag.Reference, context: Tag.Reference.Context.Equatable = [:])
+    case post(Tag.Reference, context: Tag.Reference.Context = [:])
 }
 
 let testReducer = Reducer<TestState, TestAction, TestEnvironment> { state, action, _ in
@@ -98,4 +112,3 @@ let testReducer = Reducer<TestState, TestAction, TestEnvironment> { state, actio
 .on(blockchain.db.type.string)
 .on(blockchain.db.type.integer)
 .on(blockchain.db.type.boolean)
-.autopost()

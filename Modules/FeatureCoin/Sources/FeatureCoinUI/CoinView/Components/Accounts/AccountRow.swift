@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import BlockchainNamespace
 import Combine
 import FeatureCoinDomain
+import Localization
 import MoneyKit
 import SwiftUI
 
@@ -12,45 +13,26 @@ struct AccountRow: View {
     @BlockchainApp var app
     @Environment(\.context) var context
 
-    let account: Account
+    let account: Account.Snapshot
     let assetColor: Color
     let interestRate: Double?
-
-    var cryptoValuePublisher: AnyPublisher<MoneyValue, Never>
-    @State private var cryptoValue: String = ""
-
-    var fiatValuePublisher: AnyPublisher<MoneyValue, Never>
-    @State private var fiatValue: String = ""
-
-    init(
-        account: Account,
-        assetColor: Color,
-        interestRate: Double?
-    ) {
-        self.account = account
-        self.assetColor = assetColor
-        self.interestRate = interestRate
-        cryptoValuePublisher = account.cryptoBalancePublisher
-        fiatValuePublisher = account.fiatBalancePublisher
-    }
 
     var body: some View {
         BalanceRow(
             leadingTitle: account.name,
-            leadingDescription: String(
-                format: account.accountType.subtitle,
-                interestRate ?? 0
-            ),
-            trailingTitle: fiatValue,
-            trailingDescription: cryptoValue,
+            leadingDescription: account.accountType.subtitle.interpolating(interestRate.or(0)),
+            trailingTitle: account.fiat.displayString,
+            trailingDescription: account.crypto.displayString,
             trailingDescriptionColor: .semantic.muted,
             action: {
-                app.post(
-                    event: blockchain.ux.asset.account.sheet[].ref(to: context),
-                    context: context + [
-                        blockchain.ux.asset.account: account
-                    ]
-                )
+                withAnimation(.spring()) {
+                    app.post(
+                        event: blockchain.ux.asset.account.sheet[].ref(to: context),
+                        context: context + [
+                            blockchain.ux.asset.account: account
+                        ]
+                    )
+                }
             },
             leading: {
                 account.accountType.icon
@@ -58,16 +40,13 @@ struct AccountRow: View {
                     .frame(width: 24)
             }
         )
-        .onReceive(cryptoValuePublisher) {
-            cryptoValue = $0.displayString
-        }
-        .onReceive(fiatValuePublisher) {
-            fiatValue = $0.displayString
-        }
     }
 }
 
 extension Account.AccountType {
+
+    private typealias Localization = LocalizationConstants.Coin.Account
+
     var icon: Icon {
         switch self {
         case .exchange:
@@ -84,13 +63,13 @@ extension Account.AccountType {
     var subtitle: String {
         switch self {
         case .exchange:
-            return "Pro Trading"
+            return Localization.exchange.subtitle
         case .interest:
-            return "Earning %.1f%%"
+            return Localization.interest.subtitle
         case .privateKey:
-            return "Non-custodial"
+            return Localization.privateKey.subtitle
         case .trading:
-            return "Custodial"
+            return Localization.trading.subtitle
         }
     }
 }
@@ -109,8 +88,9 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .privateKey,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        cryptoBalancePublisher: .just(.one(currency: .bitcoin)),
-                        fiatBalancePublisher: .just(.one(currency: .USD))
+                        actions: [],
+                        crypto: .one(currency: .bitcoin),
+                        fiat: .one(currency: .USD)
                     ),
                     assetColor: .orange,
                     interestRate: nil
@@ -125,8 +105,9 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .trading,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        cryptoBalancePublisher: .just(.one(currency: .bitcoin)),
-                        fiatBalancePublisher: .just(.one(currency: .USD))
+                        actions: [],
+                        crypto: .one(currency: .bitcoin),
+                        fiat: .one(currency: .USD)
                     ),
                     assetColor: .orange,
                     interestRate: nil
@@ -141,8 +122,9 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .interest,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        cryptoBalancePublisher: .just(.one(currency: .bitcoin)),
-                        fiatBalancePublisher: .just(.one(currency: .USD))
+                        actions: [],
+                        crypto: .one(currency: .bitcoin),
+                        fiat: .one(currency: .USD)
                     ),
                     assetColor: .orange,
                     interestRate: 2.5
@@ -157,8 +139,9 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .exchange,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        cryptoBalancePublisher: .just(.one(currency: .bitcoin)),
-                        fiatBalancePublisher: .just(.one(currency: .USD))
+                        actions: [],
+                        crypto: .one(currency: .bitcoin),
+                        fiat: .one(currency: .USD)
                     ),
                     assetColor: .orange,
                     interestRate: nil

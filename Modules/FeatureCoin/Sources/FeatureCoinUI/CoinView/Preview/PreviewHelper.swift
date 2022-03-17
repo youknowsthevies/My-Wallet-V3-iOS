@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Collections
 import Combine
 import FeatureCoinDomain
 import Foundation
@@ -8,18 +9,18 @@ import MoneyKit
 import NetworkError
 import SwiftUI
 
-enum PreviewHelper {
+extension AssetDetails {
 
-    static func assetDetails(
+    static func preview(
         name: String = "Bitcoin",
         code: String = "BTC",
         brandColor: Color = .orange,
         // swiftlint:disable:next line_length
         about: String = "The world’s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoins are divisible into smaller units known as satoshis — each satoshi is worth 0.00000001 bitcoin.",
-        assetInfoUrl: URL = URL(string: "https://www.blockchain.com/")!,
+        website: URL = URL(string: "https://www.blockchain.com/")!,
         logoUrl: URL? = URL(string: "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
         logoImage: Image? = nil,
-        tradeable: Bool = true,
+        isTradable: Bool = true,
         onWatchlist: Bool = true
     ) -> AssetDetails {
         AssetDetails(
@@ -27,32 +28,40 @@ enum PreviewHelper {
             code: code,
             brandColor: brandColor,
             about: about,
-            assetInfoUrl: assetInfoUrl,
+            website: website,
             logoUrl: logoUrl,
             logoImage: logoImage,
-            tradeable: tradeable
+            isTradable: isTradable
         )
     }
+}
 
-    static func account(
-        id: AnyHashable = "id",
+extension Account.Snapshot {
+
+    static func preview(
+        id: AnyHashable = "PrivateKey",
         name: String = "Private Key Wallet",
         accountType: Account.AccountType = .privateKey,
         cryptoCurrency: CryptoCurrency = .bitcoin,
         fiatCurrency: FiatCurrency = .USD,
-        cryptoBalancePublisher: AnyPublisher<MoneyValue, Never> = .just(.init(amount: BigInt(123000000), currency: .crypto(.bitcoin))),
-        fiatBalancePublisher: AnyPublisher<MoneyValue, Never> = .just(.init(amount: BigInt(4417223), currency: .fiat(.USD)))
-    ) -> Account {
-        Account(
+        actions: OrderedSet<Account.Action> = [.send, .receive, .swap, .sell],
+        crypto: MoneyValue = .init(amount: BigInt(123000000), currency: .crypto(.bitcoin)),
+        fiat: MoneyValue = .init(amount: BigInt(4417223), currency: .fiat(.USD))
+    ) -> Account.Snapshot {
+        Account.Snapshot(
             id: id,
             name: name,
             accountType: accountType,
             cryptoCurrency: cryptoCurrency,
             fiatCurrency: fiatCurrency,
-            cryptoBalancePublisher: cryptoBalancePublisher,
-            fiatBalancePublisher: fiatBalancePublisher
+            actions: actions,
+            crypto: crypto,
+            fiat: fiat
         )
     }
+}
+
+enum PreviewHelper {
 
     class HistoricalPriceService: HistoricalPriceServiceAPI {
         func fetch(
