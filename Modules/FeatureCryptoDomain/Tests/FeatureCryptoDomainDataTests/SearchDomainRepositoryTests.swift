@@ -28,7 +28,7 @@ class SearchDomainRepositoryTests: XCTestCase {
     func test_get_search_results() throws {
         _ = try repository.searchResults(searchKey: "Searchkey", freeOnly: false).wait()
         _ = try network.requests[
-            .get, "https://api.dev.blockchain.info/explorer-gateway/resolution/ud/search/Searchkey"
+            .get, "https://api.staging.blockchain.info/explorer-gateway/resolution/ud/search/Searchkey"
         ].unwrap()
     }
 }
