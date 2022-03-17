@@ -46,7 +46,7 @@ final class BlockchainNameResolutionServiceTests: XCTestCase {
         }
         let publisher = subject.reverseResolve(address: address)
         XCTAssertPublisherCompletion(publisher)
-        
+
         wait(for: [e], timeout: 10)
     }
 }
