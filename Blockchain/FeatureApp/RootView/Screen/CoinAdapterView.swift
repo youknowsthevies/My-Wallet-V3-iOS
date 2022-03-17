@@ -302,6 +302,7 @@ extension FeatureCoinDomain.KYCStatus {
 extension AssetDetails {
 
     init(cryptoCurrency: CryptoCurrency) {
+        let notTradable = !cryptoCurrency.supports(product: .custodialWalletBalance) && !cryptoCurrency.supports(product: .privateKey)
         self.init(
             name: cryptoCurrency.name,
             code: cryptoCurrency.code,
@@ -310,7 +311,7 @@ extension AssetDetails {
             website: nil,
             logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
             logoImage: cryptoCurrency.assetModel.logoResource.image,
-            isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
+            isTradable: !notTradable
         )
     }
 }

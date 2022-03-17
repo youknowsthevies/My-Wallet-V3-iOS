@@ -224,7 +224,6 @@ public struct CoinView: View {
             }
             .padding()
         }
-        .padding([.leading, .trailing], 8.pt)
     }
 }
 

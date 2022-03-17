@@ -39,7 +39,6 @@ struct AccountSheet: View {
                 Spacer()
                 IconButton(icon: Icon.closev2.circle(), action: onClose)
                     .frame(width: 24.pt, height: 24.pt)
-                    .padding(.trailing, 8.pt)
             }
             .padding([.leading, .trailing])
             BalanceSectionHeader(
@@ -100,5 +99,14 @@ extension CryptoCurrency {
 
     var color: Color? {
         assetModel.spotColor.map(Color.init(hex:))
+    }
+}
+
+struct AccountSheetPreviewProvider: PreviewProvider {
+    static var previews: some View {
+        AccountSheet(
+            account: .preview,
+            onClose: {}
+        )
     }
 }
