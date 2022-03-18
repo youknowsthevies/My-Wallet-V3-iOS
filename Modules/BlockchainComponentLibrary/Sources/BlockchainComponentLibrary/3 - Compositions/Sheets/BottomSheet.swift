@@ -63,14 +63,17 @@ struct BottomSheetView<Content: View>: View {
                 .foregroundColor(.semantic.muted)
             content
         }
-        .padding(8.pt)
-        .padding(.bottom, 20.pt)
+        .padding(.top, Spacing.padding1)
+        .padding(.bottom, Spacing.padding3)
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: cornerRadius)
+            BottomSheetBackgroundShape()
                 .foregroundColor(.semantic.background)
         )
-        .offset(y: cornerRadius)
+        .clipShape(
+            BottomSheetBackgroundShape()
+        )
+        .offset(y: Spacing.baseline)
     }
 }
 
@@ -95,7 +98,7 @@ struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 
     private func yTranslation(in proxy: GeometryProxy) -> CGFloat {
         if isPresented {
-            return inserted ? proxy.size.height : max(translation.height, -10)
+            return inserted ? proxy.size.height : max(translation.height, -Spacing.baseline)
         } else {
             return proxy.size.height
         }
@@ -123,9 +126,9 @@ struct BottomSheetModifier<SheetContent: View>: ViewModifier {
                                 }
                                 .transition(.move(edge: .bottom))
                                 .offset(y: yTranslation(in: proxy))
-                                .offset(y: 32.pt)
                         }
                     }
+                    .ignoresSafeArea()
                     .highPriorityGesture(
                         DragGesture()
                             .updating($translation) { value, state, _ in
@@ -145,6 +148,32 @@ struct BottomSheetModifier<SheetContent: View>: ViewModifier {
     }
 }
 
+struct BottomSheetBackgroundShape: Shape {
+
+    var cornerRadius: CGFloat = 32
+    var style: RoundedCornerStyle = .continuous
+
+    func path(in rect: CGRect) -> Path {
+        #if canImport(UIKit)
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: [.topLeft, .topRight],
+            cornerRadii: CGSize(
+                width: cornerRadius,
+                height: cornerRadius
+            )
+        )
+        return Path(path.cgPath)
+        #else
+        return RoundedRectangle(
+            cornerRadius: cornerRadius,
+            style: style
+        )
+        .path(in: rect)
+        #endif
+    }
+}
+
 // swiftlint:disable type_name
 struct BottomSheetView_PreviewContentView: View {
     @State var isPresented = false
@@ -159,7 +188,7 @@ struct BottomSheetView_PreviewContentView: View {
         .bottomSheet(
             isPresented: $isPresented.animation(.spring())
         ) {
-            VStack {
+            VStack(spacing: 0) {
                 ForEach(1...5, id: \.self) { i in
                     PrimaryRow(
                         title: "Title",
@@ -173,13 +202,11 @@ struct BottomSheetView_PreviewContentView: View {
                         },
                         action: {}
                     )
-                    .frame(maxHeight: 10.vh)
                     if i != 5 {
                         PrimaryDivider()
                     }
                 }
             }
-            .padding(.bottom, 50)
         }
     }
 }
@@ -189,6 +216,9 @@ struct BottomSheetView_Previews: PreviewProvider {
         Group {
             BottomSheetView_PreviewContentView()
             BottomSheetView_PreviewContentView(isPresented: true)
+            BottomSheetView_PreviewContentView(isPresented: true)
+                .previewDevice("iPhone SE (2nd generation)")
+                .previewDisplayName("iPhone SE (2nd generation)")
         }
     }
 }

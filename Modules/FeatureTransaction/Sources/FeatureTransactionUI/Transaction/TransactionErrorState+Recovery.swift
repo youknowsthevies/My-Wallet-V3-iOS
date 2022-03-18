@@ -70,6 +70,31 @@ extension TransactionErrorState {
     func recoveryWarningTitle(for action: AssetAction) -> String {
         let text: String
         switch self {
+        case .fatalError(let fatalError):
+            switch fatalError {
+            case .generic(let error):
+                if
+                    let error = error as? OrderConfirmationServiceError,
+                    case .nabu(.nabuError(let networkError)) = error
+                {
+                    return transactionErrorTitle(
+                        for: networkError.code,
+                        action: action
+                    ) ?? Localization.nextworkErrorShort
+                } else if
+                    let error = error as? NabuNetworkError,
+                    case .nabuError(let networkError) = error
+                {
+                    return transactionErrorTitle(
+                        for: networkError.code,
+                        action: action
+                    ) ?? Localization.nextworkErrorShort
+                } else {
+                    fallthrough
+                }
+            default:
+                return Localization.fatalErrorShort
+            }
         case .nabuError(let error):
             text = transactionErrorTitle(for: error.code, action: action) ?? Localization.nextworkErrorShort
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
@@ -122,8 +147,6 @@ extension TransactionErrorState {
             text = Localization.pendingOrderLimitReached
         case .transactionInFlight:
             text = Localization.transactionInFlight
-        case .fatalError:
-            text = Localization.fatalErrorShort
         case .unknownError:
             text = Localization.unknownError
         }
@@ -261,7 +284,9 @@ extension TransactionErrorState {
         let errorDescription: String
         switch fatalError {
         case .generic(let error):
-            if let networkError = error as? NabuNetworkError {
+            if let error = error as? OrderConfirmationServiceError, case .nabu(let networkError) = error {
+                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {
                 errorDescription = validationError.state.mapToTransactionErrorState.recoveryWarningTitle(for: action)

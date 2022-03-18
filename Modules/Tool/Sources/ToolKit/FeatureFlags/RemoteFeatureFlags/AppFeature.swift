@@ -89,6 +89,11 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Card Issuing
 
     case cardIssuing
+
+    // MARK: - Redesign
+
+    /// Enables Redesigned CoinView
+    case redesignCoinView
 }
 
 extension AppFeature {
@@ -143,6 +148,8 @@ extension AppFeature {
             return "ios_ff_card_issuing"
         case .sendToDomainsAnnouncement:
             return "ios_ff_send_to_domains_announcement"
+        case .redesignCoinView:
+            return "ios_ff_redesign_coinview"
         }
     }
 
@@ -196,6 +203,8 @@ extension AppFeature {
         case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:
+            return true
+        case .redesignCoinView:
             return true
         }
     }

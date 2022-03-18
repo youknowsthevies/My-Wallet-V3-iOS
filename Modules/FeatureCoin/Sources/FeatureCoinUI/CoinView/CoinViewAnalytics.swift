@@ -30,6 +30,8 @@ public final class CoinViewAnalytics: Session.Observer {
     }
 
     lazy var events = [
+        asset,
+        chart,
         buy,
         sell,
         receive,
@@ -42,6 +44,35 @@ public final class CoinViewAnalytics: Session.Observer {
         exchangeConnect,
         kyc
     ]
+
+    lazy var asset = app.on(blockchain.ux.asset) { [analytics] event in
+        try analytics.record(
+            event: CoinViewAnalyticsEvent(
+                name: "Coin View Open",
+                params: [
+                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String
+                ]
+            )
+        )
+    }
+
+    lazy var chart = app.on(
+        blockchain.ux.asset.chart.selected,
+        blockchain.ux.asset.chart.deselected
+    ) { [analytics] event in
+        guard let series = event.context[blockchain.ux.asset.chart.interval] as? FeatureCoinDomain.Series else {
+            return
+        }
+        try analytics.record(
+            event: CoinViewAnalyticsEvent(
+                name: event.tag.is(blockchain.ux.asset.chart.selected) ? "Chart Engaged" : "Chart Disengaged",
+                params: [
+                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "time_interval": series.analytics
+                ]
+            )
+        )
+    }
 
     lazy var buy = app.on(blockchain.ux.asset.buy) { [analytics] event in
         try analytics.record(

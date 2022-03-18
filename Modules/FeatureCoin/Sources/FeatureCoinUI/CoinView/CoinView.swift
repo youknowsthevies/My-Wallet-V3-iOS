@@ -31,6 +31,8 @@ public struct CoinView: View {
                     header(viewStore)
                     accounts(viewStore)
                     about(viewStore)
+                    Color.clear
+                        .frame(height: Spacing.padding2)
                 }
                 if viewStore.accounts.isNotEmpty {
                     actions(viewStore)
@@ -47,6 +49,7 @@ public struct CoinView: View {
                 content: { account in
                     AccountSheet(
                         account: account,
+                        isVerified: viewStore.kycStatus != .unverified,
                         onClose: {
                             withAnimation(.spring()) {
                                 viewStore.send(.set(\.$account, nil))
@@ -61,6 +64,7 @@ public struct CoinView: View {
                 content: { account in
                     AccountExplainer(
                         account: account,
+                        interestRate: viewStore.interestRate,
                         onClose: {
                             withAnimation(.spring()) {
                                 viewStore.send(.set(\.$explainer, nil))
@@ -108,11 +112,14 @@ public struct CoinView: View {
                     asset: viewStore.asset,
                     accounts: viewStore.accounts
                 )
-                AccountListView(
-                    accounts: viewStore.accounts,
-                    assetColor: viewStore.asset.brandColor,
-                    interestRate: viewStore.interestRate
-                )
+                if let status = viewStore.kycStatus {
+                    AccountListView(
+                        accounts: viewStore.accounts,
+                        assetColor: viewStore.asset.brandColor,
+                        interestRate: viewStore.interestRate,
+                        kycStatus: status
+                    )
+                }
             } else {
                 TotalBalanceView(
                     asset: viewStore.asset,
@@ -224,7 +231,6 @@ public struct CoinView: View {
             }
             .padding()
         }
-        .padding([.leading, .trailing], 8.pt)
     }
 }
 
@@ -237,15 +243,9 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     asset: .preview(),
                     kycStatus: .gold,
                     accounts: [
-                        .preview(),
-                        .preview(
-                            name: "Trading Account",
-                            accountType: .trading
-                        ),
-                        .preview(
-                            name: "Rewards Account",
-                            accountType: .interest
-                        )
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
                     ]
                 ),
                 reducer: coinViewReducer,
@@ -253,6 +253,26 @@ struct CoinView_PreviewProvider: PreviewProvider {
             )
         )
         .app(App.preview)
+        .previewDevice("iPhone SE (2nd generation)")
+        .previewDisplayName("Gold iPhone SE (2nd generation)")
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    asset: .preview(),
+                    kycStatus: .gold,
+                    accounts: [
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
+                    ]
+                ),
+                reducer: coinViewReducer,
+                environment: .preview
+            )
+        )
+        .app(App.preview)
+        .previewDisplayName("Gold")
 
         CoinView(
             store: .init(
@@ -262,7 +282,9 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     ),
                     kycStatus: .silver,
                     accounts: [
-                        .preview()
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
                     ]
                 ),
                 reducer: coinViewReducer,
@@ -270,6 +292,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
             )
         )
         .app(App.preview)
+        .previewDisplayName("Silver")
 
         CoinView(
             store: .init(
@@ -278,26 +301,38 @@ struct CoinView_PreviewProvider: PreviewProvider {
                         isTradable: false
                     ),
                     kycStatus: .unverified,
-                    accounts: []
+                    accounts: [
+                        .new(
+                            cryptoCurrency: .bitcoin,
+                            fiatCurrency: .USD,
+                            crypto: .zero(currency: .bitcoin),
+                            fiat: .zero(currency: .USD)
+                        )
+                    ]
                 ),
                 reducer: coinViewReducer,
                 environment: .preview
             )
         )
         .app(App.preview)
+        .previewDisplayName("Not Tradable")
 
         CoinView(
             store: .init(
                 initialState: .init(
                     asset: .preview(),
                     kycStatus: .unverified,
-                    accounts: []
+                    accounts: [
+                        .preview.privateKey,
+                        .preview.trading
+                    ]
                 ),
                 reducer: coinViewReducer,
                 environment: .preview
             )
         )
         .app(App.preview)
+        .previewDisplayName("Unverified")
 
         CoinView(
             store: .init(
@@ -312,5 +347,6 @@ struct CoinView_PreviewProvider: PreviewProvider {
             )
         )
         .app(App.preview)
+        .previewDisplayName("Error")
     }
 }

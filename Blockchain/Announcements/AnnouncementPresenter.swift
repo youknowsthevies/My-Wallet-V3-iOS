@@ -391,7 +391,7 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        featureFlagService.isEnabled(.local(.redesignCoinView))
+        featureFlagService.isEnabled(.remote(.redesignCoinView))
             .receive(on: DispatchQueue.main)
             .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
                 if isEnabled {
@@ -525,7 +525,7 @@ extension AnnouncementPresenter {
     private var claimFreeCryptoDomainAnnoucement: Announcement {
         ClaimFreeCryptoDomainAnnouncement(
             action: { [coincore, nabuUserService, navigationRouter] in
-                let vc = ClaimIntroductionHositingController(
+                let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,
                     externalAppOpener: DIKit.resolve(),
                     searchDomainRepository: DIKit.resolve(),

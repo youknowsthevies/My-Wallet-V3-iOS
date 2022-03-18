@@ -92,7 +92,7 @@ let claimIntroductionReducer = Reducer.combine(
 
 // MARK: - ClaimIntroductionView
 
-public final class ClaimIntroductionHositingController: UIViewController {
+public final class ClaimIntroductionHostingController: UIViewController {
 
     private let store: Store<ClaimIntroductionState, ClaimIntroductionAction>
     private let viewStore: ViewStore<ClaimIntroductionState, ClaimIntroductionAction>

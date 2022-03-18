@@ -23,7 +23,9 @@ public struct CoinViewState: Equatable {
     public var graph = GraphViewState()
 
     var primaryAction: ButtonAction? {
-        asset.isTradable ? .buy : .send
+        if asset.isTradable { return .buy }
+        if accounts.hasPositiveBalanceForSelling { return .send }
+        return nil
     }
 
     var secondaryAction: ButtonAction? {

@@ -345,6 +345,8 @@ blockchain:
 				+ blockchain.ux.type.action
 				swap:
 				+ blockchain.ux.type.action
+				type:
+				+ blockchain.db.type.string
 			bio:
 				visit:
 					website:
@@ -353,9 +355,13 @@ blockchain:
 			buy:
 			+ blockchain.ux.type.action
 			chart:
+				deselected:
+				+ blockchain.ux.type.analytics.action
 				interval:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
+				selected:
+				+ blockchain.ux.type.analytics.action
 			error:
 			+ blockchain.ux.type.analytics.error
 			receive:
