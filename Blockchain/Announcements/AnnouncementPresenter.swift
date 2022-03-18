@@ -383,7 +383,7 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        featureFlagService.isEnabled(.local(.redesignCoinView))
+        featureFlagService.isEnabled(.remote(.redesignCoinView))
             .receive(on: DispatchQueue.main)
             .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
                 if isEnabled {
