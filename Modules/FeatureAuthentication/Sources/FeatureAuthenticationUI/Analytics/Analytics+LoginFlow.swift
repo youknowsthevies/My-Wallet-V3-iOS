@@ -68,7 +68,7 @@ extension AnalyticsEvents.New {
             case .loginIdentifierFailed(let errorMessage):
                 return [
                     "error_message": errorMessage,
-                    "device": Device.iOS.rawValue
+                    "device": Device.iOS.rawValue,
                     "platform": Platform.wallet.rawValue
                 ]
             }
