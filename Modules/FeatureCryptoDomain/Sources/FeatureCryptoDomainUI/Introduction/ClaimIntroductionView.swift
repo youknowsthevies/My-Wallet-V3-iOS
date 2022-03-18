@@ -81,7 +81,7 @@ let claimIntroductionReducer = Reducer.combine(
 
 // MARK: - ClaimIntroductionView
 
-public final class ClaimIntroductionHositingController: UIViewController {
+public final class ClaimIntroductionHostingController: UIViewController {
 
     private let mainQueue: AnySchedulerOf<DispatchQueue>
     private let searchDomainRepository: SearchDomainRepositoryAPI

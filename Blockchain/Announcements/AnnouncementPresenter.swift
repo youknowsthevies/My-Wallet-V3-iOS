@@ -517,7 +517,7 @@ extension AnnouncementPresenter {
     private var claimFreeCryptoDomainAnnoucement: Announcement {
         ClaimFreeCryptoDomainAnnouncement(
             action: { [navigationRouter] in
-                let vc = ClaimIntroductionHositingController(
+                let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,
                     searchDomainRepository: DIKit.resolve()
                 )
