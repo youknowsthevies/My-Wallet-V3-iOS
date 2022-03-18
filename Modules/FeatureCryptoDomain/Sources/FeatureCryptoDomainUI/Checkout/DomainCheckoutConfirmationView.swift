@@ -19,6 +19,7 @@ struct DomainCheckoutConfirmationView: View {
     private let domain: SearchDomainResult
     private let completion: () -> Void
     @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.openURL) private var openURL
 
     init(
         status: DomainCheckoutConfirmationStatus,
@@ -46,7 +47,7 @@ struct DomainCheckoutConfirmationView: View {
                 .accessibility(identifier: Accessibility.description)
             if status == .success {
                 SmallMinimalButton(title: LocalizedString.Success.learnMore) {
-                    // TODO: open learn more link
+                    openURL(Constants.SupportURL.learnMoreAboutCryptoDomain)
                 }
                 .accessibility(identifier: Accessibility.learnMoreButton)
             }
