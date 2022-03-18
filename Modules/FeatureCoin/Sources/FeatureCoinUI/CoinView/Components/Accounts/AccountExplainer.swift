@@ -15,6 +15,7 @@ struct AccountExplainer: View {
     @Environment(\.context) var context
 
     let account: Account.Snapshot
+    let interestRate: Double?
     let onClose: () -> Void
 
     var body: some View {
@@ -23,7 +24,7 @@ struct AccountExplainer: View {
                 .frame(width: 24.pt, height: 24.pt)
                 .padding(.trailing, 8.pt)
             VStack(alignment: .center, spacing: 20) {
-                let explainer = account.accountType.explainer
+                let explainer = account.accountType.explainer(interestRate)
                 account.accountType.icon
                     .frame(width: 48.pt, height: 48.pt)
                     .accentColor(.semantic.primary)
@@ -61,12 +62,12 @@ extension Account.AccountType {
         let action: String
     }
 
-    var explainer: Explainer {
+    func explainer(_ interestRate: Double?) -> Explainer {
         switch self {
         case .trading:
             return .trading
         case .interest:
-            return .rewards
+            return .rewards(interestRate)
         case .privateKey:
             return .privateKey
         case .exchange:
@@ -91,11 +92,13 @@ extension Account.AccountType.Explainer {
         action: Localization.trading.action
     )
 
-    static let rewards = Self(
-        title: Localization.rewards.title,
-        body: Localization.rewards.body,
-        action: Localization.rewards.action
-    )
+    static func rewards(_ interestRate: Double?) -> Self {
+        Self(
+            title: Localization.rewards.title,
+            body: Localization.rewards.body.interpolating(interestRate ?? 0),
+            action: Localization.rewards.action
+        )
+    }
 
     static let exchange = Self(
         title: Localization.exchange.title,
@@ -108,21 +111,8 @@ extension Account.AccountType.Explainer {
 struct AccountExplainer_PreviewProvider: PreviewProvider {
 
     static var previews: some View {
-        AccountExplainer(account: .preview, onClose: {})
-    }
-}
-
-extension Account.Snapshot {
-    static var preview: Account.Snapshot {
-        .init(
-            id: "Trading",
-            name: "Trading Account",
-            accountType: .trading,
-            cryptoCurrency: .bitcoin,
-            fiatCurrency: .GBP,
-            actions: [.buy, .sell, .send, .receive, .swap],
-            crypto: .create(major: 1, currency: CryptoCurrency.bitcoin.currencyType),
-            fiat: .create(major: 50000, currency: FiatCurrency.GBP.currencyType)
-        )
+        AccountExplainer(account: .preview.privateKey, interestRate: nil, onClose: {})
+        AccountExplainer(account: .preview.trading, interestRate: nil, onClose: {})
+        AccountExplainer(account: .preview.rewards, interestRate: 2, onClose: {})
     }
 }

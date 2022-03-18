@@ -14,7 +14,10 @@ struct AccountSheet: View {
     @Environment(\.context) var context
 
     let account: Account.Snapshot
+    var isVerified: Bool
     let onClose: () -> Void
+
+    private var isNotVerified: Bool { !isVerified }
 
     var actions: [Account.Action] {
         account.actions
@@ -24,7 +27,7 @@ struct AccountSheet: View {
     }
 
     var maxHeight: Length {
-        (85 / actions.count).clamped(to: 6..<11).vh
+        (85 / actions.count).clamped(to: 8..<11).vh
     }
 
     var body: some View {
@@ -45,22 +48,35 @@ struct AccountSheet: View {
                 title: account.fiat.displayString,
                 subtitle: account.crypto.displayString
             )
-            ForEach(actions) { action in
+            let resolved = isNotVerified && account.isPrivateKey
+                ? [.send, .receive, .swap, .sell, .activity]
+                : actions
+            ForEach(resolved) { action in
                 PrimaryDivider()
-                PrimaryRow(
-                    title: action.title,
-                    subtitle: action.description.interpolating(account.cryptoCurrency.code),
-                    leading: {
-                        action.icon.circle()
-                            .accentColor(account.color)
-                            .frame(maxHeight: 24.pt)
-                    },
-                    action: {
-                        app.post(event: action.id[].ref(to: context))
-                    }
-                )
-                .accessibility(identifier: action.id(\.id))
-                .frame(maxHeight: maxHeight)
+                if actions.contains(action) {
+                    PrimaryRow(
+                        title: action.title,
+                        subtitle: action.description.interpolating(account.cryptoCurrency.code),
+                        leading: {
+                            action.icon.circle()
+                                .accentColor(account.color)
+                                .frame(maxHeight: 24.pt)
+                        },
+                        action: {
+                            app.post(event: action.id[].ref(to: context))
+                        }
+                    )
+                    .accessibility(identifier: action.id(\.id))
+                    .frame(maxHeight: maxHeight)
+                } else {
+                    LockedAccountRow(
+                        title: action.title,
+                        subtitle: action.description.interpolating(account.cryptoCurrency.code),
+                        icon: action.icon.circle()
+                    )
+                    .accessibility(identifier: action.id(\.id))
+                    .frame(maxHeight: maxHeight)
+                }
             }
         }
     }
@@ -105,7 +121,8 @@ extension CryptoCurrency {
 struct AccountSheetPreviewProvider: PreviewProvider {
     static var previews: some View {
         AccountSheet(
-            account: .preview,
+            account: .preview.trading,
+            isVerified: true,
             onClose: {}
         )
     }

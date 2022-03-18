@@ -171,7 +171,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
         Observable.combineLatest(
             tableView.rx.modelSelected(PortfolioCellType.self),
-            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
+            featureFlagService.isEnabled(.remote(.redesignCoinView)).asObservable()
         )
         .subscribe(onNext: { [presenter, presentRedesignCoinView] model, isRedesignCoinViewEnabled in
             switch model {

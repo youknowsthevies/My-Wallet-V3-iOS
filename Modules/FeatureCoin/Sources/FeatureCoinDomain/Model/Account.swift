@@ -10,7 +10,7 @@ import MoneyKit
 
 public struct Account: Identifiable {
 
-    public enum AccountType: String {
+    public enum AccountType: String, Codable {
         case privateKey
         case trading
         case interest

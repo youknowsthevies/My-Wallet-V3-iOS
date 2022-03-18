@@ -103,6 +103,20 @@ public struct GraphView: View {
                                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                             }
                             #endif
+                            switch (old, new) {
+                            case (.none, .some):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.selected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case (.some, .none):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.deselected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case _:
+                                break
+                            }
                         }
                     }
                 }
