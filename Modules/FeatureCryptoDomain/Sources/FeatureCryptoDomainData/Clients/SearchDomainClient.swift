@@ -3,7 +3,7 @@
 import Combine
 import NetworkKit
 
-protocol SearchDomainClientAPI {
+public protocol SearchDomainClientAPI {
 
     /// Get domain search results from server given a search key
     func getSearchResults(
@@ -11,7 +11,7 @@ protocol SearchDomainClientAPI {
     ) -> AnyPublisher<SearchResultResponse, NetworkError>
 }
 
-final class SearchDomainClient: SearchDomainClientAPI {
+public final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Type
 
@@ -31,7 +31,7 @@ final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Setup
 
-    init(
+    public init(
         networkAdapter: NetworkAdapterAPI,
         requestBuilder: RequestBuilder
     ) {
@@ -41,7 +41,7 @@ final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Methods
 
-    func getSearchResults(
+    public func getSearchResults(
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError> {
         let request = requestBuilder.get(

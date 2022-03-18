@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
 import MoneyKit
@@ -18,6 +19,16 @@ import WalletPayloadKit
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
 final class AnnouncementPresenter {
+
+    // MARK: - Rx
+
+    /// Returns a driver with `.none` as default value for announcement action
+    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
+    var announcement: Driver<AnnouncementDisplayAction> {
+        announcementRelay
+            .asDriver()
+            .distinctUntilChanged()
+    }
 
     // MARK: Services
 
@@ -42,16 +53,6 @@ final class AnnouncementPresenter {
     private let exchangeProviding: ExchangeProviding
     private let accountsRouter: AccountsRouting
     private let featureFlagService: FeatureFlagsServiceAPI
-
-    // MARK: - Rx
-
-    /// Returns a driver with `.none` as default value for announcement action
-    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
-    var announcement: Driver<AnnouncementDisplayAction> {
-        announcementRelay
-            .asDriver()
-            .distinctUntilChanged()
-    }
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -158,6 +159,8 @@ final class AnnouncementPresenter {
 
             let announcement: Announcement
             switch type {
+            case .claimFreeCryptoDomain:
+                announcement = claimFreeCryptoDomainAnnoucement
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
@@ -506,6 +509,23 @@ extension AnnouncementPresenter {
                     url: "https://support.blockchain.com/hc/en-us/articles/360046143432",
                     from: topMostViewController
                 )
+            }
+        )
+    }
+
+    /// Claim Free Crypto Domain Annoucement for eligible users
+    private var claimFreeCryptoDomainAnnoucement: Announcement {
+        ClaimFreeCryptoDomainAnnouncement(
+            action: { [navigationRouter] in
+                let vc = ClaimIntroductionHostingController(
+                    mainQueue: .main,
+                    searchDomainRepository: DIKit.resolve()
+                )
+                let nav = UINavigationController(rootViewController: vc)
+                navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }

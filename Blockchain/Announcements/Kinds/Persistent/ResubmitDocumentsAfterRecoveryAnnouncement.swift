@@ -66,7 +66,6 @@ final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, 
     init(
         needsDocumentResubmission: Bool,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
         action: @escaping CardAnnouncementAction
     ) {
         self.needsDocumentResubmission = needsDocumentResubmission

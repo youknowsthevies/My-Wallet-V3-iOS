@@ -17,6 +17,7 @@ extension AnnouncementRecord {
         case resubmitDocumentsAfterRecovery
         case blockstackAirdropRegisteredMini
         case simpleBuyKYCIncomplete
+        case claimFreeCryptoDomain
 
         // MARK: - Periodic
 
@@ -59,6 +60,8 @@ extension AnnouncementRecord {
                 key = "cache-stx-registered-airdrop-mini"
             case .simpleBuyKYCIncomplete:
                 key = "simple-buy-kyc-incomplete"
+            case .claimFreeCryptoDomain:
+                key = "claim-free-crypto-domain"
 
             // MARK: - Periodic
 

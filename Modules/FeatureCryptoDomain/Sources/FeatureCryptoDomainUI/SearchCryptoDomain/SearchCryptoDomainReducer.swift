@@ -54,6 +54,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
     @BindableState var isAlertCardShown: Bool
     @BindableState var isPremiumDomainBottomSheetShown: Bool
     @BindableState var selectedPremiumDomain: SearchDomainResult?
+    var isSearchResultsLoading: Bool
     var searchResults: [SearchDomainResult]
     var selectedDomains: OrderedSet<SearchDomainResult>
     var route: RouteIntent<SearchCryptoDomainRoute>?
@@ -66,6 +67,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         isAlertCardShown: Bool = true,
         isPremiumDomainBottomSheetShown: Bool = false,
         selectedPremiumDomain: SearchDomainResult? = nil,
+        isSearchResultsLoading: Bool = false,
         searchResults: [SearchDomainResult] = [],
         route: RouteIntent<SearchCryptoDomainRoute>? = nil,
         checkoutState: DomainCheckoutState? = nil
@@ -76,6 +78,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         self.isAlertCardShown = isAlertCardShown
         self.isPremiumDomainBottomSheetShown = isPremiumDomainBottomSheetShown
         self.selectedPremiumDomain = selectedPremiumDomain
+        self.isSearchResultsLoading = isSearchResultsLoading
         self.searchResults = searchResults
         selectedDomains = OrderedSet([])
         self.route = route
@@ -128,6 +131,7 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .none
 
         case .searchDomains:
+            state.isSearchResultsLoading = true
             return environment
                 .searchDomainRepository
                 .searchResults(searchKey: state.searchText)
@@ -143,6 +147,7 @@ let searchCryptoDomainReducer = Reducer.combine(
                 }
 
         case .didReceiveDomainsResult(let result):
+            state.isSearchResultsLoading = false
             switch result {
             case .success(let searchedDomains):
                 state.searchResults = searchedDomains

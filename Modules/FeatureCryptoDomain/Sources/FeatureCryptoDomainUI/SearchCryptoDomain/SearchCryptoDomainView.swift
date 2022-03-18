@@ -45,13 +45,14 @@ struct SearchCryptoDomainView: View {
 
     private var cartBarButton: some View {
         WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.navigate(to: .checkout))
-            }) {
-                Icon.cart
-                    .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
-            }
+            Button(
+                action: { viewStore.send(.navigate(to: .checkout)) },
+                label: {
+                    Icon.cart
+                        .frame(width: 24, height: 24)
+                        .accentColor(.semantic.muted)
+                }
+            )
             .accessibilityIdentifier(Accessibility.cartButton)
         }
     }
@@ -93,12 +94,16 @@ struct SearchCryptoDomainView: View {
     private var domainList: some View {
         WithViewStore(store) { viewStore in
             ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewStore.searchResults, id: \.domainName) { result in
-                        Divider()
-                        createDomainRow(result: result)
+                if viewStore.isSearchResultsLoading {
+                    ProgressView()
+                } else {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewStore.searchResults, id: \.domainName) { result in
+                            PrimaryDivider()
+                            createDomainRow(result: result)
+                        }
+                        PrimaryDivider()
                     }
-                    PrimaryDivider()
                 }
             }
             .accessibilityIdentifier(Accessibility.domainList)
