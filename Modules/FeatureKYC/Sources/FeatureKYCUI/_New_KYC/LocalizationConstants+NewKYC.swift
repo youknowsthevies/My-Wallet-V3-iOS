@@ -265,5 +265,38 @@ extension LocalizationConstants {
                 comment: "Primary CTA for alert shown to prompt Basic Tier users to upgrade"
             )
         }
+
+        // MARK: - KYC Steps
+
+        enum Steps {
+
+            enum AccountUsage {
+
+                static let title = NSLocalizedString(
+                    "Use of Account Information",
+                    comment: "KYC Step - Account Usage Questions - Screen Title"
+                )
+
+                static let submitActionTitle = NSLocalizedString(
+                    "Next",
+                    comment: "KYC Step - Account Usage Questions - Submit Action Title"
+                )
+
+                static let stepNotNeededTitle = NSLocalizedString(
+                    "You're all set",
+                    comment: "KYC Step - Account Usage Questions - Step skipped title"
+                )
+
+                static let stepNotNeededMessage = NSLocalizedString(
+                    "Please continue to the next step by tapping the button below.",
+                    comment: "KYC Step - Account Usage Questions - Step skipped message"
+                )
+
+                static let stepNotNeededContinueCTA = NSLocalizedString(
+                    "Continue",
+                    comment: "KYC Step - Account Usage Questions - Step skipped continue CTA"
+                )
+            }
+        }
     }
 }

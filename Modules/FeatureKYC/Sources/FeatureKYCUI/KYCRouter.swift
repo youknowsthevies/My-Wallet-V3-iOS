@@ -462,6 +462,7 @@ final class KYCRouter: KYCRouterAPI {
              .states,
              .profile,
              .address,
+             .accountUsageForm,
              .sddVerificationCheck,
              .tier1ForcedTier2,
              .enterPhone,
@@ -582,6 +583,7 @@ final class KYCRouter: KYCRouterAPI {
              .country,
              .states,
              .accountStatus,
+             .accountUsageForm,
              .applicationComplete,
              .resubmitIdentity:
             break

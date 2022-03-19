@@ -172,8 +172,17 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.sddVerificationCheck,
+            KYCPageType.accountUsageForm,
             KYCPageType.address.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
+        )
+        XCTAssertEqual(
+            KYCPageType.sddVerificationCheck,
+            KYCPageType.accountUsageForm.nextPage(
+                forTier: .tier1,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
     }
 
@@ -223,16 +232,25 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.sddVerificationCheck,
+            KYCPageType.accountUsageForm,
             KYCPageType.address.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.sddVerificationCheck,
+            KYCPageType.accountUsageForm,
             KYCPageType.address.nextPage(
                 forTier: .tier2,
                 user: createNabuUser(isMobileVerified: true),
                 country: nil,
                 tiersResponse: noTiersResponse
+            )
+        )
+        XCTAssertEqual(
+            KYCPageType.sddVerificationCheck,
+            KYCPageType.accountUsageForm.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
             )
         )
         XCTAssertEqual(
