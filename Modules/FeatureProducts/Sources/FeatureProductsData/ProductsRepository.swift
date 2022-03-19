@@ -11,10 +11,10 @@ public final class ProductsRepository: ProductsRepositoryAPI {
         case products
     }
 
-    private let cachedProducts: CachedValueNew<CacheKey, [Product], NabuNetworkError>
+    private let cachedProducts: CachedValueNew<CacheKey, [ProductValue], NabuNetworkError>
 
     public init(client: ProductsClientAPI) {
-        let cache: AnyCache<CacheKey, [Product]> = InMemoryCache(
+        let cache: AnyCache<CacheKey, [ProductValue]> = InMemoryCache(
             configuration: .onUserStateChanged(),
             refreshControl: PerpetualCacheRefreshControl()
         )
@@ -24,48 +24,31 @@ public final class ProductsRepository: ProductsRepositoryAPI {
             cache: cache,
             fetch: { _ in
                 client.fetchProductsData()
-                    .map([Product].init)
+                    .map([ProductValue].init)
                     .eraseToAnyPublisher()
             }
         )
     }
 
-    public func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
+    public func fetchProducts() -> AnyPublisher<[ProductValue], NabuNetworkError> {
         cachedProducts.get(key: CacheKey.products)
     }
 
-    public func streamProducts() -> AnyPublisher<Result<[Product], NabuNetworkError>, Never> {
+    public func streamProducts() -> AnyPublisher<Result<[ProductValue], NabuNetworkError>, Never> {
         cachedProducts.stream(key: CacheKey.products)
     }
 }
 
 // MARK: - Parsing Helpers
 
-extension Array where Element == Product {
+extension Array where Element == ProductValue {
 
+    /// This may not be the best interface for this but works for now. To be revisited.
     fileprivate init(_ response: ProductsAPIResponse) {
-        self = response.products.compactMap(Product.init)
-    }
-}
-
-extension Product {
-
-    fileprivate init?(_ response: ProductAPIResponse) {
-        guard let identifier = Product.Identifier(rawValue: response.id) else {
-            return nil
-        }
-        self.init(
-            id: identifier,
-            maxOrdersCap: response.maxOrdersCap,
-            canPlaceOrder: response.canPlaceOrder,
-            suggestedUpgrade: response.suggestedUpgrade.map(Product.SuggestedUpgrade.init)
-        )
-    }
-}
-
-extension Product.SuggestedUpgrade {
-
-    fileprivate init(_ response: ProductAPIResponse.SuggestedUpgrade) {
-        self.init(requiredTier: response.requiredTier)
+        self = [
+            ProductValue.trading(response.buy),
+            ProductValue.trading(response.swap),
+            ProductValue.custodialWallet(response.custodialWallets)
+        ]
     }
 }

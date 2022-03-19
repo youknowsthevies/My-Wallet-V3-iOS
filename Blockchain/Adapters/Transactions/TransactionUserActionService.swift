@@ -21,7 +21,7 @@ final class TransactionUserActionService: UserActionServiceAPI {
             .map { userStateResult -> UserActionServiceResult in
                 let productId = action.productId
                 if case .success(let userState) = userStateResult {
-                    guard userState.canUse(productId) else {
+                    guard userState.canStartTransactionFlow(for: productId) else {
                         let upgradeTier: KYC.Tier?
                         if let requiredTier = userState.requiredTierToUse(productId) {
                             upgradeTier = KYC.Tier(rawValue: requiredTier)
@@ -39,8 +39,8 @@ final class TransactionUserActionService: UserActionServiceAPI {
 
 extension TransactionFlowAction {
 
-    var productId: Product.Identifier? {
-        let productId: Product.Identifier?
+    var productId: ProductIdentifier? {
+        let productId: ProductIdentifier?
         switch self {
         case .buy:
             productId = .buy
@@ -66,5 +66,19 @@ extension TransactionFlowAction {
             productId = nil
         }
         return productId
+    }
+}
+
+extension UserState {
+
+    fileprivate func canStartTransactionFlow(for productId: ProductIdentifier?) -> Bool {
+        guard let product = product(id: productId) else {
+            // Let users use products we don't have information for
+            return true
+        }
+        guard product.enabled, case .trading(let tradingProduct) = product else {
+            return false
+        }
+        return tradingProduct.canPlaceOrder
     }
 }

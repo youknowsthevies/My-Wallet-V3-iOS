@@ -30,26 +30,9 @@ final class ProductsRepositoryTests: XCTestCase {
         XCTAssertPublisherError(publisher, error)
     }
 
-    func test_returnsProducts_allValid() throws {
+    func test_returnsProducts() throws {
         let expectedProducts = try stubClientWithDefaultProducts()
         let publisher = repository.fetchProducts()
-        XCTAssertPublisherValues(publisher, expectedProducts)
-    }
-
-    func test_returnsProducts_with_unkown_identifier() throws {
-        // GIVEN: The client returns a list of products containing some products we don't understand
-        try stubClientProductsDataResponse(usingFileNamed: "stub_products_unknown")
-        // WHEN: The repository fetches products
-        let publisher = repository.fetchProducts()
-        // THEN: The unknown products are filtered out and the request still succeeds returning only the known ones
-        let expectedProducts = [
-            Product(
-                id: .swap,
-                maxOrdersCap: 1,
-                canPlaceOrder: false,
-                suggestedUpgrade: Product.SuggestedUpgrade(requiredTier: 2)
-            )
-        ]
         XCTAssertPublisherValues(publisher, expectedProducts)
     }
 
@@ -124,22 +107,41 @@ final class ProductsRepositoryTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func stubClientWithDefaultProducts() throws -> [Product] {
+    private func stubClientWithDefaultProducts() throws -> [ProductValue] {
         // stub using local file
         try stubClientProductsDataResponse(usingFileNamed: "stub_products")
         // return expected products from parsing the file
         return [
-            Product(
-                id: .swap,
-                maxOrdersCap: 1,
-                canPlaceOrder: false,
-                suggestedUpgrade: Product.SuggestedUpgrade(requiredTier: 2)
+            ProductValue.trading(
+                TradingProduct(
+                    id: .buy,
+                    enabled: true,
+                    maxOrdersCap: nil,
+                    maxOrdersLeft: nil,
+                    canPlaceOrder: true,
+                    suggestedUpgrade: nil
+                )
             ),
-            Product(
-                id: .buy,
-                maxOrdersCap: 1,
-                canPlaceOrder: false,
-                suggestedUpgrade: Product.SuggestedUpgrade(requiredTier: 2)
+            ProductValue.trading(
+                TradingProduct(
+                    id: .swap,
+                    enabled: true,
+                    maxOrdersCap: 1,
+                    maxOrdersLeft: 0,
+                    canPlaceOrder: false,
+                    suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
+                )
+            ),
+            ProductValue.custodialWallet(
+                CustodialWalletProduct(
+                    id: .custodialWallet,
+                    enabled: true,
+                    canDepositFiat: false,
+                    canDepositCrypto: false,
+                    canWithdrawCrypto: true,
+                    canWithdrawFiat: true,
+                    suggestedUpgrade: nil
+                )
             )
         ]
     }
