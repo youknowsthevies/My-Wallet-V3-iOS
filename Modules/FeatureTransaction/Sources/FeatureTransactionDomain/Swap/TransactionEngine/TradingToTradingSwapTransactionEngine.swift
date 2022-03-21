@@ -80,8 +80,8 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
-            .map { _ in
-                TransactionResult.unHashed(amount: pendingTransaction.amount)
+            .map { (order: SwapOrder) in
+                TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: order.identifier)
             }
     }
 

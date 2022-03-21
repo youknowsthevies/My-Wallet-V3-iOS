@@ -13,7 +13,7 @@ public protocol OrderFetchingRepositoryAPI {
 
 extension OrderFetchingRepositoryAPI {
 
-    func fetchTransactionStatus(
+    public func fetchTransactionStatus(
         with transactionId: String
     ) -> AnyPublisher<SwapActivityItemEvent.EventStatus, NabuNetworkError> {
         fetchTransaction(with: transactionId)

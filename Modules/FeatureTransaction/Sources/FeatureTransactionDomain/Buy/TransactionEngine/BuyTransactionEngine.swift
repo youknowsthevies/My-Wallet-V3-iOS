@@ -245,9 +245,9 @@ final class BuyTransactionEngine: TransactionEngine {
             .asSingle()
             // Map order to Transaction Result
             .map { checkoutData -> TransactionResult in
-                TransactionResult.hashed(
-                    txHash: checkoutData.order.identifier,
+                TransactionResult.unHashed(
                     amount: pendingTransaction.amount,
+                    orderId: checkoutData.order.identifier,
                     order: checkoutData.order
                 )
             }
