@@ -20,5 +20,6 @@ public enum KYCPageType: Int {
     case resubmitIdentity
     case applicationComplete
     case accountStatus
-    case sddVerificationCheck // adding it here as in-progress KYC flows are cached
+    case accountUsageForm
+    case sddVerificationCheck
 }

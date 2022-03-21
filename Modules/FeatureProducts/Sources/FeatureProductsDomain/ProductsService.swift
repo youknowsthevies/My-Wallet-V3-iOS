@@ -10,8 +10,8 @@ public enum ProductsServiceError: Error, Equatable {
 
 public protocol ProductsServiceAPI {
 
-    func fetchProducts() -> AnyPublisher<[Product], ProductsServiceError>
-    func streamProducts() -> AnyPublisher<Result<[Product], ProductsServiceError>, Never>
+    func fetchProducts() -> AnyPublisher<[ProductValue], ProductsServiceError>
+    func streamProducts() -> AnyPublisher<Result<[ProductValue], ProductsServiceError>, Never>
 }
 
 public final class ProductsService: ProductsServiceAPI {
@@ -22,13 +22,13 @@ public final class ProductsService: ProductsServiceAPI {
         self.repository = repository
     }
 
-    public func fetchProducts() -> AnyPublisher<[Product], ProductsServiceError> {
+    public func fetchProducts() -> AnyPublisher<[ProductValue], ProductsServiceError> {
         repository.fetchProducts()
             .mapError(ProductsServiceError.network)
             .eraseToAnyPublisher()
     }
 
-    public func streamProducts() -> AnyPublisher<Result<[Product], ProductsServiceError>, Never> {
+    public func streamProducts() -> AnyPublisher<Result<[ProductValue], ProductsServiceError>, Never> {
         repository.streamProducts()
             .map { result in
                 result.mapError(ProductsServiceError.network)

@@ -20,17 +20,15 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
 
-    lazy var quote: Observable<PricedQuote> = {
-        quotesEngine
-            .startPollingRate(
-                direction: orderDirection,
-                pair: .init(
-                    sourceCurrencyType: sourceAsset,
-                    destinationCurrencyType: target.currencyType
-                )
+    lazy var quote: Observable<PricedQuote> = quotesEngine
+        .startPollingRate(
+            direction: orderDirection,
+            pair: .init(
+                sourceCurrencyType: sourceAsset,
+                destinationCurrencyType: target.currencyType
             )
-            .asObservable()
-    }()
+        )
+        .asObservable()
 
     init(
         quotesEngine: QuotesEngine,
@@ -96,8 +94,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         let order = createOrder(pendingTransaction: pendingTransaction)
         return Single
             .zip(order, amountInSourceCurrency(for: pendingTransaction))
-            .map { _, amount in
-                TransactionResult.unHashed(amount: amount)
+            .map { order, amount in
+                TransactionResult.unHashed(amount: amount, orderId: order.identifier)
             }
     }
 

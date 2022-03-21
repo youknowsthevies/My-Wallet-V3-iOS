@@ -233,15 +233,17 @@ final class TransactionModel {
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .performSecurityChecksForTransaction:
             return nil
-        case .securityChecksCompleted,
-             .startPollingOrderStatus:
+        case .securityChecksCompleted:
             guard let order = previousState.order else {
                 return perform(
                     previousState: previousState,
                     action: .updateTransactionComplete
                 )
             }
-            return processPollOrderStatus(order: order)
+            return processPollOrderStatus(orderId: order.identifier, state: previousState)
+        case .startPollingOrderStatus(let orderId):
+            guard let orderId = orderId else { return nil }
+            return processPollOrderStatus(orderId: orderId, state: previousState)
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showSourceSelection:
@@ -392,12 +394,13 @@ final class TransactionModel {
             .subscribe(
                 onSuccess: { [weak self] result in
                     switch result {
-                    case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
+                    case .unHashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                         self?.process(action: .performSecurityChecksForTransaction(result))
-                    case .unHashed,
-                         .signed,
+                    case .unHashed(_, let orderId, _):
+                        self?.process(action: .startPollingOrderStatus(orderId: orderId))
+                    case .signed,
                          .hashed:
-                        self?.process(action: .startPollingOrderStatus)
+                        self?.process(action: .updateTransactionComplete)
                     }
                 },
                 onFailure: { [weak self] error in
@@ -409,33 +412,60 @@ final class TransactionModel {
             )
     }
 
-    private func processPollOrderStatus(order: TransactionOrder) -> Disposable? {
-        interactor
-            .pollOrderStatusUntilDoneOrTimeout(orderId: order.identifier)
-            .asSingle()
-            .subscribe(on: MainScheduler.instance)
-            .subscribe { [weak self] finalOrderStatus in
-                switch finalOrderStatus {
-                case .cancelled, .expired:
-                    self?.process(
-                        action: .fatalTransactionError(
-                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+    private func processPollOrderStatus(orderId: String, state: TransactionState) -> Disposable? {
+        if state.action == .buy {
+            return interactor
+                .pollBuyOrderStatusUntilDoneOrTimeout(orderId: orderId)
+                .asObservable()
+                .subscribe(onNext: { [weak self] finalOrderStatus in
+                    switch finalOrderStatus {
+                    case .cancelled, .expired:
+                        self?.process(
+                            action: .fatalTransactionError(
+                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                            )
                         )
-                    )
-                case .failed:
-                    self?.process(
-                        action: .fatalTransactionError(
-                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                    case .failed:
+                        self?.process(
+                            action: .fatalTransactionError(
+                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                            )
                         )
-                    )
-                case .depositMatched, .pendingConfirmation, .pendingDeposit:
-                    self?.process(action: .updateTransactionPending)
-                case .finished:
-                    self?.process(action: .updateTransactionComplete)
-                }
-            } onFailure: { [weak self] error in
-                self?.process(action: .fatalTransactionError(error))
-            }
+                    case .depositMatched, .pendingConfirmation, .pendingDeposit:
+                        self?.process(action: .updateTransactionPending)
+                    case .finished:
+                        self?.process(action: .updateTransactionComplete)
+                    }
+                }, onError: { [weak self] error in
+                    self?.process(action: .fatalTransactionError(error))
+                })
+        } else {
+            return interactor
+                .pollSwapOrderStatusUntilDoneOrTimeout(orderId: orderId)
+                .asObservable()
+                .subscribe(onNext: { [weak self] finalOrderStatus in
+                    switch finalOrderStatus {
+                    case .expired, .pendingRefund, .refunded, .delayed, .none:
+                        self?.process(
+                            action: .fatalTransactionError(
+                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                            )
+                        )
+                    case .failed:
+                        self?.process(
+                            action: .fatalTransactionError(
+                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                            )
+                        )
+                    case .inProgress:
+                        self?.process(action: .updateTransactionPending)
+                    case .complete:
+                        self?.process(action: .updateTransactionComplete)
+                    }
+                }, onError: { [weak self] error in
+                    self?.process(action: .fatalTransactionError(error))
+                })
+        }
     }
 
     private func processAmountChanged(amount: MoneyValue) -> Disposable? {

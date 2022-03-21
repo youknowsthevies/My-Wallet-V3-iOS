@@ -24,6 +24,8 @@ public struct HotWalletTransactionTarget: TransactionTarget {
         realAddress.currencyType
     }
 
+    public var accountType: AccountType = .custodial
+
     /// The address for which the resulting transaction should be attributed to.
     public var realAddress: CryptoReceiveAddress
     /// The Hot Wallet address, where the transaction should be sent.

@@ -281,6 +281,8 @@ packages:
     path: Modules/FeatureCoin
   FeatureDebug:
     path: Modules/FeatureDebug
+  FeatureForm:
+    path: Modules/FeatureForm
   FeatureInterest:
     path: Modules/FeatureInterest
   FeatureKYC:
@@ -397,6 +399,7 @@ targets:
       - package: FeatureCryptoDomain
       - package: FeatureCoin
       - package: FeatureDebug
+      - package: FeatureForm
       - package: FeatureInterest
       - package: FeatureKYC
       - package: FeatureQRCodeScanner

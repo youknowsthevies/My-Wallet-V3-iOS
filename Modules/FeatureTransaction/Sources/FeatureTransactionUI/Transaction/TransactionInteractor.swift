@@ -34,6 +34,7 @@ final class TransactionInteractor {
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let userTiersService: KYCTiersServiceAPI
     private let ordersService: OrdersServiceAPI
+    private let orderFetchingRepository: OrderFetchingRepositoryAPI
     private let errorRecorder: ErrorRecording
     private var cancellables: Set<AnyCancellable> = []
     private var transactionProcessor: TransactionProcessor?
@@ -49,6 +50,7 @@ final class TransactionInteractor {
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
         userTiersService: KYCTiersServiceAPI = resolve(),
         ordersService: OrdersServiceAPI = resolve(),
+        orderFetchingRepository: OrderFetchingRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
         self.coincore = coincore
@@ -59,6 +61,7 @@ final class TransactionInteractor {
         self.linkedBanksFactory = linkedBanksFactory
         self.userTiersService = userTiersService
         self.ordersService = ordersService
+        self.orderFetchingRepository = orderFetchingRepository
     }
 
     func initializeTransaction(
@@ -288,7 +291,7 @@ final class TransactionInteractor {
             .eraseToAnyPublisher()
     }
 
-    func pollOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails.State, Never> {
+    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails.State, Never> {
         ordersService
             .fetchOrder(with: orderId)
             .asPublisher()
@@ -298,6 +301,17 @@ final class TransactionInteractor {
             )
             .map(\.state)
             .replaceError(with: .pendingConfirmation)
+            .eraseToAnyPublisher()
+    }
+
+    func pollSwapOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<SwapActivityItemEvent.EventStatus, Never> {
+        orderFetchingRepository
+            .fetchTransactionStatus(with: orderId)
+            .startPolling(
+                timeoutInterval: .seconds(30),
+                until: { $0.isFinal }
+            )
+            .replaceError(with: .inProgress(.pendingExecution))
             .eraseToAnyPublisher()
     }
 

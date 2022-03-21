@@ -24,6 +24,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
+    public var accountType: AccountType = .custodial
 
     public var requireSecondPassword: Single<Bool> {
         .just(false)
@@ -97,7 +98,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard let self = self else {
                 return .error(PlatformKitError.default)
             }
-            guard case .hashed(let hash, let amount, _) = result else {
+            guard case .hashed(let hash, let amount) = result else {
                 return .error(PlatformKitError.default)
             }
             guard let amount = amount, amount.isCrypto else {

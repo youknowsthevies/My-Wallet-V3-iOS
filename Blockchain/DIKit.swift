@@ -498,14 +498,14 @@ extension DependencyContainer {
             FeatureOnboardingUI.OnboardingRouter()
         }
 
-        factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
+        factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
                 coincore: DIKit.resolve()
             )
         }
 
-        factory { () -> FeatureOnboardingUI.EmailVerificationRouterAPI in
+        factory { () -> FeatureOnboardingUI.KYCRouterAPI in
             KYCAdapter()
         }
 
@@ -531,6 +531,10 @@ extension DependencyContainer {
         }
 
         factory { () -> FeatureTransactionUI.UserActionServiceAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
+        factory { () -> FeatureTransactionDomain.TransactionRestrictionsProviderAPI in
             TransactionUserActionService(userService: DIKit.resolve())
         }
 

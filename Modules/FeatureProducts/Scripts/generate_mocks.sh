@@ -13,8 +13,9 @@ MOCKINGBIRD_PATH="../../SourcePackages/checkouts/mockingbird/mockingbird"
   --only-protocols \
   --disable-swiftlint
 
-"${MOCKINGBIRD_PATH}" generate --project MockingbirdProject.json \
-  --output-dir Tests/FeatureProductsDomainTests/Mocks \
-  --targets FeatureProductsDomain \
-  --only-protocols \
-  --disable-swiftlint
+# .mockingbird-ignore not working on CI for some reason
+# "${MOCKINGBIRD_PATH}" generate --project MockingbirdProject.json \
+#   --output-dir Tests/FeatureProductsDomainTests/Mocks \
+#   --targets FeatureProductsDomain \
+#   --only-protocols \
+#   --disable-swiftlint

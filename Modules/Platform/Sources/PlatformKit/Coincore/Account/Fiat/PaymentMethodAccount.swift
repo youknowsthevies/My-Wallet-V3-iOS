@@ -14,6 +14,7 @@ public final class PaymentMethodAccount: FiatAccount {
     public let paymentMethodType: PaymentMethodType
     public let paymentMethod: PaymentMethod
     public let priceService: PriceServiceAPI
+    public let accountType: AccountType
 
     public init(
         paymentMethodType: PaymentMethodType,
@@ -23,6 +24,7 @@ public final class PaymentMethodAccount: FiatAccount {
         self.paymentMethodType = paymentMethodType
         self.paymentMethod = paymentMethod
         self.priceService = priceService
+        accountType = paymentMethod.isCustodial ? .custodial : .nonCustodial
     }
 
     public let isDefault: Bool = false
