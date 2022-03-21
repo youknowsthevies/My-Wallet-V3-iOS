@@ -88,6 +88,11 @@ let package = Package(
             name: "Lexicon",
             url: "https://github.com/screensailor/Lexicon",
             .revision("160c4c417f8490658a8396d0283fb0d6fb98c327")
+        ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "1.0.0"
         )
     ],
     targets: [
@@ -102,6 +107,7 @@ let package = Package(
         .target(
             name: "BlockchainComponentLibrary",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown")
             ],
@@ -128,11 +134,11 @@ let package = Package(
         ),
         .target(
             name: "AnyCoding",
-            path: "Modules/BlockchainNamespace/Sources/AnyCoding",
+            path: "Modules/BlockchainNamespace/Sources/AnyCoding"
         ),
         .target(
             name: "FirebaseProtocol",
-            path: "Modules/BlockchainNamespace/Sources/FirebaseProtocol",
+            path: "Modules/BlockchainNamespace/Sources/FirebaseProtocol"
         ),
         .target(
             name: "ComposableNavigation",
@@ -162,6 +168,7 @@ let package = Package(
         .target(
             name: "ToolKit",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "BigInt", package: "BigInt")
