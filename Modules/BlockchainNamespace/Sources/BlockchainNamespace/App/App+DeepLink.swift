@@ -65,21 +65,11 @@ extension App {
                 return
             }
             #endif
-            do {
-                guard let match = rules.match(for: url) else {
-                    throw ParsingError.nomatch
-                }
-                app.post(event: match.rule.event, context: match.parameters())
-            } catch {
-                app.post(error: error)
+            guard let match = rules.match(for: url) else {
+                return
             }
+            app.post(event: match.rule.event, context: match.parameters())
         }
-    }
-}
-
-extension App.DeepLink {
-    enum ParsingError: Error {
-        case nomatch
     }
 }
 

@@ -717,7 +717,7 @@ extension TransactionFlowInteractor {
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe { [closeFlow, presentKYCUpgradePrompt] state in
-                if let kycStatus = state.userKYCStatus, kycStatus.canUpgradeTier {
+                if state.canPresentKYCUpgradeFlow {
                     presentKYCUpgradePrompt()
                 } else {
                     closeFlow()
@@ -732,5 +732,29 @@ extension TransactionFlowInteractor {
         router?.presentKYCUpgradeFlow { [closeFlow] _ in
             closeFlow()
         }
+    }
+}
+
+extension TransactionState {
+
+    var canPresentKYCUpgradeFlow: Bool {
+        guard let kycStatus = userKYCStatus, kycStatus.canUpgradeTier else {
+            return false
+        }
+        return action.canPresentKYCUpgradeFlow
+    }
+}
+
+extension AssetAction {
+
+    var canPresentKYCUpgradeFlow: Bool {
+        let canPresentKYCUpgradeFlow: Bool
+        switch self {
+        case .buy, .swap:
+            canPresentKYCUpgradeFlow = true
+        default:
+            canPresentKYCUpgradeFlow = false
+        }
+        return canPresentKYCUpgradeFlow
     }
 }

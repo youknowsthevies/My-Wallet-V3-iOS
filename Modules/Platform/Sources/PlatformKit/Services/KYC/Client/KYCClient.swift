@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureFormDomain
 import NabuNetworkError
 import NetworkKit
 
@@ -58,8 +59,6 @@ public protocol KYCClientAPI: AnyObject {
         applicantId: String
     ) -> AnyPublisher<Void, NabuNetworkError>
 
-    // MARK: Combine Interface
-
     func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError>
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError>
@@ -68,6 +67,10 @@ public protocol KYCClientAPI: AnyObject {
     ) -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
 
     func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError>
+
+    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError>
+
+    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
 }
 
 final class KYCClient: KYCClientAPI {
@@ -85,6 +88,7 @@ final class KYCClient: KYCClientAPI {
         static let simplifiedDueDiligenceEligibility = ["sdd", "eligible"]
         static let simplifiedDueDiligenceVerification = ["sdd", "verified"]
         static let tierTradingLimitsOverview = ["limits", "overview"]
+        static let accountUsage = ["kyc", "extra-questions"]
 
         static func supportedDocuments(for country: String) -> [String] {
             ["kyc", "supported-documents", country]
@@ -322,6 +326,30 @@ final class KYCClient: KYCClientAPI {
     func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.tierTradingLimitsOverview,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
+        struct RawResponse: Decodable {
+            let nodes: [FormQuestion]
+        }
+        let request = requestBuilder.get(path: Path.accountUsage, authenticated: true)!
+        return networkAdapter.perform(request: request, responseType: RawResponse.self)
+            .map(\.nodes)
+            .eraseToAnyPublisher()
+    }
+
+    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
+        struct Payload: Codable {
+            let nodes: [FormQuestion]
+        }
+
+        let payload = Payload(nodes: form)
+        let request = requestBuilder.put(
+            path: Path.accountUsage,
+            body: try? payload.encode(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

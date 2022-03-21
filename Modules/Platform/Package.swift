@@ -80,6 +80,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks"),
+        .package(path: "../FeatureForm"),
         .package(path: "../FeatureCardPayment")
     ],
     targets: [
@@ -93,6 +94,7 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
                 .product(name: "FeatureAuthentication", package: "FeatureAuthentication"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),

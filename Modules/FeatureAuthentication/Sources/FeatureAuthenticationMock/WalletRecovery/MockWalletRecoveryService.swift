@@ -9,9 +9,6 @@ extension WalletRecoveryService {
         Self(
             recoverFromMetadata: { _ in
                 .just(.noValue)
-            },
-            recover: { _, _, _ in
-                .just(.noValue)
             }
         )
     }

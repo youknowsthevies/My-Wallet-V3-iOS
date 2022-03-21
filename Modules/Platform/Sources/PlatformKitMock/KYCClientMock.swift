@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureFormDomain
 import NabuNetworkError
 import NabuNetworkErrorMock
 import PlatformKit
@@ -15,6 +16,8 @@ final class KYCClientMock: KYCClientAPI {
         var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
         var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
         var fetchLimitsOverview: AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
+        var fetchAccountUsageForm: AnyPublisher<[FormQuestion], NabuNetworkError> = .failure(NabuNetworkError.mockError)
+        var submitAccountUsageForm: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.mockError)
         // swiftlint:enable line_length
     }
 
@@ -123,5 +126,13 @@ final class KYCClientMock: KYCClientAPI {
 
     func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> {
         stubbedResults.fetchLimitsOverview
+    }
+
+    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
+        stubbedResults.fetchAccountUsageForm
+    }
+
+    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
+        stubbedResults.submitAccountUsageForm
     }
 }

@@ -32,7 +32,7 @@ public protocol WalletManagerAPI: WalletManagerReactiveAPI {
     ///   - email: A `String` representing the email
     func newWallet(password: String, email: String)
 
-    /// Creates a new wallet with the given details
+    /// Loads a wallet with the given details
     func load(with guid: String, sharedKey: String, password: String)
 
     /// Set the `Wallet` property `isNew` to `true`

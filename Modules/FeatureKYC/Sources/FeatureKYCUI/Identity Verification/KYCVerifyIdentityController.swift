@@ -245,7 +245,7 @@ extension KYCVerifyIdentityController: KYCVerifyIdentityView {
     }
 }
 
-extension KYCVerifyIdentityController: LoadingView {
+extension KYCVerifyIdentityController: PlatformUIKit.LoadingView {
     func showLoadingIndicator() {
         nextButton.isLoading = true
     }

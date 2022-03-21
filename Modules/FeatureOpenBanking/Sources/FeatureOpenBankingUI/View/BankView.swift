@@ -206,9 +206,7 @@ public struct BankView: View {
         .background(Color.semantic.background)
     }
 
-    private typealias ButtonState = ActionableView<
-        TupleView<(Spacer, InfoView, Spacer)>
-    >.ButtonState
+    private typealias ButtonState = ActionableViewButtonState
 
     private func buttons(
         from actions: [BankState.UI.Action]?,

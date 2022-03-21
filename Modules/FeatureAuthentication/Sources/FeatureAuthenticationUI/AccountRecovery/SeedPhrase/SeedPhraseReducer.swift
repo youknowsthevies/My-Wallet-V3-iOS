@@ -238,7 +238,7 @@ let seedPhraseReducer = Reducer.combine(
         case .setImportWalletScreenVisible(let isVisible):
             state.isImportWalletScreenVisible = isVisible
             if isVisible {
-                state.importWalletState = .init()
+                state.importWalletState = .init(mnemonic: state.seedPhrase)
             }
             return .none
 
@@ -343,23 +343,8 @@ let seedPhraseReducer = Reducer.combine(
         case .importWallet(.goBackButtonTapped):
             return Effect(value: .setImportWalletScreenVisible(false))
 
-        case .importWallet(.importWalletButtonTapped):
-            return .none
-
-        case .importWallet(.createAccount(.createAccount)):
-            guard let createAccountState = state.importWalletState?.createAccountState else {
-                return .none
-            }
-            let email = createAccountState.emailAddress
-            let password = createAccountState.password
-            let mnemonic = state.seedPhrase
-            return environment.walletRecoveryService
-                .recover(email, password, mnemonic)
-                .receive(on: environment.mainQueue)
-                .mapError { _ in WalletRecoveryError.failedToRestoreWallet }
-                .catchToEffect()
-                .cancellable(id: WalletRecoveryIds.ImportId(), cancelInFlight: true)
-                .map(SeedPhraseAction.imported)
+        case .importWallet(.createAccount(.triggerAuthenticate)):
+            return Effect(value: .triggerAuthenticate)
 
         case .importWallet:
             return .none
