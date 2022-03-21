@@ -22,16 +22,26 @@ public struct CoinViewState: Equatable {
 
     public var graph = GraphViewState()
 
-    var primaryAction: ButtonAction? {
-        if asset.isTradable { return .buy }
-        if accounts.hasPositiveBalanceForSelling { return .send }
-        return nil
+    var actions: [ButtonAction] {
+        guard asset.isTradable else {
+            return accounts.hasPositiveBalanceForSelling ? [.send] : []
+        }
+        let (buy, sell, receive) = (
+            action(.buy, whenAccountCan: .buy),
+            action(.sell, whenAccountCan: .sell),
+            action(.receive, whenAccountCan: .receive)
+        )
+        guard accounts.hasPositiveBalanceForSelling else {
+            return [receive, buy].compacted().array
+        }
+        guard kycStatus?.canSellCrypto == true else {
+            return [receive, buy].compacted().array
+        }
+        return [sell, buy].compacted().array
     }
 
-    var secondaryAction: ButtonAction? {
-        guard asset.isTradable, accounts.hasPositiveBalanceForSelling else { return .receive }
-        guard let kyc = kycStatus, kyc.canSellCrypto else { return .receive }
-        return .sell
+    private func action(_ action: ButtonAction, whenAccountCan accountAction: Account.Action) -> ButtonAction? {
+        accounts.contains(where: { account in account.actions.contains(accountAction) }) ? action : nil
     }
 
     public init(

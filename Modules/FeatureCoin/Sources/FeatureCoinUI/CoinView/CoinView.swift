@@ -112,14 +112,12 @@ public struct CoinView: View {
                     asset: viewStore.asset,
                     accounts: viewStore.accounts
                 )
-                if let status = viewStore.kycStatus {
-                    AccountListView(
-                        accounts: viewStore.accounts,
-                        assetColor: viewStore.asset.brandColor,
-                        interestRate: viewStore.interestRate,
-                        kycStatus: status
-                    )
-                }
+                AccountListView(
+                    accounts: viewStore.accounts,
+                    assetColor: viewStore.asset.brandColor,
+                    interestRate: viewStore.interestRate,
+                    kycStatus: viewStore.kycStatus
+                )
             } else {
                 TotalBalanceView(
                     asset: viewStore.asset,
@@ -206,27 +204,29 @@ public struct CoinView: View {
 
     @ViewBuilder func actions(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         VStack {
-            if viewStore.primaryAction != nil || viewStore.secondaryAction != nil {
+            let actions = viewStore.actions
+            if actions.isNotEmpty {
                 PrimaryDivider()
             }
             HStack {
-                if let action = viewStore.secondaryAction {
-                    SecondaryButton(
-                        title: action.title,
-                        leadingView: { action.icon },
-                        action: {
-                            app.post(event: action.event[].ref(to: context))
-                        }
-                    )
-                }
-                if let action = viewStore.primaryAction {
-                    PrimaryButton(
-                        title: action.title,
-                        leadingView: { action.icon },
-                        action: {
-                            app.post(event: action.event[].ref(to: context))
-                        }
-                    )
+                ForEach(actions.indexed(), id: \.element.event) { index, action in
+                    if index == actions.startIndex {
+                        PrimaryButton(
+                            title: action.title,
+                            leadingView: { action.icon },
+                            action: {
+                                app.post(event: action.event[].ref(to: context))
+                            }
+                        )
+                    } else {
+                        SecondaryButton(
+                            title: action.title,
+                            leadingView: { action.icon },
+                            action: {
+                                app.post(event: action.event[].ref(to: context))
+                            }
+                        )
+                    }
                 }
             }
             .padding()

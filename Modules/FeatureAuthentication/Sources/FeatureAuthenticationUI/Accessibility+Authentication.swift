@@ -11,6 +11,7 @@ final class AccessibilityIdentifiers: NSObject {
 
         static let blockchainImage = "\(prefix)blockchainImage"
         static let welcomeTitleText = "\(prefix)titleText"
+        static let welcomeSubtitleText = "\(prefix)subtitleText"
         static let welcomeMessageText = "\(prefix)messageText"
         static let createWalletButton = "\(prefix)createWalletButton"
         static let emailLoginButton = "\(prefix)emailLoginButton"

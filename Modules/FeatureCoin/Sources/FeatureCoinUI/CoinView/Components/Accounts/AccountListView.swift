@@ -20,11 +20,11 @@ public struct AccountListView: View {
 
     let assetColor: Color
     let interestRate: Double?
-    let kycStatus: KYCStatus
+    let kycStatus: KYCStatus?
 
     var __accounts: [Account.Snapshot] {
         switch kycStatus {
-        case .unverified, .inReview:
+        case .none, .unverified, .inReview:
             return accounts.filter(\.isPrivateKey)
         case .silver, .silverPlus, .gold:
             return accounts
@@ -47,7 +47,7 @@ public struct AccountListView: View {
                     PrimaryDivider()
                 }
                 switch kycStatus {
-                case .unverified, .inReview:
+                case .none, .unverified, .inReview:
                     locked()
                 case .silver, .silverPlus, .gold:
                     EmptyView()

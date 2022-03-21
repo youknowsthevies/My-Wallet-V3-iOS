@@ -53,6 +53,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Buy Crypto Now",
                 comment: "Welcome screen: create wallet CTA button"
             )
+            public static let createWallet = NSLocalizedString(
+                "Create Wallet",
+                comment: "Welcome screen: create wallet CTA button"
+            )
             public static let login = NSLocalizedString(
                 "Log In",
                 comment: "Welcome screen: login CTA button"
@@ -70,6 +74,11 @@ extension LocalizationConstants.FeatureAuthentication {
         public static let title = NSLocalizedString(
             "Welcome to Blockchain.com",
             comment: "Welcome screen: title"
+        )
+
+        public static let subtitle = NSLocalizedString(
+            "Buy Crypto Today",
+            comment: "Welcome screen: subtitle"
         )
     }
 
