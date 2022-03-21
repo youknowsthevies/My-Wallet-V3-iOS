@@ -31,14 +31,19 @@ enum ClaimIntroductionRoute: NavigationRoute {
     }
 }
 
+enum ClaimIntroductionAction: NavigationAction {
+    case route(RouteIntent<ClaimIntroductionRoute>?)
+    case searchAction(SearchCryptoDomainAction)
+}
+
 struct ClaimIntroductionState: NavigationState {
     var route: RouteIntent<ClaimIntroductionRoute>?
     var searchState: SearchCryptoDomainState?
 }
 
-enum ClaimIntroductionAction: NavigationAction {
-    case route(RouteIntent<ClaimIntroductionRoute>?)
-    case searchAction(SearchCryptoDomainAction)
+struct ClaimIntroductionEnvironment {
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let searchDomainRepository: SearchDomainRepositoryAPI
 }
 
 let claimIntroductionReducer = Reducer.combine(
@@ -49,46 +54,19 @@ let claimIntroductionReducer = Reducer.combine(
             action: /ClaimIntroductionAction.searchAction,
             environment: {
                 SearchCryptoDomainEnvironment(
-                    mainQueue: .main
+                    mainQueue: $0.mainQueue,
+                    searchDomainRepository: $0.searchDomainRepository
                 )
             }
         ),
-    Reducer<ClaimIntroductionState, ClaimIntroductionAction, Void> {
+    Reducer<ClaimIntroductionState, ClaimIntroductionAction, ClaimIntroductionEnvironment> {
         state, action, _ in
         switch action {
         case .route(let route):
             if let routeValue = route?.route {
                 switch routeValue {
                 case .searchDomain:
-                    state.searchState = .init(
-                        searchResults: [
-                            SearchDomainResult(
-                                domainName: "cocacola.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
-                                domainAvailability: .unavailable
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocacola001.blockchain",
-                                domainType: .free,
-                                domainAvailability: .availableForFree
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocacola002.blockchain",
-                                domainType: .free,
-                                domainAvailability: .availableForFree
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocola.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
-                                domainAvailability: .availableForPremiumSale(price: "50")
-                            ),
-                            SearchDomainResult(
-                                domainName: "cocola2.blockchain",
-                                domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
-                                domainAvailability: .availableForPremiumSale(price: "500")
-                            )
-                        ]
-                    )
+                    state.searchState = .init()
                 case .benefits:
                     break
                 }
@@ -103,7 +81,57 @@ let claimIntroductionReducer = Reducer.combine(
 
 // MARK: - ClaimIntroductionView
 
-struct ClaimIntroductionView: View {
+public final class ClaimIntroductionHostingController: UIViewController {
+
+    private let mainQueue: AnySchedulerOf<DispatchQueue>
+    private let searchDomainRepository: SearchDomainRepositoryAPI
+    private let contentView: UIHostingController<ClaimIntroductionView>
+
+    public init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        searchDomainRepository: SearchDomainRepositoryAPI
+    ) {
+        self.mainQueue = mainQueue
+        self.searchDomainRepository = searchDomainRepository
+        contentView = UIHostingController(
+            rootView: ClaimIntroductionView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: claimIntroductionReducer,
+                    environment: .init(mainQueue: mainQueue, searchDomainRepository: searchDomainRepository)
+                )
+            )
+        )
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(contentView.view)
+        addChild(contentView)
+        contentView.view.translatesAutoresizingMaskIntoConstraints = false
+        contentView.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        contentView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+
+    override public func viewDidLayoutSubviews() {
+        navigationController?.isNavigationBarHidden = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+public struct ClaimIntroductionView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.ClaimIntroduction
     private typealias Accessibility = AccessibilityIdentifiers.HowItWorks
@@ -114,32 +142,34 @@ struct ClaimIntroductionView: View {
         self.store = store
     }
 
-    var body: some View {
+    public var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(alignment: .center, spacing: Spacing.padding3) {
-                introductionHeader
-                    .padding([.top, .leading, .trailing], Spacing.padding3)
-                introductionList
-                Spacer()
-                SmallMinimalButton(title: LocalizedString.promptButton) {
-                    viewStore.send(.enter(into: .benefits))
-                }
-                .accessibility(identifier: Accessibility.smallButton)
-                Spacer()
-                Text(LocalizedString.instruction)
-                    .typography(.caption1)
-                    .foregroundColor(.semantic.overlay)
-                    .multilineTextAlignment(.center)
+            PrimaryNavigationView {
+                VStack(alignment: .center, spacing: Spacing.padding3) {
+                    introductionHeader
+                        .padding([.top, .leading, .trailing], Spacing.padding3)
+                    introductionList
+                    Spacer()
+                    SmallMinimalButton(title: LocalizedString.promptButton) {
+                        viewStore.send(.enter(into: .benefits))
+                    }
+                    .accessibility(identifier: Accessibility.smallButton)
+                    Spacer()
+                    Text(LocalizedString.instruction)
+                        .typography(.caption1)
+                        .foregroundColor(.semantic.overlay)
+                        .multilineTextAlignment(.center)
+                        .padding([.leading, .trailing], Spacing.padding3)
+                        .accessibility(identifier: Accessibility.instructionText)
+                    PrimaryButton(title: LocalizedString.goButton) {
+                        viewStore.send(.navigate(to: .searchDomain))
+                    }
                     .padding([.leading, .trailing], Spacing.padding3)
-                    .accessibility(identifier: Accessibility.instructionText)
-                PrimaryButton(title: LocalizedString.goButton) {
-                    viewStore.send(.navigate(to: .searchDomain))
+                    .accessibility(identifier: Accessibility.ctaButton)
                 }
-                .padding([.leading, .trailing], Spacing.padding3)
-                .accessibility(identifier: Accessibility.ctaButton)
+                .navigationRoute(in: store)
+                .primaryNavigation(title: LocalizedString.title)
             }
-            .navigationRoute(in: store)
-            .primaryNavigation(title: LocalizedString.title)
         }
     }
 
@@ -197,14 +227,24 @@ struct ClaimIntroductionView: View {
     }
 }
 
+#if DEBUG
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct ClaimIntroductionView_Previews: PreviewProvider {
     static var previews: some View {
         ClaimIntroductionView(
             store: .init(
                 initialState: .init(),
                 reducer: claimIntroductionReducer,
-                environment: ()
+                environment: .init(
+                    mainQueue: .main,
+                    searchDomainRepository: SearchDomainRepository(
+                        apiClient: SearchDomainClient.mock
+                    )
+                )
             )
         )
     }
 }
+#endif

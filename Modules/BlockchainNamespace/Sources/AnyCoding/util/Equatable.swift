@@ -35,10 +35,6 @@ extension Wrapper: AnyEquatableContainer where T: AnyEquatable {
     static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool { T._isEqual(lhs, rhs) }
 }
 
-extension Hashable {
-    var any: AnyHashable { .init(self) }
-}
-
 extension Dictionary: AnyEquatable {
     fileprivate static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         guard let l = lhs as? [Key: Any], let r = rhs as? [Key: Any] else { return false }
@@ -52,6 +48,13 @@ extension Array: AnyEquatable {
     fileprivate static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         guard let l = lhs as? [Element], let r = rhs as? [Element] else { return false }
         return zip(l, r).allSatisfy(isEqual)
+    }
+}
+
+extension Optional: AnyEquatable {
+
+    fileprivate static func _isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+        isEqual(flattenOptionality(lhs), flattenOptionality(rhs))
     }
 }
 

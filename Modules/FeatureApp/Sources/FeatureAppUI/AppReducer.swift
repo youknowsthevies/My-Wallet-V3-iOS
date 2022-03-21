@@ -69,6 +69,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.core,
             environment: {
                 CoreAppEnvironment(
+                    app: $0.app,
+                    nabuUserService: $0.nabuUserService,
                     loadingViewPresenter: $0.loadingViewPresenter,
                     externalAppOpener: $0.externalAppOpener,
                     deeplinkHandler: $0.deeplinkHandler,
@@ -115,12 +117,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     case .appDelegate(.didFinishLaunching):
         return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
-        guard state.coreState.isLoggedIn else {
-            return .none
-        }
-        return .fireAndForget {
-            environment.portfolioSyncingService.sync()
-        }
+        return .none
     case .appDelegate(.willEnterForeground):
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):

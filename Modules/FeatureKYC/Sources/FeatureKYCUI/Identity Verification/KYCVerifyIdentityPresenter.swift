@@ -22,7 +22,7 @@ protocol KYCVerifyIdentityDelegate: AnyObject {
 
 class KYCVerifyIdentityPresenter {
     private let interactor: KYCVerifyIdentityInteractor
-    private weak var loadingView: LoadingView?
+    private weak var loadingView: PlatformUIKit.LoadingView?
 
     // TODO: Separate and use in a different presenter specifically made
     // for the KYCVerifyIdentityViewController.
@@ -30,7 +30,7 @@ class KYCVerifyIdentityPresenter {
 
     init(
         interactor: KYCVerifyIdentityInteractor,
-        loadingView: LoadingView
+        loadingView: PlatformUIKit.LoadingView
     ) {
         self.interactor = interactor
         self.loadingView = loadingView
@@ -57,9 +57,7 @@ class KYCVerifyIdentityPresenter {
     weak var cameraPromptingDelegate: CameraPromptingDelegate?
     weak var microphonePromptingDelegate: MicrophonePromptingDelegate?
 
-    internal lazy var permissionsRequestor: PermissionsRequestor = {
-        PermissionsRequestor()
-    }()
+    internal lazy var permissionsRequestor: PermissionsRequestor = PermissionsRequestor()
 }
 
 extension KYCVerifyIdentityPresenter: MicrophonePrompting {}

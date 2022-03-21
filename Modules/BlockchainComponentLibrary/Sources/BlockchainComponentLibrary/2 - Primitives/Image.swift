@@ -6,6 +6,10 @@ import SwiftUI
 
 public enum Backport {}
 
+extension View {
+    public var backport: Backport.ContentView<Self> { Backport.ContentView(content: self) }
+}
+
 extension Backport {
 
     @available(iOS, deprecated: 15.0, renamed: "SwiftUI.AsyncImagePhase")
@@ -14,6 +18,10 @@ extension Backport {
         case empty
         case success(Image)
         case failure(Error)
+    }
+
+    public struct ContentView<Content> where Content: View {
+        let content: Content
     }
 
     @available(iOS, deprecated: 15.0, renamed: "SwiftUI.AsyncImage")
@@ -161,6 +169,41 @@ extension Backport {
 
         func cancel() {
             cancellable?.cancel()
+        }
+    }
+}
+
+extension Backport.ContentView {
+    /// Hides the separator on a `View` that is shown in
+    /// a `List`.
+    @ViewBuilder public func hideListRowSeparator() -> some View {
+        if #available(iOS 15, *) {
+            content
+                .listRowSeparator(.hidden)
+        } else {
+            content
+        }
+    }
+
+    /// Adds a `PrimaryDivider` at the bottom of the View.
+    @ViewBuilder public func addPrimaryDivider() -> some View {
+        if #available(iOS 15, *) {
+            content
+            PrimaryDivider()
+        } else {
+            content
+        }
+    }
+
+    /// Hides the separator on a `View` that is shown in
+    /// a `List` and adds a `PrimaryDivider` at the bottom of the View.
+    @ViewBuilder public func hideListRowSepartorAndAddDivider() -> some View {
+        if #available(iOS 15, *) {
+            content
+                .listRowSeparator(.hidden)
+            PrimaryDivider()
+        } else {
+            content
         }
     }
 }

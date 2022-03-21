@@ -80,7 +80,8 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks"),
-        .package(path: "../FeatureCards")
+        .package(path: "../FeatureForm"),
+        .package(path: "../FeatureCardPayment")
     ],
     targets: [
         .target(
@@ -93,6 +94,7 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
                 .product(name: "FeatureAuthentication", package: "FeatureAuthentication"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
@@ -106,7 +108,7 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ]
         ),
         .target(
@@ -119,7 +121,7 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ]
         ),
         .target(
@@ -137,7 +139,7 @@ let package = Package(
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

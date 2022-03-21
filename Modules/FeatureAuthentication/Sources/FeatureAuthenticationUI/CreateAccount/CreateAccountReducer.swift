@@ -11,11 +11,21 @@ import UIComponentsKit
 
 public enum CreateAccountIds {
     public struct CreationId: Hashable {}
+    public struct ImportId: Hashable {}
 }
 
-public enum CreateAccountContext {
-    case importWallet
+public enum CreateAccountContext: Equatable {
+    case importWallet(mnemonic: String)
     case createWallet
+
+    var mnemonic: String? {
+        switch self {
+        case .importWallet(let mnemonic):
+            return mnemonic
+        case .createWallet:
+            return nil
+        }
+    }
 }
 
 public enum CreateAccountRoute: NavigationRoute {
@@ -143,7 +153,9 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case alert(AlertAction)
     case binding(BindingAction<CreateAccountState>)
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
+    case createOrImportWallet(CreateAccountContext)
     case createAccount
+    case importAccount(_ mnemonic: String)
     case createButtonTapped
     case didUpdatePasswordStrenght(PasswordValidationScore)
     case didUpdateInputValidation(CreateAccountState.InputValidationState)
@@ -153,6 +165,7 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case validatePasswordStrength
     case accountRecoveryFailed(WalletRecoveryError)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
+    case accountImported(Result<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError>)
     // required for legacy flow
     case triggerAuthenticate
     case none
@@ -230,7 +243,31 @@ let createAccountReducer = Reducer<
                 .map(CreateAccountAction.accountCreation)
         )
 
-    case .accountCreation(.failure(let error)):
+    case .createOrImportWallet(.createWallet):
+        return Effect(value: .createAccount)
+    case .createOrImportWallet(.importWallet(let mnemonic)):
+        return Effect(value: .importAccount(mnemonic))
+
+    case .importAccount(let mnemonic):
+        state.isCreatingWallet = true
+        let accountName = CreateAccountLocalization.defaultAccountName
+        return .merge(
+            Effect(value: .triggerAuthenticate),
+            environment.walletCreationService
+                .importWallet(
+                    state.emailAddress,
+                    state.password,
+                    accountName,
+                    mnemonic
+                )
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .cancellable(id: CreateAccountIds.ImportId(), cancelInFlight: true)
+                .map(CreateAccountAction.accountImported)
+        )
+
+    case .accountCreation(.failure(let error)),
+         .accountImported(.failure(let error)):
         state.isCreatingWallet = false
         let title = LocalizationConstants.Errors.error
         let message = error.localizedDescription
@@ -240,14 +277,17 @@ let createAccountReducer = Reducer<
                     .show(title: title, message: message)
                 )
             ),
-            .cancel(id: CreateAccountIds.CreationId())
+            .cancel(id: CreateAccountIds.CreationId()),
+            .cancel(id: CreateAccountIds.ImportId())
         )
 
-    case .accountCreation(.success(let context)):
+    case .accountCreation(.success(let context)),
+         .accountImported(.success(.left(let context))):
         return .concatenate(
             Effect(value: .triggerAuthenticate),
             .merge(
                 .cancel(id: CreateAccountIds.CreationId()),
+                .cancel(id: CreateAccountIds.ImportId()),
                 environment.walletCreationService
                     .setResidentialInfo(state.country.id.description, state.countryState?.id.description)
                     .receive(on: environment.mainQueue)
@@ -260,6 +300,10 @@ let createAccountReducer = Reducer<
                     .map { _ in CreateAccountAction.none }
             )
         )
+
+    case .accountImported(.success(.right(.noValue))):
+        // this will only be true in case of legacy wallet
+        return .cancel(id: CreateAccountIds.ImportId())
 
     case .createButtonTapped:
         state.validatingInput = true
@@ -299,7 +343,7 @@ let createAccountReducer = Reducer<
         guard validationState == .valid else {
             return .none
         }
-        return Effect(value: .createAccount)
+        return Effect(value: .createOrImportWallet(state.context))
 
     case .openExternalLink(let url):
         environment.externalAppOpener.open(url)
@@ -370,14 +414,14 @@ extension Reducer where
             > { state, action, environment in
                 switch action {
                 case .onWillDisappear:
-                    if state.context == .importWallet {
+                    if case .importWallet = state.context {
                         environment.analyticsRecorder.record(
                             event: .importWalletCancelled
                         )
                     }
                     return .none
                 case .createButtonTapped:
-                    if state.context == .importWallet {
+                    if case .importWallet = state.context {
                         environment.analyticsRecorder.record(
                             event: .importWalletConfirmed
                         )

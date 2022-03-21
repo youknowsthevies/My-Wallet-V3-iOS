@@ -17,19 +17,19 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
     private let limitsPresenter: TierLimitsCellPresenter
     private let emailVerificationPresenter: EmailVerificationCellPresenter
     private let mobileVerificationPresenter: MobileVerificationCellPresenter
-    private let cardIssuancePresenter: CardIssuanceCellPresenter
+    private let cardIssuingPresenter: CardIssuingCellPresenter
 
     init(
         tiersLimitsProvider: TierLimitsProviding,
         emailVerificationInteractor: EmailVerificationBadgeInteractor,
         mobileVerificationInteractor: MobileVerificationBadgeInteractor,
-        cardIssuanceInteractor: CardIssuanceBadgeInteractor,
-        featureFlagsService: FeatureFlagsServiceAPI
+        cardIssuingInteractor: CardIssuingBadgeInteractor,
+        cardIssuingAdapter: CardIssuingAdapterAPI
     ) {
         limitsPresenter = TierLimitsCellPresenter(tiersProviding: tiersLimitsProvider)
         emailVerificationPresenter = .init(interactor: emailVerificationInteractor)
         mobileVerificationPresenter = .init(interactor: mobileVerificationInteractor)
-        cardIssuancePresenter = .init(interactor: cardIssuanceInteractor)
+        cardIssuingPresenter = .init(interactor: cardIssuingInteractor)
         // IOS: 4806: Hiding the web log in for production build as pair wallet with QR code has been deprecated
         // Web log in is enabled in internal production to ease QA testing
         var viewModel = SettingsSectionViewModel(
@@ -46,20 +46,32 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
             viewModel.items.append(.init(cellType: .common(.loginToWebWallet)))
         }
 
-        let cardIssuanceCellModel = SettingsCellViewModel(cellType: .badge(.cardIssuance, cardIssuancePresenter))
+        let cardIssuingCellModelDisplay = SettingsCellViewModel(cellType: .common(.cardIssuing))
+        let cardIssuingCellModelOrder = SettingsCellViewModel(cellType: .badge(.cardIssuing, cardIssuingPresenter))
 
         state = Publishers
             .CombineLatest(
-                featureFlagsService.isEnabled(.remote(.cardIssuance)),
-                featureFlagsService.isEnabled(.local(.cardIssuance))
+                cardIssuingAdapter.isEnabled(),
+                cardIssuingAdapter.hasCard()
             )
-            .map { $0 || $1 }
-            .map { cardIssuanceEnabled -> SettingsSectionLoadingState in
-                if cardIssuanceEnabled, !viewModel.items.contains(cardIssuanceCellModel) {
-                    viewModel.items.append(cardIssuanceCellModel)
-                } else {
-                    viewModel.items.removeElementByReference(cardIssuanceCellModel)
+            .map { cardIssuingEnabled, hasCard -> SettingsSectionLoadingState in
+                if let index = viewModel.items.firstIndex(of: cardIssuingCellModelDisplay) {
+                    viewModel.items.remove(at: index)
                 }
+
+                if let index = viewModel.items.firstIndex(of: cardIssuingCellModelOrder) {
+                    viewModel.items.remove(at: index)
+                }
+
+                switch (cardIssuingEnabled, hasCard) {
+                case (_, true):
+                    viewModel.items.append(cardIssuingCellModelDisplay)
+                case (true, false):
+                    viewModel.items.append(cardIssuingCellModelOrder)
+                case (false, false):
+                    break
+                }
+
                 return .loaded(next: .some(viewModel))
             }
             .asObservable()

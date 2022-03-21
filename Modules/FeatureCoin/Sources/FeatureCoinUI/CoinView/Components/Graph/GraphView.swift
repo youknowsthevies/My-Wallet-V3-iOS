@@ -14,6 +14,9 @@ public struct GraphView: View {
 
     typealias Localization = LocalizationConstants.Coin.Graph
 
+    @BlockchainApp var app
+    @Environment(\.context) var context
+
     let store: Store<GraphViewState, GraphViewAction>
 
     public init(store: Store<GraphViewState, GraphViewAction>) {
@@ -22,17 +25,20 @@ public struct GraphView: View {
 
     @State private var animation = false
 
+    // swiftlint:disable closure_body_length
     public var body: some View {
         WithViewStore(store) { viewStore in
             VStack {
                 switch viewStore.result {
                 case .none:
+                    Spacer()
                     ProgressView()
-                        .progressViewStyle(.linear)
+                        .progressViewStyle(.circular)
                         .onAppear {
                             viewStore.send(.request(.week))
                         }
                         .padding()
+                    Spacer()
                 case .failure:
                     AlertCard(
                         title: Localization.Error.title,
@@ -97,6 +103,20 @@ public struct GraphView: View {
                                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                             }
                             #endif
+                            switch (old, new) {
+                            case (.none, .some):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.selected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case (.some, .none):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.deselected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case _:
+                                break
+                            }
                         }
                     }
                 }
@@ -114,6 +134,12 @@ public struct GraphView: View {
                         set: { newValue in viewStore.send(.request(newValue)) }
                     )
                 )
+                .onChange(of: viewStore.interval) { interval in
+                    app.post(
+                        value: interval,
+                        of: blockchain.ux.asset.chart.interval[].ref(to: context)
+                    )
+                }
                 .disabled(viewStore.isFetching)
             }
         }
@@ -146,7 +172,7 @@ public struct GraphView: View {
             return ChartBalance(
                 title: selected == nil ? Localization.currentPrice : Localization.price,
                 balance: String(
-                    amount: selected == nil ? start.price : end.price,
+                    amount: end.price,
                     currency: value.quote
                 ),
                 changeArrow: end.price.isRelativelyEqual(to: start.price)
@@ -210,14 +236,10 @@ struct GraphViewPreviewProvider: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: graphViewReducer,
-                environment: .init(
-                    app: App.preview,
-                    kycStatusProvider: { .empty() },
-                    accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
-                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
-                )
+                environment: .preview
             )
         )
+        .app(App.preview)
+        .frame(height: 300.pt)
     }
 }

@@ -70,7 +70,7 @@ public protocol WalletEncodingAPI {
     /// Transforms the NativePayload into `Data` and returns an `EncodedWalletPayload` model
     /// - Parameter wrapper: A value of `Wrapper`
     /// - Returns: `AnyPublisher<EncodedWalletPayload, WalletEncodingError>`
-    func trasform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError>
+    func transform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError>
 
     /// Encodes the given payload into `WalletCreationPayload`
     /// - Returns: `AnyPublisher<WalletCreationPayload, WalletEncodingError>`

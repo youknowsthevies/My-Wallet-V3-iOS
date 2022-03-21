@@ -79,6 +79,7 @@ public struct SeedPhraseState: Equatable {
     var lostFundsWarningState: LostFundsWarningState?
     var importWalletState: ImportWalletState?
     var failureAlert: AlertState<SeedPhraseAction>?
+    var isLoading: Bool
 
     var accountResettable: Bool {
         nabuInfo != nil
@@ -95,6 +96,7 @@ public struct SeedPhraseState: Equatable {
         isLostFundsWarningScreenVisible = false
         isImportWalletScreenVisible = false
         failureAlert = nil
+        isLoading = false
     }
 }
 
@@ -236,7 +238,7 @@ let seedPhraseReducer = Reducer.combine(
         case .setImportWalletScreenVisible(let isVisible):
             state.isImportWalletScreenVisible = isVisible
             if isVisible {
-                state.importWalletState = .init()
+                state.importWalletState = .init(mnemonic: state.seedPhrase)
             }
             return .none
 
@@ -341,28 +343,14 @@ let seedPhraseReducer = Reducer.combine(
         case .importWallet(.goBackButtonTapped):
             return Effect(value: .setImportWalletScreenVisible(false))
 
-        case .importWallet(.importWalletButtonTapped):
-            return .none
-
-        case .importWallet(.createAccount(.createAccount)):
-            guard let createAccountState = state.importWalletState?.createAccountState else {
-                return .none
-            }
-            let email = createAccountState.emailAddress
-            let password = createAccountState.password
-            let mnemonic = state.seedPhrase
-            return environment.walletRecoveryService
-                .recover(email, password, mnemonic)
-                .receive(on: environment.mainQueue)
-                .mapError { _ in WalletRecoveryError.failedToRestoreWallet }
-                .catchToEffect()
-                .cancellable(id: WalletRecoveryIds.ImportId(), cancelInFlight: true)
-                .map(SeedPhraseAction.imported)
+        case .importWallet(.createAccount(.triggerAuthenticate)):
+            return Effect(value: .triggerAuthenticate)
 
         case .importWallet:
             return .none
 
         case .restoreWallet(.metadataRecovery(let mnemonic)):
+            state.isLoading = true
             return .concatenate(
                 Effect(value: .triggerAuthenticate),
                 environment.walletRecoveryService
@@ -377,9 +365,11 @@ let seedPhraseReducer = Reducer.combine(
             return .none
 
         case .restored(.success):
+            state.isLoading = false
             return .cancel(id: WalletRecoveryIds.RecoveryId())
 
         case .restored(.failure):
+            state.isLoading = false
             return .merge(
                 .cancel(id: WalletRecoveryIds.RecoveryId()),
                 Effect(value: .setImportWalletScreenVisible(true))

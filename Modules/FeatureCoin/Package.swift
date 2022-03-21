@@ -42,6 +42,10 @@ let package = Package(
                 .product(
                     name: "NetworkError",
                     package: "NetworkErrors"
+                ),
+                .product(
+                    name: "BlockchainComponentLibrary",
+                    package: "BlockchainComponentLibrary"
                 )
             ]
         ),

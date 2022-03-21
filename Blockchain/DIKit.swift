@@ -14,6 +14,8 @@ import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureCoinData
 import FeatureCoinDomain
+import FeatureCryptoDomainData
+import FeatureCryptoDomainDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
@@ -498,14 +500,14 @@ extension DependencyContainer {
             FeatureOnboardingUI.OnboardingRouter()
         }
 
-        factory { () -> FeatureOnboardingUI.OnboardingTransactionsRouterAPI in
+        factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
                 coincore: DIKit.resolve()
             )
         }
 
-        factory { () -> FeatureOnboardingUI.EmailVerificationRouterAPI in
+        factory { () -> FeatureOnboardingUI.KYCRouterAPI in
             KYCAdapter()
         }
 
@@ -693,6 +695,15 @@ extension DependencyContainer {
                     )
                 )
             )
+        }
+
+        // MARK: Feature Crypto Domain
+
+        factory { () -> SearchDomainRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let client = SearchDomainClient(networkAdapter: adapter, requestBuilder: builder)
+            return SearchDomainRepository(apiClient: client)
         }
 
         // MARK: Pulse Network Debugging

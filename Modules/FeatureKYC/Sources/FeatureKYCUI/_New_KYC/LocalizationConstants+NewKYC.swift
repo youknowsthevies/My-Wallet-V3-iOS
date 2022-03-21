@@ -247,5 +247,56 @@ extension LocalizationConstants {
                 comment: "KYC Upgrade Prompt - Rewards Verified Benefit Info"
             )
         }
+
+        enum UnlockTradingAlert {
+
+            static let title = NSLocalizedString(
+                "Verify your account. Unlock full access.",
+                comment: "Title for alert shown to prompt Basic Tier users to upgrade"
+            )
+
+            static let message = NSLocalizedString(
+                "Complete ID verification to enable unlimited buying, selling, swapping, and more.",
+                comment: "Message for alert shown to prompt Basic Tier users to upgrade"
+            )
+
+            static let primaryCTA = NSLocalizedString(
+                "Verify Now",
+                comment: "Primary CTA for alert shown to prompt Basic Tier users to upgrade"
+            )
+        }
+
+        // MARK: - KYC Steps
+
+        enum Steps {
+
+            enum AccountUsage {
+
+                static let title = NSLocalizedString(
+                    "Use of Account Information",
+                    comment: "KYC Step - Account Usage Questions - Screen Title"
+                )
+
+                static let submitActionTitle = NSLocalizedString(
+                    "Next",
+                    comment: "KYC Step - Account Usage Questions - Submit Action Title"
+                )
+
+                static let stepNotNeededTitle = NSLocalizedString(
+                    "You're all set",
+                    comment: "KYC Step - Account Usage Questions - Step skipped title"
+                )
+
+                static let stepNotNeededMessage = NSLocalizedString(
+                    "Please continue to the next step by tapping the button below.",
+                    comment: "KYC Step - Account Usage Questions - Step skipped message"
+                )
+
+                static let stepNotNeededContinueCTA = NSLocalizedString(
+                    "Continue",
+                    comment: "KYC Step - Account Usage Questions - Step skipped continue CTA"
+                )
+            }
+        }
     }
 }

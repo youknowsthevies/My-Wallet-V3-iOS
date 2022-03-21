@@ -16,13 +16,27 @@ extension RootViewController: LoggedInBridge {
         alertViewPresenter.notify(content: content, in: topMostViewController ?? self)
     }
 
-    func presentOnboarding() {
-        onboardingRouter.presentOnboarding(from: self)
+    func presentPostSignUpOnboarding() {
+        onboardingRouter.presentPostSignUpOnboarding(from: self)
             .handleEvents(receiveOutput: { output in
                 "\(output)".peek("🏄")
             })
             .sink { [weak self] _ in
                 self?.dismiss(animated: true)
+            }
+            .store(in: &bag)
+    }
+
+    func presentPostSignInOnboarding() {
+        onboardingRouter.presentPostSignInOnboarding(from: self)
+            .handleEvents(receiveOutput: { output in
+                "\(output)".peek("🏄")
+            })
+            .sink { [weak self] _ in
+                guard let self = self, self.presentedViewController != nil else {
+                    return
+                }
+                self.dismiss(animated: true)
             }
             .store(in: &bag)
     }
@@ -92,7 +106,7 @@ extension RootViewController: LoggedInBridge {
 
     func switchTabToDashboard() {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.home))
+            viewStore.send(.tab(blockchain.ux.user.portfolio[]))
         }
     }
 
@@ -110,13 +124,13 @@ extension RootViewController: LoggedInBridge {
 
     func switchToActivity() {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.activity))
+            viewStore.send(.tab(blockchain.ux.user.activity[]))
         }
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
         dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.activity))
+            viewStore.send(.tab(blockchain.ux.user.activity[]))
         }
     }
 
@@ -297,8 +311,13 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSupport() {
-        Publishers.Zip(
+        let isSupported = Publishers.Zip(
             featureFlagService.isEnabled(.remote(.customerSupportChat)),
+            featureFlagService.isEnabled(.local(.customerSupportChat))
+        )
+        .map { $0.0 || $0.1 }
+        Publishers.Zip(
+            isSupported,
             eligibilityService.isEligiblePublisher
         )
         .receive(on: DispatchQueue.main)

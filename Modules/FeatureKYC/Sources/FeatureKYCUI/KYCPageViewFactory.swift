@@ -53,6 +53,9 @@ class KYCPageViewFactory {
         case .profile:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycProfile)
             return KYCPersonalDetailsController.make(with: coordinator)
+        case .accountUsageForm:
+//            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycProfile)
+            return KYCAccountUsageController.make(with: coordinator)
         case .address:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAddress)
             return KYCAddressController.make(with: coordinator)

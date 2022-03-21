@@ -11,16 +11,27 @@ extension Session {
 
         public let id: UInt
         public let date: Date
-        public let ref: Tag.Reference
+        public let event: Tag.Event
+        public let reference: Tag.Reference
         public let context: Tag.Context
 
-        public var tag: Tag { ref.tag }
+        public let source: (file: String, line: Int)
 
-        init(date: Date = Date(), ref: Tag.Reference, context: Tag.Context = [:]) {
+        public var tag: Tag { reference.tag }
+
+        init(
+            date: Date = Date(),
+            event: Tag.Event,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) {
             id = Self.id
             self.date = date
-            self.ref = ref
+            self.event = event
+            reference = event.key
             self.context = context
+            source = (file, line)
         }
 
         public func hash(into hasher: inout Hasher) {
@@ -31,6 +42,10 @@ extension Session {
             lhs.id == rhs.id
         }
     }
+}
+
+extension Session.Event: CustomStringConvertible {
+    public var description: String { String(describing: event) }
 }
 
 extension Session.Event {
@@ -51,19 +66,19 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter(_ type: Tag) -> Publishers.Filter<Self> {
-        filter(type.ref())
+        filter(type.reference)
     }
 
     public func filter(_ type: Tag.Reference) -> Publishers.Filter<Self> {
-        filter { event in event.ref.matches(type) }
+        filter { event in event.reference.matches(type) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
-        filter { $0.tag.is(types) }
+        filter { $0.reference.tag.is(types) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
-        filter { event in types.contains(where: { type in event.ref.matches(type) }) }
+        filter { event in types.contains(where: { type in event.reference.matches(type) }) }
     }
 }
 
@@ -76,21 +91,92 @@ extension Tag.Reference {
     }
 }
 
-extension Dictionary {
+extension Tag.Context {
 
-    func filterValues<T>(_ type: T.Type) -> [Key: T] {
-        compactMapValues { $0 as? T }
+    func filterValues<T: Hashable>(_ type: T.Type) -> Tag.Context {
+        Tag.Context(dictionary.compactMapValues { $0 as? T })
     }
 }
 
-extension Dictionary where Value: Hashable {
+extension Tag.Context {
 
     struct Pair: Hashable {
-        let key: Key
+        let key: Tag.Reference
         let value: Value
     }
 
     func pairs() -> Set<Pair> {
         map(Pair.init).set
+    }
+}
+
+extension Dictionary where Key: Tag.Event, Value: Hashable {
+
+    func pairs() -> Set<Tag.Context.Pair> {
+        map { event, value in .init(key: event.key, value: value) }.set
+    }
+}
+
+extension AppProtocol {
+
+    @inlinable public func on(
+        _ first: Tag.Event,
+        _ rest: Tag.Event...,
+        file: String = #fileID,
+        line: Int = #line,
+        action: @escaping (Session.Event) async throws -> Void
+    ) -> BlockchainEventSubscription {
+        BlockchainEventSubscription(
+            app: self,
+            events: [first] + rest,
+            file: file,
+            line: line,
+            action: action
+        )
+    }
+}
+
+public final class BlockchainEventSubscription {
+
+    let app: AppProtocol
+    let events: [Tag.Event]
+    let action: (Session.Event) async throws -> Void
+
+    let file: String, line: Int
+
+    @usableFromInline init(
+        app: AppProtocol,
+        events: [Tag.Event],
+        file: String,
+        line: Int,
+        action: @escaping (Session.Event) async throws -> Void
+    ) {
+        self.app = app
+        self.events = events
+        self.file = file
+        self.line = line
+        self.action = action
+    }
+
+    private var subscription: AnyCancellable?
+
+    public func start() {
+        guard subscription == nil else { return }
+        subscription = app.on(events).sink(
+            receiveValue: { [weak self] event in
+                Task { [weak self] in
+                    guard let self = self else { return }
+                    do {
+                        try await self.action(event)
+                    } catch {
+                        self.app.post(error: error, file: self.file, line: self.line)
+                    }
+                }
+            }
+        )
+    }
+
+    public func stop() {
+        subscription?.cancel()
     }
 }

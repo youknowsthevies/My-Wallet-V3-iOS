@@ -62,6 +62,25 @@ public struct BalanceSectionHeader<Trailing: View>: View {
     }
 }
 
+extension BalanceSectionHeader where Trailing == EmptyView {
+
+    /// Initialize a Balance Section Header
+    /// - Parameters:
+    ///   - header: (Optional) Title of the section header
+    ///   - title: Title of the header
+    ///   - subtitle: Subtitle of the header
+    public init(
+        header: String? = nil,
+        title: String,
+        subtitle: String
+    ) {
+        self.header = header
+        self.title = title
+        self.subtitle = subtitle
+        trailing = EmptyView()
+    }
+}
+
 struct BalanceSectionHeader_Previews: PreviewProvider {
 
     static var previews: some View {

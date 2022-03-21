@@ -56,7 +56,7 @@ open class AnyDecoder: AnyDecoderProtocol {
         case (let time as TimeInterval, is Date.Type):
             return Date(timeIntervalSince1970: time)
         case (let string as String, is URL.Type):
-            return try URL(string: string).or(throw: Error("'\(string)' is not a URL", at: codingPath))
+            return try URL(string: string).or(throw: Error(message: "'\(string)' is not a URL", at: codingPath))
         case (let number as NSNumber, is Bool.Type):
             return number.boolValue
         case (let number as NSNumber, is Int.Type):
@@ -77,40 +77,30 @@ open class AnyDecoder: AnyDecoderProtocol {
 
 extension AnyDecoder {
 
-    struct Error: Swift.Error {
+    public struct Error: Swift.Error, LocalizedError {
 
-        let message: String
-        let codingPath: [CodingKey]
-        let function: String, file: String, line: Int
+        public let message: String
+        public let codingPath: [CodingKey]
 
-        init(
-            _ message: String,
-            at codingPath: [CodingKey],
-            function: String = #function,
-            file: String = #file,
-            line: Int = #line
+        public init(
+            message: String,
+            at codingPath: [CodingKey]
         ) {
             self.message = message
             self.codingPath = codingPath
-            self.function = function
-            self.file = file
-            self.line = line
         }
+
+        public var errorDescription: String? { message }
     }
 
+    // swiftlint:disable line_length
     func valueNotFound<T>(
         _: T.Type,
-        at codingPath: [CodingKey],
-        _ function: String = #function,
-        _ file: String = #file,
-        _ line: Int = #line
+        at codingPath: [CodingKey]
     ) -> Error {
         .init(
-            "Value of type \(T.self) not found at coding path /\(codingPath.string); found \(Swift.type(of: value))",
-            at: codingPath,
-            function: function,
-            file: file,
-            line: line
+            message: "Value of type \(T.self) not found at coding path /\(codingPath.string); found \(Swift.type(of: value))",
+            at: codingPath
         )
     }
 }
@@ -143,12 +133,12 @@ extension AnyDecoder {
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
             dictionary = try (decoder.value as? [String: Any])
-                .or(throw: Error("Expected a [String: Any] but got: \(decoder.value)", at: decoder.codingPath))
+                .or(throw: Error(message: "Expected a [String: Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
 
         public func value(for key: Key) throws -> Any {
             try dictionary[key.stringValue]
-                .or(throw: Error("No value found for key '\(key.stringValue)'", at: codingPath))
+                .or(throw: Error(message: "No value found for key '\(key.stringValue)'", at: codingPath))
         }
     }
 }
@@ -222,7 +212,7 @@ extension AnyDecoder {
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
             array = try (decoder.value as? [Any])
-                .or(throw: Error("Expected a [Any] but got: \(decoder.value)", at: decoder.codingPath))
+                .or(throw: Error(message: "Expected a [Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
     }
 }

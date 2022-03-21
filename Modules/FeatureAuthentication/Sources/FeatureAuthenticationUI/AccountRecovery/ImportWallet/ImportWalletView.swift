@@ -96,7 +96,7 @@ struct ImportWalletView_Previews: PreviewProvider {
     static var previews: some View {
         ImportWalletView(
             store: .init(
-                initialState: .init(),
+                initialState: .init(mnemonic: ""),
                 reducer: importWalletReducer,
                 environment: .init(
                     mainQueue: .main,

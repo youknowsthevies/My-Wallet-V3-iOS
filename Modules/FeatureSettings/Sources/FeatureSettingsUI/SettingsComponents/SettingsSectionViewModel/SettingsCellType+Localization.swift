@@ -34,6 +34,8 @@ extension SettingsSectionType.CellType.CommonCellType {
             return LocalizationConstants.Settings.contactSupport
         case .airdrops:
             return LocalizationConstants.Settings.airdrops
+        case .cardIssuing:
+            return LocalizationConstants.Settings.Badge.cardIssuing
         }
     }
 

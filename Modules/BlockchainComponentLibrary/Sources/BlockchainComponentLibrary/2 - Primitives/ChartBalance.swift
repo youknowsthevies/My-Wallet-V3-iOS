@@ -91,6 +91,8 @@ public struct ChartBalance: View {
                     }
                 }
             }
+            .scaledToFit()
+            .minimumScaleFactor(0.8)
 
             Spacer()
         }
@@ -154,5 +156,17 @@ struct ChartBalance_Previews: PreviewProvider {
         .colorScheme(.dark)
         .previewLayout(.sizeThatFits)
         .previewDisplayName("No time scale, Dark")
+
+        ChartBalance(
+            title: "Current Balance",
+            balance: "$1,000,000,000,000.37",
+            changeArrow: "↑",
+            changeAmount: "$999,999,999,616.23",
+            changePercentage: "(100000000000.53%)",
+            changeColor: .semantic.success,
+            changeTime: "11 years"
+        )
+        .previewLayout(.device)
+        .previewDisplayName("Chart Balance, Overflow")
     }
 }

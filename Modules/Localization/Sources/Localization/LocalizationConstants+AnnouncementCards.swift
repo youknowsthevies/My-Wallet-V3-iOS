@@ -447,5 +447,20 @@ extension LocalizationConstants {
                 comment: "2FA announcement card CTA button title"
             )
         }
+
+        public enum ClaimFreeDomain {
+            public static let title = NSLocalizedString(
+                "Claim Your Free Domain!",
+                comment: "Claim free domain annoucement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Get a free .blockchain domain through Unstoppable Domains. Use your domain to receive crypto and much more.",
+                comment: "Claim free domain annoucement card description"
+            )
+            public static let button = NSLocalizedString(
+                "Claim Domain",
+                comment: "Claim free domain annoucement card button"
+            )
+        }
     }
 }

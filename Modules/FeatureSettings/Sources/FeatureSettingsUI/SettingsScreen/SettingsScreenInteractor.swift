@@ -17,7 +17,8 @@ public final class SettingsScreenInteractor {
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
-    let cardIssuanceBadgeInteractor: CardIssuanceBadgeInteractor
+    let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
+    let cardIssuingAdapter: CardIssuingAdapterAPI
 
     // MARK: - Services
 
@@ -28,10 +29,8 @@ public final class SettingsScreenInteractor {
     let settingsService: SettingsServiceAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: EmailNotificationSettingsServiceAPI
-    let featureFlagsService: FeatureFlagsServiceAPI
 
     let pitConnnectionProviding: PITConnectionStatusProviding
-    let balanceSharingService: BalanceSharingSettingsServiceAPI
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
@@ -45,7 +44,6 @@ public final class SettingsScreenInteractor {
     private let disposeBag = DisposeBag()
 
     public init(
-        balanceSharingService: BalanceSharingSettingsServiceAPI = resolve(),
         credentialsStore: CredentialsStoreAPI = resolve(),
         featureConfigurator: FeatureConfiguring = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
@@ -56,18 +54,17 @@ public final class SettingsScreenInteractor {
         pitConnectionAPI: PITConnectionStatusProviding,
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         wallet: WalletRecoveryVerifing,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-        authenticationCoordinator: AuthenticationCoordinating
+        authenticationCoordinator: AuthenticationCoordinating,
+        cardIssuingAdapter: CardIssuingAdapterAPI = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
         emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
-        self.balanceSharingService = balanceSharingService
-        self.featureFlagsService = featureFlagsService
+        self.cardIssuingAdapter = cardIssuingAdapter
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
@@ -92,7 +89,7 @@ public final class SettingsScreenInteractor {
             settingsService: settingsService,
             fiatCurrencyService: fiatCurrencyService
         )
-        cardIssuanceBadgeInteractor = CardIssuanceBadgeInteractor(
+        cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
             service: settingsService
         )
 

@@ -169,7 +169,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             case .metadataRecovery(let seedPhrase):
                 state.walletRecoveryContext = .metadataRecovery
                 return .none
-            case .importRecovery(let email, let newPassword, let seedPhrase):
+            case .importRecovery:
                 state.walletRecoveryContext = .importRecovery
                 return .none
             case .resetAccountRecovery(let email, let newPassword, let nabuInfo):

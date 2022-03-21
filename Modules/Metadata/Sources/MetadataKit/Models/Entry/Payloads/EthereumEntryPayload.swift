@@ -73,7 +73,7 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
         public let defaultAccountIndex: Int
         public let erc20: [String: ERC20]?
         public let hasSeen: Bool
-        public let lastTxTimestamp: Int
+        public let lastTxTimestamp: Int?
         public let transactionNotes: [String: String]
 
         public init(
@@ -81,7 +81,7 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
             defaultAccountIndex: Int,
             erc20: [String: ERC20],
             hasSeen: Bool,
-            lastTxTimestamp: Int,
+            lastTxTimestamp: Int?,
             transactionNotes: [String: String]
         ) {
             self.accounts = accounts

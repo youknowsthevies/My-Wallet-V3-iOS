@@ -170,7 +170,6 @@ let appDelegateReducer = Reducer<
                 from: state.window
             ),
             Effect.fireAndForget {
-                Logger.shared.debug("applicationDidBecomeActive")
                 UIApplication.shared.applicationIconBadgeNumber = 0
             }
         )

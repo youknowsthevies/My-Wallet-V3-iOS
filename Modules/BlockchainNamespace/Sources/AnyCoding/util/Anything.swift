@@ -90,7 +90,7 @@ public struct Anything: Codable, Hashable, Equatable, CustomStringConvertible {
                     return fragment
                 }
             }
-            encoder.value = try ƒ(any)
+            encoder.value = try ƒ(wrapped)
         default:
             throw Error(
                 description: """

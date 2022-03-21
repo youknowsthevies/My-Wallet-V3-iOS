@@ -213,6 +213,8 @@ extension KYCPageType {
         case .profile:
             return .address
         case .address:
+            return .accountUsageForm
+        case .accountUsageForm:
             return .sddVerificationCheck
         case .sddVerificationCheck:
             // This check could be also in `case .address` but I'm putting this here to ensure that
@@ -237,10 +239,7 @@ extension KYCPageType {
 
     private func nextPageTier2(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
-        case .address:
-            return .sddVerificationCheck
-        case .sddVerificationCheck,
-             .tier1ForcedTier2:
+        case .tier1ForcedTier2:
             // Skip the enter phone step if the user already has verified their phone number
             if let user = user, let mobile = user.mobile, mobile.verified {
                 if tiersResponse.canCompleteTier2 {
@@ -267,6 +266,9 @@ extension KYCPageType {
              .confirmEmail,
              .country,
              .states,
+             .address,
+             .accountUsageForm,
+             .sddVerificationCheck,
              .profile:
             return nextPageTier1(user: user, country: country, requiredTier: .tier2, tiersResponse: tiersResponse)
         }

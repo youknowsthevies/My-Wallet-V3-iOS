@@ -1,44 +1,48 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import ComposableArchitecture
 import FeatureCoinDomain
 import SwiftUI
 
+public enum CoinViewError: Error, Equatable {
+    case failedToLoad
+}
+
 public struct CoinViewState: Equatable {
-    let assetDetails: AssetDetails
-    var kycStatus: KYCStatus?
-    var accounts: [Account]
-    var hasPositiveBalanceForSelling: Bool?
-    var interestRate: Double?
 
-    var graph = GraphViewState()
+    public let asset: AssetDetails
+    public var kycStatus: KYCStatus?
+    public var accounts: [Account.Snapshot]
+    public var interestRate: Double?
+    public var error: CoinViewError?
 
-    // Dynamic Actions
+    @BindableState public var account: Account.Snapshot?
+    @BindableState public var explainer: Account.Snapshot?
 
-    var primaryAction: DoubleButtonAction? {
-        if assetDetails.tradeable {
-            return .buy
-        } else {
-            return .send
-        }
+    public var graph = GraphViewState()
+
+    var primaryAction: ButtonAction? {
+        if asset.isTradable { return .buy }
+        if accounts.hasPositiveBalanceForSelling { return .send }
+        return nil
     }
 
-    var secondaryAction: DoubleButtonAction? {
-        switch (assetDetails.tradeable, hasPositiveBalanceForSelling, kycStatus?.canSellCrypto) {
-        case (true, true, true):
-            return .sell
-        default:
-            return .receive
-        }
+    var secondaryAction: ButtonAction? {
+        guard asset.isTradable, accounts.hasPositiveBalanceForSelling else { return .receive }
+        guard let kyc = kycStatus, kyc.canSellCrypto else { return .receive }
+        return .sell
     }
 
     public init(
-        assetDetails: AssetDetails,
+        asset: AssetDetails,
         kycStatus: KYCStatus? = nil,
-        accounts: [Account] = []
+        accounts: [Account.Snapshot] = [],
+        error: CoinViewError? = nil
     ) {
-        self.assetDetails = assetDetails
+        self.asset = asset
         self.kycStatus = kycStatus
         self.accounts = accounts
+        self.error = error
     }
 }

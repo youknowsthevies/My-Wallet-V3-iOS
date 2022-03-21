@@ -32,5 +32,7 @@ extension HashedUserProperty {
     public enum Key: String, UserPropertyKey {
         /// The wallet identifier
         case walletID = "wallet_id"
+        /// The nabu user identifer
+        case nabuID = "nabu_user_id"
     }
 }

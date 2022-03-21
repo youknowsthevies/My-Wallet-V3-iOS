@@ -36,12 +36,24 @@ let package = Package(
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "1.0.0"
+        ),
+        .package(
+            name: "swift-collections",
+            url: "https://github.com/apple/swift-collections.git",
+            from: "1.0.0"
+        ),
         .package(path: "../Test")
     ],
     targets: [
         .target(
             name: "ToolKit",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "Collections", package: "swift-collections"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "BigInt", package: "BigInt")

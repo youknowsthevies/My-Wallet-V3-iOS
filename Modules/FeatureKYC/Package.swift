@@ -40,6 +40,7 @@ let package = Package(
         ),
         .package(path: "../Analytics"),
         .package(path: "../FeatureAuthentication"),
+        .package(path: "../FeatureForm"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
@@ -54,6 +55,7 @@ let package = Package(
             name: "FeatureKYCDomain",
             dependencies: [
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
@@ -64,6 +66,8 @@ let package = Package(
             name: "FeatureKYCUI",
             dependencies: [
                 .target(name: "FeatureKYCDomain"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm"),
+                .product(name: "FeatureFormUI", package: "FeatureForm"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),

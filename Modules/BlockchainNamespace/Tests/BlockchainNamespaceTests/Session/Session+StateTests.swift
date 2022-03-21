@@ -91,4 +91,78 @@ final class SessionStateTests: XCTestCase {
 
         try XCTAssertTrue(state.get(blockchain.user.is.tier.gold) as? Bool ?? false)
     }
+
+    func test_preference() throws {
+
+        state.data.preferences = Mock.UserDefaults()
+        let id = "160c4c417f8490658a8396d0283fb0d6fb98c327"
+
+        state.set(blockchain.user.id, to: id)
+        state.set(blockchain.session.state.preference.value, to: true)
+
+        do {
+            let object = state.data.preferences.object(
+                forKey: "blockchain.session.state"
+            )
+            try XCTAssertAnyEqual(state.get(blockchain.session.state.preference.value), true)
+            try XCTAssertEqual(
+                object[id, "blockchain.session.state.preference.value"].unwrap() as? Bool,
+                true
+            )
+        }
+
+        state.clear(blockchain.user.id)
+
+        do {
+            let object = state.data.preferences.object(
+                forKey: "blockchain.session.state"
+            )
+            XCTAssertThrowsError(try state.get(blockchain.session.state.preference.value))
+            try XCTAssertAnyEqual(object[id].unwrap(), [:])
+        }
+
+        state.set(blockchain.user.id, to: id)
+
+        state.set(blockchain.app.configuration.is.biometric.enabled, to: true)
+
+        do {
+            let object = state.data.preferences.object(
+                forKey: "blockchain.session.state"
+            )
+            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.is.biometric.enabled), true)
+            try XCTAssertEqual(
+                object[id, "blockchain.app.configuration.is.biometric.enabled"].unwrap() as? Bool,
+                true
+            )
+        }
+
+        state.clear(blockchain.user.id)
+
+        do {
+            let object = state.data.preferences.object(
+                forKey: "blockchain.session.state"
+            )
+            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.is.biometric.enabled), true)
+            try XCTAssertEqual(
+                object[id, "blockchain.app.configuration.is.biometric.enabled"].unwrap() as? Bool,
+                true
+            )
+        }
+    }
+}
+
+extension Mock {
+
+    class UserDefaults: Foundation.UserDefaults {
+
+        var store: [String: Any] = [:]
+
+        override func object(forKey defaultName: String) -> Any? {
+            store[defaultName]
+        }
+
+        override func set(_ value: Any?, forKey defaultName: String) {
+            store[defaultName] = value
+        }
+    }
 }

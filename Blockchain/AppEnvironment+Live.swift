@@ -13,6 +13,8 @@ extension AppEnvironment {
 
     static var live: AppEnvironment {
         AppEnvironment(
+            app: resolve(),
+            nabuUserService: resolve(),
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: resolve(),
@@ -25,7 +27,6 @@ extension AppEnvironment {
             deeplinkHandler: resolve(),
             deeplinkRouter: resolve(),
             backgroundAppHandler: resolve(),
-            portfolioSyncingService: resolve(),
             mobileAuthSyncService: resolve(),
             pushNotificationsRepository: resolve(),
             resetPasswordService: resolve(),

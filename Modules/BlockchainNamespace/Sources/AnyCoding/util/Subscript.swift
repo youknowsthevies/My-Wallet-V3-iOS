@@ -8,6 +8,11 @@ public enum SubscriptError: Error {
 
 extension Optional where Wrapped == Any {
 
+    public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
+
     public subscript<C: Collection>(path: C) -> Any? where C.Element == CodingKey {
         get { try? get(path, from: self) }
         set { set(newValue, at: path, on: &self) }
@@ -15,6 +20,11 @@ extension Optional where Wrapped == Any {
 }
 
 extension Dictionary where Key == String, Value == Any {
+
+    public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
 
     public subscript<C: Collection>(path: C) -> Value? where C.Element == CodingKey {
         get { try? get(path) }
@@ -44,6 +54,11 @@ extension Dictionary where Key == String, Value == Any {
 }
 
 extension Array where Element == Any {
+
+    public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
 
     public subscript<C: Collection>(path: C) -> Element? where C.Element == CodingKey {
         get { try? get(path) }
@@ -159,6 +174,11 @@ extension Collection where Element == String {
 
 extension Optional where Wrapped == Any {
 
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
+
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }
         set { self[string.splitDotPath()] = newValue }
@@ -172,6 +192,11 @@ extension Optional where Wrapped == Any {
 
 extension Dictionary where Key == String, Value == Any {
 
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
+
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }
         set { self[string.splitDotPath()] = newValue }
@@ -184,6 +209,11 @@ extension Dictionary where Key == String, Value == Any {
 }
 
 extension Array where Element == Any {
+
+    public subscript(first: String, rest: String...) -> Any? {
+        get { self[[first] + rest] }
+        set { self[[first] + rest] = newValue }
+    }
 
     public subscript(dotPath string: String) -> Any? {
         get { self[string.splitDotPath()] }

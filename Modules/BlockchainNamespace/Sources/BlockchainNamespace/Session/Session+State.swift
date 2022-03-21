@@ -8,9 +8,13 @@ extension Session {
     public final class State {
 
         unowned var app: AppProtocol!
-        var data = Data()
+        var data: Data
 
-        public init(_ data: [Tag.Reference: Any] = [:]) {
+        public init(
+            _ data: [Tag.Reference: Any] = [:],
+            preferences: UserDefaults = .standard
+        ) {
+            self.data = Data(preferences: preferences)
             self.data.store = data
         }
     }
@@ -27,7 +31,15 @@ extension Session.State {
         private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
         private var key: DispatchSpecificKey<Data.Type>
 
-        init() { key = .init(on: queue) }
+        var preferences: UserDefaults
+        private var scope: String {
+            store[blockchain.user.id.key] as? String ?? "ø"
+        }
+
+        init(preferences: UserDefaults) {
+            key = .init(on: queue)
+            self.preferences = preferences
+        }
     }
 }
 
@@ -63,8 +75,12 @@ extension Session.State {
     public func clear(_ key: Tag) { clear(key.ref(in: app)) }
     public func clear(_ key: Tag.Reference) {
         if key.tag.is(blockchain.user.id) {
-            for key in data.store.keys where key.tag.isNot(blockchain.session.state.shared.value) {
-                data.clear(key)
+            transaction { state in
+                let user = key
+                for key in data.store.keys where key.tag.isNot(blockchain.session.state.shared.value) {
+                    guard key != user else { continue }
+                    state.clear(key)
+                }
             }
         }
         data.clear(key)
@@ -119,10 +135,20 @@ extension Session.State.Data {
     }
 
     func get(_ key: Tag.Reference) throws -> Any {
-        guard let value = sync(execute: { store[key] }) else {
+        if let value = sync(execute: { store[key] }) {
+            return try (value as? Computed)?.yield() ?? value
+        }
+
+        switch key.tag {
+        case blockchain.session.state.preference.value:
+            guard let value = preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string] else {
+                throw FetchResult.Error.keyDoesNotExist(key)
+            }
+            set(key, to: value)
+            return value
+        default:
             throw FetchResult.Error.keyDoesNotExist(key)
         }
-        return try (value as? Computed)?.yield() ?? value
     }
 
     func set(_ key: Tag.Reference, to value: Any) {
@@ -194,6 +220,17 @@ extension Session.State.Data {
                     store[key] = value
                 }
             }
+            preferences.transaction(blockchain.session.state(\.id)) { object in
+                var dictionary = object[scope] as? [String: Any] ?? [:]
+                for (key, value) in data.filter({ key, _ in key.tag.is(blockchain.session.state.preference.value) }) {
+                    if value is Tombstone.Type {
+                        dictionary.removeValue(forKey: key.id())
+                    } else {
+                        dictionary[key.id()] = value
+                    }
+                }
+                object[scope] = dictionary
+            }
             for (key, value) in data {
                 switch value {
                 case is Tombstone.Type:
@@ -210,6 +247,15 @@ extension Session.State.Data {
         DispatchQueue.getSpecific(key: key) == nil
             ? try queue.sync(execute: work)
             : try work()
+    }
+}
+
+extension UserDefaults {
+
+    func transaction(_ key: String, _ yield: (inout Any?) -> Void) {
+        var object = object(forKey: key)
+        yield(&object)
+        set(object, forKey: key)
     }
 }
 

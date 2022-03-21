@@ -5,6 +5,7 @@ import Foundation
 public enum HttpHeaderField {
     public static let userAgent = "User-Agent"
     public static let accept = "Accept"
+    public static let acceptLanguage = "Accept-Language"
     public static let contentLength = "Content-Length"
     public static let contentType = "Content-Type"
     public static let appVersion = "X-APP-VERSION"

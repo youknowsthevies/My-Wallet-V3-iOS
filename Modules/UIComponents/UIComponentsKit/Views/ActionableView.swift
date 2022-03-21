@@ -3,50 +3,56 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
+/// Represents a `LoadingButton` in the Design System
+public struct ActionableViewButtonState: Hashable {
+    public enum Style: Hashable {
+        case primary, secondary
+    }
+
+    public let title: String
+    public let action: () -> Void
+    public let style: Style
+    public let loading: Bool
+    public let enabled: Bool
+
+    public init(
+        title: String,
+        action: @escaping () -> Void,
+        style: Style = .primary,
+        loading: Bool = false,
+        enabled: Bool = true
+    ) {
+        self.title = title
+        self.action = action
+        self.style = style
+        self.loading = loading
+        self.enabled = enabled
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(style)
+    }
+
+    public static func == (
+        lhs: ActionableViewButtonState,
+        rhs: ActionableViewButtonState
+    ) -> Bool {
+        lhs.title == rhs.title && lhs.style == rhs.style && lhs.loading == rhs.loading
+    }
+}
+
 /// A simple template for any `View` that features some content followed by a number of buttons at the end.
 /// - NOTE:Having buttons at the end is optional and they can be omitted. If omitted, no button is rendered and the content takes 100% of the view.
 public struct ActionableView<Content: View>: View {
 
-    /// Represents a `LoadingButton` in the Design System
-    public struct ButtonState: Hashable {
-        public enum Style: Hashable {
-            case primary, secondary
-        }
-
-        public let title: String
-        public let action: () -> Void
-        public let style: Style
-        public let loading: Bool
-        public let enabled: Bool
-
-        public init(
-            title: String,
-            action: @escaping () -> Void,
-            style: Style = .primary,
-            loading: Bool = false,
-            enabled: Bool = true
-        ) {
-            self.title = title
-            self.action = action
-            self.style = style
-            self.loading = loading
-            self.enabled = enabled
-        }
-
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(title)
-            hasher.combine(style)
-        }
-
-        public static func == (lhs: ButtonState, rhs: ButtonState) -> Bool {
-            lhs.title == rhs.title && lhs.style == rhs.style && lhs.loading == rhs.loading
-        }
-    }
-
     public let content: () -> Content
-    public let buttons: [ButtonState]
+    public let buttons: [ActionableViewButtonState]
 
-    public init(buttons: [ButtonState] = [], @ViewBuilder content: @escaping () -> Content) {
+    public init(
+        buttons: [ActionableViewButtonState] = [],
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.buttons = buttons
         self.content = content
     }
@@ -87,7 +93,7 @@ extension ActionableView where Content == AnyView {
         @ViewBuilder image: @escaping () -> Image,
         title: String,
         message: String,
-        buttons: [ButtonState] = [],
+        buttons: [ActionableViewButtonState] = [],
         imageSpacing: CGFloat = LayoutConstants.VerticalSpacing.betweenContentGroups
     ) {
         self.init(buttons: buttons) {
@@ -113,7 +119,7 @@ extension ActionableView where Content == AnyView {
 
 extension ActionableView where Content == TupleView<(Spacer, InfoView, Spacer)> {
 
-    public init(_ model: InfoView.Model, buttons: [ButtonState] = []) {
+    public init(_ model: InfoView.Model, buttons: [ActionableViewButtonState] = []) {
         self.init(buttons: buttons) {
             Spacer()
             InfoView(model)

@@ -11,15 +11,14 @@ extension AppDelegate {
     ) -> Bool {
         let handled = DynamicLinks.dynamicLinks()
             .handleUniversalLink(userActivity.webpageURL!) { dynamiclink, _ in
-                guard let url = dynamiclink?.url else {
-                    return
-                }
-
+                guard let url = dynamiclink?.url else { return }
                 app.post(
                     event: blockchain.app.process.deep_link,
-                    context: [blockchain.app.process.deep_link.url[]: url]
+                    context: [blockchain.app.process.deep_link.url: url]
                 )
             }
+
+        viewStore.send(.appDelegate(.userActivity(userActivity)))
 
         guard handled else {
             return handle(userActivity: userActivity)
@@ -32,10 +31,9 @@ extension AppDelegate {
         if let url = userActivity.webpageURL {
             app.post(
                 event: blockchain.app.process.deep_link,
-                context: [blockchain.app.process.deep_link.url[]: url]
+                context: [blockchain.app.process.deep_link.url: url]
             )
         }
-        viewStore.send(.appDelegate(.userActivity(userActivity)))
         return viewStore.appSettings.userActivityHandled
     }
 }

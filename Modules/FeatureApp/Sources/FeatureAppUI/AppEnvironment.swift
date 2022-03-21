@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import ComposableArchitecture
 import DIKit
 import ERC20Kit
 import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
@@ -19,6 +20,8 @@ import ToolKit
 import WalletPayloadKit
 
 public struct AppEnvironment {
+    var app: AppProtocol
+    var nabuUserService: NabuUserServiceAPI
     var loadingViewPresenter: LoadingViewPresenting
     var onboardingSettings: OnboardingSettingsAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
@@ -31,7 +34,6 @@ public struct AppEnvironment {
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandlerAPI
-    var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var resetPasswordService: ResetPasswordServiceAPI
@@ -78,6 +80,8 @@ public struct AppEnvironment {
     var appFeatureConfigurator: FeatureConfiguratorAPI
 
     public init(
+        app: AppProtocol,
+        nabuUserService: NabuUserServiceAPI,
         loadingViewPresenter: LoadingViewPresenting,
         onboardingSettings: OnboardingSettingsAPI,
         blurEffectHandler: BlurVisualEffectHandlerAPI,
@@ -90,7 +94,6 @@ public struct AppEnvironment {
         deeplinkHandler: DeepLinkHandling,
         deeplinkRouter: DeepLinkRouting,
         backgroundAppHandler: BackgroundAppHandlerAPI,
-        portfolioSyncingService: BalanceSharingSettingsServiceAPI,
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
         resetPasswordService: ResetPasswordServiceAPI,
@@ -127,6 +130,8 @@ public struct AppEnvironment {
         externalAppOpener: ExternalAppOpener,
         deepLinkCoordinator: DeepLinkCoordinatorAPI
     ) {
+        self.app = app
+        self.nabuUserService = nabuUserService
         self.loadingViewPresenter = loadingViewPresenter
         self.onboardingSettings = onboardingSettings
         self.blurEffectHandler = blurEffectHandler
@@ -139,7 +144,6 @@ public struct AppEnvironment {
         self.deeplinkHandler = deeplinkHandler
         self.deeplinkRouter = deeplinkRouter
         self.backgroundAppHandler = backgroundAppHandler
-        self.portfolioSyncingService = portfolioSyncingService
         self.mobileAuthSyncService = mobileAuthSyncService
         self.pushNotificationsRepository = pushNotificationsRepository
         self.resetPasswordService = resetPasswordService

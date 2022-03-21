@@ -142,6 +142,7 @@ public class TextFieldView: UIView {
         textField.autocorrectionType = viewModel.type.autocorrectionType
         textField.autocapitalizationType = viewModel.type.autocapitalizationType
         textField.font = viewModel.textFont
+        textField.spellCheckingType = .no
         textField.placeholder = nil
         titleLabel.font = viewModel.titleFont
 

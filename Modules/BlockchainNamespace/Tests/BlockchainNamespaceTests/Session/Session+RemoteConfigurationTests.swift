@@ -66,7 +66,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertEqual(announcements, ["1", "2", "3"])
 
-        app.remoteConfiguration.override(blockchain.app.configuration.announcements[].ref(), with: ["4", "5", "6"])
+        app.remoteConfiguration.override(blockchain.app.configuration.announcements[].reference, with: ["4", "5", "6"])
 
         announcements = try await app.publisher(for: blockchain.app.configuration.announcements, as: [String].self)
             .wait()
@@ -92,7 +92,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             remoteConfiguration: .init(
                 remote: Mock.RemoteConfiguration(),
                 default: [
-                    blockchain.app.configuration.apple.pay.is.enabled[].ref(): true
+                    blockchain.app.configuration.apple.pay.is.enabled[].reference: true
                 ]
             )
         )
@@ -107,7 +107,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             ["blockchain.app.configuration.apple.pay.is.enabled"].set
         )
 
-        app.remoteConfiguration.override(blockchain.app.configuration.apple.pay.is.enabled[].ref(), with: false)
+        app.remoteConfiguration.override(blockchain.app.configuration.apple.pay.is.enabled[].reference, with: false)
 
         isEnabled = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
             .wait()
@@ -122,7 +122,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertFalse(isEnabled)
 
-        app.remoteConfiguration.clear(blockchain.app.configuration.apple.pay.is.enabled[].ref())
+        app.remoteConfiguration.clear(blockchain.app.configuration.apple.pay.is.enabled[].reference)
 
         isEnabled = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
             .wait()
