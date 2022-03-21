@@ -8,11 +8,11 @@ import XCTest
 final class ProductsServiceTests: XCTestCase {
 
     private var service: ProductsService!
-    private var mockRepository: ProductsRepositoryAPIMock!
+    private var mockRepository: ProductsRepositoryMock!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockRepository = mock(ProductsRepositoryAPI.self)
+        mockRepository = ProductsRepositoryMock()
         service = ProductsService(repository: mockRepository)
     }
 
@@ -51,28 +51,47 @@ final class ProductsServiceTests: XCTestCase {
     // MARK: - Private
 
     private func stubRepository(with error: NabuNetworkError) throws {
-        given(mockRepository.fetchProducts()).willReturn(.failure(error))
-        given(mockRepository.streamProducts()).willReturn(.just(.failure(error)))
+        mockRepository.stubbedResponses.fetchProducts = .failure(error)
+        mockRepository.stubbedResponses.streamProducts = .just(.failure(error))
     }
 
-    private func stubRepository(with products: [Product]) throws {
-        given(mockRepository.fetchProducts()).willReturn(.just(products))
-        given(mockRepository.streamProducts()).willReturn(.just(.success(products)))
+    private func stubRepository(with products: [ProductValue]) throws {
+        mockRepository.stubbedResponses.fetchProducts = .just(products)
+        mockRepository.stubbedResponses.streamProducts = .just(.success(products))
     }
 
-    private func stubRepositoryWithDefaultProducts() throws -> [Product] {
+    private func stubRepositoryWithDefaultProducts() throws -> [ProductValue] {
         let expectedProducts = [
-            Product(
-                id: .swap,
-                maxOrdersCap: 1,
-                canPlaceOrder: false,
-                suggestedUpgrade: Product.SuggestedUpgrade(requiredTier: 2)
+            ProductValue.trading(
+                TradingProduct(
+                    id: .swap,
+                    enabled: true,
+                    maxOrdersCap: 1,
+                    maxOrdersLeft: 0,
+                    canPlaceOrder: false,
+                    suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
+                )
             ),
-            Product(
-                id: .buy,
-                maxOrdersCap: 1,
-                canPlaceOrder: false,
-                suggestedUpgrade: Product.SuggestedUpgrade(requiredTier: 2)
+            ProductValue.trading(
+                TradingProduct(
+                    id: .buy,
+                    enabled: true,
+                    maxOrdersCap: nil,
+                    maxOrdersLeft: nil,
+                    canPlaceOrder: true,
+                    suggestedUpgrade: nil
+                )
+            ),
+            ProductValue.custodialWallet(
+                CustodialWalletProduct(
+                    id: .custodialWallet,
+                    enabled: true,
+                    canDepositFiat: false,
+                    canDepositCrypto: true,
+                    canWithdrawCrypto: true,
+                    canWithdrawFiat: true,
+                    suggestedUpgrade: nil
+                )
             )
         ]
         try stubRepository(with: expectedProducts)

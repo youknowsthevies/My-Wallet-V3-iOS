@@ -110,11 +110,11 @@ final class MockBalanceDataFetcher: BalanceDataFetcherAPI {
 
 final class MockProductsService: ProductsServiceAPI {
 
-    func fetchProducts() -> AnyPublisher<[Product], ProductsServiceError> {
+    func fetchProducts() -> AnyPublisher<[ProductValue], ProductsServiceError> {
         .just([])
     }
 
-    func streamProducts() -> AnyPublisher<Result<[Product], ProductsServiceError>, Never> {
+    func streamProducts() -> AnyPublisher<Result<[ProductValue], ProductsServiceError>, Never> {
         .just(.success([]))
     }
 }

@@ -1,24 +1,25 @@
 {
-  "products": [
-    {
-      "id": "SWAP",
-      "canPlaceOrder": false,
-      "maxOrdersCap": 1,
-      "pendingOrders": 0,
-      "completedOrders": 0,
-      "suggestedUpgrade": {
-        "requiredTier": 2
-      }
+    "swap": {
+        "id": "SWAP",
+        "enabled": true,
+        "canPlaceOrder": false,
+        "maxOrdersCap": 1,
+        "maxOrdersLeft": 0,
+        "suggestedUpgrade": {
+            "requiredTier": 2
+        }
     },
-    {
-      "id": "BUY",
-      "canPlaceOrder": false,
-      "maxOrdersCap": 1,
-      "pendingOrders": 0,
-      "completedOrders": 0,
-      "suggestedUpgrade": {
-        "requiredTier": 2
-      }
+    "buy": {
+        "id": "BUY",
+        "enabled": true,
+        "canPlaceOrder": true
+    },
+    "custodialWallets": {
+        "id": "CUSTODIAL_WALLET",
+        "enabled": true,
+        "canDepositFiat": false,
+        "canDepositCrypto": false,
+        "canWithdrawCrypto": true,
+        "canWithdrawFiat": true
     }
-  ]
 }
