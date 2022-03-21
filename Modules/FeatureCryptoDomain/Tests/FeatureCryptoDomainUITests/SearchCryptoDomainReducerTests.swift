@@ -189,5 +189,8 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             state.selectedDomains = OrderedSet([])
         }
         testStore.receive(.checkoutAction(.set(\.$isRemoveBottomSheetShown, false)))
+        testStore.receive(.dismiss()) { state in
+            state.route = nil
+        }
     }
 }
