@@ -41,6 +41,7 @@ protocol QRCodeScannerViewModelProtocol: AnyObject {
     func cameraAccessDenied() -> Bool
     func openAppSettings()
     func showsWalletConnectRow() -> AnyPublisher<Bool, Never>
+    func openWalletConnectArticle(url: String)
 }
 
 public enum QRCodeScannerParsingOptions {
@@ -84,6 +85,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     private let walletConnectParser: WalletConnectQRCodeParser
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let cacheSuite: CacheSuite
+    private let urlOpener: URLOpener
     private let parsingSubject = CurrentValueSubject<Bool, Never>(false)
     private var cancellables = [AnyCancellable]()
 
@@ -103,7 +105,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         walletConnectSessionRepository: SessionRepositoryAPI = resolve(),
         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
-        cacheSuite: CacheSuite = resolve()
+        cacheSuite: CacheSuite = resolve(),
+        urlOpener: URLOpener = resolve()
     ) {
         let additionalLinkRoutes: [DeepLinkRoute]
         switch additionalParsingOptions {
@@ -131,6 +134,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         self.checkCameraAccess = checkCameraAccess
         self.featureFlagsService = featureFlagsService
         self.cacheSuite = cacheSuite
+        self.urlOpener = urlOpener
 
         cryptoTargetParser = CryptoTargetQRCodeParser(
             account: sourceAccount,
@@ -296,6 +300,13 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
 
     func showsWalletConnectRow() -> AnyPublisher<Bool, Never> {
         featureFlagsService.isEnabled(.remote(.walletConnectEnabled))
+    }
+
+    func openWalletConnectArticle(url: String) {
+        guard let url = URL(string: url) else {
+            return
+        }
+        urlOpener.open(url)
     }
 
     private func showAllowAccessSheetIfNeeded() {

@@ -28,6 +28,7 @@ public enum AnnouncementType: String, Codable {
     case celoEUR = "celo_eur_jan22"
     case ukEntitySwitch = "uk_entity_switch_2022"
     case claimFreeCryptoDomain = "claim_free_crypto_domain"
+    case walletConnect = "wallet_connect"
 
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
@@ -74,6 +75,8 @@ public enum AnnouncementType: String, Codable {
             return .ukEntitySwitch
         case .claimFreeCryptoDomain:
             return .claimFreeCryptoDomain
+        case .walletConnect:
+            return .walletConnect
         case .newAsset:
             if BuildFlag.isInternal {
                 unimplemented("AnnouncementType.newAsset does not have a default key.")

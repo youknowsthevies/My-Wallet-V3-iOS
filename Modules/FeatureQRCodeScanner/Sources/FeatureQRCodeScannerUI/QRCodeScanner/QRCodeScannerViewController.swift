@@ -196,6 +196,9 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             },
             showsWalletConnectRow: { [viewModel] in
                 viewModel.showsWalletConnectRow()
+            },
+            openWalletConnectUrl: { [viewModel] url in
+                viewModel.openWalletConnectArticle(url: url)
             }
         )
         let allowAccessStore = Store(

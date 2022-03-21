@@ -97,7 +97,9 @@ struct QRCodeScannerAllowAccessView: View {
                             .foregroundColor(.semantic.primary)
                     },
                     trailing: { EmptyView() },
-                    action: {}
+                    action: {
+                        viewStore.send(.openWalletConnectUrl)
+                    }
                 )
             }
         }
@@ -140,7 +142,8 @@ struct QRCodeScannerAllowAccessView_Previews: PreviewProvider {
                     cameraAccessDenied: { false },
                     dismiss: {},
                     showCameraDeniedAlert: {},
-                    showsWalletConnectRow: { .just(true) }
+                    showsWalletConnectRow: { .just(true) },
+                    openWalletConnectUrl: { _ in }
                 )
             )
         )
