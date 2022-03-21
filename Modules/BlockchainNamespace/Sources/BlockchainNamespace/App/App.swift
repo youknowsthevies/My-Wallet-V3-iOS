@@ -104,61 +104,23 @@ extension AppProtocol {
 
     public func post(
         value: AnyHashable,
-        of id: L,
+        of event: Tag.Event,
         file: String = #fileID,
         line: Int = #line
     ) {
-        state.set(id, to: value)
-        post(event: id, context: [id: value])
+        state.set(event.key, to: value)
+        post(event: event, context: [event: value])
     }
 
     public func post(
-        value: AnyHashable,
-        of tag: Tag,
-        file: String = #fileID,
-        line: Int = #line
-    ) {
-        state.set(tag, to: value)
-        post(event: tag, context: [tag: value])
-    }
-
-    public func post(
-        value: AnyHashable,
-        of ref: Tag.Reference,
-        file: String = #fileID,
-        line: Int = #line
-    ) {
-        state.set(ref, to: value)
-        post(event: ref, context: [ref.tag: value])
-    }
-
-    public func post(
-        event id: L,
-        context: L.Context = [:],
-        file: String = #fileID,
-        line: Int = #line
-    ) {
-        post(event: language[id], context: context.mapKeys(\.[]), file: file, line: line)
-    }
-
-    public func post(
-        event tag: Tag,
-        context: Tag.Context = [:],
-        file: String = #fileID,
-        line: Int = #line
-    ) {
-        post(event: tag.ref(in: self), context: context, file: file, line: line)
-    }
-
-    public func post(
-        event ref: Tag.Reference,
+        event: Tag.Event,
         context: Tag.Context = [:],
         file: String = #fileID,
         line: Int = #line
     ) {
         events.send(
             Session.Event(
-                ref: ref,
+                event: event,
                 context: [
                     s.file: file,
                     s.line: line
@@ -176,7 +138,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        post(tag[].ref, error: error, context: context, file: file, line: line)
+        post(tag[], error: error, context: context, file: file, line: line)
     }
 
     public func post<E: Error>(
@@ -186,14 +148,14 @@ extension AppProtocol {
         line: Int = #line
     ) {
         if let error = error as? Tag.Error {
-            post(error.tag.ref(to: error.context), error: error, context: context, file: error.file, line: error.line)
+            post(error.event, error: error, context: context, file: error.file, line: error.line)
         } else {
-            post(blockchain.ux.type.analytics.error[].ref, error: error, context: context, file: file, line: line)
+            post(blockchain.ux.type.analytics.error, error: error, context: context, file: file, line: line)
         }
     }
 
     private func post<E: Error>(
-        _ ref: Tag.Reference,
+        _ event: Tag.Event,
         error: E,
         context: Tag.Context = [:],
         file: String = #fileID,
@@ -201,7 +163,7 @@ extension AppProtocol {
     ) {
         events.send(
             Session.Event(
-                ref: ref,
+                event: event,
                 context: context + [
                     e.message: "\(error.localizedDescription)",
                     e.file: file,
@@ -212,42 +174,16 @@ extension AppProtocol {
     }
 
     public func on(
-        _ first: L,
-        _ rest: L...
+        _ first: Tag.Event,
+        _ rest: Tag.Event...
     ) -> AnyPublisher<Session.Event, Never> {
         on([first] + rest)
     }
 
     public func on<Tags>(
         _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == L {
-        on(tags.map(\.[]))
-    }
-
-    public func on(
-        _ first: Tag,
-        _ rest: Tag...
-    ) -> AnyPublisher<Session.Event, Never> {
-        on([first] + rest)
-    }
-
-    public func on<Tags>(
-        _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag {
-        on(tags.map(\.ref))
-    }
-
-    public func on(
-        _ first: Tag.Reference,
-        _ rest: Tag.Reference...
-    ) -> AnyPublisher<Session.Event, Never> {
-        on([first] + rest)
-    }
-
-    public func on<Tags>(
-        _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Reference {
-        events.filter(tags).eraseToAnyPublisher()
+    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
+        events.filter(tags.map(\.key)).eraseToAnyPublisher()
     }
 }
 
@@ -264,30 +200,13 @@ private let s = (
 
 extension AppProtocol {
 
-    public func publisher<T>(for id: L, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: id)
+    public func publisher<T>(for event: Tag.Event, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: event.key)
             .decode(as: T.self)
     }
 
-    public func publisher<T>(for tag: Tag, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: tag)
-            .decode(as: T.self)
-    }
-
-    public func publisher<T>(for ref: Tag.Reference, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: ref)
-            .decode(as: T.self)
-    }
-
-    public func publisher(for id: L) -> AnyPublisher<FetchResult, Never> {
-        publisher(for: language[id])
-    }
-
-    public func publisher(for tag: Tag) -> AnyPublisher<FetchResult, Never> {
-        publisher(for: tag.ref(in: self))
-    }
-
-    public func publisher(for ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+    public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
+        let ref = event.key
         switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.publisher(for: ref)

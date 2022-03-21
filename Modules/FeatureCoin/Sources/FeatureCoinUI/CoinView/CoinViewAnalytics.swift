@@ -50,7 +50,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Coin View Open",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String
                 ]
             )
         )
@@ -67,7 +67,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: event.tag.is(blockchain.ux.asset.chart.selected) ? "Chart Engaged" : "Chart Disengaged",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "time_interval": series.analytics
                 ]
             )
@@ -79,7 +79,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Buy Sell Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "selection": "BUY"
                 ]
             )
@@ -91,7 +91,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Buy Sell Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "selection": "SELL"
                 ]
             )
@@ -103,7 +103,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Buy Receive Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "selection": "RECEIVE"
                 ]
             )
@@ -115,7 +115,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Send Receive Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "selection": "SEND"
                 ]
             )
@@ -133,7 +133,7 @@ public final class CoinViewAnalytics: Session.Observer {
                     ? "Explainer Accepted"
                     : "Explainer Viewed",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "account_type": account.accountType.analytics
                 ]
             )
@@ -146,7 +146,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Hyperlink Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "selection": "OFFICIAL_WEBSITE_WEB"
                 ]
             )
@@ -161,7 +161,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Time Interval Selected",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "time_interval": series.analytics
                 ]
             )
@@ -190,7 +190,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Transaction Type Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                     "transaction_type": type
                 ]
             )
@@ -204,7 +204,7 @@ public final class CoinViewAnalytics: Session.Observer {
                 try CoinViewAnalyticsEvent(
                     name: name,
                     params: [
-                        "currency": event.ref.context.decode(blockchain.ux.asset.id) as String,
+                        "currency": event.reference.context.decode(blockchain.ux.asset.id) as String,
                         "account_type": account.accountType.analytics
                     ]
                 )
@@ -217,7 +217,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Connect To The Exchange Actioned",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String
                 ]
             )
         )
@@ -228,7 +228,7 @@ public final class CoinViewAnalytics: Session.Observer {
             event: CoinViewAnalyticsEvent(
                 name: "Upgrade Verification Clicked",
                 params: [
-                    "currency": event.ref.context.decode(blockchain.ux.asset.id) as String
+                    "currency": event.reference.context.decode(blockchain.ux.asset.id) as String
                 ]
             )
         )

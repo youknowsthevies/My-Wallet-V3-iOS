@@ -20,7 +20,7 @@ final class TagReferenceTests: XCTestCase {
     }
 
     func test_reference_with_invalid_indices() throws {
-        let ref = blockchain.user.name.first[].ref()
+        let ref = blockchain.user.name.first[].reference
         XCTAssertThrowsError(try ref.validated())
         XCTAssertNotNil(ref.error)
     }
@@ -39,10 +39,12 @@ final class TagReferenceTests: XCTestCase {
 
         XCTAssertAnyEqual(
             ref.context,
-            [
-                blockchain.user.id[]: id,
-                blockchain.app.configuration.apple.pay.is.enabled[]: true
-            ]
+            Tag.Context(
+                [
+                    blockchain.user.id[]: id,
+                    blockchain.app.configuration.apple.pay.is.enabled[]: true
+                ]
+            )
         )
     }
 

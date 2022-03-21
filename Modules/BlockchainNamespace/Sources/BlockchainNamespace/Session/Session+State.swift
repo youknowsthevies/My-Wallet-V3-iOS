@@ -33,7 +33,7 @@ extension Session.State {
 
         var preferences: UserDefaults
         private var scope: String {
-            store[blockchain.user.id[].ref] as? String ?? "ø"
+            store[blockchain.user.id.key] as? String ?? "ø"
         }
 
         init(preferences: UserDefaults) {

@@ -106,7 +106,7 @@ extension FetchResult {
 extension Tag {
 
     public func metadata(_ source: Metadata.Source = .undefined) -> Metadata {
-        Metadata(ref: ref(), source: source)
+        Metadata(ref: reference, source: source)
     }
 }
 

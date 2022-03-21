@@ -57,7 +57,7 @@ extension App {
                         }
                     }
                     if let event = dsl.event {
-                        app.post(event: event, context: dsl.context)
+                        app.post(event: event, context: Tag.Context(dsl.context))
                     }
                 } catch {
                     app.post(error: error)
@@ -68,7 +68,7 @@ extension App {
             guard let match = rules.match(for: url) else {
                 return
             }
-            app.post(event: match.rule.event, context: match.parameters())
+            app.post(event: match.rule.event, context: Tag.Context(match.parameters()))
         }
     }
 }

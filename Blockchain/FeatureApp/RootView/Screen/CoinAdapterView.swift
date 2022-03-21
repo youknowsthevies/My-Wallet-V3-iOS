@@ -175,9 +175,9 @@ struct CoinViewObserver: AppSessionObserver {
                 else {
                     return
                 }
-                if event.ref.context.keys.contains(blockchain.ux.asset.account.id[]) {
+                if event.reference.context[blockchain.ux.asset.account.id] != nil {
                     app.post(
-                        event: blockchain.ux.asset.account.sheet[].ref(to: event.ref.context)
+                        event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context)
                     )
                 } else {
                     let account: BlockchainAccount.Type
@@ -193,7 +193,7 @@ struct CoinViewObserver: AppSessionObserver {
                         return
                     }
                     try await app.post(
-                        event: blockchain.ux.asset.account.sheet[].ref(to: event.ref.context + [
+                        event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context + [
                             blockchain.ux.asset.account.id: custodialAccount(account, from: event).identifier
                         ])
                     )
@@ -226,7 +226,7 @@ struct CoinViewObserver: AppSessionObserver {
         .first
         .or(
             throw: blockchain.ux.asset.error[]
-                .error(message: "No trading account found for \(event.ref)")
+                .error(message: "No trading account found for \(event.reference)")
         )
     }
 
@@ -235,10 +235,10 @@ struct CoinViewObserver: AppSessionObserver {
         from event: Session.Event
     ) async throws -> CryptoAccount {
         let accounts = try await coincore.cryptoAccounts(
-            for: event.ref.context.decode(blockchain.ux.asset.id),
+            for: event.reference.context.decode(blockchain.ux.asset.id),
             supporting: action
         )
-        if let id = try? event.ref.context.decode(blockchain.ux.asset.account.id, as: String.self) {
+        if let id = try? event.reference.context.decode(blockchain.ux.asset.account.id, as: String.self) {
             return try accounts.first(where: { account in account.identifier as? String == id })
                 .or(
                     throw: blockchain.ux.asset.error[]

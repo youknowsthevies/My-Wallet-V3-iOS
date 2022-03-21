@@ -104,10 +104,10 @@ public final class FirebaseAnalytics: Session.Observer {
             analytics.record(
                 event: FirebaseEvent(
                     name: event.tag.id,
-                    params: event.ref.context.filter { key, _ in
-                        key != blockchain.user.id[]
+                    params: event.reference.context.filter { key, _ in
+                        key != blockchain.user.id
                     }
-                    .mapKeys(\.id)
+                    .mapKeys(\.description)
                 )
             )
         }
