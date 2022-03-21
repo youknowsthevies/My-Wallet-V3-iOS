@@ -57,6 +57,11 @@ public protocol WalletConnectTarget: StaticTransactionTarget {
 }
 
 extension WalletConnectTarget {
+
+    public var accountType: AccountType {
+        .external
+    }
+
     public var onTransactionRejected: (TransactionResult) -> AnyPublisher<Void, Never> {
         { _ in
             AnyPublisher<Void, Never>.just(())

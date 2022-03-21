@@ -15,6 +15,13 @@ extension ReceiveAddress {
 
 public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget {}
 
+extension CryptoReceiveAddress {
+
+    public var accountType: AccountType {
+        .external
+    }
+}
+
 public protocol CryptoAssetQRMetadataProviding {
     var metadata: CryptoAssetQRMetadata { get }
 }

@@ -13,25 +13,32 @@ final class ReceiveRouter: ReceiveRouterAPI {
     private typealias LocalizedString = LocalizationConstants.Receive
 
     private let navigationRouter: NavigationRouterAPI
-
     private let webViewService: WebViewServiceAPI
-
+    private let kycRouter: PlatformUIKit.KYCRouting
+    private let restrictionsProvider: TransactionRestrictionsProviderAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-
     private let disposeBag = DisposeBag()
 
     init(
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         webViewService: WebViewServiceAPI = resolve(),
+        kycRouter: PlatformUIKit.KYCRouting = resolve(),
+        restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.navigationRouter = navigationRouter
         self.webViewService = webViewService
+        self.kycRouter = kycRouter
+        self.restrictionsProvider = restrictionsProvider
         self.analyticsRecorder = analyticsRecorder
     }
 
     func presentReceiveScreen(for account: BlockchainAccount) {
         guard let account = account as? SingleAccount else {
+            return
+        }
+        guard restrictionsProvider.canPerform(.receive, using: account) else {
+            presentKYCScreen()
             return
         }
         let interactor = ReceiveScreenInteractor(account: account)
@@ -48,9 +55,16 @@ final class ReceiveRouter: ReceiveRouterAPI {
     }
 
     func presentKYCScreen() {
-        let presenter = ReceiveKYCPresenter()
-        let viewController = DetailsScreenViewController(presenter: presenter)
-        navigationRouter.present(viewController: viewController)
+        guard let presenter = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+            return
+        }
+        kycRouter.presentKYCUpgradeFlow(from: presenter)
+            .asSingle()
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe { _ in
+                // the call dismisses view automatically
+            }
+            .disposed(by: disposeBag)
     }
 
     func shareDetails(for metadata: CryptoAssetQRMetadata, currencyType: CurrencyType) {

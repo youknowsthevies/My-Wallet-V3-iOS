@@ -13,6 +13,8 @@ public class CryptoAccountCustodialGroup: AccountGroup {
     public let label: String
     public let accounts: [SingleAccount]
 
+    public var accountType: AccountType = .group
+
     public var requireSecondPassword: Single<Bool> {
         account?.requireSecondPassword ?? .just(false)
     }

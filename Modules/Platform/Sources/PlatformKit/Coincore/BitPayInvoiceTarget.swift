@@ -16,6 +16,8 @@ public final class BitPayInvoiceTarget: CryptoReceiveAddress, StaticTransactionT
         "BitPay\(merchant)"
     }
 
+    public var accountType: AccountType = .external
+
     public var currencyType: CurrencyType {
         amount.currencyType
     }

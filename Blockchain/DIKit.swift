@@ -534,6 +534,10 @@ extension DependencyContainer {
             TransactionUserActionService(userService: DIKit.resolve())
         }
 
+        factory { () -> FeatureTransactionDomain.TransactionRestrictionsProviderAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
         // MARK: FeatureAuthentication Module
 
         factory { () -> AutoWalletPairingServiceAPI in

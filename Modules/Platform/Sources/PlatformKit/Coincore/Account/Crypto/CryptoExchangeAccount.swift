@@ -42,6 +42,8 @@ public protocol ExchangeAccount: CryptoAccount {
 
 public final class CryptoExchangeAccount: ExchangeAccount {
 
+    public var accountType: AccountType = .custodial
+
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }
