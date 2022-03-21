@@ -13,6 +13,7 @@ struct Order: Decodable {
     struct Payment: Decodable {
         var method: String?
     }
+
     struct Item: Decodable {
         struct MintingTransaction: Decodable {
             var statusGroup: String?
@@ -31,6 +32,7 @@ struct Order: Decodable {
             var blockchain: String?
             var registryAddress: String?
         }
+
         var mintingTransaction: MintingTransaction?
         var domain: Domain?
     }

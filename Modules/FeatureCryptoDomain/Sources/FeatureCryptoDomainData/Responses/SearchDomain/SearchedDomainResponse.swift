@@ -20,6 +20,7 @@ struct SearchedDomainResponse: Equatable, Decodable {
         var availableForFree: Bool
         var test: Bool?
     }
+
     var domain: DomainResponse
     var availability: AvailabilityResponse
 }
