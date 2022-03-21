@@ -474,7 +474,8 @@ extension Router {
                 )
             )
         )
-        presenter.present(view, inNavigationController: true)
+        .embeddedInNavigationView()
+        presenter.present(view)
         return publisher.eraseToAnyPublisher()
     }
 
