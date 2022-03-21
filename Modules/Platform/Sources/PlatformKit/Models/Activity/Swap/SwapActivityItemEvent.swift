@@ -99,6 +99,15 @@ public struct SwapActivityItemEvent: Decodable {
         case complete
         case none
 
+        public var isFinal: Bool {
+            switch self {
+            case .refunded, .failed, .expired, .complete:
+                return true
+            default:
+                return false
+            }
+        }
+
         public enum ProgressStatus: String {
             case pendingExecution = "PENDING_EXECUTION"
             case pendingDeposit = "PENDING_DEPOSIT"

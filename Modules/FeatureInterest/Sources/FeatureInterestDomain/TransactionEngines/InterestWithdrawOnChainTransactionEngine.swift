@@ -211,7 +211,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
                 currencyCode: sourceAsset.code
             )
             .map { _ in
-                TransactionResult.unHashed(amount: pendingTransaction.amount)
+                TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: nil)
             }
             .asSingle()
     }

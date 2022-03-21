@@ -94,8 +94,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         let order = createOrder(pendingTransaction: pendingTransaction)
         return Single
             .zip(order, amountInSourceCurrency(for: pendingTransaction))
-            .map { _, amount in
-                TransactionResult.unHashed(amount: amount)
+            .map { order, amount in
+                TransactionResult.unHashed(amount: amount, orderId: order.identifier)
             }
     }
 
