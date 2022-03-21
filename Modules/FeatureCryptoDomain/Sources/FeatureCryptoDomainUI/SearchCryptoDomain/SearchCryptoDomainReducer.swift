@@ -265,7 +265,7 @@ let searchCryptoDomainReducer = Reducer.combine(
                 return .none
             }
             state.selectedDomains.remove(domain)
-            return .none
+            return .dismiss()
 
         case .checkoutAction(.returnToBrowseDomains):
             return .dismiss()

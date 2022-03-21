@@ -113,12 +113,12 @@ struct DomainCheckoutView: View {
 
     private var termsRow: some View {
         WithViewStore(store) { viewStore in
-            HStack(alignment: .top, spacing: Spacing.padding1) {
+            HStack(alignment: .center, spacing: Spacing.padding1) {
                 PrimarySwitch(
                     accessibilityLabel: Accessibility.termsSwitch,
                     isOn: viewStore.binding(\.$termsSwitchIsOn)
                 )
-                Text(LocalizedString.terms)
+                Text(String(format: LocalizedString.terms, viewStore.selectedDomains.first?.domainName ?? ""))
                     .typography(.micro)
                     .accessibilityIdentifier(Accessibility.termsText)
             }

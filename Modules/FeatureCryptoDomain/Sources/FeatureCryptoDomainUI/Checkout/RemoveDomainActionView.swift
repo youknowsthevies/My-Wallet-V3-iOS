@@ -31,7 +31,9 @@ struct RemoveDomainActionView: View {
             )
             .accessibility(identifier: Accessibility.removeButton)
             MinimalButton(title: LocalizedString.nevermindButton) {
-                isShown.toggle()
+                withAnimation {
+                    isShown.toggle()
+                }
             }
             .padding(.bottom, Spacing.padding3)
             .accessibility(identifier: Accessibility.nevermindButton)

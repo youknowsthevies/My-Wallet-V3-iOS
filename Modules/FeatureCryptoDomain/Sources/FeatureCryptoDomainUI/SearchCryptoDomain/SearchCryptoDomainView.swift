@@ -89,6 +89,7 @@ struct SearchCryptoDomainView: View {
                         }
                         PrimaryDivider()
                     }
+                    .animation(.easeInOut)
                 }
             }
             .accessibilityIdentifier(Accessibility.domainList)

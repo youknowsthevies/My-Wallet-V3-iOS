@@ -219,7 +219,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
             comment: "Domain checkout navigation title"
         )
         public static let terms = NSLocalizedString(
-            "I agree to the Terms & Conditions for claiming a free crypto domain through Blockchain.com and Unstoppable Domains.",
+            "I understand that my private key wallet addresses will be publicly associated with %@.",
             comment: "Domain checkout terms"
         )
         public static let button = NSLocalizedString(

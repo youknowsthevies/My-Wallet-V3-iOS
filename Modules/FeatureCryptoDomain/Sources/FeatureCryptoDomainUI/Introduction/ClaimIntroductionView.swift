@@ -35,6 +35,7 @@ enum ClaimIntroductionRoute: NavigationRoute {
 enum ClaimIntroductionAction: NavigationAction {
     case route(RouteIntent<ClaimIntroductionRoute>?)
     case searchAction(SearchCryptoDomainAction)
+    case closeButtonTapped
 }
 
 struct ClaimIntroductionState: NavigationState {
@@ -80,7 +81,8 @@ let claimIntroductionReducer = Reducer.combine(
                 }
             }
             return .none
-        case .searchAction(.checkoutAction(.dismissFlow)):
+        case .searchAction(.checkoutAction(.dismissFlow)),
+             .closeButtonTapped:
             state.isModalOpen = false
             return .none
         case .searchAction:
@@ -208,7 +210,9 @@ public struct ClaimIntroductionView: View {
                     .accessibility(identifier: Accessibility.ctaButton)
                 }
                 .navigationRoute(in: store)
-                .primaryNavigation(title: LocalizedString.title)
+                .primaryNavigation(
+                    title: LocalizedString.title
+                )
             }
         }
     }
