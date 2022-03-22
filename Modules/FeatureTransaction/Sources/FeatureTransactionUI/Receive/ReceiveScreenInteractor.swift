@@ -20,11 +20,11 @@ final class ReceiveScreenInteractor {
     var state: Single<State> {
         account
             .receiveAddress
-            .flatMap { [resolutionService] address -> Single<(ReceiveAddress, [String])> in
+            .flatMap { [resolutionService] receiveAddress -> Single<(ReceiveAddress, [String])> in
                 resolutionService
-                    .reverseResolve(address: address.address)
+                    .reverseResolve(address: receiveAddress.address)
                     .asSingle()
-                    .map { (address, $0) }
+                    .map { (receiveAddress, $0) }
             }
             .map { address, domainNames -> State in
                 guard let metadataProvider = address as? CryptoAssetQRMetadataProviding else {
