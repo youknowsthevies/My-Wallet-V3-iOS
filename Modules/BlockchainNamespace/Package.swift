@@ -16,7 +16,12 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/screensailor/Lexicon", .revision("160c4c417f8490658a8396d0283fb0d6fb98c327"))
+        .package(url: "https://github.com/screensailor/Lexicon", .revision("160c4c417f8490658a8396d0283fb0d6fb98c327")),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "1.0.0"
+        )
     ],
     targets: [
         .executableTarget(
@@ -29,6 +34,7 @@ let package = Package(
         .target(
             name: "BlockchainNamespace",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .target(name: "AnyCoding"),
                 .target(name: "FirebaseProtocol"),
                 .product(name: "Lexicon", package: "Lexicon")
