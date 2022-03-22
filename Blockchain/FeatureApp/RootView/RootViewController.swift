@@ -166,6 +166,7 @@ extension RootViewController {
         defaults.hasInteractedWithFrequentActionButton = true
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func handle(state: RootViewState, action: RootViewAction) {
         switch action {
         case .frequentAction(let frequentAction):
@@ -182,9 +183,10 @@ extension RootViewController {
                 handleDeposit()
             case .withdraw:
                 handleWithdraw()
-            case .buy,
-                 .sell:
-                break // it switches the tab instead of running the flow
+            case .buy:
+                handleBuyCrypto(currency: .bitcoin)
+            case .sell:
+                handleSellCrypto(account: nil)
             default:
                 assertionFailure("Unhandled action \(action)")
             }

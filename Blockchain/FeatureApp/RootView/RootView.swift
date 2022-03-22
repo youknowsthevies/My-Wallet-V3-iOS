@@ -108,11 +108,13 @@ struct RootView: View {
                     list: viewStore.fab.data.list,
                     buttons: viewStore.fab.data.buttons
                 ) { action in
-                    viewStore.send(.frequentAction(action))
+                    withAnimation {
+                        viewStore.send(.frequentAction(action))
+                    }
                 }
             }
             .on(blockchain.ux.home.tab.select) { event in
-                try viewStore.send(.tab(event.ref.context.decode(blockchain.ux.home.tab.id, as: Tag.self)))
+                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id, as: Tag.self)))
                 viewStore.send(.dismiss())
             }
             .onAppear {
@@ -210,7 +212,7 @@ extension View {
 
     @ViewBuilder
     func identity(_ tag: Tag) -> some View {
-        identity(tag.ref)
+        identity(tag.reference)
     }
 
     @ViewBuilder

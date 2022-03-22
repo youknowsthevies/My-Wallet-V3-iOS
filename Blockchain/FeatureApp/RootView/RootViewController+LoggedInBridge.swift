@@ -311,8 +311,13 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSupport() {
-        Publishers.Zip(
+        let isSupported = Publishers.Zip(
             featureFlagService.isEnabled(.remote(.customerSupportChat)),
+            featureFlagService.isEnabled(.local(.customerSupportChat))
+        )
+        .map { $0.0 || $0.1 }
+        Publishers.Zip(
+            isSupported,
             eligibilityService.isEligiblePublisher
         )
         .receive(on: DispatchQueue.main)

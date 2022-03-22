@@ -5,11 +5,12 @@ import BlockchainNamespace
 import Collections
 import Combine
 import Foundation
+import Localization
 import MoneyKit
 
 public struct Account: Identifiable {
 
-    public enum AccountType: String {
+    public enum AccountType: String, Codable {
         case privateKey
         case trading
         case interest
@@ -105,58 +106,60 @@ extension Account {
 
 extension Account.Action {
 
+    typealias L10n = LocalizationConstants.CoinDomain.Button
+
     public static let buy = Account.Action(
         id: blockchain.ux.asset.account.buy,
-        title: "Buy",
-        description: "Use Your Cash or Card",
+        title: L10n.Title.buy,
+        description: L10n.Description.buy,
         icon: .walletBuy
     )
 
     public static let sell = Account.Action(
         id: blockchain.ux.asset.account.sell,
-        title: "Sell",
-        description: "Convert Your Crypto to Cash",
+        title: L10n.Title.sell,
+        description: L10n.Description.sell,
         icon: .walletSell
     )
 
     public static let send = Account.Action(
         id: blockchain.ux.asset.account.send,
-        title: "Send",
-        description: "Transfer %@ to Other Wallets",
+        title: L10n.Title.send,
+        description: L10n.Description.send,
         icon: .walletSend
     )
 
     public static let receive = Account.Action(
         id: blockchain.ux.asset.account.receive,
-        title: "Receive",
-        description: "Receive %@ to your account",
+        title: L10n.Title.receive,
+        description: L10n.Description.receive,
         icon: .walletReceive
     )
 
     public static let swap = Account.Action(
         id: blockchain.ux.asset.account.swap,
-        title: "Swap",
-        description: "Exchange %@ for Another Crypto",
+        title: L10n.Title.swap,
+        description: L10n.Description.swap,
         icon: .walletSwap
     )
 
     public static let rewards = (
         withdraw: Account.Action(
             id: blockchain.ux.asset.account.rewards.withdraw,
-            title: "Withdraw",
-            description: "Withdraw %@ from Rewards Account",
-            icon: .withdraw
+            title: L10n.Title.withdraw,
+            description: L10n.Description.Rewards.withdraw,
+            icon: .walletWithdraw
         ),
         deposit: Account.Action(
             id: blockchain.ux.asset.account.rewards.deposit,
-            title: "Deposit",
-            description: "Add %@ to Rewards Account",
-            icon: .deposit
+            title: L10n.Title.deposit,
+            description: L10n.Description.Rewards.deposit,
+            icon: .walletDeposit
         ),
         summary: Account.Action(
             id: blockchain.ux.asset.account.rewards.summary,
-            title: "Summary",
-            description: "View Accrued %@ Rewards",
+            title: L10n.Title.Rewards.summary,
+            description: L10n.Description.Rewards.summary,
             icon: .walletPercent
         )
     )
@@ -164,23 +167,23 @@ extension Account.Action {
     public static let exchange = (
         withdraw: Account.Action(
             id: blockchain.ux.asset.account.exchange.withdraw,
-            title: "Withdraw",
-            description: "Withdraw %@ from Exchange",
-            icon: .withdraw
+            title: L10n.Title.withdraw,
+            description: L10n.Description.Exchange.withdraw,
+            icon: .walletWithdraw
         ),
         deposit: Account.Action(
             id: blockchain.ux.asset.account.exchange.deposit,
-            title: "Deposit",
-            description: "Add %@ to Exchange",
-            icon: .deposit
+            title: L10n.Title.deposit,
+            description: L10n.Description.Exchange.deposit,
+            icon: .walletDeposit
         )
     )
 
     public static let activity = Account.Action(
         id: blockchain.ux.asset.account.activity,
-        title: "Activity",
-        description: "View all transactions",
-        icon: .activity
+        title: L10n.Title.activity,
+        description: L10n.Description.activity,
+        icon: .walletPending
     )
 }
 

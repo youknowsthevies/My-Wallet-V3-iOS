@@ -26,9 +26,11 @@ protocol WalletLogicAPI {
 
     /// Initialises a `Wallet` from metadata using the given seed phrase
     /// - Parameter mnemonic: A `String` value representing the users mnemonic words
+    /// - Parameter queue: A `DispatchQueue` for operations to be performed on
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
-        with mnemonic: String
+        with mnemonic: String,
+        on queue: DispatchQueue
     ) -> AnyPublisher<MetadataRecoveryCredentials, WalletError>
 
     /// Initialises a `Wallet` after recovery using the given payload data
@@ -145,9 +147,12 @@ final class WalletLogic: WalletLogicAPI {
     }
 
     func initialize(
-        with mnemonic: String
+        with mnemonic: String,
+        on queue: DispatchQueue
     ) -> AnyPublisher<MetadataRecoveryCredentials, WalletError> {
         metadata.initializeAndRecoverCredentials(from: mnemonic)
+            .subscribe(on: queue)
+            .receive(on: queue)
             .mapError { _ in WalletError.initialization(.metadataInitialization) }
             .flatMap { [holder] context -> AnyPublisher<RecoveryContext, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justMetadata(context.metadataState)))

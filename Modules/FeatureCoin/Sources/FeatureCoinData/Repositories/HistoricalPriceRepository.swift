@@ -23,7 +23,7 @@ public struct HistoricalPriceRepository: HistoricalPriceRepositoryAPI {
 
         client.fetchPriceIndexes(base: base, quote: quote, series: series, relativeTo: relativeTo)
             .flatMap { [client] data in
-                client.fetchPriceIndexes(base: base, quote: quote, series: ._15_minutes, relativeTo: relativeTo)
+                client.fetchPriceIndexes(base: base, quote: quote, series: .now, relativeTo: relativeTo)
                     .map { today in data + today }
                     .eraseToAnyPublisher()
             }
@@ -49,7 +49,7 @@ extension HistoricalPriceClientAPI {
             baseCode: base.code,
             quoteCode: quote.code,
             window: .init(value: series.window.value, component: series.window.component),
-            scale: .init(value: series.scale.value, component: series.scale.component),
+            scale: series.scale.value,
             relativeTo: relativeTo
         )
     }

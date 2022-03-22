@@ -28,7 +28,10 @@ struct LockedAccountRow: View {
                     .accentColor(.semantic.muted)
             },
             action: {
-                app.post(event: blockchain.ux.asset.account.require.KYC[].ref(to: context))
+                app.post(
+                    event: blockchain.ux.asset.account.require.KYC[].ref(to: context),
+                    context: context
+                )
             }
         )
     }

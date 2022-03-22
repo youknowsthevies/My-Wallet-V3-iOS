@@ -20,16 +20,24 @@ public struct AccountListView: View {
 
     let assetColor: Color
     let interestRate: Double?
+    let kycStatus: KYCStatus?
+
+    var __accounts: [Account.Snapshot] {
+        switch kycStatus {
+        case .none, .unverified, .inReview:
+            return accounts.filter(\.isPrivateKey)
+        case .silver, .silverPlus, .gold:
+            return accounts
+        }
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: Localization.sectionTitle)
             if accounts.isEmpty {
-                locked()
-                    .redacted(reason: .placeholder)
-                    .disabled(true)
+                loading()
             } else {
-                ForEach(accounts) { account in
+                ForEach(__accounts) { account in
                     AccountRow(
                         account: account,
                         assetColor: assetColor,
@@ -38,11 +46,29 @@ public struct AccountListView: View {
                     .context([blockchain.ux.asset.account.id: account.id])
                     PrimaryDivider()
                 }
-                if !accounts.contains(where: { account in account.accountType != .privateKey }) {
+                switch kycStatus {
+                case .none, .unverified, .inReview:
                     locked()
+                case .silver, .silverPlus, .gold:
+                    EmptyView()
                 }
             }
         }
+    }
+
+    @ViewBuilder func loading() -> some View {
+        Group {
+            ForEach(1...3, id: \.self) { _ in
+                LockedAccountRow(
+                    title: Localization.tradingAccountTitle,
+                    subtitle: Localization.tradingAccountSubtitle,
+                    icon: .trade
+                )
+                PrimaryDivider()
+            }
+        }
+        .disabled(true)
+        .redacted(reason: .placeholder)
     }
 
     @ViewBuilder func locked() -> some View {
@@ -51,18 +77,14 @@ public struct AccountListView: View {
             subtitle: Localization.tradingAccountSubtitle,
             icon: .trade
         )
+        .context([blockchain.ux.asset.account.type: Account.AccountType.trading])
         PrimaryDivider()
         LockedAccountRow(
             title: Localization.rewardsAccountTitle,
             subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate.or(0)),
             icon: .interestCircle
         )
-        PrimaryDivider()
-        LockedAccountRow(
-            title: Localization.exchangeAccountTitle,
-            subtitle: Localization.exchangeAccountSubtitle,
-            icon: .walletExchange
-        )
+        .context([blockchain.ux.asset.account.type: Account.AccountType.interest])
         PrimaryDivider()
     }
 }
@@ -70,23 +92,42 @@ public struct AccountListView: View {
 // swiftlint:disable type_name
 struct AccountListView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        Group {
-            AccountListView(
-                accounts: [
-                    Account.Snapshot(
-                        id: "",
-                        name: "My Bitcoin Wallet",
-                        accountType: .privateKey,
-                        cryptoCurrency: .bitcoin,
-                        fiatCurrency: .USD,
-                        actions: [],
-                        crypto: .zero(currency: .bitcoin),
-                        fiat: .zero(currency: .GBP)
-                    )
-                ],
-                assetColor: .orange,
-                interestRate: nil
-            )
-        }
+        AccountListView(
+            accounts: [
+                .preview.privateKey,
+                .preview.trading,
+                .preview.rewards
+            ],
+            assetColor: .orange,
+            interestRate: nil,
+            kycStatus: .gold
+        )
+        .previewDisplayName("Gold")
+        AccountListView(
+            accounts: [
+                .preview.privateKey,
+                .preview.trading,
+                .preview.rewards
+            ],
+            assetColor: .orange,
+            interestRate: nil,
+            kycStatus: .silver
+        )
+        .previewDisplayName("Silver")
+        AccountListView(
+            accounts: [
+                .preview.privateKey,
+                .preview.trading,
+                .preview.rewards
+            ],
+            assetColor: .orange,
+            interestRate: nil,
+            kycStatus: .unverified
+        )
+        .previewDisplayName("Unverified")
     }
+}
+
+extension Account.Snapshot {
+    var isPrivateKey: Bool { accountType == .privateKey }
 }

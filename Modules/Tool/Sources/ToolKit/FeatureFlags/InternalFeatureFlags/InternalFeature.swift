@@ -33,12 +33,20 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Redesigned CoinView
     case redesignCoinView
 
+    /// Enables Blockchain Domains
+    case blockchainDomains
+
     /// Enables Card Issuing
     case cardIssuing
+
+    /// Enables customer support chat
+    case customerSupportChat
 
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
+        case .customerSupportChat:
+            return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .disableSSLPinning,
@@ -48,6 +56,7 @@ public enum InternalFeature: String, CaseIterable {
              .applePay,
              .nativeWalletCreation,
              .redesignCoinView,
+             .blockchainDomains,
              .cardIssuing:
             return false
         }
@@ -81,8 +90,12 @@ extension InternalFeature {
             return "Native Wallet Creation"
         case .redesignCoinView:
             return "Redesign: CoinView"
+        case .blockchainDomains:
+            return "Blockchain Domains"
         case .cardIssuing:
             return "Card Issuing"
+        case .customerSupportChat:
+            return "Customer Support Chat"
         }
     }
 }

@@ -57,7 +57,7 @@ extension App {
                         }
                     }
                     if let event = dsl.event {
-                        app.post(event: event, context: dsl.context)
+                        app.post(event: event, context: Tag.Context(dsl.context))
                     }
                 } catch {
                     app.post(error: error)
@@ -65,21 +65,11 @@ extension App {
                 return
             }
             #endif
-            do {
-                guard let match = rules.match(for: url) else {
-                    throw ParsingError.nomatch
-                }
-                app.post(event: match.rule.event, context: match.parameters())
-            } catch {
-                app.post(error: error)
+            guard let match = rules.match(for: url) else {
+                return
             }
+            app.post(event: match.rule.event, context: Tag.Context(match.parameters()))
         }
-    }
-}
-
-extension App.DeepLink {
-    enum ParsingError: Error {
-        case nomatch
     }
 }
 
@@ -153,8 +143,7 @@ extension App.DeepLink.Rule {
 extension App.DeepLink.Rule.Match {
     public func parameters() -> [Tag: String] {
 
-        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-            .queryItems ?? []
+        let items = url.queryItems()
 
         return rule.parameters
             .reduce(into: [:]) { rules, parameter in
@@ -163,6 +152,21 @@ extension App.DeepLink.Rule.Match {
                     ? items[named: parameter.name]?.value
                     : NSString(string: url.absoluteString).substring(with: range)
             }
+    }
+}
+
+extension URL {
+    func queryItems() -> [URLQueryItem] {
+        let components = URLComponents(url: self, resolvingAgainstBaseURL: false)
+        let queryItems = components?.queryItems ?? []
+
+        // since the web only uses URL fragments followed by query items,
+        // it seems to be the easiest way to get the query items back
+        // ie: https://login.blockchain.com/#/app/asset?code=BTC
+        let fragmentItems = URLComponents(string: components?.fragment ?? "")?
+            .queryItems ?? []
+
+        return queryItems + fragmentItems
     }
 }
 

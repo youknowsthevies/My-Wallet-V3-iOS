@@ -55,27 +55,19 @@ struct UserState: Equatable {
     let balanceData: BalanceData
     let linkedPaymentMethods: [PaymentMethod]
     let hasEverPurchasedCrypto: Bool
-    let products: [Product]
+    let products: [ProductValue]
 }
 
 extension UserState {
 
-    func canUse(_ productId: Product.Identifier?) -> Bool {
-        guard let product = product(id: productId) else {
-            // Let users use products we don't have information for
-            return true
-        }
-        return product.canBeUsed
-    }
-
-    func requiredTierToUse(_ productId: Product.Identifier?) -> Int? {
+    func requiredTierToUse(_ productId: ProductIdentifier?) -> Int? {
         guard let product = product(id: productId) else {
             return nil
         }
         return product.suggestedUpgrade?.requiredTier
     }
 
-    private func product(id: Product.Identifier?) -> Product? {
+    func product(id: ProductIdentifier?) -> ProductValue? {
         guard let id = id, let product = products.first(where: { $0.id == id }) else {
             return nil
         }

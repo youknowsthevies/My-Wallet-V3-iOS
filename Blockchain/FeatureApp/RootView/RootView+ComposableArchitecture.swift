@@ -101,16 +101,6 @@ let rootViewReducer = Reducer<
         return .none
     case .frequentAction(let action):
         state.fab.isOn = false
-        switch action {
-        case .buy:
-            state.buyAndSell.segment = 0
-            state.tab = blockchain.ux.buy_and_sell[]
-        case .sell:
-            state.buyAndSell.segment = 1
-            state.tab = blockchain.ux.buy_and_sell[]
-        default:
-            break
-        }
         return .none
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false

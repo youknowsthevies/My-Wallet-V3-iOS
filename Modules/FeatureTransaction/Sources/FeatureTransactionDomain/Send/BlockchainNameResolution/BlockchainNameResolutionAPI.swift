@@ -14,10 +14,22 @@ public struct DomainResolution {
     }
 }
 
+public struct ReverseResolution {
+    let domainName: String
+
+    public init(domainName: String) {
+        self.domainName = domainName
+    }
+}
+
 public protocol BlockchainNameResolutionRepositoryAPI {
 
     func resolve(
         domainName: String,
         currency: String
     ) -> AnyPublisher<DomainResolution, NetworkError>
+
+    func reverseResolve(
+        address: String
+    ) -> AnyPublisher<[ReverseResolution], NetworkError>
 }

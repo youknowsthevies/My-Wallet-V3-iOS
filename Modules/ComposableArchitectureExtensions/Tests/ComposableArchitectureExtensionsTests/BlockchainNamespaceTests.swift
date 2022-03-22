@@ -32,13 +32,13 @@ final class BlockchainNamespaceTests: XCTestCase {
         app.post(event: blockchain.db.type.string)
         store.receive(
             .observation(
-                .event(blockchain.db.type.string[].ref, context: [
+                .event(blockchain.db.type.string[].reference, context: [
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
                     blockchain.ux.type.analytics.event.source.line[]: 32
                 ])
             )
         ) { state in
-            state.event = blockchain.db.type.string[].ref
+            state.event = blockchain.db.type.string[].reference
             state.context = [
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
                 blockchain.ux.type.analytics.event.source.line[]: 32
@@ -48,13 +48,13 @@ final class BlockchainNamespaceTests: XCTestCase {
         app.post(event: blockchain.db.type.boolean)
         store.receive(
             .observation(
-                .event(blockchain.db.type.boolean[].ref, context: [
+                .event(blockchain.db.type.boolean[].reference, context: [
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
                     blockchain.ux.type.analytics.event.source.line[]: 48
                 ])
             )
         ) { state in
-            state.event = blockchain.db.type.boolean[].ref
+            state.event = blockchain.db.type.boolean[].reference
             state.context = [
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
                 blockchain.ux.type.analytics.event.source.line[]: 48
@@ -64,14 +64,14 @@ final class BlockchainNamespaceTests: XCTestCase {
         app.post(event: blockchain.db.type.integer, context: [blockchain.db.type.string: "context"])
         store.receive(
             .observation(
-                .event(blockchain.db.type.integer[].ref, context: [
+                .event(blockchain.db.type.integer[].reference, context: [
                     blockchain.db.type.string[]: "context",
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
                     blockchain.ux.type.analytics.event.source.line[]: 64
                 ])
             )
         ) { state in
-            state.event = blockchain.db.type.integer[].ref
+            state.event = blockchain.db.type.integer[].reference
             state.context = [
                 blockchain.db.type.string[]: "context",
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
@@ -91,12 +91,11 @@ struct TestEnvironment: BlockchainNamespaceAppEnvironment {
 
 struct TestState: Equatable {
     var event: Tag.Reference?
-    var context: [Tag: AnyHashable]?
+    var context: Tag.Context?
 }
 
-enum TestAction: BlockchainNamespaceObservationAction, BlockchainNamespacePostAction, Equatable {
+enum TestAction: BlockchainNamespaceObservationAction, Equatable {
     case observation(BlockchainNamespaceObservation)
-    case post(Tag.Reference, context: Tag.Reference.Context = [:])
 }
 
 let testReducer = Reducer<TestState, TestAction, TestEnvironment> { state, action, _ in
@@ -105,7 +104,7 @@ let testReducer = Reducer<TestState, TestAction, TestEnvironment> { state, actio
         state.event = event
         state.context = context
         return .none
-    case .post, .observation:
+    case .observation:
         return .none
     }
 }

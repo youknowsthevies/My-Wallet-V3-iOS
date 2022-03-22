@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureProductsDomain
 import NabuNetworkError
 import NetworkKit
 
@@ -24,29 +25,10 @@ public final class ProductsAPIClient: ProductsClientAPI {
     }
 
     public func fetchProductsData() -> AnyPublisher<ProductsAPIResponse, NabuNetworkError> {
-        // NOTE: The API implementetion doesn't respect spec. Will be rediscussed on Feb 28 2022
-//        let request = requestBuilder.get(
-//            path: Path.products,
-//            authenticated: true
-//        )!
-//        return networkAdapter.perform(request: request)
-
-        let stubbedResponse = ProductsAPIResponse(
-            products: [
-                ProductAPIResponse(
-                    id: "BUY",
-                    maxOrdersCap: 1,
-                    canPlaceOrder: true,
-                    suggestedUpgrade: nil
-                ),
-                ProductAPIResponse(
-                    id: "SWAP",
-                    maxOrdersCap: 1,
-                    canPlaceOrder: true,
-                    suggestedUpgrade: nil
-                )
-            ]
-        )
-        return .just(stubbedResponse)
+        let request = requestBuilder.get(
+            path: Path.products,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
     }
 }

@@ -37,16 +37,21 @@ public struct GraphView: View {
                         .onAppear {
                             viewStore.send(.request(.week))
                         }
-                        .padding()
+                        .padding([.leading, .trailing])
                     Spacer()
                 case .failure:
-                    AlertCard(
-                        title: Localization.Error.title,
-                        message: Localization.Error.description
-                    )
-                    SmallPrimaryButton(title: Localization.Error.retry, isLoading: viewStore.isFetching) {
-                        viewStore.send(.request(viewStore.interval, force: true))
+                    Spacer()
+                    Group {
+                        AlertCard(
+                            title: Localization.Error.title,
+                            message: Localization.Error.description
+                        )
+                        SmallPrimaryButton(title: Localization.Error.retry, isLoading: viewStore.isFetching) {
+                            viewStore.send(.request(viewStore.interval, force: true))
+                        }
                     }
+                    .padding()
+                    Spacer()
                 case .success(let value):
                     if value.series.isEmpty {
                         AlertCard(
@@ -103,6 +108,20 @@ public struct GraphView: View {
                                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                             }
                             #endif
+                            switch (old, new) {
+                            case (.none, .some):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.selected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case (.some, .none):
+                                app.post(
+                                    event: blockchain.ux.asset.chart.deselected[].ref(to: context),
+                                    context: [blockchain.ux.asset.chart.interval[]: viewStore.interval]
+                                )
+                            case _:
+                                break
+                            }
                         }
                     }
                 }

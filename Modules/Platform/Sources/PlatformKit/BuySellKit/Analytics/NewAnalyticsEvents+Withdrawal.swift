@@ -9,15 +9,7 @@ extension AnalyticsEvents.New {
         public var type: AnalyticsEventType { .nabu }
 
         case linkBankClicked(origin: LinkBank.Origin)
-        case linkBankConditionsApproved(
-            bankName: String,
-            partner: LinkBank.Partner,
-            provider: LinkBank.Provider
-        )
-        case linkBankSelected(
-            bankName: String,
-            partner: LinkBank.Partner
-        )
+
         case withdrawalAmountEntered(
             currency: String,
             inputAmount: Double,
@@ -47,16 +39,6 @@ extension AnalyticsEvents.New {
                 case deposit = "DEPOSIT"
                 case settings = "SETTINGS"
                 case withdraw = "WITHDRAW"
-            }
-
-            public enum Partner: String, StringRawRepresentable {
-                case yapidly = "YAPILY"
-                case yodlee = "YODLEE"
-            }
-
-            public enum Provider: String, StringRawRepresentable {
-                case fintecture = "FINTECTURE"
-                case safeConnect = "SAFE_CONNECT"
             }
         }
 

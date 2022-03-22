@@ -14,7 +14,7 @@ extension SearchDomainClient {
         requestBuilder: RequestBuilder(
             config: Network.Config(
                 scheme: "https",
-                host: "api.dev.blockchain.info"
+                host: "api.staging.blockchain.info"
             )
         )
     )
@@ -34,7 +34,7 @@ extension SearchDomainClient {
                 requestBuilder: RequestBuilder(
                     config: Network.Config(
                         scheme: "https",
-                        host: "api.dev.blockchain.info"
+                        host: "api.staging.blockchain.info"
                     )
                 )
             ),

@@ -45,7 +45,7 @@ enum TransactionAction: MviAction {
     case authorizedOpenBanking
     case performSecurityChecksForTransaction(TransactionResult)
     case securityChecksCompleted
-    case startPollingOrderStatus
+    case startPollingOrderStatus(orderId: String)
     case updateTransactionPending
     case updateTransactionComplete
     case fetchTransactionExchangeRates
@@ -332,7 +332,7 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
 
         case .performSecurityChecksForTransaction(let transactionResult):
-            guard case .hashed(_, _, let order) = transactionResult else {
+            guard case .unHashed(_, _, let order) = transactionResult else {
                 impossible("This should only ever happen for transactions requiring 3D Secure or similar checks")
             }
             return oldState

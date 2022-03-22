@@ -14,6 +14,8 @@ import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureCoinData
 import FeatureCoinDomain
+import FeatureCryptoDomainData
+import FeatureCryptoDomainDomain
 import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
@@ -37,11 +39,6 @@ import RxToolKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
-
-#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseCore
-import PulseUI
-#endif
 
 // MARK: - Settings Dependencies
 
@@ -695,6 +692,22 @@ extension DependencyContainer {
             )
         }
 
+        // MARK: Feature Crypto Domain
+
+        factory { () -> SearchDomainRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let client = SearchDomainClient(networkAdapter: adapter, requestBuilder: builder)
+            return SearchDomainRepository(apiClient: client)
+        }
+
+        factory { () -> OrderDomainRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let client = OrderDomainClient(networkAdapter: adapter, requestBuilder: builder)
+            return OrderDomainRepository(apiClient: client)
+        }
+
         // MARK: Pulse Network Debugging
 
         single {
@@ -706,38 +719,5 @@ extension DependencyContainer {
         }
 
         single { app }
-    }
-}
-
-class PulseNetworkDebugLogger: NetworkDebugLogger {
-    func storeRequest(
-        _ request: URLRequest,
-        response: URLResponse?,
-        error: Error?,
-        data: Data?,
-        metrics: URLSessionTaskMetrics?,
-        session: URLSession?
-    ) {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        LoggerStore.default.storeRequest(
-            request,
-            response: response,
-            error: error,
-            data: data,
-            metrics: metrics,
-            session: session
-        )
-        #endif
-    }
-}
-
-class PulseNetworkDebugScreenProvider: NetworkDebugScreenProvider {
-    var viewController: UIViewController {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        UITabBar.appearance(whenContainedInInstancesOf: [MainViewController.self]).backgroundColor = .white
-        return MainViewController()
-        #else
-        return UIViewController()
-        #endif
     }
 }

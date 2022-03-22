@@ -11,23 +11,25 @@ extension Session {
 
         public let id: UInt
         public let date: Date
-        public let ref: Tag.Reference
+        public let event: Tag.Event
+        public let reference: Tag.Reference
         public let context: Tag.Context
 
         public let source: (file: String, line: Int)
 
-        public var tag: Tag { ref.tag }
+        public var tag: Tag { reference.tag }
 
         init(
             date: Date = Date(),
-            ref: Tag.Reference,
+            event: Tag.Event,
             context: Tag.Context = [:],
             file: String = #fileID,
             line: Int = #line
         ) {
             id = Self.id
             self.date = date
-            self.ref = ref
+            self.event = event
+            reference = event.key
             self.context = context
             source = (file, line)
         }
@@ -43,7 +45,7 @@ extension Session {
 }
 
 extension Session.Event: CustomStringConvertible {
-    public var description: String { ref.string }
+    public var description: String { String(describing: event) }
 }
 
 extension Session.Event {
@@ -64,19 +66,19 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter(_ type: Tag) -> Publishers.Filter<Self> {
-        filter(type.ref())
+        filter(type.reference)
     }
 
     public func filter(_ type: Tag.Reference) -> Publishers.Filter<Self> {
-        filter { event in event.ref.matches(type) }
+        filter { event in event.reference.matches(type) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
-        filter { $0.tag.is(types) }
+        filter { $0.reference.tag.is(types) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
-        filter { event in types.contains(where: { type in event.ref.matches(type) }) }
+        filter { event in types.contains(where: { type in event.reference.matches(type) }) }
     }
 }
 
@@ -89,17 +91,17 @@ extension Tag.Reference {
     }
 }
 
-extension Dictionary {
+extension Tag.Context {
 
-    func filterValues<T>(_ type: T.Type) -> [Key: T] {
-        compactMapValues { $0 as? T }
+    func filterValues<T: Hashable>(_ type: T.Type) -> Tag.Context {
+        Tag.Context(dictionary.compactMapValues { $0 as? T })
     }
 }
 
-extension Dictionary where Value: Hashable {
+extension Tag.Context {
 
     struct Pair: Hashable {
-        let key: Key
+        let key: Tag.Reference
         let value: Value
     }
 
@@ -108,43 +110,18 @@ extension Dictionary where Value: Hashable {
     }
 }
 
+extension Dictionary where Key: Tag.Event, Value: Hashable {
+
+    func pairs() -> Set<Tag.Context.Pair> {
+        map { event, value in .init(key: event.key, value: value) }.set
+    }
+}
+
 extension AppProtocol {
 
     @inlinable public func on(
-        _ first: L,
-        _ rest: L...,
-        file: String = #fileID,
-        line: Int = #line,
-        action: @escaping (Session.Event) async throws -> Void
-    ) -> BlockchainEventSubscription {
-        BlockchainEventSubscription(
-            app: self,
-            events: ([first] + rest).map { language[$0].ref(in: self) },
-            file: file,
-            line: line,
-            action: action
-        )
-    }
-
-    @inlinable public func on(
-        _ first: Tag,
-        _ rest: Tag...,
-        file: String = #fileID,
-        line: Int = #line,
-        action: @escaping (Session.Event) async throws -> Void
-    ) -> BlockchainEventSubscription {
-        BlockchainEventSubscription(
-            app: self,
-            events: ([first] + rest).map { $0.ref(in: self) },
-            file: file,
-            line: line,
-            action: action
-        )
-    }
-
-    @inlinable public func on(
-        _ first: Tag.Reference,
-        _ rest: Tag.Reference...,
+        _ first: Tag.Event,
+        _ rest: Tag.Event...,
         file: String = #fileID,
         line: Int = #line,
         action: @escaping (Session.Event) async throws -> Void
@@ -162,14 +139,16 @@ extension AppProtocol {
 public final class BlockchainEventSubscription {
 
     let app: AppProtocol
-    let events: [Tag.Reference]
+    let events: [Tag.Event]
     let action: (Session.Event) async throws -> Void
 
     let file: String, line: Int
 
+    deinit { stop() }
+
     @usableFromInline init(
         app: AppProtocol,
-        events: [Tag.Reference],
+        events: [Tag.Event],
         file: String,
         line: Int,
         action: @escaping (Session.Event) async throws -> Void
@@ -201,5 +180,6 @@ public final class BlockchainEventSubscription {
 
     public func stop() {
         subscription?.cancel()
+        subscription = nil
     }
 }

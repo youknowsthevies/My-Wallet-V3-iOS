@@ -120,7 +120,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                     .asCompletable()
             }
             .flatMapSingle {
-                .just(TransactionResult.unHashed(amount: pendingTransaction.amount))
+                .just(TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: nil))
             }
     }
 

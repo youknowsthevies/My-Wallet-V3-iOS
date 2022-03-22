@@ -32,27 +32,13 @@ struct SearchCryptoDomainView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
-            .primaryNavigation(
-                title: LocalizedString.title,
-                trailing: { cartBarButton }
-            )
-            .bottomSheet(isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)) {
+            .primaryNavigation(title: LocalizedString.title)
+            .bottomSheet(
+                isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
+            ) {
                 createPremiumDomainBottomSheet()
             }
             .navigationRoute(in: store)
-        }
-    }
-
-    private var cartBarButton: some View {
-        WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.navigate(to: .checkout))
-            }) {
-                Icon.cart
-                    .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
-            }
-            .accessibilityIdentifier(Accessibility.cartButton)
         }
     }
 
@@ -93,12 +79,17 @@ struct SearchCryptoDomainView: View {
     private var domainList: some View {
         WithViewStore(store) { viewStore in
             ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewStore.searchResults, id: \.domainName) { result in
-                        Divider()
-                        createDomainRow(result: result)
+                if viewStore.isSearchResultsLoading {
+                    ProgressView()
+                } else {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewStore.searchResults, id: \.domainName) { result in
+                            PrimaryDivider()
+                            createDomainRow(result: result)
+                        }
+                        PrimaryDivider()
                     }
-                    PrimaryDivider()
+                    .animation(.easeInOut)
                 }
             }
             .accessibilityIdentifier(Accessibility.domainList)
@@ -134,7 +125,8 @@ struct SearchCryptoDomainView: View {
     private func createPremiumDomainBottomSheet() -> some View {
         WithViewStore(store) { viewStore in
             BuyDomainActionView(
-                domain: viewStore.binding(\.$selectedPremiumDomain),
+                domainName: viewStore.selectedPremiumDomain?.domainName ?? "",
+                redirectUrl: viewStore.selectedPremiumDomainRedirectUrl ?? "",
                 isShown: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
             )
         }
@@ -153,9 +145,14 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
                     mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
-                    )
+                    ),
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )

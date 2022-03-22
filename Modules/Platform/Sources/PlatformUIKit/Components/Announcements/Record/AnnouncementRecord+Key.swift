@@ -17,6 +17,7 @@ extension AnnouncementRecord {
         case resubmitDocumentsAfterRecovery
         case blockstackAirdropRegisteredMini
         case simpleBuyKYCIncomplete
+        case claimFreeCryptoDomain
 
         // MARK: - Periodic
 
@@ -42,6 +43,7 @@ extension AnnouncementRecord {
         case assetRename(code: String)
         case celoEUR
         case ukEntitySwitch
+        case walletConnect
 
         var string: String {
             let prefix = "announcement-"
@@ -59,6 +61,8 @@ extension AnnouncementRecord {
                 key = "cache-stx-registered-airdrop-mini"
             case .simpleBuyKYCIncomplete:
                 key = "simple-buy-kyc-incomplete"
+            case .claimFreeCryptoDomain:
+                key = "claim-free-crypto-domain"
 
             // MARK: - Periodic
 
@@ -103,6 +107,8 @@ extension AnnouncementRecord {
                 key = "cache-celo-eur"
             case .ukEntitySwitch:
                 key = "uk-entity-switch-2022"
+            case .walletConnect:
+                key = "wallet-connect"
             }
 
             return prefix + key

@@ -4,6 +4,7 @@ import BitcoinChainKit
 import DIKit
 import MoneyKit
 import PlatformKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -23,6 +24,12 @@ extension DependencyContainer {
 
         factory { () -> AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> in
             AnyActivityItemEventDetailsFetcher(api: BitcoinActivityItemEventDetailsFetcher())
+        }
+
+        factory { () -> UsedAccountsFinderAPI in
+            UsedAccountsFinder(
+                client: DIKit.resolve()
+            )
         }
     }
 }

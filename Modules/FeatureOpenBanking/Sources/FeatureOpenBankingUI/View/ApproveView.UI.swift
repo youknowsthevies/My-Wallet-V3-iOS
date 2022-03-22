@@ -67,7 +67,6 @@ extension ApproveState.UI {
     ) -> ApproveState.UI {
         let details = bankAccount.details
         guard let bankName = details?.bankName,
-              let sortCode = details?.sortCode,
               let accountNumber = details?.accountNumber
         else {
             return .init(title: Localization.Error.title, tasks: [])
@@ -86,14 +85,22 @@ extension ApproveState.UI {
             UITask.spacer(4.vmin)
         )
 
+        var tasks: [UITask] = [
+            UITask.row(Localization.Approve.Payment.bankName, value: "\(bankName)")
+        ]
+
+        if let sortCode = details?.sortCode {
+            tasks.append(
+                UITask.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)")
+            )
+        }
+
+        tasks.append(UITask.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)"))
+
         let information = UITask.section(
             header: Localization.Approve.Payment.paymentInformation,
             expandable: true,
-            tasks: [
-                UITask.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
-                UITask.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
-                UITask.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
-            ]
+            tasks: tasks
         )
 
         return .init(

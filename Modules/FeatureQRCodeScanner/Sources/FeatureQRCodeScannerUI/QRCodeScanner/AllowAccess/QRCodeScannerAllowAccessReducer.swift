@@ -8,11 +8,14 @@ enum AllowAccessAction: Equatable {
     case allowCameraAccess
     case dismiss
     case showCameraDeniedAlert
+    case openWalletConnectUrl
     case onAppear
     case showsWalletConnectRow(Bool)
 }
 
 struct AllowAccessState: Equatable {
+    static let walletConnectArticleUrl = "https://support.blockchain.com/hc/en-us/articles/4572777318548"
+
     /// Hides the action button
     let informationalOnly: Bool
     var showWalletConnectRow: Bool
@@ -24,6 +27,7 @@ struct AllowAccessEnvironment {
     let dismiss: () -> Void
     let showCameraDeniedAlert: () -> Void
     let showsWalletConnectRow: () -> AnyPublisher<Bool, Never>
+    let openWalletConnectUrl: (String) -> Void
 }
 
 let qrScannerAllowAccessReducer = Reducer<
@@ -57,6 +61,11 @@ let qrScannerAllowAccessReducer = Reducer<
         return .none
     case .dismiss:
         environment.dismiss()
+        return .none
+    case .openWalletConnectUrl:
+        environment.openWalletConnectUrl(
+            AllowAccessState.walletConnectArticleUrl
+        )
         return .none
     }
 }

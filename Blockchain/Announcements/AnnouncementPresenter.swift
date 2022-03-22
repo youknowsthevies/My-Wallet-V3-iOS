@@ -3,6 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureCryptoDomainDomain
+import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
 import MoneyKit
@@ -18,6 +20,16 @@ import WalletPayloadKit
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
 final class AnnouncementPresenter {
+
+    // MARK: - Rx
+
+    /// Returns a driver with `.none` as default value for announcement action
+    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
+    var announcement: Driver<AnnouncementDisplayAction> {
+        announcementRelay
+            .asDriver()
+            .distinctUntilChanged()
+    }
 
     // MARK: Services
 
@@ -43,15 +55,8 @@ final class AnnouncementPresenter {
     private let accountsRouter: AccountsRouting
     private let featureFlagService: FeatureFlagsServiceAPI
 
-    // MARK: - Rx
-
-    /// Returns a driver with `.none` as default value for announcement action
-    /// Scheduled on be executed on main scheduler, its resources are shared and it remembers the last value.
-    var announcement: Driver<AnnouncementDisplayAction> {
-        announcementRelay
-            .asDriver()
-            .distinctUntilChanged()
-    }
+    private let coincore: CoincoreAPI
+    private let nabuUserService: NabuUserServiceAPI
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -83,7 +88,9 @@ final class AnnouncementPresenter {
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
+        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve(),
+        coincore: CoincoreAPI = DIKit.resolve(),
+        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
     ) {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
@@ -105,6 +112,8 @@ final class AnnouncementPresenter {
         self.exchangeProviding = exchangeProviding
         self.accountsRouter = accountsRouter
         self.featureFlagService = featureFlagService
+        self.coincore = coincore
+        self.nabuUserService = nabuUserService
 
         announcement
             .asObservable()
@@ -158,6 +167,8 @@ final class AnnouncementPresenter {
 
             let announcement: Announcement
             switch type {
+            case .claimFreeCryptoDomain:
+                announcement = claimFreeCryptoDomainAnnoucement
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
@@ -231,6 +242,8 @@ final class AnnouncementPresenter {
                 )
             case .ukEntitySwitch:
                 announcement = ukEntitySwitch(user: preliminaryData.user)
+            case .walletConnect:
+                announcement = walletConnect()
             }
 
             // Return the first different announcement that should show
@@ -380,7 +393,7 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        featureFlagService.isEnabled(.local(.redesignCoinView))
+        featureFlagService.isEnabled(.remote(.redesignCoinView))
             .receive(on: DispatchQueue.main)
             .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
                 if isEnabled {
@@ -460,6 +473,23 @@ extension AnnouncementPresenter {
         )
     }
 
+    private func walletConnect() -> Announcement {
+        WalletConnectAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [topMostViewControllerProvider, webViewServiceAPI] in
+                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                webViewServiceAPI.openSafari(
+                    url: "https://medium.com/blockchain/introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9",
+                    from: topMostViewController
+                )
+            }
+        )
+    }
+
     /// Computes new asset card announcement.
     private func newAsset(cryptoCurrency: CryptoCurrency?) -> Announcement {
         NewAssetAnnouncement(
@@ -506,6 +536,74 @@ extension AnnouncementPresenter {
                     url: "https://support.blockchain.com/hc/en-us/articles/360046143432",
                     from: topMostViewController
                 )
+            }
+        )
+    }
+
+    /// Claim Free Crypto Domain Annoucement for eligible users
+    private var claimFreeCryptoDomainAnnoucement: Announcement {
+        ClaimFreeCryptoDomainAnnouncement(
+            action: { [coincore, nabuUserService, navigationRouter] in
+                let vc = ClaimIntroductionHostingController(
+                    mainQueue: .main,
+                    externalAppOpener: DIKit.resolve(),
+                    searchDomainRepository: DIKit.resolve(),
+                    orderDomainRepository: DIKit.resolve(),
+                    userInfoProvider: {
+                        Deferred {
+                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash]])
+                        }
+                        .eraseError()
+                        .flatMap { cryptoAssets -> AnyPublisher<([String], [ReceiveAddress], NabuUser), Error> in
+                            let accountsPublisher = cryptoAssets.map(\.defaultAccount)
+                            let mergedAccountsPublisher = Publishers.MergeMany(accountsPublisher)
+                                .collect()
+                                .eraseToAnyPublisher()
+
+                            let addresses = mergedAccountsPublisher
+                                .map { $0.map(\.receiveAddress) }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+                            let addressesPublisher = addresses
+                                .map { $0.map { $0.asPublisher().eraseToAnyPublisher() } }
+                                .flatMap { Publishers.MergeMany($0).collect().eraseToAnyPublisher() }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+
+                            let symbolsPublisher = Just(cryptoAssets.map(\.asset).map(\.code))
+                                .eraseError()
+                                .eraseToAnyPublisher()
+
+                            let nabuUserPublisher = nabuUserService.user.eraseError()
+
+                            return Publishers.Zip3(
+                                symbolsPublisher,
+                                addressesPublisher,
+                                nabuUserPublisher
+                            )
+                            .eraseToAnyPublisher()
+                        }
+                        .flatMap { symbols, addresses, nabuUser -> AnyPublisher<OrderDomainUserInfo, Error> in
+                            var records: [ResolutionRecord] = []
+                            for (symbol, receiveAddress) in zip(symbols, addresses) {
+                                records.append(ResolutionRecord(symbol: symbol, walletAddress: receiveAddress.address))
+                            }
+                            return .just(
+                                OrderDomainUserInfo(
+                                    nabuUserId: nabuUser.identifier,
+                                    nabuUserName: nabuUser.personalDetails.firstName ?? "",
+                                    resolutionRecords: records
+                                )
+                            )
+                        }
+                        .eraseToAnyPublisher()
+                    }
+                )
+                let nav = UINavigationController(rootViewController: vc)
+                navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }

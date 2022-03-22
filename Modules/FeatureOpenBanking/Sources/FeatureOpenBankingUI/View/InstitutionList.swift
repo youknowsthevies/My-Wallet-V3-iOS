@@ -91,7 +91,9 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return .merge(
                     .navigate(to: .approve),
                     .fireAndForget {
-                        environment.analytics.record(event: .linkBankSelected(institution: institution.name))
+                        environment.analytics.record(
+                            event: .linkBankSelected(institution: institution.name, account: account)
+                        )
                     }
                 )
             case .approve(.deny):

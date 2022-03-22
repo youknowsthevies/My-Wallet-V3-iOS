@@ -72,6 +72,7 @@ private enum Layout {
     static let imageSideLength: CGFloat = 64
     static let imageBottomPadding: CGFloat = 40
     static let titleFontSize: CGFloat = 24
+    static let subtitleFontSize: CGFloat = 18
     static let titleBottomPadding: CGFloat = 16
     static let messageFontSize: CGFloat = 16
     static let messageLineSpacing: CGFloat = 4
@@ -123,7 +124,11 @@ public struct WelcomeView: View {
                 .font(Font(weight: .semibold, size: Layout.titleFontSize))
                 .foregroundColor(.textHeading)
                 .padding(.bottom, Layout.titleBottomPadding)
-                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeTitleText)
+            Text(LocalizedString.subtitle)
+                .font(Font(weight: .semibold, size: Layout.subtitleFontSize))
+                .foregroundColor(.textHeading)
+                .padding(.bottom, Layout.titleBottomPadding)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeSubtitleText)
             welcomeMessageDescription
                 .font(Font(weight: .medium, size: Layout.messageFontSize))
                 .lineSpacing(Layout.messageLineSpacing)
@@ -155,7 +160,7 @@ public struct WelcomeView: View {
 
     private var buttonSection: some View {
         VStack(spacing: Layout.buttonSpacing) {
-            PrimaryButton(title: LocalizedString.Button.buyCryptoNow) {
+            PrimaryButton(title: LocalizedString.Button.createWallet) {
                 viewStore.send(.navigate(to: .createWallet))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)

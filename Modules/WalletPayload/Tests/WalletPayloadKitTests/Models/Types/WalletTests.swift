@@ -33,7 +33,8 @@ class WalletTests: XCTestCase {
             mnemonic: mnemonic,
             guid: guid,
             sharedKey: sharedKey,
-            accountName: "Private Key Wallet"
+            accountName: "Private Key Wallet",
+            totalAccounts: 1
         )
 
         let result = generateWallet(context: context)
@@ -61,7 +62,8 @@ class WalletTests: XCTestCase {
             mnemonic: mnemonic,
             guid: guid,
             sharedKey: sharedKey,
-            accountName: "Private Key Wallet"
+            accountName: "Private Key Wallet",
+            totalAccounts: 1
         )
 
         let result = generateWallet(context: context)

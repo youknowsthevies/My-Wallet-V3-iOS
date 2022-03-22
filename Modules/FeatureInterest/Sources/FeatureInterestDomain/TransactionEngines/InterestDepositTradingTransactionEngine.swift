@@ -214,7 +214,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
                 TransactionValidationFailure(state: .unknownError)
             }
             .map { _ in
-                TransactionResult.unHashed(amount: pendingTransaction.amount)
+                TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: nil)
             }
             .asSingle()
     }

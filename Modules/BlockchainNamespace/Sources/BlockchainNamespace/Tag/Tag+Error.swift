@@ -6,20 +6,20 @@ extension Tag {
 
     public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible, LocalizedError {
 
-        let tag: Tag
+        let event: Tag.Event
         let context: Tag.Context
 
         let message: String
         let file: String, line: Int
 
         init(
-            tag: Tag,
+            event: Tag.Event,
             context: Tag.Context = [:],
             message: @autoclosure () -> String = "",
             _ file: String = #fileID,
             _ line: Int = #line
         ) {
-            self.tag = tag
+            self.event = event
             self.context = context
             self.message = message()
             self.file = file
@@ -30,26 +30,19 @@ extension Tag {
         public var errorDescription: String? { message }
 
         public var debugDescription: String {
-            "\(file):\(line) \(tag): \(message)"
+            "\(file):\(line) \(event): \(message)"
         }
-    }
-
-    public func error(
-        message: @autoclosure () -> String = "",
-        file: String = #fileID,
-        line: Int = #line
-    ) -> Tag.Error {
-        .init(tag: self, message: message(), file, line)
     }
 }
 
-extension Tag.Reference {
+extension Tag.Event {
 
     public func error(
         message: @autoclosure () -> String = "",
+        context: Tag.Context = [:],
         file: String = #fileID,
         line: Int = #line
     ) -> Tag.Error {
-        .init(tag: tag, context: context, message: message(), file, line)
+        .init(event: self, context: context, message: message(), file, line)
     }
 }

@@ -634,7 +634,7 @@ public extension I_blockchain_session_state_preference {
 public final class L_blockchain_session_state_preference_value: L, I_blockchain_session_state_preference_value {
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.preference.value", comment: "") }
 }
-public protocol I_blockchain_session_state_preference_value: I {}
+public protocol I_blockchain_session_state_preference_value: I_blockchain_session_state_value {}
 public final class L_blockchain_session_state_shared: L, I_blockchain_session_state_shared {
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.shared", comment: "") }
 }
@@ -1265,6 +1265,7 @@ public extension I_blockchain_ux_asset_account {
 	var `send`: L_blockchain_ux_asset_account_send { .init("\(__).send") }
 	var `sheet`: L_blockchain_ux_asset_account_sheet { .init("\(__).sheet") }
 	var `swap`: L_blockchain_ux_asset_account_swap { .init("\(__).swap") }
+	var `type`: L_blockchain_ux_asset_account_type { .init("\(__).type") }
 }
 public final class L_blockchain_ux_asset_account_activity: L, I_blockchain_ux_asset_account_activity {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.activity", comment: "") }
@@ -1367,6 +1368,10 @@ public final class L_blockchain_ux_asset_account_swap: L, I_blockchain_ux_asset_
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.swap", comment: "") }
 }
 public protocol I_blockchain_ux_asset_account_swap: I_blockchain_ux_type_action {}
+public final class L_blockchain_ux_asset_account_type: L, I_blockchain_ux_asset_account_type {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account.type", comment: "") }
+}
+public protocol I_blockchain_ux_asset_account_type: I_blockchain_db_type_string {}
 public final class L_blockchain_ux_asset_bio: L, I_blockchain_ux_asset_bio {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.bio", comment: "") }
 }
@@ -1401,12 +1406,22 @@ public final class L_blockchain_ux_asset_chart: L, I_blockchain_ux_asset_chart {
 }
 public protocol I_blockchain_ux_asset_chart: I {}
 public extension I_blockchain_ux_asset_chart {
+	var `deselected`: L_blockchain_ux_asset_chart_deselected { .init("\(__).deselected") }
 	var `interval`: L_blockchain_ux_asset_chart_interval { .init("\(__).interval") }
+	var `selected`: L_blockchain_ux_asset_chart_selected { .init("\(__).selected") }
 }
+public final class L_blockchain_ux_asset_chart_deselected: L, I_blockchain_ux_asset_chart_deselected {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.chart.deselected", comment: "") }
+}
+public protocol I_blockchain_ux_asset_chart_deselected: I_blockchain_ux_type_analytics_action {}
 public final class L_blockchain_ux_asset_chart_interval: L, I_blockchain_ux_asset_chart_interval {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.chart.interval", comment: "") }
 }
 public protocol I_blockchain_ux_asset_chart_interval: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_asset_chart_selected: L, I_blockchain_ux_asset_chart_selected {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.chart.selected", comment: "") }
+}
+public protocol I_blockchain_ux_asset_chart_selected: I_blockchain_ux_type_analytics_action {}
 public final class L_blockchain_ux_asset_error: L, I_blockchain_ux_asset_error {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.error", comment: "") }
 }
@@ -1863,7 +1878,7 @@ public protocol I_blockchain_ux_type_analytics_state: I_blockchain_ux_type_analy
 public final class L_blockchain_ux_type_story: L, I_blockchain_ux_type_story {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.story", comment: "") }
 }
-public protocol I_blockchain_ux_type_story: I {}
+public protocol I_blockchain_ux_type_story: I_blockchain_ux_type_analytics_state {}
 public extension I_blockchain_ux_type_story {
 	var `entry`: L_blockchain_ux_type_story_entry { .init("\(__).entry") }
 }

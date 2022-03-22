@@ -111,7 +111,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     }
 }
 
-extension KYCResubmitIdentityController: LoadingView {
+extension KYCResubmitIdentityController: PlatformUIKit.LoadingView {
 
     func showLoadingIndicator() {
         resubmitButton.isLoading = true

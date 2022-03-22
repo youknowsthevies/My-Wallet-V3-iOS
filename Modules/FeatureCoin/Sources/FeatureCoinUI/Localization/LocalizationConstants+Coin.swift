@@ -171,7 +171,7 @@ extension LocalizationConstants {
                         comment: "Coin View: Trading Account Explainer title"
                     ),
                     body: NSLocalizedString(
-                        "Your Trading Account is a custodial wallet hosted by Blockchain.com. Your trading account allows you to trade with cheaper fees and buy and sell crypto in seconds.",
+                        "Your Trading Account is a custodial account hosted by Blockchain.com. Your trading account allows you to trade with cheaper fees and buy and sell crypto in seconds.",
                         comment: "Coin View: Trading Account Explainer body"
                     ),
                     action: NSLocalizedString(
@@ -186,7 +186,7 @@ extension LocalizationConstants {
                         comment: "Coin View:Rewards Account Explainer title"
                     ),
                     body: NSLocalizedString(
-                        "Your Rewards Account allows you to earn rewards on your crypto; up to 13.5% APY.",
+                        "Your Rewards Account allows you to earn rewards on your crypto; up to %.1f%% APY.",
                         comment: "Coin View: Rewards Account Explainer body"
                     ),
                     action: NSLocalizedString(
@@ -230,7 +230,7 @@ extension LocalizationConstants {
                     comment: "Coin View Graph: Error title"
                 )
                 static let description = NSLocalizedString(
-                    "There seems to be a problem connecting, please try again",
+                    "There seems to be a problem fetching the chart data, please try again",
                     comment: "Coin View Graph: Error description"
                 )
                 static let retry = NSLocalizedString(

@@ -37,6 +37,11 @@ extension LocalizationConstants.Receive.Text {
         comment: "Screen title."
     )
 
+    public static let domainName = NSLocalizedString(
+        "Domain Name",
+        comment: "Section header where domain name is displayed."
+    )
+
     public static let walletAddress = NSLocalizedString(
         "Wallet Address",
         comment: "Section header where wallet address is displayed."

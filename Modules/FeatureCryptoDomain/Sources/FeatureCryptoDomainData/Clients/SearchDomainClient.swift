@@ -3,15 +3,20 @@
 import Combine
 import NetworkKit
 
-protocol SearchDomainClientAPI {
+public protocol SearchDomainClientAPI {
 
     /// Get domain search results from server given a search key
     func getSearchResults(
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError>
+
+    /// Get free domain search results from server given a search key
+    func getFreeSearchResults(
+        searchKey: String
+    ) -> AnyPublisher<FreeSearchResultResponse, NetworkError>
 }
 
-final class SearchDomainClient: SearchDomainClientAPI {
+public final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Type
 
@@ -22,6 +27,12 @@ final class SearchDomainClient: SearchDomainClientAPI {
             "ud",
             "search"
         ]
+        static let freeSearch = [
+            "explorer-gateway",
+            "resolution",
+            "ud",
+            "suggestions"
+        ]
     }
 
     // MARK: - Properties
@@ -31,7 +42,7 @@ final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Setup
 
-    init(
+    public init(
         networkAdapter: NetworkAdapterAPI,
         requestBuilder: RequestBuilder
     ) {
@@ -41,11 +52,21 @@ final class SearchDomainClient: SearchDomainClientAPI {
 
     // MARK: - Methods
 
-    func getSearchResults(
+    public func getSearchResults(
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError> {
         let request = requestBuilder.get(
             path: Path.search + [searchKey],
+            contentType: .json
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    public func getFreeSearchResults(
+        searchKey: String
+    ) -> AnyPublisher<FreeSearchResultResponse, NetworkError> {
+        let request = requestBuilder.get(
+            path: Path.freeSearch + [searchKey],
             contentType: .json
         )!
         return networkAdapter.perform(request: request)

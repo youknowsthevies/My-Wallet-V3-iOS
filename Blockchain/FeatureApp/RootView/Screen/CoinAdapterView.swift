@@ -95,8 +95,9 @@ struct CoinViewObserver: AppSessionObserver {
 
     var transactionsRouter: TransactionsRouterAPI = resolve()
     var coincore: CoincoreAPI = resolve()
-    var kycRouter: FeatureKYCUI.Routing = resolve()
+    var kycRouter = KYCAdapter()
     var defaults: UserDefaults = .standard
+    var topViewController: TopMostViewControllerProviding = resolve()
 
     func body(content: Content) -> some View {
         content
@@ -148,22 +149,55 @@ struct CoinViewObserver: AppSessionObserver {
                 let interactor = InterestAccountDetailsScreenInteractor(account: account)
                 let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
                 let controller = InterestAccountDetailsViewController(presenter: presenter)
-                let navigationRouter: NavigationRouterAPI = resolve()
-                navigationRouter.present(viewController: controller, using: .modalOverTopMost)
+                topViewController.topMostViewController?.present(controller, animated: true)
             }
             .on(blockchain.ux.asset.account.exchange.withdraw) { event in
                 try await transactionsRouter.presentTransactionFlow(
-                    to: .send(cryptoAccount(for: .send, from: event), tradingAccount(from: event))
+                    to: .send(
+                        cryptoAccount(for: .send, from: event),
+                        custodialAccount(CryptoTradingAccount.self, from: event)
+                    )
                 )
             }
             .on(blockchain.ux.asset.account.exchange.deposit) { event in
                 try await transactionsRouter.presentTransactionFlow(
-                    to: .send(tradingAccount(from: event), cryptoAccount(for: .send, from: event))
+                    to: .send(
+                        custodialAccount(CryptoTradingAccount.self, from: event),
+                        cryptoAccount(for: .send, from: event)
+                    )
                 )
             }
-            .on(blockchain.ux.asset.account.require.KYC) { _ in
-                let topViewController = (resolve() as TopMostViewControllerProviding).topMostViewController!
-                _ = try await kycRouter.presentKYCIfNeeded(from: topViewController, requiredTier: .tier2).values.first
+            .on(blockchain.ux.asset.account.require.KYC) { event in
+                let viewController = topViewController.topMostViewController!
+                guard
+                    let result = await kycRouter.presentKYCUpgradeFlow(from: viewController).values.first,
+                    result != .abandoned
+                else {
+                    return
+                }
+                if event.reference.context[blockchain.ux.asset.account.id] != nil {
+                    app.post(
+                        event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context)
+                    )
+                } else {
+                    let account: BlockchainAccount.Type
+                    typealias AccountType = FeatureCoinDomain.Account.AccountType
+                    switch try event.context.decode(blockchain.ux.asset.account.type) as AccountType {
+                    case .trading:
+                        account = CryptoTradingAccount.self
+                    case .interest:
+                        account = CryptoInterestAccount.self
+                    case .exchange:
+                        account = CryptoExchangeAccount.self
+                    case .privateKey:
+                        return
+                    }
+                    try await app.post(
+                        event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context + [
+                            blockchain.ux.asset.account.id: custodialAccount(account, from: event).identifier
+                        ])
+                    )
+                }
             }
             .on(blockchain.ux.asset.account.activity) { _ in
                 app.post(
@@ -180,7 +214,10 @@ struct CoinViewObserver: AppSessionObserver {
     }
 
     // swiftlint:disable first_where
-    func tradingAccount(from event: Session.Event) async throws -> CryptoTradingAccount {
+    func custodialAccount(
+        _ type: BlockchainAccount.Type,
+        from event: Session.Event
+    ) async throws -> CryptoTradingAccount {
         try await coincore.cryptoAccounts(
             for: event.context.decode(blockchain.ux.asset.id),
             filter: .custodial
@@ -189,7 +226,7 @@ struct CoinViewObserver: AppSessionObserver {
         .first
         .or(
             throw: blockchain.ux.asset.error[]
-                .error(message: "No trading account found for \(event.ref)")
+                .error(message: "No trading account found for \(event.reference)")
         )
     }
 
@@ -198,10 +235,10 @@ struct CoinViewObserver: AppSessionObserver {
         from event: Session.Event
     ) async throws -> CryptoAccount {
         let accounts = try await coincore.cryptoAccounts(
-            for: event.ref.context.decode(blockchain.ux.asset.id),
+            for: event.reference.context.decode(blockchain.ux.asset.id),
             supporting: action
         )
-        if let id = try? event.ref.context.decode(blockchain.ux.asset.account.id, as: String.self) {
+        if let id = try? event.reference.context.decode(blockchain.ux.asset.account.id, as: String.self) {
             return try accounts.first(where: { account in account.identifier as? String == id })
                 .or(
                     throw: blockchain.ux.asset.error[]
@@ -311,6 +348,7 @@ extension AssetDetails {
             logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
             logoImage: cryptoCurrency.assetModel.logoResource.image,
             isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
+                || cryptoCurrency.supports(product: .privateKey)
         )
     }
 }
