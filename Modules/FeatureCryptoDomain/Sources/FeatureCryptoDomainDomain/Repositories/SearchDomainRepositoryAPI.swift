@@ -9,6 +9,7 @@ public enum SearchDomainRepositoryError: Equatable, Error {
 
 public protocol SearchDomainRepositoryAPI {
     func searchResults(
-        searchKey: String
+        searchKey: String,
+        freeOnly: Bool
     ) -> AnyPublisher<[SearchDomainResult], SearchDomainRepositoryError>
 }

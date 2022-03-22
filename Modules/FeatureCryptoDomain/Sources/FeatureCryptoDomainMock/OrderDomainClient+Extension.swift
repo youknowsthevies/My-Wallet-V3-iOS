@@ -5,9 +5,9 @@
 import Foundation
 import NetworkKit
 
-extension SearchDomainClient {
+extension OrderDomainClient {
 
-    static let mock = SearchDomainClient(
+    static let mock = OrderDomainClient(
         networkAdapter: NetworkAdapter(
             communicator: EphemeralNetworkCommunicator()
         ),
@@ -22,12 +22,12 @@ extension SearchDomainClient {
     public static func test(
         _ requests: [URLRequest: Data] = [:]
     ) -> (
-        client: SearchDomainClient,
+        client: OrderDomainClient,
         communicator: ReplayNetworkCommunicator
     ) {
         let communicator = ReplayNetworkCommunicator(requests, in: Bundle.module)
         return (
-            SearchDomainClient(
+            OrderDomainClient(
                 networkAdapter: NetworkAdapter(
                     communicator: communicator
                 ),

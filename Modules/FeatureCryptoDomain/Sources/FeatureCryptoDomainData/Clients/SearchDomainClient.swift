@@ -9,6 +9,11 @@ public protocol SearchDomainClientAPI {
     func getSearchResults(
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError>
+
+    /// Get free domain search results from server given a search key
+    func getFreeSearchResults(
+        searchKey: String
+    ) -> AnyPublisher<FreeSearchResultResponse, NetworkError>
 }
 
 public final class SearchDomainClient: SearchDomainClientAPI {
@@ -21,6 +26,12 @@ public final class SearchDomainClient: SearchDomainClientAPI {
             "resolution",
             "ud",
             "search"
+        ]
+        static let freeSearch = [
+            "explorer-gateway",
+            "resolution",
+            "ud",
+            "suggestions"
         ]
     }
 
@@ -46,6 +57,16 @@ public final class SearchDomainClient: SearchDomainClientAPI {
     ) -> AnyPublisher<SearchResultResponse, NetworkError> {
         let request = requestBuilder.get(
             path: Path.search + [searchKey],
+            contentType: .json
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    public func getFreeSearchResults(
+        searchKey: String
+    ) -> AnyPublisher<FreeSearchResultResponse, NetworkError> {
+        let request = requestBuilder.get(
+            path: Path.freeSearch + [searchKey],
             contentType: .json
         )!
         return networkAdapter.perform(request: request)

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureCryptoDomainDomain
@@ -34,16 +35,21 @@ enum ClaimIntroductionRoute: NavigationRoute {
 enum ClaimIntroductionAction: NavigationAction {
     case route(RouteIntent<ClaimIntroductionRoute>?)
     case searchAction(SearchCryptoDomainAction)
+    case closeButtonTapped
 }
 
 struct ClaimIntroductionState: NavigationState {
     var route: RouteIntent<ClaimIntroductionRoute>?
     var searchState: SearchCryptoDomainState?
+    var isModalOpen: Bool = true
 }
 
 struct ClaimIntroductionEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let externalAppOpener: ExternalAppOpener
     let searchDomainRepository: SearchDomainRepositoryAPI
+    let orderDomainRepository: OrderDomainRepositoryAPI
+    let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 }
 
 let claimIntroductionReducer = Reducer.combine(
@@ -55,7 +61,10 @@ let claimIntroductionReducer = Reducer.combine(
             environment: {
                 SearchCryptoDomainEnvironment(
                     mainQueue: $0.mainQueue,
-                    searchDomainRepository: $0.searchDomainRepository
+                    externalAppOpener: $0.externalAppOpener,
+                    searchDomainRepository: $0.searchDomainRepository,
+                    orderDomainRepository: $0.orderDomainRepository,
+                    userInfoProvider: $0.userInfoProvider
                 )
             }
         ),
@@ -72,6 +81,10 @@ let claimIntroductionReducer = Reducer.combine(
                 }
             }
             return .none
+        case .searchAction(.checkoutAction(.dismissFlow)),
+             .closeButtonTapped:
+            state.isModalOpen = false
+            return .none
         case .searchAction:
             return .none
         }
@@ -83,25 +96,44 @@ let claimIntroductionReducer = Reducer.combine(
 
 public final class ClaimIntroductionHostingController: UIViewController {
 
+    private let store: Store<ClaimIntroductionState, ClaimIntroductionAction>
+    private let viewStore: ViewStore<ClaimIntroductionState, ClaimIntroductionAction>
+
     private let mainQueue: AnySchedulerOf<DispatchQueue>
+    private let externalAppOpener: ExternalAppOpener
     private let searchDomainRepository: SearchDomainRepositoryAPI
+    private let orderDomainRepository: OrderDomainRepositoryAPI
+    private let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
+
     private let contentView: UIHostingController<ClaimIntroductionView>
+
+    private var cancellables = Set<AnyCancellable>()
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        searchDomainRepository: SearchDomainRepositoryAPI
+        externalAppOpener: ExternalAppOpener,
+        searchDomainRepository: SearchDomainRepositoryAPI,
+        orderDomainRepository: OrderDomainRepositoryAPI,
+        userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
+        self.externalAppOpener = externalAppOpener
         self.searchDomainRepository = searchDomainRepository
-        contentView = UIHostingController(
-            rootView: ClaimIntroductionView(
-                store: .init(
-                    initialState: .init(),
-                    reducer: claimIntroductionReducer,
-                    environment: .init(mainQueue: mainQueue, searchDomainRepository: searchDomainRepository)
-                )
+        self.orderDomainRepository = orderDomainRepository
+        self.userInfoProvider = userInfoProvider
+        store = .init(
+            initialState: .init(),
+            reducer: claimIntroductionReducer,
+            environment: .init(
+                mainQueue: mainQueue,
+                externalAppOpener: externalAppOpener,
+                searchDomainRepository: searchDomainRepository,
+                orderDomainRepository: orderDomainRepository,
+                userInfoProvider: userInfoProvider
             )
         )
+        viewStore = ViewStore(store)
+        contentView = UIHostingController(rootView: ClaimIntroductionView(store: store))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -114,6 +146,16 @@ public final class ClaimIntroductionHostingController: UIViewController {
         contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         contentView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+        viewStore
+            .publisher
+            .isModalOpen
+            .sink { [weak self] shouldOpen in
+                if !shouldOpen {
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -168,7 +210,9 @@ public struct ClaimIntroductionView: View {
                     .accessibility(identifier: Accessibility.ctaButton)
                 }
                 .navigationRoute(in: store)
-                .primaryNavigation(title: LocalizedString.title)
+                .primaryNavigation(
+                    title: LocalizedString.title
+                )
             }
         }
     }
@@ -239,9 +283,14 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                 reducer: claimIntroductionReducer,
                 environment: .init(
                     mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock
-                    )
+                    ),
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )

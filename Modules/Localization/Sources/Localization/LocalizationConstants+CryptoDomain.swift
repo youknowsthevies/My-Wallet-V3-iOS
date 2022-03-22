@@ -219,7 +219,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
             comment: "Domain checkout navigation title"
         )
         public static let terms = NSLocalizedString(
-            "I agree to the Terms & Conditions for claiming a free crypto domain through Blockchain.com and Unstoppable Domains.",
+            "I understand that my private key wallet addresses will be publicly associated with %@.",
             comment: "Domain checkout terms"
         )
         public static let button = NSLocalizedString(
@@ -257,21 +257,38 @@ extension LocalizationConstants.FeatureCryptoDomain {
     // MARK: - Checkout confirmation screen
 
     public enum CheckoutConfirmation {
-        public static let title = NSLocalizedString(
-            "%@ is now yours!",
-            comment: "checkout confirmation titlte"
-        )
-        public static let description = NSLocalizedString(
-            "You can now share your domain to receive crypto instead of sharing your wallet addresses.",
-            comment: "checkout confirmation description"
-        )
-        public static let learnMore = NSLocalizedString(
-            "Learn More",
-            comment: "learn more button"
-        )
-        public static let okayButton = NSLocalizedString(
-            "Okay",
-            comment: "okay button"
-        )
+        public enum Success {
+            public static let title = NSLocalizedString(
+                "%@ is now yours!",
+                comment: "Success checkout confirmation title"
+            )
+            public static let description = NSLocalizedString(
+                "You can now share your domain to receive crypto instead of sharing your wallet addresses.",
+                comment: "Success checkout confirmation description"
+            )
+            public static let learnMore = NSLocalizedString(
+                "Learn More",
+                comment: "Success learn more button"
+            )
+            public static let okayButton = NSLocalizedString(
+                "Okay",
+                comment: "Success okay button"
+            )
+        }
+
+        public enum Error {
+            public static let title = NSLocalizedString(
+                "Failed to claim %@",
+                comment: "Error checkout confirmation title"
+            )
+            public static let description = NSLocalizedString(
+                "Looks like there was an error claiming your domain. Don’t worry, nobody stole it.",
+                comment: "Error checkout confirmation description"
+            )
+            public static let tryAgainButton = NSLocalizedString(
+                "Try Again",
+                comment: "Error try again button"
+            )
+        }
     }
 }

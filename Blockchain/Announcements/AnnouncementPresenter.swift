@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureCryptoDomainDomain
 import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
@@ -54,6 +55,9 @@ final class AnnouncementPresenter {
     private let accountsRouter: AccountsRouting
     private let featureFlagService: FeatureFlagsServiceAPI
 
+    private let coincore: CoincoreAPI
+    private let nabuUserService: NabuUserServiceAPI
+
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
 
@@ -84,7 +88,9 @@ final class AnnouncementPresenter {
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
+        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve(),
+        coincore: CoincoreAPI = DIKit.resolve(),
+        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
     ) {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
@@ -106,6 +112,8 @@ final class AnnouncementPresenter {
         self.exchangeProviding = exchangeProviding
         self.accountsRouter = accountsRouter
         self.featureFlagService = featureFlagService
+        self.coincore = coincore
+        self.nabuUserService = nabuUserService
 
         announcement
             .asObservable()
@@ -535,10 +543,61 @@ extension AnnouncementPresenter {
     /// Claim Free Crypto Domain Annoucement for eligible users
     private var claimFreeCryptoDomainAnnoucement: Announcement {
         ClaimFreeCryptoDomainAnnouncement(
-            action: { [navigationRouter] in
+            action: { [coincore, nabuUserService, navigationRouter] in
                 let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,
-                    searchDomainRepository: DIKit.resolve()
+                    externalAppOpener: DIKit.resolve(),
+                    searchDomainRepository: DIKit.resolve(),
+                    orderDomainRepository: DIKit.resolve(),
+                    userInfoProvider: {
+                        Deferred {
+                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash]])
+                        }
+                        .eraseError()
+                        .flatMap { cryptoAssets -> AnyPublisher<([String], [ReceiveAddress], NabuUser), Error> in
+                            let accountsPublisher = cryptoAssets.map(\.defaultAccount)
+                            let mergedAccountsPublisher = Publishers.MergeMany(accountsPublisher)
+                                .collect()
+                                .eraseToAnyPublisher()
+
+                            let addresses = mergedAccountsPublisher
+                                .map { $0.map(\.receiveAddress) }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+                            let addressesPublisher = addresses
+                                .map { $0.map { $0.asPublisher().eraseToAnyPublisher() } }
+                                .flatMap { Publishers.MergeMany($0).collect().eraseToAnyPublisher() }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+
+                            let symbolsPublisher = Just(cryptoAssets.map(\.asset).map(\.code))
+                                .eraseError()
+                                .eraseToAnyPublisher()
+
+                            let nabuUserPublisher = nabuUserService.user.eraseError()
+
+                            return Publishers.Zip3(
+                                symbolsPublisher,
+                                addressesPublisher,
+                                nabuUserPublisher
+                            )
+                            .eraseToAnyPublisher()
+                        }
+                        .flatMap { symbols, addresses, nabuUser -> AnyPublisher<OrderDomainUserInfo, Error> in
+                            var records: [ResolutionRecord] = []
+                            for (symbol, receiveAddress) in zip(symbols, addresses) {
+                                records.append(ResolutionRecord(symbol: symbol, walletAddress: receiveAddress.address))
+                            }
+                            return .just(
+                                OrderDomainUserInfo(
+                                    nabuUserId: nabuUser.identifier,
+                                    nabuUserName: nabuUser.personalDetails.firstName ?? "",
+                                    resolutionRecords: records
+                                )
+                            )
+                        }
+                        .eraseToAnyPublisher()
+                    }
                 )
                 let nav = UINavigationController(rootViewController: vc)
                 navigationRouter.present(viewController: nav, using: .modalOverTopMost)

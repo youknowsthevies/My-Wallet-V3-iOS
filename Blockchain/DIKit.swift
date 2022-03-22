@@ -701,6 +701,13 @@ extension DependencyContainer {
             return SearchDomainRepository(apiClient: client)
         }
 
+        factory { () -> OrderDomainRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let client = OrderDomainClient(networkAdapter: adapter, requestBuilder: builder)
+            return OrderDomainRepository(apiClient: client)
+        }
+
         // MARK: Pulse Network Debugging
 
         single {
