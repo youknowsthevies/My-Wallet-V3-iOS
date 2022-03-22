@@ -37,16 +37,21 @@ public struct GraphView: View {
                         .onAppear {
                             viewStore.send(.request(.week))
                         }
-                        .padding()
+                        .padding([.leading, .trailing])
                     Spacer()
                 case .failure:
-                    AlertCard(
-                        title: Localization.Error.title,
-                        message: Localization.Error.description
-                    )
-                    SmallPrimaryButton(title: Localization.Error.retry, isLoading: viewStore.isFetching) {
-                        viewStore.send(.request(viewStore.interval, force: true))
+                    Spacer()
+                    Group {
+                        AlertCard(
+                            title: Localization.Error.title,
+                            message: Localization.Error.description
+                        )
+                        SmallPrimaryButton(title: Localization.Error.retry, isLoading: viewStore.isFetching) {
+                            viewStore.send(.request(viewStore.interval, force: true))
+                        }
                     }
+                    .padding()
+                    Spacer()
                 case .success(let value):
                     if value.series.isEmpty {
                         AlertCard(

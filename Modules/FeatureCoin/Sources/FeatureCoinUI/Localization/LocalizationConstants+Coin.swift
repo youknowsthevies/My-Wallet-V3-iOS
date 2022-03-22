@@ -230,7 +230,7 @@ extension LocalizationConstants {
                     comment: "Coin View Graph: Error title"
                 )
                 static let description = NSLocalizedString(
-                    "There seems to be a problem connecting, please try again",
+                    "There seems to be a problem fetching the chart data, please try again",
                     comment: "Coin View Graph: Error description"
                 )
                 static let retry = NSLocalizedString(

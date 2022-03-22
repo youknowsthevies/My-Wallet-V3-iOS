@@ -239,7 +239,7 @@ extension FeatureCoinDomain.Series {
 
     fileprivate var analytics: String {
         switch self {
-        case ._15_minutes:
+        case .now:
             return "LIVE"
         case .day:
             return "1D"
