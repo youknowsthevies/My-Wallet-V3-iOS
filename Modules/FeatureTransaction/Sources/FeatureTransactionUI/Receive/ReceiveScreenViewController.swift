@@ -108,7 +108,6 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
-
                     self?.addressLabel.content = content.labelContent
                 case .loading:
                     self?.addressLabel.text = nil
