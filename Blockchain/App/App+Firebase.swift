@@ -18,5 +18,8 @@ extension AppProtocol {
     func bootstrap(analytics recorder: AnalyticsEventRecorderAPI = resolve()) {
         observers.insert(CoinViewAnalytics(app: self, analytics: recorder))
         observers.insert(FirebaseAnalytics(app: self, analytics: recorder))
+        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+        observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
+        #endif
     }
 }

@@ -144,6 +144,8 @@ public final class BlockchainEventSubscription {
 
     let file: String, line: Int
 
+    deinit { stop() }
+
     @usableFromInline init(
         app: AppProtocol,
         events: [Tag.Event],
@@ -178,5 +180,6 @@ public final class BlockchainEventSubscription {
 
     public func stop() {
         subscription?.cancel()
+        subscription = nil
     }
 }

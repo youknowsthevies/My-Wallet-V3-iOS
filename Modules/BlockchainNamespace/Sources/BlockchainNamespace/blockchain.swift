@@ -634,7 +634,7 @@ public extension I_blockchain_session_state_preference {
 public final class L_blockchain_session_state_preference_value: L, I_blockchain_session_state_preference_value {
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.preference.value", comment: "") }
 }
-public protocol I_blockchain_session_state_preference_value: I {}
+public protocol I_blockchain_session_state_preference_value: I_blockchain_session_state_value {}
 public final class L_blockchain_session_state_shared: L, I_blockchain_session_state_shared {
 	public override class var localized: String { NSLocalizedString("blockchain.session.state.shared", comment: "") }
 }
@@ -1878,7 +1878,7 @@ public protocol I_blockchain_ux_type_analytics_state: I_blockchain_ux_type_analy
 public final class L_blockchain_ux_type_story: L, I_blockchain_ux_type_story {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.story", comment: "") }
 }
-public protocol I_blockchain_ux_type_story: I {}
+public protocol I_blockchain_ux_type_story: I_blockchain_ux_type_analytics_state {}
 public extension I_blockchain_ux_type_story {
 	var `entry`: L_blockchain_ux_type_story_entry { .init("\(__).entry") }
 }

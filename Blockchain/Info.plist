@@ -119,6 +119,12 @@
 	<string>$(LOGIN_URL)</string>
 	<key>BLOCKCHAIN_URL</key>
 	<string>$(BLOCKCHAIN_URL)</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Network usage required for debugging</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_pulse._tcp</string>
+	</array>
 	<key>GOOGLE_RECAPTCHA_SITE_KEY</key>
 	<string>$(GOOGLE_RECAPTCHA_SITE_KEY)</string>
 	<key>BLOCKCHAIN_WALLET_PAGE_LINK</key>

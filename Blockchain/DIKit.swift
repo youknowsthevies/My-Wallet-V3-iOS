@@ -40,11 +40,6 @@ import StellarKit
 import ToolKit
 import WalletPayloadKit
 
-#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseCore
-import PulseUI
-#endif
-
 // MARK: - Settings Dependencies
 
 extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
@@ -717,38 +712,5 @@ extension DependencyContainer {
         }
 
         single { app }
-    }
-}
-
-class PulseNetworkDebugLogger: NetworkDebugLogger {
-    func storeRequest(
-        _ request: URLRequest,
-        response: URLResponse?,
-        error: Error?,
-        data: Data?,
-        metrics: URLSessionTaskMetrics?,
-        session: URLSession?
-    ) {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        LoggerStore.default.storeRequest(
-            request,
-            response: response,
-            error: error,
-            data: data,
-            metrics: metrics,
-            session: session
-        )
-        #endif
-    }
-}
-
-class PulseNetworkDebugScreenProvider: NetworkDebugScreenProvider {
-    var viewController: UIViewController {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        UITabBar.appearance(whenContainedInInstancesOf: [MainViewController.self]).backgroundColor = .white
-        return MainViewController()
-        #else
-        return UIViewController()
-        #endif
     }
 }

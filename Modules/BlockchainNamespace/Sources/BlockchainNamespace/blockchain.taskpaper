@@ -505,6 +505,7 @@ blockchain:
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:
+			+ blockchain.ux.type.analytics.state
 				entry:
 		user:
 			KYC:
