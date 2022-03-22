@@ -22,6 +22,9 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
     private let qrCodeImageView = UIImageView()
 
+    private let domainHeaderLabel = UILabel()
+    private let domainSeparator = UIView()
+    private let domainLabel = UILabel()
     private let addressHeaderLabel = UILabel()
     private let addressSeparator = UIView()
     private let addressLabel = UILabel()
@@ -75,9 +78,29 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     }
 
     private func setupPresenter() {
+        domainHeaderLabel.content = presenter.walletDomainLabelContent
+
         addressHeaderLabel.content = presenter.walletAddressLabelContent
 
         memoHeaderLabel.content = presenter.memoLabelContent
+
+        presenter.domainLabelContentPresenting
+            .state
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] state in
+                switch state {
+                case .loaded(next: let content):
+                    if !content.labelContent.isEmpty {
+                        self?.domainLabel.isHidden = false
+                        self?.domainSeparator.isHidden = false
+                        self?.domainHeaderLabel.isHidden = false
+                        self?.domainLabel.content = content.labelContent
+                    }
+                case .loading:
+                    self?.domainLabel.text = nil
+                }
+            })
+            .disposed(by: disposeBag)
 
         presenter.addressLabelContentPresenting
             .state
@@ -187,6 +210,9 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         contentView.addSubview(thumbImageView)
         contentView.addSubview(assetImageView)
         contentView.addSubview(qrCodeImageView)
+        contentView.addSubview(domainHeaderLabel)
+        contentView.addSubview(domainSeparator)
+        contentView.addSubview(domainLabel)
         contentView.addSubview(addressHeaderLabel)
         contentView.addSubview(addressSeparator)
         contentView.addSubview(addressLabel)
@@ -274,6 +300,28 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         memoHeaderLabel.layoutToSuperview(.leading, offset: 24)
         memoHeaderToAddressLabelConstraint = memoHeaderLabel.layout(edge: .top, to: .bottom, of: addressLabel, offset: 16)
         memoHeaderHeightConstraint = memoHeaderLabel.layout(dimension: .height, to: 0, activate: false)
+
+        // MARK: Domain Label
+
+        domainLabel.isHidden = true
+        domainLabel.layoutToSuperview(axis: .horizontal, offset: 24)
+        domainLabel.layout(edge: .top, to: .bottom, of: domainSeparator, offset: 16)
+        domainLabel.numberOfLines = 0
+
+        // MARK: Domain Separator
+
+        domainSeparator.isHidden = true
+        domainSeparator.backgroundColor = .lightBorder
+        domainSeparator.layout(dimension: .height, to: 1)
+        domainSeparator.layout(edge: .leading, to: .trailing, of: domainHeaderLabel, offset: 8)
+        domainSeparator.layoutToSuperview(.trailing)
+        domainSeparator.layout(edge: .bottom, to: .lastBaseline, of: domainHeaderLabel)
+        domainSeparator.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -56).isActive = true
+
+        // MARK: Domain Header
+
+        domainHeaderLabel.isHidden = true
+        domainHeaderLabel.layoutToSuperview(.leading, offset: 24)
 
         // MARK: Address Label
 
