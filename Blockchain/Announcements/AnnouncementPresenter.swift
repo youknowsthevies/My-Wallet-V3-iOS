@@ -483,7 +483,7 @@ extension AnnouncementPresenter {
                     return
                 }
                 webViewServiceAPI.openSafari(
-                    url: "https://support.blockchain.com/hc/en-us/articles/4572777318548",
+                    url: "https://medium.com/blockchain/introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9",
                     from: topMostViewController
                 )
             }
