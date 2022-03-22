@@ -406,7 +406,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .authenticated(.failure(let error)) where error.code == .failedToLoadWallet:
         guard state.onboarding?.welcomeState != nil else {
             state.onboarding?.displayAlert = .walletAuthentication(error)
-            return .cancel(id: WalletCancelations.AuthenticationId())
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(value: .onboarding(.pin(.logout)))
+            )
         }
         if state.onboarding?.welcomeState?.manualCredentialsState != nil {
             return .merge(
