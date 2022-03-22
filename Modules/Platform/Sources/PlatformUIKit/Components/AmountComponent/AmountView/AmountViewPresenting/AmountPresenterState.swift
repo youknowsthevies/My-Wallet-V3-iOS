@@ -5,16 +5,6 @@
 /// and an `AmountTranslationView`.
 public enum AmountPresenterState {
 
-    /// Used by `SingleAmountPresenter`
-    case showLimitButton(CurrencyLabeledButtonViewModel)
-
-    /// Used by `AmountTranslationPresenter`
-    case warning(ButtonViewModel)
-
-    /// Used by `AmountTranslationPresenter`
-    case showSecondaryAmountLabel
-
-    /// Used by `AmountTranslationPresenter` and
-    /// `SingleAmountPresenter`
-    case empty
+    case validInput(ButtonViewModel?)
+    case invalidInput(ButtonViewModel?)
 }

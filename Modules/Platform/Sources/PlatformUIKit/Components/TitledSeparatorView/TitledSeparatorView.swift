@@ -1,6 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import UIKit
+
 public final class TitledSeparatorView: UIView {
+
+    override public var intrinsicContentSize: CGSize {
+        CGSize(
+            width: UIScreen.main.bounds.width,
+            height: max(titleLabel.frame.height, 1)
+        )
+    }
 
     // MARK: - Injected
 
@@ -30,6 +39,9 @@ public final class TitledSeparatorView: UIView {
         separatorView.layout(edge: .leading, to: .trailing, of: titleLabel, offset: 8)
         separatorView.layoutToSuperview(.centerY, .trailing)
         separatorView.layout(dimension: .height, to: 1)
+        separatorView.maximizeResistanceAndHuggingPriorities()
+
+        maximizeResistanceAndHuggingPriorities()
     }
 
     @available(*, unavailable)

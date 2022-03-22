@@ -339,10 +339,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func continueToKYCTiersScreen() {
-        router?.presentKYCFlowIfNeeded { _ in
-            // NOOP: this was designed for Swap where presenting KYC means replacing the root view with a KYC prompt.
-            // This completion block is never called.
-        }
+        presentKYCUpgradePrompt()
     }
 
     func showGenericFailure(error: Error) {
