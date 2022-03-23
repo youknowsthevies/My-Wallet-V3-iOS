@@ -49,7 +49,7 @@ public struct EIP681URI: CryptoAssetQRMetadata {
     /// Conformance to `CryptoAssetQRMetadata`, this is not the EIP681URI.
     public var absoluteString: String {
         let prefix = includeScheme ? "ethereum:" : ""
-        return "\(prefix)\(address)"
+        return "\(prefix)\(destinationAddress)"
     }
 
     public init?(address: String, cryptoCurrency: CryptoCurrency) {
