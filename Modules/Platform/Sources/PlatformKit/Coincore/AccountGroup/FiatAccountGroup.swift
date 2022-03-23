@@ -15,6 +15,8 @@ public class FiatAccountGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
 
+    public var accountType: AccountType = .group
+
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }

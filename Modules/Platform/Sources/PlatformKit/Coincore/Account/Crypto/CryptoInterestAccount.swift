@@ -24,6 +24,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
+    public var accountType: AccountType = .custodial
 
     public var receiveAddress: Single<ReceiveAddress> {
         receiveAddressRepository

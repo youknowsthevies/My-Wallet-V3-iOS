@@ -14,6 +14,8 @@ public final class AllAccountsGroup: AccountGroup {
     public let label: String = LocalizedString.allWallets
     let actions: AvailableActions = [.viewActivity]
 
+    public var accountType: AccountType = .group
+
     public var isFunded: Single<Bool> {
         guard !accounts.isEmpty else {
             return .just(false)

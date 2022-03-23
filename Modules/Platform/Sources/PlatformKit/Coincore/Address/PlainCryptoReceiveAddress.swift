@@ -12,6 +12,8 @@ struct PlainCryptoReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataPro
         PlainCryptoAssetQRMetadata(address: address, cryptoCurrency: asset)
     }
 
+    let accountType: AccountType = .external
+
     init(address: String, asset: CryptoCurrency, label: String) {
         self.address = address
         self.asset = asset

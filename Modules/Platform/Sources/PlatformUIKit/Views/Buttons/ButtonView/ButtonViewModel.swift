@@ -299,8 +299,8 @@ extension ButtonViewModel {
             accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
-            backgroundColor: .lightBlueBackground,
-            contentColor: .secondary,
+            backgroundColor: .badgeBackgroundWarning,
+            contentColor: .warningBadge,
             text: text,
             contentInset: .init(horizontal: 8, vertical: 8)
         )
@@ -308,7 +308,7 @@ extension ButtonViewModel {
     }
 
     /// Returns a cancel button with text only
-    public static func currencyOutOfBounds(
+    public static func error(
         with text: String,
         accessibilityId: String
     ) -> ButtonViewModel {
@@ -320,6 +320,24 @@ extension ButtonViewModel {
         viewModel.theme = Theme(
             backgroundColor: .lightRedBackground,
             contentColor: .negativePrice,
+            text: text,
+            contentInset: .init(horizontal: 8, vertical: 8)
+        )
+        return viewModel
+    }
+
+    public static func info(
+        with text: String,
+        accessibilityId: String
+    ) -> ButtonViewModel {
+        var viewModel = ButtonViewModel(
+            font: .main(.semibold, 14),
+            cornerRadius: 8,
+            accessibility: .id(accessibilityId)
+        )
+        viewModel.theme = Theme(
+            backgroundColor: .lightBlueBackground,
+            contentColor: .secondary,
             text: text,
             contentInset: .init(horizontal: 8, vertical: 8)
         )

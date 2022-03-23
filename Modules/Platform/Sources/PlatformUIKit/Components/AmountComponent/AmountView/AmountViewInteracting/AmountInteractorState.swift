@@ -7,23 +7,20 @@ import MoneyKit
 /// and an `AmountTranslationView`.
 public enum AmountInteractorState {
 
-    /// Show nothing.
-    case empty
+    public enum MessageState {
+        /// Shows no message.
+        case none
 
-    /// The amount entered is within the appropriate bounds
-    /// for completing a transaction
-    case inBounds
+        /// Shows an info message.
+        case info(message: String)
 
-    /// Show a warning. Tapping the warning triggers
-    /// the closure.
-    case warning(message: String, action: () -> Void)
+        /// Shows a warning.
+        case warning(message: String)
 
-    /// Show an error message
-    case error(message: String)
+        /// Shows an error message
+        case error(message: String)
+    }
 
-    /// The max limit has been exceeded
-    case maxLimitExceeded(MoneyValue)
-
-    /// The amount entered is below the users minimum
-    case underMinLimit(MoneyValue)
+    case validInput(MessageState)
+    case invalidInput(MessageState)
 }

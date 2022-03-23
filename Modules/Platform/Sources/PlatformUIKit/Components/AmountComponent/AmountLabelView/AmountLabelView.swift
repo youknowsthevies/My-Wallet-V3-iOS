@@ -3,6 +3,7 @@
 import PlatformKit
 import RxRelay
 import RxSwift
+import UIComponentsKit
 import UIKit
 
 public final class AmountLabelView: UIView {
@@ -33,6 +34,10 @@ public final class AmountLabelView: UIView {
 
     // MARK: - UI Properties
 
+    override public var intrinsicContentSize: CGSize {
+        amountLabel.intrinsicContentSize
+    }
+
     public var textColor: UIColor {
         get {
             amountLabel.textColor
@@ -62,13 +67,15 @@ public final class AmountLabelView: UIView {
 
     private func setup() {
         addSubview(amountLabel)
-        amountLabel.layoutToSuperview(.leading, .trailing, .bottom, .top)
+        amountLabel.constraint(edgesTo: self)
         amountLabel.minimumScaleFactor = 0.35
         amountLabel.adjustsFontSizeToFitWidth = true
         amountLabel.textAlignment = .center
         amountLabel.baselineAdjustment = .alignCenters
 
-        amountLabel.horizontalContentHuggingPriority = UILayoutPriority.required
-        amountLabel.horizontalContentCompressionResistancePriority = UILayoutPriority.defaultLow
+        verticalContentHuggingPriority = UILayoutPriority.defaultLow
+        horizontalContentHuggingPriority = UILayoutPriority.defaultLow
+        verticalContentCompressionResistancePriority = UILayoutPriority.defaultHigh
+        horizontalContentCompressionResistancePriority = UILayoutPriority.defaultHigh
     }
 }

@@ -14,7 +14,7 @@ public final class SingleAmountInteractor: AmountViewInteracting {
     public let activeInput: Observable<ActiveAmountInput>
 
     /// The state of the component
-    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .empty)
+    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .validInput(.none))
     public var state: Observable<AmountInteractorState> {
         stateRelay.asObservable()
             .share(replay: 1, scope: .whileConnected)
@@ -71,7 +71,7 @@ public final class SingleAmountInteractor: AmountViewInteracting {
             .disposed(by: disposeBag)
 
         return state
-            .asDriver(onErrorJustReturn: .empty)
+            .asDriver(onErrorJustReturn: .validInput(.none))
     }
 
     public func set(amount: String) {

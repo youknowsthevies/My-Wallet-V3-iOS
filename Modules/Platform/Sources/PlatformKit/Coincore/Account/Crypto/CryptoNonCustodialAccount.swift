@@ -13,6 +13,10 @@ public protocol CryptoNonCustodialAccount: CryptoAccount, NonCustodialAccount {
 
 extension CryptoNonCustodialAccount {
 
+    public var accountType: AccountType {
+        .nonCustodial
+    }
+
     public var isBitPaySupported: Bool {
         if asset == .bitcoin {
             return true
