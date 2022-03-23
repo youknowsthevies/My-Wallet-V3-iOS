@@ -144,6 +144,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let action: AssetAction // TODO: this should be removed and taken from TransactionModel
     private let sourceAccount: BlockchainAccount? // TODO: this should be removed and taken from TransactionModel
     private let target: TransactionTarget? // TODO: this should be removed and taken from TransactionModel
+    private let restrictionsProvider: TransactionRestrictionsProviderAPI
     private let analyticsHook: TransactionAnalyticsHook
     private let messageRecorder: MessageRecording
 
@@ -153,6 +154,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         sourceAccount: BlockchainAccount?,
         target: TransactionTarget?,
         presenter: TransactionFlowPresentable,
+        restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
         messageRecorder: MessageRecording = resolve()
     ) {
@@ -160,6 +162,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
+        self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.messageRecorder = messageRecorder
         super.init(presenter: presenter)
@@ -328,14 +331,15 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectDestinationAccount(target: TransactionTarget) {
+        guard canPerform(action, using: target) else {
+            presentKYCUpgradePrompt()
+            return
+        }
         transactionModel.process(action: .targetAccountSelected(target))
     }
 
     func continueToKYCTiersScreen() {
-        router?.presentKYCFlowIfNeeded { _ in
-            // NOOP: this was designed for Swap where presenting KYC means replacing the root view with a KYC prompt.
-            // This completion block is never called.
-        }
+        presentKYCUpgradePrompt()
     }
 
     func showGenericFailure(error: Error) {
@@ -343,6 +347,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     // MARK: - Private Functions
+
+    private func canPerform(_ action: AssetAction, using target: TransactionTarget) -> Bool {
+        restrictionsProvider.canPerform(action, using: target)
+    }
 
     private func doCloseFlow() {
         router?.closeFlow()
@@ -388,7 +396,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             break
 
         case .authorizeOpenBanking:
-
             let linkedBankData: LinkedBankData
             switch previousState?.source {
             case let account as PaymentMethodAccount:
@@ -623,7 +630,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private func handleCalloutTapped(callout: ErrorRecoveryState.Callout, state: TransactionState) {
         switch callout.id {
         case AnyHashable(ErrorRecoveryCalloutIdentifier.upgradeKYCTier.rawValue):
-            router?.presentKYCUpgradeFlow { _ in }
+            presentKYCUpgradePrompt()
         case AnyHashable(ErrorRecoveryCalloutIdentifier.buy.rawValue):
             guard let account = state.source as? CryptoAccount else {
                 return
@@ -717,8 +724,8 @@ extension TransactionFlowInteractor {
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe { [closeFlow, presentKYCUpgradePrompt] state in
-                if state.canPresentKYCUpgradeFlow {
-                    presentKYCUpgradePrompt()
+                if state.canPresentKYCUpgradeFlowAfterClosingTxFlow {
+                    presentKYCUpgradePrompt(closeFlow)
                 } else {
                     closeFlow()
                 }
@@ -728,26 +735,26 @@ extension TransactionFlowInteractor {
             .disposeOnDeactivate(interactor: self)
     }
 
-    private func presentKYCUpgradePrompt() {
-        router?.presentKYCUpgradeFlow { [closeFlow] _ in
-            closeFlow()
+    private func presentKYCUpgradePrompt(completion: (() -> Void)? = nil) {
+        router?.presentKYCUpgradeFlow { _ in
+            completion?()
         }
     }
 }
 
 extension TransactionState {
 
-    var canPresentKYCUpgradeFlow: Bool {
+    var canPresentKYCUpgradeFlowAfterClosingTxFlow: Bool {
         guard let kycStatus = userKYCStatus, kycStatus.canUpgradeTier else {
             return false
         }
-        return action.canPresentKYCUpgradeFlow
+        return action.canPresentKYCUpgradeFlowAfterClosingTxFlow
     }
 }
 
 extension AssetAction {
 
-    var canPresentKYCUpgradeFlow: Bool {
+    var canPresentKYCUpgradeFlowAfterClosingTxFlow: Bool {
         let canPresentKYCUpgradeFlow: Bool
         switch self {
         case .buy, .swap:

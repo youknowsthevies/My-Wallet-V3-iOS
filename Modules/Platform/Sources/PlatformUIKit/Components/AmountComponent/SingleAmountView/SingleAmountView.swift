@@ -15,7 +15,7 @@ public final class SingleAmountView: UIView, AmountViewable {
     // MARK: - Properties
 
     private let fiatAmountLabelView = AmountLabelView()
-    private let labeledButtonView = LabeledButtonView<CurrencyLabeledButtonViewModel>()
+    private let auxiliaryButton = ButtonView()
 
     private let presenter: SingleAmountPresenter
 
@@ -34,18 +34,24 @@ public final class SingleAmountView: UIView, AmountViewable {
     }
 
     private func setupUI() {
-        addSubview(fiatAmountLabelView)
-        addSubview(labeledButtonView)
+        let innerStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, auxiliaryButton])
+        innerStackView.axis = .vertical
+        innerStackView.alignment = .center
+        innerStackView.spacing = Spacing.standard
 
-        fiatAmountLabelView.layoutToSuperview(.centerX)
-        fiatAmountLabelView.layout(dimension: .height, to: 48)
-        fiatAmountLabelView.layoutToSuperview(.leading, relation: .greaterThanOrEqual, offset: Spacing.outer)
-        fiatAmountLabelView.layoutToSuperview(.trailing, relation: .lessThanOrEqual, offset: -Spacing.outer)
-        fiatAmountLabelView.layoutToSuperview(.centerY)
+        let outerStackView = UIStackView(arrangedSubviews: [innerStackView])
+        outerStackView.axis = .horizontal
+        outerStackView.alignment = .center
 
-        labeledButtonView.layout(edge: .top, to: .bottom, of: fiatAmountLabelView, offset: Spacing.standard)
-        labeledButtonView.layout(to: .centerY, of: fiatAmountLabelView, priority: .penultimateLow)
-        labeledButtonView.layoutToSuperview(.centerX)
+        addSubview(outerStackView)
+        outerStackView.constraint(
+            edgesTo: self,
+            insets: UIEdgeInsets(horizontal: Spacing.outer, vertical: Spacing.standard)
+        )
+
+        fiatAmountLabelView.constraint(axis: .horizontal, to: innerStackView)
+        auxiliaryButton.layoutToSuperview(.leading, relation: .greaterThanOrEqual)
+        auxiliaryButton.layoutToSuperview(.trailing, relation: .lessThanOrEqual)
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
@@ -55,36 +61,28 @@ public final class SingleAmountView: UIView, AmountViewable {
         )
         .map { (state: $0.0, auxiliaryEnabled: $0.1) }
         .map { [weak self] state, auxiliaryEnabled in
-            guard let self = self else { return .empty }
+            guard let self = self else { return .validInput(nil) }
             return self.performEffect(state: state, auxiliaryEnabled: auxiliaryEnabled)
         }
     }
 
     private func performEffect(state: AmountPresenterState, auxiliaryEnabled: Bool) -> AmountPresenterState {
-        let limitButtonVisibility: Visibility
         let textColor: UIColor
         switch state {
-        case .showLimitButton(let viewModel):
-            labeledButtonView.viewModel = viewModel
-            limitButtonVisibility = auxiliaryEnabled ? .visible : .hidden
-            textColor = auxiliaryEnabled ? .validInput : .invalidInput
-        case .empty:
-            limitButtonVisibility = .hidden
+        case .validInput(let viewModel):
+            auxiliaryButton.viewModel = viewModel
             textColor = .validInput
-        case .warning,
-             .showSecondaryAmountLabel:
-            unimplemented()
+        case .invalidInput(let viewModel):
+            auxiliaryButton.viewModel = viewModel
+            textColor = .invalidInput
         }
-        UIView.animate(
-            withDuration: 0.15,
-            delay: 0,
-            options: [.beginFromCurrentState, .curveEaseInOut],
-            animations: {
-                self.labeledButtonView.alpha = limitButtonVisibility.defaultAlpha
-                self.fiatAmountLabelView.textColor = textColor
-            },
-            completion: nil
-        )
+
+        let shouldShowButton = auxiliaryEnabled && auxiliaryButton.viewModel != nil
+        let limitButtonVisibility: Visibility = shouldShowButton ? .visible : .hidden
+        auxiliaryButton.alpha = limitButtonVisibility.defaultAlpha
+        auxiliaryButton.isHidden = limitButtonVisibility.isHidden
+        fiatAmountLabelView.textColor = textColor
+
         return state
     }
 }

@@ -236,14 +236,19 @@ final class TransactionAnalyticsHook {
         case .buy:
             let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
             let maxCardLimit = paymentMethod?.type.isCard == true ? paymentMethod?.max : nil
-            analyticsRecorder.record(event:
-                NewBuyAnalyticsEvent.buyAmountEntered(
-                    inputAmount: state.amount.displayMajorValue.doubleValue,
-                    inputCurrency: state.source?.currencyType.code ?? "",
-                    maxCardLimit: maxCardLimit?.displayMajorValue.doubleValue,
-                    outputCurrency: state.destination?.currencyType.code ?? ""
+            if let inputCurrency = state.source?.currencyType.code,
+               let outputCurrency = state.destination?.currencyType.code
+            {
+                analyticsRecorder.record(event:
+                    NewBuyAnalyticsEvent.buyAmountEntered(
+                        inputAmount: state.amount.displayMajorValue.doubleValue,
+                        inputCurrency: inputCurrency,
+                        maxCardLimit: maxCardLimit?.displayMajorValue.doubleValue,
+                        outputCurrency: outputCurrency
+                    )
                 )
-            )
+            }
+
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount,

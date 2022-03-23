@@ -32,7 +32,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     }
 
     /// The state of the component
-    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .empty)
+    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .validInput(.none))
     public var state: Observable<AmountInteractorState> {
         stateRelay.asObservable()
     }
@@ -293,14 +293,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .disposed(by: disposeBag)
 
         state
-            .map { state in
-                switch state {
-                case .empty, .inBounds:
-                    return .valid
-                case .maxLimitExceeded, .underMinLimit, .warning, .error:
-                    return .invalid
-                }
-            }
+            .map(\.toValidationState)
             .bindAndCatch(to: fiatInteractor.interactor.stateRelay, cryptoInteractor.interactor.stateRelay)
             .disposed(by: disposeBag)
 
@@ -343,7 +336,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .disposed(by: disposeBag)
 
         return state
-            .asDriver(onErrorJustReturn: .empty)
+            .asDriver(onErrorJustReturn: .validInput(.none))
     }
 
     public func set(amount: String) {
@@ -460,13 +453,9 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 extension AmountInteractorState {
     internal var toValidationState: ValidationState {
         switch self {
-        case .inBounds:
+        case .validInput:
             return .valid
-        case .empty,
-             .maxLimitExceeded,
-             .warning,
-             .underMinLimit,
-             .error:
+        case .invalidInput:
             return .invalid
         }
     }

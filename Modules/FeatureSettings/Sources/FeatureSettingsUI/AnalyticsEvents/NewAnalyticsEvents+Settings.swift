@@ -6,7 +6,7 @@ extension AnalyticsEvents.New {
     enum Settings: AnalyticsEvent {
         var type: AnalyticsEventType { .nabu }
 
-        case addMobileNumberClicked
+        case addMobileNumberClicked(origin: Origin)
         case changeMobileNumberClicked
         case notificationPreferencesUpdated(emailEnabled: Bool?, smsEnabled: Bool?)
         case settingsCurrencyClicked(currency: String)
@@ -18,6 +18,10 @@ extension AnalyticsEvents.New {
             case privacyPolicy = "PRIVACY_POLICY"
             case rateUs = "RATE_US"
             case termsOfService = "TERMS_OF_SERVICE"
+        }
+
+        enum Origin: String, StringRawRepresentable {
+            case settings = "SETTINGS"
         }
     }
 }

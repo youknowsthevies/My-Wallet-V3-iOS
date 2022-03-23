@@ -86,7 +86,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         .map { account, tapEnabled -> State in
             switch account {
             case let bank as LinkedBankAccount:
-                let type = bank.accountType.title
+                let type = bank.bankAccountType.title
                 let description = type + (type.isEmpty ? "" : " ") + "\(LocalizationIds.account) -"
                 let subtitle = description + " \(bank.accountNumber)"
                 return .init(

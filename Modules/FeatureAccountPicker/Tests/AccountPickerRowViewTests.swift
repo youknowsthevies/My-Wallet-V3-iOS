@@ -64,7 +64,7 @@ class AccountPickerRowViewTests: XCTestCase {
         label: "LinkedBankAccount",
         accountNumber: "0",
         accountId: "0",
-        accountType: .checking,
+        bankAccountType: .checking,
         currency: .USD,
         paymentType: .bankAccount,
         partner: .yapily,

@@ -273,6 +273,15 @@ public struct PaymentMethod: Equatable, Comparable {
         return localizedString
     }
 
+    var isCustodial: Bool {
+        switch type {
+        case .applePay, .bankAccount, .bankTransfer, .card:
+            return false
+        case .funds:
+            return true
+        }
+    }
+
     public init(
         type: MethodType,
         max: FiatValue,

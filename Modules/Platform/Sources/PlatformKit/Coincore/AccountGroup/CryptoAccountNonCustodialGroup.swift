@@ -16,6 +16,8 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
 
+    public var accountType: AccountType = .group
+
     public var requireSecondPassword: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)

@@ -16,6 +16,8 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
 
     var identifier: AnyHashable = UUID().uuidString
 
+    let accountType: AccountType = .nonCustodial
+
     var balance: Single<MoneyValue> {
         .just(.zero(currency: asset))
     }

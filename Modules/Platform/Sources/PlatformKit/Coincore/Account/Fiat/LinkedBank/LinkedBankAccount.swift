@@ -10,6 +10,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - BlockchainAccount
 
+    public let accountType: AccountType = .external
     public let isDefault: Bool = false
 
     public var actions: Single<AvailableActions> {
@@ -64,7 +65,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let label: String
     public let accountId: String
     public let accountNumber: String
-    public let accountType: LinkedBankAccountType
+    public let bankAccountType: LinkedBankAccountType
     public let paymentType: PaymentMethodPayloadType
     public let partner: LinkedBankData.Partner
     public let data: LinkedBankData
@@ -75,7 +76,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         label: String,
         accountNumber: String,
         accountId: String,
-        accountType: LinkedBankAccountType,
+        bankAccountType: LinkedBankAccountType,
         currency: FiatCurrency,
         paymentType: PaymentMethodPayloadType,
         partner: LinkedBankData.Partner,
@@ -83,7 +84,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     ) {
         self.label = label
         self.accountId = accountId
-        self.accountType = accountType
+        self.bankAccountType = bankAccountType
         self.accountNumber = accountNumber
         fiatCurrency = currency
         self.paymentType = paymentType
