@@ -12,15 +12,15 @@ final class TagReferenceTests: XCTestCase {
             .ref(to: [blockchain.user.id: id])
             .validated()
 
-        XCTAssertNil(ref.error)
+        XCTAssertFalse(ref.hasError)
         XCTAssertEqual(ref.indices[blockchain.user.id], id)
         XCTAssertEqual(ref.string, "blockchain.user[\(id)].name.first")
         XCTAssertEqual(ref.id(ignoring: [blockchain.user.id[]]), "blockchain.user.name.first")
-        XCTAssertEqual(ref.id(), "blockchain.user[\(id)].name.first")
+        XCTAssertEqual(ref.id(ignoring: []), "blockchain.user[\(id)].name.first")
     }
 
     func test_reference_with_invalid_indices() throws {
-        let ref = blockchain.user.name.first[].ref()
+        let ref = blockchain.user.name.first[].reference
         XCTAssertThrowsError(try ref.validated())
         XCTAssertNotNil(ref.error)
     }
@@ -39,10 +39,12 @@ final class TagReferenceTests: XCTestCase {
 
         XCTAssertAnyEqual(
             ref.context,
-            [
-                blockchain.user.id[]: id,
-                blockchain.app.configuration.apple.pay.is.enabled[]: true
-            ]
+            Tag.Context(
+                [
+                    blockchain.user.id[]: id,
+                    blockchain.app.configuration.apple.pay.is.enabled[]: true
+                ]
+            )
         )
     }
 
@@ -57,7 +59,7 @@ final class TagReferenceTests: XCTestCase {
             XCTAssertEqual(ref.string, "blockchain.user.name.first")
             try ref.validated()
         } catch let error as Tag.Error {
-            XCTAssertEqual(error.message(), "Missing index blockchain.user.id for ref to blockchain.user.name.first")
+            XCTAssertEqual(error.message, "Missing index blockchain.user.id for ref to blockchain.user.name.first")
         }
     }
 

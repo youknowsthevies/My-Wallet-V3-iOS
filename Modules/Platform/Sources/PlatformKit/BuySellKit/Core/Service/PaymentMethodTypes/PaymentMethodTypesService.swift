@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import Localization
 import MoneyKit
 import RxRelay

@@ -74,7 +74,7 @@ extension TransactionUserActionService: TransactionRestrictionsProviderAPI {
         guard case .trading(let tradingProduct) = rawProduct else {
             return nil
         }
-        return tradingProduct.maxOrdersCap
+        return tradingProduct.maxOrdersCap ?? tradingProduct.maxOrdersLeft
     }
 }
 
@@ -175,6 +175,12 @@ extension TransactionFlowAction {
 extension UserState {
 
     fileprivate func canStartTransactionFlow(for productId: ProductIdentifier?) -> Bool {
+        // For first-time users, let them go through the buy flow.
+        if productId == .buy, kycStatus == .unverified {
+            return true
+        }
+
+        // For everyone else, check the actual product.
         guard let product = product(id: productId) else {
             // Let users use products we don't have information for
             return true

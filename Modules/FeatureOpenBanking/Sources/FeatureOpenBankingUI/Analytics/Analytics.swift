@@ -7,6 +7,10 @@ extension AnalyticsEvents.New {
 
     enum OpenBanking: AnalyticsEvent, Equatable {
 
+        enum Origin: String {
+            case settings = "SETTINGS"
+        }
+
         case bankAccountStateTriggered(
             account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
             institution: String? = nil
@@ -14,11 +18,13 @@ extension AnalyticsEvents.New {
 
         case linkBankConditionsApproved(
             account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
-            institution: String
+            institution: String,
+            origin: OpenBanking.Origin
         )
 
         case linkBankSelected(
-            institution: String
+            institution: String,
+            account: FeatureOpenBankingDomain.OpenBanking.BankAccount
         )
 
         var type: AnalyticsEventType { .nabu }
@@ -27,17 +33,18 @@ extension AnalyticsEvents.New {
             switch self {
             case .bankAccountStateTriggered(let account, let institution):
                 return [
-                    "bank_name": String(describing: account.details?.bankName ?? institution).uppercased(),
-                    "currency": String(describing: account.currency),
+                    "bank_name": (account.details?.bankName ?? institution ?? "").uppercased(),
+                    "currency": account.currency ?? "",
                     "entity": account.attributes.entity,
-                    "institution_name": String(describing: institution),
+                    "institution_name": institution ?? "",
                     "partner": account.partner,
                     "service": "OPEN_BANKING",
-                    "state": String(describing: account.state?.value),
+                    "state": account.state?.value ?? "",
                     "type": "BANK_TRANSFER"
                 ]
-            case .linkBankConditionsApproved(let account, let institution):
+            case .linkBankConditionsApproved(let account, let institution, let origin):
                 return [
+                    "origin": origin.rawValue,
                     "bank_name": institution,
                     "partner": account.partner,
                     "provider": {
@@ -49,9 +56,10 @@ extension AnalyticsEvents.New {
                         }
                     }()
                 ]
-            case .linkBankSelected(let institution):
+            case .linkBankSelected(let institution, let account):
                 return [
-                    "bank_name": institution
+                    "bank_name": institution,
+                    "partner": account.partner
                 ]
             }
         }

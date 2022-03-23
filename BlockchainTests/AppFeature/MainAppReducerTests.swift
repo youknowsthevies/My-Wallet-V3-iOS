@@ -24,6 +24,7 @@ import XCTest
 // swiftlint:disable type_body_length
 final class MainAppReducerTests: XCTestCase {
 
+    var mockNabuUserService: MockNabuUserService!
     var mockWalletManager: WalletManager!
     var mockMobileAuthSyncService: MockMobileAuthSyncService!
     var mockResetPasswordService: MockResetPasswordService!
@@ -68,6 +69,7 @@ final class MainAppReducerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
 
+        mockNabuUserService = MockNabuUserService()
         mockSettingsApp = MockBlockchainSettingsApp()
         mockWalletManager = WalletManager(
             wallet: mockWallet,
@@ -115,6 +117,8 @@ final class MainAppReducerTests: XCTestCase {
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
+                app: App.test,
+                nabuUserService: mockNabuUserService,
                 loadingViewPresenter: LoadingViewPresenter(),
                 externalAppOpener: mockExternalAppOpener,
                 deeplinkHandler: mockDeepLinkHandler,

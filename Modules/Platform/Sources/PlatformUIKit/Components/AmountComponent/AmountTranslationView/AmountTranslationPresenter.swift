@@ -107,7 +107,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
 
     // MARK: - Accessors
 
-    private let stateRelay = BehaviorRelay<AmountPresenterState>(value: .showSecondaryAmountLabel)
+    private let stateRelay = BehaviorRelay<AmountPresenterState>(value: .validInput(nil))
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -141,7 +141,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                 interactor.activeInput
             )
             .map(weak: self) { (self, payload) in
-                self.setupButton(by: payload.0, activeInput: payload.1)
+                self.setupButton(by: payload.0)
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
@@ -154,97 +154,44 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         interactor.connect(input: input.map(\.toInteractorInput))
             .map { [weak self] state -> AmountPresenterState in
-                guard let self = self else { return .empty }
-                return self.setupButton(by: state, activeInput: self.interactor.activeInputRelay.value)
+                guard let self = self else { return .validInput(nil) }
+                return self.setupButton(by: state)
             }
     }
 
-    private func setupButton(
-        by state: AmountInteractorState,
-        activeInput: ActiveAmountInput
-    ) -> AmountPresenterState {
+    private func setupButton(by state: AmountInteractorState) -> AmountPresenterState {
         switch state {
-        case .empty, .inBounds:
-            return .showSecondaryAmountLabel
-        case .error(let message):
-            let viewModel = ButtonViewModel.currencyOutOfBounds(
-                with: message,
-                accessibilityId: AccessibilityId.error
-            )
-            viewModel.tapRelay
-                .bindAndCatch(to: auxiliaryButtonTappedRelay)
-                .disposed(by: disposeBag)
-            return .warning(viewModel)
-        case .warning(let message, let action):
-            let viewModel = ButtonViewModel.warning(
-                with: message,
-                accessibilityId: AccessibilityId.warning
-            )
-            viewModel.tap
-                .throttle(.seconds(1))
-                .emit(onNext: { _ in
-                    action()
-                })
-                .disposed(by: disposeBag)
-            viewModel.tapRelay
-                .bindAndCatch(to: auxiliaryButtonTappedRelay)
-                .disposed(by: disposeBag)
-            return .warning(viewModel)
-        case .maxLimitExceeded(let maxValue):
-            /// The min/max string value can include one parameter. If it does not
-            /// just show the localized string.
-            var message = ""
-            if displayBundle.strings.useMax.contains("%@") {
-                message = String(format: displayBundle.strings.useMax, maxValue.displayString)
-            } else {
-                message = displayBundle.strings.useMax
-            }
-            let viewModel = ButtonViewModel.currencyOutOfBounds(
-                with: message,
-                accessibilityId: AccessibilityId.max
-            )
-            viewModel.tap
-                .throttle(.seconds(1))
-                .emit(onNext: { [maxValue, weak self] in
-                    guard let self = self else { return }
-                    if let event = self.displayBundle.events?.maxTappedAnalyticsEvent {
-                        self.analyticsRecorder.record(event: event)
-                    }
-                    self.interactor.set(maxAmount: maxValue)
-                })
-                .disposed(by: disposeBag)
-            viewModel.tapRelay
-                .bindAndCatch(to: auxiliaryButtonTappedRelay)
-                .disposed(by: disposeBag)
-            return .warning(viewModel)
-        case .underMinLimit(let minValue):
-            /// The min/max string value can include one parameter. If it does not
-            /// just show the localized string.
-            var message = ""
-            if displayBundle.strings.useMin.contains("%@") {
-                message = String(format: displayBundle.strings.useMin, minValue.displayString)
-            } else {
-                message = displayBundle.strings.useMin
-            }
-            let viewModel = ButtonViewModel.currencyOutOfBounds(
-                with: message,
-                accessibilityId: AccessibilityId.min
-            )
-            viewModel.tap
-                .throttle(.seconds(1))
-                .emit(onNext: { [minValue, weak self] in
-                    guard let self = self else { return }
-                    if let event = self.displayBundle.events?.minTappedAnalyticsEvent {
-                        self.analyticsRecorder.record(event: event)
-                    }
-                    self.interactor.set(minAmount: minValue)
-                })
-                .disposed(by: disposeBag)
-            viewModel.tapRelay
-                .bindAndCatch(to: auxiliaryButtonTappedRelay)
-                .disposed(by: disposeBag)
-            return .warning(viewModel)
+        case .validInput(let messageState):
+            return .validInput(buttonViewModel(state: messageState))
+        case .invalidInput(let messageState):
+            return .invalidInput(buttonViewModel(state: messageState))
         }
+    }
+
+    private func buttonViewModel(state: AmountInteractorState.MessageState) -> ButtonViewModel? {
+        let viewModel: ButtonViewModel?
+        switch state {
+        case .none:
+            return nil
+        case .info(let message):
+            viewModel = ButtonViewModel.info(with: message, accessibilityId: message)
+
+        case .warning(let message):
+            viewModel = ButtonViewModel.warning(with: message, accessibilityId: message)
+
+        case .error(let message):
+            viewModel = ButtonViewModel.error(with: message, accessibilityId: message)
+        }
+
+        viewModel?.tap
+            .emit(
+                onNext: { [interactor] in
+                    interactor.auxiliaryButtonTappedRelay.accept(())
+                }
+            )
+            .disposed(by: disposeBag)
+
+        return viewModel
     }
 }
 

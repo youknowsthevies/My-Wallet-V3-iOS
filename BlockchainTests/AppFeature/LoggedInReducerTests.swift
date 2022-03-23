@@ -25,6 +25,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
     var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
+    var mockNabuUserService: MockNabuUserService!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var onboardingSettings: MockOnboardingSettings!
     var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
@@ -66,17 +67,20 @@ final class LoggedInReducerTests: XCTestCase {
         mockDeepLinkRouter = MockDeepLinkRouter()
         mockFeatureFlagsService = MockFeatureFlagsService()
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
+        mockNabuUserService = MockNabuUserService()
 
         testStore = TestStore(
             initialState: LoggedIn.State(),
             reducer: loggedInReducer,
             environment: LoggedIn.Environment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                app: App.test,
                 analyticsRecorder: mockAnalyticsRecorder,
                 loadingViewPresenter: LoadingViewPresenter(),
                 exchangeRepository: mockExchangeAccountRepository,
                 remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
                 remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
+                nabuUserService: mockNabuUserService,
                 walletManager: mockWalletManager,
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,

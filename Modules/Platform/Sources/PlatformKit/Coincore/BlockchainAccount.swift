@@ -93,6 +93,19 @@ extension BlockchainAccount {
         return single.asPublisher()
             .eraseToAnyPublisher()
     }
+
+    public func actionsPublisher() -> AnyPublisher<[AssetAction], Error> {
+        AssetAction.allCases
+            .map { action in
+                can(perform: action).map { value in (action: action, perform: value) }
+            }
+            .merge()
+            .collect()
+            .map { actions -> [AssetAction] in
+                actions.filter(\.perform).map(\.action)
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension BlockchainAccount {

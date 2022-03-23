@@ -194,8 +194,7 @@ private struct PrimaryNavigationModifier<Leading: View, Trailing: View>: ViewMod
         #if os(macOS)
         content
             .ifLet(title) { view, title in
-                view
-                    .navigationTitle(title)
+                view.navigationTitle(title)
             }
             .toolbar {
                 ToolbarItem {

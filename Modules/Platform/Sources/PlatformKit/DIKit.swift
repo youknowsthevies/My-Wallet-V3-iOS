@@ -2,7 +2,7 @@
 
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import MoneyKit
 import NetworkKit
 import ToolKit
@@ -17,10 +17,6 @@ extension DependencyContainer {
     // MARK: - PlatformKit Module
 
     public static var platformKit = module {
-
-        // MARK: - Today Extension
-
-        single { PortfolioSyncingService() as BalanceSharingSettingsServiceAPI }
 
         // MARK: - Clients
 

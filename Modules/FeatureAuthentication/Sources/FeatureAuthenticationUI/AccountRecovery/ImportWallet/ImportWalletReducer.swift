@@ -14,10 +14,12 @@ public enum ImportWalletAction: Equatable {
 }
 
 struct ImportWalletState: Equatable {
+    var mnemonic: String
     var createAccountState: CreateAccountState?
     var isCreateAccountScreenVisible: Bool
 
-    init() {
+    init(mnemonic: String) {
+        self.mnemonic = mnemonic
         isCreateAccountScreenVisible = false
     }
 }
@@ -60,7 +62,7 @@ let importWalletReducer = Reducer.combine(
             state.isCreateAccountScreenVisible = isVisible
             if isVisible {
                 state.createAccountState = .init(
-                    context: .importWallet
+                    context: .importWallet(mnemonic: state.mnemonic)
                 )
             }
             return .none

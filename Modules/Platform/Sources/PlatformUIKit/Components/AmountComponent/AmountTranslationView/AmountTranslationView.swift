@@ -51,11 +51,9 @@ public final class AmountTranslationView: UIView, AmountViewable {
     }()
 
     private let presenter: AmountTranslationPresenter
+    private let labelsStackView: UIStackView
 
     private let disposeBag = DisposeBag()
-
-    private var fiatLabelConstraints: AmountLabelConstraints!
-    private var cryptoLabelConstraints: AmountLabelConstraints!
 
     // MARK: - Init
 
@@ -64,121 +62,45 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
     public init(presenter: AmountTranslationPresenter) {
         self.presenter = presenter
+        labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
+        labelsStackView.axis = .vertical
         super.init(frame: UIScreen.main.bounds)
 
         fiatAmountLabelView.presenter = presenter.fiatPresenter.presenter
         cryptoAmountLabelView.presenter = presenter.cryptoPresenter.presenter
 
-        func setupConstraints(for amountLabelView: UIView, isActive: Bool) -> AmountLabelConstraints {
-            amountLabelView.layoutToSuperview(.centerX)
-            amountLabelView.layout(dimension: .height, to: 48)
-
-            let topPriority: UILayoutPriority = isActive ? .penultimateHigh : .penultimateLow
-            let topLeadingConstraint = amountLabelView.layoutToSuperview(
-                .leading,
-                relation: .greaterThanOrEqual,
-                offset: 24,
-                priority: topPriority
-            )!
-            let topTrailingConstraint = amountLabelView.layoutToSuperview(
-                .trailing,
-                relation: .lessThanOrEqual,
-                offset: -24,
-                priority: topPriority
-            )!
-            let topVerticalConstraint = amountLabelView.layout(
-                edge: .bottom,
-                to: .centerY,
-                of: self,
-                priority: topPriority
-            )!
-
-            let top = [
-                topLeadingConstraint,
-                topTrailingConstraint,
-                topVerticalConstraint
-            ]
-
-            let bottomPriority: UILayoutPriority = isActive ? .penultimateLow : .penultimateHigh
-            let bottomLeadingConstraint = amountLabelView.layoutToSuperview(
-                .leading,
-                relation: .greaterThanOrEqual,
-                offset: 24,
-                priority: topPriority
-            )!
-            let bottomTrailingConstraint = amountLabelView.layout(
-                edge: .trailing,
-                to: .leading,
-                of: swapButton,
-                relation: .lessThanOrEqual,
-                offset: -16,
-                priority: topPriority
-            )!
-            let bottomVerticalConstraint = amountLabelView.layout(
-                edge: .top,
-                to: .centerY,
-                of: self,
-                priority: bottomPriority
-            )!
-
-            let bottom = [
-                bottomLeadingConstraint,
-                bottomTrailingConstraint,
-                bottomVerticalConstraint
-            ]
-
-            return AmountLabelConstraints(top: top, bottom: bottom)
-        }
-
-        addSubview(fiatAmountLabelView)
-        addSubview(cryptoAmountLabelView)
-        addSubview(auxiliaryButton)
-        addSubview(swapButton)
-
-        fiatLabelConstraints = setupConstraints(for: fiatAmountLabelView, isActive: true)
-        cryptoLabelConstraints = setupConstraints(for: cryptoAmountLabelView, isActive: false)
-
-        cryptoLabelConstraints.bottom.append(
-            swapButton.layout(
-                to: .centerY,
-                of: cryptoAmountLabelView,
-                priority: .penultimateHigh
-            )!
-        )
-        fiatLabelConstraints.bottom.append(
-            swapButton.layout(
-                to: .centerY,
-                of: fiatAmountLabelView,
-                priority: .penultimateLow
-            )!
-        )
-
-        cryptoLabelConstraints.bottom.append(
-            auxiliaryButton.layout(
-                to: .centerY,
-                of: cryptoAmountLabelView,
-                priority: .penultimateHigh
-            )!
-        )
-        fiatLabelConstraints.bottom.append(
-            auxiliaryButton.layout(
-                to: .centerY,
-                of: fiatAmountLabelView,
-                priority: .penultimateLow
-            )!
-        )
-
-        auxiliaryButton.layoutToSuperview(.centerX)
-        auxiliaryButton.layout(
-            edge: .trailing,
-            to: .leading,
-            of: swapButton,
-            relation: .lessThanOrEqual,
-            offset: 0
-        )
-
         swapButton.layout(size: .init(edge: 40))
-        swapButton.layout(to: .trailing, of: self, offset: -16)
+        // a view to offset the swap button on the leading size, so that the inner stack view looks centered.
+        let offsetView = UIView()
+        offsetView.layout(size: .init(edge: 40))
+
+        let innerStackView = UIStackView(arrangedSubviews: [offsetView, labelsStackView, swapButton])
+        innerStackView.axis = .horizontal
+        innerStackView.alignment = .center
+        innerStackView.spacing = Spacing.standard
+
+        let contentStackView = UIStackView(arrangedSubviews: [innerStackView, auxiliaryButton])
+        contentStackView.axis = .vertical
+        contentStackView.alignment = .center
+        contentStackView.spacing = Spacing.standard
+
+        innerStackView.constraint(axis: .horizontal, to: contentStackView)
+
+        // used to center the content
+        let outerStackView = UIStackView(arrangedSubviews: [contentStackView])
+        outerStackView.axis = .horizontal
+        outerStackView.alignment = .center
+
+        addSubview(outerStackView)
+        outerStackView.constraint(
+            edgesTo: self,
+            insets: UIEdgeInsets(horizontal: Spacing.outer, vertical: Spacing.standard)
+        )
+
+        labelsStackView.maximizeResistanceAndHuggingPriorities()
+
+        auxiliaryButton.layoutToSuperview(.leading, relation: .greaterThanOrEqual)
+        auxiliaryButton.layoutToSuperview(.trailing, relation: .lessThanOrEqual)
 
         presenter.swapButtonVisibility
             .drive(swapButton.rx.visibility)
@@ -221,7 +143,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         )
         .map { (state: $0.0, activeAmountInput: $0.1, auxiliaryEnabled: $0.2) }
         .map { [weak self] value in
-            guard let self = self else { return .empty }
+            guard let self = self else { return .validInput(nil) }
             return self.performEffect(
                 state: value.state,
                 activeAmountInput: value.activeAmountInput,
@@ -237,49 +159,21 @@ public final class AmountTranslationView: UIView, AmountViewable {
         activeAmountInput: ActiveAmountInput,
         auxiliaryButtonEnabled: Bool
     ) -> AmountPresenterState {
-        let limitButtonVisibility: Visibility
         let textColor: UIColor
         switch state {
-        case .warning(let viewModel):
+        case .validInput(let viewModel):
+            textColor = .validInput
             auxiliaryButton.viewModel = viewModel
-            limitButtonVisibility = .visible
-            textColor = auxiliaryButtonEnabled ? .validInput : .invalidInput
-        case .showSecondaryAmountLabel:
-            auxiliaryButton.viewModel = nil
-            limitButtonVisibility = .hidden
-            textColor = .validInput
-        case .empty:
-            auxiliaryButton.viewModel = nil
-            limitButtonVisibility = .hidden
-            textColor = .validInput
-        case .showLimitButton:
-            unimplemented()
+        case .invalidInput(let viewModel):
+            textColor = .invalidInput
+            auxiliaryButton.viewModel = viewModel
         }
 
-        let fiatVisibility: Visibility
-        let cryptoVisibility: Visibility
-        switch activeAmountInput {
-        case .fiat:
-            fiatVisibility = .visible
-            cryptoVisibility = auxiliaryButtonEnabled ? limitButtonVisibility.inverted : .visible
-        case .crypto:
-            cryptoVisibility = .visible
-            fiatVisibility = auxiliaryButtonEnabled ? limitButtonVisibility.inverted : .visible
-        }
-        UIView.animate(
-            withDuration: 0.15,
-            delay: 0,
-            options: [.beginFromCurrentState, .curveEaseInOut],
-            animations: {
-                self.auxiliaryButton.alpha = auxiliaryButtonEnabled ? limitButtonVisibility.defaultAlpha : 0
-                self.auxiliaryButton.isHidden = !auxiliaryButtonEnabled || limitButtonVisibility.isHidden
-                self.fiatAmountLabelView.alpha = fiatVisibility.defaultAlpha
-                self.cryptoAmountLabelView.alpha = cryptoVisibility.defaultAlpha
-                self.fiatAmountLabelView.textColor = textColor
-                self.cryptoAmountLabelView.textColor = textColor
-            },
-            completion: nil
-        )
+        let shouldShowAuxiliaryButton = auxiliaryButtonEnabled && auxiliaryButton.viewModel != nil
+        auxiliaryButton.isHidden = !shouldShowAuxiliaryButton
+        fiatAmountLabelView.textColor = textColor
+        cryptoAmountLabelView.textColor = textColor
+
         return state
     }
 
@@ -294,11 +188,19 @@ public final class AmountTranslationView: UIView, AmountViewable {
             animations: {
                 switch newInput {
                 case .fiat:
-                    self.fiatLabelConstraints.activate()
-                    self.cryptoLabelConstraints.deactivate()
+                    // remove bottom label from current position and add it back as last view in the stack
+                    self.labelsStackView.removeArrangedSubview(self.cryptoAmountLabelView)
+                    self.labelsStackView.addArrangedSubview(self.cryptoAmountLabelView)
+                    // ensure that the selected crypto can be compressed to make room for the other input on small screens
+                    self.fiatAmountLabelView.verticalContentCompressionResistancePriority = .defaultHigh
+                    self.cryptoAmountLabelView.verticalContentCompressionResistancePriority = .required
                 case .crypto:
-                    self.cryptoLabelConstraints.activate()
-                    self.fiatLabelConstraints.deactivate()
+                    // remove bottom label from current position and add it back as last view in the stack
+                    self.labelsStackView.removeArrangedSubview(self.fiatAmountLabelView)
+                    self.labelsStackView.addArrangedSubview(self.fiatAmountLabelView)
+                    // ensure that the selected crypto can be compressed to make room for the other input on small screens
+                    self.fiatAmountLabelView.verticalContentCompressionResistancePriority = .required
+                    self.cryptoAmountLabelView.verticalContentCompressionResistancePriority = .defaultHigh
                 }
                 self.layoutIfNeeded()
             },

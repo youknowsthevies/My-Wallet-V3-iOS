@@ -15,7 +15,6 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     // MARK: - Types
 
     public enum State {
-        case showLimitButton(CurrencyLabeledButtonViewModel)
         case empty
     }
 
@@ -62,7 +61,7 @@ public final class SingleAmountPresenter: AmountViewPresenting {
         let input = input.filter { !$0.isEmpty }
         return interactor.connect(input: input.map(\.toInteractorInput))
             .map { [weak self] state -> AmountPresenterState in
-                guard let self = self else { return .empty }
+                guard let self = self else { return .validInput(nil) }
                 return self.setupButton(by: state)
             }
     }
@@ -70,43 +69,38 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     // MARK: - Private
 
     private func setupButton(by state: AmountInteractorState) -> AmountPresenterState {
-        let viewModel: CurrencyLabeledButtonViewModel
         switch state {
-        case .empty, .inBounds:
-            return .empty
-        case .underMinLimit(let minValue):
-            viewModel = CurrencyLabeledButtonViewModel(
-                amount: minValue,
-                format: LocalizedString.Withdraw.Min.useMin,
-                style: .currencyOutOfBounds,
-                accessibilityId: AccessibilityId.min
-            )
-            viewModel.elementOnTap
-                .emit(onNext: { [weak interactor] amount in
-                    interactor?.set(amount: amount)
-                    interactor?.auxiliaryButtonTappedRelay.accept(())
-                })
-                .disposed(by: disposeBag)
-            return .showLimitButton(viewModel)
-        case .maxLimitExceeded(let maxValue):
-            viewModel = CurrencyLabeledButtonViewModel(
-                amount: maxValue,
-                format: LocalizedString.Withdraw.Max.useMax,
-                style: .currencyOutOfBounds,
-                accessibilityId: AccessibilityId.max
-            )
-            viewModel.elementOnTap
-                .emit(onNext: { [weak interactor] amount in
-                    interactor?.set(amount: amount)
-                    interactor?.auxiliaryButtonTappedRelay.accept(())
-                })
-                .disposed(by: disposeBag)
-            return .showLimitButton(viewModel)
-        case .warning,
-             .error:
-            Logger.shared.error(String(describing: state))
-            return .empty
+        case .validInput(let messageState):
+            return .validInput(buttonViewModel(state: messageState))
+        case .invalidInput(let messageState):
+            return .invalidInput(buttonViewModel(state: messageState))
         }
+    }
+
+    private func buttonViewModel(state: AmountInteractorState.MessageState) -> ButtonViewModel? {
+        let viewModel: ButtonViewModel?
+        switch state {
+        case .none:
+            return nil
+        case .info(let message):
+            viewModel = ButtonViewModel.info(with: message, accessibilityId: message)
+
+        case .warning(let message):
+            viewModel = ButtonViewModel.warning(with: message, accessibilityId: message)
+
+        case .error(let message):
+            viewModel = ButtonViewModel.error(with: message, accessibilityId: message)
+        }
+
+        viewModel?.tap
+            .emit(
+                onNext: { [interactor] in
+                    interactor.auxiliaryButtonTappedRelay.accept(())
+                }
+            )
+            .disposed(by: disposeBag)
+
+        return viewModel
     }
 }
 

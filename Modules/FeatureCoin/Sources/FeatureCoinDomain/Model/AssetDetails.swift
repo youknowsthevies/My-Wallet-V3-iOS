@@ -4,32 +4,33 @@ import Foundation
 import SwiftUI
 
 public struct AssetDetails: Equatable {
+
     public let name: String
     public let code: String
     public var brandColor: Color
-    public let about: String
-    public let assetInfoUrl: URL
+    public let about: String?
+    public let website: URL?
     public let logoUrl: URL?
     public let logoImage: Image?
-    public var tradeable: Bool
+    public var isTradable: Bool
 
     public init(
         name: String,
         code: String,
         brandColor: Color,
-        about: String,
-        assetInfoUrl: URL,
+        about: String?,
+        website: URL?,
         logoUrl: URL?,
         logoImage: Image?,
-        tradeable: Bool
+        isTradable: Bool
     ) {
         self.name = name
         self.code = code
         self.brandColor = brandColor
         self.about = about
-        self.assetInfoUrl = assetInfoUrl
+        self.website = website
         self.logoUrl = logoUrl
         self.logoImage = logoImage
-        self.tradeable = tradeable
+        self.isTradable = isTradable
     }
 }

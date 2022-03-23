@@ -45,7 +45,7 @@ enum TransactionAction: MviAction {
     case authorizedOpenBanking
     case performSecurityChecksForTransaction(TransactionResult)
     case securityChecksCompleted
-    case startPollingOrderStatus(orderId: String?)
+    case startPollingOrderStatus(orderId: String)
     case updateTransactionPending
     case updateTransactionComplete
     case fetchTransactionExchangeRates

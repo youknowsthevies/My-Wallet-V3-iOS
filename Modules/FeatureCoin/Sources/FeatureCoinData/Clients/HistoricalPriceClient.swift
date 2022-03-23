@@ -10,7 +10,7 @@ public protocol HistoricalPriceClientAPI {
         baseCode: String,
         quoteCode: String,
         window: Interval,
-        scale: Interval,
+        scale: TimeInterval,
         relativeTo date: Date
     ) -> AnyPublisher<[PriceIndex], NetworkError>
 }
@@ -37,7 +37,7 @@ public struct HistoricalPriceClient: HistoricalPriceClientAPI {
         baseCode: String,
         quoteCode: String,
         window: Interval,
-        scale: Interval,
+        scale: TimeInterval,
         relativeTo date: Date
     ) -> AnyPublisher<[PriceIndex], NetworkError> {
 
@@ -47,13 +47,6 @@ public struct HistoricalPriceClient: HistoricalPriceClientAPI {
             to: date
         )!
 
-        let scaleDate = calendar.date(
-            byAdding: scale.component,
-            value: scale.value,
-            to: date
-        )!
-        let every = scaleDate.timeIntervalSince(date)
-
         let start = startingAt.timeIntervalSince1970
             .clamped(to: maxAge...)
 
@@ -62,9 +55,9 @@ public struct HistoricalPriceClient: HistoricalPriceClientAPI {
             parameters: [
                 URLQueryItem(name: "base", value: baseCode),
                 URLQueryItem(name: "quote", value: quoteCode),
-                URLQueryItem(name: "start", value: Int(start - every).description),
+                URLQueryItem(name: "start", value: Int(start - scale).description),
                 URLQueryItem(name: "end", value: Int(date.timeIntervalSince1970).description),
-                URLQueryItem(name: "scale", value: Int(every).description)
+                URLQueryItem(name: "scale", value: Int(scale).description)
             ]
         )!
 

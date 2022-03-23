@@ -65,7 +65,7 @@ enum SettingsSectionType: Int, Equatable {
             case currencyPreference
             case pitConnection
             case recoveryPhrase
-            case cardIssuance
+            case cardIssuing
         }
 
         enum SwitchCellType: String {
@@ -130,6 +130,7 @@ enum SettingsSectionType: Int, Equatable {
             case addresses
             case contactSupport
             case airdrops
+            case cardIssuing
         }
     }
 }

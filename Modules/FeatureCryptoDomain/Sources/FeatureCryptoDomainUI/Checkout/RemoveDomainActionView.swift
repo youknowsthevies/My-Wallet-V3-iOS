@@ -23,15 +23,17 @@ struct RemoveDomainActionView: View {
             Text(String(format: LocalizedString.removeTitle, domain?.domainName ?? ""))
                 .typography(.title3)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, Spacing.padding3)
                 .accessibility(identifier: Accessibility.removeTitle)
-            Spacer()
             DestructivePrimaryButton(
                 title: LocalizedString.removeButton,
                 action: removeButtonTapped
             )
             .accessibility(identifier: Accessibility.removeButton)
             MinimalButton(title: LocalizedString.nevermindButton) {
-                isShown.toggle()
+                withAnimation {
+                    isShown.toggle()
+                }
             }
             .padding(.bottom, Spacing.padding3)
             .accessibility(identifier: Accessibility.nevermindButton)

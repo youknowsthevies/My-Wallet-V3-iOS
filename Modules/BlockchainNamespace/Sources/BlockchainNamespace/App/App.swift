@@ -10,6 +10,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
 
     var events: Session.Events { get }
     var state: Session.State { get }
+    var observers: Session.Observers { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
 
     #if canImport(SwiftUI)
@@ -23,6 +24,7 @@ public class App: AppProtocol {
 
     public let events: Session.Events
     public let state: Session.State
+    public let observers: Session.Observers
     public let remoteConfiguration: Session.RemoteConfiguration
 
     #if canImport(SwiftUI)
@@ -37,8 +39,6 @@ public class App: AppProtocol {
     ) {
         self.init(
             language: language,
-            events: .init(),
-            state: .init(),
             remoteConfiguration: Session.RemoteConfiguration(remote: remote)
         )
     }
@@ -47,40 +47,36 @@ public class App: AppProtocol {
         language: Language = Language.root.language,
         events: Session.Events = .init(),
         state: Session.State = .init(),
+        observers: Session.Observers = .init(),
         remoteConfiguration: Session.RemoteConfiguration
     ) {
         defer { start() }
         self.language = language
         self.events = events
         self.state = state
+        self.observers = observers
         self.remoteConfiguration = remoteConfiguration
     }
 
     private func start() {
         state.app = self
         deepLinks.start()
-        for o in observers {
-            o.store(in: &bag)
-        }
+        #if DEBUG
+        _ = logger
+        #endif
     }
 
     // Observers
 
-    var bag: Set<AnyCancellable> = []
-    var observers: [AnyCancellable] {
-        #if DEBUG
-        let debug: [AnyCancellable] = [logger]
-        #else
-        let debug: [AnyCancellable] = []
-        #endif
-        return debug
-    }
-
-    lazy var logger = events.sink { event in
-        if let message = event.context[e.message] as? String {
-            print("🏷 ‼️", event.tag.id, message)
+    private lazy var logger = events.sink { event in
+        if
+            let message = event.context[e.message] as? String,
+            let file = event.context[e.file] as? String,
+            let line = event.context[e.line] as? Int
+        {
+            print("🏷 ‼️", event, message, "←", file, line)
         } else {
-            print("🏷", event.tag.id)
+            print("🏷", event)
         }
     }
 }
@@ -106,16 +102,33 @@ extension AppProtocol {
 
 extension AppProtocol {
 
-    public func post(event id: L, context: Tag.Context = [:]) {
-        post(event: language[id], context: context)
+    public func post(
+        value: AnyHashable,
+        of event: Tag.Event,
+        file: String = #fileID,
+        line: Int = #line
+    ) {
+        state.set(event.key, to: value)
+        post(event: event, context: [event: value])
     }
 
-    public func post(event tag: Tag, context: Tag.Context = [:]) {
-        post(event: tag.ref(in: self), context: context)
-    }
-
-    public func post(event ref: Tag.Reference, context: Tag.Context = [:]) {
-        events.send(Session.Event(ref: ref, context: context))
+    public func post(
+        event: Tag.Event,
+        context: Tag.Context = [:],
+        file: String = #fileID,
+        line: Int = #line
+    ) {
+        events.send(
+            Session.Event(
+                event: event,
+                context: [
+                    s.file: file,
+                    s.line: line
+                ] + context,
+                file: file,
+                line: line
+            )
+        )
     }
 
     public func post<E: Error>(
@@ -135,14 +148,14 @@ extension AppProtocol {
         line: Int = #line
     ) {
         if let error = error as? Tag.Error {
-            post(error.tag, error: error, context: context, file: file, line: line)
+            post(error.event, error: error, context: context, file: error.file, line: error.line)
         } else {
-            post(blockchain.ux.type.analytics.error[], error: error, context: context, file: file, line: line)
+            post(blockchain.ux.type.analytics.error, error: error, context: context, file: file, line: line)
         }
     }
 
     private func post<E: Error>(
-        _ tag: Tag,
+        _ event: Tag.Event,
         error: E,
         context: Tag.Context = [:],
         file: String = #fileID,
@@ -150,9 +163,9 @@ extension AppProtocol {
     ) {
         events.send(
             Session.Event(
-                ref: tag.ref(in: self),
+                event: event,
                 context: context + [
-                    e.message: "\(error)",
+                    e.message: "\(error.localizedDescription)",
                     e.file: file,
                     e.line: line
                 ]
@@ -161,77 +174,39 @@ extension AppProtocol {
     }
 
     public func on(
-        _ first: L,
-        _ rest: L...
+        _ first: Tag.Event,
+        _ rest: Tag.Event...
     ) -> AnyPublisher<Session.Event, Never> {
         on([first] + rest)
     }
 
     public func on<Tags>(
         _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == L {
-        on(tags.map(\.[]))
-    }
-
-    public func on(
-        _ first: Tag,
-        _ rest: Tag...
-    ) -> AnyPublisher<Session.Event, Never> {
-        on([first] + rest)
-    }
-
-    public func on<Tags>(
-        _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag {
-        on(tags.map(\.ref))
-    }
-
-    public func on(
-        _ first: Tag.Reference,
-        _ rest: Tag.Reference...
-    ) -> AnyPublisher<Session.Event, Never> {
-        on([first] + rest)
-    }
-
-    public func on<Tags>(
-        _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Reference {
-        events.filter(tags).eraseToAnyPublisher()
+    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
+        events.filter(tags.map(\.key)).eraseToAnyPublisher()
     }
 }
 
 private let e = (
     message: blockchain.ux.type.analytics.error.message[],
-    file: blockchain.ux.type.analytics.error.file[],
-    line: blockchain.ux.type.analytics.error.line[]
+    file: blockchain.ux.type.analytics.error.source.file[],
+    line: blockchain.ux.type.analytics.error.source.line[]
+)
+
+private let s = (
+    file: blockchain.ux.type.analytics.event.source.file[],
+    line: blockchain.ux.type.analytics.event.source.line[]
 )
 
 extension AppProtocol {
 
-    public func publisher<T>(for id: L, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: id)
+    public func publisher<T>(for event: Tag.Event, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: event.key)
             .decode(as: T.self)
     }
 
-    public func publisher<T>(for tag: Tag, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: tag)
-            .decode(as: T.self)
-    }
-
-    public func publisher<T>(for ref: Tag.Reference, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: ref)
-            .decode(as: T.self)
-    }
-
-    public func publisher(for id: L) -> AnyPublisher<FetchResult, Never> {
-        publisher(for: language[id])
-    }
-
-    public func publisher(for tag: Tag) -> AnyPublisher<FetchResult, Never> {
-        publisher(for: tag.ref(in: self))
-    }
-
-    public func publisher(for ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+    public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
+        let ref = event.key
         switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.publisher(for: ref)

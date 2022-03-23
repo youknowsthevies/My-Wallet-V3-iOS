@@ -10,13 +10,14 @@ struct BuyDomainActionView: View {
     private typealias LocalizedString = LocalizationConstants.FeatureCryptoDomain.BuyDomain
     private typealias Accessibilty = AccessibilityIdentifiers.BuyDomainBottomSheet
 
-    @Binding var domain: SearchDomainResult?
+    var domainName: String
+    var redirectUrl: String
     @Binding var isShown: Bool
     @Environment(\.openURL) var openURL
 
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
-            Text(String(format: LocalizedString.header, domain?.domainName ?? ""))
+            Text(String(format: LocalizedString.header, domainName))
                 .typography(.title3)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibility(identifier: Accessibilty.buyTitle)
@@ -24,8 +25,8 @@ struct BuyDomainActionView: View {
                 .typography(.paragraph1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.semantic.overlay)
+                .padding(.bottom, Spacing.padding3)
                 .accessibility(identifier: Accessibilty.buyDescription)
-            Spacer()
             PrimaryButton(
                 title: LocalizedString.Button.buyDomain,
                 leadingView: {
@@ -33,16 +34,20 @@ struct BuyDomainActionView: View {
                         .frame(width: 24, height: 24)
                 },
                 action: {
-                    if case .premium(let url) = domain?.domainType {
+                    if let url = URL(string: redirectUrl) {
                         openURL(url) { _ in
-                            isShown.toggle()
+                            withAnimation(.linear(duration: 0.2)) {
+                                isShown.toggle()
+                            }
                         }
                     }
                 }
             )
             .accessibility(identifier: Accessibilty.buyButton)
             MinimalButton(title: LocalizedString.Button.noThanks) {
-                isShown.toggle()
+                withAnimation(.linear(duration: 0.2)) {
+                    isShown.toggle()
+                }
             }
             .padding(.bottom, Spacing.padding3)
             .accessibility(identifier: Accessibilty.goBackButton)
@@ -55,13 +60,8 @@ struct BuyDomainActionView: View {
 struct BuyDomainActionView_Previews: PreviewProvider {
     static var previews: some View {
         BuyDomainActionView(
-            domain: .constant(
-                SearchDomainResult(
-                    domainName: "example.blockchain",
-                    domainType: .free,
-                    domainAvailability: .availableForFree
-                )
-            ),
+            domainName: "example.blockchain",
+            redirectUrl: "https://www.blockchain.com",
             isShown: .constant(true)
         )
     }

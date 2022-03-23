@@ -242,7 +242,6 @@ final class TransactionModel {
             }
             return processPollOrderStatus(orderId: order.identifier, state: previousState)
         case .startPollingOrderStatus(let orderId):
-            guard let orderId = orderId else { return nil }
             return processPollOrderStatus(orderId: orderId, state: previousState)
         case .invalidateTransaction:
             return processInvalidateTransaction()
@@ -396,9 +395,10 @@ final class TransactionModel {
                     switch result {
                     case .unHashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                         self?.process(action: .performSecurityChecksForTransaction(result))
-                    case .unHashed(_, let orderId, _):
+                    case .unHashed(_, .some(let orderId), _):
                         self?.process(action: .startPollingOrderStatus(orderId: orderId))
-                    case .signed,
+                    case .unHashed,
+                         .signed,
                          .hashed:
                         self?.process(action: .updateTransactionComplete)
                     }

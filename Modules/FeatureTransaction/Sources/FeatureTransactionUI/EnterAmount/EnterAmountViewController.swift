@@ -125,9 +125,6 @@ final class EnterAmountViewController: BaseScreenViewController,
             withdrawalLocksHostingController.didMove(toParent: self)
         }
         view.addSubview(withdrawalLocksSeparatorView)
-        view.addSubview(amountView)
-        view.addSubview(bottomAuxiliaryItemSeparatorView)
-        view.addSubview(bottomAuxiliaryViewContainer)
         view.addSubview(digitPadView)
 
         topAuxiliaryViewContainer.layoutToSuperview(axis: .horizontal)
@@ -149,12 +146,6 @@ final class EnterAmountViewController: BaseScreenViewController,
         withdrawalLocksSeparatorView.layoutToSuperview(axis: .horizontal)
         withdrawalLocksSeparatorView.layout(dimension: .height, to: 1)
 
-        amountView.layoutToSuperview(axis: .horizontal)
-        amountView.layout(edge: .top, to: .bottom, of: withdrawalLocksSeparatorView)
-
-        bottomAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: amountView)
-        bottomAuxiliaryItemSeparatorView.layoutToSuperview(.leading, priority: .defaultHigh)
-        bottomAuxiliaryItemSeparatorView.layoutToSuperview(.trailing)
         bottomAuxiliaryItemSeparatorView.layout(dimension: .height, to: 1)
 
         bottomAuxiliaryViewHeightConstraint = bottomAuxiliaryViewContainer.layout(
@@ -162,19 +153,42 @@ final class EnterAmountViewController: BaseScreenViewController,
             to: Constant.topSelectionViewHeight(device: devicePresenterType)
         )
 
-        let stackView = UIStackView(arrangedSubviews: [bottomAuxiliaryViewContainer, ctaContainerView])
+        amountView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        amountView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        amountView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        amountView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let bottomStackView = UIStackView(
+            arrangedSubviews: [
+                bottomAuxiliaryViewContainer,
+                ctaContainerView
+            ]
+        )
+        bottomStackView.axis = .vertical
+        bottomStackView.spacing = 8
+
+        let stackView = UIStackView(
+            arrangedSubviews: [
+                amountView,
+                bottomAuxiliaryItemSeparatorView,
+                bottomStackView
+            ]
+        )
         stackView.axis = .vertical
-        stackView.spacing = 16
 
         view.addSubview(stackView)
         stackView.layoutToSuperview(.leading, .trailing)
         stackView.layout(
             edge: .top,
             to: .bottom,
-            of: bottomAuxiliaryItemSeparatorView,
-            priority: .defaultLow
+            of: withdrawalLocksSeparatorView
         )
-        stackView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
+        stackView.constraint(centerXTo: view)
+        stackView.constraint(axis: .horizontal, to: view)
+        stackView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        stackView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        stackView.setContentCompressionResistancePriority(.required, for: .vertical)
+        stackView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         ctaContainerView.layout(dimension: .height, to: 48)
         ctaContainerView.addSubview(continueButtonView)
@@ -185,8 +199,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         digitPadView.layout(
             dimension: .height,
-            to: Constant.digitPadHeight(device: devicePresenterType),
-            priority: .penultimateHigh
+            to: Constant.digitPadHeight(device: devicePresenterType)
         )
     }
 

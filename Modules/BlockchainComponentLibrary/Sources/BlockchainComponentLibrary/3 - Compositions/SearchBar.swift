@@ -25,6 +25,8 @@ public struct SearchBar: View {
 
     private let placeholder: String?
     private let cancelButtonText: String
+    private let subText: String?
+    private let subTextStyle: InputSubTextStyle
     private let onReturnTapped: () -> Void
 
     /// Create a search bar
@@ -32,18 +34,24 @@ public struct SearchBar: View {
     ///   - text: The text to display and edit
     ///   - isFirstResponder: Whether the textfield is focused
     ///   - cancelButtonText: Text displayed in the trailing cancel button when focused or containing content
+    ///   - subText: Optional text displayed below the search bar
+    ///   - subTextStyle: Styling of the text displayed below the search bar, See `InputSubTextStyle`
     ///   - placeholder: Optional placeholder text displayed when `text` is empty.
     ///   - onReturnTapped: Closure executed when the user types the return key
     public init(
         text: Binding<String>,
         isFirstResponder: Binding<Bool>,
         cancelButtonText: String,
+        subText: String? = nil,
+        subTextStyle: InputSubTextStyle = .default,
         placeholder: String? = nil,
         onReturnTapped: @escaping () -> Void = {}
     ) {
         _text = text
         _isFirstResponder = isFirstResponder
         self.cancelButtonText = cancelButtonText
+        self.subText = subText
+        self.subTextStyle = subTextStyle
         self.placeholder = placeholder
         self.onReturnTapped = onReturnTapped
     }
@@ -53,6 +61,8 @@ public struct SearchBar: View {
             Input(
                 text: $text,
                 isFirstResponder: $isFirstResponder,
+                subText: subText,
+                subTextStyle: subTextStyle,
                 placeholder: placeholder,
                 configuration: { textField in
                     #if canImport(UIKit)

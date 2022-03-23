@@ -32,7 +32,6 @@ enum AccessibilityIdentifiers {
         static let alertCard = "\(prefix)alertCard"
         static let domainList = "\(prefix)domainList"
         static let domainListRow = "\(prefix)domainListRow"
-        static let cartButton = "\(prefix)cartButton"
     }
 
     // MARK: - Domain Checkout Screen

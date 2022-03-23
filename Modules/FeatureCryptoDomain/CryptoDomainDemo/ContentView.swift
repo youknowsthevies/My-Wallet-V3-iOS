@@ -1,23 +1,47 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
 @testable import FeatureCryptoDomainUI
 import SwiftUI
 
 struct ContentView: View {
+
+    @State var claimFlowShown = false
+
     var body: some View {
-        PrimaryNavigationView {
-            PrimaryNavigationLink(
-                destination: ClaimIntroductionView(
-                    store: .init(
-                        initialState: .init(),
-                        reducer: claimIntroductionReducer,
-                        environment: ()
+        VStack {
+            Button("Let's claim a domain!") {
+                claimFlowShown.toggle()
+            }
+        }
+        .sheet(isPresented: $claimFlowShown) {
+            ClaimIntroductionView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: claimIntroductionReducer,
+                    environment: .init(
+                        mainQueue: .main,
+                        externalAppOpener: UIApplication.shared,
+                        searchDomainRepository: SearchDomainRepository(
+                            apiClient: SearchDomainClient.mock
+                        ),
+                        orderDomainRepository: OrderDomainRepository(
+                            apiClient: OrderDomainClient.mock
+                        ),
+                        userInfoProvider: {
+                            .just(
+                                OrderDomainUserInfo(
+                                    nabuUserId: "mockUserId",
+                                    nabuUserName: "Firstname",
+                                    resolutionRecords: []
+                                )
+                            )
+                        }
                     )
                 )
-            ) {
-                Text("Let's claim a domain!")
-            }
+            )
         }
     }
 }

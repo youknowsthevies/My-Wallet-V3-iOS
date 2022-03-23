@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -100,6 +101,8 @@ public enum CoreAppAction: Equatable {
 }
 
 struct CoreAppEnvironment {
+    var app: AppProtocol
+    var nabuUserService: NabuUserServiceAPI
     var loadingViewPresenter: LoadingViewPresenting
     var externalAppOpener: ExternalAppOpener
     var deeplinkHandler: DeepLinkHandling
@@ -168,11 +171,13 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
                     mainQueue: environment.mainQueue,
+                    app: environment.app,
                     analyticsRecorder: environment.analyticsRecorder,
                     loadingViewPresenter: environment.loadingViewPresenter,
                     exchangeRepository: environment.exchangeRepository,
                     remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
+                    nabuUserService: environment.nabuUserService,
                     walletManager: environment.walletManager,
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
@@ -406,7 +411,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .authenticated(.failure(let error)) where error.code == .failedToLoadWallet:
         guard state.onboarding?.welcomeState != nil else {
             state.onboarding?.displayAlert = .walletAuthentication(error)
-            return .cancel(id: WalletCancelations.AuthenticationId())
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(value: .onboarding(.pin(.logout)))
+            )
         }
         if state.onboarding?.welcomeState?.manualCredentialsState != nil {
             return .merge(

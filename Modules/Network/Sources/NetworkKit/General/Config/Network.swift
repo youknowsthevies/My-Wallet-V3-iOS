@@ -49,6 +49,13 @@ public enum Network {
             apiCode: "",
             pathComponents: []
         )
+
+        static let cardIssuingConfig = Config(
+            apiScheme: "https",
+            apiHost: BlockchainAPI.shared.apiHost,
+            apiCode: BlockchainAPI.Parameters.apiCode,
+            pathComponents: ["nabu-gateway", "card-issuing"]
+        )
     }
 }
 

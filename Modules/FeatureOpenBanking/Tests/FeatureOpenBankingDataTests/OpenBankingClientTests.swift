@@ -27,7 +27,7 @@ final class OpenBankingTests: XCTestCase {
     func test_handle_consent_token_without_callback_path() throws {
         app.state.set(blockchain.ux.payment.method.open.banking.consent.token, to: "token")
         let error: OpenBanking.Error = try app.state.result(for: blockchain.ux.payment.method.open.banking.consent.error).decode().get()
-        XCTAssertEqual(error, .namespace(.keyDoesNotExist(blockchain.ux.payment.method.open.banking.callback.path[].ref())))
+        XCTAssertEqual(error, .namespace(.keyDoesNotExist(blockchain.ux.payment.method.open.banking.callback.path[].reference)))
     }
 
     func test_handle_consent_token_error() throws {

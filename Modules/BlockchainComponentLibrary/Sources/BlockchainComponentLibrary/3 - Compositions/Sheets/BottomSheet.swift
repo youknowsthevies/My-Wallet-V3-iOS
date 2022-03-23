@@ -6,38 +6,41 @@ extension View {
 
     /// Display a bottom sheet over the current content
     /// - Parameters:
-    ///   - isPresented: A binding which determines when the content should be shown
-    ///   - maximumHeight: The maximum height the sheet can reach, defaults to 70% of the viewport height
+    ///   - item: An optional binding which determines what content should be shown
     ///   - content: The contents of the sheet
     /// - Returns: ZStack containing `self` overlayed with the bottom sheet view
     @ViewBuilder
-    public func bottomSheet<Content>(
-        isPresented: Binding<Bool>,
-        maximumHeight: Length = 70.vh,
-        @ViewBuilder content: @escaping () -> Content
+    public func bottomSheet<Item, Content>(
+        item: Binding<Item?>,
+        @ViewBuilder content: (Item) -> Content
     ) -> some View where Content: View {
-        ZStack {
-            zIndex(0)
-            if isPresented.transaction(isPresented.transaction).wrappedValue {
-                Color.palette.overlay600
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-                    .zIndex(1)
-                    .onTapGesture {
-                        isPresented.wrappedValue = false
+        bottomSheet(
+            isPresented: Binding(
+                get: { item.transaction(item.transaction).wrappedValue != nil },
+                set: { newValue in
+                    if !newValue {
+                        item.transaction(item.transaction).wrappedValue = nil
                     }
+                }
+            ),
+            content: {
+                if let item = item.transaction(item.transaction).wrappedValue {
+                    content(item)
+                }
             }
-            BottomSheetView(
-                isPresented: isPresented,
-                maximumHeight: maximumHeight,
-                content: content
-            )
-            .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
-            .zIndex(2)
-            .ignoresSafeArea(.container, edges: .bottom)
-        }
-        .animation(.interactiveSpring())
+        )
+    }
+
+    /// Display a bottom sheet over the current content
+    /// - Parameters:
+    ///   - isPresented: A binding which determines when the content should be shown
+    ///   - content: The contents of the sheet
+    /// - Returns: ZStack containing `self` overlayed with the bottom sheet view
+    public func bottomSheet<Content: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        modifier(BottomSheetModifier(isPresented: isPresented, sheetContent: content()))
     }
 }
 
@@ -47,94 +50,175 @@ extension View {
 ///
 /// # Figma
 /// [Sheet](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A10112)
-public struct BottomSheetView<Content: View>: View {
+struct BottomSheetView<Content: View>: View {
+
+    let cornerRadius: CGFloat = 24
+    var content: Content
+
+    var body: some View {
+        VStack {
+            Capsule()
+                .fill(Color.semantic.dark)
+                .frame(width: 32.pt, height: 4.pt)
+                .foregroundColor(.semantic.muted)
+            content
+        }
+        .padding(.top, Spacing.padding1)
+        .padding(.bottom, Spacing.padding3)
+        .frame(maxWidth: .infinity)
+        .background(
+            BottomSheetBackgroundShape()
+                .foregroundColor(.semantic.background)
+        )
+        .clipShape(
+            BottomSheetBackgroundShape()
+        )
+        .offset(y: Spacing.baseline)
+    }
+}
+
+extension BottomSheetView {
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+}
+
+struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 
     @Binding var isPresented: Bool
 
-    let maximumHeight: Length
-    let content: () -> Content
+    @GestureState(
+        resetTransaction: Transaction(animation: .interactiveSpring())
+    ) var translation: CGSize = .zero
 
-    @GestureState private var translation: CGFloat = 0
+    let sheetContent: SheetContent
 
-    public init(
-        isPresented: Binding<Bool>,
-        maximumHeight: Length,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.maximumHeight = maximumHeight
-        self.content = content
-        _isPresented = isPresented
-    }
+    @State private var inserted = false
 
-    @State private var height: CGFloat = 0
-
-    public var body: some View {
-        GeometryReader { geometry in
-            let maximumHeight = maximumHeight.in(geometry)
-            VStack(spacing: 0) {
-                indicator
-                    .padding(.vertical, 10.pt)
-                content()
-            }
-            .padding(.bottom, 20.pt)
-            .background(
-                GeometryReader { geometry in
-                    Color.clear
-                        .onAppear { height = min(geometry.size.height, maximumHeight) }
-                }
-            )
-            .frame(
-                width: geometry.size.width,
-                height: height,
-                alignment: .top
-            )
-            .background(Color.semantic.background)
-            .cornerRadius(24)
-            .frame(height: geometry.size.height, alignment: .bottom)
-            .offset(
-                y: max((isPresented ? 0 : height) + translation, 0)
-            )
-            .gesture(
-                DragGesture()
-                    .updating($translation) { value, state, _ in
-                        state = value.translation.height
-                    }
-                    .onEnded { value in
-                        guard abs(value.translation.height) > maximumHeight / 4 else { return }
-                        isPresented = value.translation.height < 0
-                    }
-            )
+    private func yTranslation(in proxy: GeometryProxy) -> CGFloat {
+        if isPresented {
+            return inserted ? proxy.size.height : max(translation.height, -Spacing.baseline)
+        } else {
+            return proxy.size.height
         }
     }
 
-    private var indicator: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.semantic.dark)
-            .frame(width: 32.pt, height: 4.pt)
-            .onTapGesture {
-                isPresented.toggle()
+    func body(content: Content) -> some View {
+        content.overlay(
+            Group {
+                GeometryReader { proxy in
+                    ZStack(alignment: .bottom) {
+                        if isPresented {
+                            Color.palette.overlay600
+                                .onAppear { inserted = true }
+                                .onDisappear { inserted = false }
+                                .onTapGesture { isPresented = false }
+                                .transition(.opacity)
+                                .ignoresSafeArea()
+                            BottomSheetView(content: sheetContent)
+                                .zIndex(1)
+                                .onChange(of: inserted) { newValue in
+                                    guard newValue else { return }
+                                    DispatchQueue.main.async {
+                                        withAnimation(.spring()) { inserted = false }
+                                    }
+                                }
+                                .transition(.move(edge: .bottom))
+                                .offset(y: yTranslation(in: proxy))
+                        }
+                    }
+                    .ignoresSafeArea()
+                    .highPriorityGesture(
+                        DragGesture()
+                            .updating($translation) { value, state, _ in
+                                state = value.translation
+                            }
+                            .onEnded { value in
+                                let endLocation = value.predictedEndLocation
+                                let frame = proxy.frame(in: .global)
+                                if endLocation.y > frame.maxY - 60 {
+                                    isPresented = false
+                                }
+                            }
+                    )
+                }
             }
+        )
+    }
+}
+
+struct BottomSheetBackgroundShape: Shape {
+
+    var cornerRadius: CGFloat = 32
+    var style: RoundedCornerStyle = .continuous
+
+    func path(in rect: CGRect) -> Path {
+        #if canImport(UIKit)
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: [.topLeft, .topRight],
+            cornerRadii: CGSize(
+                width: cornerRadius,
+                height: cornerRadius
+            )
+        )
+        return Path(path.cgPath)
+        #else
+        return RoundedRectangle(
+            cornerRadius: cornerRadius,
+            style: style
+        )
+        .path(in: rect)
+        #endif
+    }
+}
+
+// swiftlint:disable type_name
+struct BottomSheetView_PreviewContentView: View {
+    @State var isPresented = false
+    var body: some View {
+        PrimaryButton(title: "Tap me") {
+            withAnimation(.spring()) {
+                isPresented = true
+            }
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .bottomSheet(
+            isPresented: $isPresented.animation(.spring())
+        ) {
+            VStack(spacing: 0) {
+                ForEach(1...5, id: \.self) { i in
+                    PrimaryRow(
+                        title: "Title",
+                        subtitle: "Description",
+                        leading: {
+                            Icon.allIcons
+                                .randomElement()!
+                                .circle()
+                                .accentColor(.semantic.primary)
+                                .frame(maxHeight: 24.pt)
+                        },
+                        action: {}
+                    )
+                    if i != 5 {
+                        PrimaryDivider()
+                    }
+                }
+            }
+        }
     }
 }
 
 struct BottomSheetView_Previews: PreviewProvider {
-
     static var previews: some View {
-        Color.gray
-            .overlay(
-                BottomSheetView(
-                    isPresented: .constant(true),
-                    maximumHeight: 70.vh
-                ) {
-                    ForEach(0..<10) { i in
-                        PrimaryRow(title: "\(i)")
-                            .accentColor(.semantic.muted)
-                        if i != 9 {
-                            Divider()
-                        }
-                    }
-                }
-            )
-            .ignoresSafeArea()
+        Group {
+            BottomSheetView_PreviewContentView()
+            BottomSheetView_PreviewContentView(isPresented: true)
+            BottomSheetView_PreviewContentView(isPresented: true)
+                .previewDevice("iPhone SE (2nd generation)")
+                .previewDisplayName("iPhone SE (2nd generation)")
+        }
     }
 }

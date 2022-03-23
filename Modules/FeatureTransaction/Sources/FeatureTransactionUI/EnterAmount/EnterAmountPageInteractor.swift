@@ -70,12 +70,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let analyticsHook: TransactionAnalyticsHook
     private let eventsRecorder: Recording
 
+    private let restrictionsProvider: TransactionRestrictionsProviderAPI
+
     init(
         transactionModel: TransactionModel,
         presenter: EnterAmountPagePresentable,
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
+        restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
         eventsRecorder: Recording = resolve(tag: "CrashlyticsRecorder")
@@ -85,6 +88,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
         featureFlagService = featureFlagsService
+        self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.eventsRecorder = eventsRecorder
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
@@ -116,7 +120,17 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
 
-        disableAmountViewBadgeIfNeeded()
+        amountViewInteractor
+            .auxiliaryButtonTappedRelay
+            .asObservable()
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe(
+                onNext: { [listener] in
+                    // TODO: make this generic
+                    listener?.continueToKYCTiersScreen()
+                }
+            )
+            .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor
             .amount
@@ -320,8 +334,11 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 transactionState,
                 amountViewInteractor.activeInput
             )
-            .map { state, input in
-                state.toAmountInteractorStateWithActiveInput(input)
+            .map { [restrictionsProvider] state, input in
+                state.toAmountInteractorStateWithActiveInput(
+                    input,
+                    maxTransactionsCount: restrictionsProvider.maximumNumbersOfTransactions(for: state.action)
+                )
             }
             .bindAndCatch(to: amountViewInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
@@ -495,16 +512,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             break
         }
     }
-
-    private func disableAmountViewBadgeIfNeeded() {
-        featureFlagService
-            .isEnabled(.remote(.newLimitsUIEnabled))
-            .asSingle()
-            .subscribe(onSuccess: { [amountViewInteractor] isNewLimitsUIEnabled in
-                amountViewInteractor.set(auxiliaryViewEnabled: !isNewLimitsUIEnabled)
-            })
-            .disposeOnDeactivate(interactor: self)
-    }
 }
 
 extension EnterAmountPageInteractor {
@@ -579,24 +586,39 @@ extension TransactionState {
     private typealias LocalizedString = LocalizationConstants.Transaction
 
     func toAmountInteractorStateWithActiveInput(
-        _ activeInput: ActiveAmountInput
+        _ activeInput: ActiveAmountInput,
+        maxTransactionsCount: Int?
     ) -> AmountInteractorState {
+        let message: AmountInteractorState.MessageState
+        if let maxTransactionsCount = maxTransactionsCount {
+            // NOTE: This will be localized as part of IOS-6495
+            if maxTransactionsCount == 1 {
+                message = .info(message: "1 Transaction Allowed, Verify Now ->")
+            } else {
+                message = .info(message: "\(maxTransactionsCount) Transactions Allowed, Verify Now ->")
+            }
+        } else {
+            message = .none
+        }
+
         switch errorState {
         case .none:
-            return .inBounds
+            return .validInput(message)
+
         case .belowFees:
-            return .error(
-                message: LocalizedString.Confirmation.Error.insufficientGas
-            )
+            return .invalidInput(message)
+
         case .overMaximumSourceLimit,
              .overMaximumPersonalLimit,
              .insufficientFunds:
-            return .maxLimitExceeded(maxSpendableWithCryptoInputType())
+            return .invalidInput(message)
+
         case .belowMinimumLimit:
             guard !amount.isZero else {
-                return .inBounds
+                return .validInput(message)
             }
-            return .underMinLimit(minSpendableWithActiveAmountInputType(activeInput))
+            return .invalidInput(message)
+
         case .addressIsContract,
              .invalidAddress,
              .invalidPassword,
@@ -606,7 +628,7 @@ extension TransactionState {
              .unknownError,
              .nabuError,
              .fatalError:
-            return .empty
+            return .invalidInput(.none)
         }
     }
 }

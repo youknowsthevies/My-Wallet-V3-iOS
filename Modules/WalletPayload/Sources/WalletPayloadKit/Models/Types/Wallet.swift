@@ -55,7 +55,7 @@ public struct NativeWallet: Equatable {
 /// - Parameter context: A `WalletCreationContext`
 /// - Returns: A `Result<NativeWallet, WalletCreateError>`
 func generateWallet(context: WalletCreationContext) -> Result<NativeWallet, WalletCreateError> {
-    generateHDWallet(mnemonic: context.mnemonic, accountName: context.accountName, totalAccounts: 1)
+    generateHDWallet(mnemonic: context.mnemonic, accountName: context.accountName, totalAccounts: context.totalAccounts)
         .map { hdWallet in
             NativeWallet(
                 guid: context.guid,

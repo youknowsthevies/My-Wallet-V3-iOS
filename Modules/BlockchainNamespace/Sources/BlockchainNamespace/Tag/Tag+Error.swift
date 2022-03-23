@@ -1,41 +1,48 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 extension Tag {
 
-    public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
+    public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible, LocalizedError {
 
-        let tag: Tag
-        let message: () -> String
+        let event: Tag.Event
+        let context: Tag.Context
 
-        let function: String, file: String, line: Int
+        let message: String
+        let file: String, line: Int
 
         init(
-            tag: Tag,
-            message: @autoclosure @escaping () -> String = "",
-            _ function: String = #function,
-            _ file: String = #file,
+            event: Tag.Event,
+            context: Tag.Context = [:],
+            message: @autoclosure () -> String = "",
+            _ file: String = #fileID,
             _ line: Int = #line
         ) {
-            self.tag = tag
-            self.message = message
-            self.function = function
+            self.event = event
+            self.context = context
+            self.message = message()
             self.file = file
             self.line = line
         }
 
-        public var description: String { message() }
+        public var description: String { message }
+        public var errorDescription: String? { message }
 
         public var debugDescription: String {
-            "\(file):\(line) \(tag.id): \(message())"
+            "\(file):\(line) \(event): \(message)"
         }
     }
+}
+
+extension Tag.Event {
 
     public func error(
-        message: @autoclosure @escaping () -> String = "",
-        _ function: String = #function,
-        _ file: String = #file,
-        _ line: Int = #line
+        message: @autoclosure () -> String = "",
+        context: Tag.Context = [:],
+        file: String = #fileID,
+        line: Int = #line
     ) -> Tag.Error {
-        .init(tag: self, message: message(), function, file, line)
+        .init(event: self, context: context, message: message(), file, line)
     }
 }

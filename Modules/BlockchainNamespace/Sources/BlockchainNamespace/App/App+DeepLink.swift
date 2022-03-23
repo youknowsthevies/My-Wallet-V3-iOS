@@ -47,14 +47,8 @@ extension App {
         }
 
         func process(url: URL, with rules: [Rule]) {
-            do {
-                guard let match = rules.match(for: url) else {
-                    throw ParsingError.nomatch
-                }
-
-                app.post(event: match.rule.event, context: match.parameters())
-            } catch {
-                #if DEBUG
+            #if DEBUG
+            if DSL.isDSL(url) {
                 do {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
@@ -63,22 +57,19 @@ extension App {
                         }
                     }
                     if let event = dsl.event {
-                        app.post(event: event, context: dsl.context)
+                        app.post(event: event, context: Tag.Context(dsl.context))
                     }
                 } catch {
                     app.post(error: error)
                 }
-                #else
-                app.post(error: error)
-                #endif
+                return
             }
+            #endif
+            guard let match = rules.match(for: url) else {
+                return
+            }
+            app.post(event: match.rule.event, context: Tag.Context(match.parameters()))
         }
-    }
-}
-
-extension App.DeepLink {
-    enum ParsingError: Error {
-        case nomatch
     }
 }
 

@@ -84,13 +84,14 @@ public struct SeedPhraseView: View {
             PrimaryButton(
                 title: viewStore.context == .troubleLoggingIn ?
                     LocalizedString.loginInButton :
-                    LocalizedString.NavigationTitle.restoreWallet
+                    LocalizedString.NavigationTitle.restoreWallet,
+                isLoading: viewStore.isLoading
             ) {
                 viewStore.send(
                     .restoreWallet(.metadataRecovery(seedPhrase: viewStore.seedPhrase))
                 )
             }
-            .disabled(!viewStore.seedPhraseScore.isValid)
+            .disabled(viewStore.isLoading || !viewStore.seedPhraseScore.isValid)
             .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.continueButton)
 
             PrimaryNavigationLink(
