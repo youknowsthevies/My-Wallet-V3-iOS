@@ -61,7 +61,7 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
         disable2FALabel.content = presenter.disable2FALabel
 
         mobileNumberTextFieldView.isEmpty
-            ? analyticsRecorder.record(event: AnalyticsEvents.New.Settings.addMobileNumberClicked)
+            ? analyticsRecorder.record(event: AnalyticsEvents.New.Settings.addMobileNumberClicked(origin: .settings))
             : analyticsRecorder.record(event: AnalyticsEvents.New.Settings.changeMobileNumberClicked)
 
         presenter.disable2FASMSVisibility
