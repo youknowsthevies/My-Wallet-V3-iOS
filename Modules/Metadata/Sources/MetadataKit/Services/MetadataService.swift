@@ -40,14 +40,21 @@ final class MetadataService: MetadataServiceAPI {
     func initializeAndRecoverCredentials(
         from mnemonic: String
     ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
-        Mnemonic.from(mnemonicString: mnemonic)
-            .mapError(MetadataInitialisationAndRecoveryError.invalidMnemonic)
-            .publisher
-            .flatMap { [initializeAndRecoverCredentials] mnemonic
-                -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> in
-                initializeAndRecoverCredentials(mnemonic)
+        Deferred {
+            Future<Mnemonic, MetadataInitialisationAndRecoveryError> { promise in
+                switch Mnemonic.from(mnemonicString: mnemonic) {
+                case .success(let mnemonic):
+                    promise(.success(mnemonic))
+                case .failure(let error):
+                    promise(.failure(.invalidMnemonic(error)))
+                }
             }
-            .eraseToAnyPublisher()
+        }
+        .flatMap { [initializeAndRecoverCredentials] mnemonic
+            -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> in
+            initializeAndRecoverCredentials(mnemonic)
+        }
+        .eraseToAnyPublisher()
     }
 
     func fetch(

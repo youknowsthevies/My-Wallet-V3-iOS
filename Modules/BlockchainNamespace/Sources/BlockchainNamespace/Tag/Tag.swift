@@ -6,9 +6,6 @@ import Lexicon
 
 public struct Tag {
 
-    public typealias Indices = [Tag: String]
-    public typealias Context = [Tag: Any]
-
     public typealias ID = String
     public typealias Name = String
 
@@ -39,11 +36,6 @@ public struct Tag {
         }
         self.ownChildren = ownChildren
     }
-}
-
-extension L {
-    public typealias Indices = [L: String]
-    public typealias Context = [L: Any]
 }
 
 extension Tag {
@@ -82,14 +74,10 @@ extension Tag {
     }
 }
 
-extension L {
-    public subscript() -> Tag { Tag(self, in: Language.root.language) }
-}
-
 extension Tag {
 
     public func `as`<T: L>(_ other: T) throws -> T {
-        guard `is`(other[]) else {
+        guard `is`(other) else {
             throw error(message: "\(self) is not a \(other)")
         }
         return T(id)
@@ -334,4 +322,57 @@ extension Tag: Codable {
 
 extension Tag: CustomStringConvertible {
     public var description: String { id }
+}
+
+extension L {
+    public subscript() -> Tag { Tag(self, in: Language.root.language) }
+}
+
+// MARK: - Static Tag
+
+extension I where Self: L {
+    public subscript<Value>(value: Value) -> Tag.KeyTo<L> where Value: Sendable, Value: Hashable {
+        Tag.KeyTo(id: self, context: [self: value])
+    }
+}
+
+extension I_blockchain_db_collection where Self: L {
+    public subscript(value: String) -> Tag.KeyTo<Self> {
+        Tag.KeyTo(id: self, context: [id: value])
+    }
+}
+
+extension Tag.KeyTo where A: I_blockchain_db_collection {
+
+    public subscript(value: String) -> Tag.KeyTo<A> {
+        Tag.KeyTo(id: id, context: context + [id.id: value])
+    }
+}
+
+extension Tag {
+
+    @dynamicMemberLookup
+    public struct KeyTo<A: L> {
+
+        private let id: A
+        private let context: [L: AnyHashable]
+
+        internal init(id: A, context: [L: AnyHashable]) {
+            self.id = id
+            self.context = context
+        }
+
+        public subscript<B: L>(dynamicMember keyPath: KeyPath<A, B>) -> KeyTo<B> {
+            KeyTo<B>(id: id[keyPath: keyPath], context: context)
+        }
+
+        public subscript<Value>(value: Value) -> KeyTo<A> where Value: Sendable, Value: Hashable {
+            KeyTo(id: id, context: context + [id: value])
+        }
+    }
+}
+
+extension Tag.KeyTo: TaggedEvent, CustomStringConvertible {
+    public var description: String { id(\.id) }
+    public func key(_ context: Tag.Context) -> Tag.Reference { id[].ref(to: Tag.Context(self.context) + context) }
 }

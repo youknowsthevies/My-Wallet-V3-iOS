@@ -4,11 +4,11 @@ import Foundation
 
 extension Dictionary {
 
-    func mapKeys<A>(_ transform: (Key) throws -> A) rethrows -> [A: Value] {
+    public func mapKeys<A>(_ transform: (Key) throws -> A) rethrows -> [A: Value] {
         try reduce(into: [:]) { a, e in try a[transform(e.key)] = e.value }
     }
 
-    func mapKeysAndValues<A, B>(key: (Key) throws -> A, value: (Value) throws -> B) rethrows -> [A: B] {
+    public func mapKeysAndValues<A, B>(key: (Key) throws -> A, value: (Value) throws -> B) rethrows -> [A: B] {
         try reduce(into: [:]) { a, e in try a[key(e.key)] = value(e.value) }
     }
 }
@@ -24,26 +24,10 @@ extension Dictionary {
     }
 }
 
-extension Dictionary where Key == L, Value == String {
-    public func toTagString() -> [Tag: Value] { mapKeys(\.[]) }
-}
-
-extension Dictionary where Key == L {
-    public func toTagAny() -> [Tag: Value] { mapKeys(\.[]) }
-}
-
 extension Dictionary where Key == Tag {
-
     public subscript(id: L) -> Value? { self[id[]] }
 }
 
-extension Tag.Context {
-
-    public static func + (lhs: Dictionary, rhs: L.Context) -> Dictionary {
-        lhs.merging(rhs.toTagAny(), uniquingKeysWith: { $1 })
-    }
-
-    public static func += (lhs: inout Dictionary, rhs: L.Context) {
-        lhs.merge(rhs.toTagAny(), uniquingKeysWith: { $1 })
-    }
+extension Dictionary where Key == Tag.Reference {
+    public subscript(id: L) -> Value? { self[id.key] }
 }

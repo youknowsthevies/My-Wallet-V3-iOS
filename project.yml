@@ -39,7 +39,7 @@ schemeTemplates:
       environmentVariables:
         - variable: BLOCKCHAIN_DEBUG_NETWORK_REQUEST
           value: "TRUE"
-          isEnabled: true
+          isEnabled: false
         - variable: OS_ACTIVITY_MODE
           value: disable
           isEnabled: true
@@ -141,69 +141,6 @@ settingGroups:
     groups:
     - base_signing
 
-  base_signing_today_extension:
-    base:
-      CODE_SIGN_ENTITLEMENTS: TodayExtension/TodayExtension.entitlements
-      CODE_SIGN_STYLE: Manual
-      DEVELOPMENT_TEAM: NZ6PH75U7K
-
-  debug_signing_today_extension_dev:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Developer
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.dev.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.dev.TodayExtension
-    groups:
-      - base_signing_today_extension
-  debug_signing_today_extension_staging:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Developer
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.staging.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.staging.TodayExtension
-    groups:
-      - base_signing_today_extension
-  release_signing_today_extension_staging:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Distribution
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.staging.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.staging.TodayExtension
-    groups:
-      - base_signing_today_extension
-  debug_signing_today_extension_alpha:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Developer
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.alpha.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.alpha.TodayExtension
-    groups:
-      - base_signing_today_extension
-  release_signing_today_extension_alpha:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Distribution
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.alpha.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.alpha.TodayExtension
-    groups:
-      - base_signing_today_extension
-  debug_signing_today_extension:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Developer
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.TodayExtension
-    groups:
-      - base_signing_today_extension
-  release_signing_today_extension_internal:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Distribution
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.TodayExtension
-    groups:
-      - base_signing_today_extension
-  release_signing_today_extension:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Distribution
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.TodayExtension
-    groups:
-      - base_signing_today_extension
-
 settings:
   base:
     CODE_SIGN_STYLE: Manual
@@ -271,8 +208,10 @@ packages:
     path: Modules/FeatureActivity
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
-  FeatureCards:
-    path: Modules/FeatureCards
+  FeatureCardPayment:
+    path: Modules/FeatureCardPayment
+  FeatureCardIssuing:
+    path: Modules/FeatureCardIssuing
   FeatureDashboard:
     path: Modules/FeatureDashboard
   FeatureCryptoDomain:
@@ -394,7 +333,8 @@ targets:
       - package: FeatureActivity
       - package: FeatureApp
       - package: FeatureAuthentication
-      - package: FeatureCards
+      - package: FeatureCardPayment
+      - package: FeatureCardIssuing
       - package: FeatureDashboard
       - package: FeatureCryptoDomain
       - package: FeatureCoin
@@ -487,7 +427,6 @@ targets:
       - package: WalletPayload
         product: WalletPayloadDataKit
 
-      - target: TodayExtension
     platform: iOS
     postBuildScripts:
       - name: Run Crashlytics
@@ -495,8 +434,6 @@ targets:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - ${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}
         script: ${PROJECT_DIR}/scripts/crashlytics/run
-      - name: Remove Nested Frameworks from Today Extension
-        script: ${PROJECT_DIR}/scripts/remove-nested-frameworks.sh
     postCompileScripts:
       - name: Get SSL Certificate
         path: Blockchain/Scripts/get_ssl_certificate.sh
@@ -650,7 +587,9 @@ targets:
   CryptoDomainDemo:
     dependencies:
       - package: FeatureCryptoDomain
-        product: FeatureCryptoDomainUI
+        product: FeatureCryptoDomain
+      - package: FeatureCryptoDomain
+        product: FeatureCryptoDomainMock
     platform: iOS
     sources:
       - createIntermediateGroups: true
@@ -664,63 +603,3 @@ targets:
       - path: scripts/fix-snapshot-host-app.sh
         name: "[blockchain] Copy Swift Package Manager Generated Bundles"
     type: application
-  TodayExtension:
-    dependencies:
-      - sdk: NotificationCenter.framework
-
-      - package: DIKit
-      - package: RxSwift
-        product: RxCocoa
-      - package: RxSwift
-        product: RxRelay
-      - package: RxSwift
-        product: RxSwift
-
-      - package: Analytics
-        product: AnalyticsKit
-      - package: Localization
-        product: Localization
-      - package: Platform
-        product: PlatformKit
-      - package: Platform
-        product: PlatformDataKit
-      - package: Platform
-        product: PlatformUIKit
-      - package: Tool
-        product: ToolKit
-
-      - package: Network
-        product: NetworkKit
-      - package: NetworkErrors
-        product: NetworkErrors
-    platform: iOS
-    scheme: {}
-    settings:
-      configs:
-        Debug Dev:
-          groups:
-          - debug_signing_today_extension_dev
-        Debug Staging:
-          groups:
-          - debug_signing_today_extension_staging
-        Release Staging:
-          groups:
-          - release_signing_today_extension_staging
-        Debug Alpha:
-          groups:
-          - debug_signing_today_extension_alpha
-        Release Alpha:
-          groups:
-          - release_signing_today_extension_alpha
-        Debug Production:
-          groups:
-          - debug_signing_today_extension
-        Release:
-          groups:
-          - release_signing_today_extension
-        Release Internal:
-          groups:
-          - release_signing_today_extension_internal
-    sources:
-      - TodayExtension
-    type: app-extension

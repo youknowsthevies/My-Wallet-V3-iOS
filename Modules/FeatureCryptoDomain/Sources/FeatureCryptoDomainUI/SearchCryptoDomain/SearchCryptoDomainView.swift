@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
+import DIKit
 import FeatureCryptoDomainDomain
 import Localization
 import SwiftUI
@@ -28,27 +29,16 @@ struct SearchCryptoDomainView: View {
                     .padding([.leading, .trailing], Spacing.padding3)
                 domainList
             }
-            .primaryNavigation(
-                title: LocalizedString.title,
-                trailing: { cartBarButton }
-            )
-            .bottomSheet(isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)) {
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .primaryNavigation(title: LocalizedString.title)
+            .bottomSheet(
+                isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
+            ) {
                 createPremiumDomainBottomSheet()
             }
             .navigationRoute(in: store)
-        }
-    }
-
-    private var cartBarButton: some View {
-        WithViewStore(store) { viewStore in
-            Button(action: {
-                viewStore.send(.navigate(to: .checkout))
-            }) {
-                Icon.cart
-                    .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
-            }
-            .accessibilityIdentifier(Accessibility.cartButton)
         }
     }
 
@@ -58,6 +48,8 @@ struct SearchCryptoDomainView: View {
                 text: viewStore.binding(\.$searchText),
                 isFirstResponder: viewStore.binding(\.$isSearchFieldSelected),
                 cancelButtonText: LocalizationConstants.cancel,
+                subText: viewStore.isSearchTextValid ? nil : LocalizedString.SearchBar.error,
+                subTextStyle: viewStore.isSearchTextValid ? .default : .error,
                 placeholder: LocalizedString.title,
                 onReturnTapped: {
                     viewStore.send(.set(\.$isSearchFieldSelected, false))
@@ -87,12 +79,17 @@ struct SearchCryptoDomainView: View {
     private var domainList: some View {
         WithViewStore(store) { viewStore in
             ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewStore.filteredSearchResults, id: \.domainName) { result in
-                        Divider()
-                        createDomainRow(result: result)
+                if viewStore.isSearchResultsLoading {
+                    ProgressView()
+                } else {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewStore.searchResults, id: \.domainName) { result in
+                            PrimaryDivider()
+                            createDomainRow(result: result)
+                        }
+                        PrimaryDivider()
                     }
-                    PrimaryDivider()
+                    .animation(.easeInOut)
                 }
             }
             .accessibilityIdentifier(Accessibility.domainList)
@@ -128,46 +125,37 @@ struct SearchCryptoDomainView: View {
     private func createPremiumDomainBottomSheet() -> some View {
         WithViewStore(store) { viewStore in
             BuyDomainActionView(
-                domain: viewStore.binding(\.$selectedPremiumDomain),
+                domainName: viewStore.selectedPremiumDomain?.domainName ?? "",
+                redirectUrl: viewStore.selectedPremiumDomainRedirectUrl ?? "",
                 isShown: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
             )
         }
     }
 }
 
+#if DEBUG
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct SearchCryptoDomainView_Previews: PreviewProvider {
     static var previews: some View {
         SearchCryptoDomainView(
             store: .init(
-                initialState: .init(
-                    searchResults: [
-                        SearchDomainResult(
-                            domainName: "cocacola.blockchain",
-                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
-                            domainAvailability: .unavailable
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola001.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocacola002.blockchain",
-                            domainType: .free,
-                            domainAvailability: .availableForFree
-                        ),
-                        SearchDomainResult(
-                            domainName: "cocola.blockchain",
-                            domainType: .premium(purchaseURL: URL(string: "https://www.blockchain.com/")!),
-                            domainAvailability: .availableForPremiumSale(price: "50")
-                        )
-                    ]
-                ),
+                initialState: .init(),
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
-                    mainQueue: .main
+                    mainQueue: .main,
+                    externalAppOpener: ToLogAppOpener(),
+                    searchDomainRepository: SearchDomainRepository(
+                        apiClient: SearchDomainClient.mock
+                    ),
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
+                    ),
+                    userInfoProvider: { .empty() }
                 )
             )
         )
     }
 }
+#endif

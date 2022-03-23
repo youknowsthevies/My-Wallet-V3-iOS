@@ -109,4 +109,30 @@ final class TagBlockchainSchemaTests: XCTestCase {
     func test_isDescendant() throws {
         XCTAssertTrue(blockchain.user.email.address[].isDescendant(of: blockchain.user[]))
     }
+
+    func test_static_key_indices() throws {
+        let id = blockchain.user["abcdef"].account
+        let key = id.key
+        XCTAssertEqual(key.indices, [blockchain.user.id[]: "abcdef"])
+    }
+
+    func test_static_key_any_context() throws {
+        let id = blockchain.ux.asset["BTC"].account["Trading"].buy[6000]
+        let key = id.key
+        XCTAssertEqual(
+            key.indices,
+            [
+                blockchain.ux.asset.id[]: "BTC",
+                blockchain.ux.asset.account.id[]: "Trading"
+            ]
+        )
+        XCTAssertContextEqual(
+            key.context,
+            [
+                blockchain.ux.asset.id: "BTC",
+                blockchain.ux.asset.account.id: "Trading",
+                blockchain.ux.asset.account.buy: 6000
+            ]
+        )
+    }
 }

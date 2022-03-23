@@ -6,12 +6,12 @@ import WalletPayloadKit
 
 final class MockWalletEncoder: WalletEncodingAPI {
 
-    var trasformValue: AnyPublisher<EncodedWalletPayload, WalletEncodingError> = .failure(
+    var transformValue: AnyPublisher<EncodedWalletPayload, WalletEncodingError> = .failure(
         .genericFailure
     )
 
-    func trasform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError> {
-        trasformValue
+    func transform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError> {
+        transformValue
     }
 
     var encodeValue: AnyPublisher<WalletCreationPayload, WalletEncodingError> = .failure(

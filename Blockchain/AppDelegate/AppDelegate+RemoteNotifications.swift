@@ -22,7 +22,7 @@ extension AppDelegate {
         {
             app.post(
                 event: blockchain.app.process.deep_link,
-                context: [blockchain.app.process.deep_link.url[]: url]
+                context: [blockchain.app.process.deep_link.url: url]
             )
         }
 

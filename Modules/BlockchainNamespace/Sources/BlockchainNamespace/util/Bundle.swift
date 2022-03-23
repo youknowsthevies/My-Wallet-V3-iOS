@@ -1,16 +1,21 @@
+import Algorithms
 import class Foundation.Bundle
 
 private class BundleFinder {}
 
 extension Foundation.Bundle {
-    public static let namespace = Bundle.find("BlockchainNamespace_BlockchainNamespace.bundle", in: BundleFinder.self)
+    public static let namespace = Bundle.find(
+        "BlockchainNamespace_BlockchainNamespace.bundle",
+        "Blockchain_BlockchainNamespace.bundle",
+        in: BundleFinder.self
+    )
 }
 
 // The following is copied from `ToolKit` to avoid adding an extra external dependency into the Exchange app
 extension Foundation.Bundle {
 
     /// Returns the resource bundle associated with a Swift module.
-    private static func find(_ bundleName: String, in type: AnyObject.Type) -> Bundle {
+    private static func find(_ bundleNames: String..., in type: AnyObject.Type) -> Bundle {
 
         let candidates = [
             // Bundle should be present here when the package is linked into an App.
@@ -33,13 +38,13 @@ extension Foundation.Bundle {
                 .deletingLastPathComponent()
         ]
 
-        for candidate in candidates {
+        for (candidate, bundleName) in product(candidates, bundleNames) {
             let bundlePath = candidate?.appendingPathComponent(bundleName)
             if let bundle = bundlePath.flatMap(Bundle.init(url:)) {
                 return bundle
             }
         }
 
-        fatalError("unable to find bundle named \(bundleName)")
+        fatalError("unable to find bundle named \(bundleNames)")
     }
 }

@@ -273,6 +273,9 @@ public let welcomeReducer = Reducer.combine(
         case .restoreWallet(.restoreWallet(let walletRecovery)):
             return Effect(value: .requestedToRestoreWallet(walletRecovery))
 
+        case .restoreWallet(.importWallet(.createAccount(.importAccount))):
+            return Effect(value: .requestedToRestoreWallet(.importRecovery))
+
         case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
             return Effect(value: .requestedToDecryptWallet(password))
 

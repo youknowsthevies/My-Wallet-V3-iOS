@@ -69,7 +69,11 @@ public let approveReducer = Reducer<ApproveState, ApproveAction, OpenBankingEnvi
                 .navigate(to: .bank),
                 .fireAndForget { [state] in
                     environment.analytics.record(
-                        event: .linkBankConditionsApproved(account: state.bank.account, institution: state.bank.name)
+                        event: .linkBankConditionsApproved(
+                            account: state.bank.account,
+                            institution: state.bank.name,
+                            origin: .settings
+                        )
                     )
                 }
             )

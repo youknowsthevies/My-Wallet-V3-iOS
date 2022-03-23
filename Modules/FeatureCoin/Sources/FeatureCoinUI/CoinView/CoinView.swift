@@ -16,8 +16,6 @@ public struct CoinView: View {
 
     @BlockchainApp var app
     @Environment(\.context) var context
-
-    @Environment(\.openURL) var openURL
     @Environment(\.presentationMode) private var presentationMode
 
     public init(store: Store<CoinViewState, CoinViewAction>) {
@@ -28,88 +26,149 @@ public struct CoinView: View {
 
     public var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 ScrollView {
-                    GraphView(
-                        store: store.scope(state: \.graph, action: CoinViewAction.graph)
-                    )
-
-                    if !viewStore.accounts.isEmpty {
-                        TotalBalanceView(
-                            assetDetails: viewStore.assetDetails,
-                            accounts: viewStore.accounts
-                        ) {
-                            IconButton(icon: .favorite) {}
-                        }
-                    }
-
-                    if viewStore.assetDetails.tradeable, !viewStore.accounts.isEmpty {
-                        AccountsView(
-                            assetColor: viewStore.assetDetails.brandColor,
-                            accounts: viewStore.accounts,
-                            interestRate: viewStore.interestRate
-                        )
-                    } else {
-                        AlertCard(
-                            title: Localization.Label.Title.notTradable.interpolating(
-                                viewStore.assetDetails.name,
-                                viewStore.assetDetails.code
-                            ),
-                            message: Localization.Label.Title.addToWatchListInfo.interpolating(
-                                viewStore.assetDetails.name
-                            )
-                        )
-                        .padding([.leading, .trailing, .top], Spacing.padding2)
-                    }
-
-                    HStack {
-                        Text(
-                            Localization.Label.Title.aboutCrypto
-                                .interpolating(viewStore.assetDetails.name)
-                        )
-                        .typography(.body2)
-                        .padding(Spacing.padding3)
-
-                        Spacer()
-                    }
-
-                    Text(viewStore.assetDetails.about)
-                        .typography(.paragraph1)
-                        .padding([.leading, .trailing], 24.pt)
-
-                    HStack {
-                        SmallMinimalButton(title: Localization.Link.Title.visitWebsite) {
-                            openURL(viewStore.assetDetails.assetInfoUrl)
-                        }
-                        .padding(Spacing.padding3)
-
-                        Spacer()
-                    }
+                    header(viewStore)
+                    accounts(viewStore)
+                    about(viewStore)
+                    Color.clear
+                        .frame(height: Spacing.padding2)
                 }
-                actions(in: viewStore)
+                if viewStore.accounts.isNotEmpty {
+                    actions(viewStore)
+                }
             }
-            .onAppear {
-                viewStore.send(.loadKycStatus)
-                viewStore.send(.loadAccounts)
-                viewStore.send(.loadInterestRates)
-            }
-            .primaryNavigation(
-                leading: {
-                    leading(
-                        logoUrl: viewStore.assetDetails.logoUrl,
-                        logoImage: viewStore.assetDetails.logoImage
+            .padding(.bottom, 20.pt)
+            .ignoresSafeArea(.container, edges: .bottom)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onAppear { app.post(event: blockchain.ux.asset[].ref(to: context)) }
+            .onAppear { viewStore.send(.onAppear) }
+            .onDisappear { viewStore.send(.onDisappear) }
+            .bottomSheet(
+                item: viewStore.binding(\.$account).animation(.spring()),
+                content: { account in
+                    AccountSheet(
+                        account: account,
+                        isVerified: viewStore.kycStatus != .unverified,
+                        onClose: {
+                            withAnimation(.spring()) {
+                                viewStore.send(.set(\.$account, nil))
+                            }
+                        }
                     )
-                },
-                title: viewStore.assetDetails.name,
-                trailing: {
-                    dismiss()
+                    .context([blockchain.ux.asset.account.id: account.id])
+                }
+            )
+            .bottomSheet(
+                item: viewStore.binding(\.$explainer).animation(.spring()),
+                content: { account in
+                    AccountExplainer(
+                        account: account,
+                        interestRate: viewStore.interestRate,
+                        onClose: {
+                            withAnimation(.spring()) {
+                                viewStore.send(.set(\.$explainer, nil))
+                            }
+                        }
+                    )
+                    .context([blockchain.ux.asset.account.id: account.id])
                 }
             )
         }
     }
 
-    @ViewBuilder func leading(logoUrl: URL?, logoImage: Image?) -> some View {
-        if let logoImage = logoImage {
+    @ViewBuilder func header(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+        Group {
+            GraphView(
+                store: store.scope(state: \.graph, action: CoinViewAction.graph)
+            )
+        }
+        .primaryNavigation(
+            leading: {
+                navigationLeadingView(
+                    url: viewStore.asset.logoUrl,
+                    image: viewStore.asset.logoImage
+                )
+            },
+            title: viewStore.asset.name,
+            trailing: {
+                dismiss()
+            }
+        )
+    }
+
+    @ViewBuilder func accounts(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+        VStack {
+            if viewStore.error == .failedToLoad {
+                AlertCard(
+                    title: Localization.Accounts.Error.title,
+                    message: Localization.Accounts.Error.message,
+                    variant: .error,
+                    isBordered: true
+                )
+                .padding([.leading, .trailing, .top], Spacing.padding2)
+            } else if viewStore.asset.isTradable {
+                TotalBalanceView(
+                    asset: viewStore.asset,
+                    accounts: viewStore.accounts
+                )
+                AccountListView(
+                    accounts: viewStore.accounts,
+                    assetColor: viewStore.asset.brandColor,
+                    interestRate: viewStore.interestRate,
+                    kycStatus: viewStore.kycStatus
+                )
+            } else {
+                TotalBalanceView(
+                    asset: viewStore.asset,
+                    accounts: viewStore.accounts
+                )
+                AlertCard(
+                    title: Localization.Label.Title.notTradable.interpolating(
+                        viewStore.asset.name,
+                        viewStore.asset.code
+                    ),
+                    message: Localization.Label.Title.notTradableMessage.interpolating(
+                        viewStore.asset.name,
+                        viewStore.asset.code
+                    )
+                )
+                .padding([.leading, .trailing, .top], Spacing.padding2)
+            }
+        }
+    }
+
+    @ViewBuilder func about(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                if let about = viewStore.asset.about {
+                    Text(
+                        Localization.Label.Title.aboutCrypto
+                            .interpolating(viewStore.asset.name)
+                    )
+                    .typography(.body2)
+                    .padding(Spacing.padding3)
+
+                    Text(about)
+                        .typography(.paragraph1)
+                        .padding([.leading, .trailing], 24.pt)
+                }
+                if let url = viewStore.asset.website {
+                    SmallMinimalButton(title: Localization.Link.Title.visitWebsite) {
+                        app.post(
+                            event: blockchain.ux.asset.bio.visit.website[].ref(to: context),
+                            context: [blockchain.ux.asset.bio.visit.website.url[]: url]
+                        )
+                    }
+                    .padding(Spacing.padding3)
+                }
+            }
+            Spacer()
+        }
+    }
+
+    @ViewBuilder func navigationLeadingView(url: URL?, image: Image?) -> some View {
+        if let logoImage = image {
             logoImage
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -117,7 +176,7 @@ public struct CoinView: View {
                 .frame(width: 24.pt, height: 24.pt)
         } else {
             Backport.AsyncImage(
-                url: logoUrl,
+                url: url,
                 content: { image in
                     image
                         .resizable()
@@ -143,110 +202,151 @@ public struct CoinView: View {
         .frame(width: 24.pt, height: 24.pt)
     }
 
-    @ViewBuilder func actions(in viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func actions(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         VStack {
-            if viewStore.primaryAction != nil || viewStore.secondaryAction != nil {
+            let actions = viewStore.actions
+            if actions.isNotEmpty {
                 PrimaryDivider()
             }
             HStack {
-                if let action = viewStore.primaryAction {
-                    PrimaryButton(
-                        title: action.title,
-                        leadingView: { action.icon },
-                        action: {
-                            app.post(event: action.event[].ref(to: context), context: context)
-                        }
-                    )
-                }
-                if let action = viewStore.secondaryAction {
-                    SecondaryButton(
-                        title: action.title,
-                        leadingView: { action.icon },
-                        action: {
-                            app.post(event: action.event[].ref(to: context), context: context)
-                        }
-                    )
+                ForEach(actions.indexed(), id: \.element.event) { index, action in
+                    if index == actions.startIndex {
+                        PrimaryButton(
+                            title: action.title,
+                            leadingView: { action.icon },
+                            action: {
+                                app.post(event: action.event[].ref(to: context))
+                            }
+                        )
+                    } else {
+                        SecondaryButton(
+                            title: action.title,
+                            leadingView: { action.icon },
+                            action: {
+                                app.post(event: action.event[].ref(to: context))
+                            }
+                        )
+                    }
                 }
             }
             .padding()
         }
-        .padding([.leading, .trailing], 8.pt)
     }
 }
 
 // swiftlint:disable type_name
 struct CoinView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        Group {
-            CoinView(
-                store: .init(
-                    initialState: .init(
-                        assetDetails: PreviewHelper.assetDetails(),
-                        kycStatus: .gold,
-                        accounts: [
-                            PreviewHelper.account(),
-                            PreviewHelper.account(
-                                name: "Trading Account",
-                                accountType: .trading
-                            ),
-                            PreviewHelper.account(
-                                name: "Rewards Account",
-                                accountType: .interest
-                            )
-                        ]
-                    ),
-                    reducer: coinViewReducer,
-                    environment: .init(
-                        app: App.preview,
-                        kycStatusProvider: { .empty() },
-                        accountsProvider: { .empty() },
-                        historicalPriceService: PreviewHelper.HistoricalPriceService(),
-                        interestRatesRepository: PreviewHelper.InterestRatesRepository()
-                    )
-                )
-            )
-        }
-
         CoinView(
             store: .init(
                 initialState: .init(
-                    assetDetails: PreviewHelper.assetDetails(
-                        tradeable: true
-                    ),
-                    kycStatus: .silver,
+                    asset: .preview(),
+                    kycStatus: .gold,
                     accounts: [
-                        PreviewHelper.account()
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
                     ]
                 ),
                 reducer: coinViewReducer,
-                environment: .init(
-                    app: App.preview,
-                    kycStatusProvider: { .empty() },
-                    accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
-                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
-                )
+                environment: .preview
             )
         )
+        .app(App.preview)
+        .previewDevice("iPhone SE (2nd generation)")
+        .previewDisplayName("Gold iPhone SE (2nd generation)")
 
         CoinView(
             store: .init(
                 initialState: .init(
-                    assetDetails: PreviewHelper.assetDetails(
-                        tradeable: false
-                    ),
-                    kycStatus: .unverified,
-                    accounts: []
+                    asset: .preview(),
+                    kycStatus: .gold,
+                    accounts: [
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
+                    ]
                 ),
                 reducer: coinViewReducer,
-                environment: .init(
-                    app: App.preview,
-                    kycStatusProvider: { .empty() },
-                    accountsProvider: { .empty() },
-                    historicalPriceService: PreviewHelper.HistoricalPriceService(),
-                    interestRatesRepository: PreviewHelper.InterestRatesRepository()
-                )
+                environment: .preview
             )
         )
+        .app(App.preview)
+        .previewDisplayName("Gold")
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    asset: .preview(
+                        isTradable: true
+                    ),
+                    kycStatus: .silver,
+                    accounts: [
+                        .preview.privateKey,
+                        .preview.trading,
+                        .preview.rewards
+                    ]
+                ),
+                reducer: coinViewReducer,
+                environment: .preview
+            )
+        )
+        .app(App.preview)
+        .previewDisplayName("Silver")
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    asset: .preview(
+                        isTradable: false
+                    ),
+                    kycStatus: .unverified,
+                    accounts: [
+                        .new(
+                            cryptoCurrency: .bitcoin,
+                            fiatCurrency: .USD,
+                            crypto: .zero(currency: .bitcoin),
+                            fiat: .zero(currency: .USD)
+                        )
+                    ]
+                ),
+                reducer: coinViewReducer,
+                environment: .preview
+            )
+        )
+        .app(App.preview)
+        .previewDisplayName("Not Tradable")
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    asset: .preview(),
+                    kycStatus: .unverified,
+                    accounts: [
+                        .preview.privateKey,
+                        .preview.trading
+                    ]
+                ),
+                reducer: coinViewReducer,
+                environment: .preview
+            )
+        )
+        .app(App.preview)
+        .previewDisplayName("Unverified")
+
+        CoinView(
+            store: .init(
+                initialState: .init(
+                    asset: .preview(),
+                    kycStatus: .unverified,
+                    accounts: [],
+                    error: .failedToLoad
+                ),
+                reducer: coinViewReducer,
+                environment: .preview
+            )
+        )
+        .app(App.preview)
+        .previewDisplayName("Error")
     }
 }

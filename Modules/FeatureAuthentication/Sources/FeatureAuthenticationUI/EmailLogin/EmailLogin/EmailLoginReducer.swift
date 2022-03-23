@@ -317,6 +317,13 @@ extension Reducer where
                         )
                     )
                     return .none
+                case .didSendDeviceVerificationEmail(.failure(let error)):
+                    environment.analyticsRecorder.record(
+                        event: .loginIdentifierFailed(
+                            errorMessage: error.localizedDescription
+                        )
+                    )
+                    return .none
                 default:
                     return .none
                 }

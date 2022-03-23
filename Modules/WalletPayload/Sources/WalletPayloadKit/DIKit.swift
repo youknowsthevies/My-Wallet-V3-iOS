@@ -72,6 +72,7 @@ extension DependencyContainer {
                 walletEncoder: DIKit.resolve(),
                 encryptor: PayloadCrypto(cryptor: AESCryptor()),
                 createWalletRepository: DIKit.resolve(),
+                usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),

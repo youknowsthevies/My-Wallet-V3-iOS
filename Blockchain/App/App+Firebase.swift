@@ -1,4 +1,6 @@
+import AnalyticsKit
 @_exported import BlockchainNamespace
+import FeatureCoinUI
 import Firebase
 import FirebaseProtocol
 
@@ -10,3 +12,14 @@ extension FirebaseRemoteConfig.RemoteConfig: RemoteConfiguration_p {}
 extension FirebaseRemoteConfig.RemoteConfigValue: RemoteConfigurationValue_p {}
 extension FirebaseRemoteConfig.RemoteConfigFetchStatus: RemoteConfigurationFetchStatus_p {}
 extension FirebaseRemoteConfig.RemoteConfigSource: RemoteConfigurationSource_p {}
+
+extension AppProtocol {
+
+    func bootstrap(analytics recorder: AnalyticsEventRecorderAPI = resolve()) {
+        observers.insert(CoinViewAnalytics(app: self, analytics: recorder))
+        observers.insert(FirebaseAnalytics(app: self, analytics: recorder))
+        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+        observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
+        #endif
+    }
+}

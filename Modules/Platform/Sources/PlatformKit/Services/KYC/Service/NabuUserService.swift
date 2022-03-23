@@ -5,7 +5,7 @@ import DIKit
 import NabuNetworkError
 import ToolKit
 
-public enum NabuUserServiceError: Error {
+public enum NabuUserServiceError: Error, Equatable {
     case failedToFetchUser(NabuNetworkError)
     case failedToSetAddress(NabuNetworkError)
 }

@@ -8,12 +8,6 @@ public struct WalletRecoveryService {
     public var recoverFromMetadata: (
         _ mnemonic: String
     ) -> AnyPublisher<EmptyValue, WalletError>
-
-    public var recover: (
-        _ email: String,
-        _ password: String,
-        _ mnemonic: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
 }
 
 extension WalletRecoveryService {
@@ -32,41 +26,15 @@ extension WalletRecoveryService {
                         return walletRecovery.recover(from: mnemonic)
                     }
                     .eraseToAnyPublisher()
-            },
-            recover: { [walletManager, nativeWalletEnabled, legacyImportWallet] email, password, mnemonic in
-                nativeWalletEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<EmptyValue, WalletError> in
-                        guard isEnabled else {
-                            return legacyImportWallet(email, password, mnemonic, walletManager)
-                        }
-                        unimplemented("Importing a wallet is not yet available using Native Wallet")
-                    }
-                    .eraseToAnyPublisher()
             }
         )
     }
 
     public static var noop: Self {
         Self(
-            recoverFromMetadata: { _ in .empty() },
-            recover: { _, _, _ in .empty() }
+            recoverFromMetadata: { _ in .empty() }
         )
     }
-}
-
-private func legacyImportWallet(
-    email: String,
-    password: String,
-    mnemonic: String,
-    walletManager: WalletManagerAPI
-) -> AnyPublisher<EmptyValue, WalletError> {
-    walletManager.loadWalletJS()
-    walletManager.recover(
-        email: email,
-        password: password,
-        seedPhrase: mnemonic
-    )
-    return listenForRecoveryEvents(walletManager: walletManager)
 }
 
 private func legacyRecover(

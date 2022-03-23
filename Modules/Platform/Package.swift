@@ -81,7 +81,7 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureForm"),
-        .package(path: "../FeatureCards")
+        .package(path: "../FeatureCardPayment")
     ],
     targets: [
         .target(
@@ -108,7 +108,7 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ]
         ),
         .target(
@@ -121,7 +121,7 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ]
         ),
         .target(
@@ -139,7 +139,7 @@ let package = Package(
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
-                .product(name: "FeatureCardsDomain", package: "FeatureCards")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

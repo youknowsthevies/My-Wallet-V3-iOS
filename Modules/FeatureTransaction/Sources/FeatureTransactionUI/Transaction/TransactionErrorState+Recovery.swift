@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftlint:disable file_length
+
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -64,10 +66,37 @@ extension TransactionErrorState {
         return text
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity
     func recoveryWarningTitle(for action: AssetAction) -> String {
         let text: String
         switch self {
+        case .fatalError(let fatalError):
+            switch fatalError {
+            case .generic(let error):
+                if
+                    let error = error as? OrderConfirmationServiceError,
+                    case .nabu(.nabuError(let networkError)) = error
+                {
+                    return transactionErrorTitle(
+                        for: networkError.code,
+                        action: action
+                    ) ?? Localization.nextworkErrorShort
+                } else if
+                    let error = error as? NabuNetworkError,
+                    case .nabuError(let networkError) = error
+                {
+                    return transactionErrorTitle(
+                        for: networkError.code,
+                        action: action
+                    ) ?? Localization.nextworkErrorShort
+                } else {
+                    fallthrough
+                }
+            default:
+                return Localization.fatalErrorShort
+            }
+        case .nabuError(let error):
+            text = transactionErrorTitle(for: error.code, action: action) ?? Localization.nextworkErrorShort
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
@@ -118,10 +147,6 @@ extension TransactionErrorState {
             text = Localization.pendingOrderLimitReached
         case .transactionInFlight:
             text = Localization.transactionInFlight
-        case .fatalError:
-            text = Localization.fatalErrorShort
-        case .nabuError:
-            text = Localization.nextworkErrorShort
         case .unknownError:
             text = Localization.unknownError
         }
@@ -259,7 +284,9 @@ extension TransactionErrorState {
         let errorDescription: String
         switch fatalError {
         case .generic(let error):
-            if let networkError = error as? NabuNetworkError {
+            if let error = error as? OrderConfirmationServiceError, case .nabu(let networkError) = error {
+                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {
                 errorDescription = validationError.state.mapToTransactionErrorState.recoveryWarningTitle(for: action)
@@ -271,6 +298,29 @@ extension TransactionErrorState {
             errorDescription = fatalError.localizedDescription
         }
         return errorDescription
+    }
+
+    private func transactionErrorTitle(for code: NabuErrorCode, action: AssetAction) -> String? {
+        switch code {
+        case .cardInsufficientFunds:
+            return Localization.cardInsufficientFundsTitle
+        case .cardBankDecline:
+            return Localization.cardBankDeclineTitle
+        case .cardDuplicate:
+            return Localization.cardDuplicateTitle
+        case .cardBlockchainDecline:
+            return Localization.cardBankDeclineTitle
+        case .cardAcquirerDecline:
+            return Localization.cardAcquirerDeclineTitle
+        case .cardPaymentNotSupported:
+            return Localization.cardUnsupportedPaymentMethodTitle
+        case .cardCreateFailed:
+            return Localization.cardCreateFailedTitle
+        case .cardPaymentFailed:
+            return Localization.cardPaymentFailedTitle
+        default:
+            return nil
+        }
     }
 
     // swiftlint:disable:next cyclomatic_complexity

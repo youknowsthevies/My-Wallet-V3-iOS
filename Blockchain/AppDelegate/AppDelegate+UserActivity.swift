@@ -14,7 +14,7 @@ extension AppDelegate {
                 guard let url = dynamiclink?.url else { return }
                 app.post(
                     event: blockchain.app.process.deep_link,
-                    context: [blockchain.app.process.deep_link.url[]: url]
+                    context: [blockchain.app.process.deep_link.url: url]
                 )
             }
 
@@ -31,7 +31,7 @@ extension AppDelegate {
         if let url = userActivity.webpageURL {
             app.post(
                 event: blockchain.app.process.deep_link,
-                context: [blockchain.app.process.deep_link.url[]: url]
+                context: [blockchain.app.process.deep_link.url: url]
             )
         }
         return viewStore.appSettings.userActivityHandled

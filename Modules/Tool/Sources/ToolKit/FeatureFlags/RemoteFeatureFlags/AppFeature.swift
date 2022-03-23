@@ -86,9 +86,14 @@ public enum AppFeature: Int, CaseIterable {
 
     case nativeWalletCreation
 
-    // MARK: - Card Issuance
+    // MARK: - Card Issuing
 
-    case cardIssuance
+    case cardIssuing
+
+    // MARK: - Redesign
+
+    /// Enables Redesigned CoinView
+    case redesignCoinView
 }
 
 extension AppFeature {
@@ -139,10 +144,12 @@ extension AppFeature {
             return "ios_ff_apple_pay"
         case .nativeWalletCreation:
             return "ios_ff_native_wallet_creation"
-        case .cardIssuance:
-            return "ios_ff_card_issuance"
+        case .cardIssuing:
+            return "ios_ff_card_issuing"
         case .sendToDomainsAnnouncement:
             return "ios_ff_send_to_domains_announcement"
+        case .redesignCoinView:
+            return "ios_ff_redesign_coinview"
         }
     }
 
@@ -193,9 +200,11 @@ extension AppFeature {
             return false
         case .nativeWalletCreation:
             return false
-        case .cardIssuance:
+        case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:
+            return true
+        case .redesignCoinView:
             return true
         }
     }

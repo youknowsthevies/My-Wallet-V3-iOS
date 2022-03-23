@@ -45,8 +45,11 @@ struct DomainCheckoutView: View {
                         .padding(.top, Spacing.padding3)
                     Spacer()
                     termsRow
-                    PrimaryButton(title: LocalizedString.button) {
-                        viewStore.send(.navigate(to: .confirmation))
+                    PrimaryButton(
+                        title: LocalizedString.button,
+                        isLoading: viewStore.isLoading
+                    ) {
+                        viewStore.send(.claimDomain)
                     }
                     .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
                     .accessibility(identifier: Accessibility.ctaButton)
@@ -110,12 +113,12 @@ struct DomainCheckoutView: View {
 
     private var termsRow: some View {
         WithViewStore(store) { viewStore in
-            HStack(alignment: .top, spacing: Spacing.padding1) {
+            HStack(alignment: .center, spacing: Spacing.padding1) {
                 PrimarySwitch(
                     accessibilityLabel: Accessibility.termsSwitch,
                     isOn: viewStore.binding(\.$termsSwitchIsOn)
                 )
-                Text(LocalizedString.terms)
+                Text(String(format: LocalizedString.terms, viewStore.selectedDomains.first?.domainName ?? ""))
                     .typography(.micro)
                     .accessibilityIdentifier(Accessibility.termsText)
             }
@@ -136,14 +139,26 @@ struct DomainCheckoutView: View {
     }
 }
 
+#if DEBUG
+
+@testable import FeatureCryptoDomainData
+@testable import FeatureCryptoDomainMock
+
 struct DomainCheckView_Previews: PreviewProvider {
     static var previews: some View {
         DomainCheckoutView(
             store: .init(
                 initialState: .init(),
                 reducer: domainCheckoutReducer,
-                environment: ()
+                environment: DomainCheckoutEnvironment(
+                    mainQueue: .main,
+                    orderDomainRepository: OrderDomainRepository(
+                        apiClient: OrderDomainClient.mock
+                    ),
+                    userInfoProvider: { .empty() }
+                )
             )
         )
     }
 }
+#endif

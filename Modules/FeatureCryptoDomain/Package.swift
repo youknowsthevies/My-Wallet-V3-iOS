@@ -29,6 +29,11 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.18.0"
         ),
+        .package(
+            name: "swift-collections",
+            url: "https://github.com/apple/swift-collections",
+            from: "1.0.0"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -59,6 +64,7 @@ let package = Package(
             name: "FeatureCryptoDomainUI",
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
+                .target(name: "FeatureCryptoDomainMock"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
@@ -72,6 +78,12 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainData"),
                 .target(name: "FeatureCryptoDomainDomain")
+            ],
+            resources: [
+                // swiftlint:disable line_length
+                .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json"),
+                .process("Fixtures/GET/explorer-gateway/resolution/ud/suggestions/Firstname/GET_explorer-gateway_resolution_ud_suggestions_Firstname.json"),
+                .process("Fixtures/POST/explorer-gateway/resolution/ud/orders/POST_explorer-gateway_resolution_ud_orders.json")
             ]
         ),
         .testTarget(
@@ -79,6 +91,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainData"),
                 .target(name: "FeatureCryptoDomainMock"),
+                .product(name: "OrderedCollections", package: "swift-collections"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),

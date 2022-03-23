@@ -17,7 +17,7 @@ struct RootViewState: Equatable, NavigationState {
 
     var route: RouteIntent<RootViewRoute>?
 
-    @BindableState var tab: Tab = .home
+    @BindableState var tab: Tag = blockchain.ux.user.portfolio[]
     @BindableState var fab: FrequentAction
 
     @BindableState var buyAndSell: BuyAndSell = .init()
@@ -55,7 +55,7 @@ extension RootViewState {
 
 enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<RootViewRoute>?)
-    case tab(Tab)
+    case tab(Tag)
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onAppear
@@ -101,16 +101,6 @@ let rootViewReducer = Reducer<
         return .none
     case .frequentAction(let action):
         state.fab.isOn = false
-        switch action {
-        case .buy:
-            state.buyAndSell.segment = 0
-            state.tab = .buyAndSell
-        case .sell:
-            state.buyAndSell.segment = 1
-            state.tab = .buyAndSell
-        default:
-            break
-        }
         return .none
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false

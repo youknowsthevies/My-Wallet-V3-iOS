@@ -74,7 +74,6 @@ public final class SettingsScreenPresenter {
             biometryProvider: interactor.biometryProviding,
             settingsAuthenticater: interactor.settingsAuthenticating,
             recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding,
-            balanceSharingService: interactor.balanceSharingService,
             authenticationCoordinator: interactor.authenticationCoordinator
         )
 
@@ -90,8 +89,8 @@ public final class SettingsScreenPresenter {
             tiersLimitsProvider: interactor.tiersProviding,
             emailVerificationInteractor: interactor.emailVerificationBadgeInteractor,
             mobileVerificationInteractor: interactor.mobileVerificationBadgeInteractor,
-            cardIssuanceInteractor: interactor.cardIssuanceBadgeInteractor,
-            featureFlagsService: interactor.featureFlagsService
+            cardIssuingInteractor: interactor.cardIssuingBadgeInteractor,
+            cardIssuingAdapter: interactor.cardIssuingAdapter
         )
 
         preferencesSectionPresenter = .init(

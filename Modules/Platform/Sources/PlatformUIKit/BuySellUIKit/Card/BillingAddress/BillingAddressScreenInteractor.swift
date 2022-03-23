@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import PlatformKit
 import RIBs
 import RxRelay
@@ -12,10 +12,10 @@ final class BillingAddressScreenInteractor: Interactor {
 
     // MARK: - Properties
 
-    var selectedCountry: Observable<FeatureCardsDomain.Country> {
+    var selectedCountry: Observable<FeatureCardPaymentDomain.Country> {
         countrySelectionService.selectedData
             .map(\.id)
-            .compactMap { FeatureCardsDomain.Country(code: $0) }
+            .compactMap { FeatureCardPaymentDomain.Country(code: $0) }
     }
 
     // MARK: - Setup
@@ -111,7 +111,7 @@ final class BillingAddressScreenInteractor: Interactor {
     }
 }
 
-extension FeatureCardsDomain.Country {
+extension FeatureCardPaymentDomain.Country {
     var platform: PlatformKit.Country {
         .init(code: code) ?? .US
     }

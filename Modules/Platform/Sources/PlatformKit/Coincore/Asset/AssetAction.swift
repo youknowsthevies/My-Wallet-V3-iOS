@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum AssetAction: Equatable {
+public enum AssetAction: Equatable, CaseIterable {
     case buy
     case deposit
     case interestTransfer

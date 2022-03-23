@@ -18,6 +18,9 @@ extension AnalyticsEvents.New {
         case loginIdentifierEntered(
             identifierType: IdentifierType
         )
+        case loginIdentifierFailed(
+            errorMessage: String
+        )
         case loginPasswordEntered
         case loginRequestApproved(LoginSource)
         case loginRequestDenied(LoginSource)
@@ -39,6 +42,7 @@ extension AnalyticsEvents.New {
                     "mobile_device_type": Device.iOS.rawValue
                 ]
                 return ["wallet": walletInfoDecoded]
+
             case .loginPasswordEntered,
                  .loginTwoStepVerificationEntered,
                  .loginViewed,
@@ -55,9 +59,17 @@ extension AnalyticsEvents.New {
                 return [
                     "origin": origin.rawValue
                 ]
+
             case .loginIdentifierEntered(let identifierType):
                 return [
                     "identifier_type": identifierType.rawValue
+                ]
+
+            case .loginIdentifierFailed(let errorMessage):
+                return [
+                    "error_message": errorMessage,
+                    "device": Device.iOS.rawValue,
+                    "platform": Platform.wallet.rawValue
                 ]
             }
         }

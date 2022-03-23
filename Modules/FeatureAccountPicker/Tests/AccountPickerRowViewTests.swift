@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 @testable import FeatureAccountPickerUI
-import FeatureCardsDomain
+import FeatureCardPaymentDomain
 import MoneyKit
 @testable import PlatformKit
 @testable import PlatformKitMock
@@ -14,7 +14,7 @@ import XCTest
 
 class AccountPickerRowViewTests: XCTestCase {
 
-    var isShowingMultiBadge: Bool = false
+    var isShowingMultiBadge = false
 
     let accountGroupIdentifier = UUID()
     let singleAccountIdentifier = UUID()

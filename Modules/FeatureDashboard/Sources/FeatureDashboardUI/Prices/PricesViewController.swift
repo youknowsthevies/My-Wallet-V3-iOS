@@ -154,7 +154,7 @@ public final class PricesViewController: BaseScreenViewController {
 
         Observable.combineLatest(
             tableView.rx.modelSelected(PricesCellType.self),
-            featureFlagService.isEnabled(.local(.redesignCoinView)).asObservable()
+            featureFlagService.isEnabled(.remote(.redesignCoinView)).asObservable()
         )
         .subscribe(onNext: { [weak self] model, isRedesignCoinViewEnabled in
             switch model {

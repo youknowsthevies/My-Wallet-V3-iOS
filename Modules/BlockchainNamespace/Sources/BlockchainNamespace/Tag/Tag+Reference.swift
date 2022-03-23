@@ -4,41 +4,25 @@ import Foundation
 
 extension Tag {
 
-    public var ref: Tag.Reference { ref() }
-
-    public func ref(to indices: L.Context = [:]) -> Tag.Reference {
-        ref(to: indices, in: nil)
-    }
-
-    public func ref(to indices: L.Context = [:], in app: AppProtocol?) -> Tag.Reference {
-        Tag.Reference(self, to: indices.mapKeys(\.[]), in: app)
-    }
+    public var reference: Tag.Reference { ref(to: [:]) }
 
     public func ref(to indices: Tag.Context) -> Tag.Reference {
-        ref(to: indices, in: nil)
+        Tag.Reference(self, to: indices)
     }
 
-    public func ref(to indices: Tag.Context, in app: AppProtocol?) -> Tag.Reference {
+    public func ref(to indices: Tag.Context, in app: AppProtocol) -> Tag.Reference {
         Tag.Reference(self, to: indices, in: app)
+    }
+
+    public func ref(in app: AppProtocol) -> Tag.Reference {
+        Tag.Reference(self, to: [:], in: app)
     }
 }
 
 extension Tag.Reference {
 
-    public func ref(to indices: L.Context = [:]) -> Tag.Reference {
-        ref(to: indices, in: nil)
-    }
-
-    public func ref(to indices: L.Context = [:], in app: AppProtocol?) -> Tag.Reference {
-        Tag.Reference(tag, to: context + indices.mapKeys(\.[]), in: app)
-    }
-
     public func ref(to indices: Tag.Context) -> Tag.Reference {
-        ref(to: indices, in: nil)
-    }
-
-    public func ref(to indices: Tag.Context, in app: AppProtocol?) -> Tag.Reference {
-        Tag.Reference(tag, to: context + indices, in: app)
+        Tag.Reference(tag, to: context + indices)
     }
 }
 
@@ -47,7 +31,6 @@ extension Tag {
     public struct Reference {
 
         public typealias Indices = [Tag: String]
-        public typealias Context = [Tag: Any]
 
         public let tag: Tag
 
@@ -56,9 +39,19 @@ extension Tag {
 
         public let string: String
 
-        var error: Swift.Error?
+        private var error: Swift.Error?
 
-        init(_ tag: Tag, to context: Context, in app: AppProtocol?) {
+        @usableFromInline init(unchecked tag: Tag, context: Tag.Context) {
+            self.tag = tag
+            self.context = context
+            indices = [:]
+            string = tag.id
+            error = tag.template.indices.isNotEmpty
+                ? tag.error(message: "Missing indices for ref to \(tag.id)")
+                : nil
+        }
+
+        @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
             self.tag = tag
             self.context = context
             do {
@@ -118,17 +111,13 @@ extension Tag.Reference {
                 tag.child(named: blockchain.db.collection.id[].name)
             ] = id[range.id].string
         }
-        self.init(tag, to: indices, in: nil)
+        self.init(tag, to: Tag.Context(indices), in: nil)
     }
 }
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<L>) -> String {
-        id(ignoring: ignoring.map(\.[]).set)
-    }
-
-    public func id(ignoring: Set<Tag> = []) -> String {
+    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
         Self.id(
             tag: tag,
             to: context,
@@ -139,7 +128,7 @@ extension Tag.Reference {
 
     fileprivate static func id(
         tag: Tag,
-        to context: Context,
+        to context: Tag.Context,
         indices: Indices,
         ignoring: Set<Tag> = []
     ) -> String {
@@ -170,6 +159,22 @@ extension Tag.Reference: Equatable {
 
     public static func == (lhs: Tag.Reference, rhs: Tag.Reference) -> Bool {
         lhs.string == rhs.string
+    }
+
+    public static func == (lhs: Tag.Reference, rhs: Tag) -> Bool {
+        lhs.string == rhs.id
+    }
+
+    public static func == (lhs: Tag.Reference, rhs: L) -> Bool {
+        lhs.string == rhs(\.id)
+    }
+
+    public static func != (lhs: Tag.Reference, rhs: Tag) -> Bool {
+        lhs.string != rhs.id
+    }
+
+    public static func != (lhs: Tag.Reference, rhs: L) -> Bool {
+        lhs.string != rhs(\.id)
     }
 }
 
@@ -218,7 +223,7 @@ extension Tag.Reference {
 
         func indices(from ids: Tag.Context, in app: AppProtocol?) throws -> [String] {
             let ids = ids.mapKeysAndValues(
-                key: \.id,
+                key: \.description,
                 value: String.init(describing:)
             )
             return try indices.map { id in

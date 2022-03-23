@@ -9,12 +9,13 @@ extension FetchResult {
 
     public enum Error: Swift.Error {
         case keyDoesNotExist(Tag.Reference)
+        case decoding(AnyDecoder.Error)
         case other(Swift.Error)
     }
 }
 
 public struct Metadata {
-    public let tag: Tag.Reference
+    public let ref: Tag.Reference
     public let source: Source
 }
 
@@ -72,6 +73,8 @@ extension FetchResult {
             self = .value(value, metadata)
         case .failure(let error as FetchResult.Error):
             self = .error(error, metadata)
+        case .failure(let error as AnyDecoder.Error):
+            self = .error(.decoding(error), metadata)
         case .failure(let error):
             self = .error(.other(error), metadata)
         }
@@ -94,7 +97,7 @@ extension FetchResult {
             if let any = result {
                 return .value(any, metadata)
             } else {
-                return .error(.keyDoesNotExist(metadata.tag), metadata)
+                return .error(.keyDoesNotExist(metadata.ref), metadata)
             }
         }
     }
@@ -103,14 +106,14 @@ extension FetchResult {
 extension Tag {
 
     public func metadata(_ source: Metadata.Source = .undefined) -> Metadata {
-        Metadata(tag: ref(), source: source)
+        Metadata(ref: reference, source: source)
     }
 }
 
 extension Tag.Reference {
 
     public func metadata(_ source: Metadata.Source = .undefined) -> Metadata {
-        Metadata(tag: self, source: source)
+        Metadata(ref: self, source: source)
     }
 }
 
@@ -146,6 +149,8 @@ extension FetchResult {
             case .error(let error, _):
                 throw error
             }
+        } catch let error as AnyDecoder.Error {
+            return .error(.decoding(error), metadata)
         } catch let error as FetchResult.Error {
             return .error(error, metadata)
         } catch {
@@ -172,6 +177,13 @@ extension FetchResult.Value {
 }
 
 extension DecodedFetchResult {
+
+    public var metadata: Metadata {
+        switch identity {
+        case .value(_, let metadata), .error(_, let metadata):
+            return metadata
+        }
+    }
 
     public var value: Value? {
         switch identity {
@@ -207,6 +219,7 @@ extension DecodedFetchResult {
 
 #if canImport(Combine)
 
+import AnyCoding
 import Combine
 
 extension Publisher where Output == FetchResult {
