@@ -6,6 +6,11 @@
 #  ------------
 #  Runs swiftlint if it is available.
 
+if [[ ! -z "${IS_CI}" && "${IS_CI}" == true ]]; then
+    echo "warning: running on CI, skipping swiftlint check"
+    exit 0
+fi
+
 if which swiftlint > /dev/null; then
     swiftlint
 else
