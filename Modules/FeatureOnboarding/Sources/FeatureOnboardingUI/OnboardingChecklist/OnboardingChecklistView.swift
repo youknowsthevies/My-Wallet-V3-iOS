@@ -131,7 +131,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .incomplete,
+                            kycStatus: .notVerified,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -151,7 +151,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .pending,
+                            kycStatus: .verificationPending,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -171,7 +171,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .complete,
+                            kycStatus: .verified,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: false
                         )
@@ -191,7 +191,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .complete,
+                            kycStatus: .verified,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: true
                         )

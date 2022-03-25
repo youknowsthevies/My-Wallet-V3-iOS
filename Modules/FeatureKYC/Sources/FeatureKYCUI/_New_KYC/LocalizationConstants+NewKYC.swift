@@ -153,7 +153,7 @@ extension LocalizationConstants {
             )
 
             static let navigationTitle = NSLocalizedString(
-                "Upgrade Now",
+                "Verify Now",
                 comment: "KYC Upgrade Prompt - Navigation Bar Title"
             )
 
@@ -251,12 +251,12 @@ extension LocalizationConstants {
         enum UnlockTradingAlert {
 
             static let title = NSLocalizedString(
-                "Verify your account. Unlock full access.",
+                "We are updating our account verification requirements",
                 comment: "Title for alert shown to prompt Basic Tier users to upgrade"
             )
 
             static let message = NSLocalizedString(
-                "Complete ID verification to enable unlimited buying, selling, swapping, and more.",
+                "To buy, sell, and swap, you will need to verify your identity.",
                 comment: "Message for alert shown to prompt Basic Tier users to upgrade"
             )
 
