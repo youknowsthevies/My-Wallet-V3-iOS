@@ -16,29 +16,31 @@ struct SupportView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: 40.0) {
-                VStack(spacing: 24.0) {
-                    VStack(alignment: .leading, spacing: 10.0, content: {
-                        Text(LocalizationIds.title)
-                            .typography(.title3)
-                        Text(LocalizationIds.description)
-                            .typography(.paragraph1)
-                        VStack(alignment: .center, spacing: 16.0) {
-                            MinimalDoubleButton(
-                                leadingTitle: LocalizationIds.chatNow,
-                                leadingAction: {
+            ActionableView(buttons: [
+                .init(
+                    title: LocalizationIds.contactUs,
+                    action: {
 
-                                },
-                                trailingTitle: LocalizationIds.emailUs,
-                                trailingAction: {
+                    },
+                    style: .secondary
+                ),
+                .init(
+                    title: LocalizationIds.viewFAQ,
+                    action: {
 
-                                }
-                            )
-                        }
-                    })
-                }
-                .padding(24.0)
-            }
+                    },
+                    style: .secondary
+                )
+            ], content: {
+                VStack(alignment: .leading, spacing: 10.0, content: {
+                    Text(LocalizationIds.title)
+                        .typography(.title3)
+                    Text(LocalizationIds.description)
+                        .typography(.paragraph1)
+                })
+            })
+            .padding(16.0)
+            .fixedSize(horizontal: false, vertical: true)
             .onAppear {
                 viewStore.send(.loadAppStoreVersionInformation)
             }

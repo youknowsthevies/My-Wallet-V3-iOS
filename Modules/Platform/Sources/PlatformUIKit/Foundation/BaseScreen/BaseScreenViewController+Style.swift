@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Foundation
 import UIKit
 
@@ -88,6 +89,9 @@ extension Screen.Style {
 
         /// Close icon
         case close
+
+        /// Question Mark Icon
+        case questionMark
     }
 
     // MARK: - The leading button style
@@ -184,6 +188,11 @@ extension Screen.Style.TrailingButton {
             return Screen.NavigationBarContent(
                 image: UIImage(named: "Icon-Close-Circle"),
                 accessibility: .id(Accessibility.Identifier.NavigationBar.dismissButton)
+            )
+        case .questionMark:
+            return Screen.NavigationBarContent(
+                image: UIImage(named: "Question Circle", in: .componentLibrary, with: nil),
+                accessibility: .id(Accessibility.Identifier.NavigationBar.supportButton)
             )
         default:
             return nil

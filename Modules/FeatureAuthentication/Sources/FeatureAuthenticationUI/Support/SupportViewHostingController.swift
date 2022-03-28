@@ -46,10 +46,11 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentView.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            contentView.view.topAnchor.constraint(equalTo: view.topAnchor),
             contentView.view.heightAnchor.constraint(equalTo: view.heightAnchor),
-            contentView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            contentView.view.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            contentView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        preferredContentSize = contentView.view.intrinsicContentSize
     }
 
     // MARK: - SupportViewHostingControllerDelegate

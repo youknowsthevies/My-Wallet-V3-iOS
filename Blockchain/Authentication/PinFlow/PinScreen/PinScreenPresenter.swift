@@ -40,13 +40,14 @@ final class PinScreenPresenter {
     var trailingButton: Screen.Style.TrailingButton {
         let title = Bundle.versionAndBuildNumber()
         switch flow {
-        case .create,
-             .createPin:
+        case .create:
             return .content(Screen.NavigationBarContent(title: title))
+        case .createPin:
+            return .none
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
             case .background, .attachedOn:
-                return .content(Screen.NavigationBarContent(title: title))
+                return .questionMark
             case .foreground:
                 return .none
             }
@@ -546,6 +547,9 @@ extension PinScreenPresenter {
     /// Invoked when user is authenticating himself using pin or biometrics.
     func authenticatePin() -> Completable {
         verify()
+            .do(onDispose: { [isProcessingRelay] in
+                isProcessingRelay.accept(false)
+            })
             .observe(on: verificationQueue)
             .flatMap(weak: self) { (self, pinDecryptionKey) -> Single<String> in
                 self.backupOrRestoreCredentials(pinDecryptionKey: pinDecryptionKey)

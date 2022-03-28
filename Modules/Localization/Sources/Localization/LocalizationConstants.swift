@@ -148,7 +148,7 @@ public enum LocalizationConstants {
             public static let title = NSLocalizedString("Having Trouble Logging In?", comment: "Having Trouble Logging In?")
             public static let description = NSLocalizedString("We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.", comment: "We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.")
             public static let chatNow = NSLocalizedString("Chat Now", comment: "Chat Now")
-            public static let emailUs = NSLocalizedString("Email Us", comment: "Email Us")
+            public static let contactUs = NSLocalizedString("Contact Us", comment: "Contact Us")
             public static let viewFAQ = NSLocalizedString("View FAQs", comment: "View FAQs")
             public static let version = NSLocalizedString("iOS Version", comment: "iOS Version")
             public static let latestVersion = NSLocalizedString("Latest Version", comment: "Latest Version")
