@@ -199,7 +199,7 @@ extension AppFeature {
         case .applePay:
             return false
         case .nativeWalletCreation:
-            return false
+            return true
         case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:
