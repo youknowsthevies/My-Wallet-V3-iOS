@@ -4,13 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 import UIKit
 
-public protocol SupportViewHostingControllerDelegate: AnyObject {
-    // TODO:
-}
-
-public final class SupportViewHostingController: UIViewController, SupportViewHostingControllerDelegate {
-
-    public weak var delegate: SupportViewHostingControllerDelegate?
+public final class SupportViewHostingController: UIViewController, SupportViewViewDelegate {
 
     private let contentView: UIHostingController<SupportView>
 
@@ -28,6 +22,7 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
             )
         )
         super.init(nibName: nil, bundle: nil)
+        contentView.rootView.delegate = self
     }
 
     @available(*, unavailable)
@@ -47,12 +42,33 @@ public final class SupportViewHostingController: UIViewController, SupportViewHo
         NSLayoutConstraint.activate([
             contentView.view.widthAnchor.constraint(equalTo: view.widthAnchor),
             contentView.view.topAnchor.constraint(equalTo: view.topAnchor),
-            contentView.view.heightAnchor.constraint(equalTo: view.heightAnchor),
+            contentView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             contentView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
-        preferredContentSize = contentView.view.intrinsicContentSize
     }
 
-    // MARK: - SupportViewHostingControllerDelegate
-    // TODO:
+    // MARK: - SupportViewViewDelegate
+
+    func didTapContactUs() {
+        guard let url = URL(string: "https://support.blockchain.com/hc/en-us/requests/new") else { return }
+        dismiss(animated: true) {
+            UIApplication.shared.open(
+                url,
+                options: [.universalLinksOnly: false],
+                completionHandler: nil
+            )
+        }
+    }
+
+    func didTapViewFAQs() {
+        let link = "https://support.blockchain.com/hc/en-us/categories/4416659837460-Wallet"
+        guard let url = URL(string: link) else { return }
+        dismiss(animated: true) {
+            UIApplication.shared.open(
+                url,
+                options: [.universalLinksOnly: false],
+                completionHandler: nil
+            )
+        }
+    }
 }

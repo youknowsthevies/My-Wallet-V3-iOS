@@ -4,13 +4,21 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
+protocol SupportViewViewDelegate: AnyObject {
+    func didTapViewFAQs()
+    func didTapContactUs()
+}
+
 struct SupportView: View {
 
     private typealias LocalizationIds = LocalizationConstants.Authentication.Support
 
+    weak var delegate: SupportViewViewDelegate?
     private let store: Store<SupportViewState, SupportViewAction>
 
-    init(store: Store<SupportViewState, SupportViewAction>) {
+    init(
+        store: Store<SupportViewState, SupportViewAction>
+    ) {
         self.store = store
     }
 
@@ -19,15 +27,15 @@ struct SupportView: View {
             ActionableView(buttons: [
                 .init(
                     title: LocalizationIds.contactUs,
-                    action: {
-
+                    action: { [delegate] in
+                        delegate?.didTapContactUs()
                     },
                     style: .secondary
                 ),
                 .init(
                     title: LocalizationIds.viewFAQ,
-                    action: {
-
+                    action: { [delegate] in
+                        delegate?.didTapViewFAQs()
                     },
                     style: .secondary
                 )
