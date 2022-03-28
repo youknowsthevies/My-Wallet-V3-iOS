@@ -265,6 +265,7 @@ public protocol I_blockchain_app_deep__link_send: I {}
 public extension I_blockchain_app_deep__link_send {
 	var `amount`: L_blockchain_app_deep__link_send_amount { .init("\(__).amount") }
 	var `crypto`: L_blockchain_app_deep__link_send_crypto { .init("\(__).crypto") }
+	var `destination`: L_blockchain_app_deep__link_send_destination { .init("\(__).destination") }
 }
 public final class L_blockchain_app_deep__link_send_amount: L, I_blockchain_app_deep__link_send_amount {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.amount", comment: "") }
@@ -281,6 +282,10 @@ public final class L_blockchain_app_deep__link_send_crypto_code: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.crypto.code", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_send_crypto_code: I_blockchain_db_type_string {}
+public final class L_blockchain_app_deep__link_send_destination: L, I_blockchain_app_deep__link_send_destination {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.destination", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_send_destination: I_blockchain_db_type_string {}
 public final class L_blockchain_app_enter: L, I_blockchain_app_enter {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter", comment: "") }
 }

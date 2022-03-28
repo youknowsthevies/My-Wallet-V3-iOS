@@ -1,17 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
-import RxSwift
 import ToolKit
 
-enum BitPayError: Error {
-    case unsupportedCurrencyType
+public enum BitPayError: Error {
     case invalidBitPayURL
-    case invoiceError
-    case invalidBitcoinURL
-    case invalidBitcoinCashURL
+    case invoiceFetchError(Error)
+    case missingInvoiceID
 }
 
 extension BitPayInvoiceTarget {
@@ -28,71 +26,53 @@ extension BitPayInvoiceTarget {
 
     // MARK: - Public Factory
 
-    public static func isBitcoin(_ data: String) -> Completable {
-        Completable.fromCallable {
-            guard data.contains(Prefix.bitcoin) else {
-                throw BitPayError.invalidBitcoinURL
-            }
-        }
+    public static func isBitcoin(_ data: String) -> Bool {
+        data.contains(Prefix.bitcoin)
     }
 
-    public static func isBitcoinCash(_ data: String) -> Completable {
-        Completable.fromCallable {
-            guard data.contains(Prefix.bitcoinCash) else {
-                throw BitPayError.invalidBitcoinCashURL
-            }
-        }
+    public static func isBitcoinCash(_ data: String) -> Bool {
+        data.contains(Prefix.bitcoinCash)
     }
 
-    public static func isSupportedAsset(_ asset: CryptoCurrency) -> Completable {
-        Completable.fromCallable {
-            guard asset.supportsBitPay else {
-                throw BitPayError.unsupportedCurrencyType
-            }
-        }
+    public static func isSupportedAsset(_ asset: CryptoCurrency) -> Bool {
+        asset.supportsBitPay
     }
 
-    public static func isBitPay(_ data: String) -> Completable {
-        Completable.fromCallable {
-            guard data.contains(Prefix.bitpay) else {
-                throw BitPayError.invalidBitPayURL
-            }
-        }
+    public static func isBitPay(_ data: String) -> Bool {
+        data.contains(Prefix.bitpay)
     }
 
     public static func make(
         from data: String,
         asset: CryptoCurrency
-    ) -> Single<BitPayInvoiceTarget> {
-        isBitPay(data)
-            .andThen(invoiceId(from: data))
+    ) -> AnyPublisher<BitPayInvoiceTarget, BitPayError> {
+        guard isBitPay(data) else {
+            return .failure(.invalidBitPayURL)
+        }
+        guard isSupportedAsset(asset) else {
+            return .failure(.invalidBitPayURL)
+        }
+        return invoiceId(from: data)
             .flatMap { invoiceId in
                 BitPayInvoiceTarget.bitpayRepository
                     .getBitPayPaymentRequest(
                         invoiceId: invoiceId,
                         currency: asset
                     )
-                    .asObservable()
-                    .asSingle()
+                    .mapError(BitPayError.invoiceFetchError)
             }
-            .do(onError: { error in
-                Logger.shared.error("\(error)")
-            })
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Functions
 
-    private static func invoiceId(from data: String) -> Single<String> {
-        .create { observer -> Disposable in
-            let payload = data
-                .replacingOccurrences(of: Prefix.bitcoin, with: "")
-                .replacingOccurrences(of: Prefix.bitcoinCash, with: "")
-            guard let url = URL(string: payload) else {
-                observer(.error(BitPayError.invoiceError))
-                return Disposables.create()
-            }
-            observer(.success(url.lastPathComponent))
-            return Disposables.create()
+    private static func invoiceId(from data: String) -> AnyPublisher<String, BitPayError> {
+        let payload = data
+            .replacingOccurrences(of: Prefix.bitcoin, with: "")
+            .replacingOccurrences(of: Prefix.bitcoinCash, with: "")
+        guard let url = URL(string: payload) else {
+            return .failure(.missingInvoiceID)
         }
+        return .just(url.lastPathComponent)
     }
 }

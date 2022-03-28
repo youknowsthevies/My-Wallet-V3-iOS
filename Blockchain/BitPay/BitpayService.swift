@@ -4,11 +4,11 @@ import RxRelay
 
 final class BitpayService: BitpayServiceProtocol {
 
-    // MARK: Public Properties
-
-    let contentRelay = BehaviorRelay<URL?>(value: nil)
-
-    // MARK: Init
+    // MARK: Static Properties
 
     static let shared = BitpayService()
+
+    // MARK: Properties
+
+    var content: URL?
 }

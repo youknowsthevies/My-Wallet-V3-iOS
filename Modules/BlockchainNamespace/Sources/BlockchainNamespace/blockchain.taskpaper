@@ -49,6 +49,8 @@ blockchain:
 				crypto:
 					code:
 					+ blockchain.db.type.string
+				destination:
+				+ blockchain.db.type.string
 		enter:
 			into:
 			+ blockchain.ux.type.story

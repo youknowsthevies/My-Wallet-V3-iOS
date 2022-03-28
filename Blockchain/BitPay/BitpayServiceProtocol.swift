@@ -2,8 +2,8 @@
 
 import RxRelay
 
-protocol BitpayServiceProtocol {
+protocol BitpayServiceProtocol: AnyObject {
 
     /// BitPayURL content
-    var contentRelay: BehaviorRelay<URL?> { get }
+    var content: URL? { get set }
 }
