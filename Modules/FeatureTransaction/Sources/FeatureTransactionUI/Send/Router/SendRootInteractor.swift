@@ -8,14 +8,9 @@ import RIBs
 import RxSwift
 import ToolKit
 
-public protocol SendRootRouting: ViewableRouting {
-    /// Landing shows the wallets that the user
-    /// can send from.
-    func routeToSendLanding()
-    func routeToSendLanding(navigationBarHidden: Bool)
-    func routeToSend(sourceAccount: BlockchainAccount)
-    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget)
-    func dismissTransactionFlow()
+protocol SendRootInteractable: Interactable, TransactionFlowListener {
+    var router: SendRootRouting? { get set }
+    var listener: SendRootListener? { get set }
 }
 
 public protocol SendRootListener: ViewListener {}

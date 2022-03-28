@@ -44,36 +44,17 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
         guard let string = string else {
             return .failure(CryptoTargetPayloadError.invalidStringData)
         }
-        let metadata = makeCryptoQRMetaData(fromString: string, asset: asset)
-        return BitPayInvoiceTarget
-            // Check if the data is a BitPay payload.
-            .isBitPay(string)
-            // Check if the asset is a supported asset for BitPay.
-            .andThen(BitPayInvoiceTarget.isSupportedAsset(asset))
-            // Return the BitPay data
-            .andThen(Single.just(.bitpay(string)))
-            .asPublisher()
-            .catch { error -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> in
-                guard let bitpayError = error as? BitPayError else {
-                    return .failure(.invalidStringData)
-                }
-                switch bitpayError {
-                // If the BitPay URL is valid but
-                // is invalid for either BTC or BCH
-                // we throw an error.
-                case .unsupportedCurrencyType,
-                     .invalidBitcoinURL,
-                     .invalidBitcoinCashURL,
-                     .invoiceError:
-                    return .failure(.bitPay(bitpayError))
-                // If the BitPay URL is invalid,
-                // we return the data, as it's likely a regular
-                // receive address.
-                case .invalidBitPayURL:
-                    return metadata
-                }
-            }
-            .eraseToAnyPublisher()
+        let metadata = makeCryptoQRMetaData(
+            fromString: string,
+            asset: asset
+        )
+        if BitPayInvoiceTarget.isBitPay(string),
+           BitPayInvoiceTarget.isSupportedAsset(asset)
+        {
+            return .just(.bitpay(string))
+        } else {
+            return metadata
+        }
     }
 
     // MARK: - Private Functions

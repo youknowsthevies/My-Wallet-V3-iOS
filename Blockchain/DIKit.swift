@@ -145,7 +145,7 @@ extension DependencyContainer {
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(
-                markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+                markBitpayUrl: { BitpayService.shared.content = $0 },
                 isBitPayURL: BitPayLinkRouter.isBitPayURL,
                 isPinSet: isPinSet
             )

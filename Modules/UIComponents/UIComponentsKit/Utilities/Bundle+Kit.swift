@@ -5,5 +5,9 @@ import ToolKit
 
 private class BundleFinder {}
 extension Bundle {
-    public static let UIComponents = Bundle.find("UIComponents_UIComponentsKit.bundle", in: BundleFinder.self)
+    public static let UIComponents = Bundle.find(
+        "UIComponents_UIComponentsKit.bundle",
+        "Blockchain_UIComponentsKit.bundle",
+        in: BundleFinder.self
+    )
 }

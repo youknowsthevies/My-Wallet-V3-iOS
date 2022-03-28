@@ -149,9 +149,8 @@ extension QRCodeScannerAdapter: CryptoTargetQRCodeParserAdapter {
                         .map { target in
                             FeatureQRCodeScannerDomain
                                 .QRCodeParserTarget
-                                .address(account, target as CryptoReceiveAddress)
+                                .address(account, target)
                         }
-                        .asPublisher()
                         .mapError(QRScannerError.parserError)
                         .eraseToAnyPublisher()
                 case .address:
