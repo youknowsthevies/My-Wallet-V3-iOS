@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import RxSwift
 import WalletCore
@@ -17,6 +18,12 @@ enum EthereumAddressFactoryError: Error {
 /// to preserve any extra information (eg amount), if that fails it tries to create EthereumReceiveAddress
 /// by assuming the input is an address.
 final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
+
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+
+    init(enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
+        self.enabledCurrenciesService = enabledCurrenciesService
+    }
 
     func makeExternalAssetAddress(
         address: String,
@@ -47,7 +54,10 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         onTxCompleted: @escaping TxCompleted
     ) -> Result<CryptoReceiveAddress, EthereumAddressFactoryError> {
         // Creates BIP21URI from url.
-        guard let eip681URI = EIP681URI(url: address, enabledCurrenciesService: resolve()) else {
+        guard let eip681URI = EIP681URI(
+            url: address,
+            enabledCurrenciesService: enabledCurrenciesService
+        ) else {
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.

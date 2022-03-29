@@ -140,11 +140,11 @@ final class ReceiveScreenPresenter {
             .share(replay: 1)
 
         let qrCodeMetadata = state
-            .map(\.metadata)
+            .map(\.qrCodeMetadata)
 
         qrCodeMetadata
             .map { metadata -> QRCodeAPI? in
-                QRCode(metadata: metadata)
+                QRCode(string: metadata.content)
             }
             .map { $0?.image }
             .catchAndReturn(nil)
@@ -152,7 +152,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         qrCodeMetadata
-            .map(\.destinationAddress)
+            .map(\.title)
             .catchAndReturn("")
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
@@ -205,7 +205,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .withLatestFrom(qrCodeMetadata.map(\.destinationAddress))
+            .withLatestFrom(qrCodeMetadata.map(\.title))
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 

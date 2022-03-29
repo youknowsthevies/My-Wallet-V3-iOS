@@ -68,25 +68,39 @@ final class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
     ]
 
     func testBIP21() {
-        for testcase in Self.bip21TestCases {
+        for testCase in Self.bip21TestCases {
             let result = sut.makeExternalAssetAddress(
-                address: testcase,
-                label: "",
+                address: testCase,
+                label: "Test",
                 onTxCompleted: { _ in .empty() }
             )
-            XCTAssertNoThrow(try result.get(), testcase)
+            assertCryptoReceiveAddressIsValid(
+                testCase: testCase,
+                result: result
+            )
         }
     }
 
-    func testValidWithPrefix() {
-        let result = sut.makeExternalAssetAddress(
-            address: "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq",
-            label: "label",
-            onTxCompleted: { _ in .empty() }
-        )
+    private func assertCryptoReceiveAddressIsValid(
+        testCase: String,
+        result: Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError>
+    ) {
         var address: CryptoReceiveAddress!
         XCTAssertNoThrow(address = try result.get())
         XCTAssertEqual(address.address, "bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq")
-        XCTAssertEqual(address.label, "label")
+        XCTAssertEqual(address.label, "Test")
+        guard let qrCodeMetadataProvider = address as? QRCodeMetadataProvider else {
+            XCTFail("Result is not QRCodeMetadataProvider: \(testCase)")
+            return
+        }
+        let qrCodeMetadata = qrCodeMetadataProvider.qrCodeMetadata
+        XCTAssertEqual(
+            qrCodeMetadata.title,
+            "bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"
+        )
+        XCTAssertEqual(
+            qrCodeMetadata.content,
+            "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"
+        )
     }
 }

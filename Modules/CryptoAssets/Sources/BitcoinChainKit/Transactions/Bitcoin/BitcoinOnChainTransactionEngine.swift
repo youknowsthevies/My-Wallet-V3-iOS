@@ -158,7 +158,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
             )
             .map { [predefinedAmount] fiatCurrency, availableBalance, _ -> PendingTransaction in
                 PendingTransaction(
-                    amount: predefinedAmount?.moneyValue ?? .zero(currency: Token.coin.cryptoCurrency),
+                    amount: predefinedAmount ?? .zero(currency: Token.coin.cryptoCurrency),
                     available: availableBalance,
                     feeAmount: .zero(currency: Token.coin.cryptoCurrency),
                     feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),

@@ -4,7 +4,7 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 
-struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
+struct EthereumReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
 
     var asset: CryptoCurrency {
         eip681URI.cryptoCurrency
@@ -14,8 +14,8 @@ struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvid
         eip681URI.method.destination ?? eip681URI.address
     }
 
-    var metadata: CryptoAssetQRMetadata {
-        eip681URI
+    var qrCodeMetadata: QRCodeMetadata {
+        QRCodeMetadata(content: address, title: address)
     }
 
     let label: String

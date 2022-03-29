@@ -130,7 +130,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             if let predefinedAmount = predefinedAmount,
                predefinedAmount.currency == .ethereum
             {
-                amount = predefinedAmount.moneyValue
+                amount = predefinedAmount
             } else {
                 amount = .zero(currency: .ethereum)
             }

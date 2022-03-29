@@ -4,14 +4,13 @@ import MoneyKit
 import PlatformKit
 import stellarsdk
 
-struct SEP7URI: CryptoAssetQRMetadata {
+struct SEP7URI {
 
     private static let scheme: String = "web+stellar"
 
     let cryptoCurrency: CryptoCurrency = .stellar
     let address: String
     let amount: CryptoValue?
-    let includeScheme: Bool = true
     let memo: String?
 
     var absoluteString: String {
