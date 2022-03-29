@@ -223,8 +223,6 @@ final class PinScreenViewController: BaseScreenViewController {
                 sheet.detents = [.medium()]
                 sheet.prefersGrabberVisible = true
             }
-        } else {
-            // TODO
         }
         present(navigationController, animated: true, completion: nil)
     }
