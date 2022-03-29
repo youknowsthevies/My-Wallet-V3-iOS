@@ -37,9 +37,6 @@ public struct OnboardingChecklistView: View {
                 }
             },
             content: {
-                let firstIncompleteItem = viewStore.items.first {
-                    !viewStore.completedItems.contains($0)
-                }
                 VStack(spacing: Spacing.padding3) {
                     VStack(alignment: .leading, spacing: Spacing.baseline) {
                         ForEach(viewStore.items) { item in
@@ -63,7 +60,7 @@ public struct OnboardingChecklistView: View {
 
                     Spacer()
 
-                    if let item = firstIncompleteItem {
+                    if let item = viewStore.firstIncompleteItem {
                         Button(item.title) {
                             viewStore.send(
                                 .didSelectItem(item.id, .callToActionButton)

@@ -10,6 +10,8 @@ import SafariServices
 import ToolKit
 import Veriff
 
+private typealias Events = AnalyticsEvents.New.KYC
+
 /// Account verification screen in KYC flow
 final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView {
 
@@ -86,6 +88,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
         addAccessibilityIds()
         dependenciesSetup()
         nextButton.actionBlock = { [unowned self] in
+            self.analyticsRecorder.record(event: Events.preVerificationCTAClicked)
             self.analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVerifyIdStartButtonClick)
             switch self.currentProvider {
             case .veriff:
@@ -175,11 +178,17 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        analyticsRecorder.record(event: Events.preVerificationViewed)
         updateLeftBarButtonItem()
     }
 
     override func navControllerCTAType() -> NavigationCTA {
         .dismiss
+    }
+
+    override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
+        analyticsRecorder.record(event: Events.preVerificationDismissed)
+        super.navControllerRightBarButtonTapped(navController)
     }
 
     private func updateLeftBarButtonItem() {

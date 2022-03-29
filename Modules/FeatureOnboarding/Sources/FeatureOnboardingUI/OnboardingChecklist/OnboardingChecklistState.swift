@@ -58,6 +58,10 @@ public enum OnboardingChecklist {
         func hasCompleted(_ item: Item) -> Bool {
             completedItems.contains(item)
         }
+
+        var firstIncompleteItem: Item? {
+            items.first { !hasCompleted($0) }
+        }
     }
 
     public enum ItemSelectionSource {
