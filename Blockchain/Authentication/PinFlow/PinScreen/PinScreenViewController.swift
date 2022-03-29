@@ -20,6 +20,8 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var digitPadBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
 
+    private lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: false)
+
     private let presenter: PinScreenPresenter
     private let alertViewPresenter: AlertViewPresenter
 
@@ -215,16 +217,10 @@ final class PinScreenViewController: BaseScreenViewController {
     }
 
     override func navigationBarTrailingButtonPressed() {
-        let supportViewController = SupportViewHostingController()
-        let navigationController = UINavigationController(rootViewController: supportViewController)
-        supportViewController.modalPresentationStyle = .pageSheet
-        if #available(iOS 15.0, *) {
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = [.medium()]
-                sheet.prefersGrabberVisible = true
-            }
-        }
-        present(navigationController, animated: true, completion: nil)
+        presentSupportViewFromViewController(
+            self,
+            transitioningDelegate: sheetPresenter
+        )
     }
 }
 

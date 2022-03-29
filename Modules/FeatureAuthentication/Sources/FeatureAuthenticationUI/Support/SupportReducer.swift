@@ -1,3 +1,5 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
@@ -6,20 +8,19 @@ import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
 
-enum SupportViewAction: Equatable, BindableAction {
+enum SupportViewAction: Equatable, NavigationAction {
     case loadAppStoreVersionInformation
     case failedToRetrieveAppStoreInfo
     case appStoreVersionInformationReceived(AppStoreApplicationInfo)
-    case binding(BindingAction<SupportViewState>)
-//    case route(RouteIntent<>?)
+    case route(RouteIntent<SupportViewRoute>?)
 }
 
-struct SupportViewState: Equatable {
-    @BindableState var isSupportViewSheetShown = true
+struct SupportViewState: Equatable, NavigationState {
     let applicationVersion: String
     let bundleIdentifier: String
     var appStoreVersion: String?
     var isApplicationUpdated: Bool
+    var route: RouteIntent<SupportViewRoute>?
 
     init(
         applicationVersion: String,
@@ -38,10 +39,6 @@ let supportViewReducer = Reducer<
     SupportViewEnvironment
 > { state, action, environment in
     switch action {
-    case .binding(.set(\.$isSupportViewSheetShown, true)):
-        return .none
-    case .binding(.set(\.$isSupportViewSheetShown, false)):
-        return .none
     case .loadAppStoreVersionInformation:
         return environment
             .appStoreInformationRepository
@@ -61,13 +58,13 @@ let supportViewReducer = Reducer<
         state.isApplicationUpdated = applicationInfo.isApplicationUpToDate
         state.appStoreVersion = applicationInfo.version
         return .none
-    case .failedToRetrieveAppStoreInfo:
+    case .route(let route):
+        state.route = route
         return .none
-    case .binding:
+    case .failedToRetrieveAppStoreInfo:
         return .none
     }
 }
-.binding()
 
 struct SupportViewEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
