@@ -5,7 +5,6 @@ import Combine
 import CombineSchedulers
 import DIKit
 import FeatureOpenBankingDomain
-import NetworkKit
 import SwiftUI
 import ToolKit
 
