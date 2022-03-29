@@ -50,6 +50,7 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ToolKitMock", package: "Tool"),
                 "FeatureProductsData",
                 "Mockingbird"
             ],
@@ -63,6 +64,7 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ToolKitMock", package: "Tool"),
                 "FeatureProductsDomain",
                 "Mockingbird"
             ]

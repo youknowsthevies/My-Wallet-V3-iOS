@@ -692,7 +692,8 @@ extension DependencyContainer {
                         networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                         requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
                     )
-                )
+                ),
+                featureFlagsService: DIKit.resolve()
             )
         }
 
