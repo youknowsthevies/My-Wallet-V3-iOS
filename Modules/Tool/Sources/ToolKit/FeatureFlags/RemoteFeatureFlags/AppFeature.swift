@@ -41,7 +41,10 @@ public enum AppFeature: Int, CaseIterable {
 
     case pollingForEmailLogin
 
-    // MARK: - SDD
+    // MARK: - Transactions
+
+    /// Enables the use of the `/products` endpoint to check users capabilities.
+    case productsChecksEnabled
 
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
@@ -120,6 +123,8 @@ extension AppFeature {
             return "sso_unified_sign_in_enabled_ios"
         case .pollingForEmailLogin:
             return "ios_ff_sso_polling"
+        case .productsChecksEnabled:
+            return "ios_products_check_enabled"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -175,6 +180,8 @@ extension AppFeature {
         case .unifiedSignIn:
             return false
         case .pollingForEmailLogin:
+            return true
+        case .productsChecksEnabled:
             return true
         case .sddEnabled:
             return false
