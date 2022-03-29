@@ -129,6 +129,7 @@ final class AnnouncementPresenter {
     func refresh() {
         reactiveWallet
             .waitUntilInitialized
+            .asObservable()
             .bind { [weak self] _ in
                 self?.calculate()
             }

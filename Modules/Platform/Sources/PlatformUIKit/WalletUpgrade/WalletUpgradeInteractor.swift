@@ -26,6 +26,7 @@ public final class WalletUpgradeInteractor {
     /// Errors when something went wrong.
     func upgradeWallet() -> Observable<String> {
         service.upgradeWallet()
+            .asObservable()
             .do(afterCompleted: { [weak self] in
                 self?.completion()
             })

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
+import Combine
 import DIKit
 import PlatformKit
 import RxBlocking
@@ -25,6 +26,8 @@ class WalletCryptoServiceTests: XCTestCase {
     var walletManager: WalletManager!
     var service: WalletCryptoServiceAPI!
 
+    var cancellables = Set<AnyCancellable>()
+
     override func setUp() {
         super.setUp()
         // Force JS initialization before hand
@@ -44,22 +47,30 @@ class WalletCryptoServiceTests: XCTestCase {
         let key = "keykeykeykeykey"
         let data = "datadatadatadatadata"
         let pbkdf2Iterations: Int = 100
-        do {
-            let encrypted = try service
-                .encrypt(pair: KeyDataPair(key: key, data: data), pbkdf2Iterations: pbkdf2Iterations)
-                .toBlocking()
-                .first()
-            guard let encryptedData = encrypted else {
-                XCTFail("encryptedData is nil")
-                return
+
+        let expectation = expectation(description: "encrypt and decrypt works")
+        expectation.expectedFulfillmentCount = 2
+
+        service
+            .encrypt(pair: KeyDataPair(key: key, data: data), pbkdf2Iterations: pbkdf2Iterations)
+            .flatMap { encrypted -> AnyPublisher<String, PayloadCryptoError> in
+                expectation.fulfill()
+                return self.service.decrypt(
+                    pair: KeyDataPair(key: key, data: encrypted),
+                    pbkdf2Iterations: pbkdf2Iterations
+                )
             }
-            let decryptedData = try service
-                .decrypt(pair: KeyDataPair(key: key, data: encryptedData), pbkdf2Iterations: pbkdf2Iterations)
-                .toBlocking()
-                .first()
-            XCTAssertEqual(data, decryptedData)
-        } catch {
-            XCTFail("Decryption failed with error: \(String(describing: error))")
-        }
+            .sink(receiveCompletion: { completion in
+                guard case .failure(let error) = completion else {
+                    return
+                }
+                XCTFail("Decryption failed with error: \(String(describing: error))")
+            }, receiveValue: { decryptedData in
+                expectation.fulfill()
+                XCTAssertEqual(data, decryptedData)
+            })
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 2)
     }
 }

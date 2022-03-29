@@ -81,7 +81,10 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     func update(accountIndex: Int, label: String) -> Completable {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
                 guard let wallet = self.wallet else {
                     return .error(WalletError.notInitialized)
@@ -112,7 +115,10 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     func updateNote(for transactionHash: String, note: String?) -> Completable {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMapCompletable { [wallet] in
                 Completable.create { completable in
                     wallet?.setEthereumNote(for: transactionHash, note: note)
@@ -147,7 +153,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 extension EthereumWallet: EthereumWalletAccountBridgeAPI {
     var wallets: AnyPublisher<[EthereumWalletAccount], Error> {
         reactiveWallet
-            .waitUntilInitializedSinglePublisher
+            .waitUntilInitializedFirst
             .setFailureType(to: SecondPasswordError.self)
             .flatMap { [secondPasswordPrompter] _ in
                 secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)

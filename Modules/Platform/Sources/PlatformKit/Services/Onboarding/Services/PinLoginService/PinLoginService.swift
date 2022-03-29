@@ -116,6 +116,9 @@ public final class PinLoginService: PinLoginServiceAPI {
                     pair: keyDataPair,
                     pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin
                 )
+                .asObservable()
+                .take(1)
+                .asSingle()
             }
     }
 }

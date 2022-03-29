@@ -402,6 +402,11 @@ extension DependencyContainer {
             return completeSettingsService
         }
 
+        factory { () -> SettingsServiceCombineAPI in
+            let settings: SettingsServiceAPI = DIKit.resolve()
+            return settings as SettingsServiceCombineAPI
+        }
+
         factory { () -> FiatCurrencyServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService

@@ -49,7 +49,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
         .combineLatest(
             fiatCurrencySettingsService.displayCurrencyPublisher.asObservable(),
             fetchTriggerRelay.asObservable(),
-            reactiveWallet.waitUntilInitialized
+            reactiveWallet.waitUntilInitialized.asObservable()
         )
         .map(\.0)
         .flatMapLatest(weak: self) { (self, currency) -> Observable<[FiatValue]> in

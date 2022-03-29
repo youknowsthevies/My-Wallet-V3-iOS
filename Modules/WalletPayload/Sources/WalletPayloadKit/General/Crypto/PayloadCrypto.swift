@@ -4,7 +4,7 @@ import CommonCryptoKit
 import DIKit
 import Foundation
 
-enum PayloadCryptoError: Error {
+public enum PayloadCryptoError: Error, Equatable {
     case unknown
     case noEncryptedWalletData
     case noPassword
