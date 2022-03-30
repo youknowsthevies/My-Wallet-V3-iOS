@@ -28,8 +28,8 @@ struct SupportViewState: Equatable, NavigationState {
     ) {
         self.applicationVersion = applicationVersion
         self.bundleIdentifier = bundleIdentifier
-        self.appStoreVersion = nil
-        self.isApplicationUpdated = true
+        appStoreVersion = nil
+        isApplicationUpdated = true
     }
 }
 
