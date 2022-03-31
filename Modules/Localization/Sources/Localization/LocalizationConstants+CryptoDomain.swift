@@ -174,8 +174,8 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Search Domains list view free domain status"
             )
             public static let premiumDomain = NSLocalizedString(
-                "Premium domain",
-                comment: "Search Domains list view premium domain status"
+                "Paid domain",
+                comment: "Search Domains list view paid domain status"
             )
             public static let free = NSLocalizedString(
                 "Free",
@@ -192,7 +192,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
 
     public enum BuyDomain {
         public static let header = NSLocalizedString(
-            "%@ is a premium domain.",
+            "%@ is a paid domain.",
             comment: "Buy domain bottom action view header"
         )
         public static let prompt = NSLocalizedString(
