@@ -1,29 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-import RxSwift
-
+import Combine
+import Foundation
 @testable import RemoteNotificationsKit
 
-/// A class that is a gateway to external notification service functionality
 final class MockExternalNotificationServiceProvider: ExternalNotificationProviding {
 
-    struct FakeError: Error {
-        let info: String
+    var token: AnyPublisher<String, RemoteNotification.TokenFetchError> {
+        expectedTokenResult.publisher.eraseToAnyPublisher()
     }
 
-    var token: Single<String> {
-        expectedTokenResult.single
-    }
+    private(set) var topics: [String] = []
 
-    private let expectedTokenResult: Result<String, FakeError>
-    private let expectedTopicSubscriptionResult: Result<Void, FakeError>
-
-    private(set) var topics: [RemoteNotification.Topic] = []
+    private let expectedTokenResult: Result<String, RemoteNotification.TokenFetchError>
+    private let expectedTopicSubscriptionResult: Result<Void, ExternalNotificationProviderError>
 
     init(
-        expectedTokenResult: Result<String, FakeError>,
-        expectedTopicSubscriptionResult: Result<Void, FakeError>
+        expectedTokenResult: Result<String, RemoteNotification.TokenFetchError>,
+        expectedTopicSubscriptionResult: Result<Void, ExternalNotificationProviderError>
     ) {
         self.expectedTokenResult = expectedTokenResult
         self.expectedTopicSubscriptionResult = expectedTopicSubscriptionResult
@@ -31,13 +25,17 @@ final class MockExternalNotificationServiceProvider: ExternalNotificationProvidi
 
     func didReceiveNewApnsToken(token: Data) {}
 
-    func subscribe(to topic: RemoteNotification.Topic) -> Single<Void> {
+    func subscribe(
+        to topic: String
+    ) -> AnyPublisher<Void, ExternalNotificationProviderError> {
         switch expectedTopicSubscriptionResult {
         case .success:
             topics.append(topic)
         case .failure:
             break
         }
-        return expectedTopicSubscriptionResult.single
+        return expectedTopicSubscriptionResult
+            .publisher
+            .eraseToAnyPublisher()
     }
 }

@@ -121,7 +121,6 @@ let appDelegateReducer = Reducer<
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
-                .asPublisher()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),

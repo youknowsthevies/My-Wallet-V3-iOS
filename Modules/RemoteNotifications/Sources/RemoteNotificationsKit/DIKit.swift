@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import NetworkKit
+import UIKit
 
 extension DependencyContainer {
 
@@ -8,12 +10,43 @@ extension DependencyContainer {
 
     public static var remoteNotificationsKit = module {
 
-        factory { RemoteNotificationAuthorizer() as RemoteNotificationAuthorizing }
+        factory {
+            RemoteNotificationAuthorizer(
+                application: UIApplication.shared,
+                analyticsRecorder: DIKit.resolve(),
+                userNotificationCenter: UNUserNotificationCenter.current()
+            ) as RemoteNotificationAuthorizing
+        }
 
-        factory { RemoteNotificationNetworkService() as RemoteNotificationNetworkServicing }
+        factory {
+            RemoteNotificationNetworkService(
+                pushNotificationsUrl: BlockchainAPI.shared.pushNotificationsUrl,
+                networkAdapter: DIKit.resolve()
+            ) as RemoteNotificationNetworkServicing
+        }
 
-        factory { RemoteNotificationService() as RemoteNotificationServicing }
+        factory {
+            RemoteNotificationService(
+                authorizer: DIKit.resolve(),
+                notificationRelay: DIKit.resolve(),
+                backgroundReceiver: DIKit.resolve(),
+                externalService: DIKit.resolve(),
+                networkService: DIKit.resolve(),
+                sharedKeyRepository: DIKit.resolve(),
+                guidRepository: DIKit.resolve()
+            ) as RemoteNotificationService
+        }
 
-        single { RemoteNotificationServiceContainer() as RemoteNotificationServiceContaining }
+        factory { () -> RemoteNotificationServicing in
+            let service: RemoteNotificationService = DIKit.resolve()
+            return service as RemoteNotificationServicing
+        }
+
+        single { () -> RemoteNotificationServiceContaining in
+            let service: RemoteNotificationService = DIKit.resolve()
+            return RemoteNotificationServiceContainer(
+                service: service
+            ) as RemoteNotificationServiceContaining
+        }
     }
 }

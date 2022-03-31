@@ -1,14 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import FeatureAuthenticationDomain
-import RxSwift
-
 @testable import RemoteNotificationsKit
 
 final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
-    let expectedResult: Result<Void, RemoteNotificationNetworkService.PushNotificationError>
+    let expectedResult: Result<Void, PushNotificationError>
 
-    init(expectedResult: Result<Void, RemoteNotificationNetworkService.PushNotificationError>) {
+    init(expectedResult: Result<Void, PushNotificationError>) {
         self.expectedResult = expectedResult
     }
 
@@ -16,7 +15,7 @@ final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServi
         with deviceToken: String,
         sharedKeyProvider: SharedKeyRepositoryAPI,
         guidProvider: GuidRepositoryAPI
-    ) -> Single<Void> {
-        expectedResult.single
+    ) -> AnyPublisher<Void, PushNotificationError> {
+        expectedResult.publisher.eraseToAnyPublisher()
     }
 }

@@ -32,6 +32,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -357,7 +358,11 @@ extension DependencyContainer {
 
         // MARK: - AppFeatureConfigurator
 
-        single { AppFeatureConfigurator() }
+        single {
+            AppFeatureConfigurator(
+                remoteConfig: RemoteConfig.remoteConfig()
+            )
+        }
 
         factory { () -> FeatureConfiguratorAPI in
             let configurator: AppFeatureConfigurator = DIKit.resolve()

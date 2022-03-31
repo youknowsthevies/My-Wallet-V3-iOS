@@ -2,18 +2,28 @@
 
 @testable import AnalyticsKit
 @testable import AnalyticsKitMock
-import DIKit
-import PlatformKit
+import Combine
 @testable import RemoteNotificationsKit
 @testable import RemoteNotificationsKitMock
-import RxBlocking
-import RxSwift
+import TestKit
 import UserNotifications
 import XCTest
 
 final class RemoteNotificationAuthorizerTests: XCTestCase {
 
     // MARK: - Test Authorization Request
+
+    var cancellables: Set<AnyCancellable> = []
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        cancellables = []
+    }
+
+    override func tearDownWithError() throws {
+        cancellables = []
+        try super.tearDownWithError()
+    }
 
     func testSuccessfulAuthorization() {
         let registry = MockRemoteNotificationsRegistry()
@@ -28,19 +38,39 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
-        do {
-            try authorizer.requestAuthorizationIfNeeded().toBlocking().first()!
-            XCTAssertTrue(registry.isRegistered)
-        } catch {
-            XCTFail("expected successful registration. got \(error) instead")
-        }
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        authorizer
+            .requestAuthorizationIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    case .finished:
+                        XCTAssertTrue(registry.isRegistered)
+                    }
+                },
+                receiveValue: { [registerExpectation] _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testFailedAuthorizationAfterDenyingPermissions() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
             initialAuthorizationStatus: .notDetermined,
-            expectedAuthorizationResult: .failure(.init(info: "permission denied"))
+            expectedAuthorizationResult: .failure(MockError.unknown)
         )
         let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
@@ -49,14 +79,33 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
-        do {
-            try authorizer.requestAuthorizationIfNeeded().toBlocking().first()!
-            XCTFail("expected error. got success instead")
-        } catch {
-            // Okay
-        }
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        authorizer
+            .requestAuthorizationIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure:
+                        registerExpectation.fulfill()
+                        XCTAssertFalse(registry.isRegistered)
+                    case .finished:
+                        XCTFail("Expected error. Got success instead.")
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected error. Got success instead.")
+                }
+            )
+            .store(in: &cancellables)
 
-        XCTAssertFalse(registry.isRegistered)
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testFailedAuthorizationWhenPermissionIsAlreadyDetermined() {
@@ -72,16 +121,39 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
-        do {
-            try authorizer.requestAuthorizationIfNeeded().toBlocking().first()!
-            XCTFail("expected error \(RemoteNotificationAuthorizer.ServiceError.statusWasAlreadyDetermined). got success instead")
-        } catch RemoteNotificationAuthorizer.ServiceError.statusWasAlreadyDetermined {
-            // Okay
-        } catch {
-            XCTFail("expected error \(RemoteNotificationAuthorizer.ServiceError.statusWasAlreadyDetermined). got \(error) instead")
-        }
 
-        XCTAssertFalse(registry.isRegistered)
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        authorizer
+            .requestAuthorizationIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        switch error {
+                        case .statusWasAlreadyDetermined:
+                            registerExpectation.fulfill()
+                            XCTAssertFalse(registry.isRegistered)
+                        default:
+                            XCTFail("Expected 'statusWasAlreadyDetermined'. Got \(error) instead.")
+                        }
+                    case .finished:
+                        XCTFail("Expected error. Got success instead.")
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected error. Got success instead.")
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     // MARK: - Test Registration If Already Authorized
@@ -100,12 +172,32 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             options: [.alert, .badge, .sound]
         )
 
-        do {
-            try authorizer.registerForRemoteNotificationsIfAuthorized().toBlocking().first()!
-            XCTAssertTrue(registry.isRegistered)
-        } catch {
-            XCTFail("expected successful registration. got \(error) instead")
-        }
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        authorizer
+            .registerForRemoteNotificationsIfAuthorized()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    case .finished:
+                        XCTAssertTrue(registry.isRegistered)
+                    }
+                },
+                receiveValue: { [registerExpectation] _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testRegistrationFailureForRemoteNotificationsIfNotAuthorized() {
@@ -122,14 +214,37 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             options: [.alert, .badge, .sound]
         )
 
-        do {
-            try authorizer.registerForRemoteNotificationsIfAuthorized().toBlocking().first()!
-            XCTFail("expected \(RemoteNotificationAuthorizer.ServiceError.unauthorizedStatus). got success instead")
-            XCTAssertFalse(registry.isRegistered)
-        } catch RemoteNotificationAuthorizer.ServiceError.unauthorizedStatus {
-            // Okay
-        } catch {
-            XCTFail("expected \(RemoteNotificationAuthorizer.ServiceError.unauthorizedStatus). got \(error) instead")
-        }
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        authorizer
+            .registerForRemoteNotificationsIfAuthorized()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        switch error {
+                        case .unauthorizedStatus:
+                            registerExpectation.fulfill()
+                            XCTAssertFalse(registry.isRegistered)
+                        default:
+                            XCTFail("Expected 'unauthorizedStatus'. Got \(error) instead.")
+                        }
+                    case .finished:
+                        XCTFail("Expected error. Got success instead.")
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected error. Got success instead.")
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 }

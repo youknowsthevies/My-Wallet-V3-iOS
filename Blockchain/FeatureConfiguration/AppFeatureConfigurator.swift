@@ -12,7 +12,7 @@ final class AppFeatureConfigurator {
 
     private let remoteConfig: RemoteConfig
 
-    init(remoteConfig: RemoteConfig = RemoteConfig.remoteConfig()) {
+    init(remoteConfig: RemoteConfig) {
         self.remoteConfig = remoteConfig
     }
 

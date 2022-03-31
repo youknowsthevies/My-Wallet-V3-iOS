@@ -2,7 +2,6 @@
 
 import Foundation
 import NetworkKit
-import PlatformKit
 
 struct RemoteNotificationTokenQueryParametersBuilder {
 
