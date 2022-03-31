@@ -14,11 +14,6 @@
 echo "generate_mocks.sh begin"
 echo "\n"
 
-echo "AnalyticsKit mocks"
-cd Modules/Analytics
-sh Scripts/generate_mocks.sh
-cd ../..
-
 echo "FeatureProducts mocks"
 cd Modules/FeatureProducts
 sh Scripts/generate_mocks.sh
