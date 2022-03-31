@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureCryptoDomainDomain
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -99,5 +100,20 @@ final class StellarAsset: CryptoAsset {
         onTxCompleted: @escaping (TransactionResult) -> Completable
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
+    }
+}
+
+extension StellarAsset: DomainResolutionRecordProviderAPI {
+
+    var resolutionRecord: AnyPublisher<ResolutionRecord, Error> {
+        defaultAccount
+            .eraseError()
+            .flatMap { account in
+                account.receiveAddress.asPublisher().eraseError()
+            }
+            .map { [asset] receiveAddress in
+                ResolutionRecord(symbol: asset.code, walletAddress: receiveAddress.address)
+            }
+            .eraseToAnyPublisher()
     }
 }

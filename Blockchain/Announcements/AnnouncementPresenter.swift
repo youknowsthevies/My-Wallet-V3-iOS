@@ -160,8 +160,8 @@ final class AnnouncementPresenter {
         // For other users, keep the current logic in place
         for type in metadata.order {
             // IOS-6127: wallets with no balance should show no announcements
-            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch no matter what.
-            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch else {
+            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch or claim domain no matter what.
+            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch || type == .claimFreeCryptoDomain else {
                 return .none
             }
 
@@ -551,7 +551,7 @@ extension AnnouncementPresenter {
                     orderDomainRepository: DIKit.resolve(),
                     userInfoProvider: {
                         Deferred {
-                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash]])
+                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
                         }
                         .eraseError()
                         .flatMap { cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
@@ -565,7 +565,8 @@ extension AnnouncementPresenter {
                                 .eraseToAnyPublisher()
                         }
                         .map { records, nabuUser -> OrderDomainUserInfo in
-                            OrderDomainUserInfo(
+                            print("TTT \(records)")
+                            return OrderDomainUserInfo(
                                 nabuUserId: nabuUser.identifier,
                                 nabuUserName: nabuUser
                                     .personalDetails
