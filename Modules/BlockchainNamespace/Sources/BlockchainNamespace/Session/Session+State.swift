@@ -11,11 +11,11 @@ extension Session {
         var data: Data
 
         public init(
-            _ data: [Tag.Reference: Any] = [:],
+            _ data: Tag.Context = [:],
             preferences: UserDefaults = .standard
         ) {
             self.data = Data(preferences: preferences)
-            self.data.store = data
+            self.data.store = data.dictionary
         }
     }
 }
@@ -65,15 +65,12 @@ extension Session.State {
         }
     }
 
-    public func contains(_ key: L) -> Bool { contains(key[]) }
-    public func contains(_ key: Tag) -> Bool { contains(key.ref(in: app)) }
-    public func contains(_ key: Tag.Reference) -> Bool {
-        data.store.keys.contains(key)
+    public func contains(_ event: Tag.Event) -> Bool {
+        data.store.keys.contains(event.key)
     }
 
-    public func clear(_ key: L) { clear(key[]) }
-    public func clear(_ key: Tag) { clear(key.ref(in: app)) }
-    public func clear(_ key: Tag.Reference) {
+    public func clear(_ event: Tag.Event) {
+        let key = event.key
         if key.tag.is(blockchain.user.id) {
             transaction { state in
                 let user = key
@@ -86,27 +83,21 @@ extension Session.State {
         data.clear(key)
     }
 
-    public func set(_ key: L, to value: Any) { set(key[], to: value) }
-    public func set(_ key: Tag, to value: Any) { set(key.ref(in: app), to: value) }
-    public func set(_ key: Tag.Reference, to value: Any) {
-        data.set(key, to: value)
+    public func set(_ event: Tag.Event, to value: Any) {
+        data.set(event.key, to: value)
     }
 
-    public func set(_ key: L, to value: @escaping () throws -> Any) { set(key[], to: value) }
-    public func set(_ key: Tag, to value: @escaping () throws -> Any) { set(key.ref(in: app), to: value) }
-    public func set(_ key: Tag.Reference, to value: @escaping () throws -> Any) {
+    public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
+        let key = event.key
         data.set(key, to: Data.Computed(key: key, yield: value))
     }
 
-    public func get(_ key: L) throws -> Any { try get(key[]) }
-    public func get(_ key: Tag) throws -> Any { try get(key.ref(in: app)) }
-    public func get(_ key: Tag.Reference) throws -> Any {
-        try data.get(key)
+    public func get(_ event: Tag.Event) throws -> Any {
+        try data.get(event.key)
     }
 
-    public func result(for key: L) -> FetchResult { result(for: key[]) }
-    public func result(for key: Tag) -> FetchResult { result(for: key.ref(in: app)) }
-    public func result(for key: Tag.Reference) -> FetchResult {
+    public func result(for event: Tag.Event) -> FetchResult {
+        let key = event.key
         do {
             return try .value(get(key), key.metadata(.state))
         } catch let error as FetchResult.Error {
@@ -116,10 +107,9 @@ extension Session.State {
         }
     }
 
-    public func publisher(for key: L) -> AnyPublisher<FetchResult, Never> { publisher(for: key[]) }
-    public func publisher(for key: Tag) -> AnyPublisher<FetchResult, Never> { publisher(for: key.ref(in: app)) }
-    public func publisher(for key: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
-        Just(result(for: key))
+    public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
+        let key = event.key
+        return Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
     }
