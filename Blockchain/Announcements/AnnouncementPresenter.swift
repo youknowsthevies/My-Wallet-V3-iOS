@@ -558,46 +558,24 @@ extension AnnouncementPresenter {
                             Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash]])
                         }
                         .eraseError()
-                        .flatMap { cryptoAssets -> AnyPublisher<([String], [ReceiveAddress], NabuUser), Error> in
-                            let accountsPublisher = cryptoAssets.map(\.defaultAccount)
-                            let mergedAccountsPublisher = Publishers.MergeMany(accountsPublisher)
-                                .collect()
-                                .eraseToAnyPublisher()
-
-                            let addresses = mergedAccountsPublisher
-                                .map { $0.map(\.receiveAddress) }
-                                .eraseError()
-                                .eraseToAnyPublisher()
-                            let addressesPublisher = addresses
-                                .map { $0.map { $0.asPublisher().eraseToAnyPublisher() } }
-                                .flatMap { Publishers.MergeMany($0).collect().eraseToAnyPublisher() }
-                                .eraseError()
-                                .eraseToAnyPublisher()
-
-                            let symbolsPublisher = Just(cryptoAssets.map(\.asset).map(\.code))
-                                .eraseError()
-                                .eraseToAnyPublisher()
-
-                            let nabuUserPublisher = nabuUserService.user.eraseError()
-
-                            return Publishers.Zip3(
-                                symbolsPublisher,
-                                addressesPublisher,
-                                nabuUserPublisher
-                            )
-                            .eraseToAnyPublisher()
-                        }
-                        .flatMap { symbols, addresses, nabuUser -> AnyPublisher<OrderDomainUserInfo, Error> in
-                            var records: [ResolutionRecord] = []
-                            for (symbol, receiveAddress) in zip(symbols, addresses) {
-                                records.append(ResolutionRecord(symbol: symbol, walletAddress: receiveAddress.address))
+                        .flatMap { cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
+                            guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
+                                return .empty()
                             }
-                            return .just(
-                                OrderDomainUserInfo(
-                                    nabuUserId: nabuUser.identifier,
-                                    nabuUserName: nabuUser.personalDetails.firstName ?? "",
-                                    resolutionRecords: records
-                                )
+                            let recordPublisher = providers.map(\.resolutionRecord).zip()
+                            let nabuUserPublisher = nabuUserService.user.eraseError()
+                            return recordPublisher
+                                .zip(nabuUserPublisher)
+                                .eraseToAnyPublisher()
+                        }
+                        .map { records, nabuUser -> OrderDomainUserInfo in
+                            OrderDomainUserInfo(
+                                nabuUserId: nabuUser.identifier,
+                                nabuUserName: nabuUser
+                                    .personalDetails
+                                    .firstName?
+                                    .replacingOccurrences(of: " ", with: "") ?? "",
+                                resolutionRecords: records
                             )
                         }
                         .eraseToAnyPublisher()

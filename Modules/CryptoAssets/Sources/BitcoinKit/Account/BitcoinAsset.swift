@@ -3,6 +3,7 @@
 import BitcoinChainKit
 import Combine
 import DIKit
+import FeatureCryptoDomainDomain
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -157,6 +158,37 @@ final class BitcoinAsset: CryptoAsset {
             }
             .recordErrors(on: errorRecorder)
             .replaceError(with: CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+            .eraseToAnyPublisher()
+    }
+}
+
+extension BitcoinAsset: DomainResolutionRecordProviderAPI {
+
+    var resolutionRecord: AnyPublisher<ResolutionRecord, Error> {
+        resolutionRecordAccount
+            .eraseError()
+            .flatMap { account in
+                account.firstReceiveAddress.asPublisher().eraseError()
+            }
+            .map { [asset] receiveAddress in
+                ResolutionRecord(symbol: asset.code, walletAddress: receiveAddress.address)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private var resolutionRecordAccount: AnyPublisher<BitcoinCryptoAccount, BitcoinWalletRepositoryError> {
+        repository
+            .accounts
+            .map { accounts -> BitcoinWalletAccount? in
+                accounts.first(where: { $0.index == 0 })
+            }
+            .onNil(.missingWallet)
+            .map { account in
+                BitcoinCryptoAccount(
+                    walletAccount: account,
+                    isDefault: false
+                )
+            }
             .eraseToAnyPublisher()
     }
 }

@@ -39,6 +39,11 @@ protocol LegacyBitcoinWalletProtocol: AnyObject {
         derivation: BitcoinDerivation
     ) -> Result<String, BitcoinReceiveAddressError>
 
+    func getBitcoinFirstReceiveAddress(
+        forXPub xpub: String,
+        derivation: BitcoinDerivation
+    ) -> Result<String, BitcoinReceiveAddressError>
+
     func getSignedBitcoinPayment(
         with secondPassword: String?,
         success: @escaping (String, Int) -> Void,
@@ -103,6 +108,33 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             forceLegacy = "false"
         }
         let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
+        guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
+            return .failure(.jsReturnedNil)
+        }
+        guard let result: String = jsResult.toString() else {
+            return .failure(.jsValueNotString)
+        }
+        guard !result.isEmpty else {
+            return .failure(.jsValueEmptyString)
+        }
+        return .success(result)
+    }
+
+    func getBitcoinFirstReceiveAddress(
+        forXPub xpub: String,
+        derivation: BitcoinDerivation
+    ) -> Result<String, BitcoinReceiveAddressError> {
+        guard isInitialized() else {
+            return .failure(.uninitialized)
+        }
+        let forceLegacy: String
+        switch derivation {
+        case .legacy:
+            forceLegacy = "true"
+        case .default:
+            forceLegacy = "false"
+        }
+        let function: String = "MyWalletPhone.getFirstReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
         guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
