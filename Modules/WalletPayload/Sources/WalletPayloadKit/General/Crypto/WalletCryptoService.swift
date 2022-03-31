@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
-import RxSwift
-import RxToolKit
+import Foundation
 import ToolKit
 
 public enum WalletCryptoPBKDF2Iterations {
@@ -13,18 +13,13 @@ public enum WalletCryptoPBKDF2Iterations {
 }
 
 public protocol WalletCryptoServiceAPI: AnyObject {
-    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String>
-    func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String>
+    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> AnyPublisher<String, PayloadCryptoError>
+    func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> AnyPublisher<String, PayloadCryptoError>
 }
 
 final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Types
-
-    enum ServiceError: Error {
-        case emptyResult
-        case failed
-    }
 
     private enum JSMethod: String {
         case decrypt = "WalletCrypto.decrypt(\"%@\", \"%@\", %ld)"
@@ -53,32 +48,33 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
 
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
     /// - Parameter pair: A pair of key and data used in the decription process.
-    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        Single.just(decryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)))
-            .flatMap(weak: self) { (self, result) -> Single<String> in
-                switch result {
-                case .success(let payload):
-                    return .just(payload)
-                case .failure(let payloadDecryptionError):
-                    return self.decryptJS(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
-                        .do(onSuccess: { _ in
-                            // For now log the error only
-                            self.recorder.error(payloadDecryptionError)
-                            // Crash for internal builds if JS decryption succeeds but native decryption fails
-                            if BuildFlag.isInternal {
-                                fatalError(
-                                    "Native decryption failed. Error: \(String(describing: payloadDecryptionError))"
-                                )
-                            }
-                        })
-                }
+    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> AnyPublisher<String, PayloadCryptoError> {
+        decryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
+            .publisher
+            .catch { [decryptJS, recorder] payloadDecryptionError -> AnyPublisher<String, PayloadCryptoError> in
+                decryptJS(pair, UInt32(pbkdf2Iterations))
+                    .handleEvents(receiveOutput: { _ in
+                        // For now log the error only
+                        recorder.error(payloadDecryptionError)
+                        // Crash for internal builds if JS decryption succeeds but native decryption fails
+                        if BuildFlag.isInternal {
+                            fatalError("Native decryption failed. Error: \(String(describing: payloadDecryptionError))")
+                        }
+                    })
+                    .eraseToAnyPublisher()
             }
+            .eraseToAnyPublisher()
     }
 
     /// Receives a `KeyDataPair` and encrypt `data` using `key`.
     /// - Parameter pair: A pair of key and data used in the encription process.
-    func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        encryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)).single
+    func encrypt(
+        pair: KeyDataPair<String, String>,
+        pbkdf2Iterations: Int
+    ) -> AnyPublisher<String, PayloadCryptoError> {
+        encryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
+            .publisher
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private methods
@@ -97,40 +93,52 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         payloadCryptor.decrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
 
-    private func decryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Single<String> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            do {
-                let result = try self.jsCrypto(
+    private func decryptJS(
+        pair: KeyDataPair<String, String>,
+        pbkdf2Iterations: UInt32
+    ) -> AnyPublisher<String, PayloadCryptoError> {
+        Deferred { [jsCrypto] in
+            Future<String, PayloadCryptoError> { promise in
+                let result = jsCrypto(
                     .decrypt,
-                    data: pair.data,
-                    key: pair.key,
-                    iterations: Int(pbkdf2Iterations)
+                    pair.data,
+                    pair.key,
+                    Int(pbkdf2Iterations)
                 )
-                observer(.success(result))
-            } catch {
-                observer(.error(error))
+                switch result {
+                case .success(let value):
+                    promise(.success(value))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
             }
-            return Disposables.create()
         }
-        .subscribe(on: MainScheduler.instance)
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 
-    private func encryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            do {
-                let result = try self.jsCrypto(
+    private func encryptJS(
+        pair: KeyDataPair<String, String>,
+        pbkdf2Iterations: Int
+    ) -> AnyPublisher<String, PayloadCryptoError> {
+        Deferred { [jsCrypto] in
+            Future<String, PayloadCryptoError> { promise in
+                let result = jsCrypto(
                     .encrypt,
-                    data: pair.data,
-                    key: pair.key,
-                    iterations: pbkdf2Iterations
+                    pair.data,
+                    pair.key,
+                    Int(pbkdf2Iterations)
                 )
-                observer(.success(result))
-            } catch {
-                observer(.error(error))
+                switch result {
+                case .success(let value):
+                    promise(.success(value))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
             }
-            return Disposables.create()
         }
-        .subscribe(on: MainScheduler.instance)
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 
     private func jsCrypto(
@@ -138,17 +146,28 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         data: String,
         key: String,
         iterations: Int
-    ) throws -> String {
+    ) -> Result<String, PayloadCryptoError> {
         let data = data.escapedForJS()
         let key = key.escapedForJS()
         let script = String(format: method.rawValue, data, key, iterations)
         let jsContext = jsContextProvider.jsContext
         guard let result = jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString() else {
-            throw ServiceError.failed
+            return .failure(payloadCryptoError(from: method))
         }
         guard !result.isEmpty else {
-            throw ServiceError.emptyResult
+            return .failure(payloadCryptoError(from: method))
         }
-        return result
+        return .success(result)
+    }
+
+    private func payloadCryptoError(
+        from jsMethod: JSMethod
+    ) -> PayloadCryptoError {
+        switch jsMethod {
+        case .decrypt:
+            return .decryptionFailed
+        case .encrypt:
+            return .decryptionFailed
+        }
     }
 }

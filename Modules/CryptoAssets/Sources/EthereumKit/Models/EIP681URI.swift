@@ -9,7 +9,7 @@ import WalletCore
 
 /// Implementation of EIP 681 URI
 /// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-681.md
-public struct EIP681URI: CryptoAssetQRMetadata {
+public struct EIP681URI {
 
     public enum Method: Equatable {
         case send(amount: CryptoValue?, gasLimit: BigUInt?, gasPrice: BigUInt?)
@@ -34,22 +34,11 @@ public struct EIP681URI: CryptoAssetQRMetadata {
         }
     }
 
-    public var destinationAddress: String {
-        method.destination ?? address
-    }
-
     public let cryptoCurrency: CryptoCurrency
     public let address: String
     public let method: Method
-    public let includeScheme: Bool = false
     public var amount: CryptoValue? {
         method.amount
-    }
-
-    /// Conformance to `CryptoAssetQRMetadata`, this is not the EIP681URI.
-    public var absoluteString: String {
-        let prefix = includeScheme ? "ethereum:" : ""
-        return "\(prefix)\(destinationAddress)"
     }
 
     public init?(address: String, cryptoCurrency: CryptoCurrency) {
@@ -92,8 +81,12 @@ public struct EIP681URI: CryptoAssetQRMetadata {
         guard Self.validate(method: method) else {
             return nil
         }
-        address = parser.address
+        self.init(cryptoCurrency: cryptoCurrency, address: parser.address, method: method)
+    }
+
+    init(cryptoCurrency: CryptoCurrency, address: String, method: EIP681URI.Method) {
         self.cryptoCurrency = cryptoCurrency
+        self.address = address
         self.method = method
     }
 

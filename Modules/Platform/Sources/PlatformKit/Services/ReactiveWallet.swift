@@ -67,52 +67,25 @@ public final class ReactiveWallet: ReactiveWalletAPI {
 
     // MARK: - Public properties
 
-    public var waitUntilInitialized: Observable<Void> {
-        waitUntilInitializedObservable
-            .share(replay: 1, scope: .whileConnected)
-    }
-
-    public var waitUntilInitializedStreamPublisher: AnyPublisher<Void, Never> {
+    public var waitUntilInitialized: AnyPublisher<Void, Never> {
         waitUntilInitializedPublisher
             .share()
             .eraseToAnyPublisher()
     }
 
-    public var waitUntilInitializedSingle: Single<Void> {
-        waitUntilInitializedObservable
-            .take(1)
-            .asSingle()
-    }
-
-    public var waitUntilInitializedSinglePublisher: AnyPublisher<Void, Never> {
+    public var waitUntilInitializedFirst: AnyPublisher<Void, Never> {
         waitUntilInitializedPublisher
             .first()
             .eraseToAnyPublisher()
     }
 
-    /// A `Single` that streams a boolean element indicating
-    /// whether the wallet is initialized
-    public var initializationState: Single<WalletSetup.State> {
-        state.take(1).asSingle()
-    }
-
-    public var initializationStatePublisher: AnyPublisher<WalletSetup.State, Never> {
+    public var initializationState: AnyPublisher<WalletSetup.State, Never> {
         stateSubject
             .first()
             .eraseToAnyPublisher()
     }
 
     // MARK: - Private properties
-
-    private var waitUntilInitializedObservable: Observable<Void> {
-        state
-            .asObservable()
-            .filter { state -> Bool in
-                state == .initialized
-            }
-            .subscribe(on: MainScheduler.asyncInstance)
-            .mapToVoid()
-    }
 
     private var waitUntilInitializedPublisher: AnyPublisher<Void, Never> {
         stateSubject
@@ -125,7 +98,6 @@ public final class ReactiveWallet: ReactiveWalletAPI {
             .mapToVoid()
     }
 
-    private let state = BehaviorRelay<WalletSetup.State>(value: .uninitialized)
     private let stateSubject = CurrentValueSubject<WalletSetup.State, Never>(.uninitialized)
 
     private let walletAndMetadataState = Atomic<WalletAndMetadataState>(.uninitialized)
@@ -161,13 +133,11 @@ public final class ReactiveWallet: ReactiveWalletAPI {
     // MARK: - Private methods
 
     private func setInitialized() {
-        state.accept(.initialized)
         stateSubject.send(.initialized)
     }
 
     private func resetState() {
         walletAndMetadataState.mutate { $0.setUninitialized() }
-        state.accept(.uninitialized)
         stateSubject.send(.uninitialized)
     }
 }

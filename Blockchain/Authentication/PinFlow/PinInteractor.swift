@@ -215,6 +215,9 @@ final class PinInteractor: PinInteracting {
                         pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin
                     )
                     .map { (encryptedPinPassword: $0, password: data.password) }
+                    .asObservable()
+                    .take(1)
+                    .asSingle()
             }
             .flatMapCompletable(weak: self) { (self, data) -> Completable in
                 // Once the pin has been created successfully, the wallet is not longer marked as new.

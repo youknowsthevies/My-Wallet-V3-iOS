@@ -46,11 +46,11 @@ final class EthereumAsset: CryptoAsset {
 
     init(
         network: EVMNetwork,
-        repository: EthereumWalletAccountRepositoryAPI = resolve(),
-        addressFactory: EthereumExternalAssetAddressFactory = .init(),
-        errorRecorder: ErrorRecording = resolve(),
-        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        repository: EthereumWalletAccountRepositoryAPI,
+        addressFactory: EthereumExternalAssetAddressFactory,
+        errorRecorder: ErrorRecording,
+        exchangeAccountProvider: ExchangeAccountsProviderAPI,
+        kycTiersService: KYCTiersServiceAPI
     ) {
         self.network = network
         asset = network.cryptoCurrency

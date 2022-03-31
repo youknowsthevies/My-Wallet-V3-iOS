@@ -8,9 +8,25 @@ import RIBs
 import ToolKit
 import UIComponentsKit
 
-protocol SendRootInteractable: Interactable, TransactionFlowListener {
-    var router: SendRootRouting? { get set }
-    var listener: SendRootListener? { get set }
+public protocol SendRootRouting: ViewableRouting {
+    /// Landing shows all wallets that the user can send from.
+    func routeToSendLanding(navigationBarHidden: Bool)
+    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget?)
+    func dismissTransactionFlow()
+}
+
+extension SendRootRouting {
+
+    public func routeToSendLanding() {
+        routeToSendLanding(navigationBarHidden: false)
+    }
+
+    public func routeToSend(sourceAccount: BlockchainAccount) {
+        routeToSend(
+            sourceAccount: sourceAccount,
+            destination: nil
+        )
+    }
 }
 
 final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewControllable>, SendRootRouting {
@@ -37,10 +53,6 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     }
 
     // MARK: - SwapRootRouting
-
-    func routeToSendLanding() {
-        routeToSendLanding(navigationBarHidden: false)
-    }
 
     func routeToSendLanding(navigationBarHidden: Bool) {
         let header = AccountPickerHeaderModel(
@@ -87,22 +99,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         )
     }
 
-    func routeToSend(sourceAccount: BlockchainAccount) {
-        let builder = TransactionFlowBuilder()
-        transactionRouter = builder.build(
-            withListener: interactor,
-            action: .send,
-            sourceAccount: sourceAccount,
-            target: nil
-        )
-        if let router = transactionRouter {
-            let viewControllable = router.viewControllable
-            attachChild(router)
-            viewController.present(viewController: viewControllable)
-        }
-    }
-
-    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget) {
+    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget?) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import Foundation
 
 extension Bundle {
@@ -85,7 +86,7 @@ extension InfoPlist {
 extension Foundation.Bundle {
 
     /// Returns the resource bundle associated with a Swift module.
-    public static func find(_ bundleName: String, in type: AnyObject.Type) -> Bundle {
+    public static func find(_ bundleNames: String..., in type: AnyObject.Type) -> Bundle {
 
         let candidates = [
             // Bundle should be present here when the package is linked into an App.
@@ -108,14 +109,14 @@ extension Foundation.Bundle {
                 .deletingLastPathComponent()
         ]
 
-        for candidate in candidates {
+        for (candidate, bundleName) in product(candidates, bundleNames) {
             let bundlePath = candidate?.appendingPathComponent(bundleName)
             if let bundle = bundlePath.flatMap(Bundle.init(url:)) {
                 return bundle
             }
         }
 
-        fatalError("unable to find bundle named \(bundleName)")
+        fatalError("unable to find bundle named \(bundleNames)")
     }
 }
 

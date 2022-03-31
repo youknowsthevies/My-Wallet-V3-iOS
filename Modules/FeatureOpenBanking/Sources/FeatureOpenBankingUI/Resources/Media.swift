@@ -5,7 +5,11 @@ import UIComponentsKit
 
 private class BundleFinder {}
 extension Bundle {
-    public static let openBanking = Bundle.find("FeatureOpenBanking_FeatureOpenBankingUI.bundle", in: BundleFinder.self)
+    public static let openBanking = Bundle.find(
+        "FeatureOpenBanking_FeatureOpenBankingUI.bundle",
+        "Blockchain_FeatureOpenBankingUI.bundle",
+        in: BundleFinder.self
+    )
 }
 
 extension Media {

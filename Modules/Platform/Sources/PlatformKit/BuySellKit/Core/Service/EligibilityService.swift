@@ -50,7 +50,10 @@ final class EligibilityService: EligibilityServiceAPI {
         )
 
         isEligibileValue.setFetch(weak: self) { (self) in
-            self.reactiveWallet.waitUntilInitializedSingle
+            self.reactiveWallet.waitUntilInitializedFirst
+                .asObservable()
+                .take(1)
+                .asSingle()
                 .flatMap(weak: self) { (self, _) -> Single<Eligibility> in
                     self.fiatCurrencyService.displayCurrency
                         .asSingle()

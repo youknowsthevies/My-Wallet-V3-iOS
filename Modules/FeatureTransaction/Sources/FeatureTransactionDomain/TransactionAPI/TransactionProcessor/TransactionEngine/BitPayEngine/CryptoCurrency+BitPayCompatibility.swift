@@ -5,6 +5,12 @@ import MoneyKit
 extension CryptoCurrency {
     /// Indicates whether the currency supports bit pay transactions
     var supportsBitPay: Bool {
-        self == .bitcoin
+        switch self {
+        case .bitcoin,
+             .bitcoinCash:
+            return true
+        default:
+            return false
+        }
     }
 }

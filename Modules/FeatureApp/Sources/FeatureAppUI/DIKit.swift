@@ -59,11 +59,12 @@ extension DependencyContainer {
         single {
             DeepLinkCoordinator(
                 app: DIKit.resolve(),
-                kycRouter: DIKit.resolve(),
-                topMostViewControllerProvider: DIKit.resolve(),
-                exchangeProvider: DIKit.resolve(),
-                transactionsRouter: DIKit.resolve(),
                 coincore: DIKit.resolve(),
+                exchangeProvider: DIKit.resolve(),
+                kycRouter: DIKit.resolve(),
+                payloadFactory: DIKit.resolve(),
+                topMostViewControllerProvider: DIKit.resolve(),
+                transactionsRouter: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
                 },

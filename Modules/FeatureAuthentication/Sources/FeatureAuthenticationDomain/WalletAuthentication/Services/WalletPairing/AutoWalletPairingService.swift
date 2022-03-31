@@ -76,7 +76,6 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
             }
             .flatMap { [walletCryptoService] keyDataPair -> AnyPublisher<String, AutoWalletPairingServiceError> in
                 walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
-                    .asPublisher()
                     .mapError(AutoWalletPairingServiceError.walletCryptoServiceError)
                     .eraseToAnyPublisher()
             }

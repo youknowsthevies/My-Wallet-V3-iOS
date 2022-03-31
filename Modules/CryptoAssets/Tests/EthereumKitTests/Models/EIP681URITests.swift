@@ -8,7 +8,7 @@ import XCTest
 final class EIP681URITests: XCTestCase {
 
     enum TestCase {
-        static let address = "0xfb6916095ca1df60bb79Ce92ce3ea74c37c5d359"
+        static let address = "0x8e23ee67d1332ad560396262c48ffbb01f93d052"
         static let contract = "0xfb6916095ca1df60bb79Ce92ce3ea74c37c5d359"
         static let sendString = "ethereum:\(address)@33?value=2.014e18&gasPrice=10&gasLimit=20"
         static let transferString = "ethereum:\(contract)@33/transfer?address=\(address)&uint256=1"

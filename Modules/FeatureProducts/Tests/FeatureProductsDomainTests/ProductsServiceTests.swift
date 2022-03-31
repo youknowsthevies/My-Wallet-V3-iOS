@@ -1,19 +1,24 @@
 @testable import FeatureProductsDomain
-import Mockingbird
 import NabuNetworkError
 import TestKit
 import ToolKit
+import ToolKitMock
 import XCTest
 
 final class ProductsServiceTests: XCTestCase {
 
     private var service: ProductsService!
     private var mockRepository: ProductsRepositoryMock!
+    private var mockFeatureFlagService: MockFeatureFlagsService!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockRepository = ProductsRepositoryMock()
-        service = ProductsService(repository: mockRepository)
+        mockFeatureFlagService = MockFeatureFlagsService()
+        service = ProductsService(
+            repository: mockRepository,
+            featureFlagsService: mockFeatureFlagService
+        )
     }
 
     override func tearDownWithError() throws {
@@ -22,30 +27,45 @@ final class ProductsServiceTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func test_fetch_returnsRepositoryError() throws {
+    // MARK: Fetch
+
+    func test_fetch_returns_emptyArray_if_featureFlag_isDisabled() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.disable(.remote(.productsChecksEnabled)))
+        XCTAssertPublisherValues(service.fetchProducts(), [ProductValue]())
+    }
+
+    func test_fetch_returns_repositoryError() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.remote(.productsChecksEnabled)))
         let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
         try stubRepository(with: error)
         let publisher = service.fetchProducts()
         XCTAssertPublisherError(publisher, .network(error))
     }
 
-    func test_fetch_returnsRepositoryValues() throws {
+    func test_fetch_returns_repositoryValues() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.remote(.productsChecksEnabled)))
         let expectedProducts = try stubRepositoryWithDefaultProducts()
-        let publisher = service.fetchProducts()
-        XCTAssertPublisherValues(publisher, expectedProducts)
+        XCTAssertPublisherValues(service.fetchProducts(), expectedProducts)
     }
 
-    func test_stream_returnsRepositoryError() throws {
+    func test_stream_returns_repositoryError() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.remote(.productsChecksEnabled)))
         let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
         try stubRepository(with: error)
-        let publisher = service.fetchProducts()
-        XCTAssertPublisherError(publisher, .network(error))
+        XCTAssertPublisherError(service.fetchProducts(), .network(error))
     }
 
-    func test_stream_publishesProducts() throws {
+    // MARK: Stream
+
+    func test_stream_returns_emptyArray_if_featureFlag_isDisabled() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.disable(.remote(.productsChecksEnabled)))
+        XCTAssertPublisherValues(service.streamProducts(), .success([]))
+    }
+
+    func test_stream_publishes_products() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.remote(.productsChecksEnabled)))
         let expectedProducts = try stubRepositoryWithDefaultProducts()
-        let publisher = service.streamProducts()
-        XCTAssertPublisherValues(publisher, .success(expectedProducts))
+        XCTAssertPublisherValues(service.streamProducts(), .success(expectedProducts))
     }
 
     // MARK: - Private

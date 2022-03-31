@@ -69,17 +69,14 @@ final class MetadataService: MetadataServiceAPI {
         metadataType: EntryType,
         state: MetadataState
     ) -> AnyPublisher<Void, MetadataSaveError> {
-        unimplemented()
-//        TODO: Uncomment this once we have better test coverage
-//              for metadata write operations:
-//        saveEntry(
-//            .init(
-//                payloadJson: jsonPayload,
-//                type: metadataType,
-//                nodes: state.metadataNodes
-//            )
-//        )
-//        .mapError(MetadataSaveError.saveFailed)
-//        .eraseToAnyPublisher()
+        saveEntry(
+            .init(
+                payloadJson: jsonPayload,
+                type: metadataType,
+                nodes: state.metadataNodes
+            )
+        )
+        .mapError(MetadataSaveError.saveFailed)
+        .eraseToAnyPublisher()
     }
 }
