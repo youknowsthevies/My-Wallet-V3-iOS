@@ -78,7 +78,6 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
             }
     }
 
-
     func note(for transactionHash: String) -> Single<String?> {
         Single<String?>
             .create(weak: self) { (self, observer) -> Disposable in
