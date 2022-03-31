@@ -70,5 +70,12 @@ extension DependencyContainer {
                 }
             )
         }
+
+        factory {
+            CardIssuingAdapter(
+                cardIssuingBuilder: DIKit.resolve(),
+                nabuUserService: DIKit.resolve()
+            ) as FeatureSettingsUI.CardIssuingViewControllerAPI
+        }
     }
 }

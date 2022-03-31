@@ -1926,6 +1926,7 @@ public extension I_blockchain_ux_user_account {
 	var `airdrops`: L_blockchain_ux_user_account_airdrops { .init("\(__).airdrops") }
 	var `connect`: L_blockchain_ux_user_account_connect { .init("\(__).connect") }
 	var `currency`: L_blockchain_ux_user_account_currency { .init("\(__).currency") }
+	var `debit_card`: L_blockchain_ux_user_account_debit__card { .init("\(__).debit_card") }
 	var `help`: L_blockchain_ux_user_account_help { .init("\(__).help") }
 	var `linked`: L_blockchain_ux_user_account_linked { .init("\(__).linked") }
 	var `notification`: L_blockchain_ux_user_account_notification { .init("\(__).notification") }
@@ -1994,6 +1995,17 @@ public final class L_blockchain_ux_user_account_currency_trading_select: L, I_bl
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.currency.trading.select", comment: "") }
 }
 public protocol I_blockchain_ux_user_account_currency_trading_select: I {}
+public final class L_blockchain_ux_user_account_debit__card: L, I_blockchain_ux_user_account_debit__card {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.debit_card", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_debit__card: I {}
+public extension I_blockchain_ux_user_account_debit__card {
+	var `order`: L_blockchain_ux_user_account_debit__card_order { .init("\(__).order") }
+}
+public final class L_blockchain_ux_user_account_debit__card_order: L, I_blockchain_ux_user_account_debit__card_order {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.debit_card.order", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_debit__card_order: I {}
 public final class L_blockchain_ux_user_account_help: L, I_blockchain_ux_user_account_help {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.help", comment: "") }
 }

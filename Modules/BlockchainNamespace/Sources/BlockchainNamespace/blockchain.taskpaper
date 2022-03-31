@@ -534,6 +534,8 @@ blockchain:
 					trading:
 					+ blockchain.ux.type.story
 						select:
+				debit_card:
+					order:
 				help:
 					contact:
 						support:
