@@ -19,8 +19,6 @@ struct PricesView: UIViewControllerRepresentable {
         self.store = store
     }
 
-    private var featureFlagService: FeatureFlagsServiceAPI = resolve()
-
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -31,11 +29,7 @@ struct PricesView: UIViewControllerRepresentable {
             )
         )
         let viewController = PricesViewController(
-            presenter: presenter,
-            featureFlagService: featureFlagService,
-            presentRedesignCoinView: { _, cryptoCurrency in
-                ViewStore(store).send(.enter(into: .coinView(cryptoCurrency)))
-            }
+            presenter: presenter
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

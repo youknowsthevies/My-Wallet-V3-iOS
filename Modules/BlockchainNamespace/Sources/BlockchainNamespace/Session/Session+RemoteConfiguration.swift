@@ -89,7 +89,7 @@ extension Session {
 
         public func publisher(for key: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
             _isSynchronized
-                .zip(_fetched)
+                .combineLatest(_fetched)
                 .filter(\.0)
                 .map(\.1)
                 .flatMap { configuration -> Just<FetchResult> in

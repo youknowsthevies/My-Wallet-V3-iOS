@@ -7,7 +7,7 @@ import PlatformKit
 import ToolKit
 
 /// A protocol to fetch and monitor changes in `UserState`
-protocol UserAdapterAPI {
+public protocol UserAdapterAPI {
 
     /// A publisher that streams `UserState` values on subscription and on change.
     var userState: AnyPublisher<Result<UserState, UserStateError>, Never> { get }
@@ -15,7 +15,7 @@ protocol UserAdapterAPI {
 
 // MARK: - UserAdapterAPI concrete implementation
 
-protocol BalanceDataFetcherAPI {
+public protocol BalanceDataFetcherAPI {
 
     func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError>
 }
@@ -28,13 +28,13 @@ private typealias RawUserData = (
     products: [ProductValue]
 )
 
-final class UserAdapter: UserAdapterAPI {
+public final class UserAdapter: UserAdapterAPI {
 
-    let userState: AnyPublisher<Result<UserState, UserStateError>, Never>
+    public let userState: AnyPublisher<Result<UserState, UserStateError>, Never>
 
     private let balanceDataStreamer: BalanceDataStreamer
 
-    init(
+    public init(
         balanceDataFetcher: BalanceDataFetcherAPI,
         kycTiersService: KYCTiersServiceAPI,
         paymentMethodsService: PaymentMethodTypesServiceAPI,
@@ -157,15 +157,15 @@ extension ProductsServiceAPI {
     }
 }
 
-class BalanceDataFetcher: BalanceDataFetcherAPI {
+public class BalanceDataFetcher: BalanceDataFetcherAPI {
 
     private let coincore: CoincoreAPI
 
-    init(coincore: CoincoreAPI) {
+    public init(coincore: CoincoreAPI) {
         self.coincore = coincore
     }
 
-    func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError> {
+    public func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError> {
         var randomNumberGenerator = SystemRandomNumberGenerator()
         return coincore.hasFundedAccounts(for: .fiat)
             .zip(

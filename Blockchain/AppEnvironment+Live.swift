@@ -63,8 +63,7 @@ extension AppEnvironment {
             appStoreOpener: resolve(),
             secondPasswordPrompter: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber,
-            externalAppOpener: resolve(),
-            deepLinkCoordinator: resolve()
+            externalAppOpener: resolve()
         )
     }
 }

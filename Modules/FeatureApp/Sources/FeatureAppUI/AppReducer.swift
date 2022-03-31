@@ -58,8 +58,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
                     featureFlagService: $0.featureFlagsService,
-                    mainQueue: $0.mainQueue,
-                    deepLinkCoordinator: $0.deepLinkCoordinator
+                    mainQueue: $0.mainQueue
                 )
             }
         ),

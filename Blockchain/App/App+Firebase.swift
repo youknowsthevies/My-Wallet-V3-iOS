@@ -1,5 +1,7 @@
 import AnalyticsKit
 @_exported import BlockchainNamespace
+import DIKit
+import FeatureAppUI
 import FeatureCoinUI
 import Firebase
 import FirebaseProtocol
@@ -18,6 +20,8 @@ extension AppProtocol {
     func bootstrap(analytics recorder: AnalyticsEventRecorderAPI = resolve()) {
         observers.insert(CoinViewAnalytics(app: self, analytics: recorder))
         observers.insert(FirebaseAnalytics(app: self, analytics: recorder))
+        observers.insert(CoinViewObserver(app: self))
+        observers.insert(resolve() as DeepLinkCoordinator)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif

@@ -13,4 +13,5 @@ public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction
     case graph(GraphViewAction)
     case observation(BlockchainNamespaceObservation)
     case binding(BindingAction<CoinViewState>)
+    case dismiss
 }

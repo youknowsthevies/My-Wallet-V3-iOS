@@ -83,6 +83,7 @@ public extension I_blockchain_app_configuration {
 	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
 	var `google`: L_blockchain_app_configuration_google { .init("\(__).google") }
 	var `is`: L_blockchain_app_configuration_is { .init("\(__).is") }
+	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
 public final class L_blockchain_app_configuration_announcements: L, I_blockchain_app_configuration_announcements {
@@ -168,6 +169,17 @@ public final class L_blockchain_app_configuration_is_biometric_enabled: L, I_blo
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.is.biometric.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_is_biometric_enabled: I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_app_configuration_redesign: L, I_blockchain_app_configuration_redesign {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign: I {}
+public extension I_blockchain_app_configuration_redesign {
+	var `coinview`: L_blockchain_app_configuration_redesign_coinview { .init("\(__).coinview") }
+}
+public final class L_blockchain_app_configuration_redesign_coinview: L, I_blockchain_app_configuration_redesign_coinview {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.coinview", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign_coinview: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_wallet: L, I_blockchain_app_configuration_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet", comment: "") }
 }
@@ -1250,6 +1262,7 @@ public extension I_blockchain_ux_asset {
 	var `error`: L_blockchain_ux_asset_error { .init("\(__).error") }
 	var `receive`: L_blockchain_ux_asset_receive { .init("\(__).receive") }
 	var `recurring`: L_blockchain_ux_asset_recurring { .init("\(__).recurring") }
+	var `select`: L_blockchain_ux_asset_select { .init("\(__).select") }
 	var `sell`: L_blockchain_ux_asset_sell { .init("\(__).sell") }
 	var `send`: L_blockchain_ux_asset_send { .init("\(__).send") }
 }
@@ -1472,6 +1485,10 @@ public final class L_blockchain_ux_asset_recurring_buys_notification: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.recurring.buys.notification", comment: "") }
 }
 public protocol I_blockchain_ux_asset_recurring_buys_notification: I {}
+public final class L_blockchain_ux_asset_select: L, I_blockchain_ux_asset_select {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.select", comment: "") }
+}
+public protocol I_blockchain_ux_asset_select: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset_sell: L, I_blockchain_ux_asset_sell {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.sell", comment: "") }
 }

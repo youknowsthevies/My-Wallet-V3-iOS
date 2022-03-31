@@ -2,7 +2,7 @@
 
 import FeatureProductsDomain
 
-enum UserStateError: Error {
+public enum UserStateError: Error {
     case missingBalance(Error)
     case missingKYCInfo(Error)
     case missingPaymentInfo(Error)
@@ -12,30 +12,30 @@ enum UserStateError: Error {
 
 extension UserStateError: Equatable {
 
-    static func == (lhs: UserStateError, rhs: UserStateError) -> Bool {
+    public static func == (lhs: UserStateError, rhs: UserStateError) -> Bool {
         String(describing: lhs) == String(describing: rhs)
     }
 }
 
 /// A data structure that represents the state of the user
-struct UserState: Equatable {
+public struct UserState: Equatable {
 
     /// A data structure wrapping key information about the user's holdings
-    struct BalanceData: Equatable {
-        let hasAnyBalance: Bool
-        let hasAnyFiatBalance: Bool
-        let hasAnyCryptoBalance: Bool
+    public struct BalanceData: Equatable {
+        public let hasAnyBalance: Bool
+        public let hasAnyFiatBalance: Bool
+        public let hasAnyCryptoBalance: Bool
     }
 
     /// A data structure that represents the KYC status of the user
-    enum KYCStatus: Equatable {
+    public enum KYCStatus: Equatable {
         case unverified
         case inReview
         case silver
         case silverPlus
         case gold
 
-        var canPurchaseCrypto: Bool {
+        public var canPurchaseCrypto: Bool {
             switch self {
             case .unverified, .silver:
                 return false
@@ -46,28 +46,28 @@ struct UserState: Equatable {
     }
 
     /// A data structure that represents a payment method the user has linked to their Blockchain.com account
-    struct PaymentMethod: Identifiable, Equatable {
-        let id: String
-        let label: String
+    public struct PaymentMethod: Identifiable, Equatable {
+        public let id: String
+        public let label: String
     }
 
-    let kycStatus: KYCStatus
-    let balanceData: BalanceData
-    let linkedPaymentMethods: [PaymentMethod]
-    let hasEverPurchasedCrypto: Bool
-    let products: [ProductValue]
+    public let kycStatus: KYCStatus
+    public let balanceData: BalanceData
+    public let linkedPaymentMethods: [PaymentMethod]
+    public let hasEverPurchasedCrypto: Bool
+    public let products: [ProductValue]
 }
 
 extension UserState {
 
-    func requiredTierToUse(_ productId: ProductIdentifier?) -> Int? {
+    public func requiredTierToUse(_ productId: ProductIdentifier?) -> Int? {
         guard let product = product(id: productId) else {
             return nil
         }
         return product.suggestedUpgrade?.requiredTier
     }
 
-    func product(id: ProductIdentifier?) -> ProductValue? {
+    public func product(id: ProductIdentifier?) -> ProductValue? {
         guard let id = id, let product = products.first(where: { $0.id == id }) else {
             return nil
         }

@@ -9,6 +9,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain

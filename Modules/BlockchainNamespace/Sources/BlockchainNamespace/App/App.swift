@@ -74,9 +74,9 @@ public class App: AppProtocol {
             let file = event.context[e.file] as? String,
             let line = event.context[e.line] as? Int
         {
-            print("🏷 ‼️", event, message, "←", file, line)
+            print("🏷 ‼️", event.reference, message, "←", file, line)
         } else {
-            print("🏷", event)
+            print("🏷", event.reference)
         }
     }
 }
