@@ -246,6 +246,11 @@ final class AnnouncementPresenter {
                 announcement = ukEntitySwitch(user: preliminaryData.user)
             case .walletConnect:
                 announcement = walletConnect()
+            case .taxCenter:
+                announcement = taxCenter(
+                    userCountry: preliminaryData.user.address?.country,
+                    reappearanceTimeInterval: metadata.interval
+                )
             }
 
             // Return the first different announcement that should show
@@ -470,6 +475,19 @@ extension AnnouncementPresenter {
                     url: "https://medium.com/blockchain/introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9",
                     from: topMostViewController
                 )
+            }
+        )
+    }
+
+    private func taxCenter(
+        userCountry: Country?,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
+        TaxCenterAnnouncement(
+            userCountry: userCountry,
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }
