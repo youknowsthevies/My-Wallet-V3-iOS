@@ -4,7 +4,7 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 
-struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
+struct StellarReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
 
     let asset: CryptoCurrency = .stellar
     let address: String
@@ -12,9 +12,11 @@ struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvidi
     let memo: String?
     let onTxCompleted: TxCompleted
 
-    var metadata: CryptoAssetQRMetadata {
-        SEP7URI(address: address, amount: nil, memo: memo)
+    var qrCodeMetadata: QRCodeMetadata {
+        QRCodeMetadata(content: sep7URI.absoluteString, title: address)
     }
+
+    private let sep7URI: SEP7URI
 
     init(
         address: String,
@@ -26,5 +28,6 @@ struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvidi
         self.label = label
         self.memo = memo
         self.onTxCompleted = onTxCompleted
+        sep7URI = SEP7URI(address: address, amount: nil, memo: memo)
     }
 }

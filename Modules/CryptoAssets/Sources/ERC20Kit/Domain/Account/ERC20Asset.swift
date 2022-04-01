@@ -51,10 +51,14 @@ final class ERC20Asset: CryptoAsset {
         walletAccountBridge: EthereumWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
         asset = erc20Token.cryptoCurrency!
-        addressFactory = ERC20ExternalAssetAddressFactory(asset: asset)
+        addressFactory = ERC20ExternalAssetAddressFactory(
+            asset: asset,
+            enabledCurrenciesService: enabledCurrenciesService
+        )
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder

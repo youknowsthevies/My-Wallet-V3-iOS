@@ -137,7 +137,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             if let predefinedAmount = predefinedAmount,
                predefinedAmount.currency == cryptoCurrency
             {
-                amount = predefinedAmount.moneyValue
+                amount = predefinedAmount
             } else {
                 amount = .zero(currency: cryptoCurrency)
             }

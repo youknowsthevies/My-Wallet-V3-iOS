@@ -89,7 +89,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
         let userId = userIdFromJS
         let offlineToken = offlineTokenFromJS
-        return reactiveWallet.waitUntilInitializedSinglePublisher
+        return reactiveWallet.waitUntilInitializedFirst
             .mapError()
             .flatMap { [userId, offlineToken] _ -> AnyPublisher<(String?, String?), WalletError> in
                 Publishers.Zip(

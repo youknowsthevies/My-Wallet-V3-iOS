@@ -1,19 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineSchedulers
 import DIKit
 import Localization
-import RxSwift
-import RxToolKit
 import ToolKit
 
 protocol WalletUpgradeJSServicing: AnyObject {
     /// Upgrades the wallet to V3 and emits "V3"
     /// Fails with `WalletUpgradeError.failedV3Upgrade` if anything went wrong.
-    func upgradeToV3() -> Single<String>
+    func upgradeToV3() -> AnyPublisher<String, WalletUpgradeJSError>
 
     /// Upgrades the wallet to V4 and emits "V4"
     /// Fails with `WalletUpgradeError.failedV4Upgrade` if anything went wrong.
-    func upgradeToV4() -> Single<String>
+    func upgradeToV4() -> AnyPublisher<String, WalletUpgradeJSError>
 }
 
 enum WalletUpgradeJSError: Error {
@@ -52,60 +52,64 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
     // MARK: Private Properties
 
     private let contextProvider: JSContextProviderAPI
-    private let scheduler: SchedulerType
+    private let queue: AnySchedulerOf<DispatchQueue>
 
     // MARK: Init
 
     init(
         contextProvider: JSContextProviderAPI = resolve(),
-        scheduler: SchedulerType = MainScheduler.asyncInstance
+        queue: AnySchedulerOf<DispatchQueue> = .main
     ) {
         self.contextProvider = contextProvider
-        self.scheduler = scheduler
+        self.queue = queue
     }
 
     // MARK: WalletUpgradeJSServicing
 
-    func upgradeToV3() -> Single<String> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            let context = self.contextProvider.jsContext
-            let walletName = LocalizationConstants.Account.myWallet
-            context.invokeOnce(
-                functionBlock: {
-                    observer(.success("V3"))
-                },
-                forJsFunctionName: JSCallback.V3Payload.didUpgrade.rawValue
-            )
-            context.invokeOnce(
-                functionBlock: {
-                    observer(.error(WalletUpgradeJSError.failedV3Upgrade))
-                },
-                forJsFunctionName: JSCallback.V3Payload.didFail.rawValue
-            )
-            context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
-            return Disposables.create()
+    func upgradeToV3() -> AnyPublisher<String, WalletUpgradeJSError> {
+        Deferred { [contextProvider] in
+            Future<String, WalletUpgradeJSError> { promise in
+                let context = contextProvider.jsContext
+                let walletName = LocalizationConstants.Account.myWallet
+                context.invokeOnce(
+                    functionBlock: {
+                        promise(.success("V3"))
+                    },
+                    forJsFunctionName: JSCallback.V3Payload.didUpgrade.rawValue
+                )
+                context.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(WalletUpgradeJSError.failedV3Upgrade))
+                    },
+                    forJsFunctionName: JSCallback.V3Payload.didFail.rawValue
+                )
+                context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
+            }
         }
-        .subscribe(on: scheduler)
+        .subscribe(on: queue)
+        .eraseToAnyPublisher()
     }
 
-    func upgradeToV4() -> Single<String> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            let context = self.contextProvider.jsContext
-            context.invokeOnce(
-                functionBlock: {
-                    observer(.success("V4"))
-                },
-                forJsFunctionName: JSCallback.V4Payload.didUpgrade.rawValue
-            )
-            context.invokeOnce(
-                functionBlock: {
-                    observer(.error(WalletUpgradeJSError.failedV4Upgrade))
-                },
-                forJsFunctionName: JSCallback.V4Payload.didFail.rawValue
-            )
-            context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
-            return Disposables.create()
+    func upgradeToV4() -> AnyPublisher<String, WalletUpgradeJSError> {
+        Deferred { [contextProvider] in
+            Future<String, WalletUpgradeJSError> { promise in
+                let context = contextProvider.jsContext
+                context.invokeOnce(
+                    functionBlock: {
+                        promise(.success("V4"))
+                    },
+                    forJsFunctionName: JSCallback.V4Payload.didUpgrade.rawValue
+                )
+                context.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(WalletUpgradeJSError.failedV4Upgrade))
+                    },
+                    forJsFunctionName: JSCallback.V4Payload.didFail.rawValue
+                )
+                context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
+            }
         }
-        .subscribe(on: scheduler)
+        .subscribe(on: queue)
+        .eraseToAnyPublisher()
     }
 }

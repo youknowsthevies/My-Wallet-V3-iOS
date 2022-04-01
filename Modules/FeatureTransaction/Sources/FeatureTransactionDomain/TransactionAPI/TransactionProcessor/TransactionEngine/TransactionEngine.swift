@@ -217,12 +217,10 @@ public protocol TransactionEngine: AnyObject {
 
 extension TransactionEngine {
 
-    public var predefinedAmount: CryptoValue? {
+    public var predefinedAmount: MoneyValue? {
         switch transactionTarget {
-        case let target as CryptoAssetQRMetadata:
-            return target.amount
-        case let target as CryptoAssetQRMetadataProviding:
-            return target.metadata.amount
+        case let target as ReceiveAddress:
+            return target.predefinedAmount
         default:
             return nil
         }

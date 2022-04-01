@@ -315,17 +315,14 @@ extension TransactionsRouter {
             mimicRIBAttachment(router: router)
             return listener.publisher
 
-        case .send(let fromAccount, let toAccount):
+        case .send(let fromAccount, let target):
             let router = sendFlowBuilder.build()
-            switch (fromAccount, toAccount) {
-            case (.some(let fromAccount), .some(let toAccount)):
-                router.routeToSend(sourceAccount: fromAccount, destination: toAccount)
-            case (.some(let fromAccount), _):
-                router.routeToSend(sourceAccount: fromAccount)
-            default:
-                break
+            switch (fromAccount, target) {
+            case (.some(let fromAccount), let target):
+                router.routeToSend(sourceAccount: fromAccount, destination: target)
+            case (nil, _):
+                router.routeToSendLanding(navigationBarHidden: true)
             }
-            router.routeToSendLanding(navigationBarHidden: true)
             presenter.present(router.viewControllable.uiviewController, animated: true)
             mimicRIBAttachment(router: router)
             return .empty()

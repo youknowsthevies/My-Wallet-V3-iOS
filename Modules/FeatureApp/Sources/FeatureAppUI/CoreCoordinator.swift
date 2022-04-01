@@ -513,7 +513,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .initializeWallet:
         return environment.walletManager
             .reactiveWallet
-            .waitUntilInitializedSinglePublisher
+            .waitUntilInitializedFirst
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: WalletCancelations.InitializationId(), cancelInFlight: false)
@@ -521,7 +521,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .walletInitialized:
         return environment.walletUpgradeService
-            .needsWalletUpgradePublisher
+            .needsWalletUpgrade
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: WalletCancelations.UpgradeId(), cancelInFlight: false)

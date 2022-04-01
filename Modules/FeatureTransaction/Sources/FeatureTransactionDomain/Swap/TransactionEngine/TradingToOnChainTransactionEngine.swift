@@ -143,7 +143,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 if let predefinedAmount = predefinedAmount,
                    predefinedAmount.currencyType == sourceAsset
                 {
-                    amount = predefinedAmount.moneyValue
+                    amount = predefinedAmount
                 } else {
                     amount = .zero(currency: sourceAsset)
                 }

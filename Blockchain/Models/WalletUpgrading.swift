@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import WalletPayloadKit
 
 final class WalletUpgrading: WalletUpgradingAPI {
@@ -21,18 +21,20 @@ final class WalletUpgrading: WalletUpgradingAPI {
         wallet.didUpgradeToV4
     }
 
-    var requiresV4Upgrade: Single<Bool> {
-        settings.fetch(force: true)
+    var requiresV4Upgrade: AnyPublisher<Bool, Error> {
+        settings.fetchPublisher(force: true)
             .map(\.features)
             .map { features -> Bool in
                 features[.segwit] ?? false
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     // MARK: Private Properties
 
     private let walletManager: WalletManager
-    private let settings: SettingsServiceAPI
+    private let settings: SettingsServiceCombineAPI
     private var wallet: Wallet {
         walletManager.wallet
     }
@@ -41,7 +43,7 @@ final class WalletUpgrading: WalletUpgradingAPI {
 
     init(
         walletManager: WalletManager = .shared,
-        settings: SettingsServiceAPI = resolve()
+        settings: SettingsServiceCombineAPI = resolve()
     ) {
         self.settings = settings
         self.walletManager = walletManager

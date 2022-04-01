@@ -12,10 +12,6 @@ public protocol QRCodeAPI {
 }
 
 extension QRCodeAPI {
-    public init?(metadata: CryptoAssetQRMetadata) {
-        self.init(string: metadata.absoluteString)
-    }
-
     public init?(string: String) {
         guard let data = string.data(using: .utf8) else {
             return nil

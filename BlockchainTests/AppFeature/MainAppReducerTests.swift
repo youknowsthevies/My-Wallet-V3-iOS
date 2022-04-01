@@ -428,9 +428,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.resetVerificationStatusIfNeeded(guid: decryption.guid, sharedKey: decryption.sharedKey))
         testStore.receive(.authenticated(.success(true)))
         testStore.receive(.initializeWallet)
-        mockReactiveWallet.mockState.on(.next(.initialized))
+        mockReactiveWallet.mockState.send(.initialized)
         mockMainQueue.advance()
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.receive(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
@@ -509,7 +509,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_walletInitialized_should_check_if_wallet_upgrade_is_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(true))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(true)
 
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
@@ -535,7 +535,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
@@ -556,7 +556,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         mockSettingsApp.isPinSet = true
 
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))

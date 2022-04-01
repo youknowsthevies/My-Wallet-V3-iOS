@@ -1,24 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 import Combine
-import RxCocoa
-import RxSwift
 import WalletPayloadKit
 
 class MockWalletUpgradeService: WalletUpgradeServicing {
-    var needsWalletUpgradeRelay = BehaviorSubject<Bool>(value: false)
+    var needsWalletUpgradeRelay = CurrentValueSubject<Bool, Never>(false)
 
-    var needsWalletUpgrade: Single<Bool> {
-        needsWalletUpgradeRelay.asSingle()
-    }
-
-    var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> {
-        needsWalletUpgradeRelay.asPublisher()
+    var needsWalletUpgrade: AnyPublisher<Bool, Never> {
+        needsWalletUpgradeRelay
             .eraseToAnyPublisher()
     }
 
     init() {}
 
-    func upgradeWallet() -> Observable<String> {
+    func upgradeWallet() -> AnyPublisher<String, WalletUpgradeError> {
         .just("")
     }
 }

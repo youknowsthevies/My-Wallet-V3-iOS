@@ -41,7 +41,7 @@ final class Coincore: CoincoreAPI {
     // MARK: - Public Properties
 
     var allAccounts: AnyPublisher<AccountGroup, CoincoreError> {
-        reactiveWallet.waitUntilInitializedSinglePublisher
+        reactiveWallet.waitUntilInitializedFirst
             .flatMap { [allAssets] _ -> AnyPublisher<[AccountGroup], Never> in
                 allAssets
                     .map { asset in
