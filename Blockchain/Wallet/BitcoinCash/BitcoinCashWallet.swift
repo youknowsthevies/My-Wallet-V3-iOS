@@ -66,7 +66,10 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 
     func firstReceiveAddress(forXPub xpub: String) -> Single<String> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitialized
+            .asObservable()
+            .take(1)
+            .asSingle()
             .map(weak: self) { (self, _) -> String in
                 let result = self.wallet.getBitcoinCashFirstReceiveAddress(forXPub: xpub)
                 switch result {
