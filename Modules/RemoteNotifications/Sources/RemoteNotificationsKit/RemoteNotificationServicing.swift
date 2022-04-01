@@ -1,16 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
 import UIKit
+
+public enum RemoteNotificationTokenSenderError: Error {
+    case failed
+}
 
 /// A protocol that encapsulates the sending of a pre-known notification token
 public protocol RemoteNotificationTokenSending: AnyObject {
     /// Sends the token. Only if remote notification permission was pre-authorized.
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
-    func sendTokenIfNeeded() -> Single<Void>
-    func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error>
+    func sendTokenIfNeeded() -> AnyPublisher<Void, RemoteNotificationTokenSenderError>
 }
 
 /// A protocol defining an object that reacts to the registration, or failure, of remote notifications.

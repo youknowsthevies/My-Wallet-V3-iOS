@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import UserNotifications
 
 /// A protocol that provides custom APIs for various operations of UNUserNotificationCenter
@@ -22,10 +23,27 @@ public protocol UNUserNotificationCenterAPI: AnyObject {
     func getAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void)
 }
 
-extension UNUserNotificationCenter: UNUserNotificationCenterAPI {
+extension UNUserNotificationCenter: UNUserNotificationCenterAPI {}
+
+extension UNUserNotificationCenterAPI {
     public func getAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void) {
         getNotificationSettings { settings in
             completionHandler(settings.authorizationStatus)
         }
+    }
+
+    public func requestAuthorizationPublisher(options: UNAuthorizationOptions) -> AnyPublisher<Bool, Error> {
+        Deferred { [requestAuthorization] in
+            Future { [requestAuthorization] promise in
+                requestAuthorization(options) { isGranted, error in
+                    if let error = error {
+                        promise(.failure(error))
+                    } else {
+                        promise(.success(isGranted))
+                    }
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

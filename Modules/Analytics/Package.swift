@@ -15,13 +15,7 @@ let package = Package(
             targets: ["AnalyticsKitMock"]
         )
     ],
-    dependencies: [
-        .package(
-            name: "Mockingbird",
-            url: "https://github.com/birdrides/mockingbird.git",
-            .upToNextMinor(from: "0.20.0")
-        )
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "AnalyticsKit"
@@ -35,8 +29,7 @@ let package = Package(
         .testTarget(
             name: "AnalyticsKitTests",
             dependencies: [
-                .target(name: "AnalyticsKit"),
-                .product(name: "Mockingbird", package: "Mockingbird")
+                .target(name: "AnalyticsKit")
             ]
         )
     ]

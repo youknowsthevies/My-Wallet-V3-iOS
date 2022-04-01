@@ -1,13 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import NetworkKit
 @testable import NetworkKitMock
-import PlatformKit
 @testable import RemoteNotificationsKit
 @testable import RemoteNotificationsKitMock
-import RxBlocking
-import RxSwift
 import UserNotifications
 import XCTest
 
@@ -18,57 +15,104 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
         case failure = "remote-notification-registration-failure"
     }
 
-    override class func setUp() {
-        DependencyContainer.defined(by: modules {
-            DependencyContainer.toolKit
-            DependencyContainer.networkKit
-        })
+    var cancellables: Set<AnyCancellable> = []
+    var credentialsProvider: MockGuidSharedKeyRepositoryAPI!
+    var subject: RemoteNotificationNetworkService!
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        cancellables = []
+        credentialsProvider = MockGuidSharedKeyRepositoryAPI()
+    }
+
+    override func tearDownWithError() throws {
+        subject = nil
+        credentialsProvider = nil
+        cancellables = []
+        try super.tearDownWithError()
     }
 
     func testHttpCodeOkWithSuccess() {
         let token = "remote-notification-token"
-        let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
-        let service = prepareServiceForHttpCodeOk(with: .success)
-        let observable = service
+        subject = prepareServiceForHttpCodeOk(with: .success)
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        subject
             .register(
                 with: token,
                 sharedKeyProvider: credentialsProvider,
                 guidProvider: credentialsProvider
             )
-            .toBlocking()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { [registerExpectation] _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
 
-        do {
-            try observable.first()
-        } catch {
-            XCTFail("expected successful token registration. got \(error) instead")
-        }
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testHttpCodeOkWithFailure() {
         let token = "remote-notification-token"
-        let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
-        let service = prepareServiceForHttpCodeOk(with: .failure)
-        let observable = service
+        subject = prepareServiceForHttpCodeOk(with: .failure)
+        let registerExpectation = expectation(
+            description: "Service registered token failed."
+        )
+        subject
             .register(
                 with: token,
                 sharedKeyProvider: credentialsProvider,
                 guidProvider: credentialsProvider
             )
-            .toBlocking()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        switch error {
+                        case .registrationFailure:
+                            registerExpectation.fulfill()
+                        default:
+                            XCTFail("Expected 'registrationFailure'. Got \(error) instead.")
+                        }
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected token registration to fail. Got success instead.")
+                }
+            )
+            .store(in: &cancellables)
 
-        do {
-            try observable.first()
-            XCTFail("expected \(RemoteNotificationNetworkService.PushNotificationError.registrationFailure) token registration. got success instead")
-        } catch RemoteNotificationNetworkService.PushNotificationError.registrationFailure {
-            // Okay
-        } catch {
-            XCTFail("expected \(RemoteNotificationNetworkService.PushNotificationError.registrationFailure) token registration. got \(error) instead")
-        }
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     private func prepareServiceForHttpCodeOk(with fixture: Fixture) -> RemoteNotificationNetworkService {
         let networkAdapter = NetworkAdapterMock()
         networkAdapter.response = (filename: fixture.rawValue, bundle: .remoteNotificationKitMock)
-        return RemoteNotificationNetworkService(url: "blockchain.com", networkAdapter: networkAdapter)
+        return RemoteNotificationNetworkService(
+            pushNotificationsUrl: "blockchain.com",
+            networkAdapter: networkAdapter
+        )
     }
 }

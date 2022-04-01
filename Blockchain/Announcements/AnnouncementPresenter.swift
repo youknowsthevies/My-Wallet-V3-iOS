@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureCryptoDomainDomain
@@ -38,6 +39,7 @@ final class AnnouncementPresenter {
     private let backupFlowStarter: BackupFlowStarterAPI
     private let settingsStarter: SettingsStarterAPI
 
+    private let app: AppProtocol
     private let featureFetcher: RxFeatureFetching
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
@@ -53,7 +55,6 @@ final class AnnouncementPresenter {
     private let navigationRouter: NavigationRouterAPI
     private let exchangeProviding: ExchangeProviding
     private let accountsRouter: AccountsRouting
-    private let featureFlagService: FeatureFlagsServiceAPI
 
     private let coincore: CoincoreAPI
     private let nabuUserService: NabuUserServiceAPI
@@ -69,6 +70,7 @@ final class AnnouncementPresenter {
     // MARK: - Setup
 
     init(
+        app: AppProtocol = DIKit.resolve(),
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         exchangeProviding: ExchangeProviding = DIKit.resolve(),
         accountsRouter: AccountsRouting = DIKit.resolve(),
@@ -88,10 +90,10 @@ final class AnnouncementPresenter {
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
         nabuUserService: NabuUserServiceAPI = DIKit.resolve()
     ) {
+        self.app = app
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -111,7 +113,6 @@ final class AnnouncementPresenter {
         self.navigationRouter = navigationRouter
         self.exchangeProviding = exchangeProviding
         self.accountsRouter = accountsRouter
-        self.featureFlagService = featureFlagService
         self.coincore = coincore
         self.nabuUserService = nabuUserService
 
@@ -129,6 +130,7 @@ final class AnnouncementPresenter {
     func refresh() {
         reactiveWallet
             .waitUntilInitialized
+            .asObservable()
             .bind { [weak self] _ in
                 self?.calculate()
             }
@@ -393,25 +395,7 @@ extension AnnouncementPresenter {
     }
 
     private func showAssetDetailsScreen(for currency: CryptoCurrency) {
-        featureFlagService.isEnabled(.remote(.redesignCoinView))
-            .receive(on: DispatchQueue.main)
-            .sink { [accountsRouter, exchangeProviding, navigationRouter] isEnabled in
-                if isEnabled {
-                    // Run CoinView
-                } else {
-                    let builder = AssetDetailsBuilder(
-                        accountsRouter: accountsRouter,
-                        currency: currency,
-                        exchangeProviding: exchangeProviding
-                    )
-                    let controller = builder.build()
-                    navigationRouter.present(
-                        viewController: controller,
-                        using: .modalOverTopMost
-                    )
-                }
-            }
-            .store(in: &cancellables)
+        app.post(event: blockchain.ux.asset[currency.code].select)
     }
 
     /// Computes asset rename card announcement.

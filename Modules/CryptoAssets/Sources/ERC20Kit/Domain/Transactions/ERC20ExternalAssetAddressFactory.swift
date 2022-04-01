@@ -17,9 +17,14 @@ enum ERC20AddressFactoryError: Error {
 final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
 
     private let asset: CryptoCurrency
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
-    init(asset: CryptoCurrency) {
+    init(
+        asset: CryptoCurrency,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    ) {
         self.asset = asset
+        self.enabledCurrenciesService = enabledCurrenciesService
     }
 
     func makeExternalAssetAddress(
@@ -59,7 +64,10 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // If label is same as address, we will replace it with the sanitized version (without prefix).
         let replaceLabel = label == address
         // Creates BIP21URI from url.
-        guard let eip681URI = EIP681URI(url: address, enabledCurrenciesService: resolve()) else {
+        guard let eip681URI = EIP681URI(
+            url: address,
+            enabledCurrenciesService: enabledCurrenciesService
+        ) else {
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.

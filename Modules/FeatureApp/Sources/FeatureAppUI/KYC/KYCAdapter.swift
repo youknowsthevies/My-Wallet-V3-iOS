@@ -13,7 +13,7 @@ import ToolKit
 import UIComponentsKit
 import UIKit
 
-final class KYCAdapter {
+public final class KYCAdapter {
 
     // MARK: - Properties
 
@@ -23,13 +23,13 @@ final class KYCAdapter {
 
     // MARK: - Init
 
-    init(router: FeatureKYCUI.Routing = resolve()) {
+    public init(router: FeatureKYCUI.Routing = resolve()) {
         self.router = router
     }
 
     // MARK: - Public Interface
 
-    func presentEmailVerificationAndKYCIfNeeded(
+    public func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
         requireEmailVerification: Bool,
         requiredTier: KYC.Tier
@@ -43,7 +43,7 @@ final class KYCAdapter {
             .eraseToAnyPublisher()
     }
 
-    func presentEmailVerificationIfNeeded(
+    public func presentEmailVerificationIfNeeded(
         from presenter: UIViewController
     ) -> AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> {
         router
@@ -51,7 +51,7 @@ final class KYCAdapter {
             .eraseToAnyPublisher()
     }
 
-    func presentKYCIfNeeded(
+    public func presentKYCIfNeeded(
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> {
@@ -63,7 +63,7 @@ final class KYCAdapter {
 
 extension KYCAdapter {
 
-    func presentKYCIfNeeded(
+    public func presentKYCIfNeeded(
         from presenter: UIViewController,
         requireEmailVerification: Bool,
         requiredTier: KYC.Tier,
@@ -83,7 +83,7 @@ extension KYCAdapter {
 
 extension KYCRouterError {
 
-    init(_ error: FeatureKYCUI.RouterError) {
+    public init(_ error: FeatureKYCUI.RouterError) {
         switch error {
         case .emailVerificationFailed:
             self = .emailVerificationFailed
@@ -97,7 +97,7 @@ extension KYCRouterError {
 
 extension KYCRoutingResult {
 
-    init(_ result: FeatureKYCUI.FlowResult) {
+    public init(_ result: FeatureKYCUI.FlowResult) {
         switch result {
         case .abandoned:
             self = .abandoned
@@ -109,7 +109,7 @@ extension KYCRoutingResult {
 
 extension KYCAdapter: PlatformUIKit.KYCRouting {
 
-    func presentEmailVerificationAndKYCIfNeeded(
+    public func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
@@ -123,7 +123,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
         .eraseToAnyPublisher()
     }
 
-    func presentEmailVerificationIfNeeded(
+    public func presentEmailVerificationIfNeeded(
         from presenter: UIViewController
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentEmailVerificationIfNeeded(from: presenter)
@@ -132,7 +132,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
             .eraseToAnyPublisher()
     }
 
-    func presentKYCIfNeeded(
+    public func presentKYCIfNeeded(
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
@@ -142,7 +142,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
             .eraseToAnyPublisher()
     }
 
-    func presentKYCUpgradeFlow(
+    public func presentKYCUpgradeFlow(
         from presenter: UIViewController
     ) -> AnyPublisher<KYCRoutingResult, Never> {
         router.presentPromptToUnlockMoreTrading(from: presenter)
@@ -151,7 +151,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
             .eraseToAnyPublisher()
     }
 
-    func presentKYCUpgradeFlowIfNeeded(
+    public func presentKYCUpgradeFlowIfNeeded(
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
@@ -167,7 +167,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
 
 extension OnboardingResult {
 
-    init(_ result: FeatureKYCUI.FlowResult) {
+    public init(_ result: FeatureKYCUI.FlowResult) {
         switch result {
         case .abandoned:
             self = .abandoned
@@ -179,14 +179,14 @@ extension OnboardingResult {
 
 extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
 
-    func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
+    public func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         router.presentEmailVerificationIfNeeded(from: presenter)
             .map(OnboardingResult.init)
             .replaceError(with: OnboardingResult.completed)
             .eraseToAnyPublisher()
     }
 
-    func presentKYCUpgradePrompt(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
+    public func presentKYCUpgradePrompt(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         router.presentNoticeToUnlockMoreTradingIfNeeded(from: presenter, requiredTier: .tier2)
             .map(OnboardingResult.init)
             .replaceError(with: OnboardingResult.completed)
@@ -196,7 +196,7 @@ extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
 
 extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
 
-    func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void) {
+    public func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void) {
         guard let presenter = presenter ?? UIApplication.shared.topMostViewController else {
             fatalError("A view controller was expected to exist to run \(#function) in \(#file)")
         }
@@ -222,7 +222,7 @@ extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
 
 extension KYCAdapter: FeatureSettingsUI.KYCRouterAPI {
 
-    func presentLimitsOverview(from presenter: UIViewController) {
+    public func presentLimitsOverview(from presenter: UIViewController) {
         router.presentLimitsOverview(from: presenter)
     }
 }

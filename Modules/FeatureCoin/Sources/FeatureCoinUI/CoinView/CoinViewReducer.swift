@@ -96,6 +96,8 @@ public let coinViewReducer = Reducer<
                 break
             }
             return .none
+        case .dismiss:
+            return .fireAndForget(environment.dismiss)
         case .graph, .binding, .observation:
             return .none
         }

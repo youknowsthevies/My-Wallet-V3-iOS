@@ -2,32 +2,10 @@
 
 import AnalyticsKit
 import Combine
-import DIKit
-import PlatformKit
-import PlatformUIKit
-import RxSwift
 import ToolKit
 import UserNotifications
 
 final class RemoteNotificationAuthorizer {
-
-    // MARK: - Types
-
-    /// Any potential error that may be risen during authrorization request
-    enum ServiceError: Error {
-
-        /// Any system error
-        case system(Error)
-
-        /// End-user has not granted
-        case permissionDenied
-
-        /// Thrown if the authorization status should be `.authorized` but it's not
-        case unauthorizedStatus
-
-        /// Authrization was already granted / refused
-        case statusWasAlreadyDetermined
-    }
 
     // MARK: - Private Properties
 
@@ -36,14 +14,12 @@ final class RemoteNotificationAuthorizer {
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let options: UNAuthorizationOptions
 
-    private let disposeBag = DisposeBag()
-
     // MARK: - Setup
 
     init(
-        application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
+        application: UIApplicationRemoteNotificationsAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        userNotificationCenter: UNUserNotificationCenterAPI,
         options: UNAuthorizationOptions = [.alert, .badge, .sound]
     ) {
         self.application = application
@@ -54,67 +30,96 @@ final class RemoteNotificationAuthorizer {
 
     // MARK: - Private Accessors
 
-    private func requestAuthorization() -> Single<Void> {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.analyticsRecorder.record(event: AnalyticsEvents.Permission.permissionSysNotifRequest)
-                self.userNotificationCenter.requestAuthorization(options: self.options) { [weak self] isGranted, error in
-                    guard let self = self else { return }
-                    guard error == nil else {
-                        observer(.error(ServiceError.system(error!)))
-                        return
+    private func requestAuthorization() -> AnyPublisher<Void, RemoteNotificationAuthorizerError> {
+        Deferred { [analyticsRecorder, userNotificationCenter, options] ()
+            -> AnyPublisher<Void, RemoteNotificationAuthorizerError> in
+            AnyPublisher<Void, RemoteNotificationAuthorizerError>
+                .just(())
+                .handleEvents(
+                    receiveOutput: { _ in
+                        analyticsRecorder.record(
+                            event: AnalyticsEvents.Permission.permissionSysNotifRequest
+                        )
                     }
-                    guard isGranted else {
-                        self.analyticsRecorder.record(event: AnalyticsEvents.Permission.permissionSysNotifDecline)
-                        observer(.error(ServiceError.permissionDenied))
-                        return
-                    }
-                    self.analyticsRecorder.record(event: AnalyticsEvents.Permission.permissionSysNotifApprove)
-                    observer(.success(()))
+                )
+                .flatMap {
+                    userNotificationCenter
+                        .requestAuthorizationPublisher(
+                            options: options
+                        )
+                        .mapError(RemoteNotificationAuthorizerError.system)
                 }
-                return Disposables.create()
-            }
+                .handleEvents(
+                    receiveOutput: { isGranted in
+                        let event: AnalyticsEvents.Permission
+                        if isGranted {
+                            event = .permissionSysNotifApprove
+                        } else {
+                            event = .permissionSysNotifDecline
+                        }
+                        analyticsRecorder.record(event: event)
+                    }
+                )
+                .flatMap { isGranted -> AnyPublisher<Void, RemoteNotificationAuthorizerError> in
+                    guard isGranted else {
+                        return .failure(.permissionDenied)
+                    }
+                    return .just(())
+                }
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 
-    private var isNotDetermined: Single<Bool> {
-        status.map { $0 == .notDetermined }
+    private var isNotDetermined: AnyPublisher<Bool, Never> {
+        status
+            .map { $0 == .notDetermined }
+            .eraseToAnyPublisher()
     }
 }
 
 // MARK: - RemoteNotificationAuthorizationStatusProviding
 
 extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusProviding {
-    var status: Single<UNAuthorizationStatus> {
-        Single<UNAuthorizationStatus>
-            .create(weak: self) { (self, observer) -> Disposable in
-                self.userNotificationCenter.getAuthorizationStatus(completionHandler: { status in
-                    observer(.success(status))
-                })
-                return Disposables.create()
+    var status: AnyPublisher<UNAuthorizationStatus, Never> {
+        Deferred { [userNotificationCenter] in
+            Future { [userNotificationCenter] promise in
+                userNotificationCenter.getAuthorizationStatus { status in
+                    promise(.success(status))
+                }
             }
+        }
+        .eraseToAnyPublisher()
     }
 }
 
 // MARK: - RemoteNotificationRegistering
 
 extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
-    func registerForRemoteNotificationsIfAuthorized() -> Single<Void> {
+    func registerForRemoteNotificationsIfAuthorized() -> AnyPublisher<Void, RemoteNotificationAuthorizerError> {
         isAuthorized
-            .map { isAuthorized -> Void in
+            .flatMap { isAuthorized -> AnyPublisher<Void, RemoteNotificationAuthorizerError> in
                 guard isAuthorized else {
-                    throw ServiceError.unauthorizedStatus
+                    return .failure(.unauthorizedStatus)
                 }
-                return ()
+                return .just(())
             }
-            .observe(on: MainScheduler.instance)
-            .do(
-                onSuccess: { [unowned application] _ in
+            .receive(on: DispatchQueue.main)
+            .handleEvents(
+                receiveOutput: { [unowned application] _ in
                     application.registerForRemoteNotifications()
                 },
-                onError: { error in
-                    Logger.shared.error("Token registration failed with error: \(String(describing: error))")
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        Logger.shared
+                            .error("Token registration failed with error: \(String(describing: error))")
+                    case .finished:
+                        break
+                    }
                 }
             )
+            .eraseToAnyPublisher()
     }
 }
 
@@ -122,33 +127,55 @@ extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
 
 extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting {
     // TODO: Handle a `.denied` case
-    func requestAuthorizationIfNeeded() -> Single<Void> {
+    func requestAuthorizationIfNeeded() -> AnyPublisher<Void, RemoteNotificationAuthorizerError> {
         isNotDetermined
-            .map { isNotDetermined -> Void in
+            .flatMap { isNotDetermined -> AnyPublisher<Void, RemoteNotificationAuthorizerError> in
                 guard isNotDetermined else {
-                    throw ServiceError.statusWasAlreadyDetermined
+                    return .failure(.statusWasAlreadyDetermined)
                 }
-                return ()
+                return .just(())
             }
-            .observe(on: MainScheduler.instance)
-            .flatMap(weak: self) { (self, _) -> Single<Void> in
-                self.requestAuthorization()
+            .receive(on: DispatchQueue.main)
+            .flatMap { [requestAuthorization] in
+                requestAuthorization()
             }
-            .observe(on: MainScheduler.instance)
-            .do(
-                onSuccess: { [unowned application] _ in
+            .receive(on: DispatchQueue.main)
+            .handleEvents(
+                receiveOutput: { [unowned application] _ in
                     application.registerForRemoteNotifications()
                 },
-                onError: { error in
-                    Logger.shared.error("Remote notification authorization failed with error: \(error)")
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        Logger.shared
+                            .error("Remote notification authorization failed with error: \(error)")
+                    case .finished:
+                        break
+                    }
                 }
             )
-    }
-
-    func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error> {
-        requestAuthorizationIfNeeded()
-            .asCompletable()
-            .asPublisher()
             .eraseToAnyPublisher()
+    }
+}
+
+extension AnalyticsEvents {
+    enum Permission: AnalyticsEvent {
+        case permissionSysNotifRequest
+        case permissionSysNotifApprove
+        case permissionSysNotifDecline
+
+        public var name: String {
+            switch self {
+            // Permission - remote notification system request
+            case .permissionSysNotifRequest:
+                return "permission_sys_notif_request"
+            // Permission - remote notification system approve
+            case .permissionSysNotifApprove:
+                return "permission_sys_notif_approve"
+            // Permission - remote notification system decline
+            case .permissionSysNotifDecline:
+                return "permission_sys_notif_decline"
+            }
+        }
     }
 }

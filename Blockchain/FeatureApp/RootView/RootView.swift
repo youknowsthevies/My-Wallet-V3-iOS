@@ -124,7 +124,6 @@ struct RootView: View {
                 viewStore.send(.onDisappear)
             }
         }
-        .observer(CoinViewObserver())
         .navigationRoute(in: store)
         .app(Blockchain.app)
     }

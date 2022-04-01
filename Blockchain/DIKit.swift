@@ -9,6 +9,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
@@ -31,6 +32,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -145,7 +147,7 @@ extension DependencyContainer {
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(
-                markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+                markBitpayUrl: { BitpayService.shared.content = $0 },
                 isBitPayURL: BitPayLinkRouter.isBitPayURL,
                 isPinSet: isPinSet
             )
@@ -356,7 +358,11 @@ extension DependencyContainer {
 
         // MARK: - AppFeatureConfigurator
 
-        single { AppFeatureConfigurator() }
+        single {
+            AppFeatureConfigurator(
+                remoteConfig: RemoteConfig.remoteConfig()
+            )
+        }
 
         factory { () -> FeatureConfiguratorAPI in
             let configurator: AppFeatureConfigurator = DIKit.resolve()
@@ -400,6 +406,11 @@ extension DependencyContainer {
         factory { () -> SettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
+        }
+
+        factory { () -> SettingsServiceCombineAPI in
+            let settings: SettingsServiceAPI = DIKit.resolve()
+            return settings as SettingsServiceCombineAPI
         }
 
         factory { () -> FiatCurrencyServiceAPI in

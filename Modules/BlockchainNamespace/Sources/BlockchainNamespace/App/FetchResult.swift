@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 public enum FetchResult {
     case value(Any, Metadata)
     case error(FetchResult.Error, Metadata)
@@ -7,10 +9,21 @@ public enum FetchResult {
 
 extension FetchResult {
 
-    public enum Error: Swift.Error {
+    public enum Error: Swift.Error, LocalizedError {
         case keyDoesNotExist(Tag.Reference)
         case decoding(AnyDecoder.Error)
         case other(Swift.Error)
+
+        public var errorDescription: String? {
+            switch self {
+            case .keyDoesNotExist(let reference):
+                return "\(reference) does not exist"
+            case .decoding(let error):
+                return error.errorDescription
+            case .other(let error):
+                return String(describing: error)
+            }
+        }
     }
 }
 

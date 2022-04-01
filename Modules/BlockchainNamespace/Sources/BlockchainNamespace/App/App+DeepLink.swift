@@ -16,7 +16,7 @@ extension App {
 
         func start() {
             let rules = app
-                .publisher(for: blockchain.app.configuration.deep_link.rules, as: [Rule].self)
+                .publisher(for: blockchain.app.configuration.deep_link.rules, as: [Rule?].self)
                 .compactMap(\.value)
                 .removeDuplicates()
 
@@ -30,7 +30,7 @@ extension App {
                 .map(\.0)
                 .combineLatest(rules)
                 .sink { [weak self] event, rules in
-                    self?.process(event: event, with: rules)
+                    self?.process(event: event, with: rules.compactMap { $0 })
                 }
                 .store(in: &bag)
         }
@@ -55,6 +55,9 @@ extension App {
                         for (tag, value) in dsl.context {
                             state.set(tag, to: value)
                         }
+                    }
+                    for (tag, value) in dsl.context where tag.is(blockchain.session.configuration.value) {
+                        app.remoteConfiguration.override(tag.key, with: value)
                     }
                     if let event = dsl.event {
                         app.post(event: event, context: Tag.Context(dsl.context))

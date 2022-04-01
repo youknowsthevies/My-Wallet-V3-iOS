@@ -15,8 +15,8 @@ final class CardRepository: CardRepositoryAPI {
         self.client = client
     }
 
-    func orderCard(product: Product, at address: Card.Address) -> AnyPublisher<[Card], NabuNetworkError> {
-        client.orderCard(with: .init(productCode: product.productCode, deliveryAddress: address))
+    func orderCard(product: Product, at address: Card.Address, with ssn: String) -> AnyPublisher<Card, NabuNetworkError> {
+        client.orderCard(with: .init(productCode: product.productCode, deliveryAddress: address, ssn: ssn))
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {

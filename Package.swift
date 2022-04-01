@@ -125,6 +125,7 @@ let package = Package(
             dependencies: [
                 .target(name: "AnyCoding"),
                 .target(name: "FirebaseProtocol"),
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "Lexicon", package: "Lexicon")
             ],
             path: "Modules/BlockchainNamespace/Sources/BlockchainNamespace",

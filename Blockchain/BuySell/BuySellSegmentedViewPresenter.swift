@@ -47,7 +47,6 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
                     showSupportedPairsOnly: true
                 )
             ),
-            featureFlagService: featureFlagService,
             customSelectionActionClosure: { [weak self] currency in
                 guard let self = self else { return }
                 self.coincore.cryptoAccounts(for: currency, filter: .custodial)
@@ -118,7 +117,6 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
     private let transactionsRouter: TransactionsRouterAPI
     private let cryptoCurrenciesService: CryptoCurrenciesServiceAPI
     private let coincore: CoincoreAPI
-    private let featureFlagService: FeatureFlagsServiceAPI
 
     /// Currently retained RIBs router in use.
     private var currentRIBRouter: RIBs.Routing?
@@ -129,13 +127,11 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
     init(
         cryptoCurrenciesService: CryptoCurrenciesServiceAPI = resolve(),
         transactionsRouter: TransactionsRouterAPI = resolve(),
-        coincore: CoincoreAPI = resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = resolve()
+        coincore: CoincoreAPI = resolve()
     ) {
         self.transactionsRouter = transactionsRouter
         self.cryptoCurrenciesService = cryptoCurrenciesService
         self.coincore = coincore
-        self.featureFlagService = featureFlagService
     }
 }
 

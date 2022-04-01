@@ -126,11 +126,11 @@ let loggedInReducer = Reducer<
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationTokenSender
-                .sendTokenIfNeededPublisher()
+                .sendTokenIfNeeded()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationAuthorizer
-                .requestAuthorizationIfNeededPublisher()
+                .requestAuthorizationIfNeeded()
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {

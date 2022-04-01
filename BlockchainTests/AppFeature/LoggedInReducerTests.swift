@@ -134,7 +134,7 @@ final class LoggedInReducerTests: XCTestCase {
 
         XCTAssertTrue(mockRemoteNotificationServiceContainer.sendTokenIfNeededPublisherCalled)
 
-        XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededPublisherCalled)
+        XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededCalled)
 
         performSignOut()
     }

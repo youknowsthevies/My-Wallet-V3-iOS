@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxRelay
-import RxSwift
 import UIKit
 
 @testable import RemoteNotificationsKit
@@ -31,14 +29,10 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
         sendTokenIfNeededSubject.send(completion: .finished)
     }
 
-    func sendTokenIfNeeded() -> Single<Void> {
-        .just(())
-    }
-
-    var sendTokenIfNeededSubject = PassthroughSubject<Never, Error>()
+    var sendTokenIfNeededSubject = PassthroughSubject<Void, RemoteNotificationTokenSenderError>()
     var sendTokenIfNeededPublisherCalled = false
 
-    func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error> {
+    func sendTokenIfNeeded() -> AnyPublisher<Void, RemoteNotificationTokenSenderError> {
         sendTokenIfNeededPublisherCalled = true
         return sendTokenIfNeededSubject
             .eraseToAnyPublisher()

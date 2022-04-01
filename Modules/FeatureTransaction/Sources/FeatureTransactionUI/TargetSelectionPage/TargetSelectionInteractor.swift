@@ -27,7 +27,9 @@ final class TargetSelectionInteractor {
     }
 
     func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
-        BitPayInvoiceTarget.make(from: data, asset: .bitcoin)
+        BitPayInvoiceTarget
+            .make(from: data, asset: asset)
+            .asSingle()
     }
 
     func getAvailableTargetAccounts(
@@ -46,7 +48,6 @@ final class TargetSelectionInteractor {
                             sourceAccount: account,
                             action: action
                         )
-                        .asObservable()
                         .asSingle()
                 }
         case .deposit:

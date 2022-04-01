@@ -94,19 +94,13 @@ final class OpenBankingTests: XCTestCase {
 
         XCTAssertNotNil(
             network.requests[
-                .get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"
-            ]
-        )
-
-        XCTAssertNotNil(
-            network.requests[
                 .post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c/payment"
             ]
         )
 
         XCTAssertNotNil(
             network.requests[
-                .get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"
+                .get, "https://api.blockchain.info/nabu-gateway/payments/payment/b039317d-df85-413f-932d-2719346a839a"
             ]
         )
     }

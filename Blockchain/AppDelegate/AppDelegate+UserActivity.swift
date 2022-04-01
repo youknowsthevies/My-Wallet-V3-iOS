@@ -9,14 +9,23 @@ extension AppDelegate {
         continue userActivity: NSUserActivity,
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
-        let handled = DynamicLinks.dynamicLinks()
-            .handleUniversalLink(userActivity.webpageURL!) { dynamiclink, _ in
-                guard let url = dynamiclink?.url else { return }
-                app.post(
-                    event: blockchain.app.process.deep_link,
-                    context: [blockchain.app.process.deep_link.url: url]
-                )
-            }
+        let handled: Bool
+        if let webpageURL = userActivity.webpageURL {
+            handled = DynamicLinks.dynamicLinks()
+                .handleUniversalLink(webpageURL) { dynamiclink, _ in
+                    guard let url = dynamiclink?.url else { return }
+                    var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    components?.query = webpageURL.query
+                    app.post(
+                        event: blockchain.app.process.deep_link,
+                        context: [
+                            blockchain.app.process.deep_link.url: components?.url ?? webpageURL
+                        ]
+                    )
+                }
+        } else {
+            handled = false
+        }
 
         viewStore.send(.appDelegate(.userActivity(userActivity)))
 

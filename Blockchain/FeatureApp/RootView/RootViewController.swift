@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationDomain
 import FeatureDashboardUI

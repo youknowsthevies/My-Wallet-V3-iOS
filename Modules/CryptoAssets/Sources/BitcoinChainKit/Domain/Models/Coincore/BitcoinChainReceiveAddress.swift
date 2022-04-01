@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 
 public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiveAddress,
-    CryptoAssetQRMetadataProviding
+    QRCodeMetadataProvider
 {
 
     public let address: String
@@ -15,8 +15,8 @@ public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiv
     public let label: String
     public let onTxCompleted: TxCompleted
 
-    public var metadata: CryptoAssetQRMetadata {
-        bip21URI
+    public var qrCodeMetadata: QRCodeMetadata {
+        QRCodeMetadata(content: bip21URI.absoluteString, title: address)
     }
 
     public init(

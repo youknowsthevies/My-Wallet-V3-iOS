@@ -1,12 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureAuthenticationDomain
-import PlatformKit
-import RxCocoa
-import RxRelay
-import RxSwift
+import Foundation
 import ToolKit
 
 /// A service that coordinates
@@ -31,18 +27,18 @@ final class RemoteNotificationService: RemoteNotificationServicing {
     private let sharedKeyRepository: SharedKeyRepositoryAPI
     private let guidRepository: FeatureAuthenticationDomain.GuidRepositoryAPI
 
-    private let disposeBag = DisposeBag()
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Setup
 
     init(
-        authorizer: RemoteNotificationAuthorizing = resolve(),
-        notificationRelay: RemoteNotificationEmitting = resolve(),
-        backgroundReceiver: RemoteNotificationBackgroundReceiving = resolve(),
-        externalService: ExternalNotificationProviding = resolve(),
-        networkService: RemoteNotificationNetworkServicing = resolve(),
-        sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
-        guidRepository: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve()
+        authorizer: RemoteNotificationAuthorizing,
+        notificationRelay: RemoteNotificationEmitting,
+        backgroundReceiver: RemoteNotificationBackgroundReceiving,
+        externalService: ExternalNotificationProviding,
+        networkService: RemoteNotificationNetworkServicing,
+        sharedKeyRepository: SharedKeyRepositoryAPI,
+        guidRepository: FeatureAuthenticationDomain.GuidRepositoryAPI
     ) {
         self.authorizer = authorizer
         self.externalService = externalService
@@ -57,30 +53,28 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 // MARK: - RemoteNotificationTokenSending
 
 extension RemoteNotificationService: RemoteNotificationTokenSending {
-    func sendTokenIfNeeded() -> Single<Void> {
+    func sendTokenIfNeeded() -> AnyPublisher<Void, RemoteNotificationTokenSenderError> {
         authorizer.isAuthorized
-            .filter { isAuthorized in
+            .flatMap { [externalService] isAuthorized
+                -> AnyPublisher<String, RemoteNotificationTokenSenderError> in
                 guard isAuthorized else {
-                    throw ServiceError.unauthorizedRemoteNotificationsPermission
+                    return .failure(.failed)
                 }
-                return true
+                return externalService.token
+                    .replaceError(with: RemoteNotificationTokenSenderError.failed)
+                    .eraseToAnyPublisher()
             }
-            .flatMap(weak: self) { (self, _) -> Single<String> in
-                self.externalService.token
+            .flatMap { [networkService, sharedKeyRepository, guidRepository] token
+                -> AnyPublisher<Void, RemoteNotificationTokenSenderError> in
+                networkService
+                    .register(
+                        with: token,
+                        sharedKeyProvider: sharedKeyRepository,
+                        guidProvider: guidRepository
+                    )
+                    .replaceError(with: RemoteNotificationTokenSenderError.failed)
+                    .eraseToAnyPublisher()
             }
-            .flatMap(weak: self) { (self, token) -> Single<Void> in
-                self.networkService.register(
-                    with: token,
-                    sharedKeyProvider: self.sharedKeyRepository,
-                    guidProvider: self.guidRepository
-                )
-            }
-    }
-
-    func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error> {
-        sendTokenIfNeeded()
-            .asCompletable()
-            .asPublisher()
             .eraseToAnyPublisher()
     }
 }
@@ -100,11 +94,7 @@ extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
 
         // Send the token
         sendTokenIfNeeded()
-            .subscribe(
-                onFailure: { error in
-                    Logger.shared.error("Remote notification token could not be sent to the backend. received error: \(error)")
-                }
-            )
-            .disposed(by: disposeBag)
+            .subscribe()
+            .store(in: &cancellables)
     }
 }

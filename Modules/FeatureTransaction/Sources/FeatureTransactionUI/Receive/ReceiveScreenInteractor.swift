@@ -8,7 +8,7 @@ import RxSwift
 final class ReceiveScreenInteractor {
 
     struct State {
-        let metadata: CryptoAssetQRMetadata
+        let qrCodeMetadata: QRCodeMetadata
         let domainNames: [String]
         let memo: String?
     }
@@ -23,15 +23,15 @@ final class ReceiveScreenInteractor {
             .flatMap { [resolutionService] receiveAddress -> Single<(ReceiveAddress, [String])> in
                 resolutionService
                     .reverseResolve(address: receiveAddress.address)
-                    .asSingle()
                     .map { (receiveAddress, $0) }
+                    .asSingle()
             }
             .map { address, domainNames -> State in
-                guard let metadataProvider = address as? CryptoAssetQRMetadataProviding else {
+                guard let metadataProvider = address as? QRCodeMetadataProvider else {
                     throw ReceiveAddressError.notSupported
                 }
                 return State(
-                    metadata: metadataProvider.metadata,
+                    qrCodeMetadata: metadataProvider.qrCodeMetadata,
                     domainNames: domainNames,
                     memo: address.memo
                 )

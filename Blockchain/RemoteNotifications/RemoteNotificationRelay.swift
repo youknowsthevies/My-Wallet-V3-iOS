@@ -1,12 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FirebaseMessaging
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
-import RxRelay
-import RxSwift
 import ToolKit
 import UserNotifications
 
@@ -15,7 +14,7 @@ final class RemoteNotificationRelay: NSObject {
 
     // MARK: - Properties
 
-    private let relay = PublishRelay<RemoteNotification.NotificationType>()
+    private let relay = PassthroughSubject<RemoteNotification.NotificationType, RemoteNotificationEmitterError>()
 
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let messagingService: FirebaseCloudMessagingServiceAPI
@@ -39,8 +38,11 @@ final class RemoteNotificationRelay: NSObject {
 // MARK: - RemoteNotificationEmitting
 
 extension RemoteNotificationRelay: RemoteNotificationEmitting {
-    var notification: Observable<RemoteNotification.NotificationType> {
-        relay.asObservable()
+    var notification: AnyPublisher<
+        RemoteNotification.NotificationType,
+        RemoteNotificationEmitterError
+    > {
+        relay.eraseToAnyPublisher()
     }
 }
 

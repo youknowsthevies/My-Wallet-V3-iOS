@@ -1,8 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import JavaScriptCore
-import RxSwift
-import RxTest
+import TestKit
 import ToolKit
 import ToolKitMock
 @testable import WalletPayloadKit
@@ -10,19 +9,16 @@ import XCTest
 
 class WalletUpgradeJSServiceTests: XCTestCase {
 
-    var scheduler: TestScheduler!
     var contextProvider: MockContextProvider!
     var sut: WalletUpgradeJSServicing!
 
     override func setUp() {
         super.setUp()
-        scheduler = TestScheduler(initialClock: 0)
         contextProvider = MockContextProvider()
-        sut = WalletUpgradeJSService(contextProvider: contextProvider, scheduler: scheduler)
+        sut = WalletUpgradeJSService(contextProvider: contextProvider, queue: .main)
     }
 
     override func tearDown() {
-        scheduler = nil
         sut = nil
         contextProvider = nil
         super.tearDown()
@@ -76,81 +72,38 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         // Arrange
         contextProvider.underlyingContext = newContext(script: successScript)
         let expectedString = "V3"
-        let upgradeObservable = sut.upgradeToV3().asObservable()
+        let publisher = sut.upgradeToV3()
 
-        // Act
-        let result: TestableObserver<String> = scheduler
-            .start { upgradeObservable }
-
-        // Assert
-        let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
-            .next(
-                201,
-                expectedString
-            ),
-            .completed(201)
-        )
-        XCTAssertEqual(result.events, expectedEvents)
+        // Act + Assert
+        XCTAssertPublisherValues(publisher, [expectedString])
     }
 
     func testSuccessIsInvokedOnlyOnce() {
         // Arrange
         contextProvider.underlyingContext = newContext(script: multipleSuccessScript)
         let expectedString = "V3"
-        let upgradeObservable = sut.upgradeToV3().asObservable()
+        let publisher = sut.upgradeToV3()
 
-        // Act
-        let result: TestableObserver<String> = scheduler
-            .start { upgradeObservable }
-
-        // Assert
-        let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
-            .next(
-                201,
-                expectedString
-            ),
-            .completed(201)
-        )
-        XCTAssertEqual(result.events, expectedEvents)
+        // Act + Assert
+        XCTAssertPublisherValues(publisher, [expectedString])
     }
 
     func testCompletesAfterFirstSuccess() {
         // Arrange
         contextProvider.underlyingContext = newContext(script: successErrorScript)
         let expectedString = "V3"
-        let upgradeObservable = sut.upgradeToV3().asObservable()
+        let upgradePublisher = sut.upgradeToV3()
 
-        // Act
-        let result: TestableObserver<String> = scheduler
-            .start { upgradeObservable }
-
-        // Assert
-        let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
-            .next(
-                201,
-                expectedString
-            ),
-            .completed(201)
-        )
-        XCTAssertEqual(result.events, expectedEvents)
+        // Act + Assert
+        XCTAssertPublisherValues(upgradePublisher, [expectedString])
     }
 
     func testError() {
         // Arrange
         contextProvider.underlyingContext = newContext(script: failureScript)
-        let upgradeObservable = sut.upgradeToV3().asObservable()
+        let upgradePublisher = sut.upgradeToV3()
 
-        // Act
-        let result: TestableObserver<String> = scheduler
-            .start { upgradeObservable }
-
-        // Assert
-        let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
-            .error(
-                201,
-                WalletUpgradeJSError.failedV3Upgrade
-            )
-        )
-        XCTAssertEqual(result.events, expectedEvents)
+        // Act + Assert
+        XCTAssertPublisherError(upgradePublisher, WalletUpgradeJSError.failedV3Upgrade)
     }
 }

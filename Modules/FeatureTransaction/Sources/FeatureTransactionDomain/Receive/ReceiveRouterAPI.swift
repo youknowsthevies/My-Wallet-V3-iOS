@@ -6,5 +6,5 @@ import PlatformKit
 public protocol ReceiveRouterAPI: AnyObject {
     func presentReceiveScreen(for account: BlockchainAccount)
     func presentKYCScreen()
-    func shareDetails(for metadata: CryptoAssetQRMetadata, currencyType: CurrencyType)
+    func shareDetails(for metadata: QRCodeMetadata, currencyType: CurrencyType)
 }

@@ -7,7 +7,7 @@ import NabuNetworkError
 
 protocol CardClientAPI {
 
-    func orderCard(with parameters: OrderCardParameters) -> AnyPublisher<[Card], NabuNetworkError>
+    func orderCard(with parameters: OrderCardParameters) -> AnyPublisher<Card, NabuNetworkError>
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError>
 
@@ -34,4 +34,5 @@ protocol CardClientAPI {
 struct OrderCardParameters: Encodable {
     let productCode: String
     let deliveryAddress: Card.Address
+    let ssn: String
 }

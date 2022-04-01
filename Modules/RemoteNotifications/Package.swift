@@ -21,14 +21,8 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
-        .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
-        ),
         .package(path: "../Analytics"),
         .package(path: "../Network"),
-        .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../FeatureAuthentication")
     ],
@@ -38,11 +32,6 @@ let package = Package(
             dependencies: [
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "PlatformUIKit", package: "Platform"),
-                .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxRelay", package: "RxSwift"),
-                .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication")
             ]
@@ -63,9 +52,7 @@ let package = Package(
                 .target(name: "RemoteNotificationsKit"),
                 .target(name: "RemoteNotificationsKitMock"),
                 .product(name: "AnalyticsKitMock", package: "Analytics"),
-                .product(name: "NetworkKitMock", package: "Network"),
-                .product(name: "RxBlocking", package: "RxSwift"),
-                .product(name: "RxSwift", package: "RxSwift")
+                .product(name: "NetworkKitMock", package: "Network")
             ]
         )
     ]
