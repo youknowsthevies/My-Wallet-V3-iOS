@@ -73,37 +73,6 @@ workflows:
       APPCENTER_DISTRIBUTE_RELEASE_NOTES: internal-production-builds
     before_run:
     - prepare_for_build
-  mock-generation:
-    steps:
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=./scripts/install-mockingbird.sh
-            if [ -f "$FILE" ]; then
-                sh "$FILE"
-            fi
-        title: Install Mockingbird
-    - script@1:
-        title: Install Mocks
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            FILE=./scripts/install-mocks.sh
-            if [ -f "$FILE" ]; then
-                sh "$FILE"
-            fi
-    before_run: []
   prepare_for_build:
     steps:
     - activate-ssh-key@4:
@@ -322,7 +291,6 @@ workflows:
         - is_compress: 'true'
     before_run:
     - prepare_for_build
-    - mock-generation
   staging-and-alpha-builds:
     steps:
     - script@1:
