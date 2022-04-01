@@ -40,11 +40,11 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
     // MARK: - Methods
 
     func subscribe(
-        to topic: String
+        to topic: RemoteNotification.Topic
     ) -> AnyPublisher<Void, ExternalNotificationProviderError> {
         Deferred { [messagingService] in
             Future { [messagingService] promise in
-                messagingService.subscribe(toTopic: topic) { error in
+                messagingService.subscribe(toTopic: topic.rawValue) { error in
                     if let error = error {
                         promise(.failure(.system(error)))
                     } else {

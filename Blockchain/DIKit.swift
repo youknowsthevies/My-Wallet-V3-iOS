@@ -32,6 +32,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseMessaging
 import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
@@ -360,6 +361,7 @@ extension DependencyContainer {
 
         single {
             AppFeatureConfigurator(
+                cacheSuite: DIKit.resolve(),
                 remoteConfig: RemoteConfig.remoteConfig()
             )
         }
@@ -478,7 +480,14 @@ extension DependencyContainer {
             return relay as RemoteNotificationBackgroundReceiving
         }
 
-        single { RemoteNotificationRelay() }
+        single {
+            RemoteNotificationRelay(
+                cacheSuite: DIKit.resolve(),
+                userNotificationCenter: UNUserNotificationCenter.current(),
+                messagingService: Messaging.messaging(),
+                secureChannelNotificationRelay: DIKit.resolve()
+            )
+        }
 
         // MARK: Helpers
 

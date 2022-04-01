@@ -8,12 +8,14 @@ extension Session {
 
     public class RemoteConfiguration {
 
+        enum RemoteConfigConstants {
+            static let cacheSuiteKey: String = "FIREBASE_REMOTE_CONFIG_STALE"
+        }
+
         public var isSynchronized: Bool { _isSynchronized.value }
         private let _isSynchronized: CurrentValueSubject<Bool, Never> = .init(false)
 
         public var allKeys: [String] { Array(fetched.keys) }
-
-        internal let expiration: TimeInterval
 
         private var fetched: [String: Any] {
             get { _fetched.value }
@@ -21,14 +23,14 @@ extension Session {
         }
 
         private var _fetched: CurrentValueSubject<[String: Any], Never> = .init([:])
+        private let preferences: UserDefaults
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
             default defaultValue: [Tag.Reference: Any] = [:],
-            expiration: TimeInterval = TimeInterval(1 * 60 * 60)
+            preferences: UserDefaults = .standard
         ) {
-            self.expiration = expiration
-
+            self.preferences = preferences
             Task {
                 var configuration: [String: Any] = defaultValue.mapKeys { key in
                     key.idToFirebaseConfigurationKeyDefault()
@@ -58,6 +60,7 @@ extension Session {
 
                 _fetched.send(configuration)
                 _isSynchronized.send(true)
+                clearIsStale()
             }
         }
 
@@ -101,6 +104,34 @@ extension Session {
                     }
                 }
                 .eraseToAnyPublisher()
+        }
+
+        /// The expiration time interval to be used.
+        private var expiration: TimeInterval {
+            if isStale {
+                return 0
+            } else if isDebug {
+                return 30 // 30 seconds
+            }
+            return 3600 // 1 hour
+        }
+
+        /// Flag indicating if RemoteConfig is set as Stale.
+        private var isStale: Bool {
+            preferences.bool(forKey: RemoteConfigConstants.cacheSuiteKey)
+        }
+
+        /// Determines if the app has the `DEBUG` build flag.
+        private var isDebug: Bool {
+            #if DEBUG
+            return true
+            #else
+            return false
+            #endif
+        }
+
+        private func clearIsStale() {
+            preferences.set(false, forKey: RemoteConfigConstants.cacheSuiteKey)
         }
     }
 }

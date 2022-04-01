@@ -95,11 +95,11 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
             shouldSubscribeToTopicsSuccessfully: true
         )
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        let topic = RemoteNotification.Topic.todo
+        let topic = RemoteNotification.Topic.remoteConfig
         let registerExpectation = expectation(
             description: "Service registered token."
         )
-        provider.subscribe(to: topic.rawValue)
+        provider.subscribe(to: topic)
             .sink(
                 receiveCompletion: { completion in
                     switch completion {
@@ -129,12 +129,12 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
             shouldSubscribeToTopicsSuccessfully: false
         )
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        let topic = RemoteNotification.Topic.todo
+        let topic = RemoteNotification.Topic.remoteConfig
 
         let registerExpectation = expectation(
             description: "Service registered token."
         )
-        provider.subscribe(to: topic.rawValue)
+        provider.subscribe(to: topic)
             .sink(
                 receiveCompletion: { completion in
                     switch completion {

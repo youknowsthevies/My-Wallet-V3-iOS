@@ -10,7 +10,7 @@ final class MockExternalNotificationServiceProvider: ExternalNotificationProvidi
         expectedTokenResult.publisher.eraseToAnyPublisher()
     }
 
-    private(set) var topics: [String] = []
+    private(set) var topics: [RemoteNotification.Topic] = []
 
     private let expectedTokenResult: Result<String, RemoteNotification.TokenFetchError>
     private let expectedTopicSubscriptionResult: Result<Void, ExternalNotificationProviderError>
@@ -26,7 +26,7 @@ final class MockExternalNotificationServiceProvider: ExternalNotificationProvidi
     func didReceiveNewApnsToken(token: Data) {}
 
     func subscribe(
-        to topic: String
+        to topic: RemoteNotification.Topic
     ) -> AnyPublisher<Void, ExternalNotificationProviderError> {
         switch expectedTopicSubscriptionResult {
         case .success:

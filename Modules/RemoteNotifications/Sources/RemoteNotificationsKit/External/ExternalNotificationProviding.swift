@@ -19,6 +19,6 @@ public protocol ExternalNotificationProviding: AnyObject {
     /// - Parameter topic: the topic that the client should subscribe to.
     /// - Returns: A publisher acknowledges the subscription.
     func subscribe(
-        to topic: String
+        to topic: RemoteNotification.Topic
     ) -> AnyPublisher<Void, ExternalNotificationProviderError>
 }

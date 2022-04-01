@@ -96,5 +96,10 @@ extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
         sendTokenIfNeeded()
             .subscribe()
             .store(in: &cancellables)
+
+        externalService
+            .subscribe(to: .remoteConfig)
+            .subscribe()
+            .store(in: &cancellables)
     }
 }

@@ -50,8 +50,10 @@ final class RemoteNotificationServiceTests: XCTestCase {
             options: [.alert, .badge, .sound]
         )
         let relay = RemoteNotificationRelay(
+            cacheSuite: resolve(),
             userNotificationCenter: userNotificationCenter,
-            messagingService: messagingService
+            messagingService: messagingService,
+            secureChannelNotificationRelay: resolve()
         )
         let externalServiceProvider = ExternalNotificationServiceProvider(messagingService: messagingService)
         let networkService = RemoteNotificationNetworkService(

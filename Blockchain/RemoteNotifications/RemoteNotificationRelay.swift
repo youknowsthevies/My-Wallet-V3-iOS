@@ -16,6 +16,7 @@ final class RemoteNotificationRelay: NSObject {
 
     private let relay = PassthroughSubject<RemoteNotification.NotificationType, RemoteNotificationEmitterError>()
 
+    private let cacheSuite: CacheSuite
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let messagingService: FirebaseCloudMessagingServiceAPI
     private let secureChannelNotificationRelay: SecureChannelNotificationRelaying
@@ -23,10 +24,12 @@ final class RemoteNotificationRelay: NSObject {
     // MARK: - Setup
 
     init(
-        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-        messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
-        secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()
+        cacheSuite: CacheSuite,
+        userNotificationCenter: UNUserNotificationCenterAPI,
+        messagingService: FirebaseCloudMessagingServiceAPI,
+        secureChannelNotificationRelay: SecureChannelNotificationRelaying
     ) {
+        self.cacheSuite = cacheSuite
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService
         self.secureChannelNotificationRelay = secureChannelNotificationRelay
@@ -47,24 +50,35 @@ extension RemoteNotificationRelay: RemoteNotificationEmitting {
 }
 
 extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
+
     func didReceiveRemoteNotification(
         _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        let result = secureChannelNotificationRelay.didReceiveRemoteNotification(
+        let secureChannelResult = secureChannelNotificationRelay.didReceiveRemoteNotification(
             userInfo,
             onApplicationState: applicationState,
             fetchCompletionHandler: completionHandler
         )
-        switch result {
-        case true:
+        guard !secureChannelResult else {
             // SecureChannelNotificationRelaying reacted to the given input.
             return
-        case false:
-            // SecureChannelNotificationRelaying did not react to the given input.
-            completionHandler(.noData)
         }
+        // SecureChannelNotificationRelaying did not react to the given input.
+
+        updateRemoteConfigState(userInfo: userInfo)
+        completionHandler(.noData)
+    }
+
+    private func updateRemoteConfigState(userInfo: [AnyHashable: Any]) {
+        guard let value = userInfo[RemoteConfigConstants.notificationKey] as? String else {
+            return
+        }
+        guard value == RemoteConfigConstants.notificationValue else {
+            return
+        }
+        cacheSuite.set(true, forKey: RemoteConfigConstants.cacheSuiteKey)
     }
 }
 
