@@ -54,6 +54,14 @@ public enum OnboardingChecklist {
             pendingItems = []
             completedItems = []
         }
+
+        func hasCompleted(_ item: Item) -> Bool {
+            completedItems.contains(item)
+        }
+
+        var firstIncompleteItem: Item? {
+            items.first { !hasCompleted($0) }
+        }
     }
 
     public enum ItemSelectionSource {
@@ -148,7 +156,7 @@ public enum OnboardingChecklist {
 
         case .userStateDidChange(let userState):
             state.completedItems = userState.completedOnboardingChecklistItems
-            state.pendingItems = userState.kycStatus == .pending ? [.verifyIdentity] : []
+            state.pendingItems = userState.kycStatus == .verificationPending ? [.verifyIdentity] : []
             return .none
         }
     }
@@ -321,7 +329,7 @@ extension UserState {
 
     fileprivate var completedOnboardingChecklistItems: Set<OnboardingChecklist.Item> {
         var result = Set<OnboardingChecklist.Item>()
-        if kycStatus == .complete {
+        if kycStatus.canBuyCrypto {
             result.insert(.verifyIdentity)
         }
         if hasLinkedPaymentMethods {

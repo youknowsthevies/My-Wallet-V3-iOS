@@ -19,8 +19,8 @@ protocol EnterAmountPageRouting: AnyObject {
 
 protocol EnterAmountPageListener: AnyObject {
     func enterAmountDidTapBack()
+    func enterAmountDidTapAuxiliaryButton()
     func closeFlow()
-    func continueToKYCTiersScreen()
     func showGenericFailure(error: Error)
 }
 
@@ -126,8 +126,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .subscribe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onNext: { [listener] in
-                    // TODO: make this generic
-                    listener?.continueToKYCTiersScreen()
+                    listener?.enterAmountDidTapAuxiliaryButton()
                 }
             )
             .disposeOnDeactivate(interactor: self)
@@ -591,12 +590,7 @@ extension TransactionState {
     ) -> AmountInteractorState {
         let message: AmountInteractorState.MessageState
         if let maxTransactionsCount = maxTransactionsCount {
-            // NOTE: This will be localized as part of IOS-6495
-            if maxTransactionsCount == 1 {
-                message = .info(message: "1 Transaction Allowed, Verify Now ->")
-            } else {
-                message = .info(message: "\(maxTransactionsCount) Transactions Allowed, Verify Now ->")
-            }
+            message = .info(message: LocalizedString.Notices.maxTransactionsLimited(to: maxTransactionsCount))
         } else {
             message = .none
         }

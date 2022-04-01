@@ -30,12 +30,17 @@ extension FeatureOnboardingUI.UserState.KYCStatus {
 
     init(_ kycStatus: FeatureAppDomain.UserState.KYCStatus) {
         switch kycStatus {
-        case .unverified, .silver:
-            self = .incomplete
-        case .gold, .silverPlus:
-            self = .complete
+        case .unverified:
+            self = .notVerified
+        case .silver:
+            // Users cannot buy, so consider them as unverified
+            self = .notVerified
+        case .silverPlus:
+            self = .partiallyVerified
+        case .gold:
+            self = .verified
         case .inReview:
-            self = .pending
+            self = .verificationPending
         }
     }
 }

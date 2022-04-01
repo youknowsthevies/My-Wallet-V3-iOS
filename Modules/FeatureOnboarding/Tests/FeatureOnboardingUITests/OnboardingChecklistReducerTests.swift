@@ -237,7 +237,7 @@ extension UserState {
 
     static var initialState: UserState {
         UserState(
-            kycStatus: .incomplete,
+            kycStatus: .notVerified,
             hasLinkedPaymentMethods: false,
             hasEverPurchasedCrypto: false
         )
@@ -245,7 +245,7 @@ extension UserState {
 
     static var kycComplete: UserState {
         UserState(
-            kycStatus: .complete,
+            kycStatus: .verified,
             hasLinkedPaymentMethods: false,
             hasEverPurchasedCrypto: false
         )
@@ -253,7 +253,7 @@ extension UserState {
 
     static var paymentMethodsLinked: UserState {
         UserState(
-            kycStatus: .complete,
+            kycStatus: .verified,
             hasLinkedPaymentMethods: true,
             hasEverPurchasedCrypto: false
         )
@@ -261,7 +261,7 @@ extension UserState {
 
     static var complete: UserState {
         UserState(
-            kycStatus: .complete,
+            kycStatus: .verified,
             hasLinkedPaymentMethods: true,
             hasEverPurchasedCrypto: true
         )

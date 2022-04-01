@@ -116,6 +116,9 @@ protocol TransactionFlowRouting: Routing {
     ///  - completion: A closure that is called with `true` if the user completed the KYC flow to move to the next tier.
     func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void)
 
+    /// Shows a bottom sheet to ask the user to upgrade to a higher KYC tier
+    func showVerifyToUnlockMoreTransactionsPrompt(action: AssetAction)
+
     /// Presentes a new transaction flow on top of the current one
     func presentNewTransactionFlow(
         to action: TransactionFlowAction,
@@ -338,8 +341,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel.process(action: .targetAccountSelected(target))
     }
 
-    func continueToKYCTiersScreen() {
-        presentKYCUpgradePrompt()
+    func enterAmountDidTapAuxiliaryButton() {
+        router?.showVerifyToUnlockMoreTransactionsPrompt(action: action)
     }
 
     func showGenericFailure(error: Error) {

@@ -47,11 +47,7 @@ struct AccountUsageView_Previews: PreviewProvider {
             store: .init(
                 initialState: AccountUsage.State.loading,
                 reducer: AccountUsage.reducer,
-                environment: AccountUsage.Environment(
-                    onComplete: {},
-                    loadForm: { .empty() },
-                    submitForm: { _ in .empty() }
-                )
+                environment: .preview
             )
         )
         .previewDisplayName("Account Usage View - loading")
@@ -64,11 +60,7 @@ struct AccountUsageView_Previews: PreviewProvider {
                     )
                 ),
                 reducer: AccountUsage.reducer,
-                environment: AccountUsage.Environment(
-                    onComplete: {},
-                    loadForm: { .empty() },
-                    submitForm: { _ in .empty() }
-                )
+                environment: .preview
             )
         )
         .previewDisplayName("Account Usage View - success")
@@ -88,11 +80,7 @@ struct AccountUsageView_Previews: PreviewProvider {
                     )
                 ),
                 reducer: AccountUsage.reducer,
-                environment: AccountUsage.Environment(
-                    onComplete: {},
-                    loadForm: { .empty() },
-                    submitForm: { _ in .empty() }
-                )
+                environment: .preview
             )
         )
         .previewDisplayName("Account Usage View - failure")

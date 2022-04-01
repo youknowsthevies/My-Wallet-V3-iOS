@@ -29,25 +29,31 @@ extension Reducer where State == OnboardingChecklist.State,
                     }
 
                 case .dismissFullScreenChecklist:
-                    let completedItems = state.completedItems
+                    guard let firstPendingStep = state.firstPendingStep else {
+                        return .none
+                    }
                     return .fireAndForget {
                         environment.analyticsRecorder.record(
-                            event: AnalyticsEvent.peeksheetDismissed(currentStepCompleted: completedItems.count)
+                            event: AnalyticsEvent.peeksheetDismissed(currentStepCompleted: firstPendingStep)
                         )
                     }
 
                 case .presentFullScreenChecklist:
-                    let completedItems = state.completedItems
+                    guard let firstPendingStep = state.firstPendingStep else {
+                        return .none
+                    }
                     return .merge(
                         .fireAndForget {
                             environment.analyticsRecorder.record(
-                                event: AnalyticsEvent.peeksheetViewed(currentStepCompleted: completedItems.count)
+                                event: AnalyticsEvent.peeksheetViewed(
+                                    currentStepCompleted: firstPendingStep
+                                )
                             )
                         },
                         .fireAndForget {
                             environment.analyticsRecorder.record(
                                 event: AnalyticsEvent.peeksheetProcessClicked(
-                                    currentStepCompleted: completedItems.count
+                                    currentStepCompleted: firstPendingStep
                                 )
                             )
                         }
@@ -58,5 +64,18 @@ extension Reducer where State == OnboardingChecklist.State,
                 }
             }
         )
+    }
+}
+
+extension OnboardingChecklist.State {
+
+    fileprivate var firstPendingStep: AnalyticsEvent.PendingStep? {
+        guard let firstIncompleteItem = firstIncompleteItem else {
+            return nil
+        }
+        guard let firstPendingStep = AnalyticsEvent.PendingStep(firstIncompleteItem.id) else {
+            return nil
+        }
+        return firstPendingStep
     }
 }
