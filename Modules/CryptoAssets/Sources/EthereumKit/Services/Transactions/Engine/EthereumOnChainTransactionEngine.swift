@@ -35,7 +35,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Private Properties
 
-    private let hotWalletAddressService: HotWalletAddressServiceAPI
+    private let ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI
     private let receiveAddressFactory: ExternalAssetAddressServiceAPI
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumFeeServiceAPI
@@ -48,33 +48,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount as! EthereumCryptoAccount
     }
 
-    /// The current transactionTarget receive address.
-    private var receiveAddress: Single<ReceiveAddress> {
-        switch transactionTarget {
-        case let target as ReceiveAddress:
-            return .just(target)
-        case let target as CryptoAccount:
-            return target.receiveAddress
-        case let target as HotWalletTransactionTarget:
-            return .just(target.hotWalletAddress)
-        default:
-            fatalError(
-                "Impossible State \(type(of: self)): transactionTarget is \(type(of: transactionTarget))"
-            )
-        }
-    }
-
-    /// The current transactionTarget address reference.
-    /// If we are not sending directly to a HotWalletTransactionTarget, then this will emit 'nil'.
-    private var addressReference: Single<ReceiveAddress?> {
-        switch transactionTarget {
-        case let target as HotWalletTransactionTarget:
-            return .just(target.realAddress)
-        default:
-            return .just(nil)
-        }
-    }
-
     // MARK: - Init
 
     init(
@@ -83,7 +56,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
         ethereumAccountService: EthereumAccountServiceAPI = resolve(),
-        hotWalletAddressService: HotWalletAddressServiceAPI = resolve(),
+        ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
         pendingTransactionRepository: PendingTransactionRepositoryAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
@@ -97,7 +70,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionBuildingService = transactionBuildingService
         self.pendingTransactionRepository = pendingTransactionRepository
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
-        self.hotWalletAddressService = hotWalletAddressService
+        self.ethereumOnChainEngineCompanion = ethereumOnChainEngineCompanion
         self.receiveAddressFactory = receiveAddressFactory
         feeCache = CachedValue(
             configuration: .periodic(
@@ -219,8 +192,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             sourceAccount.actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
-        .map { values -> PendingTransaction in
-            let (actionableBalance, fee) = values
+        .map { actionableBalance, fee -> PendingTransaction in
             let available = try actionableBalance - fee.moneyValue
             let zero: MoneyValue = .zero(currency: actionableBalance.currency)
             let max: MoneyValue = try .max(available, zero)
@@ -273,21 +245,42 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
             fatalError("Not an ethereum value.")
         }
-
+        let ethereumCryptoAccount = ethereumCryptoAccount
+        let transactionBuildingService = transactionBuildingService
+        let destinationAddresses = ethereumOnChainEngineCompanion
+            .destinationAddresses(
+                transactionTarget: transactionTarget,
+                cryptoCurrency: sourceCryptoCurrency,
+                receiveAddressFactory: receiveAddressFactory
+            )
+        let extraGasLimit = ethereumOnChainEngineCompanion
+            .extraGasLimit(
+                transactionTarget: transactionTarget,
+                cryptoCurrency: sourceCryptoCurrency,
+                receiveAddressFactory: receiveAddressFactory
+            )
         return Single
             .zip(
                 feeCache.valueSingle,
-                destinationAddresses
+                destinationAddresses,
+                receiveAddressIsContract,
+                extraGasLimit
             )
-            .flatMap { [ethereumCryptoAccount, transactionBuildingService] fee, destinationAddresses -> Single<EthereumTransactionCandidate> in
+            .flatMap { fee, destinationAddresses, isContract, extraGasLimit
+                -> Single<EthereumTransactionCandidate> in
                 ethereumCryptoAccount.nonce
                     .flatMap { nonce in
                         transactionBuildingService.buildTransaction(
                             amount: pendingTransaction.amount,
                             to: destinationAddresses.destination,
                             addressReference: destinationAddresses.referenceAddress,
-                            feeLevel: pendingTransaction.feeLevel,
-                            fee: fee,
+                            gasPrice: fee.gasPrice(
+                                feeLevel: pendingTransaction.feeLevel.ethereumFeeLevel
+                            ),
+                            gasLimit: fee.gasLimit(
+                                extraGasLimit: extraGasLimit,
+                                isContract: isContract
+                            ),
                             nonce: nonce,
                             chainID: ethereumCryptoAccount.network.chainID,
                             contractAddress: nil
@@ -313,111 +306,22 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 }
 
 extension EthereumOnChainTransactionEngine {
-    /**
-     Ethereum Destination addresses.
 
-     - Returns: Single that emits a tuple with the destination address (`destination`) and the reference address
-     (`referenceAddress`) for the current `transactionTarget`.
-
-     When sending a transaction to one of Blockchain's custodial products, we check if a hot wallet address for that product
-     is available. If that is not available, reference address is null and the transaction happens as it normally would. If it is available,
-     we will send the fund directly to the hot wallet address, and pass along the original address (real address) as the
-     reference address, that will be added to the transaction data field or as a the third parameter of the overloaded transfer method.
-     You can check how this works and the reasons for its implementation here:
-     https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
-     */
-    private var destinationAddresses: Single<(destination: EthereumAddress, referenceAddress: EthereumAddress?)> {
-        let receiveAddresses: Single<(destination: ReceiveAddress, referenceAddress: ReceiveAddress?)>
-        switch transactionTarget {
-        case let blockchainAccount as BlockchainAccount:
-            receiveAddresses = createDestinationAddress(for: blockchainAccount)
-        default:
-            receiveAddresses = Single.zip(receiveAddress, addressReference)
-                .map { (to: $0.0, reference: $0.1) }
-        }
-
-        return receiveAddresses
-            .map { addresses -> (destination: EthereumAddress, referenceAddress: EthereumAddress?) in
-                let destination = try EthereumAddress(string: addresses.destination.address)
-                guard let referenceAddress = addresses.referenceAddress else {
-                    return (destination, nil)
-                }
-                return (destination, try EthereumAddress(string: referenceAddress.address))
-            }
-    }
-
-    /**
-     Hot Wallet Receive Address.
-
-     - Returns: Single that emits the hot wallet receive address for the given `product` and for the current `sourceCryptoCurrency`.
-
-     When sending a transaction to one of Blockchain's custodial products, we check if a hot wallet address for that product
-     is available. If that is not available, reference address is null and the transaction happens as it normally would. If it is available,
-     we will send the fund directly to the hot wallet address, and pass along the original address (real address) as the
-     reference address, that will be added to the transaction data field or as a the third parameter of the overloaded transfer method.
-     You can check how this works and the reasons for its implementation here:
-     https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
-     */
-    private func hotWalletReceiveAddress(for product: HotWalletProduct) -> Single<CryptoReceiveAddress?> {
-        hotWalletAddressService
-            .hotWalletAddress(for: sourceCryptoCurrency, product: product)
-            .asSingle()
-            .flatMap { [sourceCryptoCurrency, receiveAddressFactory] hotWalletAddress -> Single<CryptoReceiveAddress?> in
-                guard let hotWalletAddress = hotWalletAddress else {
-                    return .just(nil)
-                }
-                return receiveAddressFactory.makeExternalAssetAddress(
-                    asset: sourceCryptoCurrency,
-                    address: hotWalletAddress,
-                    label: hotWalletAddress,
-                    onTxCompleted: { _ in .empty() }
-                )
-                .single
-                .optional()
-            }
-    }
-
-    /**
-     Destination addresses for a BlockchainAccount.
-     If we are sending to a Custodial Account (Trading, Exchange, Interest), we must generate the 'addressReference' ourselves.
-
-     - Returns: Single that emits a tuple with the destination address (`destination`) and the reference address
-     (`referenceAddress`) for the given `BlockchainAccount`.
-
-     When sending a transaction to one of Blockchain's custodial products, we check if a hot wallet address for that product
-     is available. If that is not available, reference address is null and the transaction happens as it normally would. If it is available,
-     we will send the fund directly to the hot wallet address, and pass along the original address (real address) as the
-     reference address, that will be added to the transaction data field or as a the third parameter of the overloaded transfer method.
-     You can check how this works and the reasons for its implementation here:
-     https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
-     */
-    private func createDestinationAddress(
-        for blockchainAccount: BlockchainAccount
-    ) -> Single<(destination: ReceiveAddress, referenceAddress: ReceiveAddress?)> {
-        let product: HotWalletProduct
-        switch blockchainAccount {
-        case is CryptoTradingAccount:
-            product = .trading
-        case is InterestAccount:
-            product = .rewards
-        case is ExchangeAccount:
-            product = .exchange
-        default:
-            return Single.zip(receiveAddress, addressReference)
-                .map { receiveAddress, addressReference in
-                    (destination: receiveAddress, referenceAddress: addressReference)
-                }
-        }
-        return Single
-            .zip(
-                blockchainAccount.receiveAddress,
-                hotWalletReceiveAddress(for: product)
-            )
-            .map { receiveAddress, hotWalletAddress in
-                guard let hotWalletAddress = hotWalletAddress else {
-                    return (destination: receiveAddress, referenceAddress: nil)
-                }
-                return (destination: hotWalletAddress, referenceAddress: receiveAddress)
+    /// Returns Ethereum CryptoValue of the maximum fee that the user may pay.
+    private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
+        Single
+            .zip(feeCache.valueSingle, receiveAddressIsContract)
+            .flatMap(weak: self) { (self, values) -> Single<CryptoValue> in
+                let (fees, isContract) = values
+                return self.ethereumOnChainEngineCompanion
+                    .absoluteFee(
+                        feeLevel: feeLevel,
+                        fees: fees,
+                        transactionTarget: self.transactionTarget,
+                        cryptoCurrency: self.sourceCryptoCurrency,
+                        receiveAddressFactory: self.receiveAddressFactory,
+                        isContract: isContract
+                    )
             }
     }
 
@@ -462,9 +366,11 @@ extension EthereumOnChainTransactionEngine {
             .asCompletable()
     }
 
-    private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
+    /// Returns true if the destination address is a contract.
+    private var receiveAddressIsContract: Single<Bool> {
         let network = ethereumCryptoAccount.network
-        let isContract = receiveAddress
+        return ethereumOnChainEngineCompanion
+            .receiveAddress(transactionTarget: transactionTarget)
             .flatMap { [ethereumAccountService] receiveAddress in
                 ethereumAccountService
                     .isContract(
@@ -472,23 +378,6 @@ extension EthereumOnChainTransactionEngine {
                         address: receiveAddress.address
                     )
                     .asSingle()
-            }
-
-        return Single
-            .zip(feeCache.valueSingle, isContract)
-            .map { (fees: EthereumTransactionFee, isContract: Bool) -> CryptoValue in
-                let level: EthereumTransactionFee.FeeLevel
-                switch feeLevel {
-                case .none:
-                    fatalError("On chain ETH transactions should never have a 0 fee")
-                case .custom:
-                    fatalError("Not supported")
-                case .priority:
-                    level = .priority
-                case .regular:
-                    level = .regular
-                }
-                return fees.absoluteFee(with: level, isContract: isContract)
             }
     }
 
