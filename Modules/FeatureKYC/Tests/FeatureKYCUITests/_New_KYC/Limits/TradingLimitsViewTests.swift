@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 @testable import FeatureKYCUI
@@ -183,6 +184,7 @@ final class TradingLimitsViewTests: XCTestCase {
                     }
                     return .failure(KYCTierServiceError.other(MockError.unknown))
                 },
+                analyticsRecorder: MockAnalyticsRecorder(),
                 mainQueue: testScheduler.eraseToAnyScheduler()
             )
         )

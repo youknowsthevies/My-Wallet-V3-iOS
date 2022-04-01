@@ -68,6 +68,10 @@ extension TransactionUserActionService: TransactionRestrictionsProviderAPI {
     }
 
     func maximumNumbersOfTransactions(for action: AssetAction) -> Int? {
+        // Ignore Tier 0 users
+        guard latestUserState?.kycStatus != .unverified else {
+            return nil
+        }
         guard let rawProduct = latestUserState?.product(id: action.productId) else {
             return nil
         }

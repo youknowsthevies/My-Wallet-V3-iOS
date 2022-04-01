@@ -1,6 +1,5 @@
 @testable import FeatureProductsData
 import FeatureProductsDomain
-import Mockingbird
 import NabuNetworkError
 import TestKit
 import ToolKit
@@ -9,11 +8,11 @@ import XCTest
 final class ProductsRepositoryTests: XCTestCase {
 
     private var repository: ProductsRepository!
-    private var mockClient: ProductsClientAPIMock!
+    private var mockClient: ProductsClientMock!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockClient = mock(ProductsClientAPI.self)
+        mockClient = ProductsClientMock()
         repository = ProductsRepository(client: mockClient)
     }
 
@@ -45,7 +44,7 @@ final class ProductsRepositoryTests: XCTestCase {
         let secondRequestPublisher = repository.fetchProducts()
         XCTAssertPublisherValues(secondRequestPublisher, expectedProducts)
         // THEN: The repository has used the cache to serve the response
-        verify(mockClient.fetchProductsData()).wasCalled(exactly(once))
+        XCTAssertEqual(mockClient.recordedInvocations.fetchProductsData.count, 1)
     }
 
     func test_cache_invalidatesCacheOn_transactionNotification() throws {
@@ -59,7 +58,7 @@ final class ProductsRepositoryTests: XCTestCase {
         let secondRequestPublisher = repository.fetchProducts()
         XCTAssertPublisherValues(secondRequestPublisher, expectedProducts)
         // THEN: The repository has NOT used the cache to serve the response
-        verify(mockClient.fetchProductsData()).wasCalled(exactly(twice))
+        XCTAssertEqual(mockClient.recordedInvocations.fetchProductsData.count, 2)
     }
 
     func test_cache_invalidatesCacheOn_kycStatusChangedNotification() throws {
@@ -73,7 +72,7 @@ final class ProductsRepositoryTests: XCTestCase {
         let secondRequestPublisher = repository.fetchProducts()
         XCTAssertPublisherValues(secondRequestPublisher, expectedProducts)
         // THEN: The repository has NOT used the cache to serve the response
-        verify(mockClient.fetchProductsData()).wasCalled(exactly(twice))
+        XCTAssertEqual(mockClient.recordedInvocations.fetchProductsData.count, 2)
     }
 
     func test_stream_publishesNewValues_whenCacheIsInvalidated() throws {
@@ -85,7 +84,7 @@ final class ProductsRepositoryTests: XCTestCase {
         NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
         // AND: The data is refreashed
         XCTAssertPublisherValues(publisher, .success(expectedProducts), expectCompletion: false)
-        verify(mockClient.fetchProductsData()).wasCalled(exactly(twice))
+        XCTAssertEqual(mockClient.recordedInvocations.fetchProductsData.count, 2)
     }
 
     func test_stream_doesNotFailOnFailure() throws {
@@ -102,7 +101,7 @@ final class ProductsRepositoryTests: XCTestCase {
         let expectedProducts = try stubClientWithDefaultProducts()
         // THEN: The data is refreashed
         XCTAssertPublisherValues(publisher, .success(expectedProducts), expectCompletion: false)
-        verify(mockClient.fetchProductsData()).wasCalled(exactly(twice))
+        XCTAssertEqual(mockClient.recordedInvocations.fetchProductsData.count, 2)
     }
 
     // MARK: - Helpers
@@ -156,10 +155,10 @@ final class ProductsRepositoryTests: XCTestCase {
         }
         let stubbedResponseData = try Data(contentsOf: stubbedResponseURL)
         let stubbedResponse = try ProductsAPIResponse(json: stubbedResponseData.json())
-        given(mockClient.fetchProductsData()).willReturn(.just(stubbedResponse))
+        mockClient.stubbedResults.fetchProductsData = .just(stubbedResponse)
     }
 
     private func stubClientProductsDataResponse(with error: NabuNetworkError) throws {
-        given(mockClient.fetchProductsData()).willReturn(.failure(error))
+        mockClient.stubbedResults.fetchProductsData = .failure(error)
     }
 }

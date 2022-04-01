@@ -85,8 +85,8 @@ extension TransactionLimits {
             maximum: maximum?.convert(using: exchangeRate),
             maximumDaily: maximumDaily?.convert(using: exchangeRate),
             maximumAnnual: maximumAnnual?.convert(using: exchangeRate),
-            effectiveLimit: effectiveLimit,
-            suggestedUpgrade: suggestedUpgrade
+            effectiveLimit: effectiveLimit?.convert(using: exchangeRate),
+            suggestedUpgrade: suggestedUpgrade?.convert(using: exchangeRate)
         )
     }
 }

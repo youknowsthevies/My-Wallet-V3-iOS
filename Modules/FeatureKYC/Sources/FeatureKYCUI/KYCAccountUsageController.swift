@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureFormDomain
@@ -18,6 +19,7 @@ final class KYCAccountUsageController: KYCBaseViewController {
         return controller
     }
 
+    let analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve()
     let accountUsageService: KYCAccountUsageServiceAPI = DIKit.resolve()
 
     override func viewDidLoad() {
@@ -34,7 +36,8 @@ final class KYCAccountUsageController: KYCBaseViewController {
                 environment: AccountUsage.Environment(
                     onComplete: continueToNextStep,
                     loadForm: accountUsageService.fetchAccountUsageForm,
-                    submitForm: accountUsageService.submitAccountUsageForm
+                    submitForm: accountUsageService.submitAccountUsageForm,
+                    analyticsRecorder: analyticsRecorder
                 )
             )
         )

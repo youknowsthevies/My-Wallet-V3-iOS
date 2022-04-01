@@ -98,7 +98,7 @@ public struct WelcomeView: View {
             welcomeMessageSection
             Spacer()
             buttonSection
-                .padding(.bottom, Layout.buttonBottomPadding)
+                .padding(.vertical, Layout.buttonBottomPadding)
             supplementarySection
         }
         .padding(
@@ -132,6 +132,7 @@ public struct WelcomeView: View {
             welcomeMessageDescription
                 .font(Font(weight: .medium, size: Layout.messageFontSize))
                 .lineSpacing(Layout.messageLineSpacing)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeMessageText)
         }
         .multilineTextAlignment(.center)
