@@ -138,9 +138,3 @@ yarn-error.log*
 SourcePackages/
 PackageCache/
 
-# Mockingbird
-.mockingbird
-*.generated.swift
-MockingbirdMocks/
-MockingbirdSupport/
-MockingbirdProject.json
