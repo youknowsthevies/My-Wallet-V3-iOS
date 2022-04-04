@@ -24,6 +24,10 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
         receiveAddressValue
     }
 
+    func firstReceiveAddress(forXPub xpub: String) -> Single<String> {
+        receiveAddressValue
+    }
+
     var noteValue: Single<String?> = .just(nil)
 
     func note(for transactionHash: String) -> Single<String?> {
