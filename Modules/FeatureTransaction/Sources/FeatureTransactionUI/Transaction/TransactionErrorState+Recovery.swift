@@ -577,8 +577,7 @@ extension TransactionErrorState {
         case .withdraw:
             text = localizedOverMaxPersonalLimitMessageForWithdraw(
                 effectiveLimit: limit,
-                availableAmount: available,
-                suggestedUpgrade: suggestedUpgrade
+                availableAmount: available
             )
         case .receive,
              .deposit,
@@ -594,12 +593,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForBuy(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_other
@@ -614,12 +613,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSell(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_other
@@ -634,12 +633,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSwap(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_other
@@ -654,12 +653,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSend(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_other
@@ -673,8 +672,7 @@ extension TransactionErrorState {
 
     private func localizedOverMaxPersonalLimitMessageForWithdraw(
         effectiveLimit: EffectiveLimit,
-        availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        availableAmount: MoneyValue
     ) -> String {
         String.localizedStringWithFormat(
             Localization.overMaximumPersonalLimitRecoveryMessage_withdraw,

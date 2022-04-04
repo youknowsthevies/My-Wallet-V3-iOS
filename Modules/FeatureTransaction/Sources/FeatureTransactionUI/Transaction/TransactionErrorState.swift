@@ -26,7 +26,7 @@ enum TransactionErrorState: Equatable {
     case overMaximumSourceLimit(MoneyValue, String, MoneyValue)
     /// The amount is over the user's maximum limit for the transaction.
     /// Takes the applicable Periodic Limit that has been exceeded, the available limit, and an optional suggested upgrade.
-    case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, SuggestedLimitsUpgrade?)
+    case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, TransactionValidationState.LimitsUpgrade?)
 
     // MARK: - Not checked
 

@@ -576,11 +576,15 @@ extension TransactionEngine {
             }
             let maxLimitForDisplay = maxLimit.convert(using: sourceToAmountRate)
             let effectiveLimit = limits.effectiveLimit?.convert(using: sourceToAmountRate)
+            let upgrade = limits.suggestedUpgrade
+                .flatMap { upgrade -> TransactionValidationState.LimitsUpgrade in
+                    .init(requiresTier2: upgrade.requiredTier == .tier2)
+                }
             throw TransactionValidationFailure(
                 state: .overMaximumPersonalLimit(
                     effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimitForDisplay),
                     maxLimitForDisplay,
-                    limits.suggestedUpgrade
+                    upgrade
                 )
             )
         }

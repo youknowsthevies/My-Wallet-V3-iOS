@@ -5,6 +5,11 @@ import NabuNetworkError
 import PlatformKit
 
 public enum TransactionValidationState: Equatable {
+
+    public struct LimitsUpgrade: Equatable {
+        public let requiresTier2: Bool
+    }
+
     /// The transaction has not been initialized yet
     case uninitialized
     /// The transaction is valid and can be executed
@@ -27,7 +32,7 @@ public enum TransactionValidationState: Equatable {
     case overMaximumSourceLimit(MoneyValue, String, MoneyValue)
     /// The amount is over the user's maximum limit for the transaction.
     /// Takes the applicable Periodic Limit that has been exceeded, the available limit, and an optional suggested upgrade.
-    case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, SuggestedLimitsUpgrade?)
+    case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, LimitsUpgrade?)
 
     // MARK: - Not checked
 
