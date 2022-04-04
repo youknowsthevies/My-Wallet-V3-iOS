@@ -133,6 +133,7 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
