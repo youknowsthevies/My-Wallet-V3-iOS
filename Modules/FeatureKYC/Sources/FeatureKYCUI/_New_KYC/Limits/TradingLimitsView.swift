@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
@@ -8,6 +9,8 @@ import Localization
 import PlatformKit
 import SwiftUI
 import UIComponentsKit
+
+private typealias Events = AnalyticsEvents.New.KYC
 
 struct TradingLimitsState: Equatable {
     var loading: Bool = false
@@ -34,6 +37,7 @@ struct TradingLimitsEnvironment {
     /// the passed-in tier is the tier the user whishes to upgrade to
     let presentKYCFlow: (KYC.Tier) -> Void
     let fetchLimitsOverview: () -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
     init(
@@ -41,12 +45,14 @@ struct TradingLimitsEnvironment {
         openURL: @escaping (URL) -> Void,
         presentKYCFlow: @escaping (KYC.Tier) -> Void,
         fetchLimitsOverview: @escaping () -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main
     ) {
         self.close = close
         self.openURL = openURL
         self.presentKYCFlow = presentKYCFlow
         self.fetchLimitsOverview = fetchLimitsOverview
+        self.analyticsRecorder = analyticsRecorder
         self.mainQueue = mainQueue
     }
 }
@@ -68,14 +74,23 @@ let tradingLimitsReducer = Reducer.combine(
         environment: {
             UnlockTradingEnvironment(
                 dismiss: $0.close,
-                unlock: $0.presentKYCFlow
+                unlock: $0.presentKYCFlow,
+                analyticsRecorder: $0.analyticsRecorder
             )
         }
     ),
     Reducer<TradingLimitsState, TradingLimitsAction, TradingLimitsEnvironment> { state, action, environment in
         switch action {
         case .close:
+            let currentTier = state.unlockTradingState?.currentUserTier
             return .fireAndForget {
+                if let currentTier = currentTier {
+                    environment.analyticsRecorder.record(
+                        event: Events.tradingLimitsDismissed(
+                            tier: currentTier.rawValue
+                        )
+                    )
+                }
                 environment.close()
             }
 
@@ -97,8 +112,14 @@ let tradingLimitsReducer = Reducer.combine(
                     features: overview.features,
                     kycTiers: overview.tiers
                 )
+                let currentTier = overview.tiers.latestApprovedTier
                 state.unlockTradingState = UnlockTradingState(
-                    currentUserTier: overview.tiers.latestApprovedTier
+                    currentUserTier: currentTier
+                )
+                environment.analyticsRecorder.record(
+                    event: Events.tradingLimitsViewed(
+                        tier: currentTier.rawValue
+                    )
                 )
             } else {
                 state.featuresList = .init(
@@ -153,7 +174,7 @@ struct TradingLimitsView: View {
                         .padding(Spacing.padding3)
                         Spacer()
                     }
-                } else if let userTiers = viewStore.userTiers, canUpgradeTier {
+                } else if canUpgradeTier {
                     IfLetStore(
                         store.scope(
                             state: \.unlockTradingState,
@@ -202,7 +223,8 @@ struct TradingLimitsView_Previews: PreviewProvider {
                             features: []
                         )
                         return .just(overview)
-                    }
+                    },
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

@@ -1,17 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxRelay
-import RxSwift
-import UIKit
-
+import Combine
 @testable import RemoteNotificationsKit
+import UIKit
 
 final class MockRemoteNotificationRelay: RemoteNotificationEmitting, RemoteNotificationBackgroundReceiving {
 
-    let relay = PublishRelay<RemoteNotification.NotificationType>()
-    var notification: Observable<RemoteNotification.NotificationType> {
-        relay.asObservable()
+    var notification: AnyPublisher<
+        RemoteNotification.NotificationType,
+        RemoteNotificationEmitterError
+    > {
+        relay.eraseToAnyPublisher()
     }
+
+    private let relay = PassthroughSubject<
+        RemoteNotification.NotificationType,
+        RemoteNotificationEmitterError
+    >()
 
     func didReceiveRemoteNotification(
         _ userInfo: [AnyHashable: Any],

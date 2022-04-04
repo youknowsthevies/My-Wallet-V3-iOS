@@ -16,7 +16,6 @@ public struct CoinView: View {
 
     @BlockchainApp var app
     @Environment(\.context) var context
-    @Environment(\.presentationMode) private var presentationMode
 
     public init(store: Store<CoinViewState, CoinViewAction>) {
         self.store = store
@@ -38,6 +37,18 @@ public struct CoinView: View {
                     actions(viewStore)
                 }
             }
+            .primaryNavigation(
+                leading: {
+                    navigationLeadingView(
+                        url: viewStore.asset.logoUrl,
+                        image: viewStore.asset.logoImage
+                    )
+                },
+                title: viewStore.asset.name,
+                trailing: {
+                    dismiss(viewStore)
+                }
+            )
             .padding(.bottom, 20.pt)
             .ignoresSafeArea(.container, edges: .bottom)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -78,22 +89,8 @@ public struct CoinView: View {
     }
 
     @ViewBuilder func header(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
-        Group {
-            GraphView(
-                store: store.scope(state: \.graph, action: CoinViewAction.graph)
-            )
-        }
-        .primaryNavigation(
-            leading: {
-                navigationLeadingView(
-                    url: viewStore.asset.logoUrl,
-                    image: viewStore.asset.logoImage
-                )
-            },
-            title: viewStore.asset.name,
-            trailing: {
-                dismiss()
-            }
+        GraphView(
+            store: store.scope(state: \.graph, action: CoinViewAction.graph)
         )
     }
 
@@ -195,9 +192,9 @@ public struct CoinView: View {
         }
     }
 
-    @ViewBuilder func dismiss() -> some View {
+    @ViewBuilder func dismiss(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         IconButton(icon: .closev2.circle()) {
-            presentationMode.wrappedValue.dismiss()
+            viewStore.send(.dismiss)
         }
         .frame(width: 24.pt, height: 24.pt)
     }
@@ -210,7 +207,7 @@ public struct CoinView: View {
             }
             HStack {
                 ForEach(actions.indexed(), id: \.element.event) { index, action in
-                    if index == actions.startIndex {
+                    if index == actions.index(before: actions.endIndex) {
                         PrimaryButton(
                             title: action.title,
                             leadingView: { action.icon },

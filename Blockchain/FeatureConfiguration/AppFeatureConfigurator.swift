@@ -1,42 +1,86 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FirebaseRemoteConfig
-import PlatformKit
 import RxSwift
 import RxToolKit
 import ToolKit
 
+enum RemoteConfigConstants {
+    static let cacheSuiteKey: String = "FIREBASE_REMOTE_CONFIG_STALE"
+    static let notificationKey: String = "CONFIG_STATE"
+    static let notificationValue: String = "STALE"
+}
+
 final class AppFeatureConfigurator {
 
+    // MARK: Private Properties
+
+    private let cacheSuite: CacheSuite
     private let remoteConfig: RemoteConfig
 
-    init(remoteConfig: RemoteConfig = RemoteConfig.remoteConfig()) {
+    /// The expiration time interval to be used.
+    private var expiration: TimeInterval {
+        if isStale {
+            return 0
+        } else if isDebug {
+            return 30 // 30 seconds
+        }
+        return 3600 // 1 hour
+    }
+
+    /// Flag indicating if RemoteConfig is set as Stale.
+    private var isStale: Bool {
+        cacheSuite.bool(forKey: RemoteConfigConstants.cacheSuiteKey)
+    }
+
+    /// Determines if the app has the `DEBUG` build flag.
+    private var isDebug: Bool {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }
+
+    // MARK: Init
+
+    init(
+        cacheSuite: CacheSuite,
+        remoteConfig: RemoteConfig
+    ) {
+        self.cacheSuite = cacheSuite
         self.remoteConfig = remoteConfig
     }
+
+    // MARK: Methods
 
     func initialize() {
         fetchRemoteConfig()
     }
 
+    // MARK: Private Methods
+
     private func fetchRemoteConfig() {
-        var expiration = TimeInterval(1 * 60 * 60) // 1 hour
-        #if DEBUG
-        expiration = TimeInterval(60) // 1 min
-        #endif
         remoteConfig.fetch(withExpirationDuration: expiration) { [weak self] status, error in
             guard status == .success, error == nil else {
-                print("config fetch error")
+                print("Config fetch error: \(error?.localizedDescription ?? "").")
                 return
             }
+            self?.clearIsStale()
             self?.remoteConfig.activate(completion: nil)
         }
+    }
+
+    private func clearIsStale() {
+        cacheSuite.set(false, forKey: RemoteConfigConstants.cacheSuiteKey)
     }
 }
 
 extension AppFeatureConfigurator: FeatureConfiguratorAPI {
-    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError> {
+    func configuration<Feature: Decodable>(
+        for feature: AppFeature
+    ) -> Result<Feature, FeatureConfigurationError> {
         guard let remoteEnabledKey = feature.remoteEnabledKey else {
             return .failure(.missingKeyRawValue)
         }

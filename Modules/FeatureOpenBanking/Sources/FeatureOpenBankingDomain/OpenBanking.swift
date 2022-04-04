@@ -142,10 +142,7 @@ public final class OpenBanking {
     }
 
     private func deposit(amountMinor: String, product: String, data: Data) -> AnyPublisher<Action, Never> {
-        banking.get(account: data.account)
-            .flatMap { [banking] account -> AnyPublisher<OpenBanking.Payment, OpenBanking.Error> in
-                banking.deposit(amountMinor: amountMinor, product: product, from: account)
-            }
+        banking.deposit(amountMinor: amountMinor, product: product, from: data.account)
             .flatMap { [banking] payment in
                 banking.poll(payment: payment)
                     .flatMap { payment -> AnyPublisher<OpenBanking.Payment.Details, OpenBanking.Error> in

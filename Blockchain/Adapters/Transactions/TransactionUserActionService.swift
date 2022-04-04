@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureAppDomain
 import FeatureProductsDomain
 import FeatureTransactionDomain
 import FeatureTransactionUI
@@ -68,6 +69,10 @@ extension TransactionUserActionService: TransactionRestrictionsProviderAPI {
     }
 
     func maximumNumbersOfTransactions(for action: AssetAction) -> Int? {
+        // Ignore Tier 0 users
+        guard latestUserState?.kycStatus != .unverified else {
+            return nil
+        }
         guard let rawProduct = latestUserState?.product(id: action.productId) else {
             return nil
         }

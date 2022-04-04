@@ -4,9 +4,10 @@
 public struct UserState: Equatable {
 
     public enum KYCStatus: Equatable {
-        case incomplete
-        case pending
-        case complete
+        case notVerified
+        case verificationPending
+        case partiallyVerified
+        case verified
     }
 
     public let kycStatus: KYCStatus
@@ -21,5 +22,17 @@ public struct UserState: Equatable {
         self.kycStatus = kycStatus
         self.hasLinkedPaymentMethods = hasLinkedPaymentMethods
         self.hasEverPurchasedCrypto = hasEverPurchasedCrypto
+    }
+}
+
+extension UserState.KYCStatus {
+
+    var canBuyCrypto: Bool {
+        switch self {
+        case .notVerified, .verificationPending:
+            return false
+        case .partiallyVerified, .verified:
+            return true
+        }
     }
 }

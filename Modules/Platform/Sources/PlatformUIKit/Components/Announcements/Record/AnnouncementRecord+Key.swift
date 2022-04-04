@@ -27,6 +27,7 @@ extension AnnouncementRecord {
         case transferBitcoin
         case kycAirdrop
         case newSwap
+        case taxCenter
 
         // MARK: - One Time
 
@@ -78,6 +79,8 @@ extension AnnouncementRecord {
                 key = "cache-kyc-airdrop"
             case .newSwap:
                 key = "cache-new-swap"
+            case .taxCenter:
+                key = "tax-center"
 
             // MARK: - One Time
 

@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct Card: Codable {
+public struct Card: Codable, Equatable {
 
     public let cardId: String
 
@@ -17,9 +17,9 @@ public struct Card: Codable {
 
     public let cardStatus: Status
 
-    public let orderStatus: [OrderStatus]
+    public let orderStatus: [OrderStatus]?
 
-    public let createdAt: Date
+    public let createdAt: String
 }
 
 extension Card {
@@ -40,19 +40,19 @@ extension Card {
         case terminated = "TERMINATED"
     }
 
-    public struct OrderStatus: Codable {
+    public struct OrderStatus: Codable, Equatable {
         let status: Status
         let date: Date
     }
 
-    public struct Address: Codable {
+    public struct Address: Codable, Equatable {
 
         public init(
-            line1: String,
-            line2: String,
-            city: String,
-            postcode: String,
-            state: String,
+            line1: String?,
+            line2: String?,
+            city: String?,
+            postcode: String?,
+            state: String?,
             country: String
         ) {
             self.line1 = line1
@@ -63,15 +63,15 @@ extension Card {
             self.country = country
         }
 
-        public let line1: String
+        public let line1: String?
 
-        public let line2: String
+        public let line2: String?
 
-        public let city: String
+        public let city: String?
 
-        public let postcode: String
+        public let postcode: String?
 
-        public let state: String
+        public let state: String?
 
         /// Country code in ISO-2
         public let country: String
@@ -84,5 +84,12 @@ extension Card.OrderStatus {
         case ordered = "ORDERED"
         case shipped = "SHIPPED"
         case delivered = "DELIVERED"
+    }
+}
+
+extension Card {
+
+    var creationDate: Date? {
+        DateFormatter.iso8601Format.date(from: createdAt)
     }
 }

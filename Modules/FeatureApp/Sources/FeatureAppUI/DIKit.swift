@@ -67,11 +67,15 @@ extension DependencyContainer {
                 transactionsRouter: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
-                },
-                tabSwapper: {
-                    DIKit.resolve()
                 }
-            ) as DeepLinkCoordinatorAPI
+            )
+        }
+
+        factory {
+            CardIssuingAdapter(
+                cardIssuingBuilder: DIKit.resolve(),
+                nabuUserService: DIKit.resolve()
+            ) as FeatureSettingsUI.CardIssuingViewControllerAPI
         }
     }
 }

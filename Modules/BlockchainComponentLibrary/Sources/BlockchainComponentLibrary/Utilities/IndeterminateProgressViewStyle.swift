@@ -2,14 +2,19 @@
 
 import SwiftUI
 
-struct ButtonProgressViewStyle: ProgressViewStyle {
+public struct IndeterminateProgressViewStyle: ProgressViewStyle {
 
     @State private var angle: Angle = .degrees(-90)
 
-    let railColor: Color
-    let trackColor: Color
+    private let railColor: Color
+    private let trackColor: Color
 
-    func makeBody(configuration: Configuration) -> some View {
+    public init(railColor: Color, trackColor: Color) {
+        self.railColor = railColor
+        self.trackColor = trackColor
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
         GeometryReader { geometry in
             let lineWidth: CGFloat = geometry.size.width / 6.0
             ZStack {
@@ -39,16 +44,23 @@ struct ButtonProgressViewStyle: ProgressViewStyle {
     }
 }
 
-struct ButtonProgressView_Previews: PreviewProvider {
+struct IndeterminateProgressView_Previews: PreviewProvider {
 
     static var previews: some View {
         ProgressView()
             .progressViewStyle(
-                ButtonProgressViewStyle(
-                    railColor: Color.semantic.primary,
-                    trackColor: Color.semantic.light
-                )
+                .indeterminate
             )
             .frame(width: 70, height: 70)
+    }
+}
+
+extension ProgressViewStyle where Self == IndeterminateProgressViewStyle {
+
+    public static var indeterminate: IndeterminateProgressViewStyle {
+        .init(
+            railColor: Color.semantic.primary,
+            trackColor: Color.semantic.blueBG
+        )
     }
 }

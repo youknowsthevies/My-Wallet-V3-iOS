@@ -14,7 +14,7 @@ protocol GasEstimateServiceAPI {
     func estimateGas(
         network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
-    ) -> AnyPublisher<BigInt, GasEstimateError>
+    ) -> AnyPublisher<BigUInt, GasEstimateError>
 }
 
 final class GasEstimateService: GasEstimateServiceAPI {
@@ -28,13 +28,16 @@ final class GasEstimateService: GasEstimateServiceAPI {
     func estimateGas(
         network: EVMNetwork,
         transaction: EthereumJsonRpcTransaction
-    ) -> AnyPublisher<BigInt, GasEstimateError> {
+    ) -> AnyPublisher<BigUInt, GasEstimateError> {
         client.estimateGas(network: network, transaction: transaction)
             .mapError(GasEstimateError.unableToEstimateGas)
             .map(\.result)
             .map { gasEstimate -> BigInt in
                 // Increase the node's gas estimate by 20%.
                 gasEstimate + (gasEstimate / 5)
+            }
+            .map { gasEstimate in
+                BigUInt(gasEstimate)
             }
             .eraseToAnyPublisher()
     }

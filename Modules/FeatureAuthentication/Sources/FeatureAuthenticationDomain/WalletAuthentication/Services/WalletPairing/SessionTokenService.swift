@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkError
-import RxToolKit
 
 public enum SessionTokenServiceError: Error, Equatable {
     case networkError(NetworkError)

@@ -49,6 +49,12 @@ extension DependencyContainer {
 
         // MARK: Other
 
+        factory {
+            EthereumOnChainEngineCompanion(
+                hotWalletAddressService: DIKit.resolve()
+            ) as EthereumOnChainEngineCompanionAPI
+        }
+
         single { EthereumNonceRepository() as EthereumNonceRepositoryAPI }
 
         single { EthereumBalanceRepository() as EthereumBalanceRepositoryAPI }

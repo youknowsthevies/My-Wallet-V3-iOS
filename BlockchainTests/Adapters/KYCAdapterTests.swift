@@ -2,6 +2,7 @@
 
 @testable import Blockchain
 import Combine
+@testable import FeatureAppUI
 import FeatureKYCUI
 import FeatureOnboardingUI
 import PlatformKit

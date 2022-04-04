@@ -9,6 +9,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
@@ -31,6 +32,8 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseMessaging
+import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -356,7 +359,12 @@ extension DependencyContainer {
 
         // MARK: - AppFeatureConfigurator
 
-        single { AppFeatureConfigurator() }
+        single {
+            AppFeatureConfigurator(
+                cacheSuite: DIKit.resolve(),
+                remoteConfig: RemoteConfig.remoteConfig()
+            )
+        }
 
         factory { () -> FeatureConfiguratorAPI in
             let configurator: AppFeatureConfigurator = DIKit.resolve()
@@ -472,7 +480,14 @@ extension DependencyContainer {
             return relay as RemoteNotificationBackgroundReceiving
         }
 
-        single { RemoteNotificationRelay() }
+        single {
+            RemoteNotificationRelay(
+                cacheSuite: DIKit.resolve(),
+                userNotificationCenter: UNUserNotificationCenter.current(),
+                messagingService: Messaging.messaging(),
+                secureChannelNotificationRelay: DIKit.resolve()
+            )
+        }
 
         // MARK: Helpers
 

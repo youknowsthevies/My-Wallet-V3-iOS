@@ -13,8 +13,8 @@ public protocol EthereumTransactionBuildingServiceAPI {
         amount: MoneyValue,
         to address: EthereumAddress,
         addressReference: EthereumAddress?,
-        feeLevel: FeeLevel,
-        fee: EthereumTransactionFee,
+        gasPrice: BigUInt,
+        gasLimit: BigUInt,
         nonce: BigUInt,
         chainID: BigUInt,
         contractAddress: EthereumAddress?
@@ -37,25 +37,17 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         amount: MoneyValue,
         to address: EthereumAddress,
         addressReference: EthereumAddress?,
-        feeLevel: FeeLevel,
-        fee: EthereumTransactionFee,
+        gasPrice: BigUInt,
+        gasLimit: BigUInt,
         nonce: BigUInt,
         chainID: BigUInt,
         contractAddress: EthereumAddress?
     ) -> Result<EthereumTransactionCandidate, Never> {
-        let isContract = contractAddress != nil
-        let gasPrice = BigUInt(
-            fee.fee(feeLevel: feeLevel.ethereumFeeLevel).amount
-        )
-        let gasLimit = BigUInt(
-            isContract ? fee.gasLimitContract : fee.gasLimit
-        )
-        let extraGasLimit: BigUInt = addressReference != nil ? 600 : 0
-        return buildTransaction(
+        buildTransaction(
             amount: amount,
             to: address,
             gasPrice: gasPrice,
-            gasLimit: gasLimit + extraGasLimit,
+            gasLimit: gasLimit,
             nonce: nonce,
             chainID: chainID,
             transferType: transferType(

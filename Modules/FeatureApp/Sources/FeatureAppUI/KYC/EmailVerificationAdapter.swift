@@ -7,7 +7,7 @@ import ToolKit
 
 // NOTE: This should really be reversed, meaning the API Client implementation should be in the KYC module and adapted for Settings, not the way around like it is now!
 // TICKET: IOS-4733
-final class EmailVerificationAdapter {
+public final class EmailVerificationAdapter {
 
     // MARK: - Properties
 
@@ -15,13 +15,13 @@ final class EmailVerificationAdapter {
 
     // MARK: - Init
 
-    init(settingsService: CompleteSettingsServiceAPI) {
+    public init(settingsService: CompleteSettingsServiceAPI) {
         self.settingsService = settingsService
     }
 
     // MARK: - Public Interface
 
-    func fetchEmailVerificationStatus(
+    public func fetchEmailVerificationStatus(
         force: Bool
     ) -> AnyPublisher<EmailVerificationStatusResponse, EmailVerificationError> {
         settingsService.fetchPublisher(force: force)
@@ -42,7 +42,7 @@ final class EmailVerificationAdapter {
             .eraseToAnyPublisher()
     }
 
-    func update(email: String) -> AnyPublisher<Void, EmailVerificationError> {
+    public func update(email: String) -> AnyPublisher<Void, EmailVerificationError> {
         settingsService.update(email: email)
             .mapToVoid()
             .mapError { error in

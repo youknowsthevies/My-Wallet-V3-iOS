@@ -22,6 +22,10 @@ blockchain:
 					enabled:
 					+ blockchain.session.state.preference.value
 					+ blockchain.session.state.shared.value
+			redesign:
+				coinview:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.configuration.value
 			wallet:
 				options:
 				+ blockchain.session.configuration.value
@@ -376,6 +380,8 @@ blockchain:
 						cancel:
 				buys:
 					notification:
+			select:
+			+ blockchain.ux.type.action
 			sell:
 			+ blockchain.ux.type.action
 			send:
@@ -528,6 +534,8 @@ blockchain:
 					trading:
 					+ blockchain.ux.type.story
 						select:
+				debit_card:
+					order:
 				help:
 					contact:
 						support:

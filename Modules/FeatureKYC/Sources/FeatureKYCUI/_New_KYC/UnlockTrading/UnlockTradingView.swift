@@ -294,7 +294,6 @@ extension View {
     }
 }
 
-#if DEBUG
 struct UnlockTradingView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -302,12 +301,8 @@ struct UnlockTradingView_Previews: PreviewProvider {
             store: .init(
                 initialState: UnlockTradingState(currentUserTier: .tier0),
                 reducer: unlockTradingReducer,
-                environment: UnlockTradingEnvironment(
-                    dismiss: {},
-                    unlock: { _ in }
-                )
+                environment: .preview
             )
         )
     }
 }
-#endif

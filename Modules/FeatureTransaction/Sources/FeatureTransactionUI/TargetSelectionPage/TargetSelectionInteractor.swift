@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -26,7 +27,10 @@ final class TargetSelectionInteractor {
         self.nameResolutionService = nameResolutionService
     }
 
-    func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
+    func getBitPayInvoiceTarget(
+        data: String,
+        asset: CryptoCurrency
+    ) -> Single<BitPayInvoiceTarget> {
         BitPayInvoiceTarget
             .make(from: data, asset: asset)
             .asSingle()
@@ -63,23 +67,30 @@ final class TargetSelectionInteractor {
         }
     }
 
-    func validateCrypto(address: String, account: BlockchainAccount) -> Single<Result<ReceiveAddress, Error>> {
+    func validateCrypto(
+        address: String,
+        account: BlockchainAccount
+    ) -> Single<Result<ReceiveAddress, Error>> {
         guard let crypto = account as? CryptoAccount else {
             fatalError("You cannot validate an address using this account type: \(account)")
         }
         let asset = coincore[crypto.asset]
         return asset
             .parse(address: address)
-            .asSingle()
-            .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in
+            .flatMap { [validate] validatedAddress
+                -> AnyPublisher<Result<ReceiveAddress, Error>, Never> in
                 guard let validatedAddress = validatedAddress else {
-                    return self.validate(domainName: address, currency: crypto.asset)
+                    return validate(address, crypto.asset)
                 }
                 return .just(.success(validatedAddress))
             }
+            .asSingle()
     }
 
-    private func validate(domainName: String, currency: CryptoCurrency) -> Single<Result<ReceiveAddress, Error>> {
+    private func validate(
+        domainName: String,
+        currency: CryptoCurrency
+    ) -> AnyPublisher<Result<ReceiveAddress, Error>, Never> {
         nameResolutionService
             .validate(domainName: domainName, currency: currency)
             .map { receiveAddress -> Result<ReceiveAddress, Error> in
@@ -90,6 +101,6 @@ final class TargetSelectionInteractor {
                     return .failure(CryptoAssetError.addressParseFailure)
                 }
             }
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 }
