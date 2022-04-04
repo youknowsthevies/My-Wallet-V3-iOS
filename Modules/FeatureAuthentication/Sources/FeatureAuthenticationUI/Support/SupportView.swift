@@ -10,6 +10,7 @@ struct SupportView: View {
 
     private typealias LocalizationIds = LocalizationConstants.Authentication.Support
 
+    @Environment(\.presentationMode) private var presentationMode
     private let store: Store<SupportViewState, SupportViewAction>
 
     init(
@@ -24,14 +25,16 @@ struct SupportView: View {
                 .init(
                     title: LocalizationIds.contactUs,
                     action: {
-                        viewStore.send(.navigate(to: .contactUs))
+                        presentationMode.wrappedValue.dismiss()
+                        // TODO: Route to Safari
                     },
                     style: .secondary
                 ),
                 .init(
                     title: LocalizationIds.viewFAQ,
                     action: {
-                        viewStore.send(.navigate(to: .viewFAQs))
+                        presentationMode.wrappedValue.dismiss()
+                        // TODO: Route to Safari
                     },
                     style: .secondary
                 )
@@ -48,6 +51,7 @@ struct SupportView: View {
             .onAppear {
                 viewStore.send(.loadAppStoreVersionInformation)
             }
+            .navigationRoute(in: store)
         }
     }
 }

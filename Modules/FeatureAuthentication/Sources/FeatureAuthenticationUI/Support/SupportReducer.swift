@@ -65,6 +65,7 @@ let supportViewReducer = Reducer<
         return .none
     }
 }
+.routing()
 
 struct SupportViewEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
