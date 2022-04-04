@@ -312,7 +312,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 guard let wallet = self.wallet else {
                     fatalError("Wallet was nil")
                 }
-                let result = wallet.getBitcoinFirstReceiveAddress(forXPub: xpub, derivation: .default)
+                let result = wallet.getBitcoinFirstReceiveAddress(forXPub: xpub)
                 switch result {
                 case .success(let address):
                     return address
