@@ -40,8 +40,7 @@ protocol LegacyBitcoinWalletProtocol: AnyObject {
     ) -> Result<String, BitcoinReceiveAddressError>
 
     func getBitcoinFirstReceiveAddress(
-        forXPub xpub: String,
-        derivation: BitcoinDerivation
+        forXPub xpub: String
     ) -> Result<String, BitcoinReceiveAddressError>
 
     func getSignedBitcoinPayment(
@@ -121,20 +120,12 @@ extension Wallet: LegacyBitcoinWalletProtocol {
     }
 
     func getBitcoinFirstReceiveAddress(
-        forXPub xpub: String,
-        derivation: BitcoinDerivation
+        forXPub xpub: String
     ) -> Result<String, BitcoinReceiveAddressError> {
         guard isInitialized() else {
             return .failure(.uninitialized)
         }
-        let forceLegacy: String
-        switch derivation {
-        case .legacy:
-            forceLegacy = "true"
-        case .default:
-            forceLegacy = "false"
-        }
-        let function: String = "MyWalletPhone.getFirstReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
+        let function: String = "MyWalletPhone.getFirstReceivingAddressForAccountXPub(\"\(xpub)\")"
         guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
