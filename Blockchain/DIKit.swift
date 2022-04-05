@@ -742,6 +742,14 @@ extension DependencyContainer {
             return OrderDomainRepository(apiClient: client)
         }
 
+        factory { () -> ClaimEligibilityRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let client = ClaimEligibilityClient(networkAdapter: adapter, requestBuilder: builder)
+            let offlineTokenRepository: NabuOfflineTokenRepositoryAPI = DIKit.resolve()
+            return ClaimEligibilityRepository(offlineTokenRepository: offlineTokenRepository, apiClient: client)
+        }
+
         // MARK: Pulse Network Debugging
 
         single {
