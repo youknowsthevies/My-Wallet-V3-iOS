@@ -79,6 +79,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                     fatalError(String(describing: error))
                 }
             }
+            .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
     }
 
     func note(for transactionHash: String) -> Single<String?> {

@@ -1278,6 +1278,11 @@ MyWalletPhone.bch = {
         return Helpers.toBitcoinCash(found.receiveAddress);
     },
 
+    getFirstReceivingAddressForAccountXPub: function(xpub) {
+        const found = MyWallet.wallet.bch.accounts.find(account => account.xpub == xpub);
+        return Helpers.toBitcoinCash(found.firstReceiveAddress);
+    },
+
     getLabelForAccount : function(index) {
         return MyWallet.wallet.bch.accounts[index].label;
     },
