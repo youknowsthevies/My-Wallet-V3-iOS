@@ -194,9 +194,9 @@ extension BitcoinCashAsset: DomainResolutionRecordProviderAPI {
             .map { account in
                 BitcoinCashCryptoAccount(
                     xPub: account.publicKey,
-                    label: account.label,
+                    label: account.label ?? CryptoCurrency.bitcoinCash.defaultWalletName,
                     isDefault: false,
-                    hdAccountIndex: 0
+                    hdAccountIndex: account.index
                 )
             }
             .eraseToAnyPublisher()
