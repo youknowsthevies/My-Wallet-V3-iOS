@@ -1,16 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationDomain
 import Foundation
 import NabuNetworkError
 import NetworkKit
 
 public protocol ClaimEligibilityClientAPI {
 
-    func getEligibility(
-        offlineToken: NabuOfflineToken
-    ) -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError>
+    func getEligibility() -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError>
 }
 
 public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
@@ -19,7 +16,6 @@ public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
 
     private enum Path {
         static let eligibility = [
-            "nabu-gateway",
             "users",
             "domain-campaigns",
             "eligibility"
@@ -43,9 +39,7 @@ public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
 
     // MARK: - API
 
-    public func getEligibility(
-        offlineToken: NabuOfflineToken
-    ) -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError> {
+    public func getEligibility() -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError> {
         let parameters = [
             URLQueryItem(
                 name: "domainCampaign",
@@ -55,7 +49,7 @@ public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
         let request = requestBuilder.get(
             path: Path.eligibility,
             parameters: parameters,
-            headers: [HttpHeaderField.authorization: "Bearer \(offlineToken.token)"],
+            authenticated: true,
             contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
