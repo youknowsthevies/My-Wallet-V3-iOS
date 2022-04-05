@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 @testable import FeatureCryptoDomainData
@@ -35,6 +36,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             reducer: searchCryptoDomainReducer,
             environment: SearchCryptoDomainEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                analyticsRecorder: MockAnalyticsRecorder(),
                 externalAppOpener: ToLogAppOpener(),
                 searchDomainRepository: SearchDomainRepository(
                     apiClient: searchClient
