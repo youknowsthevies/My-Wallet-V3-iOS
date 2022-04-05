@@ -49,8 +49,7 @@ public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
         let request = requestBuilder.get(
             path: Path.eligibility,
             parameters: parameters,
-            authenticated: true,
-            contentType: .formUrlEncoded
+            authenticated: true
         )!
         return networkAdapter.perform(request: request)
     }
