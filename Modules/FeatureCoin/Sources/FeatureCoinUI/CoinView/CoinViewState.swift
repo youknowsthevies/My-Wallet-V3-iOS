@@ -16,6 +16,7 @@ public struct CoinViewState: Equatable {
     public var accounts: [Account.Snapshot]
     public var interestRate: Double?
     public var error: CoinViewError?
+    public var isFavorite: Bool?
 
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?

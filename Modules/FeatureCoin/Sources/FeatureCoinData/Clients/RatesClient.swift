@@ -12,7 +12,7 @@ public protocol RatesClientAPI {
     ) -> AnyPublisher<InterestAccountRateResponse, NetworkError>
 }
 
-public final class RatesClient: RatesClientAPI {
+public struct RatesClient: RatesClientAPI {
 
     // MARK: - Private Properties
 

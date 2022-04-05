@@ -186,7 +186,7 @@ extension LocalizationConstants {
                         comment: "Coin View:Rewards Account Explainer title"
                     ),
                     body: NSLocalizedString(
-                        "Your Rewards Account allows you to earn rewards on your crypto; up to %.1f%% APY.",
+                        "Your Rewards Account allows you to earn rewards on your crypto.",
                         comment: "Coin View: Rewards Account Explainer body"
                     ),
                     action: NSLocalizedString(

@@ -38,15 +38,46 @@ public let coinViewReducer = Reducer<
                 environment.interestRatesRepository
                     .fetchRate(code: state.asset.code)
                     .result()
+                    .receive(on: environment.mainQueue)
                     .eraseToEffect()
-                    .map(CoinViewAction.fetchedInterestRate)
+                    .map(CoinViewAction.fetchedInterestRate),
+                environment.app.publisher(
+                    for: blockchain.ux.asset[state.asset.code].watchlist.is.on,
+                    as: Bool.self
+                )
+                .compactMap(\.value)
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .map(CoinViewAction.isOnWatchlist),
+                .fireAndForget { [state] in
+                    environment.app.post(event: blockchain.ux.asset[state.asset.code])
+                }
             )
+
         case .onDisappear:
             return Effect(value: .observation(.stop))
 
         case .fetchedInterestRate(let result):
             state.interestRate = try? result.get()
             return .none
+
+        case .isOnWatchlist(let isFavorite):
+            state.isFavorite = isFavorite
+            return .none
+
+        case .addToWatchlist:
+            return .fireAndForget { [state] in
+                environment.app.post(
+                    event: blockchain.ux.asset[state.asset.code].watchlist.add
+                )
+            }
+
+        case .removeFromWatchlist:
+            return .fireAndForget { [state] in
+                environment.app.post(
+                    event: blockchain.ux.asset[state.asset.code].watchlist.remove
+                )
+            }
 
         case .update(let update):
             switch update {

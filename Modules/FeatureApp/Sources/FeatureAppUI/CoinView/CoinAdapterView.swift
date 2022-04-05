@@ -26,8 +26,7 @@ public struct CoinAdapterView: View {
 
     let app: AppProtocol
     let store: Store<CoinViewState, CoinViewAction>
-    let currency: CryptoCurrency
-    let analytics: AnalyticsEventRecorderAPI
+    let cryptoCurrency: CryptoCurrency
 
     public init(
         cryptoCurrency: CryptoCurrency,
@@ -37,12 +36,11 @@ public struct CoinAdapterView: View {
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
         ratesRepository: RatesRepositoryAPI = resolve(),
-        analytics: AnalyticsEventRecorderAPI = resolve(),
+        watchlistRepository: WatchlistRepositoryAPI = resolve(),
         dismiss: @escaping () -> Void
     ) {
-        currency = cryptoCurrency
+        self.cryptoCurrency = cryptoCurrency
         self.app = app
-        self.analytics = analytics
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
                 asset: AssetDetails(cryptoCurrency: cryptoCurrency)
@@ -82,6 +80,11 @@ public struct CoinAdapterView: View {
                 ),
                 interestRatesRepository: ratesRepository,
                 explainerService: .init(app: app),
+                watchlistService: WatchlistService(
+                    base: cryptoCurrency,
+                    watchlistRepository: watchlistRepository,
+                    app: app
+                ),
                 dismiss: dismiss
             )
         )
@@ -90,7 +93,7 @@ public struct CoinAdapterView: View {
     public var body: some View {
         CoinView(store: store)
             .app(app)
-            .context([blockchain.ux.asset.id: currency.code])
+            .context([blockchain.ux.asset.id: cryptoCurrency.code])
     }
 }
 

@@ -173,6 +173,7 @@ public class RequestBuilder {
     public func delete(
         path components: [String] = [],
         parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
@@ -183,6 +184,7 @@ public class RequestBuilder {
             method: .delete,
             path: RequestBuilder.path(from: components),
             parameters: parameters,
+            body: body,
             headers: headers,
             authenticated: authenticated,
             contentType: contentType,

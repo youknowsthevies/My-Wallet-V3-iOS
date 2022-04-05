@@ -16,6 +16,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
     public let historicalPriceService: HistoricalPriceServiceAPI
     public let interestRatesRepository: RatesRepositoryAPI
     public let explainerService: ExplainerService
+    let watchlistService: WatchlistService
     public let dismiss: () -> Void
 
     public init(
@@ -26,6 +27,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         historicalPriceService: HistoricalPriceServiceAPI,
         interestRatesRepository: RatesRepositoryAPI,
         explainerService: ExplainerService,
+        watchlistService: WatchlistService,
         dismiss: @escaping () -> Void
     ) {
         self.app = app
@@ -35,6 +37,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         self.historicalPriceService = historicalPriceService
         self.interestRatesRepository = interestRatesRepository
         self.explainerService = explainerService
+        self.watchlistService = watchlistService
         self.dismiss = dismiss
     }
 }
@@ -47,6 +50,11 @@ extension CoinViewEnvironment {
         historicalPriceService: PreviewHelper.HistoricalPriceService(),
         interestRatesRepository: PreviewHelper.InterestRatesRepository(),
         explainerService: .init(app: App.preview),
+        watchlistService: WatchlistService(
+            base: .bitcoin,
+            watchlistRepository: PreviewHelper.WatchlistRepository(),
+            app: App.preview
+        ),
         dismiss: {}
     )
 }

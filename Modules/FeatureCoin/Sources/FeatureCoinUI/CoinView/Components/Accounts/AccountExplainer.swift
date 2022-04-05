@@ -15,7 +15,6 @@ struct AccountExplainer: View {
     @Environment(\.context) var context
 
     let account: Account.Snapshot
-    let interestRate: Double?
     let onClose: () -> Void
 
     var body: some View {
@@ -24,7 +23,7 @@ struct AccountExplainer: View {
                 .frame(width: 24.pt, height: 24.pt)
                 .padding(.trailing, 8.pt)
             VStack(alignment: .center, spacing: 20) {
-                let explainer = account.accountType.explainer(interestRate)
+                let explainer = account.accountType.explainer
                 account.accountType.icon
                     .frame(width: 48.pt, height: 48.pt)
                     .accentColor(.semantic.primary)
@@ -62,12 +61,12 @@ extension Account.AccountType {
         let action: String
     }
 
-    func explainer(_ interestRate: Double?) -> Explainer {
+    var explainer: Explainer {
         switch self {
         case .trading:
             return .trading
         case .interest:
-            return .rewards(interestRate)
+            return .rewards
         case .privateKey:
             return .privateKey
         case .exchange:
@@ -92,13 +91,11 @@ extension Account.AccountType.Explainer {
         action: Localization.trading.action
     )
 
-    static func rewards(_ interestRate: Double?) -> Self {
-        Self(
-            title: Localization.rewards.title,
-            body: Localization.rewards.body.interpolating(interestRate ?? 0),
-            action: Localization.rewards.action
-        )
-    }
+    static let rewards = Self(
+        title: Localization.rewards.title,
+        body: Localization.rewards.body,
+        action: Localization.rewards.action
+    )
 
     static let exchange = Self(
         title: Localization.exchange.title,
@@ -111,8 +108,8 @@ extension Account.AccountType.Explainer {
 struct AccountExplainer_PreviewProvider: PreviewProvider {
 
     static var previews: some View {
-        AccountExplainer(account: .preview.privateKey, interestRate: nil, onClose: {})
-        AccountExplainer(account: .preview.trading, interestRate: nil, onClose: {})
-        AccountExplainer(account: .preview.rewards, interestRate: 2, onClose: {})
+        AccountExplainer(account: .preview.privateKey, onClose: {})
+        AccountExplainer(account: .preview.trading, onClose: {})
+        AccountExplainer(account: .preview.rewards, onClose: {})
     }
 }

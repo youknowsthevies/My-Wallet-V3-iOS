@@ -27,9 +27,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables Apple Pay
     case applePay
 
-    /// Enables Redesigned CoinView
-    case redesignCoinView
-
     /// Enables Blockchain Domains
     case blockchainDomains
 
@@ -51,7 +48,6 @@ public enum InternalFeature: String, CaseIterable {
              .nativeWalletPayload,
              .nativeBitcoinTransaction,
              .applePay,
-             .redesignCoinView,
              .blockchainDomains,
              .cardIssuing:
             return false
@@ -82,8 +78,6 @@ extension InternalFeature {
             return "Native Bitcoin Transaction"
         case .applePay:
             return "Apple Pay"
-        case .redesignCoinView:
-            return "Redesign: CoinView"
         case .blockchainDomains:
             return "Blockchain Domains"
         case .cardIssuing:

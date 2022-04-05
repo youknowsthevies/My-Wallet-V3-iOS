@@ -703,6 +703,15 @@ extension DependencyContainer {
             RatesRepository(DIKit.resolve())
         }
 
+        single { () -> WatchlistRepositoryAPI in
+            WatchlistRepository(
+                WatchlistClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                )
+            )
+        }
+
         // MARK: Feature Product
 
         factory { () -> FeatureProductsDomain.ProductsServiceAPI in

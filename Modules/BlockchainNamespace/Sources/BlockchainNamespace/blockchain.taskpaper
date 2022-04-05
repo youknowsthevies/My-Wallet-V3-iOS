@@ -386,6 +386,15 @@ blockchain:
 			+ blockchain.ux.type.action
 			send:
 			+ blockchain.ux.type.action
+			watchlist:
+				add:
+				+ blockchain.ux.type.analytics.event
+				is:
+					on:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.value
+				remove:
+				+ blockchain.ux.type.analytics.event
 		buy_and_sell:
 		+ blockchain.ux.type.story
 			buy:

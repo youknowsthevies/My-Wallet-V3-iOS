@@ -124,6 +124,24 @@ enum PreviewHelper {
             .just(5 / 3)
         }
     }
+
+    class WatchlistRepository: WatchlistRepositoryAPI {
+        func addToWatchlist(
+            _ assetCode: String
+        ) -> AnyPublisher<Void, NetworkError> {
+            .just(())
+        }
+
+        func removeFromWatchlist(
+            _ assetCode: String
+        ) -> AnyPublisher<Void, NetworkError> {
+            .just(())
+        }
+
+        func getWatchlist() -> AnyPublisher<Set<String>, NetworkError> {
+            .just(Set())
+        }
+    }
 }
 
 extension Series {
