@@ -76,7 +76,7 @@ public class App: AppProtocol {
         {
             print("🏷 ‼️", event.reference, message, "←", file, line)
         } else {
-            print("🏷", event.reference)
+            print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
     }
 }

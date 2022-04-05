@@ -13,8 +13,8 @@ import ToolKit
 public struct CoinView: View {
 
     let store: Store<CoinViewState, CoinViewAction>
-
     @BlockchainApp var app
+
     @Environment(\.context) var context
 
     public init(store: Store<CoinViewState, CoinViewAction>) {
@@ -52,7 +52,6 @@ public struct CoinView: View {
             .padding(.bottom, 20.pt)
             .ignoresSafeArea(.container, edges: .bottom)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear { app.post(event: blockchain.ux.asset[].ref(to: context)) }
             .onAppear { viewStore.send(.onAppear) }
             .onDisappear { viewStore.send(.onDisappear) }
             .bottomSheet(
@@ -75,7 +74,6 @@ public struct CoinView: View {
                 content: { account in
                     AccountExplainer(
                         account: account,
-                        interestRate: viewStore.interestRate,
                         onClose: {
                             withAnimation(.spring()) {
                                 viewStore.send(.set(\.$explainer, nil))
@@ -94,6 +92,40 @@ public struct CoinView: View {
         )
     }
 
+    @ViewBuilder func totalBalance(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+        switch viewStore.isFavorite {
+        case true:
+            TotalBalanceView(
+                asset: viewStore.asset,
+                accounts: viewStore.accounts,
+                trailing: {
+                    IconButton(icon: .favorite) {
+                        viewStore.send(.addToWatchlist)
+                    }
+                }
+            )
+        case false:
+            TotalBalanceView(
+                asset: viewStore.asset,
+                accounts: viewStore.accounts,
+                trailing: {
+                    IconButton(icon: .favoriteEmpty) {
+                        viewStore.send(.removeFromWatchlist)
+                    }
+                }
+            )
+        default:
+            TotalBalanceView(
+                asset: viewStore.asset,
+                accounts: viewStore.accounts,
+                trailing: {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                }
+            )
+        }
+    }
+
     @ViewBuilder func accounts(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         VStack {
             if viewStore.error == .failedToLoad {
@@ -105,21 +137,17 @@ public struct CoinView: View {
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)
             } else if viewStore.asset.isTradable {
-                TotalBalanceView(
-                    asset: viewStore.asset,
-                    accounts: viewStore.accounts
-                )
-                AccountListView(
-                    accounts: viewStore.accounts,
-                    assetColor: viewStore.asset.brandColor,
-                    interestRate: viewStore.interestRate,
-                    kycStatus: viewStore.kycStatus
-                )
+                totalBalance(viewStore)
+                if let status = viewStore.kycStatus {
+                    AccountListView(
+                        accounts: viewStore.accounts,
+                        assetColor: viewStore.asset.brandColor,
+                        interestRate: viewStore.interestRate,
+                        kycStatus: status
+                    )
+                }
             } else {
-                TotalBalanceView(
-                    asset: viewStore.asset,
-                    accounts: viewStore.accounts
-                )
+                totalBalance(viewStore)
                 AlertCard(
                     title: Localization.Label.Title.notTradable.interpolating(
                         viewStore.asset.name,

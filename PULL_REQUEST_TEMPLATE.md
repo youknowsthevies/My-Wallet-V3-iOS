@@ -8,7 +8,7 @@
 
 ## Key Classes
 
-*Our `VIPER` architecture is prone to larger pull requests. If possible, list key classes that need a more thorough review or where the bulk of the logic is. 👀* 
+*Our `VIPER` architecture is prone to larger pull requests. If possible, list key classes that need a more thorough review or where the bulk of the logic is. 👀*
 
 ## How to Test
 
@@ -37,3 +37,4 @@
 - [ ] You have added unit tests.
 - [ ] You have added sufficient documentation (descriptive comments).
 - [ ] New files added are within the correct directory. (e.g. if a file is required for unit tests to compile, be sure it is added to the tests target.)
+- [ ] If user faceing feature: I have posted to #team-blockchain and #mobile-product-updates, link: <LINK>

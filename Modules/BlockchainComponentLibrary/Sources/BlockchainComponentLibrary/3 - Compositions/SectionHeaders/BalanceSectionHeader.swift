@@ -12,7 +12,7 @@ public struct BalanceSectionHeader<Trailing: View>: View {
     private let header: String?
     private let title: String
     private let subtitle: String
-    private let trailing: Trailing
+    @ViewBuilder private let trailing: () -> Trailing
 
     /// Initialize a Balance Section Header
     /// - Parameters:
@@ -29,7 +29,7 @@ public struct BalanceSectionHeader<Trailing: View>: View {
         self.header = header
         self.title = title
         self.subtitle = subtitle
-        self.trailing = trailing()
+        self.trailing = trailing
     }
 
     public var body: some View {
@@ -53,7 +53,7 @@ public struct BalanceSectionHeader<Trailing: View>: View {
                     )
             }
             Spacer()
-            trailing
+            trailing()
                 .frame(maxHeight: 28)
         }
         .padding(24)
@@ -77,7 +77,7 @@ extension BalanceSectionHeader where Trailing == EmptyView {
         self.header = header
         self.title = title
         self.subtitle = subtitle
-        trailing = EmptyView()
+        trailing = EmptyView.init
     }
 }
 

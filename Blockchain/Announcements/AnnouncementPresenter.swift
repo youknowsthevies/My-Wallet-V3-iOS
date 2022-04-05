@@ -14,6 +14,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import RxToolKit
+import SwiftUI
 import ToolKit
 import UIComponentsKit
 import WalletPayloadKit

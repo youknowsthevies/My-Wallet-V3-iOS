@@ -1265,6 +1265,7 @@ public extension I_blockchain_ux_asset {
 	var `select`: L_blockchain_ux_asset_select { .init("\(__).select") }
 	var `sell`: L_blockchain_ux_asset_sell { .init("\(__).sell") }
 	var `send`: L_blockchain_ux_asset_send { .init("\(__).send") }
+	var `watchlist`: L_blockchain_ux_asset_watchlist { .init("\(__).watchlist") }
 }
 public final class L_blockchain_ux_asset_account: L, I_blockchain_ux_asset_account {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account", comment: "") }
@@ -1497,6 +1498,34 @@ public final class L_blockchain_ux_asset_send: L, I_blockchain_ux_asset_send {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.send", comment: "") }
 }
 public protocol I_blockchain_ux_asset_send: I_blockchain_ux_type_action {}
+public final class L_blockchain_ux_asset_watchlist: L, I_blockchain_ux_asset_watchlist {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.watchlist", comment: "") }
+}
+public protocol I_blockchain_ux_asset_watchlist: I {}
+public extension I_blockchain_ux_asset_watchlist {
+	var `add`: L_blockchain_ux_asset_watchlist_add { .init("\(__).add") }
+	var `is`: L_blockchain_ux_asset_watchlist_is { .init("\(__).is") }
+	var `remove`: L_blockchain_ux_asset_watchlist_remove { .init("\(__).remove") }
+}
+public final class L_blockchain_ux_asset_watchlist_add: L, I_blockchain_ux_asset_watchlist_add {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.watchlist.add", comment: "") }
+}
+public protocol I_blockchain_ux_asset_watchlist_add: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_asset_watchlist_is: L, I_blockchain_ux_asset_watchlist_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.watchlist.is", comment: "") }
+}
+public protocol I_blockchain_ux_asset_watchlist_is: I {}
+public extension I_blockchain_ux_asset_watchlist_is {
+	var `on`: L_blockchain_ux_asset_watchlist_is_on { .init("\(__).on") }
+}
+public final class L_blockchain_ux_asset_watchlist_is_on: L, I_blockchain_ux_asset_watchlist_is_on {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.watchlist.is.on", comment: "") }
+}
+public protocol I_blockchain_ux_asset_watchlist_is_on: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_asset_watchlist_remove: L, I_blockchain_ux_asset_watchlist_remove {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.watchlist.remove", comment: "") }
+}
+public protocol I_blockchain_ux_asset_watchlist_remove: I_blockchain_ux_type_analytics_event {}
 public final class L_blockchain_ux_buy__and__sell: L, I_blockchain_ux_buy__and__sell {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.buy_and_sell", comment: "") }
 }
