@@ -568,8 +568,7 @@ extension AnnouncementPresenter {
                                 .eraseToAnyPublisher()
                         }
                         .map { records, nabuUser -> OrderDomainUserInfo in
-                            print("TTT \(records)")
-                            return OrderDomainUserInfo(
+                            OrderDomainUserInfo(
                                 nabuUserId: nabuUser.identifier,
                                 nabuUserName: nabuUser
                                     .personalDetails
