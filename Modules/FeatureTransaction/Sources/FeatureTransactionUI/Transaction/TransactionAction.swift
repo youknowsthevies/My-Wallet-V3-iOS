@@ -358,7 +358,7 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
 
         case .fatalTransactionError(let error):
-            Logger.shared.error(String(describing: error))
+            Logger.shared.error(error)
             var newState = oldState
             newState.nextEnabled = true
             newState.step = .inProgress

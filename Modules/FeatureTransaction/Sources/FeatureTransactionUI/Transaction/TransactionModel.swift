@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureOpenBankingDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -417,8 +418,8 @@ final class TransactionModel {
             return interactor
                 .pollBuyOrderStatusUntilDoneOrTimeout(orderId: orderId)
                 .asObservable()
-                .subscribe(onNext: { [weak self] finalOrderStatus in
-                    switch finalOrderStatus {
+                .subscribe(onNext: { [weak self] order in
+                    switch order.state {
                     case .cancelled, .expired:
                         self?.process(
                             action: .fatalTransactionError(
@@ -426,11 +427,17 @@ final class TransactionModel {
                             )
                         )
                     case .failed:
-                        self?.process(
-                            action: .fatalTransactionError(
-                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                        if let error = order.error {
+                            self?.process(
+                                action: .fatalTransactionError(OpenBanking.Error.code(error))
                             )
-                        )
+                        } else {
+                            self?.process(
+                                action: .fatalTransactionError(
+                                    FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                                )
+                            )
+                        }
                     case .depositMatched, .pendingConfirmation, .pendingDeposit:
                         self?.process(action: .updateTransactionPending)
                     case .finished:
