@@ -49,6 +49,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -57,7 +58,8 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors")
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors")
             ]
         ),
         .target(
