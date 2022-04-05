@@ -37,7 +37,6 @@ let package = Package(
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../FeatureAuthentication"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
@@ -48,7 +47,6 @@ let package = Package(
         .target(
             name: "FeatureCryptoDomainDomain",
             dependencies: [
-                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool")
@@ -58,7 +56,6 @@ let package = Package(
             name: "FeatureCryptoDomainData",
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
-                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "NetworkError", package: "NetworkErrors")
             ]
