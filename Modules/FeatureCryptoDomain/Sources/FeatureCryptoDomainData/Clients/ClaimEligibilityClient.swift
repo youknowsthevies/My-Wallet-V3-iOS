@@ -2,9 +2,9 @@
 
 import Combine
 import FeatureAuthenticationDomain
-import NetworkKit
-import NabuNetworkError
 import Foundation
+import NabuNetworkError
+import NetworkKit
 
 public protocol ClaimEligibilityClientAPI {
 
