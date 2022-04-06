@@ -69,8 +69,13 @@ import Foundation
         log(message, level: .error, file: file, function: function, line: line)
     }
 
-    public func error(_ error: Error) {
-        log(String(describing: error), level: .error)
+    public func error(
+        _ error: Error,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        log(String(describing: error), level: .error, file: file, function: function, line: line)
     }
 
     public func log(
