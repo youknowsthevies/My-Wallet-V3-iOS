@@ -96,8 +96,7 @@ let domainCheckoutReducer = Reducer<
                     .createDomainOrder(
                         isFree: true,
                         domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                        resolutionRecords: userInfo.resolutionRecords,
-                        nabuUserId: userInfo.nabuUserId
+                        resolutionRecords: userInfo.resolutionRecords
                     )
             }
             .receive(on: environment.mainQueue)

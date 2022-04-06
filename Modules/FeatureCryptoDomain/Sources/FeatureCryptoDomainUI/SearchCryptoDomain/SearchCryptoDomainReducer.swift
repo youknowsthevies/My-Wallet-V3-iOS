@@ -223,8 +223,7 @@ let searchCryptoDomainReducer = Reducer.combine(
                     .createDomainOrder(
                         isFree: false,
                         domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                        resolutionRecords: nil,
-                        nabuUserId: nil
+                        resolutionRecords: nil
                     )
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
