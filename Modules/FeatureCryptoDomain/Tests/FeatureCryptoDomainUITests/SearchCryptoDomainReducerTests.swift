@@ -74,7 +74,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), true)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
@@ -95,7 +95,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), true)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
@@ -114,7 +114,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Searchkey", freeOnly: false)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), false)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
