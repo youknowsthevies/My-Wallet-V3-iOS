@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -15,6 +16,7 @@ final class ReceiveScreenInteractor {
 
     let account: SingleAccount
     let resolutionService: BlockchainNameResolutionServiceAPI
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let receiveRouter: ReceiveRouterAPI
 
     var state: Single<State> {
@@ -24,6 +26,9 @@ final class ReceiveScreenInteractor {
                 resolutionService
                     .reverseResolve(address: receiveAddress.address)
                     .map { (receiveAddress, $0) }
+                    .handleEvents(receiveOutput: { [weak self] _ in
+                        self?.analyticsRecorder.record(event: AnalyticsEvents.New.Receive.receiveDomainReverseResolved)
+                    })
                     .asSingle()
             }
             .map { address, domainNames -> State in
@@ -41,10 +46,12 @@ final class ReceiveScreenInteractor {
     init(
         account: SingleAccount,
         resolutionService: BlockchainNameResolutionServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         receiveRouter: ReceiveRouterAPI = resolve()
     ) {
         self.account = account
         self.resolutionService = resolutionService
+        self.analyticsRecorder = analyticsRecorder
         self.receiveRouter = receiveRouter
     }
 }

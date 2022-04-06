@@ -549,6 +549,7 @@ extension AnnouncementPresenter {
             action: { [coincore, nabuUserService, navigationRouter] in
                 let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,
+                    analyticsRecorder: DIKit.resolve(),
                     externalAppOpener: DIKit.resolve(),
                     searchDomainRepository: DIKit.resolve(),
                     orderDomainRepository: DIKit.resolve(),

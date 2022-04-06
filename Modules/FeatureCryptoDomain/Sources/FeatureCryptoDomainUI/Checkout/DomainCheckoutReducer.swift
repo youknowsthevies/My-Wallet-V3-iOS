@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -55,6 +56,7 @@ struct DomainCheckoutState: Equatable, NavigationState {
 
 struct DomainCheckoutEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
     let userInfoProvider: () -> AnyPublisher<OrderDomainUserInfo, Error>
 }
@@ -127,3 +129,45 @@ let domainCheckoutReducer = Reducer<
 }
 .binding()
 .routing()
+.analytics()
+
+// MARK: - Private
+
+extension Reducer where
+    Action == DomainCheckoutAction,
+    State == DomainCheckoutState,
+    Environment == DomainCheckoutEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                DomainCheckoutState,
+                DomainCheckoutAction,
+                DomainCheckoutEnvironment
+            > { state, action, environment in
+                switch action {
+                case .binding(\.$termsSwitchIsOn):
+                    if state.termsSwitchIsOn {
+                        environment.analyticsRecorder.record(event: .domainTermsAgreed)
+                    }
+                    return .none
+                case .removeDomain:
+                    environment.analyticsRecorder.record(event: .domainCartEmptied)
+                    return .none
+                case .claimDomain:
+                    environment.analyticsRecorder.record(event: .registerDomainStarted)
+                    return .none
+                case .didClaimDomain(.success):
+                    environment.analyticsRecorder.record(event: .registerDomainSucceeded)
+                    return .none
+                case .didClaimDomain(.failure):
+                    environment.analyticsRecorder.record(event: .registerDomainFailed)
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}
