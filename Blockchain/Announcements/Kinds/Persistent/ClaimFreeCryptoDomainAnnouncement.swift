@@ -84,12 +84,9 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
 
         claimEligibilityRepository
             .checkClaimEligibility()
-            .zip(
-                featureFlagsService.isEnabled(.local(.blockchainDomains)),
-                featureFlagsService.isEnabled(.remote(.blockchainDomains))
-            )
-            .map { localEnabled, remoteEnabled, isEligible in
-                localEnabled && remoteEnabled && isEligible
+            .zip(featureFlagsService.isEnabled(.remote(.blockchainDomains)))
+            .map { isEligible, featureEnabled in
+                isEligible && featureEnabled
             }
             .asSingle()
             .subscribe { [weak self] enabled in
