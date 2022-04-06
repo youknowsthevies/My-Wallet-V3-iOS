@@ -59,7 +59,6 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
     let type = AnnouncementType.claimFreeCryptoDomain
     let featureFlagsService: FeatureFlagsServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
-    let claimEligibilityRepository: ClaimEligibilityRepositoryAPI
     let action: CardAnnouncementAction
     let dismiss: CardAnnouncementAction
 
@@ -72,26 +71,16 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
     init(
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        claimEligibilityRepository: ClaimEligibilityRepositoryAPI = resolve(),
         action: @escaping CardAnnouncementAction,
         dismiss: @escaping CardAnnouncementAction
     ) {
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
-        self.claimEligibilityRepository = claimEligibilityRepository
         self.action = action
         self.dismiss = dismiss
 
         featureFlagsService
             .isEnabled(.remote(.blockchainDomains))
-            .asSingle()
-            .subscribe { [weak self] enabled in
-                self?.claimFreeDomainEnabled.mutate { $0 = enabled }
-            }
-            .disposed(by: disposeBag)
-
-        claimEligibilityRepository
-            .checkClaimEligibility()
             .asSingle()
             .subscribe { [weak self] enabled in
                 self?.claimFreeDomainEnabled.mutate { $0 = enabled }
