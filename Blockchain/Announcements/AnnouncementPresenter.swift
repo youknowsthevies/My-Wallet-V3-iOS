@@ -59,6 +59,8 @@ final class AnnouncementPresenter {
 
     private let coincore: CoincoreAPI
     private let nabuUserService: NabuUserServiceAPI
+    private let claimEligibilityRepository: ClaimEligibilityRepositoryAPI
+    private var claimFreeDomainEligible: Atomic<Bool> = .init(false)
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -92,7 +94,8 @@ final class AnnouncementPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
-        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
+        nabuUserService: NabuUserServiceAPI = DIKit.resolve(),
+        claimEligibilityRepository: ClaimEligibilityRepositoryAPI = DIKit.resolve()
     ) {
         self.app = app
         self.interactor = interactor
@@ -116,6 +119,7 @@ final class AnnouncementPresenter {
         self.accountsRouter = accountsRouter
         self.coincore = coincore
         self.nabuUserService = nabuUserService
+        self.claimEligibilityRepository = claimEligibilityRepository
 
         announcement
             .asObservable()
@@ -125,6 +129,13 @@ final class AnnouncementPresenter {
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
+
+        claimEligibilityRepository
+            .checkClaimEligibility()
+            .sink { [weak self] enabled in
+                self?.claimFreeDomainEligible.mutate { $0 = enabled }
+            }
+            .store(in: &cancellables)
     }
 
     /// Refreshes announcements on demand
@@ -164,7 +175,8 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             // IOS-6127: wallets with no balance should show no announcements
             // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch or claim domain no matter what.
-            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch || type == .claimFreeCryptoDomain else {
+            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch ||
+                (type == .claimFreeCryptoDomain && claimFreeDomainEligible.value) else {
                 return .none
             }
 
