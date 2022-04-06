@@ -82,12 +82,16 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         self.action = action
         self.dismiss = dismiss
 
+        featureFlagsService
+            .isEnabled(.remote(.blockchainDomains))
+            .asSingle()
+            .subscribe { [weak self] enabled in
+                self?.claimFreeDomainEnabled.mutate { $0 = enabled }
+            }
+            .disposed(by: disposeBag)
+
         claimEligibilityRepository
             .checkClaimEligibility()
-            .zip(featureFlagsService.isEnabled(.remote(.blockchainDomains)))
-            .map { isEligible, featureEnabled in
-                isEligible && featureEnabled
-            }
             .asSingle()
             .subscribe { [weak self] enabled in
                 self?.claimFreeDomainEnabled.mutate { $0 = enabled }
