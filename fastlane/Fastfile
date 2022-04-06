@@ -1,5 +1,7 @@
 opt_out_usage
 
+DERIVED_DATA_PATH = "~/Library/Developer/Xcode/DerivedData"
+
 default_platform(:ios)
 platform :ios do
   
@@ -89,9 +91,18 @@ platform :ios do
   
   desc "Runs all unit tests on Blockchain (Staging) scheme"
   lane :execute_tests do
-    scan(
-      cloned_source_packages_path: "SourcePackages",
-      xcargs: "-packageCachePath ${PWD}/PackageCache -disableAutomaticPackageResolution"
+    xcargs = {}
+    xcargs['CODE_SIGN_IDENTITY'] = ''
+    xcargs['CODE_SIGNING_REQUIRED'] = 'NO'
+    xcargs['COMPILER_INDEX_STORE_ENABLE'] = 'NO'
+    flatten = flatten_xcargs(xcargs)
+    clonedSourcesPath = "#{DERIVED_DATA_PATH}/SourcePackages" 
+    packageCachePath = "#{DERIVED_DATA_PATH}/PackageCache"
+    xcodebuild(
+      project: "Blockchain.xcodeproj",
+      scheme: "Blockchain (Staging)",
+      configuration: "Debug Staging",
+      xcargs: flatten + " -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.4' -clonedSourcePackagesDirPath #{clonedSourcesPath} -packageCachePath #{packageCachePath} -disableAutomaticPackageResolution test"
     )
   end
   
@@ -175,8 +186,8 @@ platform :ios do
   private_lane :build_and_archive do | options |
     puts "🏗  Building App"
     build_app(
-      cloned_source_packages_path: "SourcePackages",
-      xcargs: "-packageCachePath ${PWD}/PackageCache -disableAutomaticPackageResolution"
+      cloned_source_packages_path: "#{DERIVED_DATA_PATH}/SourcePackages",
+      xcargs: "-packageCachePath #{DERIVED_DATA_PATH}/PackageCache -disableAutomaticPackageResolution"
     )
   end
   
@@ -233,5 +244,9 @@ platform :ios do
       issuer_id: ENV["APPSTORE_CONNECT_API_ISSUER_ID"],
       key_content: ENV["APPSTORE_CONNECT_API_KEY_CONTENT"]
     )
+  end
+
+  def flatten_xcargs(xcargs)
+    xcargs.map{|k,v| "#{k}=\"#{v}\""}.join(' ')
   end
 end
