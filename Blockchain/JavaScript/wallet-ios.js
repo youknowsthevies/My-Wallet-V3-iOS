@@ -432,6 +432,24 @@ MyWalletPhone.getReceivingAddressForAccountXPub = function(xpub, forceLegacy) {
     }
 };
 
+MyWalletPhone.getFirstReceivingAddressForAccountXPub = function(xpub) {
+    if (!MyWallet.wallet.isUpgradedToHD) {
+        console.log('Warning: Getting accounts when wallet has not upgraded!');
+        return '';
+    }
+    const hdwallet = MyWallet.wallet.hdwallet;
+    if (hdwallet.isUpgradedToV4) {
+        // V4 Wallet
+        // Find the HDAccount that contains the given XPub in any of its derivations.
+        var hdAccount = hdwallet.accounts.find(account => account.derivations.find(derivation => derivation.xpub == xpub));
+        // Returns default derivation receive address.
+        return hdAccount.firstReceiveAddress;
+    } else {
+        // V3 Wallet
+        return null
+    }
+};
+
 MyWalletPhone.isArchived = function(accountOrAddress) {
     if (Helpers.isNumber(accountOrAddress) && accountOrAddress >= 0) {
 
@@ -1258,6 +1276,11 @@ MyWalletPhone.bch = {
     getReceivingAddressForAccountXPub : function(xpub) {
         const found = MyWallet.wallet.bch.accounts.find(account => account.xpub == xpub);
         return Helpers.toBitcoinCash(found.receiveAddress);
+    },
+
+    getFirstReceivingAddressForAccountXPub: function(xpub) {
+        const found = MyWallet.wallet.bch.accounts.find(account => account.xpub == xpub);
+        return Helpers.toBitcoinCash(found.firstReceiveAddress);
     },
 
     getLabelForAccount : function(index) {

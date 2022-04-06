@@ -22,6 +22,8 @@ protocol LegacyBitcoinCashWalletProtocol: AnyObject {
 
     func getBitcoinCashReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
 
+    func getBitcoinCashFirstReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
+
     func getBitcoinCashNote(
         for transaction: String,
         success: @escaping (String?) -> Void,
@@ -49,6 +51,23 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
             return .failure(.uninitialized)
         }
         let function: String = "MyWalletPhone.bch.getReceivingAddressForAccountXPub(\"\(xpub)\")"
+        guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
+            return .failure(.jsReturnedNil)
+        }
+        guard let result: String = jsResult.toString() else {
+            return .failure(.jsValueNotString)
+        }
+        guard !result.isEmpty else {
+            return .failure(.jsValueEmptyString)
+        }
+        return .success(result)
+    }
+
+    func getBitcoinCashFirstReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError> {
+        guard isInitialized() else {
+            return .failure(.uninitialized)
+        }
+        let function: String = "MyWalletPhone.bch.getFirstReceivingAddressForAccountXPub(\"\(xpub)\")"
         guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
