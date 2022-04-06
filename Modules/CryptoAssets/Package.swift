@@ -50,6 +50,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Money"),
         .package(path: "../Platform"),
+        .package(path: "../FeatureCryptoDomain"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -62,6 +63,7 @@ let package = Package(
                 .target(name: "BitcoinChainKit"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
@@ -85,6 +87,7 @@ let package = Package(
                 .target(name: "BitcoinChainKit"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "WalletCore", package: "WalletCore")
@@ -115,6 +118,7 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "MetadataKit", package: "Metadata"),
                 .product(name: "PlatformKit", package: "Platform"),
@@ -129,6 +133,7 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
