@@ -305,8 +305,6 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     func firstReceiveAddress(forXPub xpub: String) -> Single<String> {
         reactiveWallet
             .waitUntilInitializedFirst
-            .asObservable()
-            .take(1)
             .asSingle()
             .map(weak: self) { (self, _) -> String in
                 guard let wallet = self.wallet else {
