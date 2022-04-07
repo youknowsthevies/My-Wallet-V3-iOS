@@ -568,22 +568,6 @@ targets:
     - createIntermediateGroups: true
       path: Modules/WalletPayload/Sources/WalletPayloadKitMock
     type: bundle.unit-test
-  OnboardingDemo:
-    dependencies:
-      - package: FeatureOnboarding
-        product: FeatureOnboardingUI
-      - package: FeatureKYC
-      - package: Platform
-        product: PlatformKit
-      - package: Platform
-        product: PlatformDataKit
-      - package: Platform
-        product: PlatformUIKit
-    platform: iOS
-    sources:
-      - createIntermediateGroups: true
-        path: Modules/FeatureOnboarding/OnboardingDemo
-    type: application
   CryptoDomainDemo:
     dependencies:
       - package: FeatureCryptoDomain

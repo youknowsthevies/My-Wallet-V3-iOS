@@ -66,6 +66,7 @@ public let coinViewReducer = Reducer<
             return .none
 
         case .addToWatchlist:
+            state.isFavorite = nil
             return .fireAndForget { [state] in
                 environment.app.post(
                     event: blockchain.ux.asset[state.asset.code].watchlist.add
@@ -73,6 +74,7 @@ public let coinViewReducer = Reducer<
             }
 
         case .removeFromWatchlist:
+            state.isFavorite = nil
             return .fireAndForget { [state] in
                 environment.app.post(
                     event: blockchain.ux.asset[state.asset.code].watchlist.remove

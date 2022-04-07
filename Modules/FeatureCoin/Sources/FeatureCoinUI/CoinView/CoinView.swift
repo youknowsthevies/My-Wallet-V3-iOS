@@ -92,35 +92,23 @@ public struct CoinView: View {
         )
     }
 
-    @ViewBuilder func totalBalance(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
-        switch viewStore.isFavorite {
-        case true:
+    @ViewBuilder func totalBalance() -> some View {
+        WithViewStore(store) { viewStore in
             TotalBalanceView(
                 asset: viewStore.asset,
                 accounts: viewStore.accounts,
                 trailing: {
-                    IconButton(icon: .favorite) {
-                        viewStore.send(.addToWatchlist)
+                    WithViewStore(store) { viewStore in
+                        if let isFavorite = viewStore.isFavorite {
+                            IconButton(icon: isFavorite ? .favorite : .favoriteEmpty) {
+                                viewStore.send(isFavorite ? .removeFromWatchlist : .addToWatchlist)
+                            }
+                        } else {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .frame(width: 28, height: 28)
+                        }
                     }
-                }
-            )
-        case false:
-            TotalBalanceView(
-                asset: viewStore.asset,
-                accounts: viewStore.accounts,
-                trailing: {
-                    IconButton(icon: .favoriteEmpty) {
-                        viewStore.send(.removeFromWatchlist)
-                    }
-                }
-            )
-        default:
-            TotalBalanceView(
-                asset: viewStore.asset,
-                accounts: viewStore.accounts,
-                trailing: {
-                    ProgressView()
-                        .progressViewStyle(.circular)
                 }
             )
         }
@@ -137,7 +125,7 @@ public struct CoinView: View {
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)
             } else if viewStore.asset.isTradable {
-                totalBalance(viewStore)
+                totalBalance()
                 if let status = viewStore.kycStatus {
                     AccountListView(
                         accounts: viewStore.accounts,
@@ -147,7 +135,7 @@ public struct CoinView: View {
                     )
                 }
             } else {
-                totalBalance(viewStore)
+                totalBalance()
                 AlertCard(
                     title: Localization.Label.Title.notTradable.interpolating(
                         viewStore.asset.name,
@@ -327,7 +315,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     ),
                     kycStatus: .unverified,
                     accounts: [
-                        .new(
+                        .stub(
                             cryptoCurrency: .bitcoin,
                             fiatCurrency: .USD,
                             crypto: .zero(currency: .bitcoin),

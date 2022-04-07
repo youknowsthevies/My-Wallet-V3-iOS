@@ -67,15 +67,10 @@ public struct StatePickerView: View {
         SearchableItem(id: "WY", title: "Wyoming")
     ]
 
-    private let selectedItem: SearchableItem<String>?
-    private let onSelection: (SearchableItem<String>) -> Void
+    @Binding private var selectedItem: SearchableItem<String>?
 
-    public init(
-        selectedItem: SearchableItem<String>?,
-        onSelection: @escaping (SearchableItem<String>) -> Void
-    ) {
-        self.selectedItem = selectedItem
-        self.onSelection = onSelection
+    public init(selectedItem: Binding<SearchableItem<String>?>) {
+        _selectedItem = selectedItem
     }
 
     public var body: some View {
@@ -86,10 +81,9 @@ public struct StatePickerView: View {
                     items: StatePickerView.usaStates
                 )
             ],
-            selectedItem: selectedItem,
+            selectedItem: $selectedItem,
             cancelButtonTitle: LocalizationConstants.searchCancelButtonTitle,
-            searchPlaceholder: LocalizationConstants.searchPlaceholder,
-            onSelection: onSelection
+            searchPlaceholder: LocalizationConstants.searchPlaceholder
         )
     }
 }
