@@ -309,8 +309,10 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var activity = app.on(blockchain.ux.asset.account.activity) { [unowned app] _ in
-        app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
+    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ in
+        self.topViewController.topMostViewController?.dismiss(animated: true) {
+            self.app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
+        }
     }
 
     lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { [application] event in
