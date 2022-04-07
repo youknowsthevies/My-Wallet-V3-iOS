@@ -226,6 +226,8 @@ packages:
     path: Modules/FeatureInterest
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureNFT:
+    path: Modules/FeatureNFT
   FeatureOpenBanking:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
@@ -342,6 +344,7 @@ targets:
       - package: FeatureForm
       - package: FeatureInterest
       - package: FeatureKYC
+      - package: FeatureNFT
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
