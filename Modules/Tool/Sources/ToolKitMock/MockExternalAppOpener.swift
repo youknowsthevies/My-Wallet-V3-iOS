@@ -11,6 +11,10 @@ public final class MockExternalAppOpener: ExternalAppOpener {
 
     public private(set) var recordedInvocations = RecordedInvocations()
 
+    public init() {
+        // required for use in other modules
+    }
+
     public func openMailApp(completionHandler: @escaping (Bool) -> Void) {
         recordedInvocations.open.append((URL(string: "message://")!, completionHandler))
     }

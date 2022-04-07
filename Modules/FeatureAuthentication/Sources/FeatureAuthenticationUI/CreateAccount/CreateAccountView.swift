@@ -9,6 +9,7 @@ import SwiftUI
 import UIComponentsKit
 
 private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.CreateAccount
+private typealias AccessibilityIdentifier = AccessibilityIdentifiers.CreateAccountScreen
 
 struct CreateAccountView: View {
 
@@ -34,7 +35,7 @@ struct CreateAccountView: View {
                         viewStore.send(.createButtonTapped)
                     }
                     .disabled(viewStore.isCreateButtonDisabled)
-                    .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
+                    .accessibility(identifier: AccessibilityIdentifier.createAccountButton)
                 }
                 .padding(Spacing.padding3)
             }
@@ -47,16 +48,17 @@ struct CreateAccountView: View {
             } label: {
                 Text(LocalizedString.nextButton)
                     .typography(.paragraph2)
-                    .foregroundColor(.semantic.primary)
             }
-            .disabled(viewStore.validatingInput || viewStore.inputValidationState.isInvalid)
-            .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.nextButton)
+            .disabled(viewStore.isCreateButtonDisabled)
+            // disabling the button doesn't gray it out
+            .foregroundColor(viewStore.isCreateButtonDisabled ? .semantic.muted : .semantic.primary)
+            .accessibility(identifier: AccessibilityIdentifier.nextButton)
         }
         .onWillDisappear {
             viewStore.send(.onWillDisappear)
         }
         .navigationRoute(in: store)
-        .alert(self.store.scope(state: \.failureAlert), dismiss: .alert(.dismiss))
+        .alert(store.scope(state: \.failureAlert), dismiss: .alert(.dismiss))
     }
 }
 
@@ -112,7 +114,7 @@ private struct CreateAccountForm: View {
                 viewStore.send(.set(\.$selectedInputField, .password))
             }
         )
-        .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.emailGroup)
+        .accessibility(identifier: AccessibilityIdentifier.emailGroup)
     }
 
     private var passwordField: some View {
@@ -141,7 +143,7 @@ private struct CreateAccountForm: View {
                 viewStore.send(.set(\.$selectedInputField, nil))
             }
         )
-        .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.passwordGroup)
+        .accessibility(identifier: AccessibilityIdentifier.passwordGroup)
     }
 
     private var countryAndStatePickers: some View {
@@ -154,30 +156,37 @@ private struct CreateAccountForm: View {
                 .typography(.paragraph2)
 
             VStack(spacing: .zero) {
-                let country = viewStore.country.title
-                if let state = viewStore.countryState?.title {
+                let isCountryValid = viewStore.inputValidationState != .invalid(.noCountrySelected)
+                if viewStore.shouldDisplayCountryStateField {
+                    let isCountryStateValid = viewStore.inputValidationState != .invalid(.noCountryStateSelected)
                     PrimaryPicker(
-                        selection: viewStore.binding(\.$pickerSelection),
+                        selection: viewStore.binding(\.$selectedAddressSegmentPicker),
                         rows: [
                             .row(
-                                title: country,
+                                title: viewStore.country?.title,
                                 identifier: .country,
+                                placeholder: LocalizedString.TextFieldPlaceholder.country,
+                                inputState: isCountryValid ? .default : .error,
                                 trailing: { accessory }
                             ),
                             .row(
-                                title: state,
-                                identifier: .state,
+                                title: viewStore.countryState?.title,
+                                identifier: .countryState,
+                                placeholder: LocalizedString.TextFieldPlaceholder.state,
+                                inputState: isCountryStateValid ? .default : .error,
                                 trailing: { accessory }
                             )
                         ]
                     )
                 } else {
                     PrimaryPicker(
-                        selection: viewStore.binding(\.$pickerSelection),
+                        selection: viewStore.binding(\.$selectedAddressSegmentPicker),
                         rows: [
                             .row(
-                                title: country,
+                                title: viewStore.country?.title,
                                 identifier: .country,
+                                placeholder: LocalizedString.TextFieldPlaceholder.country,
+                                inputState: isCountryValid ? .default : .error,
                                 trailing: { accessory }
                             )
                         ]
@@ -194,11 +203,11 @@ private struct CreateAccountForm: View {
                 isOn: viewStore.binding(\.$termsAccepted),
                 variant: showCheckboxError ? .error : .default
             )
-            .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.termsOfServiceButton)
+            .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
 
             agreementText
                 .typography(.caption1)
-                .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.agreementPromptText)
+                .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
         }
         // fixing the size prevents the view from collapsing when the keyboard is on screen
         .fixedSize(horizontal: false, vertical: true)
@@ -220,7 +229,7 @@ private struct CreateAccountForm: View {
                 .onTapGesture {
                     viewStore.send(.openExternalLink(Constants.SupportURL.ResetAccount.walletBackupURL))
                 }
-                .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.agreementPromptText)
+                .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
 
             HStack(alignment: .firstTextBaseline, spacing: .zero) {
                 Text(LocalizedString.termsOfServiceLink)
@@ -229,7 +238,7 @@ private struct CreateAccountForm: View {
                         guard let url = URL(string: Constants.HostURL.terms) else { return }
                         viewStore.send(.openExternalLink(url))
                     }
-                    .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.termsOfServiceButton)
+                    .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
 
                 Text(" " + LocalizedString.and + " ")
                     .foregroundColor(.semantic.body)
@@ -245,7 +254,7 @@ private struct CreateAccountForm: View {
                         guard let url = URL(string: Constants.HostURL.privacyPolicy) else { return }
                         viewStore.send(.openExternalLink(url))
                     }
-                    .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.privacyPolicyButton)
+                    .accessibility(identifier: AccessibilityIdentifier.privacyPolicyButton)
             }
         }
     }

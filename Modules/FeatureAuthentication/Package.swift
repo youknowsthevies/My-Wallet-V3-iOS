@@ -69,6 +69,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
