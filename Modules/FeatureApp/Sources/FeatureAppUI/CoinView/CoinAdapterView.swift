@@ -104,7 +104,7 @@ public final class CoinViewObserver: Session.Observer {
     let app: AppProtocol
     let transactionsRouter: TransactionsRouterAPI
     let coincore: CoincoreAPI
-    let kycRouter: KYCAdapter
+    let kycRouter: KYCRouterAPI
     let defaults: UserDefaults
     let application: URLOpener
     let topViewController: TopMostViewControllerProviding
@@ -115,7 +115,7 @@ public final class CoinViewObserver: Session.Observer {
         app: AppProtocol,
         transactionsRouter: TransactionsRouterAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
-        kycRouter: KYCAdapter = KYCAdapter(),
+        kycRouter: KYCRouterAPI = resolve(),
         defaults: UserDefaults = .standard,
         application: URLOpener = resolve(),
         topViewController: TopMostViewControllerProviding = resolve(),
@@ -135,21 +135,21 @@ public final class CoinViewObserver: Session.Observer {
 
     var observers: [BlockchainEventSubscription] {
         [
-            select,
+            activity,
             buy,
-            sell,
+            exchangeDeposit,
+            exchangeWithdraw,
+            explainerReset,
+            kyc,
             receive,
-            send,
-            swap,
-            rewardsWithdraw,
             rewardsDeposit,
             rewardsSummary,
-            exchangeWithdraw,
-            exchangeDeposit,
-            kyc,
-            activity,
-            website,
-            explainerReset
+            rewardsWithdraw,
+            select,
+            sell,
+            send,
+            swap,
+            website
         ]
     }
 
@@ -277,13 +277,8 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { [unowned self] event in
-        let viewController = topViewController.topMostViewController!
-        guard
-            let result = await kycRouter.presentKYCUpgradeFlow(from: viewController).values.first,
-            result != .abandoned
-        else {
-            return
-        }
+        kycRouter.start(parentFlow: .coin)
+
         if event.reference.context[blockchain.ux.asset.account.id] != nil {
             app.post(
                 event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context)

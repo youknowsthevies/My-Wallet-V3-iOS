@@ -315,7 +315,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                     ),
                     kycStatus: .unverified,
                     accounts: [
-                        .new(
+                        .stub(
                             cryptoCurrency: .bitcoin,
                             fiatCurrency: .USD,
                             crypto: .zero(currency: .bitcoin),
