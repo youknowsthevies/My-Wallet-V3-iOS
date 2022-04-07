@@ -59,6 +59,8 @@ final class AnnouncementPresenter {
 
     private let coincore: CoincoreAPI
     private let nabuUserService: NabuUserServiceAPI
+    private let claimEligibilityRepository: ClaimEligibilityRepositoryAPI
+    private var claimFreeDomainEligible: Atomic<Bool> = .init(false)
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -92,7 +94,8 @@ final class AnnouncementPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
-        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
+        nabuUserService: NabuUserServiceAPI = DIKit.resolve(),
+        claimEligibilityRepository: ClaimEligibilityRepositoryAPI = DIKit.resolve()
     ) {
         self.app = app
         self.interactor = interactor
@@ -116,6 +119,7 @@ final class AnnouncementPresenter {
         self.accountsRouter = accountsRouter
         self.coincore = coincore
         self.nabuUserService = nabuUserService
+        self.claimEligibilityRepository = claimEligibilityRepository
 
         announcement
             .asObservable()
@@ -125,6 +129,13 @@ final class AnnouncementPresenter {
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
+
+        claimEligibilityRepository
+            .checkClaimEligibility()
+            .sink { [weak self] enabled in
+                self?.claimFreeDomainEligible.mutate { $0 = enabled }
+            }
+            .store(in: &cancellables)
     }
 
     /// Refreshes announcements on demand
@@ -163,8 +174,10 @@ final class AnnouncementPresenter {
         // For other users, keep the current logic in place
         for type in metadata.order {
             // IOS-6127: wallets with no balance should show no announcements
-            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch no matter what.
-            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch else {
+            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch or claim domain no matter what.
+            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch ||
+                (type == .claimFreeCryptoDomain && claimFreeDomainEligible.value)
+            else {
                 return .none
             }
 
@@ -549,54 +562,33 @@ extension AnnouncementPresenter {
             action: { [coincore, nabuUserService, navigationRouter] in
                 let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,
+                    analyticsRecorder: DIKit.resolve(),
                     externalAppOpener: DIKit.resolve(),
                     searchDomainRepository: DIKit.resolve(),
                     orderDomainRepository: DIKit.resolve(),
                     userInfoProvider: {
                         Deferred {
-                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash]])
+                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
                         }
                         .eraseError()
-                        .flatMap { cryptoAssets -> AnyPublisher<([String], [ReceiveAddress], NabuUser), Error> in
-                            let accountsPublisher = cryptoAssets.map(\.defaultAccount)
-                            let mergedAccountsPublisher = Publishers.MergeMany(accountsPublisher)
-                                .collect()
-                                .eraseToAnyPublisher()
-
-                            let addresses = mergedAccountsPublisher
-                                .map { $0.map(\.receiveAddress) }
-                                .eraseError()
-                                .eraseToAnyPublisher()
-                            let addressesPublisher = addresses
-                                .map { $0.map { $0.asPublisher().eraseToAnyPublisher() } }
-                                .flatMap { Publishers.MergeMany($0).collect().eraseToAnyPublisher() }
-                                .eraseError()
-                                .eraseToAnyPublisher()
-
-                            let symbolsPublisher = Just(cryptoAssets.map(\.asset).map(\.code))
-                                .eraseError()
-                                .eraseToAnyPublisher()
-
-                            let nabuUserPublisher = nabuUserService.user.eraseError()
-
-                            return Publishers.Zip3(
-                                symbolsPublisher,
-                                addressesPublisher,
-                                nabuUserPublisher
-                            )
-                            .eraseToAnyPublisher()
-                        }
-                        .flatMap { symbols, addresses, nabuUser -> AnyPublisher<OrderDomainUserInfo, Error> in
-                            var records: [ResolutionRecord] = []
-                            for (symbol, receiveAddress) in zip(symbols, addresses) {
-                                records.append(ResolutionRecord(symbol: symbol, walletAddress: receiveAddress.address))
+                        .flatMap { cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
+                            guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
+                                return .empty()
                             }
-                            return .just(
-                                OrderDomainUserInfo(
-                                    nabuUserId: nabuUser.identifier,
-                                    nabuUserName: nabuUser.personalDetails.firstName ?? "",
-                                    resolutionRecords: records
-                                )
+                            let recordPublisher = providers.map(\.resolutionRecord).zip()
+                            let nabuUserPublisher = nabuUserService.user.eraseError()
+                            return recordPublisher
+                                .zip(nabuUserPublisher)
+                                .eraseToAnyPublisher()
+                        }
+                        .map { records, nabuUser -> OrderDomainUserInfo in
+                            OrderDomainUserInfo(
+                                nabuUserId: nabuUser.identifier,
+                                nabuUserName: nabuUser
+                                    .personalDetails
+                                    .firstName?
+                                    .replacingOccurrences(of: " ", with: "") ?? "",
+                                resolutionRecords: records
                             )
                         }
                         .eraseToAnyPublisher()

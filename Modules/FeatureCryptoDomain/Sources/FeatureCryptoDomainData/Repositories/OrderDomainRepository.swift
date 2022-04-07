@@ -19,17 +19,16 @@ public final class OrderDomainRepository: OrderDomainRepositoryAPI {
     public func createDomainOrder(
         isFree: Bool,
         domainName: String,
-        resolutionRecords: [ResolutionRecord]?,
-        nabuUserId: String?
+        resolutionRecords: [ResolutionRecord]?
     ) -> AnyPublisher<OrderDomainResult, OrderDomainRepositoryError> {
         apiClient
             .postOrder(
                 payload: PostOrderRequest(
+                    domainCampaign: "UNSTOPPABLE_DOMAINS",
                     domain: domainName,
+                    owner: resolutionRecords?.first?.walletAddress ?? "",
                     records: resolutionRecords?.map(Record.init) ?? [],
-                    isFree: isFree,
-                    walletId: nabuUserId ?? "",
-                    owner: resolutionRecords?.first?.walletAddress ?? ""
+                    isFree: isFree
                 )
             )
             .map { response in

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -14,10 +15,12 @@ final class TargetSelectionInteractor {
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         coincore: CoincoreAPI = resolve(),
         nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()
     ) {
@@ -25,6 +28,7 @@ final class TargetSelectionInteractor {
         self.linkedBanksFactory = linkedBanksFactory
         self.featureFetcher = featureFetcher
         self.nameResolutionService = nameResolutionService
+        self.analyticsRecorder = analyticsRecorder
     }
 
     func getBitPayInvoiceTarget(
@@ -101,6 +105,9 @@ final class TargetSelectionInteractor {
                     return .failure(CryptoAssetError.addressParseFailure)
                 }
             }
+            .handleEvents(receiveOutput: { [analyticsRecorder] _ in
+                analyticsRecorder.record(event: AnalyticsEvents.New.Send.sendDomainResolved)
+            })
             .eraseToAnyPublisher()
     }
 }

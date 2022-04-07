@@ -10,6 +10,7 @@ extension AnalyticsEvents.New {
 
         case receiveCurrencySelected(accountType: AccountType, currency: String)
         case receiveDetailsCopied(accountType: AccountType, currency: String)
+        case receiveDomainReverseResolved
 
         public enum AccountType: String, StringRawRepresentable {
             case savings = "SAVINGS"

@@ -65,6 +65,17 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
             }
     }
 
+    var firstReceiveAddress: Single<ReceiveAddress> {
+        bridge.firstReceiveAddress(forXPub: xPub.address)
+            .map { [label, onTxCompleted] address -> ReceiveAddress in
+                BitcoinChainReceiveAddress<BitcoinToken>(
+                    address: address,
+                    label: label,
+                    onTxCompleted: onTxCompleted
+                )
+            }
+    }
+
     var activity: Single<[ActivityItemEvent]> {
         Single.zip(nonCustodialActivity, swapActivity)
             .map { nonCustodialActivity, swapActivity in
