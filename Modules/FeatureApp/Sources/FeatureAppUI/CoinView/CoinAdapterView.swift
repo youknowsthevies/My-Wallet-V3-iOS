@@ -34,6 +34,7 @@ public struct CoinAdapterView: View {
         userAdapter: UserAdapterAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        assetInformationRepository: AssetInformationRepositoryAPI = resolve(),
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
         ratesRepository: RatesRepositoryAPI = resolve(),
         watchlistRepository: WatchlistRepositoryAPI = resolve(),
@@ -43,7 +44,7 @@ public struct CoinAdapterView: View {
         self.app = app
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
-                asset: AssetDetails(cryptoCurrency: cryptoCurrency)
+                currency: cryptoCurrency
             ),
             reducer: coinViewReducer,
             environment: CoinViewEnvironment(
@@ -73,6 +74,10 @@ public struct CoinAdapterView: View {
                         }
                         .eraseToAnyPublisher()
                 },
+                assetInformationService: AssetInformationService(
+                    currency: cryptoCurrency,
+                    repository: assetInformationRepository
+                ),
                 historicalPriceService: HistoricalPriceService(
                     base: cryptoCurrency,
                     displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
@@ -276,7 +281,7 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { [unowned self] event in
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] event in
         kycRouter.start(parentFlow: .coin)
 
         if event.reference.context[blockchain.ux.asset.account.id] != nil {
@@ -438,23 +443,6 @@ extension FeatureCoinDomain.KYCStatus {
         case .gold:
             self = .gold
         }
-    }
-}
-
-extension AssetDetails {
-
-    init(cryptoCurrency: CryptoCurrency) {
-        self.init(
-            name: cryptoCurrency.name,
-            code: cryptoCurrency.code,
-            brandColor: cryptoCurrency.brandColor,
-            about: nil,
-            website: nil,
-            logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
-            logoImage: cryptoCurrency.assetModel.logoResource.image,
-            isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
-                || cryptoCurrency.supports(product: .privateKey)
-        )
     }
 }
 

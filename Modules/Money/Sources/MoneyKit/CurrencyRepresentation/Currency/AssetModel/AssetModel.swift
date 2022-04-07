@@ -52,7 +52,7 @@ public struct AssetModel: Hashable {
         self.sortIndex = assetModelType.baseSortIndex + sortIndex
     }
 
-    init(
+    public init(
         code: String,
         displayCode: String,
         kind: AssetModelType,

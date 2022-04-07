@@ -13,6 +13,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let kycStatusProvider: () -> AnyPublisher<KYCStatus, Never>
     public let accountsProvider: () -> AnyPublisher<[Account], Error>
+    public let assetInformationService: AssetInformationService
     public let historicalPriceService: HistoricalPriceServiceAPI
     public let interestRatesRepository: RatesRepositoryAPI
     public let explainerService: ExplainerService
@@ -24,6 +25,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         kycStatusProvider: @escaping () -> AnyPublisher<KYCStatus, Never>,
         accountsProvider: @escaping () -> AnyPublisher<[Account], Error>,
+        assetInformationService: AssetInformationService,
         historicalPriceService: HistoricalPriceServiceAPI,
         interestRatesRepository: RatesRepositoryAPI,
         explainerService: ExplainerService,
@@ -34,6 +36,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         self.mainQueue = mainQueue
         self.kycStatusProvider = kycStatusProvider
         self.accountsProvider = accountsProvider
+        self.assetInformationService = assetInformationService
         self.historicalPriceService = historicalPriceService
         self.interestRatesRepository = interestRatesRepository
         self.explainerService = explainerService
@@ -47,6 +50,7 @@ extension CoinViewEnvironment {
         app: App.preview,
         kycStatusProvider: { .empty() },
         accountsProvider: { .empty() },
+        assetInformationService: .preview,
         historicalPriceService: PreviewHelper.HistoricalPriceService(),
         interestRatesRepository: PreviewHelper.InterestRatesRepository(),
         explainerService: .init(app: App.preview),

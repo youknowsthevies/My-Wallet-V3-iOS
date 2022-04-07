@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureCoinDomain
+import MoneyKit
 import SwiftUI
 
 public enum CoinViewError: Error, Equatable {
@@ -11,11 +12,12 @@ public enum CoinViewError: Error, Equatable {
 
 public struct CoinViewState: Equatable {
 
-    public let asset: AssetDetails
-    public var kycStatus: KYCStatus?
+    public let currency: CryptoCurrency
     public var accounts: [Account.Snapshot]
-    public var interestRate: Double?
     public var error: CoinViewError?
+    public var information: AssetInformation?
+    public var interestRate: Double?
+    public var kycStatus: KYCStatus?
     public var isFavorite: Bool?
 
     @BindableState public var account: Account.Snapshot?
@@ -24,7 +26,7 @@ public struct CoinViewState: Equatable {
     public var graph = GraphViewState()
 
     var actions: [ButtonAction] {
-        guard asset.isTradable else {
+        guard currency.isTradable else {
             return accounts.hasPositiveBalanceForSelling ? [.send] : []
         }
         let (buy, sell, receive) = (
@@ -46,14 +48,21 @@ public struct CoinViewState: Equatable {
     }
 
     public init(
-        asset: AssetDetails,
+        currency: CryptoCurrency,
         kycStatus: KYCStatus? = nil,
         accounts: [Account.Snapshot] = [],
         error: CoinViewError? = nil
     ) {
-        self.asset = asset
+        self.currency = currency
         self.kycStatus = kycStatus
         self.accounts = accounts
         self.error = error
+    }
+}
+
+extension CryptoCurrency {
+
+    var isTradable: Bool {
+        supports(product: .custodialWalletBalance) || supports(product: .privateKey)
     }
 }
