@@ -27,6 +27,7 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
                     event: AnalyticsEvents.Announcement.cardActioned(type: .claimFreeCryptoDomain)
                 )
                 self.action()
+                self.dismiss()
             }
             .disposed(by: disposeBag)
         return AnnouncementCardViewModel(
