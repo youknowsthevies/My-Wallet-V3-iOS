@@ -153,7 +153,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         Single
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
-                ordersActivity.activity(cryptoCurrency: asset).catchAndReturn([]),
+                ordersActivity.activity(cryptoCurrency: asset).asSingle().catchAndReturn([]),
                 swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
                     .catchAndReturn([])
             )
