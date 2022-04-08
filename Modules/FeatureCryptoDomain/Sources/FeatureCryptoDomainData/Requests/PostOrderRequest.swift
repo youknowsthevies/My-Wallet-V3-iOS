@@ -4,16 +4,16 @@ import FeatureCryptoDomainDomain
 import Foundation
 
 public struct PostOrderRequest: Encodable {
-    var domainCampaign: String
-    var domain: String
-    var owner: String
-    var records: [Record]
-    var isFree: Bool
+    let domainCampaign: String
+    let domain: String
+    let owner: String
+    let records: [Record]
+    let isFree: Bool
 }
 
 struct Record: Encodable {
-    var currency: String
-    var address: String?
+    let currency: String
+    let address: String?
 }
 
 extension Record {
