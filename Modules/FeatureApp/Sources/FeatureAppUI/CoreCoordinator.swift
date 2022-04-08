@@ -115,7 +115,6 @@ struct CoreAppEnvironment {
     var userService: NabuUserServiceAPI
     var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
-    var appFeatureConfigurator: FeatureConfiguratorAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var blockchainSettings: BlockchainSettingsAppAPI
     var credentialsStore: CredentialsStoreAPI
@@ -205,17 +204,12 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
 let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment> { state, action, environment in
     switch action {
     case .start:
-        return .merge(
-            .fireAndForget {
-                environment.appFeatureConfigurator.initialize()
-            },
-            .fireAndForget {
-                syncPinKeyWithICloud(
-                    blockchainSettings: environment.blockchainSettings,
-                    credentialsStore: environment.credentialsStore
-                )
-            }
-        )
+        return .fireAndForget {
+            syncPinKeyWithICloud(
+                blockchainSettings: environment.blockchainSettings,
+                credentialsStore: environment.credentialsStore
+            )
+        }
 
     case .appForegrounded:
         // check if we need to display the pin for authentication

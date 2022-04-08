@@ -45,7 +45,6 @@ public final class SettingsScreenInteractor {
 
     public init(
         credentialsStore: CredentialsStoreAPI = resolve(),
-        featureConfigurator: FeatureConfiguring = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
@@ -93,7 +92,7 @@ public final class SettingsScreenInteractor {
             service: settingsService
         )
 
-        biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
+        biometryProviding = BiometryProvider(settings: settingsAuthenticating)
         self.settingsAuthenticating = settingsAuthenticating
         pitConnnectionProviding = pitConnectionAPI
         recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)

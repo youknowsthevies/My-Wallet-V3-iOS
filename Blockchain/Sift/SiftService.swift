@@ -1,14 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import PlatformKit
 import Sift
 import ToolKit
 
-final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI,
-    PlatformKit.SiftServiceAPI
-{
+final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI, PlatformKit.SiftServiceAPI {
 
     private enum Constants {
         static let siftAccountId = "siftAccountId"
@@ -17,11 +16,13 @@ final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI,
 
     // MARK: - Private properties
 
-    private var sift: Sift? {
-        guard featureConfigurator.configuration(for: .siftScienceEnabled).isEnabled else {
-            return nil
-        }
-        return Sift.sharedInstance()
+    private var sift: AnyPublisher<Sift?, Never> {
+        featureFetcher
+            .isEnabled(.remote(.siftScienceEnabled))
+            .map { isEnabled in
+                isEnabled ? Sift.sharedInstance() : nil
+            }
+            .eraseToAnyPublisher()
     }
 
     private var identifier: String {
@@ -45,34 +46,42 @@ final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI,
         return infoDictionary
     }
 
-    private let featureConfigurator: FeatureConfiguring
+    private var bag = Set<AnyCancellable>()
+    private let featureFetcher: FeatureFlagsServiceAPI
 
-    init(featureConfigurator: FeatureConfiguring = DIKit.resolve()) {
-        self.featureConfigurator = featureConfigurator
+    init(featureFetcher: FeatureFlagsServiceAPI = DIKit.resolve()) {
+        self.featureFetcher = featureFetcher
     }
 
     // MARK: - SiftServiceAPI
 
     /// Enables the services
     func enable() {
-        guard let sift = sift else { return }
-        sift.accountId = identifier
-        sift.beaconKey = beacon
-        sift.allowUsingMotionSensors = false
-        sift.disallowCollectingLocationData = true
+        sift
+            .sink(receiveValue: { [identifier, beacon] sift in
+                sift?.accountId = identifier
+                sift?.beaconKey = beacon
+                sift?.allowUsingMotionSensors = false
+                sift?.disallowCollectingLocationData = true
+            })
+            .store(in: &bag)
     }
 
     func set(userId: String) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.sift?.userId = userId
-        }
+        sift
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { sift in
+                sift?.userId = userId
+            })
+            .store(in: &bag)
     }
 
     func removeUserId() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.sift?.unsetUserId()
-        }
+        sift
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { sift in
+                sift?.unsetUserId()
+            })
+            .store(in: &bag)
     }
 }

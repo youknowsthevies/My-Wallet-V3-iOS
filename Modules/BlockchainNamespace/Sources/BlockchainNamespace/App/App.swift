@@ -61,6 +61,7 @@ public class App: AppProtocol {
     private func start() {
         state.app = self
         deepLinks.start()
+        remoteConfiguration.start(app: self)
         #if DEBUG
         _ = logger
         #endif

@@ -50,7 +50,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
     private let analyticsRecoder: AnalyticsEventRecorderAPI
-    private let featureFetching: RxFeatureFetching
     private var disposeBag = DisposeBag()
 
     public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
@@ -69,10 +68,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
-        featureFetching: RxFeatureFetching = resolve(),
         analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        self.featureFetching = featureFetching
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
 

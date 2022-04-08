@@ -24,8 +24,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let assetRenameAnnouncement: Single<AssetRenameAnnouncementFeature> = featureFetcher
-            .fetch(for: .assetRenameAnnouncement)
+        let assetRenameAnnouncement = featureFetcher
+            .fetch(for: .assetRenameAnnouncement, as: AssetRenameAnnouncementFeature.self)
         let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = assetRenameAnnouncement
             .flatMap { [enabledCurrenciesService, coincore] data -> Single<AnnouncementPreliminaryData.AssetRename?> in
                 guard let cryptoCurrency = CryptoCurrency(
@@ -92,7 +92,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
         let authenticatorType = repository.authenticatorType
         let newAsset: Single<CryptoCurrency?> = featureFetcher
-            .fetchString(for: .newAssetAnnouncement)
+            .fetch(for: .newAssetAnnouncement, as: String.self)
             .map { [enabledCurrenciesService] code -> CryptoCurrency? in
                 CryptoCurrency(
                     code: code,

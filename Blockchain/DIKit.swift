@@ -361,19 +361,8 @@ extension DependencyContainer {
 
         single {
             AppFeatureConfigurator(
-                cacheSuite: DIKit.resolve(),
-                remoteConfig: RemoteConfig.remoteConfig()
+                app: DIKit.resolve()
             )
-        }
-
-        factory { () -> FeatureConfiguratorAPI in
-            let configurator: AppFeatureConfigurator = DIKit.resolve()
-            return configurator
-        }
-
-        factory { () -> FeatureConfiguring in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
         }
 
         factory { () -> FeatureFetching in
@@ -382,11 +371,6 @@ extension DependencyContainer {
         }
 
         factory { () -> RxFeatureFetching in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
-        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
@@ -482,6 +466,7 @@ extension DependencyContainer {
 
         single {
             RemoteNotificationRelay(
+                app: DIKit.resolve(),
                 cacheSuite: DIKit.resolve(),
                 userNotificationCenter: UNUserNotificationCenter.current(),
                 messagingService: Messaging.messaging(),

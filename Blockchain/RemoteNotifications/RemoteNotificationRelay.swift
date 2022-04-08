@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FirebaseMessaging
@@ -16,6 +17,7 @@ final class RemoteNotificationRelay: NSObject {
 
     private let relay = PassthroughSubject<RemoteNotification.NotificationType, RemoteNotificationEmitterError>()
 
+    private let app: AppProtocol
     private let cacheSuite: CacheSuite
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let messagingService: FirebaseCloudMessagingServiceAPI
@@ -24,11 +26,13 @@ final class RemoteNotificationRelay: NSObject {
     // MARK: - Setup
 
     init(
+        app: AppProtocol,
         cacheSuite: CacheSuite,
         userNotificationCenter: UNUserNotificationCenterAPI,
         messagingService: FirebaseCloudMessagingServiceAPI,
         secureChannelNotificationRelay: SecureChannelNotificationRelaying
     ) {
+        self.app = app
         self.cacheSuite = cacheSuite
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService
@@ -78,7 +82,8 @@ extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
         guard value == RemoteConfigConstants.notificationValue else {
             return
         }
-        cacheSuite.set(true, forKey: RemoteConfigConstants.cacheSuiteKey)
+        // Update User Defaults
+        app.state.set(blockchain.app.configuration.remote.is.stale, to: true)
     }
 }
 

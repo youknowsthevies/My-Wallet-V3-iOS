@@ -37,7 +37,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     private let backButtonInterceptor: BackButtonInterceptor
-    private let featureConfigurator: FeatureConfiguring
     private let radioSelectionHandler: RadioSelectionHandling
     weak var listener: TargetSelectionPageListener?
 
@@ -51,15 +50,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         action: AssetAction,
         radioSelectionHandler: RadioSelectionHandling,
         backButtonInterceptor: @escaping BackButtonInterceptor,
-        messageRecorder: MessageRecording = resolve(),
-        featureConfigurator: FeatureConfiguring = resolve()
+        messageRecorder: MessageRecording = resolve()
     ) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
         self.messageRecorder = messageRecorder
         self.backButtonInterceptor = backButtonInterceptor
-        self.featureConfigurator = featureConfigurator
         self.radioSelectionHandler = radioSelectionHandler
         switch listener {
         case .simple(let didSelect):
