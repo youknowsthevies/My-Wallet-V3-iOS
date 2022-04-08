@@ -16,6 +16,7 @@ platform :ios do
   lane :dev do | options |
     final_options = options.merge(
       {
+        scheme: "Blockchain (Dev)",
         environment: "Dev",
         app_center_app_name: ENV["APPCENTER_APP_NAME_DEV"],
         app_center_app_owner: ENV["APPCENTER_OWNER_NAME_DEV"],
@@ -30,6 +31,7 @@ platform :ios do
   lane :staging do | options |
     final_options = options.merge(
       {
+        scheme: "Blockchain (Staging)",
         environment: "Staging",
         app_center_app_name: ENV["APPCENTER_APP_NAME_STAGING"],
         app_center_app_owner: ENV["APPCENTER_OWNER_NAME_STAGING"],
@@ -55,6 +57,7 @@ platform :ios do
     )
     final_options = options.merge(
       {
+        scheme: "Blockchain (Alpha)",
         environment: "Alpha",
         build_type: "appstore"
       }
@@ -68,6 +71,7 @@ platform :ios do
   lane :internal_release do | options |
     final_options = options.merge(
       {
+        scheme: "Blockchain (Internal Production)",
         environment: "Prod",
         app_center_app_name: ENV["APPCENTER_APP_NAME"],
         app_center_app_owner: ENV["APPCENTER_OWNER_NAME"],
@@ -82,6 +86,7 @@ platform :ios do
   lane :release do | options |
     final_options = options.merge(
       {
+        scheme: "Blockchain",
         environment: "Prod",
         build_type: "appstore"
       }
@@ -185,9 +190,29 @@ platform :ios do
   desc "Runs Gym for the current configuration."
   private_lane :build_and_archive do | options |
     puts "🏗  Building App"
+    xcargs = {}
+    xcargs['COMPILER_INDEX_STORE_ENABLE'] = 'NO'
+    flattenArgs = flatten_xcargs(xcargs)
+    clonedSourcesPath = "#{DERIVED_DATA_PATH}/SourcePackages" 
+    packageCachePath = "#{DERIVED_DATA_PATH}/PackageCache"
+    xcodebuild(
+      clean: true,
+      archive: true,
+      project: "Blockchain.xcodeproj",
+      scheme: options[:scheme],
+      output_directory: "output",
+      archive_path: "output/Blockchain.xcarchive",
+      xcargs: flattenArgs + " -destination 'generic/platform=iOS' -clonedSourcePackagesDirPath #{clonedSourcesPath} -packageCachePath #{packageCachePath} -disableAutomaticPackageResolution"
+    )
+    puts "🏗 Exporting archive"
+    # we only care exporting the `xcarchive` from previous build at this point
     build_app(
-      cloned_source_packages_path: "#{DERIVED_DATA_PATH}/SourcePackages",
-      xcargs: "-packageCachePath #{DERIVED_DATA_PATH}/PackageCache -disableAutomaticPackageResolution"
+      skip_package_dependencies_resolution: true,
+      skip_build_archive: true,
+      archive_path: "output/Blockchain.xcarchive",
+      output_directory: "output",
+      output_name: "Blockchain.ipa",
+      xcargs: flattenArgs + " -disableAutomaticPackageResolution"
     )
   end
   
