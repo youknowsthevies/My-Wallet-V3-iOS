@@ -200,37 +200,37 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var buy = app.on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { [unowned self] event in
+    lazy var buy = app.on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .buy(cryptoAccount(for: .buy, from: event))
         )
     }
 
-    lazy var sell = app.on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { [unowned self] event in
+    lazy var sell = app.on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .sell(cryptoAccount(for: .sell, from: event))
         )
     }
 
-    lazy var receive = app.on(blockchain.ux.asset.receive, blockchain.ux.asset.account.receive) { [unowned self] event in
+    lazy var receive = app.on(blockchain.ux.asset.receive, blockchain.ux.asset.account.receive) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .receive(cryptoAccount(for: .receive, from: event))
         )
     }
 
-    lazy var send = app.on(blockchain.ux.asset.send, blockchain.ux.asset.account.send) { [unowned self] event in
+    lazy var send = app.on(blockchain.ux.asset.send, blockchain.ux.asset.account.send) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .send(cryptoAccount(for: .send, from: event), nil)
         )
     }
 
-    lazy var swap = app.on(blockchain.ux.asset.account.swap) { [unowned self] event in
+    lazy var swap = app.on(blockchain.ux.asset.account.swap) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .swap(cryptoAccount(for: .swap, from: event))
         )
     }
 
-    lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { [unowned self] event in
+    lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { @MainActor [unowned self] event in
         switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
@@ -240,7 +240,7 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { [unowned self] event in
+    lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { @MainActor [unowned self] event in
         switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
@@ -250,15 +250,15 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var rewardsSummary = app.on(blockchain.ux.asset.account.rewards.summary) { [unowned self] event in
+    lazy var rewardsSummary = app.on(blockchain.ux.asset.account.rewards.summary) { @MainActor [unowned self] event in
         let account = try await cryptoAccount(from: event)
         let interactor = InterestAccountDetailsScreenInteractor(account: account)
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
-        let controller = await InterestAccountDetailsViewController(presenter: presenter)
-        await topViewController.topMostViewController?.present(controller, animated: true, completion: nil)
+        let controller = InterestAccountDetailsViewController(presenter: presenter)
+        topViewController.topMostViewController?.present(controller, animated: true, completion: nil)
     }
 
-    lazy var exchangeWithdraw = app.on(blockchain.ux.asset.account.exchange.withdraw) { [unowned self] event in
+    lazy var exchangeWithdraw = app.on(blockchain.ux.asset.account.exchange.withdraw) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .send(
                 cryptoAccount(for: .send, from: event),
@@ -267,7 +267,7 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var exchangeDeposit = app.on(blockchain.ux.asset.account.exchange.deposit) { [unowned self] event in
+    lazy var exchangeDeposit = app.on(blockchain.ux.asset.account.exchange.deposit) { @MainActor [unowned self] event in
         try await transactionsRouter.presentTransactionFlow(
             to: .send(
                 custodialAccount(CryptoTradingAccount.self, from: event),
@@ -276,7 +276,7 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { [unowned self] event in
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] event in
         let viewController = topViewController.topMostViewController!
         guard
             let result = await kycRouter.presentKYCUpgradeFlow(from: viewController).values.first,
