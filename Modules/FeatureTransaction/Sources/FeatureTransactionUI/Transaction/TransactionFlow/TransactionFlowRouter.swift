@@ -8,6 +8,8 @@ import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
+import NabuNetworkError
+import NetworkError
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -141,8 +143,12 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             return
         }
 
+        if let analytics = errorState.analytics(for: action) {
+            analyticsRecorder.record(event: analytics)
+        }
+
         presentErrorRecoveryCallout(
-            title: errorState.recoveryWarningTitle(for: action),
+            title: errorState.recoveryWarningTitle(for: action).or(Localization.Error.unknownError),
             message: errorState.recoveryWarningMessage(for: action),
             callouts: errorState.recoveryWarningCallouts(for: action),
             onClose: { [transactionModel] in

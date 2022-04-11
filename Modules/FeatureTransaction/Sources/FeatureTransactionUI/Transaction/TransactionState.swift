@@ -386,7 +386,7 @@ extension TransactionState {
 extension TransactionState {
 
     var transactionErrorTitle: String {
-        errorState.recoveryWarningTitle(for: action)
+        errorState.recoveryWarningTitle(for: action).or(Localization.Error.unknownError)
     }
 
     var transactionErrorDescription: String {

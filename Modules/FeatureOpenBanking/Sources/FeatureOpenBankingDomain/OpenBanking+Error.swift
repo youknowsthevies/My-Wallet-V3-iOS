@@ -47,6 +47,15 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         String(describing: lhs.any) == String(describing: rhs.any)
     }
 
+    public var code: String? {
+        switch self {
+        case .timeout, .message, .namespace, .other:
+            return nil
+        case .code(let code):
+            return code
+        }
+    }
+
     public var description: String {
         switch self {
         case .timeout:

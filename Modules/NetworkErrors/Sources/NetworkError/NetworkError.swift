@@ -28,6 +28,35 @@ extension NetworkError: Equatable {
 
 extension NetworkError: CustomStringConvertible {
 
+    public var endpoint: String? {
+        switch self {
+        case .authentication, .urlError, .payloadError, .serverError:
+            return nil
+        case .rawServerError(let error):
+            return error.response.url?.path
+        }
+    }
+
+    public var response: HTTPURLResponse? {
+        switch self {
+        case .authentication, .payloadError, .serverError, .urlError:
+            return nil
+        case .rawServerError(let error):
+            return error.response
+        }
+    }
+
+    public var code: Int? {
+        switch self {
+        case .authentication, .payloadError, .serverError:
+            return nil
+        case .urlError(let error):
+            return error.errorCode
+        case .rawServerError(let error):
+            return error.response.statusCode
+        }
+    }
+
     public var description: String {
         switch self {
         case .authentication(let error), .urlError(let error as Error):
