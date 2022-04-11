@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCryptoDomainDomain
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -26,6 +27,7 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
                     event: AnalyticsEvents.Announcement.cardActioned(type: .claimFreeCryptoDomain)
                 )
                 self.action()
+                self.dismiss()
             }
             .disposed(by: disposeBag)
         return AnnouncementCardViewModel(
@@ -82,8 +84,9 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         self.analyticsRecorder = analyticsRecorder
         self.action = action
         self.dismiss = dismiss
+
         featureFlagsService
-            .isEnabled(.local(.blockchainDomains))
+            .isEnabled(.remote(.blockchainDomains))
             .asSingle()
             .subscribe { [weak self] enabled in
                 self?.claimFreeDomainEnabled.mutate { $0 = enabled }

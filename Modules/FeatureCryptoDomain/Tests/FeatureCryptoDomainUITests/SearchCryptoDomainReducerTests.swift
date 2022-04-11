@@ -151,8 +151,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             .createDomainOrder(
                 isFree: false,
                 domainName: "premium",
-                resolutionRecords: nil,
-                nabuUserId: nil
+                resolutionRecords: nil
             )
             .wait()
         let testDomain = SearchDomainResult(

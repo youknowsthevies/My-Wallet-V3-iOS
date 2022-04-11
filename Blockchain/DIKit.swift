@@ -721,10 +721,17 @@ extension DependencyContainer {
         }
 
         factory { () -> OrderDomainRepositoryAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OrderDomainClient(networkAdapter: adapter, requestBuilder: builder)
             return OrderDomainRepository(apiClient: client)
+        }
+
+        factory { () -> ClaimEligibilityRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = ClaimEligibilityClient(networkAdapter: adapter, requestBuilder: builder)
+            return ClaimEligibilityRepository(apiClient: client)
         }
 
         // MARK: Pulse Network Debugging

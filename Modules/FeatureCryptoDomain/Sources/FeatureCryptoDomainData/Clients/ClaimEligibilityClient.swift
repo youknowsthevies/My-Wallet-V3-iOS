@@ -1,25 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Foundation
 import NabuNetworkError
 import NetworkKit
 
-public protocol OrderDomainClientAPI {
+public protocol ClaimEligibilityClientAPI {
 
-    func postOrder(
-        payload: PostOrderRequest
-    ) -> AnyPublisher<PostOrderResponse, NabuNetworkError>
+    func getEligibility() -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError>
 }
 
-public final class OrderDomainClient: OrderDomainClientAPI {
+public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
 
     // MARK: - Type
 
     private enum Path {
-        static let order = [
+        static let eligibility = [
             "users",
             "domain-campaigns",
-            "claim"
+            "eligibility"
         ]
     }
 
@@ -40,12 +39,16 @@ public final class OrderDomainClient: OrderDomainClientAPI {
 
     // MARK: - API
 
-    public func postOrder(
-        payload: PostOrderRequest
-    ) -> AnyPublisher<PostOrderResponse, NabuNetworkError> {
-        let request = requestBuilder.post(
-            path: Path.order,
-            body: try? payload.encode(),
+    public func getEligibility() -> AnyPublisher<ClaimEligibilityResponse, NabuNetworkError> {
+        let parameters = [
+            URLQueryItem(
+                name: "domainCampaign",
+                value: "UNSTOPPABLE_DOMAINS"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.eligibility,
+            parameters: parameters,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

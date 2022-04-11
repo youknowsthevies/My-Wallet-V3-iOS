@@ -71,6 +71,8 @@ public enum AppFeature: Int, CaseIterable {
 
     case sendToDomainsAnnouncement
 
+    case blockchainDomains
+
     // MARK: - Account Picker
 
     /// New SwiftUI account picker from `FeatureAccountPicker`
@@ -147,6 +149,8 @@ extension AppFeature {
             return "ios_ff_card_issuing"
         case .sendToDomainsAnnouncement:
             return "ios_ff_send_to_domains_announcement"
+        case .blockchainDomains:
+            return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
         }
@@ -202,6 +206,8 @@ extension AppFeature {
         case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:
+            return true
+        case .blockchainDomains:
             return true
         case .redesignCoinView:
             return true

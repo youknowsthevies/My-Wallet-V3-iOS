@@ -219,13 +219,17 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .merge(
                 Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true)),
                 environment
-                    .orderDomainRepository
-                    .createDomainOrder(
-                        isFree: false,
-                        domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                        resolutionRecords: nil,
-                        nabuUserId: nil
-                    )
+                    .userInfoProvider()
+                    .ignoreFailure(setFailureType: OrderDomainRepositoryError.self)
+                    .flatMap { userInfo -> AnyPublisher<OrderDomainResult, OrderDomainRepositoryError> in
+                        environment
+                            .orderDomainRepository
+                            .createDomainOrder(
+                                isFree: false,
+                                domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
+                                resolutionRecords: userInfo.resolutionRecords
+                            )
+                    }
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result in
