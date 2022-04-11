@@ -315,11 +315,11 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { [application] event in
+    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { @MainActor [application] event in
         try application.open(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
     }
 
-    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { [defaults] _ in
+    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { @MainActor [defaults] _ in
         defaults.removeObject(forKey: blockchain.ux.asset.account.explainer(\.id))
     }
 

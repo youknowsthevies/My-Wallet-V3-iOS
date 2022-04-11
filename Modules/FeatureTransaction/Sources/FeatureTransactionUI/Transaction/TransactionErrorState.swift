@@ -1,9 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import FeatureOpenBankingDomain
 import FeatureTransactionDomain
 import MoneyKit
 import NabuNetworkError
+import NetworkError
 import PlatformKit
+import SwiftUI
+import ToolKit
 
 enum TransactionErrorState: Equatable {
     /// The tansaction is valid
@@ -40,12 +45,80 @@ enum TransactionErrorState: Equatable {
 }
 
 extension TransactionErrorState {
+
+    var label: String {
+        Mirror(reflecting: self).children.first?.label ?? String(describing: self)
+    }
+
     var fatalError: FatalTransactionError? {
         switch self {
         case .fatalError(let error):
             return error
         default:
             return nil
+        }
+    }
+}
+
+extension TransactionErrorState {
+
+    func analytics(for action: AssetAction) -> ClientEvent? {
+
+        guard self != .none else { return nil }
+
+        let title = recoveryWarningTitle(for: action)
+        let error = title == nil ? "OOPS_ERROR" : label.snakeCase().uppercased()
+        let oops = "Oops! Something went wrong"
+        let action = action.description.snakeCase().uppercased()
+
+        if let nabuError = extract(NabuError.self, from: self) {
+            return ClientEvent.clientError(
+                error: error,
+                networkEndpoint: nil,
+                networkErrorCode: nabuError.code.rawValue.description,
+                networkErrorDescription: nabuError.serverDescription,
+                networkErrorId: nabuError.id,
+                networkErrorType: nabuError.type.rawValue,
+                source: "NABU",
+                title: title.or(oops),
+                action: action
+            )
+        } else if let networkError = extract(NetworkError.self, from: self) {
+            return ClientEvent.clientError(
+                error: error,
+                networkEndpoint: networkError.endpoint,
+                networkErrorCode: networkError.code?.description,
+                networkErrorDescription: networkError.description,
+                networkErrorId: nil,
+                networkErrorType: "NETWORK",
+                source: "NABU",
+                title: title.or(oops),
+                action: action
+            )
+        } else if let openBankingError = extract(OpenBanking.Error.self, from: self) {
+            return ClientEvent.clientError(
+                error: error,
+                networkEndpoint: nil,
+                networkErrorCode: nil,
+                networkErrorDescription: openBankingError.description,
+                networkErrorId: nil,
+                networkErrorType: openBankingError.code,
+                source: "NABU",
+                title: title.or(oops),
+                action: action
+            )
+        } else {
+            return ClientEvent.clientError(
+                error: error,
+                networkEndpoint: nil,
+                networkErrorCode: nil,
+                networkErrorDescription: extract(CustomStringConvertible.self, from: self).description,
+                networkErrorId: nil,
+                networkErrorType: label.snakeCase().uppercased(),
+                source: "CLIENT",
+                title: title.or(oops),
+                action: action
+            )
         }
     }
 }

@@ -114,7 +114,7 @@ extension Optional: CustomStringConvertible {
         case .none:
             return "nil \(Wrapped.self)"
         case .some(let wrapped):
-            return "\(wrapped)?"
+            return "\(wrapped)"
         }
     }
 }

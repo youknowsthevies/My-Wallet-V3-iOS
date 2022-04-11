@@ -25,7 +25,12 @@ public final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
                 if let parameters = event.params, !parameters.isEmpty {
                     print("parameters:")
                     for parameter in parameters {
-                        print("\t", parameter.key, "=", parameter.value as Any? ?? "nil")
+                        print(
+                            "\t",
+                            parameter.key,
+                            "=",
+                            (parameter.value as? CustomStringConvertible)?.description ?? "nil"
+                        )
                     }
                 }
                 print()

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureOpenBankingDomain
@@ -132,12 +133,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             return .merge(
                 .cancel(id: ID.ConsentError()),
                 .cancel(id: ID.Request()),
-                .cancel(id: ID.LaunchBank()),
-                .fireAndForget { [state] in
-                    environment.analytics.record(
-                        event: .bankAccountStateTriggered(account: account, institution: state.name)
-                    )
-                }
+                .cancel(id: ID.LaunchBank())
             )
         case .deposited(let payment):
             state.ui = .deposit(success: payment, in: environment)
@@ -172,6 +168,44 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             state.ui = .error(error, currency: state.currency, in: environment)
             return .cancel(id: ID.ConsentError())
         }
+    }
+}
+.analytics()
+
+extension Reducer where State == BankState, Action == BankAction, Environment == OpenBankingEnvironment {
+
+    func analytics() -> Reducer {
+        combined(
+            with: .init { state, action, environment in
+                switch action {
+                case .finalise(.linked(let account, _)):
+                    return .fireAndForget { [state] in
+                        environment.analytics.record(
+                            event: .bankAccountStateTriggered(account: account, institution: state.name)
+                        )
+                    }
+                case .failure(let error):
+                    return .fireAndForget {
+                        environment.analytics.record(
+                            event: ClientEvent.clientError(
+                                error: BankState.UI.errors[error] != nil
+                                    ? "OPEN_BANKING_ERROR"
+                                    : "OPEN_BANKING_OOPS_ERROR",
+                                networkEndpoint: nil,
+                                networkErrorCode: nil,
+                                networkErrorDescription: error.description,
+                                networkErrorId: nil,
+                                networkErrorType: error.code,
+                                source: error.code == nil ? "CLIENT" : "NABU",
+                                title: error.description
+                            )
+                        )
+                    }
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }
 
