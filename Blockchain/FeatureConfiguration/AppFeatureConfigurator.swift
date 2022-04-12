@@ -43,6 +43,7 @@ extension AppFeatureConfigurator: FeatureFetching {
         }
         return app.remoteConfiguration
             .publisher(for: keyRawValue)
+            .prefix(1)
             .tryMap { data -> Feature in
                 try data.decode(as: Feature.self)
             }
