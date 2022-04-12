@@ -175,8 +175,7 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             // IOS-6127: wallets with no balance should show no announcements
             // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch or claim domain no matter what.
-            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch ||
-                (type == .claimFreeCryptoDomain && claimFreeDomainEligible.value)
+            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch || type == .claimFreeCryptoDomain
             else {
                 return .none
             }
@@ -184,6 +183,9 @@ final class AnnouncementPresenter {
             let announcement: Announcement
             switch type {
             case .claimFreeCryptoDomain:
+                guard claimFreeDomainEligible.value else {
+                    return .none
+                }
                 announcement = claimFreeCryptoDomainAnnoucement
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
