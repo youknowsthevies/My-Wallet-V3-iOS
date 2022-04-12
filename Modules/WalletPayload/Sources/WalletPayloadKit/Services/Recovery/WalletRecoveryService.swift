@@ -21,6 +21,7 @@ struct WalletPayloadContext: Equatable {
 }
 
 struct DecryptedPayloadContext: Equatable {
+    let walletPayload: WalletPayload
     let payload: String
     let password: String
 }
@@ -80,7 +81,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                     .eraseToAnyPublisher()
             }
             .flatMap { [payloadCrypto] walletPayloadContext -> AnyPublisher<DecryptedPayloadContext, WalletError> in
-                let payloadWrapper = walletPayloadContext.payload.payload
+                let payloadWrapper = walletPayloadContext.payload.payloadWrapper
                 let password = walletPayloadContext.credentials.password
                 guard let wrapper = payloadWrapper, !wrapper.payload.isEmpty else {
                     return .failure(WalletError.payloadNotFound)
@@ -91,7 +92,13 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                 )
                 .publisher
                 .mapError { _ in WalletError.decryption(.decryptionError) }
-                .map { DecryptedPayloadContext(payload: $0, password: password) }
+                .map { payload in
+                    DecryptedPayloadContext(
+                        walletPayload: walletPayloadContext.payload,
+                        payload: payload,
+                        password: password
+                    )
+                }
                 .eraseToAnyPublisher()
             }
             .flatMap { [walletLogic] decryptedWalletPayloadContext -> AnyPublisher<WalletState, WalletError> in
@@ -100,7 +107,8 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                 }
                 return walletLogic.initializeAfterMetadataRecovery(
                     with: decryptedWalletPayloadContext.password,
-                    payload: data
+                    payload: decryptedWalletPayloadContext.walletPayload,
+                    decryptedWallet: data
                 )
             }
             .map { _ in .noValue }

@@ -21,7 +21,7 @@ class WalletRepoTests: XCTestCase {
             language: "en",
             authenticatorType: .standard
         ),
-        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")
+        walletPayload: .empty
     )
 
     override func setUp() {
@@ -126,7 +126,7 @@ class WalletRepoTests: XCTestCase {
                 language: "en",
                 authenticatorType: .standard
             ),
-            encryptedPayload: .init(pbkdf2IterationCount: 1, version: 4, payload: "")
+            walletPayload: .empty
         )
 
         walletRepo.set(value: updatedState)

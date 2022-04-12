@@ -24,9 +24,9 @@ class WalletLogicTests: XCTestCase {
     func test_wallet_logic_can_initialize_a_wallet() {
         let walletHolder = WalletHolder()
         var decoderWalletCalled = false
-        let decoder: WalletDecoding = { data -> AnyPublisher<NativeWallet, WalletError> in
+        let decoder: WalletDecoding = { payload, data -> AnyPublisher<Wrapper, WalletError> in
             decoderWalletCalled = true
-            return WalletDecoder().createWallet(from: data)
+            return WalletDecoder().createWallet(from: payload, decryptedData: data)
         }
         let metadataService = MetadataServiceMock()
 
@@ -37,11 +37,21 @@ class WalletLogicTests: XCTestCase {
             notificationCenter: .default
         )
 
+        let walletPayload = WalletPayload(
+            guid: "guid",
+            authType: 0,
+            language: "en",
+            shouldSyncPubKeys: false,
+            time: Date(),
+            payloadChecksum: "",
+            payload: WalletPayloadWrapper(pbkdf2IterationCount: 5000, version: 4, payload: "") // we don't use this
+        )
+
         metadataService.initializeValue = .just(MetadataState.mock)
 
         let expectation = expectation(description: "wallet-fetching-expectation")
 
-        walletLogic.initialize(with: "password", payload: jsonV4)
+        walletLogic.initialize(with: "password", payload: walletPayload, decryptedWallet: jsonV4)
             .sink { _ in
                 //
             } receiveValue: { _ in

@@ -42,7 +42,6 @@ class WalletEncoderTests: XCTestCase {
             payloadChecksum: "",
             language: "en",
             syncPubKeys: false,
-            warChecksum: "",
             wallet: wallet
         )
 
@@ -84,7 +83,6 @@ class WalletEncoderTests: XCTestCase {
             payloadChecksum: "",
             language: "en",
             syncPubKeys: false,
-            warChecksum: "",
             wallet: wallet
         )
 

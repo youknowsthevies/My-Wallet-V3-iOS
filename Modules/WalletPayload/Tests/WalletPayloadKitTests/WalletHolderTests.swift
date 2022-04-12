@@ -35,9 +35,17 @@ class WalletHolderTests: XCTestCase {
             hdWallets: [],
             addresses: []
         )
+        let wrapper = Wrapper(
+            pbkdf2Iterations: 5000,
+            version: 4,
+            payloadChecksum: "",
+            language: "en",
+            syncPubKeys: false,
+            wallet: wallet
+        )
 
         let expectation = expectation(description: "wallet holding")
-        holder.hold(walletState: .partially(loaded: .justWallet(wallet)))
+        holder.hold(walletState: .partially(loaded: .justWrapper(wrapper)))
             .sink { _ in
                 //
             } receiveValue: { _ in
@@ -63,9 +71,17 @@ class WalletHolderTests: XCTestCase {
             hdWallets: [],
             addresses: []
         )
+        let wrapper = Wrapper(
+            pbkdf2Iterations: 5000,
+            version: 4,
+            payloadChecksum: "",
+            language: "en",
+            syncPubKeys: false,
+            wallet: wallet
+        )
 
         let expectation = expectation(description: "wallet holding")
-        holder.hold(walletState: .partially(loaded: .justWallet(wallet)))
+        holder.hold(walletState: .partially(loaded: .justWrapper(wrapper)))
             .sink { _ in
                 //
             } receiveValue: { _ in

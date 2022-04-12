@@ -6,9 +6,12 @@ import WalletPayloadKit
 
 final class WalletDecoder: WalletDecoderAPI {
 
-    func createWallet(from data: Data) -> AnyPublisher<NativeWallet, WalletError> {
-        decode(data: data)
+    func createWallet(from walletPayload: WalletPayload, decryptedData: Data) -> AnyPublisher<Wrapper, WalletError> {
+        decode(data: decryptedData)
             .map(NativeWallet.from(blockchainWallet:))
+            .map { wallet in
+                Wrapper(walletPayload: walletPayload, wallet: wallet)
+            }
             .eraseToAnyPublisher()
     }
 
