@@ -74,6 +74,15 @@
         }
       },
       {
+        "package": "Lexicon",
+        "repositoryURL": "https://github.com/screensailor/Lexicon",
+        "state": {
+          "branch": null,
+          "revision": "160c4c417f8490658a8396d0283fb0d6fb98c327",
+          "version": null
+        }
+      },
+      {
         "package": "MetadataHDWalletKit",
         "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
         "state": {

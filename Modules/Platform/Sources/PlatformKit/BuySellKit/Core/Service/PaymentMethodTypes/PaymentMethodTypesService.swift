@@ -303,7 +303,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let featureFetching: RxFeatureFetching
     private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
@@ -317,11 +316,9 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        featureFetching: RxFeatureFetching = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         notificationCenter: NotificationCenter = .default
     ) {
-        self.featureFetching = featureFetching
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService

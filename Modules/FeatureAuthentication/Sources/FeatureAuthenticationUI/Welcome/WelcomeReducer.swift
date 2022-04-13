@@ -314,6 +314,8 @@ public let welcomeReducer = Reducer.combine(
                 return Effect(value: .emailLogin(.verifyDevice(.credentials(.navigate(to: .secondPasswordDetected)))))
             case .manualLogin:
                 return Effect(value: .manualPairing(.navigate(to: .secondPasswordDetected)))
+            case .restoreWallet:
+                return Effect(value: .restoreWallet(.setSecondPasswordNoticeVisible(true)))
             default:
                 return .none
             }

@@ -51,7 +51,7 @@ extension App {
 
     public convenience init(
         language: Language = Language.root.language,
-        state: [Tag.Reference: Any] = [:],
+        state: Tag.Context = [:],
         remote: [Mock.RemoteConfigurationSource: [String: Mock.RemoteConfigurationValue]] = [:]
     ) {
         self.init(

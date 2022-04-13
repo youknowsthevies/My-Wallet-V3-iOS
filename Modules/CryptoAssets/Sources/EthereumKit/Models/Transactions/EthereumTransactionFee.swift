@@ -18,10 +18,10 @@ public struct EthereumTransactionFee {
         gasLimitContract: 75000
     )
 
-    let regular: CryptoValue
-    let priority: CryptoValue
-    let gasLimit: Int
-    let gasLimitContract: Int
+    private let regular: CryptoValue
+    private let priority: CryptoValue
+    private let gasLimit: Int
+    private let gasLimitContract: Int
 
     init(regular: Int, priority: Int, gasLimit: Int, gasLimitContract: Int) {
         self.regular = CryptoValue.ether(gwei: BigInt(regular))
@@ -30,20 +30,32 @@ public struct EthereumTransactionFee {
         self.gasLimitContract = gasLimitContract
     }
 
-    public func fee(feeLevel: FeeLevel) -> CryptoValue {
+    public func gasPrice(feeLevel: FeeLevel) -> BigUInt {
         switch feeLevel {
         case .regular:
-            return regular
+            return BigUInt(regular.amount)
         case .priority:
-            return priority
+            return BigUInt(priority.amount)
         }
     }
 
-    public func absoluteFee(with feeLevel: FeeLevel, isContract: Bool) -> CryptoValue {
-        let price = fee(feeLevel: feeLevel).amount
-        let gasLimit = BigInt(isContract ? gasLimitContract : gasLimit)
+    public func gasLimit(
+        extraGasLimit: BigUInt = 0,
+        isContract: Bool
+    ) -> BigUInt {
+        BigUInt(isContract ? gasLimitContract : gasLimit)
+            + extraGasLimit
+    }
+
+    public func absoluteFee(
+        with feeLevel: FeeLevel,
+        extraGasLimit: BigUInt = 0,
+        isContract: Bool
+    ) -> CryptoValue {
+        let price = gasPrice(feeLevel: feeLevel)
+        let gasLimit = gasLimit(extraGasLimit: extraGasLimit, isContract: isContract)
         let amount = price * gasLimit
-        return CryptoValue.create(minor: amount, currency: .ethereum)
+        return CryptoValue.create(minor: BigInt(amount), currency: .ethereum)
     }
 }
 

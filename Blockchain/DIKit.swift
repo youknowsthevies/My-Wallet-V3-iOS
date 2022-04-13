@@ -9,6 +9,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
@@ -31,6 +32,8 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseMessaging
+import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -356,16 +359,10 @@ extension DependencyContainer {
 
         // MARK: - AppFeatureConfigurator
 
-        single { AppFeatureConfigurator() }
-
-        factory { () -> FeatureConfiguratorAPI in
-            let configurator: AppFeatureConfigurator = DIKit.resolve()
-            return configurator
-        }
-
-        factory { () -> FeatureConfiguring in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
+        single {
+            AppFeatureConfigurator(
+                app: DIKit.resolve()
+            )
         }
 
         factory { () -> FeatureFetching in
@@ -374,11 +371,6 @@ extension DependencyContainer {
         }
 
         factory { () -> RxFeatureFetching in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
-        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
@@ -400,6 +392,11 @@ extension DependencyContainer {
         factory { () -> SettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
+        }
+
+        factory { () -> SettingsServiceCombineAPI in
+            let settings: SettingsServiceAPI = DIKit.resolve()
+            return settings as SettingsServiceCombineAPI
         }
 
         factory { () -> FiatCurrencyServiceAPI in
@@ -467,7 +464,15 @@ extension DependencyContainer {
             return relay as RemoteNotificationBackgroundReceiving
         }
 
-        single { RemoteNotificationRelay() }
+        single {
+            RemoteNotificationRelay(
+                app: DIKit.resolve(),
+                cacheSuite: DIKit.resolve(),
+                userNotificationCenter: UNUserNotificationCenter.current(),
+                messagingService: Messaging.messaging(),
+                secureChannelNotificationRelay: DIKit.resolve()
+            )
+        }
 
         // MARK: Helpers
 
@@ -683,6 +688,15 @@ extension DependencyContainer {
             RatesRepository(DIKit.resolve())
         }
 
+        single { () -> WatchlistRepositoryAPI in
+            WatchlistRepository(
+                WatchlistClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                )
+            )
+        }
+
         // MARK: Feature Product
 
         factory { () -> FeatureProductsDomain.ProductsServiceAPI in
@@ -692,7 +706,8 @@ extension DependencyContainer {
                         networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                         requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
                     )
-                )
+                ),
+                featureFlagsService: DIKit.resolve()
             )
         }
 
@@ -706,10 +721,17 @@ extension DependencyContainer {
         }
 
         factory { () -> OrderDomainRepositoryAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OrderDomainClient(networkAdapter: adapter, requestBuilder: builder)
             return OrderDomainRepository(apiClient: client)
+        }
+
+        factory { () -> ClaimEligibilityRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = ClaimEligibilityClient(networkAdapter: adapter, requestBuilder: builder)
+            return ClaimEligibilityRepository(apiClient: client)
         }
 
         // MARK: Pulse Network Debugging

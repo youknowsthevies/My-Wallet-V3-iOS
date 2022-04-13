@@ -80,9 +80,7 @@ extension CustodialActivityEvent.Fiat {
         guard let fiatCurrency = FiatCurrency(code: item.amount.symbol) else {
             return nil
         }
-        let date: Date = DateFormatter.sessionDateFormat.date(from: item.insertedAt)
-            ?? DateFormatter.iso8601Format.date(from: item.insertedAt)
-            ?? Date()
+        let date: Date = item.insertedAtDate
         self.init(
             amount: FiatValue(amount: BigInt(item.amountMinor) ?? 0, currency: fiatCurrency),
             identifier: item.id,
@@ -104,12 +102,13 @@ extension CustodialActivityEvent.Crypto {
         guard let eventType = item.custodialActivityEventType else {
             return nil
         }
-        guard let cryptoCurrency = CryptoCurrency(code: item.amount.symbol, enabledCurrenciesService: enabledCurrenciesService) else {
+        guard let cryptoCurrency = CryptoCurrency(
+            code: item.amount.symbol,
+            enabledCurrenciesService: enabledCurrenciesService
+        ) else {
             return nil
         }
-        let date: Date = DateFormatter.sessionDateFormat.date(from: item.insertedAt)
-            ?? DateFormatter.iso8601Format.date(from: item.insertedAt)
-            ?? Date()
+        let date: Date = item.insertedAtDate
         let amount = CryptoValue(
             amount: BigInt(item.amountMinor) ?? 0,
             currency: cryptoCurrency

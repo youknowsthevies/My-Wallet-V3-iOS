@@ -291,7 +291,7 @@ final class TransactionInteractor {
             .eraseToAnyPublisher()
     }
 
-    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails.State, Never> {
+    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails, Swift.Error> {
         ordersService
             .fetchOrder(with: orderId)
             .asPublisher()
@@ -299,8 +299,6 @@ final class TransactionInteractor {
                 timeoutInterval: .seconds(30),
                 until: { $0.isFinal }
             )
-            .map(\.state)
-            .replaceError(with: .pendingConfirmation)
             .eraseToAnyPublisher()
     }
 

@@ -61,6 +61,7 @@ public class App: AppProtocol {
     private func start() {
         state.app = self
         deepLinks.start()
+        remoteConfiguration.start(app: self)
         #if DEBUG
         _ = logger
         #endif
@@ -74,9 +75,9 @@ public class App: AppProtocol {
             let file = event.context[e.file] as? String,
             let line = event.context[e.line] as? Int
         {
-            print("🏷 ‼️", event, message, "←", file, line)
+            print("🏷 ‼️", event.reference, message, "←", file, line)
         } else {
-            print("🏷", event)
+            print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
     }
 }

@@ -118,7 +118,7 @@ final class SessionStateTests: XCTestCase {
                 forKey: "blockchain.session.state"
             )
             XCTAssertThrowsError(try state.get(blockchain.session.state.preference.value))
-            try XCTAssertAnyEqual(object[id].unwrap(), [:])
+            try XCTAssertAnyEqual(object[id].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
         }
 
         state.set(blockchain.user.id, to: id)

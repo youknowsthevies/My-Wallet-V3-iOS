@@ -10,7 +10,6 @@ public struct Wrapper: Equatable {
     public let payloadChecksum: String
     public let language: String
     public let syncPubKeys: Bool
-    public let warChecksum: String
     public let wallet: NativeWallet
 
     public init(
@@ -19,7 +18,6 @@ public struct Wrapper: Equatable {
         payloadChecksum: String,
         language: String,
         syncPubKeys: Bool,
-        warChecksum: String,
         wallet: NativeWallet
     ) {
         self.pbkdf2Iterations = UInt32(pbkdf2Iterations)
@@ -27,7 +25,18 @@ public struct Wrapper: Equatable {
         self.payloadChecksum = payloadChecksum
         self.language = language
         self.syncPubKeys = syncPubKeys
-        self.warChecksum = warChecksum
+        self.wallet = wallet
+    }
+
+    public init(
+        walletPayload: WalletPayload,
+        wallet: NativeWallet
+    ) {
+        version = walletPayload.payloadWrapper?.version ?? 4
+        pbkdf2Iterations = walletPayload.payloadWrapper?.pbkdf2IterationCount ?? 5000
+        payloadChecksum = walletPayload.payloadChecksum
+        language = walletPayload.language
+        syncPubKeys = walletPayload.shouldSyncPubKeys
         self.wallet = wallet
     }
 }
@@ -45,7 +54,6 @@ func generateWrapper(
         payloadChecksum: "",
         language: language,
         syncPubKeys: false,
-        warChecksum: "",
         wallet: wallet
     )
 }

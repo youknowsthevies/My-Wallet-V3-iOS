@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -39,7 +40,7 @@ enum SearchCryptoDomainAction: Equatable, NavigationAction, BindableAction {
     case onAppear
     case searchDomainsWithUsername
     case searchDomains(key: String, freeOnly: Bool = false)
-    case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>)
+    case didReceiveDomainsResult(Result<[SearchDomainResult], SearchDomainRepositoryError>, Bool)
     case selectFreeDomain(SearchDomainResult)
     case selectPremiumDomain(SearchDomainResult)
     case didSelectPremiumDomain(Result<OrderDomainResult, OrderDomainRepositoryError>)
@@ -94,6 +95,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
 struct SearchCryptoDomainEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let externalAppOpener: ExternalAppOpener
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
@@ -101,12 +103,14 @@ struct SearchCryptoDomainEnvironment {
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         externalAppOpener: ExternalAppOpener,
         searchDomainRepository: SearchDomainRepositoryAPI,
         orderDomainRepository: OrderDomainRepositoryAPI,
         userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
+        self.analyticsRecorder = analyticsRecorder
         self.externalAppOpener = externalAppOpener
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
@@ -123,6 +127,7 @@ let searchCryptoDomainReducer = Reducer.combine(
             environment: {
                 DomainCheckoutEnvironment(
                     mainQueue: $0.mainQueue,
+                    analyticsRecorder: $0.analyticsRecorder,
                     orderDomainRepository: $0.orderDomainRepository,
                     userInfoProvider: $0.userInfoProvider
                 )
@@ -183,10 +188,10 @@ let searchCryptoDomainReducer = Reducer.combine(
                     scheduler: environment.mainQueue
                 )
                 .map { result in
-                    .didReceiveDomainsResult(result)
+                    .didReceiveDomainsResult(result, isFreeOnly)
                 }
 
-        case .didReceiveDomainsResult(let result):
+        case .didReceiveDomainsResult(let result, _):
             state.isSearchResultsLoading = false
             switch result {
             case .success(let searchedDomains):
@@ -214,13 +219,17 @@ let searchCryptoDomainReducer = Reducer.combine(
             return .merge(
                 Effect(value: .set(\.$isPremiumDomainBottomSheetShown, true)),
                 environment
-                    .orderDomainRepository
-                    .createDomainOrder(
-                        isFree: false,
-                        domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
-                        resolutionRecords: nil,
-                        nabuUserId: nil
-                    )
+                    .userInfoProvider()
+                    .ignoreFailure(setFailureType: OrderDomainRepositoryError.self)
+                    .flatMap { userInfo -> AnyPublisher<OrderDomainResult, OrderDomainRepositoryError> in
+                        environment
+                            .orderDomainRepository
+                            .createDomainOrder(
+                                isFree: false,
+                                domainName: domain.domainName.replacingOccurrences(of: ".blockchain", with: ""),
+                                resolutionRecords: userInfo.resolutionRecords
+                            )
+                    }
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result in
@@ -279,4 +288,41 @@ let searchCryptoDomainReducer = Reducer.combine(
     }
     .routing()
     .binding()
+    .analytics()
 )
+
+// MARK: - Private
+
+extension Reducer where
+    Action == SearchCryptoDomainAction,
+    State == SearchCryptoDomainState,
+    Environment == SearchCryptoDomainEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                SearchCryptoDomainState,
+                SearchCryptoDomainAction,
+                SearchCryptoDomainEnvironment
+            > { _, action, environment in
+                switch action {
+                case .didReceiveDomainsResult(.success, let isFreeOnly):
+                    if !isFreeOnly {
+                        environment.analyticsRecorder.record(event: .searchDomainManual)
+                    }
+                    environment.analyticsRecorder.record(event: .searchDomainLoaded)
+                    return .none
+                case .openPremiumDomainLink:
+                    environment.analyticsRecorder.record(event: .unstoppableSiteVisited)
+                    return .none
+                case .selectFreeDomain:
+                    environment.analyticsRecorder.record(event: .domainSelected)
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}

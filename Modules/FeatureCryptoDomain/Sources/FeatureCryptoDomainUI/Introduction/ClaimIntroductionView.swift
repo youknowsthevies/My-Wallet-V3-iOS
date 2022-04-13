@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
@@ -46,6 +47,7 @@ struct ClaimIntroductionState: NavigationState {
 
 struct ClaimIntroductionEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let externalAppOpener: ExternalAppOpener
     let searchDomainRepository: SearchDomainRepositoryAPI
     let orderDomainRepository: OrderDomainRepositoryAPI
@@ -61,6 +63,7 @@ let claimIntroductionReducer = Reducer.combine(
             environment: {
                 SearchCryptoDomainEnvironment(
                     mainQueue: $0.mainQueue,
+                    analyticsRecorder: $0.analyticsRecorder,
                     externalAppOpener: $0.externalAppOpener,
                     searchDomainRepository: $0.searchDomainRepository,
                     orderDomainRepository: $0.orderDomainRepository,
@@ -100,6 +103,7 @@ public final class ClaimIntroductionHostingController: UIViewController {
     private let viewStore: ViewStore<ClaimIntroductionState, ClaimIntroductionAction>
 
     private let mainQueue: AnySchedulerOf<DispatchQueue>
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let externalAppOpener: ExternalAppOpener
     private let searchDomainRepository: SearchDomainRepositoryAPI
     private let orderDomainRepository: OrderDomainRepositoryAPI
@@ -111,12 +115,14 @@ public final class ClaimIntroductionHostingController: UIViewController {
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         externalAppOpener: ExternalAppOpener,
         searchDomainRepository: SearchDomainRepositoryAPI,
         orderDomainRepository: OrderDomainRepositoryAPI,
         userInfoProvider: @escaping () -> AnyPublisher<OrderDomainUserInfo, Error>
     ) {
         self.mainQueue = mainQueue
+        self.analyticsRecorder = analyticsRecorder
         self.externalAppOpener = externalAppOpener
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
@@ -126,6 +132,7 @@ public final class ClaimIntroductionHostingController: UIViewController {
             reducer: claimIntroductionReducer,
             environment: .init(
                 mainQueue: mainQueue,
+                analyticsRecorder: analyticsRecorder,
                 externalAppOpener: externalAppOpener,
                 searchDomainRepository: searchDomainRepository,
                 orderDomainRepository: orderDomainRepository,
@@ -283,6 +290,7 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
                 reducer: claimIntroductionReducer,
                 environment: .init(
                     mainQueue: .main,
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock

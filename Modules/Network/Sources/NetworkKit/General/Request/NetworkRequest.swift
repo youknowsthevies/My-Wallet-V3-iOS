@@ -82,10 +82,14 @@ public struct NetworkRequest {
         response: ProcessInfo.processInfo.environment["BLOCKCHAIN_DEBUG_NETWORK_RESPONSE"] == "TRUE"
     )
 
+    private var acceptLanguage: [String] {
+        Array(Locale.preferredLanguages.prefix(3) + Bundle.main.preferredLocalizations)
+    }
+
     private var defaultHeaders: HTTPHeaders {
         [
             HttpHeaderField.requestId: requestId.uuidString,
-            HttpHeaderField.acceptLanguage: Locale.preferredLanguages.prefix(3).qualityEncoded()
+            HttpHeaderField.acceptLanguage: Set(acceptLanguage).sorted(like: acceptLanguage).qualityEncoded()
         ]
     }
 
@@ -196,9 +200,11 @@ extension NSMutableURLRequest {
 extension Collection where Element == String {
 
     func qualityEncoded() -> String {
-        enumerated().map { index, encoding in
-            let quality = 1.0 - (Double(index) * 0.1)
-            return "\(encoding);q=\(quality)"
-        }.joined(separator: ", ")
+        enumerated()
+            .map { index, encoding in
+                let quality = 1.0 - (Double(index) * 0.1)
+                return "\(encoding);q=\(quality)"
+            }
+            .joined(separator: ", ")
     }
 }

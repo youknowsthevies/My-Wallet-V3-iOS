@@ -8,6 +8,8 @@ import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
+import NabuNetworkError
+import NetworkError
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -40,6 +42,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 }
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
+typealias TransactionFlowAnalyticsEvent = AnalyticsEvents.New.TransactionFlow
 
 // swiftlint:disable type_body_length
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
@@ -139,20 +142,65 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             }
             return
         }
+
+        if let analytics = errorState.analytics(for: action) {
+            analyticsRecorder.record(event: analytics)
+        }
+
+        presentErrorRecoveryCallout(
+            title: errorState.recoveryWarningTitle(for: action).or(Localization.Error.unknownError),
+            message: errorState.recoveryWarningMessage(for: action),
+            callouts: errorState.recoveryWarningCallouts(for: action),
+            onClose: { [transactionModel] in
+                transactionModel.process(action: .returnToPreviousStep)
+            },
+            onCalloutTapped: handleCalloutTapped
+        )
+    }
+
+    func showVerifyToUnlockMoreTransactionsPrompt(action: AssetAction) {
+        presentErrorRecoveryCallout(
+            title: LocalizationConstants.Transaction.Notices.verifyToUnlockMoreTradingNoticeTitle,
+            message: LocalizationConstants.Transaction.Notices.verifyToUnlockMoreTradingNoticeMessage,
+            callouts: [
+                .init(
+                    image: Image("icon-verified", bundle: .main),
+                    title: LocalizationConstants.Transaction.Notices.verifyToUnlockMoreTradingNoticeCalloutTitle,
+                    message: LocalizationConstants.Transaction.Notices.verifyToUnlockMoreTradingNoticeCalloutMessage,
+                    callToAction: LocalizationConstants.Transaction.Notices.verifyToUnlockMoreTradingNoticeCalloutCTA
+                )
+            ],
+            onClose: { [analyticsRecorder, presenter = topMostViewControllerProvider.topMostViewController] in
+                if let flowStep = TransactionFlowAnalyticsEvent.FlowStep(action) {
+                    analyticsRecorder.record(
+                        event: TransactionFlowAnalyticsEvent.getMoreAccessWhenYouVerifyDismissed(flowStep: flowStep)
+                    )
+                }
+                presenter?.dismiss(animated: true)
+            },
+            onCalloutTapped: { [analyticsRecorder, presentKYCUpgradeFlow] _ in
+                if let flowStep = TransactionFlowAnalyticsEvent.FlowStep(action) {
+                    analyticsRecorder.record(
+                        event: TransactionFlowAnalyticsEvent.getMoreAccessWhenYouVerifyClicked(flowStep: flowStep)
+                    )
+                }
+                presentKYCUpgradeFlow { _ in }
+            }
+        )
+    }
+
+    private func presentErrorRecoveryCallout(
+        title: String,
+        message: String,
+        callouts: [ErrorRecoveryState.Callout],
+        onClose: @escaping () -> Void,
+        onCalloutTapped: @escaping (ErrorRecoveryState.Callout) -> Void
+    ) {
         let view = ErrorRecoveryView(
             store: .init(
-                initialState: ErrorRecoveryState(
-                    title: errorState.recoveryWarningTitle(for: action),
-                    message: errorState.recoveryWarningMessage(for: action),
-                    callouts: errorState.recoveryWarningCallouts(for: action)
-                ),
+                initialState: ErrorRecoveryState(title: title, message: message, callouts: callouts),
                 reducer: errorRecoveryReducer,
-                environment: ErrorRecoveryEnvironment(
-                    close: {
-                        transactionModel.process(action: .returnToPreviousStep)
-                    },
-                    calloutTapped: handleCalloutTapped
-                )
+                environment: ErrorRecoveryEnvironment(close: onClose, calloutTapped: onCalloutTapped)
             )
         )
         let viewController = UIHostingController(rootView: view)

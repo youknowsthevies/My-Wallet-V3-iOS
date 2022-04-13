@@ -36,7 +36,7 @@ public final class CardClient: CardClientAPI {
 
     // MARK: - API
 
-    func orderCard(with parameters: OrderCardParameters) -> AnyPublisher<[Card], NabuNetworkError> {
+    func orderCard(with parameters: OrderCardParameters) -> AnyPublisher<Card, NabuNetworkError> {
         let request = requestBuilder.post(
             path: [Path.cards.rawValue],
             body: try? parameters.encode(),
@@ -44,7 +44,7 @@ public final class CardClient: CardClientAPI {
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: [Card].self)
+            .perform(request: request, responseType: Card.self)
             .eraseToAnyPublisher()
     }
 

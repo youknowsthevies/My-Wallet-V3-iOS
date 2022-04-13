@@ -18,7 +18,7 @@ public func nativeWalletFlagEnabled(
 public func nativeWalletCreationFlagEnabled(
     service: FeatureFlagsServiceAPI = resolve()
 ) -> AnyPublisher<Bool, Never> {
-    service.isEnabled(.local(.nativeWalletCreation))
+    service.isEnabled(.remote(.nativeWalletCreation))
 }
 
 /// Useful top-left method that output an Either type of values old and new.

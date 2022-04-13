@@ -35,6 +35,7 @@ extension AnalyticsEvents.New {
             fromAccountType: FromAccountType,
             toAccountType: ToAccountType
         )
+        case sendDomainResolved
 
         public enum Origin: String, StringRawRepresentable {
             case navigation = "NAVIGATION"

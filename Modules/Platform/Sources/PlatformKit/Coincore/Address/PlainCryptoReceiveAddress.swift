@@ -3,13 +3,13 @@
 import Foundation
 import MoneyKit
 
-/// A `CryptoReceiveAddress & CryptoAssetQRMetadataProviding` that doesn't know how to validate the asset/address and assumes it is correct.
-struct PlainCryptoReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
+/// A `CryptoReceiveAddress & QRCodeMetadataProvider` that doesn't know how to validate the asset/address and assumes it is correct.
+struct PlainCryptoReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
     let address: String
     let asset: CryptoCurrency
     let label: String
-    var metadata: CryptoAssetQRMetadata {
-        PlainCryptoAssetQRMetadata(address: address, cryptoCurrency: asset)
+    var qrCodeMetadata: QRCodeMetadata {
+        QRCodeMetadata(content: address, title: address)
     }
 
     let accountType: AccountType = .external

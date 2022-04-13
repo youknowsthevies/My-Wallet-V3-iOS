@@ -15,7 +15,7 @@ public protocol AnyDecoderProtocol: AnyObject, Decoder {
     func convert<T>(_ any: Any, to: T.Type) throws -> Any?
 }
 
-open class AnyDecoder: AnyDecoderProtocol {
+open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
 
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey: Any] = [:]
@@ -51,6 +51,7 @@ open class AnyDecoder: AnyDecoderProtocol {
         try? decode(T.self, from: any)
     }
 
+    // swiftlint:disable cyclomatic_complexity
     open func convert<T>(_ any: Any, to type: T.Type) throws -> Any? {
         switch (any, T.self) {
         case (let time as TimeInterval, is Date.Type):
@@ -69,8 +70,17 @@ open class AnyDecoder: AnyDecoderProtocol {
             return number.doubleValue
         case (let number as NSNumber, is CGFloat.Type):
             return number.doubleValue
+        case (let string as String, is Int.Type):
+            return Int(string)
+        case (let string as String, is Bool.Type):
+            return Bool(string)
         default:
-            return nil
+            switch Wrapper<T>.self {
+            case let rawRepresentable as AnyRawRepresentable.Type:
+                return rawRepresentable.value(from: any, using: self)
+            default:
+                return nil
+            }
         }
     }
 }
@@ -270,5 +280,20 @@ private protocol OptionalDecodableProtocol: OptionalProtocol, Decodable {
 extension Optional: OptionalDecodableProtocol where Wrapped: Decodable & Equatable {
     static func decodeUnwrapped<D: AnyDecoderProtocol>(from decoder: D) -> Optional {
         try? decoder.decode(Wrapped.self, from: decoder.value)
+    }
+}
+
+private protocol AnyRawRepresentable {
+    static func value(from any: Any, using decoder: AnyDecoderProtocol) -> Any?
+}
+
+private enum Wrapper<T> {}
+
+extension Wrapper: AnyRawRepresentable where T: RawRepresentable, T.RawValue: Decodable {
+    static func value(from any: Any, using decoder: AnyDecoderProtocol) -> Any? {
+        guard let value = any as? T.RawValue ?? (try? decoder.decode(T.RawValue.self, from: any)) else {
+            return nil
+        }
+        return T(rawValue: value)
     }
 }

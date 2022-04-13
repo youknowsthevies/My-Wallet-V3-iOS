@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
@@ -145,6 +146,7 @@ struct SearchCryptoDomainView_Previews: PreviewProvider {
                 reducer: searchCryptoDomainReducer,
                 environment: .init(
                     mainQueue: .main,
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     externalAppOpener: ToLogAppOpener(),
                     searchDomainRepository: SearchDomainRepository(
                         apiClient: SearchDomainClient.mock

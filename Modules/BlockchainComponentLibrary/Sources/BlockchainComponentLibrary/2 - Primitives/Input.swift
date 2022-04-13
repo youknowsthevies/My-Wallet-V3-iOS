@@ -199,7 +199,7 @@ extension Input where Trailing == EmptyView {
 }
 
 /// Override for the border color of `Input`
-public struct InputState {
+public struct InputState: Equatable {
     let borderColor: Color?
 
     /// Default border colors, changing based on focus

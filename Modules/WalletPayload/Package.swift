@@ -14,11 +14,6 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
-        ),
-        .package(
             name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
@@ -30,8 +25,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Metadata"),
         .package(path: "../Test"),
-        .package(path: "../Tool"),
-        .package(path: "../RxTool")
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -43,7 +37,6 @@ let package = Package(
                 .product(name: "MetadataKit", package: "Metadata"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
             ]
         ),
@@ -62,9 +55,7 @@ let package = Package(
             name: "WalletPayloadKitMock",
             dependencies: [
                 .target(name: "WalletPayloadKit"),
-                .target(name: "WalletPayloadDataKit"),
-                .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxCocoa", package: "RxSwift")
+                .target(name: "WalletPayloadDataKit")
             ]
         ),
         .testTarget(
@@ -75,8 +66,6 @@ let package = Package(
                 .target(name: "WalletPayloadKitMock"),
                 .product(name: "MetadataKitMock", package: "Metadata"),
                 .product(name: "KeychainKitMock", package: "Keychain"),
-                .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "TestKit", package: "Test"),

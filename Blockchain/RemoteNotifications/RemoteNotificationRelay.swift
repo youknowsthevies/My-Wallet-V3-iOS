@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
+import Combine
 import DIKit
 import FirebaseMessaging
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
-import RxRelay
-import RxSwift
 import ToolKit
 import UserNotifications
 
@@ -15,8 +15,10 @@ final class RemoteNotificationRelay: NSObject {
 
     // MARK: - Properties
 
-    private let relay = PublishRelay<RemoteNotification.NotificationType>()
+    private let relay = PassthroughSubject<RemoteNotification.NotificationType, RemoteNotificationEmitterError>()
 
+    private let app: AppProtocol
+    private let cacheSuite: CacheSuite
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let messagingService: FirebaseCloudMessagingServiceAPI
     private let secureChannelNotificationRelay: SecureChannelNotificationRelaying
@@ -24,10 +26,14 @@ final class RemoteNotificationRelay: NSObject {
     // MARK: - Setup
 
     init(
-        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-        messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
-        secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()
+        app: AppProtocol,
+        cacheSuite: CacheSuite,
+        userNotificationCenter: UNUserNotificationCenterAPI,
+        messagingService: FirebaseCloudMessagingServiceAPI,
+        secureChannelNotificationRelay: SecureChannelNotificationRelaying
     ) {
+        self.app = app
+        self.cacheSuite = cacheSuite
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService
         self.secureChannelNotificationRelay = secureChannelNotificationRelay
@@ -39,30 +45,45 @@ final class RemoteNotificationRelay: NSObject {
 // MARK: - RemoteNotificationEmitting
 
 extension RemoteNotificationRelay: RemoteNotificationEmitting {
-    var notification: Observable<RemoteNotification.NotificationType> {
-        relay.asObservable()
+    var notification: AnyPublisher<
+        RemoteNotification.NotificationType,
+        RemoteNotificationEmitterError
+    > {
+        relay.eraseToAnyPublisher()
     }
 }
 
 extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
+
     func didReceiveRemoteNotification(
         _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        let result = secureChannelNotificationRelay.didReceiveRemoteNotification(
+        let secureChannelResult = secureChannelNotificationRelay.didReceiveRemoteNotification(
             userInfo,
             onApplicationState: applicationState,
             fetchCompletionHandler: completionHandler
         )
-        switch result {
-        case true:
+        guard !secureChannelResult else {
             // SecureChannelNotificationRelaying reacted to the given input.
             return
-        case false:
-            // SecureChannelNotificationRelaying did not react to the given input.
-            completionHandler(.noData)
         }
+        // SecureChannelNotificationRelaying did not react to the given input.
+
+        updateRemoteConfigState(userInfo: userInfo)
+        completionHandler(.noData)
+    }
+
+    private func updateRemoteConfigState(userInfo: [AnyHashable: Any]) {
+        guard let value = userInfo[RemoteConfigConstants.notificationKey] as? String else {
+            return
+        }
+        guard value == RemoteConfigConstants.notificationValue else {
+            return
+        }
+        // Update User Defaults
+        app.state.set(blockchain.app.configuration.remote.is.stale, to: true)
     }
 }
 

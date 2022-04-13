@@ -358,7 +358,7 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
 
         case .fatalTransactionError(let error):
-            Logger.shared.error(String(describing: error))
+            Logger.shared.error(error)
             var newState = oldState
             newState.nextEnabled = true
             newState.step = .inProgress
@@ -415,7 +415,7 @@ extension TransactionAction {
     }
 }
 
-enum FatalTransactionError: Error, Equatable {
+enum FatalTransactionError: Error, Equatable, CustomStringConvertible {
     case rxError(RxError)
     case generic(Error)
     case message(String)
@@ -436,6 +436,17 @@ enum FatalTransactionError: Error, Equatable {
             return error
         default:
             return nil
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .rxError(let error):
+            return error.debugDescription
+        case .generic(let error):
+            return String(describing: error)
+        case .message(let message):
+            return message
         }
     }
 

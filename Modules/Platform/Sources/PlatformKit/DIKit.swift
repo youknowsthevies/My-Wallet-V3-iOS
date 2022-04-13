@@ -251,7 +251,14 @@ extension DependencyContainer {
 
         // MARK: - Services - General
 
-        factory { OrdersActivityService() as OrdersActivityServiceAPI }
+        single {
+            OrdersActivityService(
+                client: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                priceService: DIKit.resolve(),
+                enabledCurrenciesService: DIKit.resolve()
+            ) as OrdersActivityServiceAPI
+        }
 
         factory {
             OrderConfirmationService(

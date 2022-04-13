@@ -2,6 +2,8 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureAppDomain
+import FeatureAppUI
 import FeatureDashboardUI
 import FeatureOnboardingUI
 import PlatformKit

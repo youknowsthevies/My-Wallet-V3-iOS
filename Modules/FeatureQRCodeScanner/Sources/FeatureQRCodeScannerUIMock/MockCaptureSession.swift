@@ -38,4 +38,12 @@ final class CaptureSessionMock: CaptureSessionProtocol {
         outputsAdded.append(output)
         addOutputCallback(output)
     }
+
+    func canAdd(input: CaptureInputProtocol) -> Bool {
+        true
+    }
+
+    func canAdd(output: CaptureOutputProtocol) -> Bool {
+        true
+    }
 }

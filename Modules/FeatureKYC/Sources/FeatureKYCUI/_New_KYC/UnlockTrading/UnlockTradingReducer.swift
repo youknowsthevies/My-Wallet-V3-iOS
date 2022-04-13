@@ -1,7 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import PlatformKit
+
+private typealias Events = AnalyticsEvents.New.KYC
 
 struct UnlockTradingState: Equatable {
 
@@ -22,6 +25,7 @@ enum UnlockTradingAction: Equatable, BindableAction {
 struct UnlockTradingEnvironment {
     let dismiss: () -> Void
     let unlock: (KYC.Tier) -> Void
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 }
 
 let unlockTradingReducer = Reducer<
@@ -44,4 +48,54 @@ let unlockTradingReducer = Reducer<
         return .none
     }
 }
+.analytics()
 .binding()
+
+// MARK: - Analytics
+
+// swiftlint:disable:next line_length
+extension Reducer where State == UnlockTradingState, Action == UnlockTradingAction, Environment == UnlockTradingEnvironment {
+
+    func analytics() -> Self {
+        combined(
+            with: Reducer { state, action, environment in
+                switch action {
+                case .binding:
+                    return .none
+
+                case .closeButtonTapped:
+                    return .none
+
+                case .unlockButtonTapped(let requiredTier):
+                    let userTier = state.currentUserTier
+                    return .fireAndForget {
+                        if requiredTier == .tier1 {
+                            environment.analyticsRecorder.record(
+                                event: Events.tradingLimitsGetBasicCTAClicked(
+                                    tier: userTier.rawValue
+                                )
+                            )
+                        } else {
+                            environment.analyticsRecorder.record(
+                                event: Events.tradingLimitsGetVerifiedCTAClicked(
+                                    tier: userTier.rawValue
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
+// MARK: - SwiftUI Preview Helpers
+
+extension UnlockTradingEnvironment {
+
+    static let preview = UnlockTradingEnvironment(
+        dismiss: {},
+        unlock: { _ in },
+        analyticsRecorder: NoOpAnalyticsRecorder()
+    )
+}

@@ -37,9 +37,6 @@ public struct OnboardingChecklistView: View {
                 }
             },
             content: {
-                let firstIncompleteItem = viewStore.items.first {
-                    !viewStore.completedItems.contains($0)
-                }
                 VStack(spacing: Spacing.padding3) {
                     VStack(alignment: .leading, spacing: Spacing.baseline) {
                         ForEach(viewStore.items) { item in
@@ -63,7 +60,7 @@ public struct OnboardingChecklistView: View {
 
                     Spacer()
 
-                    if let item = firstIncompleteItem {
+                    if let item = viewStore.firstIncompleteItem {
                         Button(item.title) {
                             viewStore.send(
                                 .didSelectItem(item.id, .callToActionButton)
@@ -131,7 +128,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .incomplete,
+                            kycStatus: .notVerified,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -151,7 +148,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .pending,
+                            kycStatus: .verificationPending,
                             hasLinkedPaymentMethods: false,
                             hasEverPurchasedCrypto: false
                         )
@@ -171,7 +168,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .complete,
+                            kycStatus: .verified,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: false
                         )
@@ -191,7 +188,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 environment: OnboardingChecklist.Environment(
                     userState: .just(
                         UserState(
-                            kycStatus: .complete,
+                            kycStatus: .verified,
                             hasLinkedPaymentMethods: true,
                             hasEverPurchasedCrypto: true
                         )

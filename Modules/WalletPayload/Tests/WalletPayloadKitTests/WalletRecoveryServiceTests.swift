@@ -29,9 +29,9 @@ class WalletRecoveryServiceTests: XCTestCase {
         let walletHolder = WalletHolder()
         var walletDecoderCalled = false
         let walletDecoder: WalletDecoderAPI = WalletDecoder()
-        let decoder: WalletDecoding = { [walletDecoder] blockchainWallet in
+        let decoder: WalletDecoding = { [walletDecoder] walletPayload, blockchainWallet in
             walletDecoderCalled = true
-            return walletDecoder.createWallet(from: blockchainWallet)
+            return walletDecoder.createWallet(from: walletPayload, decryptedData: blockchainWallet)
         }
 
         let mockMetadata = MetadataServiceMock()
@@ -75,9 +75,9 @@ class WalletRecoveryServiceTests: XCTestCase {
         let walletHolder = WalletHolder()
         var walletDecoderCalled = false
         let walletDecoder: WalletDecoderAPI = WalletDecoder()
-        let decoder: WalletDecoding = { [walletDecoder] blockchainWallet in
+        let decoder: WalletDecoding = { [walletDecoder] walletPayload, blockchainWallet in
             walletDecoderCalled = true
-            return walletDecoder.createWallet(from: blockchainWallet)
+            return walletDecoder.createWallet(from: walletPayload, decryptedData: blockchainWallet)
         }
 
         let mockMetadata = MetadataServiceMock()
@@ -106,7 +106,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             language: "en",
             serverTime: 0,
             payload: String(data: jsonV4Wrapper, encoding: .utf8)!,
-            shouldSyncPubkeys: false
+            shouldSyncPubkeys: false,
+            payloadChecksum: ""
         )
         let mockWalletPayloadClient = MockWalletPayloadClient(result: .success(response))
         let walletPayloadRepository = WalletPayloadRepository(apiClient: mockWalletPayloadClient)

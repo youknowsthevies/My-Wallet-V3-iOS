@@ -2,6 +2,7 @@
 
 // swiftlint:disable file_length
 
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -67,36 +68,39 @@ extension TransactionErrorState {
     }
 
     // swiftlint:disable cyclomatic_complexity
-    func recoveryWarningTitle(for action: AssetAction) -> String {
-        let text: String
+    func recoveryWarningTitle(for action: AssetAction) -> String? {
+        let text: String?
         switch self {
         case .fatalError(let fatalError):
             switch fatalError {
             case .generic(let error):
-                if
+                if let error = error as? OpenBanking.Error {
+                    let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                    return ui.info.title
+                } else if
                     let error = error as? OrderConfirmationServiceError,
                     case .nabu(.nabuError(let networkError)) = error
                 {
-                    return transactionErrorTitle(
+                    text = transactionErrorTitle(
                         for: networkError.code,
                         action: action
-                    ) ?? Localization.nextworkErrorShort
+                    ) ?? networkError.serverDescription
                 } else if
                     let error = error as? NabuNetworkError,
                     case .nabuError(let networkError) = error
                 {
-                    return transactionErrorTitle(
+                    text = transactionErrorTitle(
                         for: networkError.code,
                         action: action
-                    ) ?? Localization.nextworkErrorShort
+                    ) ?? networkError.serverDescription
                 } else {
                     fallthrough
                 }
             default:
-                return Localization.fatalErrorShort
+                text = nil
             }
         case .nabuError(let error):
-            text = transactionErrorTitle(for: error.code, action: action) ?? Localization.nextworkErrorShort
+            text = transactionErrorTitle(for: error.code, action: action) ?? error.serverDescription
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
@@ -134,7 +138,7 @@ extension TransactionErrorState {
             if BuildFlag.isInternal {
                 Logger.shared.error("Unsupported API error thrown or an internal error thrown")
             }
-            text = Localization.unknownError
+            return nil
         case .addressIsContract:
             text = Localization.addressIsContract
         case .invalidAddress:
@@ -148,7 +152,7 @@ extension TransactionErrorState {
         case .transactionInFlight:
             text = Localization.transactionInFlight
         case .unknownError:
-            text = Localization.unknownError
+            text = nil
         }
         return text
     }
@@ -173,6 +177,8 @@ extension TransactionErrorState {
             text = localizedOverMaxPersonalLimitMessage(action: action)
         case .nabuError(let error):
             text = transactionErrorDescription(for: error.code, action: action)
+                ?? error.serverDescription
+                ?? Localization.unknownErrorDescription
         case .fatalError(let fatalTransactionError):
             text = transactionErrorDescription(for: fatalTransactionError, action: action)
         case .unknownError:
@@ -274,6 +280,8 @@ extension TransactionErrorState {
         switch networkError {
         case .nabuError(let error):
             errorDescription = transactionErrorDescription(for: error.code, action: action)
+                ?? error.serverDescription
+                ?? Localization.unknownError
         case .communicatorError(let error):
             errorDescription = String(describing: error)
         }
@@ -284,14 +292,18 @@ extension TransactionErrorState {
         let errorDescription: String
         switch fatalError {
         case .generic(let error):
-            if let error = error as? OrderConfirmationServiceError, case .nabu(let networkError) = error {
-                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            if let error = error as? OpenBanking.Error {
+                let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                errorDescription = ui.info.subtitle
+            } else if let error = error as? OrderConfirmationServiceError, case .nabu(let nabu) = error {
+                errorDescription = transactionErrorDescription(for: nabu, action: action)
             } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {
                 errorDescription = validationError.state.mapToTransactionErrorState.recoveryWarningTitle(for: action)
+                    ?? Localization.unknownErrorDescription
             } else {
-                errorDescription = Localization.unknownError
+                errorDescription = Localization.unknownErrorDescription
             }
 
         default:
@@ -324,7 +336,7 @@ extension TransactionErrorState {
     }
 
     // swiftlint:disable:next cyclomatic_complexity
-    private func transactionErrorDescription(for code: NabuErrorCode, action: AssetAction) -> String {
+    private func transactionErrorDescription(for code: NabuErrorCode, action: AssetAction) -> String? {
         switch code {
         case .notFound:
             return Localization.notFound
@@ -385,7 +397,7 @@ extension TransactionErrorState {
         case .cardPaymentFailed:
             return Localization.cardPaymentFailed
         default:
-            return Localization.unknownError
+            return nil
         }
     }
 
@@ -577,8 +589,7 @@ extension TransactionErrorState {
         case .withdraw:
             text = localizedOverMaxPersonalLimitMessageForWithdraw(
                 effectiveLimit: limit,
-                availableAmount: available,
-                suggestedUpgrade: suggestedUpgrade
+                availableAmount: available
             )
         case .receive,
              .deposit,
@@ -594,12 +605,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForBuy(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_other
@@ -614,12 +625,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSell(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_other
@@ -634,12 +645,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSwap(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_other
@@ -654,12 +665,12 @@ extension TransactionErrorState {
     private func localizedOverMaxPersonalLimitMessageForSend(
         effectiveLimit: EffectiveLimit,
         availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: TransactionValidationState.LimitsUpgrade?
     ) -> String {
         let format: String
         if effectiveLimit.timeframe == .single {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_single
-        } else if suggestedUpgrade?.requiredTier == .tier2 {
+        } else if suggestedUpgrade?.requiresTier2 == true {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_gold
         } else {
             format = Localization.overMaximumPersonalLimitRecoveryMessage_send_other
@@ -673,8 +684,7 @@ extension TransactionErrorState {
 
     private func localizedOverMaxPersonalLimitMessageForWithdraw(
         effectiveLimit: EffectiveLimit,
-        availableAmount: MoneyValue,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        availableAmount: MoneyValue
     ) -> String {
         String.localizedStringWithFormat(
             Localization.overMaximumPersonalLimitRecoveryMessage_withdraw,

@@ -104,14 +104,14 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
         guard let authenticatorType = WalletAuthenticatorType(rawValue: payload.authType) else {
             return .failure(.unsupported2FAType)
         }
-        guard let rawPayload = payload.payload else {
+        guard let rawPayload = payload.payloadWrapper, !rawPayload.payload.isEmpty else {
             return .failure(.missingPayload)
         }
         return walletRepo
             .set(keyPath: \.credentials.guid, value: payload.guid)
             .set(keyPath: \.properties.language, value: payload.language)
             .set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
-            .set(keyPath: \.encryptedPayload, value: rawPayload)
+            .set(keyPath: \.walletPayload, value: payload)
             .set(keyPath: \.properties.authenticatorType, value: authenticatorType)
             .get()
             .map { _ in payload }

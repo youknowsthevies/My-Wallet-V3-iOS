@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureCardIssuingDomain
 import FeatureCardPaymentDomain
 import FeatureSettingsDomain
 import Localization
@@ -19,6 +19,15 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
+
+public enum CardOrderingResult {
+    case created
+    case cancelled
+}
+
+public protocol CardIssuingViewControllerAPI: AnyObject {
+    func makeViewController(onComplete: @escaping (CardOrderingResult) -> Void) -> UIViewController
+}
 
 public protocol AuthenticationCoordinating: AnyObject {
     func enableBiometrics()
@@ -45,6 +54,8 @@ public protocol KYCRouterAPI {
 }
 
 final class SettingsRouter: SettingsRouterAPI {
+
+    private let app: AppProtocol = resolve()
 
     typealias AnalyticsEvent = AnalyticsEvents.Settings
 
@@ -328,7 +339,16 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
-    private func showCardIssuingFlow() {}
+    private func showCardIssuingFlow() {
+        let cardIssuing: CardIssuingViewControllerAPI = resolve()
+        let nav = navigationRouter.navigationControllerAPI
+        nav?.pushViewController(
+            cardIssuing.makeViewController(onComplete: { _ in
+                nav?.popToRootViewControllerAnimated(animated: true)
+            }),
+            animated: true
+        )
+    }
 
     private func showCardLinkingFlow() {
         let presenter = topViewController

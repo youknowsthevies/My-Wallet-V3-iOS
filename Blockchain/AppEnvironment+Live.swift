@@ -55,7 +55,6 @@ extension AppEnvironment {
             walletUpgradeService: resolve(),
             walletRepoPersistence: resolve(),
             exchangeRepository: ExchangeAccountRepository(),
-            appFeatureConfigurator: resolve(),
             blockchainSettings: .shared,
             credentialsStore: resolve(),
             urlSession: resolve(),
@@ -63,8 +62,7 @@ extension AppEnvironment {
             appStoreOpener: resolve(),
             secondPasswordPrompter: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber,
-            externalAppOpener: resolve(),
-            deepLinkCoordinator: resolve()
+            externalAppOpener: resolve()
         )
     }
 }

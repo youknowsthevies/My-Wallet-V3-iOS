@@ -5,18 +5,14 @@ import UserNotifications
 
 final class MockUNUserNotificationCenter: UNUserNotificationCenterAPI {
 
-    struct FakeError: Error {
-        let info: String
-    }
-
     weak var delegate: UNUserNotificationCenterDelegate?
 
     private let initialAuthorizationStatus: UNAuthorizationStatus
-    private let expectedAuthorizationResult: Result<Bool, FakeError>
+    private let expectedAuthorizationResult: Result<Bool, Error>
 
     init(
         initialAuthorizationStatus: UNAuthorizationStatus,
-        expectedAuthorizationResult: Result<Bool, FakeError>
+        expectedAuthorizationResult: Result<Bool, Error>
     ) {
         self.initialAuthorizationStatus = initialAuthorizationStatus
         self.expectedAuthorizationResult = expectedAuthorizationResult

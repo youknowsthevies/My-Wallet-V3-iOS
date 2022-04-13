@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureFormDomain
@@ -10,6 +11,7 @@ import ToolKit
 enum AccountUsage {
 
     typealias State = LoadingState<AccountUsage.Form.State, FailureState<AccountUsage.Action>>
+    private typealias Events = AnalyticsEvents.New.KYC
 
     enum Action: Equatable {
         case onAppear
@@ -23,6 +25,7 @@ enum AccountUsage {
         let onComplete: () -> Void
         let loadForm: () -> AnyPublisher<[FormQuestion], NabuNetworkError>
         let submitForm: ([FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
+        let analyticsRecorder: AnalyticsEventRecorderAPI
         let mainQueue: AnySchedulerOf<DispatchQueue> = .main
     }
 
@@ -30,6 +33,7 @@ enum AccountUsage {
         Reducer<State, Action, Environment> { state, action, environment in
             switch action {
             case .onAppear:
+                environment.analyticsRecorder.record(event: Events.accountInfoScreenViewed)
                 return Effect(value: .loadForm)
 
             case .onComplete:
@@ -76,6 +80,11 @@ enum AccountUsage {
 
             case .form(let action):
                 switch action {
+                case .submit:
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(event: Events.accountInfoSubmitted)
+                    }
+
                 case .onComplete:
                     return Effect(value: .onComplete)
 
@@ -94,5 +103,17 @@ enum AccountUsage {
                 )
             }
         )
+    )
+}
+
+// MARK: SwiftUI Preview Helpers
+
+extension AccountUsage.Environment {
+
+    static let preview = AccountUsage.Environment(
+        onComplete: {},
+        loadForm: { .empty() },
+        submitForm: { _ in .empty() },
+        analyticsRecorder: NoOpAnalyticsRecorder()
     )
 }

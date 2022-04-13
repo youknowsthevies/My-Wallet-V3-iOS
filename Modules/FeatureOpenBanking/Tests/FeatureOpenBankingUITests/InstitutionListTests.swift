@@ -85,10 +85,6 @@ final class InstitutionListTests: OpenBankingTestCase {
         approve()
     }
 
-    func test_approve_deny() throws {
-        store.send(.approve(.deny))
-    }
-
     func test_approve_bank_cancel() throws {
         approve()
 

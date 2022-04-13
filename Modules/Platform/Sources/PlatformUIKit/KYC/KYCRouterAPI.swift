@@ -15,6 +15,7 @@ public enum KYCParentFlow {
     case receive
     case airdrop
     case cash
+    case coin
 }
 
 // TICKET: IOS-4734 (remove this code)

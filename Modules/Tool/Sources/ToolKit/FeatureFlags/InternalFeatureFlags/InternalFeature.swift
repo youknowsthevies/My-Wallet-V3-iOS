@@ -21,20 +21,11 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
-    /// Enabled native wallet creation instead of JS
-    case nativeWalletCreation
-
     /// Enables native bitcion transaction
     case nativeBitcoinTransaction
 
     /// Enables Apple Pay
     case applePay
-
-    /// Enables Redesigned CoinView
-    case redesignCoinView
-
-    /// Enables Blockchain Domains
-    case blockchainDomains
 
     /// Enables Card Issuing
     case cardIssuing
@@ -54,9 +45,6 @@ public enum InternalFeature: String, CaseIterable {
              .nativeWalletPayload,
              .nativeBitcoinTransaction,
              .applePay,
-             .nativeWalletCreation,
-             .redesignCoinView,
-             .blockchainDomains,
              .cardIssuing:
             return false
         }
@@ -86,12 +74,6 @@ extension InternalFeature {
             return "Native Bitcoin Transaction"
         case .applePay:
             return "Apple Pay"
-        case .nativeWalletCreation:
-            return "Native Wallet Creation"
-        case .redesignCoinView:
-            return "Redesign: CoinView"
-        case .blockchainDomains:
-            return "Blockchain Domains"
         case .cardIssuing:
             return "Card Issuing"
         case .customerSupportChat:

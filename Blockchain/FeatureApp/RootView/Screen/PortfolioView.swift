@@ -3,6 +3,8 @@
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import DIKit
+import FeatureAppDomain
+import FeatureAppUI
 import FeatureDashboardUI
 import PlatformKit
 import PlatformUIKit
@@ -20,7 +22,6 @@ struct PortfolioView: UIViewControllerRepresentable {
     private var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
     private var onboardingViewsFactory = OnboardingViewsFactory()
     private var userAdapter: UserAdapterAPI = resolve()
-    private var featureFlagService: FeatureFlagsServiceAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
@@ -29,16 +30,12 @@ struct PortfolioView: UIViewControllerRepresentable {
             fiatBalanceCellProvider: fiatBalanceCellProvider,
             userHasCompletedOnboarding: userAdapter
                 .onboardingUserState
-                .map { $0.kycStatus == .complete && $0.hasEverPurchasedCrypto }
+                .map { $0.kycStatus == .verified && $0.hasEverPurchasedCrypto }
                 .eraseToAnyPublisher(),
             onboardingChecklistViewBuilder: { [onboardingViewsFactory] in
                 onboardingViewsFactory.makeOnboardingChecklistOverview()
             },
-            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer()),
-            featureFlagService: featureFlagService,
-            presentRedesignCoinView: { _, cryptoCurrency in
-                ViewStore(store).send(.enter(into: .coinView(cryptoCurrency)))
-            }
+            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer())
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

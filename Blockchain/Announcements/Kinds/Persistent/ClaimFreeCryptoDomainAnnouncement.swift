@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCryptoDomainDomain
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -22,8 +23,11 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         button.tapRelay
             .bind { [weak self] in
                 guard let self = self else { return }
-                self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
+                self.analyticsRecorder.record(
+                    event: AnalyticsEvents.Announcement.cardActioned(type: .claimFreeCryptoDomain)
+                )
                 self.action()
+                self.dismiss()
             }
             .disposed(by: disposeBag)
         return AnnouncementCardViewModel(
@@ -40,12 +44,15 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
             buttons: [button],
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }
+                self.analyticsRecorder.record(
+                    event: AnalyticsEvents.Announcement.cardDismissed(type: .claimFreeCryptoDomain)
+                )
                 self.dismiss()
             },
             didAppear: { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(
-                    event: self.didAppearAnalyticsEvent
+                    event: AnalyticsEvents.Announcement.cardShown(type: .claimFreeCryptoDomain)
                 )
             }
         )
@@ -77,8 +84,9 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         self.analyticsRecorder = analyticsRecorder
         self.action = action
         self.dismiss = dismiss
+
         featureFlagsService
-            .isEnabled(.local(.blockchainDomains))
+            .isEnabled(.remote(.blockchainDomains))
             .asSingle()
             .subscribe { [weak self] enabled in
                 self?.claimFreeDomainEnabled.mutate { $0 = enabled }

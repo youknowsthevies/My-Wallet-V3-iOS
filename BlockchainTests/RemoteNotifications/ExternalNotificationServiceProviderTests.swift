@@ -1,65 +1,166 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
-import PlatformKit
+import Combine
 @testable import RemoteNotificationsKit
-import RxBlocking
-import RxSwift
 import UserNotifications
 import XCTest
 
 final class ExternalNotificationServiceProviderTests: XCTestCase {
 
+    var cancellables: Set<AnyCancellable> = []
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        cancellables = []
+    }
+
+    override func tearDownWithError() throws {
+        cancellables = []
+        try super.tearDownWithError()
+    }
+
     func testSuccessfullTokenFetching() {
         let expectedToken = "fcm-token-value"
         let messagingService = MockMessagingService(expectedTokenResult: .success(expectedToken))
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        do {
-            let token = try provider.token.toBlocking().first()!
-            XCTAssertEqual(token, expectedToken)
-        } catch {
-            XCTFail("expected successful token fetch. got \(error) instead")
-        }
+
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        provider.token
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail("Expected successful token fetch. Got \(error) instead")
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { token in
+                    registerExpectation.fulfill()
+                    XCTAssertEqual(token, expectedToken)
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testEmptyTokenFetchingFailure() {
         let messagingService = MockMessagingService(expectedTokenResult: .failure(.tokenIsEmpty))
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        do {
-            let token = try provider.token.toBlocking().first()!
-            XCTFail("expected \(RemoteNotification.TokenFetchError.tokenIsEmpty). got token \(token) instead")
-        } catch RemoteNotification.TokenFetchError.tokenIsEmpty {
-            // Okay
-        } catch {
-            XCTFail("expected \(RemoteNotification.TokenFetchError.tokenIsEmpty). got \(error) instead")
-        }
+
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        provider.token
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        switch error {
+                        case .tokenIsEmpty:
+                            registerExpectation.fulfill()
+                        default:
+                            XCTFail("Expected '.tokenIsEmpty' error. Got \(error) instead")
+                        }
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected '.tokenIsEmpty' error. Got success instead")
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testTopicSubscriptionSuccess() {
-        let messagingService = MockMessagingService(expectedTokenResult: .success(""), shouldSubscribeToTopicsSuccessfully: true)
+        let messagingService = MockMessagingService(
+            expectedTokenResult: .success(""),
+            shouldSubscribeToTopicsSuccessfully: true
+        )
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        let topic = RemoteNotification.Topic.todo
-        do {
-            try provider.subscribe(to: topic).toBlocking().first()
-            XCTAssertTrue(messagingService.topics.contains(topic))
-        } catch {
-            XCTFail("expected successful topic subscription. got \(error) instead")
-        }
+        let topic = RemoteNotification.Topic.remoteConfig
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        provider.subscribe(to: topic)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail("Expected successful topic subscription. Got \(error) instead")
+                    case .finished:
+                        XCTAssertTrue(messagingService.topics.contains(topic.rawValue))
+                    }
+                },
+                receiveValue: { _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     func testTopicSubscriptionFailure() {
-        let messagingService = MockMessagingService(expectedTokenResult: .failure(.tokenIsEmpty), shouldSubscribeToTopicsSuccessfully: false)
+        let messagingService = MockMessagingService(
+            expectedTokenResult: .failure(.tokenIsEmpty),
+            shouldSubscribeToTopicsSuccessfully: false
+        )
         let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        let topic = RemoteNotification.Topic.todo
-        do {
-            try provider.subscribe(to: topic).toBlocking().first()
-            XCTFail("expected \(MockMessagingService.FakeError.subscriptionFailure) topic subscription. got success instead")
-        } catch MockMessagingService.FakeError.subscriptionFailure {
-            // Okay
-        } catch {
-            XCTFail("expected \(MockMessagingService.FakeError.subscriptionFailure) topic subscription. got \(error) instead")
-        }
+        let topic = RemoteNotification.Topic.remoteConfig
 
-        XCTAssertFalse(messagingService.topics.contains(topic))
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        provider.subscribe(to: topic)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        switch error {
+                        case .system(MockMessagingService.FakeError.subscriptionFailure):
+                            XCTAssertFalse(messagingService.topics.contains(topic.rawValue))
+                            registerExpectation.fulfill()
+                        default:
+                            XCTFail("Expected 'subscriptionFailure' error. Got \(error) instead")
+                        }
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected 'subscriptionFailure' error. Got success instead")
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 }

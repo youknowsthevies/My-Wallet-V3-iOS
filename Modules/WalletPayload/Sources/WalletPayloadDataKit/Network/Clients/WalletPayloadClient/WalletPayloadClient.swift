@@ -20,6 +20,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         let language: String
         let shouldSyncPubkeys: Bool
         let time: Date
+        let payloadChecksum: String
 
         /// Payload should be nullified if 2FA s required.
         /// Then `authType` should have a none 0 value.
@@ -35,6 +36,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             authType = response.authType
             language = response.language
             shouldSyncPubkeys = response.shouldSyncPubkeys
+            payloadChecksum = response.payloadChecksum
             time = Date(timeIntervalSince1970: response.serverTime / 1000)
         }
     }
@@ -124,6 +126,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         let serverTime: TimeInterval
         let payload: String?
         let shouldSyncPubkeys: Bool
+        let payloadChecksum: String
     }
 
     // MARK: - Properties
@@ -249,6 +252,7 @@ extension WalletPayloadClient.Response: Decodable {
         case shouldSyncPubkeys = "sync_pubkeys"
         case language
         case serverTime
+        case payloadChecksum = "payload_checksum"
     }
 
     init(from decoder: Decoder) throws {
@@ -259,6 +263,7 @@ extension WalletPayloadClient.Response: Decodable {
         shouldSyncPubkeys = try container.decodeIfPresent(Bool.self, forKey: .shouldSyncPubkeys) ?? false
         payload = try container.decodeIfPresent(String.self, forKey: .payload)
         serverTime = try container.decode(TimeInterval.self, forKey: .serverTime)
+        payloadChecksum = try container.decode(String.self, forKey: .payloadChecksum)
     }
 }
 
@@ -271,6 +276,7 @@ extension WalletPayload {
             language: response.language,
             shouldSyncPubKeys: response.shouldSyncPubkeys,
             time: response.time,
+            payloadChecksum: response.payloadChecksum,
             payload: response.payload
         )
     }

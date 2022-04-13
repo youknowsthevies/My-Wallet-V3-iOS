@@ -5,10 +5,6 @@ import Foundation
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
 public enum AppFeature: Int, CaseIterable {
 
-    // MARK: - Local features
-
-    case biometry
-
     // MARK: - Firebase features
 
     /// The announcements
@@ -41,7 +37,10 @@ public enum AppFeature: Int, CaseIterable {
 
     case pollingForEmailLogin
 
-    // MARK: - SDD
+    // MARK: - Transactions
+
+    /// Enables the use of the `/products` endpoint to check users capabilities.
+    case productsChecksEnabled
 
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
@@ -71,6 +70,8 @@ public enum AppFeature: Int, CaseIterable {
     case hotWalletCustodial
 
     case sendToDomainsAnnouncement
+
+    case blockchainDomains
 
     // MARK: - Account Picker
 
@@ -110,8 +111,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .biometry:
-            return nil
         case .showEmailVerificationInOnboarding:
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
@@ -120,6 +119,8 @@ extension AppFeature {
             return "sso_unified_sign_in_enabled_ios"
         case .pollingForEmailLogin:
             return "ios_ff_sso_polling"
+        case .productsChecksEnabled:
+            return "ios_products_check_enabled"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -148,6 +149,8 @@ extension AppFeature {
             return "ios_ff_card_issuing"
         case .sendToDomainsAnnouncement:
             return "ios_ff_send_to_domains_announcement"
+        case .blockchainDomains:
+            return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
         }
@@ -166,8 +169,6 @@ extension AppFeature {
             return false
         case .siftScienceEnabled:
             return false
-        case .biometry:
-            return false
         case .showEmailVerificationInOnboarding:
             return false
         case .showEmailVerificationInBuyFlow:
@@ -175,6 +176,8 @@ extension AppFeature {
         case .unifiedSignIn:
             return false
         case .pollingForEmailLogin:
+            return true
+        case .productsChecksEnabled:
             return true
         case .sddEnabled:
             return false
@@ -199,10 +202,12 @@ extension AppFeature {
         case .applePay:
             return false
         case .nativeWalletCreation:
-            return false
+            return true
         case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:
+            return true
+        case .blockchainDomains:
             return true
         case .redesignCoinView:
             return true

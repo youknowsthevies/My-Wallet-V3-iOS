@@ -27,7 +27,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.18.0"
+            from: "0.34.0"
         ),
         .package(
             name: "swift-collections",
@@ -49,6 +49,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -57,7 +58,8 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors")
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors")
             ]
         ),
         .target(
@@ -83,7 +85,7 @@ let package = Package(
                 // swiftlint:disable line_length
                 .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json"),
                 .process("Fixtures/GET/explorer-gateway/resolution/ud/suggestions/Firstname/GET_explorer-gateway_resolution_ud_suggestions_Firstname.json"),
-                .process("Fixtures/POST/explorer-gateway/resolution/ud/orders/POST_explorer-gateway_resolution_ud_orders.json")
+                .process("Fixtures/POST/nabu-gateway/users/domain-campaigns/claim/POST_nabu-gateway_users_domain-campaigns_claim.json")
             ]
         ),
         .testTarget(

@@ -30,6 +30,7 @@ extension AnalyticsEvents.New {
             case simplebuy = "SIMPLEBUY"
             case simpletrade = "SIMPLETRADE"
             case swap = "SWAP"
+            case coin = "COIN_VIEW"
             case unknown = "UNKNOWN"
 
             init(_ parentFlow: KYCParentFlow) {
@@ -52,6 +53,8 @@ extension AnalyticsEvents.New {
                     self = .airdrop
                 case .cash:
                     self = .fiatFunds
+                case .coin:
+                    self = .coin
                 }
             }
         }

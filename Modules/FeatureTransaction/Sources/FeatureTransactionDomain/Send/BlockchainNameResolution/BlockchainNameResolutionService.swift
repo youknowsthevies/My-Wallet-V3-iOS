@@ -44,7 +44,7 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
             return .just(nil)
         }
         return repository
-            .resolve(domainName: domainName, currency: currency.code.lowercased())
+            .resolve(domainName: domainName, currency: currency.code)
             .eraseError()
             .flatMap { [factory] response -> AnyPublisher<ReceiveAddress?, Error> in
                 factory
@@ -78,6 +78,15 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
     }
 
     private func preValidate(domainName: String) -> Bool {
+        preValidateEmojiDomain(domainName)
+            || preValidateRegularDomain(domainName)
+    }
+
+    private func preValidateEmojiDomain(_ domainName: String) -> Bool {
+        domainName.containsEmoji
+    }
+
+    private func preValidateRegularDomain(_ domainName: String) -> Bool {
         // Separated by '.' (period)
         let components = domainName.components(separatedBy: ".")
         // Must have more than one component

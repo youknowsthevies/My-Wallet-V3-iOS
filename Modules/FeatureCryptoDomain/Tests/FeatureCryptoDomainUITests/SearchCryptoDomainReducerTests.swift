@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 @testable import FeatureCryptoDomainData
@@ -35,6 +36,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             reducer: searchCryptoDomainReducer,
             environment: SearchCryptoDomainEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                analyticsRecorder: MockAnalyticsRecorder(),
                 externalAppOpener: ToLogAppOpener(),
                 searchDomainRepository: SearchDomainRepository(
                     apiClient: searchClient
@@ -72,7 +74,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), true)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
@@ -93,7 +95,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), true)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
@@ -112,7 +114,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore.receive(.searchDomains(key: "Searchkey", freeOnly: false)) { state in
             state.isSearchResultsLoading = true
         }
-        testStore.receive(.didReceiveDomainsResult(.success(expectedResults))) { state in
+        testStore.receive(.didReceiveDomainsResult(.success(expectedResults), false)) { state in
             state.isSearchResultsLoading = false
             state.searchResults = expectedResults
         }
@@ -149,8 +151,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             .createDomainOrder(
                 isFree: false,
                 domainName: "premium",
-                resolutionRecords: nil,
-                nabuUserId: nil
+                resolutionRecords: nil
             )
             .wait()
         let testDomain = SearchDomainResult(

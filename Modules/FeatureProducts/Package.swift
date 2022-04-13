@@ -1,11 +1,11 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureProducts",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "FeatureProductsData",
@@ -17,11 +17,6 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(
-            name: "Mockingbird",
-            url: "https://github.com/birdrides/mockingbird.git",
-            .upToNextMinor(from: "0.20.0")
-        ),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Test"),
@@ -50,8 +45,8 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
-                "FeatureProductsData",
-                "Mockingbird"
+                .product(name: "ToolKitMock", package: "Tool"),
+                "FeatureProductsData"
             ],
             resources: [
                 .process("Fixtures")
@@ -63,8 +58,8 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
-                "FeatureProductsDomain",
-                "Mockingbird"
+                .product(name: "ToolKitMock", package: "Tool"),
+                "FeatureProductsDomain"
             ]
         )
     ]

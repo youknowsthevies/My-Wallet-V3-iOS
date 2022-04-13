@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import Mockingbird
 import XCTest
 
 @testable import AnalyticsKit

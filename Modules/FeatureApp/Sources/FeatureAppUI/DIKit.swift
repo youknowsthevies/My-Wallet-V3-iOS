@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureCoinData
+import FeatureCoinDomain
 import FeatureOpenBankingUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
@@ -67,11 +69,24 @@ extension DependencyContainer {
                 transactionsRouter: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
-                },
-                tabSwapper: {
-                    DIKit.resolve()
                 }
-            ) as DeepLinkCoordinatorAPI
+            )
+        }
+
+        factory {
+            CardIssuingAdapter(
+                cardIssuingBuilder: DIKit.resolve(),
+                nabuUserService: DIKit.resolve()
+            ) as FeatureSettingsUI.CardIssuingViewControllerAPI
+        }
+
+        single { () -> AssetInformationRepositoryAPI in
+            AssetInformationRepository(
+                AssetInformationClient(
+                    networkAdapter: DIKit.resolve(),
+                    requestBuilder: DIKit.resolve()
+                )
+            )
         }
     }
 }

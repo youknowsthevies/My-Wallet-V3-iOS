@@ -217,12 +217,10 @@ public protocol TransactionEngine: AnyObject {
 
 extension TransactionEngine {
 
-    public var predefinedAmount: CryptoValue? {
+    public var predefinedAmount: MoneyValue? {
         switch transactionTarget {
-        case let target as CryptoAssetQRMetadata:
-            return target.amount
-        case let target as CryptoAssetQRMetadataProviding:
-            return target.metadata.amount
+        case let target as ReceiveAddress:
+            return target.predefinedAmount
         default:
             return nil
         }
@@ -578,11 +576,15 @@ extension TransactionEngine {
             }
             let maxLimitForDisplay = maxLimit.convert(using: sourceToAmountRate)
             let effectiveLimit = limits.effectiveLimit?.convert(using: sourceToAmountRate)
+            let upgrade = limits.suggestedUpgrade
+                .flatMap { upgrade -> TransactionValidationState.LimitsUpgrade in
+                    .init(requiresTier2: upgrade.requiredTier == .tier2)
+                }
             throw TransactionValidationFailure(
                 state: .overMaximumPersonalLimit(
                     effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimitForDisplay),
                     maxLimitForDisplay,
-                    limits.suggestedUpgrade
+                    upgrade
                 )
             )
         }

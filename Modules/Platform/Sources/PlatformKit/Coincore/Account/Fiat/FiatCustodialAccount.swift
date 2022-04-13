@@ -32,6 +32,7 @@ final class FiatCustodialAccount: FiatAccount {
             .map { items in
                 items.map(ActivityItemEvent.fiat)
             }
+            .asSingle()
     }
 
     var actions: Single<AvailableActions> {

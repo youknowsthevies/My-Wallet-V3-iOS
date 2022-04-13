@@ -294,6 +294,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum TaxCenter {
+            public static let title = NSLocalizedString(
+                "Tax Center is Now Available!",
+                comment: "Tax Center announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "In partnership with CoinTracker, our new Tax Center is now live. Connect to your account on web and go to Account -> Tax Center.",
+                comment: "Tax Center announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "OK",
+                comment: "Tax Center announcement card CTA button title"
+            )
+        }
+
         // MARK: - Periodic
 
         public enum BuyBitcoin {

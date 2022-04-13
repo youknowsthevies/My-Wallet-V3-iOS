@@ -1,16 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
+import BlockchainNamespace
+import Combine
 import DIKit
+import NetworkKit
 @testable import RemoteNotificationsKit
-import RxBlocking
-import RxSwift
 import XCTest
 
-import NetworkKit
-import PlatformKit
-
 final class RemoteNotificationServiceTests: XCTestCase {
+
+    var cancellables: Set<AnyCancellable> = []
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        cancellables = []
+    }
+
+    override func tearDownWithError() throws {
+        cancellables = []
+        try super.tearDownWithError()
+    }
 
     // MARK: - Wide range interaction testing
 
@@ -27,7 +37,10 @@ final class RemoteNotificationServiceTests: XCTestCase {
         let messagingService = MockMessagingService(expectedTokenResult: .success(token))
         let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let networkAdapter = NetworkAdapterMock()
-        networkAdapter.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
+        networkAdapter.response = (
+            filename: "remote-notification-registration-success",
+            bundle: Bundle(for: RemoteNotificationServiceTests.self)
+        )
 
         // Instantiate all the sub services
 
@@ -38,29 +51,55 @@ final class RemoteNotificationServiceTests: XCTestCase {
             options: [.alert, .badge, .sound]
         )
         let relay = RemoteNotificationRelay(
+            app: App.test,
+            cacheSuite: resolve(),
             userNotificationCenter: userNotificationCenter,
-            messagingService: messagingService
+            messagingService: messagingService,
+            secureChannelNotificationRelay: resolve()
         )
         let externalServiceProvider = ExternalNotificationServiceProvider(messagingService: messagingService)
-        let networkService = RemoteNotificationNetworkService(networkAdapter: networkAdapter)
+        let networkService = RemoteNotificationNetworkService(
+            pushNotificationsUrl: BlockchainAPI.shared.pushNotificationsUrl,
+            networkAdapter: networkAdapter
+        )
 
         // Instantiate the main service
 
         let service = RemoteNotificationService(
             authorizer: authorizer,
             notificationRelay: relay,
+            backgroundReceiver: resolve(),
             externalService: externalServiceProvider,
             networkService: networkService,
             sharedKeyRepository: credentialsProvider,
             guidRepository: credentialsProvider
         )
 
-        let observable = service.sendTokenIfNeeded().toBlocking()
-        do {
-            try observable.first()!
-        } catch {
-            XCTFail("expected success. got \(error) instead")
-        }
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        service.sendTokenIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail("Expected success. Got \(error) instead")
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     // MARK: - Happy Scenarios using mocks
@@ -72,6 +111,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 authorizationRequestExpectedStatus: .success(())
             ),
             notificationRelay: MockRemoteNotificationRelay(),
+            backgroundReceiver: resolve(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
@@ -80,14 +120,31 @@ final class RemoteNotificationServiceTests: XCTestCase {
             sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
             guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        service.sendTokenIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        XCTFail("Expected success. Got \(error) instead")
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    registerExpectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
 
-        let result = service.sendTokenIfNeeded().toBlocking()
-
-        do {
-            try result.first()
-        } catch {
-            XCTFail("expected token to be sent successfully, got \(error) instead")
-        }
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     // MARK: - Unauthorized permission
@@ -99,6 +156,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 authorizationRequestExpectedStatus: .success(())
             ),
             notificationRelay: MockRemoteNotificationRelay(),
+            backgroundReceiver: resolve(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
@@ -108,12 +166,31 @@ final class RemoteNotificationServiceTests: XCTestCase {
             guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
-        let result = service.sendTokenIfNeeded().toBlocking()
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        service.sendTokenIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure:
+                        registerExpectation.fulfill()
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected permission authorization. Got success instead")
+                }
+            )
+            .store(in: &cancellables)
 
-        do {
-            try result.first()
-            XCTFail("expected permission authorization. got success instead")
-        } catch {}
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     // MARK: - Unauthorized permission
@@ -125,8 +202,9 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 authorizationRequestExpectedStatus: .success(())
             ),
             notificationRelay: MockRemoteNotificationRelay(),
+            backgroundReceiver: resolve(),
             externalService: MockExternalNotificationServiceProvider(
-                expectedTokenResult: .failure(.init(info: "token fetch failure")),
+                expectedTokenResult: .failure(.tokenIsEmpty),
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
@@ -134,12 +212,31 @@ final class RemoteNotificationServiceTests: XCTestCase {
             guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
-        let result = service.sendTokenIfNeeded().toBlocking()
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        service.sendTokenIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure:
+                        registerExpectation.fulfill()
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected failure fetching the token. Got success instead")
+                }
+            )
+            .store(in: &cancellables)
 
-        do {
-            try result.first()
-            XCTFail("expected failure fetching the token. got success instead")
-        } catch {}
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 
     // MARK: - Unauthorized permission
@@ -151,6 +248,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 authorizationRequestExpectedStatus: .success(())
             ),
             notificationRelay: MockRemoteNotificationRelay(),
+            backgroundReceiver: resolve(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
@@ -160,11 +258,30 @@ final class RemoteNotificationServiceTests: XCTestCase {
             guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
-        let result = service.sendTokenIfNeeded().toBlocking()
+        let registerExpectation = expectation(
+            description: "Service registered token."
+        )
+        service.sendTokenIfNeeded()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure:
+                        registerExpectation.fulfill()
+                    case .finished:
+                        break
+                    }
+                },
+                receiveValue: { _ in
+                    XCTFail("Expected failure sending the token. Got success instead")
+                }
+            )
+            .store(in: &cancellables)
 
-        do {
-            try result.first()
-            XCTFail("expected failure sending the token. got success instead")
-        } catch {}
+        wait(
+            for: [
+                registerExpectation
+            ],
+            timeout: 10.0
+        )
     }
 }

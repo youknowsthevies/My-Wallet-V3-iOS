@@ -174,9 +174,7 @@ final class PinScreenPresenter {
         useCase: PinScreenUseCase,
         flow: PinRouting.Flow,
         interactor: PinInteracting = PinInteractor(),
-        biometryProvider: BiometryProviding = BiometryProvider(
-            featureConfigurator: resolve()
-        ),
+        biometryProvider: BiometryProviding = BiometryProvider(),
         appSettings: Settings = BlockchainSettings.App.shared,
         recorder: Recording = CrashlyticsRecorder(),
         credentialsStore: CredentialsStoreAPI = resolve(),

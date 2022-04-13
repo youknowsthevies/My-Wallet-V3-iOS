@@ -117,7 +117,7 @@ extension TaggedEvent {
 
 extension L: TaggedEvent, CustomStringConvertible {
     public var description: String { self(\.id) }
-    public func key(_ context: Tag.Context) -> Tag.Reference { self[].ref(to: context) }
+    public func key(_ context: Tag.Context) -> Tag.Reference { Tag.Reference(unchecked: self[], context: context) }
 }
 
 extension Tag: TaggedEvent {

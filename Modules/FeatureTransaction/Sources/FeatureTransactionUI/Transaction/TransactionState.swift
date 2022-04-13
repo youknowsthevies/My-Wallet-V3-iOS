@@ -89,16 +89,12 @@ struct TransactionState: StateType {
     /// The predefined MoneyValue that should be used.
     var initialAmountToSet: MoneyValue? {
         switch destination {
-        case let target as CryptoAssetQRMetadata:
+        case let target as ReceiveAddress:
             // The predefined amount is only used if the PendingTransaction has
             // it already set. This means the engine chose to use it.
-            let amount = target.amount?.moneyValue
-            return amount == pendingTransaction?.amount ? amount : nil
-        case let target as CryptoAssetQRMetadataProviding:
-            // The predefined amount is only used if the PendingTransaction has
-            // it already set. This means the engine chose to use it.
-            let amount = target.metadata.amount?.moneyValue
-            return amount == pendingTransaction?.amount ? amount : nil
+            let predefinedAmount = target.predefinedAmount
+            return predefinedAmount == pendingTransaction?.amount
+                ? predefinedAmount : nil
         default:
             return nil
         }
@@ -390,7 +386,7 @@ extension TransactionState {
 extension TransactionState {
 
     var transactionErrorTitle: String {
-        errorState.recoveryWarningTitle(for: action)
+        errorState.recoveryWarningTitle(for: action).or(Localization.Error.unknownError)
     }
 
     var transactionErrorDescription: String {

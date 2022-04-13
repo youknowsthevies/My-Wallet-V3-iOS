@@ -101,6 +101,9 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
                     pair: KeyDataPair(key: encryptionPhrase, data: data),
                     pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair
                 )
+                .asObservable()
+                .take(1)
+                .asSingle()
             }
     }
 }

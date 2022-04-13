@@ -28,10 +28,17 @@ public struct PrimaryPicker<Selection: Hashable>: View {
     public var body: some View {
         VStack(spacing: 0) {
             ForEach(rows.indices) { index in
-                rows[index].builder($selection)
+                let row = rows[index]
+                row.builder($selection)
+                    .frame(minHeight: 48)
                     .background(
-                        RowBackground(position: position(for: index))
+                        RowBackground(
+                            position: position(for: index),
+                            inputState: row.inputState
+                        )
                     )
+                    // if the state should be highlighted, ensure the row doesn't get obstructed by others in the list
+                    .zIndex(row.inputState != .default ? 1 : 0)
             }
         }
     }
@@ -56,6 +63,8 @@ extension PrimaryPicker {
 
     /// A row item within a `PrimaryPicker`
     public struct Row {
+
+        fileprivate let inputState: InputState
         fileprivate let builder: (Binding<Selection?>) -> AnyView
 
         /// Create a row with trailing view & picker.
@@ -67,14 +76,17 @@ extension PrimaryPicker {
         ///   - picker: Picker displayed below the row when selected. eg `DatePicker`
         /// - Returns: A row for use in `PrimaryPicker`
         public static func row<Trailing: View, Picker: View>(
-            title: String,
+            title: String?,
             identifier: Selection,
+            placeholder: String? = nil,
+            inputState: InputState = .default,
             @ViewBuilder trailing: @escaping () -> Trailing,
             @ViewBuilder picker: @escaping () -> Picker
         ) -> Row {
-            Row { selection in
+            Row(inputState) { selection in
                 PickerRow(
                     title: title,
+                    placeholder: placeholder,
                     isActive: Binding(
                         get: {
                             selection.wrappedValue == identifier
@@ -101,13 +113,17 @@ extension PrimaryPicker {
         ///   - picker: Picker displayed below the row when selected. eg `DatePicker`
         /// - Returns: A row for use in `PrimaryPicker`
         public static func row<Picker: View>(
-            title: String,
+            title: String?,
             identifier: Selection,
+            placeholder: String? = nil,
+            inputState: InputState = .default,
             @ViewBuilder picker: @escaping () -> Picker
         ) -> Row {
             row(
                 title: title,
                 identifier: identifier,
+                placeholder: placeholder,
+                inputState: inputState,
                 trailing: EmptyView.init,
                 picker: picker
             )
@@ -123,13 +139,17 @@ extension PrimaryPicker {
         ///   - trailing: Trailing view displayed in the row. Commonly contains `Tag`.
         /// - Returns: A row for use in `PrimaryPicker`
         public static func row<Trailing: View>(
-            title: String,
+            title: String?,
             identifier: Selection,
+            placeholder: String? = nil,
+            inputState: InputState = .default,
             @ViewBuilder trailing: @escaping () -> Trailing
         ) -> Row {
             row(
                 title: title,
                 identifier: identifier,
+                placeholder: placeholder,
+                inputState: inputState,
                 trailing: trailing,
                 picker: EmptyView.init
             )
@@ -144,18 +164,26 @@ extension PrimaryPicker {
         ///   - identifier: ID for determining `selection`
         /// - Returns: A row for use in `PrimaryPicker`
         public static func row(
-            title: String,
-            identifier: Selection
+            title: String?,
+            identifier: Selection,
+            placeholder: String? = nil,
+            inputState: InputState = .default
         ) -> Row {
             row(
                 title: title,
                 identifier: identifier,
+                placeholder: placeholder,
+                inputState: inputState,
                 trailing: EmptyView.init,
                 picker: EmptyView.init
             )
         }
 
-        private init<T: View>(@ViewBuilder _ view: @escaping (Binding<Selection?>) -> T) {
+        private init<T: View>(
+            _ inputState: InputState,
+            @ViewBuilder _ view: @escaping (Binding<Selection?>) -> T
+        ) {
+            self.inputState = inputState
             builder = { AnyView(view($0)) }
         }
     }
@@ -168,7 +196,9 @@ extension PrimaryPicker {
 
     /// Shaped background with optional rounded corners.
     private struct RowBackground: View {
+
         let position: Row.Position
+        let inputState: InputState
 
         private var corners: UIRectCorner {
             switch position {
@@ -185,18 +215,19 @@ extension PrimaryPicker {
 
         var body: some View {
             ZStack {
+                let borderColor: Color = inputState.borderColor ?? .semantic.medium
                 if corners.isEmpty {
                     Rectangle()
                         .fill(Color.semantic.background)
 
                     Rectangle()
-                        .stroke(Color.semantic.medium, lineWidth: 1)
+                        .stroke(borderColor, lineWidth: 1)
                 } else {
                     RowShape(corners: corners)
                         .fill(Color.semantic.background)
 
                     RowShape(corners: corners)
-                        .stroke(Color.semantic.medium, lineWidth: 1)
+                        .stroke(borderColor, lineWidth: 1)
                 }
             }
         }
@@ -253,7 +284,8 @@ extension PrimaryPicker.Row {
 
     /// Generic view used to display an individual picker row
     private struct PickerRow<Trailing: View, Picker: View>: View {
-        let title: String
+        let title: String?
+        let placeholder: String?
         @Binding var isActive: Bool
         let picker: Picker
         @ViewBuilder let trailing: () -> Trailing
@@ -268,10 +300,17 @@ extension PrimaryPicker.Row {
                     },
                     label: {
                         HStack(spacing: 0) {
-                            Text(title)
-                                .typography(.body1)
-                                .foregroundColor(.semantic.title)
-                                .padding(.vertical, 12)
+                            if let title = title {
+                                Text(title)
+                                    .typography(.body1)
+                                    .foregroundColor(.semantic.title)
+                                    .padding(.vertical, 12)
+                            } else {
+                                Text(placeholder ?? "")
+                                    .typography(.body1)
+                                    .foregroundColor(.semantic.muted)
+                                    .padding(.vertical, 12)
+                            }
 
                             Spacer()
 
@@ -302,11 +341,23 @@ struct PrimaryPicker_Previews: PreviewProvider {
         PrimaryPicker(
             selection: .constant(nil),
             rows: [
-                .row(title: "One", identifier: "one", trailing: { TagView(text: "Trailing") }),
+                .row(
+                    title: nil,
+                    identifier: "nil",
+                    placeholder: "Remove me",
+                    trailing: { TagView(text: "Trailing") }
+                ),
+                .row(
+                    title: "One",
+                    identifier: "one",
+                    inputState: .error,
+                    trailing: { TagView(text: "Trailing") }
+                ),
                 .row(title: "Two", identifier: "two"),
                 .row(title: "Three", identifier: "three")
             ]
         )
+        .padding()
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Multi")
 
@@ -317,6 +368,7 @@ struct PrimaryPicker_Previews: PreviewProvider {
                 .row(title: "Two", identifier: "two")
             ]
         )
+        .padding()
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Two")
 
@@ -326,6 +378,7 @@ struct PrimaryPicker_Previews: PreviewProvider {
                 .row(title: "One", identifier: "one")
             ]
         )
+        .padding()
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Single")
 
@@ -335,6 +388,7 @@ struct PrimaryPicker_Previews: PreviewProvider {
                 .row(title: "One", identifier: "one", picker: { Text("Picker") })
             ]
         )
+        .padding()
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Single, selected with picker")
     }

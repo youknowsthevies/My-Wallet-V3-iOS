@@ -385,7 +385,7 @@ public class Router: Routing {
         return featureFlagsService.isEnabled(.remote(.newLimitsUIEnabled))
             .receive(on: DispatchQueue.main)
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
-            .sink { [kycService, disposeBag, internalPresentKYC, openURL] newLimitsUIEnabled in
+            .sink { [analyticsRecorder, kycService, disposeBag, internalPresentKYC, openURL] newLimitsUIEnabled in
                 guard newLimitsUIEnabled else {
                     KYCTiersViewController
                         .routeToTiers(fromViewController: presenter)
@@ -406,7 +406,8 @@ public class Router: Routing {
                                     internalPresentKYC(presenter, requiredTier)
                                 }
                             },
-                            fetchLimitsOverview: kycService.fetchOverview
+                            fetchLimitsOverview: kycService.fetchOverview,
+                            analyticsRecorder: analyticsRecorder
                         )
                     )
                 )
@@ -419,6 +420,7 @@ public class Router: Routing {
 // MARK: - Helpers
 
 private typealias L10n = LocalizationConstants.NewKYC
+private typealias Events = AnalyticsEvents.New.KYC
 
 extension Router {
 
@@ -470,7 +472,8 @@ extension Router {
                                 publisher.send(completion: .finished)
                             }
                         }
-                    }
+                    },
+                    analyticsRecorder: analyticsRecorder
                 )
             )
         )
@@ -483,6 +486,7 @@ extension Router {
         from presenter: UIViewController,
         currentUserTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, Never> {
+        analyticsRecorder.record(event: Events.verifyNowPopUpViewed)
         let subject = PassthroughSubject<FlowResult, Never>()
 
         let alert = Alert(
@@ -495,14 +499,16 @@ extension Router {
             title: L10n.UnlockTradingAlert.title,
             message: L10n.UnlockTradingAlert.message,
             buttons: [
-                Alert.Button(title: L10n.UnlockTradingAlert.primaryCTA, style: .primary) {
+                Alert.Button(title: L10n.UnlockTradingAlert.primaryCTA, style: .primary) { [analyticsRecorder] in
+                    analyticsRecorder.record(event: Events.verifyNowPopUpCTAClicked)
                     presenter.dismiss(animated: true) {
                         subject.send(.completed)
                         subject.send(completion: .finished)
                     }
                 }
             ],
-            close: {
+            close: { [analyticsRecorder] in
+                analyticsRecorder.record(event: Events.verifyNowPopUpDismissed)
                 presenter.dismiss(animated: true) {
                     subject.send(.abandoned)
                     subject.send(completion: .finished)

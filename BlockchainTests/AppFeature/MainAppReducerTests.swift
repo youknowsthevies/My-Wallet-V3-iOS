@@ -41,7 +41,6 @@ final class MainAppReducerTests: XCTestCase {
     var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockCoincore: MockCoincore!
-    var mockFeatureConfigurator: MockFeatureConfigurator!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var mockSiftService: MockSiftService!
     var onboardingSettings: MockOnboardingSettings!
@@ -93,7 +92,6 @@ final class MainAppReducerTests: XCTestCase {
             authorizer: mockRemoteNotificationAuthorizer
         )
         mockCoincore = MockCoincore()
-        mockFeatureConfigurator = MockFeatureConfigurator()
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         mockSiftService = MockSiftService()
         onboardingSettings = MockOnboardingSettings()
@@ -131,7 +129,6 @@ final class MainAppReducerTests: XCTestCase {
                 userService: MockNabuUserService(),
                 deviceVerificationService: mockDeviceVerificationService,
                 featureFlagsService: mockFeatureFlagsService,
-                appFeatureConfigurator: mockFeatureConfigurator,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
                 blockchainSettings: mockSettingsApp,
                 credentialsStore: mockCredentialsStore,
@@ -172,7 +169,6 @@ final class MainAppReducerTests: XCTestCase {
         mockRemoteNotificationAuthorizer = nil
         mockRemoteNotificationServiceContainer = nil
         mockCoincore = nil
-        mockFeatureConfigurator = nil
         mockAnalyticsRecorder = nil
         mockSiftService = nil
         onboardingSettings = nil
@@ -247,14 +243,6 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertTrue(mockCredentialsStore.synchronizeCalled)
         XCTAssertTrue(mockCredentialsStore.expectedPinDataCalled)
-    }
-
-    func test_sending_start_should_correct_outputs() {
-        testStore.send(.start) { state in
-            state.onboarding = Onboarding.State()
-            state.loggedIn = nil
-        }
-        XCTAssertTrue(mockFeatureConfigurator.initializeCalled)
     }
 
     func test_verify_didDecryptWallet_action_updates_appSettings() {
@@ -428,9 +416,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.resetVerificationStatusIfNeeded(guid: decryption.guid, sharedKey: decryption.sharedKey))
         testStore.receive(.authenticated(.success(true)))
         testStore.receive(.initializeWallet)
-        mockReactiveWallet.mockState.on(.next(.initialized))
+        mockReactiveWallet.mockState.send(.initialized)
         mockMainQueue.advance()
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.receive(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
@@ -509,7 +497,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_walletInitialized_should_check_if_wallet_upgrade_is_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(true))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(true)
 
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
@@ -535,7 +523,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
@@ -556,7 +544,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         mockSettingsApp.isPinSet = true
 
-        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))

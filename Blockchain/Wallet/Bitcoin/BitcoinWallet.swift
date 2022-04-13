@@ -284,12 +284,33 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 
     func receiveAddress(forXPub xpub: String) -> Single<String> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .map(weak: self) { (self, _) -> String in
                 guard let wallet = self.wallet else {
                     fatalError("Wallet was nil")
                 }
                 let result = wallet.getBitcoinReceiveAddress(forXPub: xpub, derivation: .default)
+                switch result {
+                case .success(let address):
+                    return address
+                case .failure(let error):
+                    fatalError(String(describing: error))
+                }
+            }
+    }
+
+    func firstReceiveAddress(forXPub xpub: String) -> Single<String> {
+        reactiveWallet
+            .waitUntilInitializedFirst
+            .asSingle()
+            .map(weak: self) { (self, _) -> String in
+                guard let wallet = self.wallet else {
+                    fatalError("Wallet was nil")
+                }
+                let result = wallet.getBitcoinFirstReceiveAddress(forXPub: xpub)
                 switch result {
                 case .success(let address):
                     return address
@@ -318,7 +339,10 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             }
 
         return reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap { note }
     }
 
@@ -330,13 +354,17 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
         }
         return reactiveWallet
             .waitUntilInitialized
+            .asObservable()
             .flatMap { setNote.asObservable() }
             .asCompletable()
     }
 
     var defaultWallet: Single<BitcoinWalletAccount> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
                     .asSingle()

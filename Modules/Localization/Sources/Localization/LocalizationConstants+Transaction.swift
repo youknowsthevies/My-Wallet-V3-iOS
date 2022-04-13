@@ -6,7 +6,11 @@ import Foundation
 // swiftlint:disable line_length
 
 extension LocalizationConstants {
+
     public enum Transaction {
+
+        public enum Notices {}
+
         public enum TargetSource {
             public enum Radio {}
             public enum SendToDomainCard {}
@@ -114,6 +118,50 @@ extension LocalizationConstants {
         public enum TradingCurrency {}
 
         public enum Error {}
+    }
+}
+
+extension LocalizationConstants.Transaction.Notices {
+
+    public static let verifyToUnlockMoreTradingNoticeTitle = NSLocalizedString(
+        "Verify Now",
+        comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - title"
+    )
+
+    public static let verifyToUnlockMoreTradingNoticeMessage = NSLocalizedString(
+        "You can only complete one transaction with a Basic level account.",
+        comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - message"
+    )
+
+    public static let verifyToUnlockMoreTradingNoticeCalloutTitle = NSLocalizedString(
+        "Unlock more when you verify",
+        comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - callout title"
+    )
+
+    public static let verifyToUnlockMoreTradingNoticeCalloutMessage = NSLocalizedString(
+        "Access higher limits and more payment methods",
+        comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - callout title"
+    )
+
+    public static let verifyToUnlockMoreTradingNoticeCalloutCTA = NSLocalizedString(
+        "GO",
+        comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - callout CTA"
+    )
+
+    public static func maxTransactionsLimited(to maxTransactions: Int) -> String {
+        guard maxTransactions != 1 else {
+            return NSLocalizedString(
+                "1 Transaction Allowed, Verify Now ->",
+                comment: "Transaction Flow - Hint users that they only have a 1 transaction left before having to upgrade KYC Tier"
+            )
+        }
+        return String(
+            format: NSLocalizedString(
+                "%d Transactions Allowed, Verify Now ->",
+                comment: "Transaction Flow - Hint users that they only have a limited amount of transactions before having to upgrade KYC Tier"
+            ),
+            maxTransactions
+        )
     }
 }
 
