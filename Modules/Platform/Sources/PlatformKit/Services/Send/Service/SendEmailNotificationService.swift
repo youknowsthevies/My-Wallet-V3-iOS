@@ -40,7 +40,10 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
                     guid: guid,
                     sharedKey: sharedKey,
                     currency: moneyValue.code,
-                    amount: moneyValue.toDisplayString(includeSymbol: false)
+                    amount: moneyValue.toDisplayString(
+                        includeSymbol: false,
+                        locale: Locale.US // Locale is enforced to ensure the format of the amount.
+                    )
                 )
             }
             .flatMap { [client] payload in
