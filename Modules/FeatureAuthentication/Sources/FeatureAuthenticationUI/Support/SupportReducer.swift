@@ -8,19 +8,17 @@ import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
 
-enum SupportViewAction: Equatable, NavigationAction {
+enum SupportViewAction: Equatable {
     case loadAppStoreVersionInformation
     case failedToRetrieveAppStoreInfo
     case appStoreVersionInformationReceived(AppStoreApplicationInfo)
-    case route(RouteIntent<SupportViewRoute>?)
 }
 
-struct SupportViewState: Equatable, NavigationState {
+struct SupportViewState: Equatable {
     let applicationVersion: String
     let bundleIdentifier: String
     var appStoreVersion: String?
     var isApplicationUpdated: Bool
-    var route: RouteIntent<SupportViewRoute>?
 
     init(
         applicationVersion: String,
@@ -58,14 +56,10 @@ let supportViewReducer = Reducer<
         state.isApplicationUpdated = applicationInfo.isApplicationUpToDate
         state.appStoreVersion = applicationInfo.version
         return .none
-    case .route(let route):
-        state.route = route
-        return .none
     case .failedToRetrieveAppStoreInfo:
         return .none
     }
 }
-.routing()
 
 struct SupportViewEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>

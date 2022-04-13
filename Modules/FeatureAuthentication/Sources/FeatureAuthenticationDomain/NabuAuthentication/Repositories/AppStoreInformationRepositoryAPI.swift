@@ -5,14 +5,14 @@ import NetworkError
 
 public enum AppStoreServiceError: Error {
     case failedToRetrieveAppStoreInfo
-    case networkError(Error)
+    case networkError(NetworkError)
 }
 
 public protocol AppStoreInformationRepositoryAPI {
     /// Checks that the current app version is the same as the version that is in the AppStore.
     /// - Parameters:
-    ///   - version: The wallet GUID
-    ///   - bundleId: The wallet sharedKey
+    ///   - version: the current app version
+    ///   - bundleId: the app bundle ID
     /// - Returns: `AppStoreApplicationInfo`
     func verifyTheCurrentAppVersionIsTheLatestVersion(
         _ version: String,

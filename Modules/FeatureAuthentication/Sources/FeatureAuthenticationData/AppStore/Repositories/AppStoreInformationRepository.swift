@@ -22,18 +22,19 @@ final class AppStoreInformationRepository: AppStoreInformationRepositoryAPI {
     ) -> AnyPublisher<AppStoreApplicationInfo, AppStoreServiceError> {
         client
             .fetchAppStoreResponseForBundleId(bundleId)
-            .eraseError()
+            .mapError(AppStoreServiceError.networkError)
             .map(\.results)
-            .tryMap { applications in
+            .flatMap { applications -> AnyPublisher<AppStoreApplicationInfo, AppStoreServiceError> in
                 guard let result = applications.first else {
-                    throw AppStoreServiceError.failedToRetrieveAppStoreInfo
+                    return .failure(.failedToRetrieveAppStoreInfo)
                 }
-                return AppStoreApplicationInfo(
-                    version: result.version,
-                    isApplicationUpToDate: version == result.version
+                return .just(
+                    AppStoreApplicationInfo(
+                        version: result.version,
+                        isApplicationUpToDate: version == result.version
+                    )
                 )
             }
-            .mapError(AppStoreServiceError.networkError)
             .eraseToAnyPublisher()
     }
 }

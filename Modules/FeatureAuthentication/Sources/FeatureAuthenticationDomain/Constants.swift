@@ -61,6 +61,11 @@ public enum Constants {
             public static let learnMore = "https://support.blockchain.com/hc/en-us/articles/4404679303700"
             public static let contactSupport = "https://support.blockchain.com/hc/en-us"
         }
+
+        public enum PIN {
+            public static let contactUs = "https://support.blockchain.com/hc/en-us/requests/new"
+            public static let viewFAQ = "https://support.blockchain.com/hc/en-us/categories/4416659837460-Wallet"
+        }
     }
 }
 

@@ -2,6 +2,7 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import UIComponentsKit
@@ -11,6 +12,7 @@ struct SupportView: View {
     private typealias LocalizationIds = LocalizationConstants.Authentication.Support
 
     @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.openURL) private var openURL
     private let store: Store<SupportViewState, SupportViewAction>
 
     init(
@@ -25,16 +27,18 @@ struct SupportView: View {
                 .init(
                     title: LocalizationIds.contactUs,
                     action: {
-                        presentationMode.wrappedValue.dismiss()
-                        // TODO: Route to Safari
+                        openURL(URL(string: Constants.SupportURL.PIN.contactUs)!) { _ in
+                            presentationMode.wrappedValue.dismiss()
+                        }
                     },
                     style: .secondary
                 ),
                 .init(
                     title: LocalizationIds.viewFAQ,
                     action: {
-                        presentationMode.wrappedValue.dismiss()
-                        // TODO: Route to Safari
+                        openURL(URL(string: Constants.SupportURL.PIN.viewFAQ)!) { _ in
+                            presentationMode.wrappedValue.dismiss()
+                        }
                     },
                     style: .secondary
                 )
@@ -51,7 +55,6 @@ struct SupportView: View {
             .onAppear {
                 viewStore.send(.loadAppStoreVersionInformation)
             }
-            .navigationRoute(in: store)
         }
     }
 }
