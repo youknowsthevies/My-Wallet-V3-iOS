@@ -9,9 +9,14 @@ import FeatureAuthenticationDomain
 import ToolKit
 
 enum SupportViewAction: Equatable {
+    enum URLContent {
+        case contactUs
+        case viewFAQ
+    }
     case loadAppStoreVersionInformation
     case failedToRetrieveAppStoreInfo
     case appStoreVersionInformationReceived(AppStoreApplicationInfo)
+    case openURL(URLContent)
 }
 
 struct SupportViewState: Equatable {
@@ -58,17 +63,65 @@ let supportViewReducer = Reducer<
         return .none
     case .failedToRetrieveAppStoreInfo:
         return .none
+    case .openURL(let content):
+        switch content {
+        case .contactUs:
+            environment.externalAppOpener.open(URL(string: Constants.SupportURL.PIN.contactUs)!)
+        case .viewFAQ:
+            environment.externalAppOpener.open(URL(string: Constants.SupportURL.PIN.viewFAQ)!)
+        }
+        return .none
     }
 }
+.analytics()
 
 struct SupportViewEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let appStoreInformationRepository: AppStoreInformationRepositoryAPI
+    let analyticsRecorder: AnalyticsEventRecorderAPI
+    let externalAppOpener: ExternalAppOpener
 }
 
 extension SupportViewEnvironment {
     static let `default`: SupportViewEnvironment = .init(
         mainQueue: .main,
-        appStoreInformationRepository: resolve()
+        appStoreInformationRepository: resolve(),
+        analyticsRecorder: resolve(),
+        externalAppOpener: resolve()
     )
+}
+
+// MARK: - Private
+
+extension Reducer where
+    Action == SupportViewAction,
+    State == SupportViewState,
+    Environment == SupportViewEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                SupportViewState,
+                SupportViewAction,
+                SupportViewEnvironment
+            > { _, action, environment in
+                switch action {
+                case .loadAppStoreVersionInformation:
+                    environment.analyticsRecorder.record(event: .customerSupportClicked)
+                    return .none
+                case .openURL(let content):
+                    switch content {
+                    case .contactUs:
+                        environment.analyticsRecorder.record(event: .contactUsClicked)
+                    case .viewFAQ:
+                        environment.analyticsRecorder.record(event: .viewFAQsClicked)
+                    }
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
 }

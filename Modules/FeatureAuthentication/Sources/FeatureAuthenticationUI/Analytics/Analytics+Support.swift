@@ -4,7 +4,16 @@ import AnalyticsKit
 
 extension AnalyticsEvents.New {
     enum Support: AnalyticsEvent {
+        case contactUsClicked
+        case viewFAQsClicked
+        case customerSupportClicked
 
         public var type: AnalyticsEventType { .nabu }
+    }
+}
+
+extension AnalyticsEventRecorderAPI {
+    func record(event: AnalyticsEvents.New.Support) {
+        record(event: event)
     }
 }
