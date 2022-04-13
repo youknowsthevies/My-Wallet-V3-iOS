@@ -8,11 +8,12 @@ import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
 
-enum SupportViewAction: Equatable {
-    enum URLContent {
+public enum SupportViewAction: Equatable {
+    public enum URLContent {
         case contactUs
         case viewFAQ
     }
+
     case loadAppStoreVersionInformation
     case failedToRetrieveAppStoreInfo
     case appStoreVersionInformationReceived(AppStoreApplicationInfo)
