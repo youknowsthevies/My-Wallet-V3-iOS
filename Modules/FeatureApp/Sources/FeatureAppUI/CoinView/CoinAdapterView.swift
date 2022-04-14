@@ -452,6 +452,7 @@ extension AssetDetails {
         self.init(
             name: cryptoCurrency.name,
             code: cryptoCurrency.code,
+            displayCode: cryptoCurrency.displayCode,
             brandColor: cryptoCurrency.brandColor,
             about: nil,
             website: nil,

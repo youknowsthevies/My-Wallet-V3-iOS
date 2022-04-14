@@ -7,6 +7,7 @@ public struct AssetDetails: Equatable {
 
     public let name: String
     public let code: String
+    public let displayCode: String
     public var brandColor: Color
     public let about: String?
     public let website: URL?
@@ -19,6 +20,7 @@ public struct AssetDetails: Equatable {
     public init(
         name: String,
         code: String,
+        displayCode: String,
         brandColor: Color,
         about: String?,
         website: URL?,
@@ -30,6 +32,7 @@ public struct AssetDetails: Equatable {
     ) {
         self.name = name
         self.code = code
+        self.displayCode = displayCode
         self.brandColor = brandColor
         self.about = about
         self.website = website

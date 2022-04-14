@@ -140,11 +140,11 @@ public struct CoinView: View {
                 AlertCard(
                     title: Localization.Label.Title.notTradable.interpolating(
                         viewStore.asset.name,
-                        viewStore.asset.code
+                        viewStore.asset.displayCode
                     ),
                     message: Localization.Label.Title.notTradableMessage.interpolating(
                         viewStore.asset.name,
-                        viewStore.asset.code
+                        viewStore.asset.displayCode
                     )
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)

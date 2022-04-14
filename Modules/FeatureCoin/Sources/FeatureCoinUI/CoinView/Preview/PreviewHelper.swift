@@ -14,6 +14,7 @@ extension AssetDetails {
     static func preview(
         name: String = "Bitcoin",
         code: String = "BTC",
+        displayCode: String = "BTC",
         brandColor: Color = .orange,
         // swiftlint:disable:next line_length
         about: String = "The world’s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoins are divisible into smaller units known as satoshis — each satoshi is worth 0.00000001 bitcoin.",
@@ -27,6 +28,7 @@ extension AssetDetails {
         AssetDetails(
             name: name,
             code: code,
+            displayCode: displayCode,
             brandColor: brandColor,
             about: about,
             website: website,
