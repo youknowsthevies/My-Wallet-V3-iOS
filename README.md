@@ -13,7 +13,7 @@ Ruby-Gems: 3.0.3
 Swiftlint: 0.46.5+
 Swiftformat: 0.49.5+
 
-If you are using a M1 you might need to update ruby to version 2.7.5 or 3.x.x. Postponing the upgrade now so we don't disturb the current builds until every
+If you are using a M1 you might need to update ruby to version 2.7.5 or 3.x.x. Postponing the upgrade now so we don't disturb the current builds until the CI is updated to M1 and everybody get their M1s.
 
 
 # Building
