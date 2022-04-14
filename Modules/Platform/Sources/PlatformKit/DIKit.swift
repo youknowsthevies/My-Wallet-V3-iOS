@@ -174,6 +174,11 @@ extension DependencyContainer {
             return client as SupportedPairsClientAPI
         }
 
+        factory { () -> TradingPairsClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as TradingPairsClientAPI
+        }
+
         factory { () -> BeneficiariesClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as BeneficiariesClientAPI
@@ -285,6 +290,8 @@ extension DependencyContainer {
         factory { PaymentAccountService() as PaymentAccountServiceAPI }
 
         single { SupportedPairsInteractorService() as SupportedPairsInteractorServiceAPI }
+
+        single { TradingPairsService() as TradingPairsServiceAPI }
 
         factory { SupportedPairsService() as SupportedPairsServiceAPI }
 

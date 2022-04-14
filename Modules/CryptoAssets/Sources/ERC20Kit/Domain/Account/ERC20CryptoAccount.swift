@@ -156,6 +156,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
+    private let tradingPairsService: TradingPairsServiceAPI
 
     init(
         publicKey: String,
@@ -168,6 +169,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         priceService: PriceServiceAPI = resolve(),
         supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        tradingPairsService: TradingPairsServiceAPI = resolve(),
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve()
     ) {
         precondition(erc20Token.kind.isERC20)
@@ -184,6 +186,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
         self.swapTransactionsService = swapTransactionsService
+        self.tradingPairsService = tradingPairsService
         self.transactionsService = transactionsService
     }
 
@@ -194,6 +197,18 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             .asSingle()
             .map { [asset] pairs in
                 pairs.cryptoCurrencySet.contains(asset)
+            }
+            .catchAndReturn(false)
+    }
+
+    private var isPairToCryptoAvailable: Single<Bool> {
+        tradingPairsService
+            .tradingPairs
+            .asSingle()
+            .map { [asset] tradingPairs in
+                tradingPairs.contains { pair in
+                    pair.sourceCurrencyType == asset
+                }
             }
             .catchAndReturn(false)
     }
@@ -215,9 +230,12 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             return .just(false)
         case .viewActivity:
             return hasHistory.asSingle()
-        case .send,
-             .swap:
+        case .send:
             return isFunded
+        case .swap:
+            return Single.zip(isPairToCryptoAvailable, isFunded).map {
+                $0.0 && $0.1
+            }
         case .buy:
             return isPairToFiatAvailable
         case .sell:

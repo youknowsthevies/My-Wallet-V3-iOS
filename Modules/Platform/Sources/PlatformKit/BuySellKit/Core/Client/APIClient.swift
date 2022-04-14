@@ -9,6 +9,7 @@ import NetworkKit
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &
     SupportedPairsClientAPI &
+    TradingPairsClientAPI &
     SuggestedAmountsClientAPI &
     OrderDetailsClientAPI &
     OrderCancellationClientAPI &
@@ -57,6 +58,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let beneficiaries = ["payments", "beneficiaries"]
         static let banks = ["payments", "banks"]
         static let supportedPairs = ["simple-buy", "pairs"]
+        static let tradingPairs = ["custodial", "trades", "pairs"]
         static let suggestedAmounts = ["simple-buy", "amounts"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
@@ -189,6 +191,16 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.supportedPairs,
             parameters: queryParameters
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    // MARK: - TradingPairsClientAPI
+
+    func tradingPairs() -> AnyPublisher<[String], NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.tradingPairs,
+            authenticated: true
         )!
         return networkAdapter.perform(request: request)
     }

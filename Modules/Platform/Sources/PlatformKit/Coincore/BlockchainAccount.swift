@@ -97,7 +97,8 @@ extension BlockchainAccount {
     public func actionsPublisher() -> AnyPublisher<[AssetAction], Error> {
         AssetAction.allCases
             .map { action in
-                can(perform: action).map { value in (action: action, perform: value) }
+                can(perform: action)
+                    .map { value in (identifier: identifier, action: action, perform: value) }
             }
             .merge()
             .collect()
