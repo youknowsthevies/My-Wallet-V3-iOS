@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -8,6 +9,8 @@ import RIBs
 import RxRelay
 import RxSwift
 import ToolKit
+
+// swiftlint:disable file_length
 
 enum TransitionType: Equatable {
     case push
@@ -150,6 +153,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let restrictionsProvider: TransactionRestrictionsProviderAPI
     private let analyticsHook: TransactionAnalyticsHook
     private let messageRecorder: MessageRecording
+    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
+
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         transactionModel: TransactionModel,
@@ -159,7 +165,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         presenter: TransactionFlowPresentable,
         restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
-        messageRecorder: MessageRecording = resolve()
+        messageRecorder: MessageRecording = resolve(),
+        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
         self.transactionModel = transactionModel
         self.action = action
@@ -168,6 +175,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.messageRecorder = messageRecorder
+        self.sendEmailNotificationService = sendEmailNotificationService
         super.init(presenter: presenter)
         presenter.listener = self
     }
@@ -247,6 +255,24 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     self?.finishFlow()
                 }
             )
+            .disposeOnDeactivate(interactor: self)
+
+        transactionModel.state
+            .filter { $0.executionStatus == .error }
+            .subscribe(onNext: { [analyticsHook] transactionState in
+                analyticsHook.onTransactionFailure(with: transactionState)
+            })
+            .disposeOnDeactivate(interactor: self)
+
+        transactionModel.state
+            .filter { $0.executionStatus == .completed }
+            .take(1)
+            .asSingle()
+            .subscribe(onSuccess: { [weak self] transactionState in
+                guard let self = self else { return }
+                self.analyticsHook.onTransactionSuccess(with: transactionState)
+                self.triggerSendEmailNotification(transactionState)
+            })
             .disposeOnDeactivate(interactor: self)
     }
 
@@ -350,6 +376,21 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     // MARK: - Private Functions
+
+    private func triggerSendEmailNotification(_ transactionState: TransactionState) {
+        switch transactionState.action {
+        case .interestTransfer,
+             .send:
+            if transactionState.source is NonCustodialAccount {
+                sendEmailNotificationService
+                    .postSendEmailNotificationTrigger(transactionState.amount)
+                    .subscribe()
+                    .store(in: &cancellables)
+            }
+        default:
+            break
+        }
+    }
 
     private func canPerform(_ action: AssetAction, using target: TransactionTarget) -> Bool {
         restrictionsProvider.canPerform(action, using: target)
