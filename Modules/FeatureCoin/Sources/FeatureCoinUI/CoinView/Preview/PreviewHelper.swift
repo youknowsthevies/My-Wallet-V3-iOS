@@ -21,7 +21,8 @@ extension AssetDetails {
         logoUrl: URL? = URL(string: "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
         logoImage: Image? = nil,
         isTradable: Bool = true,
-        onWatchlist: Bool = true
+        supportsCustodial: Bool = true,
+        supportsInterest: Bool = true
     ) -> AssetDetails {
         AssetDetails(
             name: name,
@@ -31,7 +32,9 @@ extension AssetDetails {
             website: website,
             logoUrl: logoUrl,
             logoImage: logoImage,
-            isTradable: isTradable
+            isTradable: isTradable,
+            supportsCustodial: supportsCustodial,
+            supportsInterest: supportsInterest
         )
     }
 }

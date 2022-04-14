@@ -129,6 +129,7 @@ public struct CoinView: View {
                 if let status = viewStore.kycStatus {
                     AccountListView(
                         accounts: viewStore.accounts,
+                        asset: viewStore.asset,
                         assetColor: viewStore.asset.brandColor,
                         interestRate: viewStore.interestRate,
                         kycStatus: status

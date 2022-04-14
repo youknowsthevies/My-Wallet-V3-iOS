@@ -7,6 +7,7 @@ import ComposableArchitecture
 import FeatureCoinDomain
 import Foundation
 import Localization
+import MoneyKit
 import SwiftUI
 
 public struct AccountListView: View {
@@ -17,6 +18,7 @@ public struct AccountListView: View {
     @Environment(\.context) var context
 
     let accounts: [Account.Snapshot]
+    let asset: AssetDetails
 
     let assetColor: Color
     let interestRate: Double?
@@ -72,20 +74,24 @@ public struct AccountListView: View {
     }
 
     @ViewBuilder func locked() -> some View {
-        LockedAccountRow(
-            title: Localization.tradingAccountTitle,
-            subtitle: Localization.tradingAccountSubtitle,
-            icon: .trade
-        )
-        .context([blockchain.ux.asset.account.type: Account.AccountType.trading])
-        PrimaryDivider()
-        LockedAccountRow(
-            title: Localization.rewardsAccountTitle,
-            subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate.or(0)),
-            icon: .interestCircle
-        )
-        .context([blockchain.ux.asset.account.type: Account.AccountType.interest])
-        PrimaryDivider()
+        if asset.supportsCustodial {
+            LockedAccountRow(
+                title: Localization.tradingAccountTitle,
+                subtitle: Localization.tradingAccountSubtitle,
+                icon: .trade
+            )
+            .context([blockchain.ux.asset.account.type: Account.AccountType.trading])
+            PrimaryDivider()
+        }
+        if asset.supportsInterest {
+            LockedAccountRow(
+                title: Localization.rewardsAccountTitle,
+                subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate.or(0)),
+                icon: .interestCircle
+            )
+            .context([blockchain.ux.asset.account.type: Account.AccountType.interest])
+            PrimaryDivider()
+        }
     }
 }
 
@@ -98,6 +104,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.trading,
                 .preview.rewards
             ],
+            asset: .preview(),
             assetColor: .orange,
             interestRate: nil,
             kycStatus: .gold
@@ -109,6 +116,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.trading,
                 .preview.rewards
             ],
+            asset: .preview(),
             assetColor: .orange,
             interestRate: nil,
             kycStatus: .silver
@@ -120,6 +128,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.trading,
                 .preview.rewards
             ],
+            asset: .preview(),
             assetColor: .orange,
             interestRate: nil,
             kycStatus: .unverified

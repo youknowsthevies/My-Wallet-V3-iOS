@@ -458,7 +458,9 @@ extension AssetDetails {
             logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
             logoImage: cryptoCurrency.assetModel.logoResource.image,
             isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
-                || cryptoCurrency.supports(product: .privateKey)
+                || cryptoCurrency.supports(product: .privateKey),
+            supportsCustodial: cryptoCurrency.supports(product: .custodialWalletBalance),
+            supportsInterest: cryptoCurrency.supports(product: .interestBalance)
         )
     }
 }

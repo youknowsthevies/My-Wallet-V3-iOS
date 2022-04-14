@@ -13,6 +13,8 @@ public struct AssetDetails: Equatable {
     public let logoUrl: URL?
     public let logoImage: Image?
     public var isTradable: Bool
+    public var supportsCustodial: Bool
+    public var supportsInterest: Bool
 
     public init(
         name: String,
@@ -22,7 +24,9 @@ public struct AssetDetails: Equatable {
         website: URL?,
         logoUrl: URL?,
         logoImage: Image?,
-        isTradable: Bool
+        isTradable: Bool,
+        supportsCustodial: Bool,
+        supportsInterest: Bool
     ) {
         self.name = name
         self.code = code
@@ -32,5 +36,7 @@ public struct AssetDetails: Equatable {
         self.logoUrl = logoUrl
         self.logoImage = logoImage
         self.isTradable = isTradable
+        self.supportsCustodial = supportsCustodial
+        self.supportsInterest = supportsInterest
     }
 }

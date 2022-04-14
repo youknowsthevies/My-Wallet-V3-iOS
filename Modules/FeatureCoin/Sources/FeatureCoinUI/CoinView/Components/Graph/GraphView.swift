@@ -35,7 +35,7 @@ public struct GraphView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .onAppear {
-                            viewStore.send(.request(.week))
+                            viewStore.send(.onAppear(context))
                         }
                         .padding([.leading, .trailing])
                     Spacer()
