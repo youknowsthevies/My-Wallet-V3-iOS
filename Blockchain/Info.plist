@@ -62,7 +62,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>COMMIT_HASH</key>
 	<string>${COMMIT_HASH}</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
