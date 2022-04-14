@@ -8,10 +8,13 @@
 
 Homebrew: 3.4.1+
 Xcode: 13.2.1+
-Ruby: 2.7.5
+Ruby: 2.6.5
 Ruby-Gems: 3.0.3
 Swiftlint: 0.46.5+
 Swiftformat: 0.49.5+
+
+If you are using a M1 you might need to update ruby to version 2.7.5 or 3.x.x. Postponing the upgrade now so we don't disturb the current builds until every
+
 
 # Building
 
@@ -21,11 +24,11 @@ After installing Xcode, open it to begin the Command Line Tools installation. Af
 
 ## Install Git submodules
 
-    git submodule update --init
+    $ git submodule update --init
 
 If the submodules are not fetched, run:
 
-    git submodule update --recursive --force
+    $ git submodule update --recursive --force
 
 ### If you don't have read access to My-Wallet-V3-Private:
 
@@ -48,8 +51,8 @@ to:
 
 Then run:
 
-    git submodule sync
-    git submodule update --init
+    $ git submodule sync
+    $ git submodule update --init
 
 ## Install `homebrew`
 
@@ -59,23 +62,23 @@ https://brew.sh/
 
 Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
 
-    brew update && brew install rbenv
-    rbenv init
+    $ brew update && brew install rbenv
+    $ rbenv init
 
 Install a recent ruby version:
 
-    rbenv install 2.7.5
-    rbenv global 2.7.5
-    eval "$(rbenv init -)"
+    $ rbenv install 2.6.5
+    $ rbenv global 2.6.5
+    $ eval "$(rbenv init -)"
 
 Then the project ruby dependencies (`fastlane`, etc.):
 
-    gem install bundler
-    bundle install
+    $ gem install bundler
+    $ bundle install
 
 ## Install build dependencies (brew)
 
-    sh scripts/install-brew-dependencies.sh
+    $ sh scripts/install-brew-dependencies.sh
 
 ## Install JS Dependencies
 
@@ -88,41 +91,43 @@ You will be installing:
 
 Check [nvm installaton instructions](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 
 Install the correct node version:
 
-    nvm install 8.17.0
-    nvm use 8.17.0
+    $ nvm install 8.17.0
+    $ nvm use 8.17.0
 
 If nvm is failing to install, please make sure you are installing it with the curl command above. If it still fails, check their website for a possibly newer installer.
 
 ### Install Yarn
-    brew install yarn
+    $ brew install yarn
 
 ### Checkout ios branch from Submodules/My-Wallet-V3
-    cd Submodules/My-Wallet-V3
-    git checkout ios
-    cd ../..
+    $ cd Submodules/My-Wallet-V3
+    $ git checkout ios
+    $ cd ../..
 
 ### Install and build js files
-    sh scripts/install-js.sh && sh scripts/build-js.sh
+    $ sh scripts/install-js.sh && sh scripts/build-js.sh
 
 If the above command is failing you might need to fix the missing python binary on systems with python3 installed.
 
 #### Install python3 using homebrew:
 
-    brew install python3
+    $ brew install python3
 
 You should see those Caveats at the end of a successful installation:
 
-    ==> Caveats
-    Python has been installed as
-    /opt/homebrew/bin/python3
+```console
+==> Caveats
+Python has been installed as
+/opt/homebrew/bin/python3
 
-    Unversioned symlinks `python`, `python-config`, `pip` etc. pointing to
-    `python3`, `python3-config`, `pip3` etc., respectively, have been installed into
-    /opt/homebrew/opt/python@3.9/libexec/bin
+Unversioned symlinks `python`, `python-config`, `pip` etc. pointing to
+`python3`, `python3-config`, `pip3` etc., respectively, have been installed into
+/opt/homebrew/opt/python@3.9/libexec/bin
+```
 
 The first lines tells us python3 binary was installed.
 
@@ -132,13 +137,15 @@ To do so, edit your `~/.zshrc` or `~/.bashrc` depending on which shell do you us
 Find a line that starts with `export PATH` and add the aliases path to it.
 Example below:
 
-    BREW_PYTHON="$(brew --prefix python3)/libexec/bin"
-    export PATH=$HOME/bin:/usr/local/bin:$BREW_PYTHON:$PATH
+```console
+BREW_PYTHON="$(brew --prefix python3)/libexec/bin"
+export PATH=$HOME/bin:/usr/local/bin:$BREW_PYTHON:$PATH
+```
 
 ## Prepare OpenSSL
 
-    cd ./Submodules/OpenSSL-for-iPhone
-    ./build-libssl.sh --cleanup --archs="x86_64 arm64"
+    $ cd ./Submodules/OpenSSL-for-iPhone
+    $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
 ## Add production Config file
 
@@ -196,17 +203,17 @@ We are integrating XcodeGen and, despite still committing project files in git, 
 
 ### Installing:
 
-    brew install xcodegen
+    $ brew install xcodegen
 
 ## Generate projects & dependencies: 
 
-    sh scripts/bootstrap.sh
+    $ sh scripts/bootstrap.sh
 
 👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
 
 ⚠️ You may need to run the following command if you encounter an `xcode-select` error:
 
-    sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 ## Build the project
 
