@@ -560,6 +560,7 @@ extension TransactionFlowRouter {
     private func present(_ viewControllerToPresent: UIViewController, transitionType: TransitionType) {
         switch transitionType {
         case .modal:
+            viewControllerToPresent.isModalInPresentation = true
             viewController.present(viewController: viewControllerToPresent, animated: true)
         case .push:
             viewController.push(viewController: viewControllerToPresent)
