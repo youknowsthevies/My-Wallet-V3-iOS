@@ -22,6 +22,7 @@ import FeatureWalletConnectData
 import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
+import FeatureNotificationSettingsDomain
 import Firebase
 import FirebaseCrashlytics
 import MetadataDataKit
@@ -109,6 +110,7 @@ func defineDependencies() {
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit
+        DependencyContainer.featureNotificationSettingsDomainKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
