@@ -1,17 +1,16 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Augustin Udrea on 15/04/2022.
 //
 
-import Foundation
 import Combine
-import NetworkKit
-import NetworkError
 import DIKit
+import Foundation
 import NabuNetworkError
-
+import NetworkError
+import NetworkKit
 
 public protocol ContactLanguagePreferenceServiceAPI: AnyObject {
     func updateLanguage(

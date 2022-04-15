@@ -16,6 +16,7 @@ import FeatureCardPaymentData
 import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
+import FeatureNotificationSettingsDomain
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
@@ -23,7 +24,6 @@ import FeatureWalletConnectData
 import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
-import FeatureNotificationSettingsDomain
 import Firebase
 import FirebaseCrashlytics
 import MetadataDataKit
