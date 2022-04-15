@@ -20,6 +20,7 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
+import FeatureNotificationSettingsUI
 
 public enum CardOrderingResult {
     case created
