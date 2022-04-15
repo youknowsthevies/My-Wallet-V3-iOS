@@ -25,7 +25,6 @@ import FeatureWalletConnectData
 import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
-import FeatureNotificationSettingsDomain
 import Firebase
 import FirebaseCrashlytics
 import MetadataDataKit
