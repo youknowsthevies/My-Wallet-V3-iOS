@@ -3,9 +3,9 @@ import AnalyticsKit
 import DIKit
 import FeatureAppUI
 import FeatureCoinUI
+import FeatureNotificationSettingsDomain
 import Firebase
 import FirebaseProtocol
-import FeatureNotificationSettingsDomain
 
 let app: AppProtocol = App(
     remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig()
