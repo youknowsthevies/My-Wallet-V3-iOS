@@ -8,7 +8,11 @@ let package = Package(
     products: [
         .library(
             name: "FeatureNFT",
-            targets: ["FeatureNFTDomain", "FeatureNFTUI"]
+            targets: [
+                "FeatureNFTDomain",
+                "FeatureNFTUI",
+                "FeatureNFTData"
+            ]
         ),
         .library(
             name: "FeatureNFTUI",
@@ -30,6 +34,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../CryptoAssets"),
         .package(path: "../Tool")
     ],
     targets: [
@@ -39,6 +44,14 @@ let package = Package(
                 .product(
                     name: "NetworkError",
                     package: "NetworkErrors"
+                ),
+                .product(
+                    name: "NabuNetworkError",
+                    package: "NetworkErrors"
+                ),
+                .product(
+                    name: "ToolKit",
+                    package: "Tool"
                 )
             ]
         ),
