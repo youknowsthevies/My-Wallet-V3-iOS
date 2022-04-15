@@ -46,16 +46,16 @@ public final class NotificationLanguageObserver: Session.Observer {
         guard let self = self,
               let languageCode = self.locale.languageCode else { return }
 
-        self.contactLanguagePreferenceService
-            .updateLanguage(language: languageCode)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    print(error)
-                case .finished:
-                    return
-                }
-            }, receiveValue: { _ in })
-            .store(in: &self.cancellables)
+//        self.contactLanguagePreferenceService
+//            .updateLanguage(language: languageCode)
+//            .sink(receiveCompletion: { completion in
+//                switch completion {
+//                case .failure(let error):
+//                    print(error)
+//                case .finished:
+//                    return
+//                }
+//            }, receiveValue: { _ in })
+//            .store(in: &self.cancellables)
     }
 }
