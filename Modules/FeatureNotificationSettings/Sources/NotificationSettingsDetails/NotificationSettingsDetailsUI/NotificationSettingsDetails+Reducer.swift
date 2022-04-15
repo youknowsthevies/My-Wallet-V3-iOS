@@ -12,5 +12,12 @@ public let notificationSettingsDetailsReducer = Reducer<
     NotificationSettingsDetailsState,
     NotificationSettingsDetailsAction,
     NotificationSettingsDetailsEnvironment
-> { _, _, _ in
+> { state, action, environment in
+    switch action {
+    case .onDissapear:
+        return .none
+    case .binding:
+        return .none
+    }
 }
+.binding()

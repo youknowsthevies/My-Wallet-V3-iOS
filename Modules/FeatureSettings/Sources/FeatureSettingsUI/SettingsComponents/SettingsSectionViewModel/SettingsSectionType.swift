@@ -131,6 +131,7 @@ enum SettingsSectionType: Int, Equatable {
             case contactSupport
             case airdrops
             case cardIssuing
+            case notifications
         }
     }
 }

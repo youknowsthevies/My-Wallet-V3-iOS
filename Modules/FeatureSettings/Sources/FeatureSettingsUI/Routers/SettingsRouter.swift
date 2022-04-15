@@ -19,6 +19,7 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
+import FeatureNotificationSettingsUI
 
 public enum CardOrderingResult {
     case created
@@ -334,6 +335,8 @@ final class SettingsRouter: SettingsRouterAPI {
             externalActionsProvider.handleSecureChannel()
         case .showCardIssuing:
             showCardIssuingFlow()
+        case .showNotificationsSettings:
+            showNotificationsSettingsScreen()
         case .none:
             break
         }
@@ -359,6 +362,10 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
+    private func showNotificationsSettingsScreen() {
+        let presenter = topViewController
+    }
+    
     private func showBankLinkingFlow(currency: FiatCurrency) {
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
         let viewController = topViewController
