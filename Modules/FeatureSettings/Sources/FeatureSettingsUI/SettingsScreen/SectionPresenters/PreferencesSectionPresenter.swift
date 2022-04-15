@@ -17,7 +17,8 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
                         sectionType: sectionType,
                         items: [
                             .init(cellType: .switch(.emailNotifications, emailNotificationsCellPresenter)),
-                            .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter))
+                            .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter)),
+                            .init(cellType: .common(.notifications))
                         ]
                     )
                 )

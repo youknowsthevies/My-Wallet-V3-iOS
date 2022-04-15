@@ -6,8 +6,11 @@
 //
 
 import Foundation
+import FeatureNotificationSettingsDomain
+import Combine
+import NetworkError
 
-struct MockGenerator {
+public struct MockGenerator {
     static let emailMethod = NotificationMethodInfo(
         id: UUID(),
         method: .email,
@@ -55,7 +58,7 @@ struct MockGenerator {
         emailMethod
     ]
 
-    static let priceAlertNotificationPreference = NotificationPreference(
+    public static let priceAlertNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .priceAlert,
         title: "Price alerts",
@@ -65,7 +68,7 @@ struct MockGenerator {
         enabledMethods: enabledMethods
     )
 
-    static let transactionalNotificationPreference = NotificationPreference(
+    public static let transactionalNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .transactional,
         title: "Transactional notifications",
@@ -75,7 +78,7 @@ struct MockGenerator {
         enabledMethods: enabledMethods
     )
 
-    static let securityNotificationPreference = NotificationPreference(
+    public static let securityNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .security,
         title: "Security notifications",
@@ -85,7 +88,7 @@ struct MockGenerator {
         enabledMethods: enabledMethods
     )
 
-    static let marketingNotificationPreference = NotificationPreference(
+    public static let marketingNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .marketing,
         title: "Marketing notifications",
@@ -95,3 +98,12 @@ struct MockGenerator {
         enabledMethods: enabledMethods
     )
 }
+
+public class NotificationSettingsRepositoryMock: NotificationSettingsRepositoryAPI {
+    var subject = PassthroughSubject<[NotificationPreference], NetworkError>()
+    public init() {}
+    public func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {
+        return subject.eraseToAnyPublisher()
+    }
+}
+
