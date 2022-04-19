@@ -369,10 +369,9 @@ final class SettingsRouter: SettingsRouterAPI {
                 initialState: .init(),
                 reducer: featureNotificationReducer,
                 environment: FeatureNotificationSettingsEnvironment(mainQueue: .main,
-                                                                    notificationSettingsRepository: .resolve())
+                                                                    notificationSettingsRepository: DIKit.resolve())
         ))
-        let hostingViewController = UIHostingController(rootView: notificationCenterView)
-        presenter.present(hostingViewController)
+        presenter.present(notificationCenterView)
         
     }
 

@@ -12,16 +12,16 @@ import FeatureNotificationSettingsDomain
 import Mocks
 import FeatureNotificationSettingsData
 
-struct FeatureNotificationSettingsView: View {
+public struct FeatureNotificationSettingsView: View {
     var store: Store<NotificationSettingsState, NotificationSettingsAction>
     @ObservedObject var viewStore: ViewStore<NotificationSettingsState, NotificationSettingsAction>
     
-    init(store: Store<NotificationSettingsState,NotificationSettingsAction>) {
+    public init(store: Store<NotificationSettingsState,NotificationSettingsAction>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
     
-    var body: some View {
+    public var body: some View {
         WithViewStore(store) { viewStore in
             VStack(alignment: .leading, spacing: 20) {
                 headerSection
