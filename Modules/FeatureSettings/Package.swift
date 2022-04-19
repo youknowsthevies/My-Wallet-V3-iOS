@@ -50,7 +50,8 @@ let package = Package(
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../FeatureCardPayment")
+        .package(path: "../FeatureCardPayment"),
+        .package(path: "../FeatureNotificationSettings")
     ],
     targets: [
         .target(
@@ -84,7 +85,9 @@ let package = Package(
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "FeatureCardPaymentUI", package: "FeatureCardPayment"),
-                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
+                .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
+                .product(name: "FeatureNotificationSettingsUI", package: "FeatureNotificationSettings")
+
             ]
         ),
         .target(
