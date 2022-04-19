@@ -44,8 +44,8 @@ public final class NotificationLanguageObserver: Session.Observer {
 
     lazy var login = app.on(blockchain.session.event.did.sign.in) { [weak self] _ in
         guard let self = self,
-              let languageCode = self.locale.languageCode else { return }
-
+              let languageCode = self.locale.identifier else { return }
+        
 //        self.contactLanguagePreferenceService
 //            .updateLanguage(language: languageCode)
 //            .sink(receiveCompletion: { completion in

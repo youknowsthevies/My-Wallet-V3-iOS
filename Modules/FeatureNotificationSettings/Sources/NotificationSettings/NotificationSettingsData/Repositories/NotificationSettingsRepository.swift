@@ -14,7 +14,7 @@ public struct NotificationSettingsRepository: NotificationSettingsRepositoryAPI 
 
     private let client: NotificationsSettingsClient
 
-    public init(_ client: NotificationsSettingsClient) {
+    public init(client: NotificationsSettingsClient) {
         self.client = client
     }
 
