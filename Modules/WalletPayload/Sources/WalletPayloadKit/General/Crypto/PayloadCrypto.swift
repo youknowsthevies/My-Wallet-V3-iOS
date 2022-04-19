@@ -96,7 +96,7 @@ extension PayloadCryptoAPI {
 
 final class PayloadCrypto: PayloadCryptoAPI {
 
-    private enum Constants {
+    enum Constants {
         static let supportedEncryptionVersion = 4
         static let saltBytes = 16
         static let keyBitLen: UInt = 256

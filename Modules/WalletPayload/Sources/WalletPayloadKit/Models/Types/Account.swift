@@ -34,10 +34,11 @@ public struct Account: Equatable {
 
 func createAccount(
     label: String,
+    index: Int,
     derivations: [Derivation]
 ) -> Account {
     Account(
-        index: 0,
+        index: index,
         label: label,
         archived: false,
         defaultDerivation: .segwit,

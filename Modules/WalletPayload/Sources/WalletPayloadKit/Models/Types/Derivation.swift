@@ -74,9 +74,23 @@ func generateDerivations(
 ) -> [Derivation] {
     DerivationType.allCases
         .map { type in
-            let key = deriveAccountKey(at: index, seedHex: masterSeedHex, type: type)
-            return createDerivation(privateKey: key, type: type)
+            generateDerivation(type: type, index: index, masterSeedHex: masterSeedHex)
         }
+}
+
+/// Creates a `Derivation`
+/// - Parameters:
+///   - type: A `DerivationType`
+///   - seedHex: A `String` to be used as a seed hex
+///   - index: An `Int` for the private key derivation
+/// - Returns: `Derivation`
+func generateDerivation(
+    type: DerivationType,
+    index: Int,
+    masterSeedHex: String
+) -> Derivation {
+    let key = deriveAccountKey(at: index, seedHex: masterSeedHex, type: type)
+    return createDerivation(privateKey: key, type: type)
 }
 
 /// Derives a `PrivateKey` of path `m/(purpose)'/0'/(index)'`

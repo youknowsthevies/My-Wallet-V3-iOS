@@ -12,6 +12,10 @@ public struct Wrapper: Equatable {
     public let syncPubKeys: Bool
     public let wallet: NativeWallet
 
+    public var isLatestVersion: Bool {
+        version == PayloadCrypto.Constants.supportedEncryptionVersion
+    }
+
     public init(
         pbkdf2Iterations: Int,
         version: Int,
