@@ -15,6 +15,8 @@ import FeatureNotificationSettingsDetailsUI
 
 public struct NotificationSettingsState: Hashable, NavigationState {
     public var route: RouteIntent<NotificationsSettingsRoute>?
+    var notificationDetailsState: NotificationSettingsDetailsState?
+
     public var notificationPrefrences: [NotificationPreference]?
     
     public init(route: RouteIntent<NotificationsSettingsRoute>? = nil,
@@ -25,7 +27,9 @@ public struct NotificationSettingsState: Hashable, NavigationState {
 }
 
 public enum NotificationSettingsAction: Equatable, NavigationAction {
-    case onAppear, onDisappear
+    case onAppear
+    case onDisappear
+    case notificationDetailsChanged(NotificationSettingsDetailsAction)
     case fetchedSettings(Result<[NotificationPreference], NetworkError>)
     case route(RouteIntent<NotificationsSettingsRoute>?)
 }
@@ -37,13 +41,37 @@ public enum NotificationsSettingsRoute: NavigationRoute {
         switch self {
             
         case .showDetails(let preference):
-            return NotificationSettingsDetailsView(store: .init(initialState:
-                    .init(notificationPreference: preference),
-                                                                reducer: notificationSettingsDetailsReducer,
-                                                                environment: NotificationSettingsDetailsEnvironment()))
+           return IfLetStore(
+                store.scope(
+                    state: \.notificationDetailsState,
+                    action: NotificationSettingsAction.notificationDetailsChanged
+                ),
+                then: { store in
+                    NotificationSettingsDetailsView(store: store)
+                }
+            )
+
+//            return NotificationSettingsDetailsView(store: .init(initialState:
+//                    .init(notificationPreference: preference),
+//                                                                reducer: notificationSettingsDetailsReducer,
+//                                                                environment: NotificationSettingsDetailsEnvironment()))
         }
     }
 }
+
+
+let mainAppReducer = Reducer<NotificationSettingsState, NotificationSettingsAction, FeatureNotificationSettingsEnvironment>.combine(
+    notificationSettingsDetailsReducer
+        .optional()
+        .pullback(
+            state: \.notificationDetailsState,
+            action: /NotificationSettingsAction.notificationDetailsChanged,
+            environment: { environment -> NotificationSettingsDetailsEnvironment in
+                NotificationSettingsDetailsEnvironment()
+            }
+        ),
+    featureNotificationReducer
+)
 
 public let featureNotificationReducer = Reducer<
     NotificationSettingsState,
@@ -68,7 +96,11 @@ public let featureNotificationReducer = Reducer<
         
     case .onDisappear:
         return .none
-        
+    
+    case .notificationDetailsChanged(let action):
+        print(action)
+        return .none
+    
     case .fetchedSettings(let result):
         state.notificationPrefrences = try? result.get()
         return .none
