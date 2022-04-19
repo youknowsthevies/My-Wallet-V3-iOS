@@ -9,9 +9,8 @@ import ComposableArchitecture
 import Foundation
 import FeatureNotificationSettingsDomain
 
-public struct NotificationSettingsDetailsState: Equatable {
+public struct NotificationSettingsDetailsState: Equatable, Hashable {
     public let notificationPreference: NotificationPreference
-    
     @BindableState var pushSwitchIsOn: Bool = false
     @BindableState var emailSwitchIsOn: Bool = false
     @BindableState var smsSwitchIsOn: Bool = false

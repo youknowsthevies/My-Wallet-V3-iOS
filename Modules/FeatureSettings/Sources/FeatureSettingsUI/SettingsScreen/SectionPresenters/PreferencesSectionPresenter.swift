@@ -7,16 +7,16 @@ import RxSwift
 import ToolKit
 
 final class PreferencesSectionPresenter: SettingsSectionPresenting {
-
+    
     // MARK: - SettingsSectionPresenting
-
+    
     let sectionType: SettingsSectionType = .preferences
 
     var state: Observable<SettingsSectionLoadingState>
 
     private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
-
+    
     init(
         emailNotificationService: EmailNotificationSettingsServiceAPI,
         preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor,
@@ -29,17 +29,17 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             sectionType: sectionType,
             items: [
                 .init(cellType: .switch(.emailNotifications, emailNotificationsCellPresenter)),
-                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter))
+                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter)),
             ]
         )
-
-        state = featureFlagService.isEnabled(.remote(.notificationPreferences))
+        
+        state = featureFlagService.isEnabled(.remote(.applePay))
             .last()
-            .map { NotificationPreferencesEnabled -> SettingsSectionLoadingState in
-
-                let NotificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
-                if NotificationPreferencesEnabled, viewModel.items.contains(NotificationPreferencesCell) == false {
-                    viewModel.items.append(NotificationPreferencesCell)
+            .map { notificationSettingsEnabled -> SettingsSectionLoadingState in
+                
+                let notificationSettingsCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
+                if notificationSettingsEnabled && viewModel.items.contains(notificationSettingsCell) == false {
+                    viewModel.items.append(notificationSettingsCell)
                 }
                 return .loaded(next: .some(viewModel))
             }
