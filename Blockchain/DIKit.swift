@@ -21,6 +21,8 @@ import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
+import FeatureNFTData
+import FeatureNFTDomain
 import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
@@ -361,19 +363,8 @@ extension DependencyContainer {
 
         single {
             AppFeatureConfigurator(
-                cacheSuite: DIKit.resolve(),
-                remoteConfig: RemoteConfig.remoteConfig()
+                app: DIKit.resolve()
             )
-        }
-
-        factory { () -> FeatureConfiguratorAPI in
-            let configurator: AppFeatureConfigurator = DIKit.resolve()
-            return configurator
-        }
-
-        factory { () -> FeatureConfiguring in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
         }
 
         factory { () -> FeatureFetching in
@@ -382,11 +373,6 @@ extension DependencyContainer {
         }
 
         factory { () -> RxFeatureFetching in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
-        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
@@ -482,6 +468,7 @@ extension DependencyContainer {
 
         single {
             RemoteNotificationRelay(
+                app: DIKit.resolve(),
                 cacheSuite: DIKit.resolve(),
                 userNotificationCenter: UNUserNotificationCenter.current(),
                 messagingService: Messaging.messaging(),
@@ -723,6 +710,25 @@ extension DependencyContainer {
                     )
                 ),
                 featureFlagsService: DIKit.resolve()
+            )
+        }
+
+        // MARK: Feature NFT
+
+        factory { () -> FeatureNFTDomain.AssetProviderServiceAPI in
+            let repository: EthereumWalletAccountRepositoryAPI = DIKit.resolve()
+            let publisher = repository
+                .defaultAccount
+                .map(\.publicKey)
+                .eraseError()
+            return AsssetProviderService(
+                repository: AssetProviderRepository(
+                    client: FeatureNFTData.APIClient(
+                        networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                        requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                    )
+                ),
+                ethereumWalletAddressPublisher: publisher
             )
         }
 

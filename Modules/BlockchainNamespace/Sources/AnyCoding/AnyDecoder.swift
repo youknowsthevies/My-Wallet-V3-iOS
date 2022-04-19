@@ -15,7 +15,7 @@ public protocol AnyDecoderProtocol: AnyObject, Decoder {
     func convert<T>(_ any: Any, to: T.Type) throws -> Any?
 }
 
-open class AnyDecoder: AnyDecoderProtocol {
+open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
 
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey: Any] = [:]

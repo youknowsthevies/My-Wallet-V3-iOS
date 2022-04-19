@@ -33,12 +33,12 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.32.0"
+            from: "0.34.0"
         ),
         .package(
             name: "swift-case-paths",
             url: "https://github.com/pointfreeco/swift-case-paths",
-            from: "0.7.0"
+            from: "0.8.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),

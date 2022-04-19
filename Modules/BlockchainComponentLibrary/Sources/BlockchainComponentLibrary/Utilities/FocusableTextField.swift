@@ -67,19 +67,22 @@ struct FocusableTextField: UIViewRepresentable {
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
+            // Dispatching is necessary otherwise the view doesn't update properly
             DispatchQueue.main.async {
                 self.isFirstResponder.wrappedValue = true
             }
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
+            // Dispatching is necessary otherwise the view doesn't update properly
             DispatchQueue.main.async {
                 self.isFirstResponder.wrappedValue = false
             }
         }
 
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-            onReturnTapped()
+            // Dispatching is necessary otherwise the view doesn't update properly
+            DispatchQueue.main.async(execute: onReturnTapped)
             return true
         }
     }

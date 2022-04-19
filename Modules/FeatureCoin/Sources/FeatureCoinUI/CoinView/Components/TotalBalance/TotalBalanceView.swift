@@ -11,13 +11,13 @@ struct TotalBalanceView<Trailing: View>: View {
 
     private typealias Localization = LocalizationConstants.Coin.Accounts
 
-    let asset: AssetDetails
+    let currency: CryptoCurrency
     let accounts: [Account.Snapshot]
     @ViewBuilder let trailing: () -> Trailing
 
     var body: some View {
         BalanceSectionHeader(
-            header: Localization.totalBalance.interpolating(asset.displayCode),
+            header: Localization.totalBalance.interpolating(currency.displayCode),
             title: accounts.fiatBalance?.displayString ?? 6.of(".").joined(),
             subtitle: accounts.cryptoBalance?.displayString ?? 10.of(".").joined(),
             trailing: trailing
@@ -33,7 +33,7 @@ struct TotalBalanceView_PreviewProvider: PreviewProvider {
 
     static var previews: some View {
         TotalBalanceView(
-            asset: .preview(),
+            currency: .bitcoin,
             accounts: [],
             trailing: { EmptyView() }
         )

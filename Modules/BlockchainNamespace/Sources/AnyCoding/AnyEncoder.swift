@@ -1,5 +1,6 @@
 // https://github.com/ollieatkinson/Eumorphic/blob/anything/Sources/Anything/AnyEncoder.swift
 
+import Combine
 import Foundation
 
 public protocol AnyEncoderProtocol: AnyObject, Encoder {
@@ -13,7 +14,7 @@ public protocol AnyEncoderProtocol: AnyObject, Encoder {
     func encode<T>(_ this: T) throws -> Any? where T: Encodable
 }
 
-open class AnyEncoder: AnyEncoderProtocol {
+open class AnyEncoder: AnyEncoderProtocol, TopLevelEncoder {
 
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey: Any] = [:]

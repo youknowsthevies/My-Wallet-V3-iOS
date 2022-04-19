@@ -5,10 +5,6 @@ import Foundation
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
 public enum AppFeature: Int, CaseIterable {
 
-    // MARK: - Local features
-
-    case biometry
-
     // MARK: - Firebase features
 
     /// The announcements
@@ -115,8 +111,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .biometry:
-            return nil
         case .showEmailVerificationInOnboarding:
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
@@ -174,8 +168,6 @@ extension AppFeature {
         case .announcements:
             return false
         case .siftScienceEnabled:
-            return false
-        case .biometry:
             return false
         case .showEmailVerificationInOnboarding:
             return false

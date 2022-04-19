@@ -8,37 +8,23 @@ import Foundation
 import MoneyKit
 import NetworkError
 import SwiftUI
+import ToolKit
 
-extension AssetDetails {
+extension CryptoCurrency {
 
-    static func preview(
-        name: String = "Bitcoin",
-        code: String = "BTC",
-        displayCode: String = "BTC",
-        brandColor: Color = .orange,
-        // swiftlint:disable:next line_length
-        about: String = "The world’s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoins are divisible into smaller units known as satoshis — each satoshi is worth 0.00000001 bitcoin.",
-        website: URL = URL(string: "https://www.blockchain.com/")!,
-        logoUrl: URL? = URL(string: "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
-        logoImage: Image? = nil,
-        isTradable: Bool = true,
-        supportsCustodial: Bool = true,
-        supportsInterest: Bool = true
-    ) -> AssetDetails {
-        AssetDetails(
-            name: name,
-            code: code,
-            displayCode: displayCode,
-            brandColor: brandColor,
-            about: about,
-            website: website,
-            logoUrl: logoUrl,
-            logoImage: logoImage,
-            isTradable: isTradable,
-            supportsCustodial: supportsCustodial,
-            supportsInterest: supportsInterest
+    public static let notTradable = CryptoCurrency(
+        assetModel: AssetModel(
+            code: "BTC",
+            displayCode: "BTC",
+            kind: .coin(minimumOnChainConfirmations: 2),
+            name: "Bitcoin",
+            precision: 8,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "FF9B22",
+            sortIndex: 1
         )
-    }
+    )!
 }
 
 extension Account.Snapshot {
@@ -90,7 +76,7 @@ extension Account.Snapshot {
             crypto: crypto,
             fiat: fiat
         )
-    }
+    )!
 }
 
 enum PreviewHelper {

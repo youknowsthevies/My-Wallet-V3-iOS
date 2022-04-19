@@ -124,6 +124,22 @@ extension AppProtocol {
         _ rest: Tag.Event...,
         file: String = #fileID,
         line: Int = #line,
+        action: @escaping (Session.Event) throws -> Void
+    ) -> BlockchainEventSubscription {
+        BlockchainEventSubscription(
+            app: self,
+            events: [first] + rest,
+            file: file,
+            line: line,
+            action: action
+        )
+    }
+
+    @inlinable public func on(
+        _ first: Tag.Event,
+        _ rest: Tag.Event...,
+        file: String = #fileID,
+        line: Int = #line,
         action: @escaping (Session.Event) async throws -> Void
     ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
@@ -138,13 +154,32 @@ extension AppProtocol {
 
 public final class BlockchainEventSubscription {
 
+    enum Action {
+        case sync((Session.Event) throws -> Void)
+        case async((Session.Event) async throws -> Void)
+    }
+
     let app: AppProtocol
     let events: [Tag.Event]
-    let action: (Session.Event) async throws -> Void
+    let action: Action
 
     let file: String, line: Int
 
     deinit { stop() }
+
+    @usableFromInline init(
+        app: AppProtocol,
+        events: [Tag.Event],
+        file: String,
+        line: Int,
+        action: @escaping (Session.Event) throws -> Void
+    ) {
+        self.app = app
+        self.events = events
+        self.file = file
+        self.line = line
+        self.action = .sync(action)
+    }
 
     @usableFromInline init(
         app: AppProtocol,
@@ -157,7 +192,7 @@ public final class BlockchainEventSubscription {
         self.events = events
         self.file = file
         self.line = line
-        self.action = action
+        self.action = .async(action)
     }
 
     private var subscription: AnyCancellable?
@@ -166,12 +201,21 @@ public final class BlockchainEventSubscription {
         guard subscription == nil else { return }
         subscription = app.on(events).sink(
             receiveValue: { [weak self] event in
-                Task { [weak self] in
-                    guard let self = self else { return }
+                guard let self = self else { return }
+                switch self.action {
+                case .sync(let action):
                     do {
-                        try await self.action(event)
+                        try action(event)
                     } catch {
                         self.app.post(error: error, file: self.file, line: self.line)
+                    }
+                case .async(let action):
+                    Task {
+                        do {
+                            try await action(event)
+                        } catch {
+                            self.app.post(error: error, file: self.file, line: self.line)
+                        }
                     }
                 }
             }

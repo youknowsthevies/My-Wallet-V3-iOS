@@ -74,8 +74,6 @@ public struct AppEnvironment {
 
     @available(*, deprecated, message: "Use featureFlagsService instead")
     var internalFeatureService: InternalFeatureFlagServiceAPI
-    @available(*, deprecated, message: "Use featureFlagsService instead")
-    var appFeatureConfigurator: FeatureConfiguratorAPI
 
     public init(
         app: AppProtocol,
@@ -117,7 +115,6 @@ public struct AppEnvironment {
         walletUpgradeService: WalletUpgradeServicing,
         walletRepoPersistence: WalletRepoPersistenceAPI,
         exchangeRepository: ExchangeAccountRepositoryAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI,
         blockchainSettings: BlockchainSettings.App,
         credentialsStore: CredentialsStoreAPI,
         urlSession: URLSession,
@@ -164,7 +161,6 @@ public struct AppEnvironment {
         self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
         self.exchangeRepository = exchangeRepository
-        self.appFeatureConfigurator = appFeatureConfigurator
         self.blockchainSettings = blockchainSettings
         self.credentialsStore = credentialsStore
         self.urlSession = urlSession

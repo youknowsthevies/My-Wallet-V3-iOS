@@ -20,8 +20,9 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.32.0"
+            from: "0.34.0"
         ),
+        .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -42,6 +43,10 @@ let package = Package(
                 .product(
                     name: "NetworkError",
                     package: "NetworkErrors"
+                ),
+                .product(
+                    name: "Localization",
+                    package: "Localization"
                 ),
                 .product(
                     name: "BlockchainComponentLibrary",
@@ -90,6 +95,10 @@ let package = Package(
                     package: "BlockchainNamespace"
                 ),
                 .product(
+                    name: "AnalyticsKit",
+                    package: "Analytics"
+                ),
+                .product(
                     name: "Localization",
                     package: "Localization"
                 ),
@@ -114,16 +123,19 @@ let package = Package(
         .testTarget(
             name: "FeatureCoinDomainTests",
             dependencies: [
+                .target(name: "FeatureCoinDomain")
             ]
         ),
         .testTarget(
             name: "FeatureCoinDataTests",
             dependencies: [
+                .target(name: "FeatureCoinData")
             ]
         ),
         .testTarget(
             name: "FeatureCoinUITests",
             dependencies: [
+                .target(name: "FeatureCoinUI")
             ]
         )
     ]

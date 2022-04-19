@@ -28,17 +28,17 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.18.0"
+            from: "0.34.0"
         ),
         .package(
             name: "Stripe",
             url: "https://github.com/stripe/stripe-ios",
-            from: "21.9.0"
+            from: "22.0.0"
         ),
         .package(
             name: "Frames",
             url: "https://github.com/checkout/frames-ios.git",
-            .upToNextMajor(from: "3.0.0")
+            .upToNextMajor(from: "3.5.2")
         ),
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),

@@ -26,7 +26,7 @@ class WalletPersistenceTests: XCTestCase {
             language: "en",
             authenticatorType: .standard
         ),
-        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")
+        walletPayload: .empty
     )
 
     override func setUp() {

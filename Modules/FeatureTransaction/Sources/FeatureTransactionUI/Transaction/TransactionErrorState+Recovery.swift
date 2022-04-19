@@ -2,6 +2,7 @@
 
 // swiftlint:disable file_length
 
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -73,7 +74,10 @@ extension TransactionErrorState {
         case .fatalError(let fatalError):
             switch fatalError {
             case .generic(let error):
-                if
+                if let error = error as? OpenBanking.Error {
+                    let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                    return ui.info.title
+                } else if
                     let error = error as? OrderConfirmationServiceError,
                     case .nabu(.nabuError(let networkError)) = error
                 {
@@ -96,7 +100,7 @@ extension TransactionErrorState {
                 text = nil
             }
         case .nabuError(let error):
-            text = transactionErrorTitle(for: error.code, action: action)
+            text = transactionErrorTitle(for: error.code, action: action) ?? error.serverDescription
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
@@ -288,8 +292,11 @@ extension TransactionErrorState {
         let errorDescription: String
         switch fatalError {
         case .generic(let error):
-            if let error = error as? OrderConfirmationServiceError, case .nabu(let networkError) = error {
-                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            if let error = error as? OpenBanking.Error {
+                let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                errorDescription = ui.info.subtitle
+            } else if let error = error as? OrderConfirmationServiceError, case .nabu(let nabu) = error {
+                errorDescription = transactionErrorDescription(for: nabu, action: action)
             } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {

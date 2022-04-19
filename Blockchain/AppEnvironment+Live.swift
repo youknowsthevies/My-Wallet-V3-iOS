@@ -55,7 +55,6 @@ extension AppEnvironment {
             walletUpgradeService: resolve(),
             walletRepoPersistence: resolve(),
             exchangeRepository: ExchangeAccountRepository(),
-            appFeatureConfigurator: resolve(),
             blockchainSettings: .shared,
             credentialsStore: resolve(),
             urlSession: resolve(),

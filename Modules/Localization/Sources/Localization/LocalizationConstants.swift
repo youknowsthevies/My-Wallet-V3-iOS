@@ -145,6 +145,11 @@ public enum LocalizationConstants {
     public enum Authentication {
 
         public enum CountryAndStatePickers {
+            public static let suggestedSelectionTitle = NSLocalizedString(
+                "Suggested",
+                comment: "Country and State Pickers: Suggested Section Title"
+            )
+
             public static let countriesPickerTitle = NSLocalizedString(
                 "Select Your Country",
                 comment: "Country Picker: Page Title"

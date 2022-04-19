@@ -16,11 +16,6 @@ public final class BiometryProvider: BiometryProviding {
     public var configurationStatus: Biometry.Status {
         switch canAuthenticate {
         case .success(let biometryType):
-            // Verify configuration in remote
-            guard featureConfigurator.configuration(for: .biometry).isEnabled else {
-                return .unconfigurable(Biometry.EvaluationError.notAllowed)
-            }
-
             // Biometrics id is already configured - therefore, return it
             if settings.biometryEnabled {
                 return .configured(biometryType)
@@ -68,17 +63,14 @@ public final class BiometryProvider: BiometryProviding {
 
     // MARK: - Services
 
-    private let featureConfigurator: FeatureConfiguring
     private let settings: AppSettingsAuthenticating
 
     // MARK: - Setup
 
     public init(
-        settings: AppSettingsAuthenticating = resolve(),
-        featureConfigurator: FeatureConfiguring
+        settings: AppSettingsAuthenticating = resolve()
     ) {
         self.settings = settings
-        self.featureConfigurator = featureConfigurator
     }
 
     /// Performs authentication if possible

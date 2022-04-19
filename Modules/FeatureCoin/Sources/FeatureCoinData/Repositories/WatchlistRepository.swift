@@ -3,7 +3,6 @@
 import Combine
 import FeatureCoinDomain
 import Foundation
-import NabuNetworkError
 import NetworkError
 
 public struct WatchlistRepository: WatchlistRepositoryAPI {

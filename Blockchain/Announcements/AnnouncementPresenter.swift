@@ -150,7 +150,8 @@ final class AnnouncementPresenter {
     }
 
     private func calculate() {
-        let announcementsMetadata: Single<AnnouncementsMetadata> = featureFetcher.fetch(for: .announcements)
+        let announcementsMetadata = featureFetcher
+            .fetch(for: .announcements, as: AnnouncementsMetadata.self)
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
             .delaySubscription(.seconds(10), scheduler: MainScheduler.asyncInstance)
         Single

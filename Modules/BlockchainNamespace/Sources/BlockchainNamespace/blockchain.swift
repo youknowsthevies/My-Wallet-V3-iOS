@@ -84,6 +84,7 @@ public extension I_blockchain_app_configuration {
 	var `google`: L_blockchain_app_configuration_google { .init("\(__).google") }
 	var `is`: L_blockchain_app_configuration_is { .init("\(__).is") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
+	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
 public final class L_blockchain_app_configuration_announcements: L, I_blockchain_app_configuration_announcements {
@@ -180,6 +181,24 @@ public final class L_blockchain_app_configuration_redesign_coinview: L, I_blockc
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.coinview", comment: "") }
 }
 public protocol I_blockchain_app_configuration_redesign_coinview: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_remote: L, I_blockchain_app_configuration_remote {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote", comment: "") }
+}
+public protocol I_blockchain_app_configuration_remote: I {}
+public extension I_blockchain_app_configuration_remote {
+	var `is`: L_blockchain_app_configuration_remote_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_remote_is: L, I_blockchain_app_configuration_remote_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_remote_is: I {}
+public extension I_blockchain_app_configuration_remote_is {
+	var `stale`: L_blockchain_app_configuration_remote_is_stale { .init("\(__).stale") }
+}
+public final class L_blockchain_app_configuration_remote_is_stale: L, I_blockchain_app_configuration_remote_is_stale {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote.is.stale", comment: "") }
+}
+public protocol I_blockchain_app_configuration_remote_is_stale: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_configuration_wallet: L, I_blockchain_app_configuration_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet", comment: "") }
 }

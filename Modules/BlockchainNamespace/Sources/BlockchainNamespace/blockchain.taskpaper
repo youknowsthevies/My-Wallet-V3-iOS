@@ -26,6 +26,12 @@ blockchain:
 				coinview:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.configuration.value
+			remote:
+				is:
+					stale:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.preference.value
+					+ blockchain.session.state.shared.value
 			wallet:
 				options:
 				+ blockchain.session.configuration.value

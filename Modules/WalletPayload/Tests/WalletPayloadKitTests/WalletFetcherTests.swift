@@ -32,7 +32,7 @@ class WalletFetcherTests: XCTestCase {
         let notificationCenterSpy = NotificationCenterSpy()
         let walletLogic = WalletLogic(
             holder: walletHolder,
-            decoder: decoder.createWallet(from:),
+            decoder: decoder.createWallet,
             metadata: metadataService,
             notificationCenter: notificationCenterSpy
         )
@@ -43,10 +43,19 @@ class WalletFetcherTests: XCTestCase {
             operationsQueue: dispatchQueue
         )
 
-        let encryptedPayload = try JSONDecoder().decode(WalletPayloadWrapper.self, from: jsonV4)
+        let encryptedPayload = String(data: jsonV4, encoding: .utf8)!
+        let walletPayload = WalletPayload(
+            guid: "dfa6d0af-7b04-425d-b35c-ded8efaa0016",
+            authType: 0,
+            language: "en",
+            shouldSyncPubKeys: false,
+            time: Date(),
+            payloadChecksum: "",
+            payload: try? WalletPayloadWrapper(string: encryptedPayload)
+        )
         walletRepo.set(
-            keyPath: \.encryptedPayload,
-            value: encryptedPayload
+            keyPath: \.walletPayload,
+            value: walletPayload
         )
         var receivedValue: WalletFetchedContext?
         let expectedValue = WalletFetchedContext(

@@ -8,10 +8,6 @@ extension Session {
 
     public class RemoteConfiguration {
 
-        enum RemoteConfigConstants {
-            static let cacheSuiteKey: String = "FIREBASE_REMOTE_CONFIG_STALE"
-        }
-
         public var isSynchronized: Bool { _isSynchronized.value }
         private let _isSynchronized: CurrentValueSubject<Bool, Never> = .init(false)
 
@@ -23,23 +19,38 @@ extension Session {
         }
 
         private var _fetched: CurrentValueSubject<[String: Any], Never> = .init([:])
-        private let preferences: UserDefaults
+        private var fetch: ((AppProtocol, Bool) -> Void)?
+        private var bag: Set<AnyCancellable> = []
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
-            default defaultValue: [Tag.Reference: Any] = [:],
-            preferences: UserDefaults = .standard
+            default defaultValue: Tag.Context = [:]
         ) {
-            self.preferences = preferences
-            Task {
-                var configuration: [String: Any] = defaultValue.mapKeys { key in
-                    key.idToFirebaseConfigurationKeyDefault()
-                }
+            fetch = { [unowned self] app, isStale in
+                Task {
+                    var configuration: [String: Any] = defaultValue.dictionary.mapKeys { key in
+                        key.idToFirebaseConfigurationKeyDefault()
+                    }
 
-                do {
-                    let status = try await remote.fetch(withExpirationDuration: expiration)
-                    guard status == .success else { return }
-                    _ = try await remote.activate()
+                    let expiration: TimeInterval
+                    if isStale {
+                        expiration = 0 // Instant
+                    } else if isDebug {
+                        expiration = 30 // 30 seconds
+                    } else {
+                        expiration = 3600 // 1 hour
+                    }
+
+                    do {
+                        let status = try await remote.fetch(withExpirationDuration: expiration)
+                        _ = try await remote.activate()
+                    } catch {
+                        print("😱", "unable to fetch remote configuration", error)
+                        #if DEBUG
+                        fatalError(String(describing: error))
+                        #endif
+                    }
+
                     let keys = remote.allKeys(from: .remote)
                     for key in keys {
                         do {
@@ -51,17 +62,24 @@ extension Session {
                             configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
                         }
                     }
-                } catch {
-                    print("😱", "unable to fetch remote configuration", error)
-                    #if DEBUG
-                    fatalError(String(describing: error))
-                    #endif
-                }
 
-                _fetched.send(configuration)
-                _isSynchronized.send(true)
-                clearIsStale()
+                    _fetched.send(configuration)
+                    _isSynchronized.send(true)
+                    app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
+                }
             }
+        }
+
+        func start(app: AppProtocol) {
+            app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
+                .replaceError(with: false)
+                .scan((stale: false, count: 0)) { ($1, $0.count + 1) }
+                .sink { [unowned self] stale, count in
+                    if stale || count == 1 {
+                        fetch?(app, stale)
+                    }
+                }
+                .store(in: &bag)
         }
 
         public func override(_ key: Tag.Reference, with value: Any) {
@@ -106,19 +124,13 @@ extension Session {
                 .eraseToAnyPublisher()
         }
 
-        /// The expiration time interval to be used.
-        private var expiration: TimeInterval {
-            if isStale {
-                return 0
-            } else if isDebug {
-                return 30 // 30 seconds
-            }
-            return 3600 // 1 hour
-        }
-
-        /// Flag indicating if RemoteConfig is set as Stale.
-        private var isStale: Bool {
-            preferences.bool(forKey: RemoteConfigConstants.cacheSuiteKey)
+        public func publisher(for string: String) -> AnyPublisher<Any?, Never> {
+            _isSynchronized
+                .combineLatest(_fetched)
+                .filter(\.0)
+                .map(\.1)
+                .map { configuration -> Any? in configuration[string] }
+                .eraseToAnyPublisher()
         }
 
         /// Determines if the app has the `DEBUG` build flag.
@@ -128,10 +140,6 @@ extension Session {
             #else
             return false
             #endif
-        }
-
-        private func clearIsStale() {
-            preferences.set(false, forKey: RemoteConfigConstants.cacheSuiteKey)
         }
     }
 }
