@@ -5,14 +5,15 @@ import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 final class SecuritySectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .security
 
     var state: Observable<SettingsSectionLoadingState> {
-        .just(
-            .loaded(next:
-                .some(
+        return .just(
+                .loaded(next:
+                        .some(
                     .init(
                         sectionType: sectionType,
                         items: [
