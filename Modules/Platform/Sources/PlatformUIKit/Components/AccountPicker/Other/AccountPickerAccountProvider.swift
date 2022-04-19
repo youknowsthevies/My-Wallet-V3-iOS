@@ -39,13 +39,13 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
 
     public var accounts: Observable<[BlockchainAccount]> {
         coincore.allAccounts
-            .asSingle()
             .map { [singleAccountsOnly] allAccountsGroup -> [BlockchainAccount] in
                 if singleAccountsOnly {
                     return allAccountsGroup.accounts
                 }
                 return [allAccountsGroup] + allAccountsGroup.accounts
             }
+            .eraseError()
             .flatMapFilter(
                 action: action,
                 failSequence: failSequence,

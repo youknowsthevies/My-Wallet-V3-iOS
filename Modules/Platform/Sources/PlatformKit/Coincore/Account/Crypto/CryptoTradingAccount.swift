@@ -9,7 +9,7 @@ import ToolKit
 /// Named `CustodialTradingAccount` on Android
 public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
-    private enum Error: LocalizedError {
+    private enum CryptoTradingAccountError: LocalizedError {
         case loadingFailed(asset: String, label: String, action: AssetAction, error: String)
 
         var errorDescription: String? {
@@ -45,9 +45,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var isFunded: Single<Bool> {
+        isFundedPublisher.asSingle()
+    }
+
+    public var isFundedPublisher: AnyPublisher<Bool, Never> {
         balances
             .map { $0 != .absent }
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 
     public var pendingBalance: Single<MoneyValue> {
@@ -61,11 +65,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         balancePublisher.asSingle()
     }
 
-    public var balancePublisher: AnyPublisher<MoneyValue, Swift.Error> {
+    public var balancePublisher: AnyPublisher<MoneyValue, Never> {
         balances
             .map(\.balance?.available)
             .replaceNil(with: .zero(currency: currencyType))
-            .mapError()
+            .eraseToAnyPublisher()
     }
 
     public var actionableBalance: Single<MoneyValue> {
@@ -116,37 +120,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
-    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Swift.Error> {
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         interestEligibilityRepository
             .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
             .map(\.ineligibilityReason)
             .eraseError()
-    }
-
-    public var actions: Single<AvailableActions> {
-        Single.zip(
-            balance,
-            eligibilityService.isEligible,
-            isPairToFiatAvailable,
-            canPerformInterestTransfer()
-        )
-        .map { balance, isEligible, isPairToFiatAvailable, interestTransferAvailable -> AvailableActions in
-            var base: AvailableActions = [.viewActivity, .receive]
-            if isPairToFiatAvailable {
-                base.insert(.buy)
-            }
-            if balance.isPositive {
-                base.insert(.send)
-            }
-            if interestTransferAvailable {
-                base.insert(.interestTransfer)
-            }
-            if balance.isPositive, isEligible {
-                base.insert(.sell)
-                base.insert(.swap)
-            }
-            return base
-        }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
@@ -237,47 +215,54 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         featureFlagsService = featureFlagService
     }
 
-    private var isPairToFiatAvailable: Single<Bool> {
+    private var isPairToFiatAvailable: AnyPublisher<Bool, Never> {
         supportedPairsInteractorService
             .pairs
-            .take(1)
-            .asSingle()
+            .asPublisher()
+            .prefix(1)
             .map { [asset] pairs in
                 pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .viewActivity:
+        case .viewActivity, .receive:
             return .just(true)
-        case .send:
-            return canPerformSend()
-        case .buy:
-            return isPairToFiatAvailable
-        case .sell:
-            return Single.zip(isPairToFiatAvailable, isFunded).map {
-                $0.0 && $0.1
-            }
-        case .swap:
-            return canPerformSwap()
-        case .receive:
-            return .just(true)
-        case .interestTransfer:
-            return canPerformInterestTransfer()
         case .deposit,
              .interestWithdraw,
              .sign,
              .withdraw:
             return .just(false)
+        case .send:
+            return isFundedPublisher
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        case .buy:
+            return isPairToFiatAvailable
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        case .sell:
+            return canPerformSell
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        case .swap:
+            return canPerformSwap
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        case .interestTransfer:
+            return canPerformInterestTransfer
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         }
     }
 
     public func balancePair(
         fiatCurrency: FiatCurrency,
         at time: PriceTime
-    ) -> AnyPublisher<MoneyValuePair, Swift.Error> {
+    ) -> AnyPublisher<MoneyValuePair, Error> {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
@@ -290,40 +275,42 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     // MARK: - Private Functions
 
-    private func canPerformSwap() -> Single<Bool> {
-        balance
-            .map(\.isPositive)
-            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
-                guard isPositive else {
+    public var canPerformSwap: AnyPublisher<Bool, Never> {
+        isFundedPublisher
+            .flatMap { [eligibilityService] isFunded -> AnyPublisher<Bool, Never> in
+                guard isFunded else {
                     return .just(false)
                 }
-                return self.eligibilityService.isEligible
+                return eligibilityService.isEligiblePublisher
             }
-            .catch { [label, asset] error in
-                throw Error.loadingFailed(
-                    asset: asset.code,
-                    label: label,
-                    action: .swap,
-                    error: String(describing: error)
-                )
-            }
-            .recordErrors(on: errorRecorder)
-            .catchAndReturn(false)
+            .eraseToAnyPublisher()
     }
 
-    private func canPerformInterestTransfer() -> Single<Bool> {
-        let isEligible = disabledReason
-            .map(\.isEligible)
-            .asSingle()
-        let balanceAvailable = balance
-            .map(\.isPositive)
-        let isFeatureFlagEnabled = isInterestWithdrawAndDepositEnabled
-            .asSingle()
-        return Single
-            .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)
-            .map { $0 && $1 && $2 }
-            .catch { [label, asset] error in
-                throw Error.loadingFailed(
+    public var canPerformSell: AnyPublisher<Bool, Never> {
+        isPairToFiatAvailable
+            .flatMap { [isFundedPublisher] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
+                guard isPairToFiatAvailable else {
+                    return .just(false)
+                }
+                return isFundedPublisher
+                    .replaceError(with: false)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public var canPerformInterestTransfer: AnyPublisher<Bool, Never> {
+        Publishers
+            .Zip3(
+                disabledReason.map(\.isEligible),
+                isFundedPublisher.setFailureType(to: Error.self),
+                isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
+            )
+            .map { isEligible, isFunded, isInterestWithdrawAndDepositEnabled in
+                isEligible && isFunded && isInterestWithdrawAndDepositEnabled
+            }
+            .mapError { [label, asset] error in
+                CryptoTradingAccountError.loadingFailed(
                     asset: asset.code,
                     label: label,
                     action: .interestTransfer,
@@ -331,22 +318,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchAndReturn(false)
-    }
-
-    private func canPerformSend() -> Single<Bool> {
-        balance
-            .map(\.isPositive)
-            .catch { [label, asset] error in
-                throw Error.loadingFailed(
-                    asset: asset.code,
-                    label: label,
-                    action: .send,
-                    error: String(describing: error)
-                )
-            }
-            .recordErrors(on: errorRecorder)
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     public func invalidateAccountBalance() {

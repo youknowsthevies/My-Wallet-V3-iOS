@@ -44,8 +44,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let pendingTransactionRepository: PendingTransactionRepositoryAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
-    private var ethereumCryptoAccount: EthereumCryptoAccount {
-        sourceAccount as! EthereumCryptoAccount
+    private var evmCryptoAccount: EVMCryptoAccount {
+        sourceAccount as! EVMCryptoAccount
     }
 
     // MARK: - Init
@@ -87,7 +87,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceAccount is EthereumCryptoAccount)
+        precondition(sourceAccount is EVMCryptoAccount)
         precondition(sourceCryptoCurrency == .ethereum)
     }
 
@@ -245,7 +245,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
             fatalError("Not an ethereum value.")
         }
-        let ethereumCryptoAccount = ethereumCryptoAccount
+        let evmCryptoAccount = evmCryptoAccount
         let transactionBuildingService = transactionBuildingService
         let destinationAddresses = ethereumOnChainEngineCompanion
             .destinationAddresses(
@@ -268,7 +268,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             )
             .flatMap { fee, destinationAddresses, isContract, extraGasLimit
                 -> Single<EthereumTransactionCandidate> in
-                ethereumCryptoAccount.nonce
+                evmCryptoAccount.nonce
                     .flatMap { nonce in
                         transactionBuildingService.buildTransaction(
                             amount: pendingTransaction.amount,
@@ -282,7 +282,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                                 isContract: isContract
                             ),
                             nonce: nonce,
-                            chainID: ethereumCryptoAccount.network.chainID,
+                            chainID: evmCryptoAccount.network.chainID,
                             contractAddress: nil
                         ).publisher
                     }
@@ -328,8 +328,8 @@ extension EthereumOnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         pendingTransactionRepository
             .isWaitingOnTransaction(
-                network: ethereumCryptoAccount.network,
-                address: ethereumCryptoAccount.publicKey
+                network: evmCryptoAccount.network,
+                address: evmCryptoAccount.publicKey
             )
             .replaceError(with: true)
             .flatMap { isWaitingOnTransaction in
@@ -368,7 +368,7 @@ extension EthereumOnChainTransactionEngine {
 
     /// Returns true if the destination address is a contract.
     private var receiveAddressIsContract: Single<Bool> {
-        let network = ethereumCryptoAccount.network
+        let network = evmCryptoAccount.network
         return ethereumOnChainEngineCompanion
             .receiveAddress(transactionTarget: transactionTarget)
             .flatMap { [ethereumAccountService] receiveAddress in

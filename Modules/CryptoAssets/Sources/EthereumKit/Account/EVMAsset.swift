@@ -8,7 +8,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-final class EthereumAsset: CryptoAsset {
+final class EVMAsset: CryptoAsset {
 
     // MARK: - Properties
 
@@ -94,7 +94,7 @@ final class EthereumAsset: CryptoAsset {
     }
 }
 
-extension EthereumAsset: DomainResolutionRecordProviderAPI {
+extension EVMAsset: DomainResolutionRecordProviderAPI {
 
     var resolutionRecord: AnyPublisher<ResolutionRecord, Error> {
         defaultAccount
@@ -115,7 +115,7 @@ extension EthereumWalletAccountRepositoryAPI {
         defaultAccount
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account -> SingleAccount in
-                EthereumCryptoAccount(
+                EVMCryptoAccount(
                     network: network,
                     publicKey: account.publicKey,
                     label: account.label,

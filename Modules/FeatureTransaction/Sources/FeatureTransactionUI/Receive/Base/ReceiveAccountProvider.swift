@@ -48,7 +48,7 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
                 }
                 return (accounts + newAccounts)
             }
-            .asSingle()
+            .eraseError()
             .flatMapFilter(
                 action: .receive,
                 failSequence: false,

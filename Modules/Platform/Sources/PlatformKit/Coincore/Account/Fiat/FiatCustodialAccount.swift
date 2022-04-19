@@ -35,28 +35,6 @@ final class FiatCustodialAccount: FiatAccount {
             .asSingle()
     }
 
-    var actions: Single<AvailableActions> {
-        let hasActionableBalance = actionableBalance
-            .map(\.isPositive)
-            .catchAndReturn(false)
-        let canTransactWithBanks = paymentMethodService
-            .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
-            .catchAndReturn(false)
-
-        return Single.zip(canTransactWithBanks, hasActionableBalance)
-            .map { fiatSupported, hasPositiveBalance in
-                var availableActions: AvailableActions = [.viewActivity]
-                if fiatSupported {
-                    availableActions.insert(.deposit)
-                    if hasPositiveBalance {
-                        // TICKET: IOS-4988 - Implement canWithdrawFunds in FiatCustodialAccount
-                        availableActions.insert(.withdraw)
-                    }
-                }
-                return availableActions
-            }
-    }
-
     var canWithdrawFunds: Single<Bool> {
         // TODO: Fetch transaction history and filer
         // for transactions that are `withdrawals` and have a
@@ -118,7 +96,7 @@ final class FiatCustodialAccount: FiatAccount {
         self.priceService = priceService
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .viewActivity:
             return .just(true)
@@ -134,6 +112,8 @@ final class FiatCustodialAccount: FiatAccount {
         case .deposit:
             return paymentMethodService
                 .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
+                .asPublisher()
+                .eraseToAnyPublisher()
         case .withdraw:
             // TODO: Account for OB
             let hasActionableBalance = actionableBalance
@@ -144,6 +124,8 @@ final class FiatCustodialAccount: FiatAccount {
                 .map { canTransact, hasBalance in
                     canTransact && hasBalance
                 }
+                .asPublisher()
+                .eraseToAnyPublisher()
         }
     }
 

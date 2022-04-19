@@ -34,29 +34,26 @@ extension CryptoNonCustodialAccount {
     }
 
     public var isFunded: Single<Bool> {
-        balance
-            .map(\.isPositive)
+        balance.map(\.isPositive)
     }
 
-    public var isFundedPublisher: AnyPublisher<Bool, Never> {
-        balance
-            .map(\.isPositive)
-            .asPublisher()
-            .crashOnError()
+    public var isFundedPublisher: AnyPublisher<Bool, Error> {
+        balancePublisher.map(\.isPositive)
+            .eraseToAnyPublisher()
     }
 
     public func updateLabel(_ newLabel: String) -> AnyPublisher<Void, Never> {
         .just(())
     }
 
-    public func canPerformInterestTransfer() -> Single<Bool> {
-        let isEligible = disabledReason
-            .map(\.isEligible)
-            .asSingle()
-        return Single
-            .zip(isEligible, isFunded)
-            .map { $0 && $1 }
-            .catchAndReturn(false)
+    public var canPerformInterestTransfer: AnyPublisher<Bool, Never> {
+        disabledReason.map(\.isEligible)
+            .zip(isFundedPublisher)
+            .map { isEligible, isFunded in
+                isEligible && isFunded
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     /// The `OrderDirection` for which an `CryptoNonCustodialAccount` could have custodial events.

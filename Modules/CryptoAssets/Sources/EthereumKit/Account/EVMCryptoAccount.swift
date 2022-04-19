@@ -8,9 +8,9 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-final class EthereumCryptoAccount: CryptoNonCustodialAccount {
+final class EVMCryptoAccount: CryptoNonCustodialAccount {
 
-    private(set) lazy var identifier: AnyHashable = "EthereumCryptoAccount.\(asset.code).\(publicKey)"
+    private(set) lazy var identifier: AnyHashable = "EVMCryptoAccount.\(asset.code).\(publicKey)"
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
@@ -26,42 +26,31 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
+        balancePublisher.asSingle()
+    }
+
+    var balancePublisher: AnyPublisher<MoneyValue, Error> {
         ethereumBalanceRepository
             .balance(
                 network: network,
                 for: publicKey
             )
-            .asSingle()
-            .moneyValue
+            .map(\.moneyValue)
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var pendingBalance: Single<MoneyValue> {
         .just(.zero(currency: asset))
     }
 
-    var actions: Single<AvailableActions> {
-        Single.zip(
-            isFunded,
-            isInterestTransferAvailable.asSingle()
-        )
-        .map { [asset] isFunded, isInterestEnabled -> AvailableActions in
-            var base: AvailableActions = [.viewActivity, .receive, .send]
-            if asset.supports(product: .custodialWalletBalance) {
-                base.insert(.buy)
-            }
-            if isFunded {
-                base.insert(.swap)
-                base.insert(.sell)
-                if isInterestEnabled {
-                    base.insert(.interestTransfer)
-                }
-            }
-            return base
-        }
+    var receiveAddress: Single<ReceiveAddress> {
+        .just(ethereumReceiveAddress)
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .just(EthereumReceiveAddress(address: publicKey, label: label, onTxCompleted: onTxCompleted)!)
+    /// The `ReceiveAddress` for the given account
+    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
+        .just(ethereumReceiveAddress)
     }
 
     var activity: Single<[ActivityItemEvent]> {
@@ -79,15 +68,16 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
-        Single.zip(
-            canPerformInterestTransfer(),
-            isInterestWithdrawAndDepositEnabled
-                .asSingle()
-        )
-        .map { $0.0 && $0.1 }
-        .asPublisher()
-        .replaceError(with: false)
-        .eraseToAnyPublisher()
+        guard asset.supports(product: .interestBalance) else {
+            return .just(false)
+        }
+        return isInterestWithdrawAndDepositEnabled
+            .zip(canPerformInterestTransfer)
+            .map { isEnabled, canPerform in
+                isEnabled && canPerform
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
@@ -99,6 +89,14 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             }
             .replaceError(with: [])
             .asSingle()
+    }
+
+    private var ethereumReceiveAddress: EthereumReceiveAddress {
+        EthereumReceiveAddress(
+            address: publicKey,
+            label: label,
+            onTxCompleted: onTxCompleted
+        )!
     }
 
     private var swapActivity: Single<[SwapActivityItemEvent]> {
@@ -154,28 +152,30 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         self.nonceRepository = nonceRepository
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .receive,
              .send,
-             .viewActivity,
-             .buy:
+             .viewActivity:
             return .just(true)
-        case .interestTransfer:
-            return isInterestTransferAvailable
-                .asSingle()
-                .flatMap { [isFunded] isEnabled in
-                    isEnabled ? isFunded : .just(false)
-                }
         case .deposit,
              .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)
-        case .sell:
-            return isFunded
-        case .swap:
-            return isFunded
+        case .buy:
+            return .just(asset.supports(product: .custodialWalletBalance))
+        case .interestTransfer:
+            return isInterestTransferAvailable
+                .flatMap { [isFundedPublisher] isEnabled in
+                    isEnabled ? isFundedPublisher : .just(false)
+                }
+                .eraseToAnyPublisher()
+        case .sell, .swap:
+            guard asset.supports(product: .custodialWalletBalance) else {
+                return .just(false)
+            }
+            return isFundedPublisher
         }
     }
 

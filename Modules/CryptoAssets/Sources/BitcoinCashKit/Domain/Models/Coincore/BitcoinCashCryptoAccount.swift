@@ -36,24 +36,6 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         balance
     }
 
-    var actions: Single<AvailableActions> {
-        Single.zip(
-            isFunded,
-            isInterestTransferAvailable.asSingle()
-        )
-        .map { isFunded, isInterestTransferEnabled -> AvailableActions in
-            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-            if isFunded {
-                base.insert(.swap)
-                base.insert(.sell)
-                if isInterestTransferEnabled {
-                    base.insert(.interestTransfer)
-                }
-            }
-            return base
-        }
-    }
-
     var receiveAddress: Single<ReceiveAddress> {
         bridge
             .receiveAddress(forXPub: xPub.address)
@@ -86,15 +68,16 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
-        Single.zip(
-            canPerformInterestTransfer(),
-            isInterestWithdrawAndDepositEnabled
-                .asSingle()
-        )
-        .map { $0.0 && $0.1 }
-        .asPublisher()
-        .replaceError(with: false)
-        .eraseToAnyPublisher()
+        guard asset.supports(product: .interestBalance) else {
+            return .just(false)
+        }
+        return isInterestWithdrawAndDepositEnabled
+            .zip(canPerformInterestTransfer)
+            .map { isEnabled, canPerform in
+                isEnabled && canPerform
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
@@ -154,28 +137,26 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         self.featureFlagsService = featureFlagsService
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .receive,
              .send,
              .buy,
              .viewActivity:
             return .just(true)
-        case .interestTransfer:
-            return isInterestTransferAvailable
-                .asSingle()
-                .flatMap { [isFunded] isEnabled in
-                    isEnabled ? isFunded : .just(false)
-                }
         case .deposit,
              .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)
-        case .sell:
-            return isFunded
-        case .swap:
-            return isFunded
+        case .interestTransfer:
+            return isInterestTransferAvailable
+                .flatMap { [isFundedPublisher] isEnabled in
+                    isEnabled ? isFundedPublisher : .just(false)
+                }
+                .eraseToAnyPublisher()
+        case .sell, .swap:
+            return isFundedPublisher
         }
     }
 
