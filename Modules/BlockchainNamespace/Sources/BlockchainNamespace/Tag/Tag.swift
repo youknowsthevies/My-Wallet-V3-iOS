@@ -337,8 +337,13 @@ extension I where Self: L {
 }
 
 extension I_blockchain_db_collection where Self: L {
+
     public subscript(value: String) -> Tag.KeyTo<Self> {
         Tag.KeyTo(id: self, context: [id: value])
+    }
+
+    public subscript(event: Tag.Event) -> Tag.KeyTo<Self> {
+        Tag.KeyTo(id: self, context: [id: event.description])
     }
 }
 
@@ -346,6 +351,10 @@ extension Tag.KeyTo where A: I_blockchain_db_collection {
 
     public subscript(value: String) -> Tag.KeyTo<A> {
         Tag.KeyTo(id: id, context: context + [id.id: value])
+    }
+
+    public subscript(event: Tag.Event) -> Tag.KeyTo<A> {
+        Tag.KeyTo(id: id, context: context + [id.id: event.description])
     }
 }
 

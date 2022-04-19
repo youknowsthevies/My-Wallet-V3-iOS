@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NabuNetworkError
 import NetworkKit
 
 public protocol OrderDomainClientAPI {
 
     func postOrder(
         payload: PostOrderRequest
-    ) -> AnyPublisher<PostOrderResponse, NetworkError>
+    ) -> AnyPublisher<PostOrderResponse, NabuNetworkError>
 }
 
 public final class OrderDomainClient: OrderDomainClientAPI {
@@ -16,10 +17,9 @@ public final class OrderDomainClient: OrderDomainClientAPI {
 
     private enum Path {
         static let order = [
-            "explorer-gateway",
-            "resolution",
-            "ud",
-            "orders"
+            "users",
+            "domain-campaigns",
+            "claim"
         ]
     }
 
@@ -42,11 +42,11 @@ public final class OrderDomainClient: OrderDomainClientAPI {
 
     public func postOrder(
         payload: PostOrderRequest
-    ) -> AnyPublisher<PostOrderResponse, NetworkError> {
+    ) -> AnyPublisher<PostOrderResponse, NabuNetworkError> {
         let request = requestBuilder.post(
             path: Path.order,
             body: try? payload.encode(),
-            contentType: .json
+            authenticated: true
         )!
         return networkAdapter.perform(request: request)
     }

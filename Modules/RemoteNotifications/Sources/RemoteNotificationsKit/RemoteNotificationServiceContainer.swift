@@ -13,10 +13,6 @@ public protocol RemoteNotificationServiceContaining {
 
 final class RemoteNotificationServiceContainer: RemoteNotificationServiceContaining {
 
-    // MARK: - Types
-
-    typealias Service = RemoteNotificationServicing & RemoteNotificationTokenSending & RemoteNotificationDeviceTokenReceiving
-
     // MARK: - Properties
 
     /// Emitter of notification enums
@@ -45,11 +41,11 @@ final class RemoteNotificationServiceContainer: RemoteNotificationServiceContain
     }
 
     /// Aggregates common remote notification logic
-    private let service: Service
+    private let service: RemoteNotificationService
 
     // MARK: - Setup
 
-    init(service: Service = RemoteNotificationService()) {
+    init(service: RemoteNotificationService) {
         self.service = service
     }
 }

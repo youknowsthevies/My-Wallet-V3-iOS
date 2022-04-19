@@ -4,59 +4,52 @@ import BlockchainNamespace
 import Combine
 import FeatureActivityUI
 import FeatureDashboardUI
+import FeatureTransactionDomain
 import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
+import SwiftUI
 import UIComponentsKit
 import UIKit
 
-public protocol DeepLinkCoordinatorAPI {
-    func start()
-}
-
-public enum DeepLinkRoutingError: Error {
-    case nocrypto
-}
-
-final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
+public final class DeepLinkCoordinator: Session.Observer {
 
     private let app: AppProtocol
-    private let kycRouter: KYCRouting
-    private let topMostViewControllerProvider: TopMostViewControllerProviding
-    private let exchangeProvider: ExchangeProviding
-    private let transactionsRouter: TransactionsRouterAPI
     private let coincore: CoincoreAPI
+    private let exchangeProvider: ExchangeProviding
+    private let kycRouter: KYCRouting
+    private let payloadFactory: CryptoTargetPayloadFactoryAPI
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let transactionsRouter: TransactionsRouterAPI
 
     private var bag: Set<AnyCancellable> = []
 
     // We can't resolve those at initialization
     private let accountsRouter: () -> AccountsRouting
-    private let tabSwapper: () -> TabSwapping
 
     init(
         app: AppProtocol,
-        kycRouter: KYCRouting,
-        topMostViewControllerProvider: TopMostViewControllerProviding,
-        exchangeProvider: ExchangeProviding,
-        transactionsRouter: TransactionsRouterAPI,
         coincore: CoincoreAPI,
-        accountsRouter: @escaping () -> AccountsRouting,
-        tabSwapper: @escaping () -> TabSwapping
+        exchangeProvider: ExchangeProviding,
+        kycRouter: KYCRouting,
+        payloadFactory: CryptoTargetPayloadFactoryAPI,
+        topMostViewControllerProvider: TopMostViewControllerProviding,
+        transactionsRouter: TransactionsRouterAPI,
+        accountsRouter: @escaping () -> AccountsRouting
     ) {
-        self.app = app
-        self.kycRouter = kycRouter
-        self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.exchangeProvider = exchangeProvider
-        self.transactionsRouter = transactionsRouter
-        self.coincore = coincore
         self.accountsRouter = accountsRouter
-        self.tabSwapper = tabSwapper
+        self.app = app
+        self.coincore = coincore
+        self.exchangeProvider = exchangeProvider
+        self.kycRouter = kycRouter
+        self.payloadFactory = payloadFactory
+        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.transactionsRouter = transactionsRouter
     }
 
-    func start() {
-
-        let observers = [
+    var observers: [AnyCancellable] {
+        [
             activity,
             buy,
             asset,
@@ -64,10 +57,16 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
             send,
             kyc
         ]
+    }
 
+    public func start() {
         for observer in observers {
             observer.store(in: &bag)
         }
+    }
+
+    public func stop() {
+        bag = []
     }
 
     private lazy var activity = app.on(blockchain.app.deep_link.activity)
@@ -83,8 +82,15 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
         .sink(to: DeepLinkCoordinator.showTransactionSend(_:), on: self)
 
     private lazy var asset = app.on(blockchain.app.deep_link.asset)
+        .flatMap { [unowned self] event -> AnyPublisher<(Session.Event, Bool), Never> in
+            app.publisher(for: blockchain.app.configuration.redesign.coinview, as: Bool.self)
+                .compactMap(\.value)
+                .prefix(1)
+                .map { (event, $0) }
+                .eraseToAnyPublisher()
+        }
         .receive(on: DispatchQueue.main)
-        .sink(to: DeepLinkCoordinator.showAsset(_:), on: self)
+        .sink(to: DeepLinkCoordinator.showAsset, on: self)
 
     private lazy var qr = app.on(blockchain.app.deep_link.qr)
         .receive(on: DispatchQueue.main)
@@ -95,9 +101,7 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
         .sink(to: DeepLinkCoordinator.kyc(_:), on: self)
 
     func kyc(_ event: Session.Event) {
-        guard let tierParam = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: String.self),
-              let tierInt = Int(tierParam),
-              let tier = KYC.Tier(rawValue: tierInt),
+        guard let tier = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: KYC.Tier.self),
               let topViewController = topMostViewControllerProvider.topMostViewController
         else {
             return
@@ -116,27 +120,44 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
             .present(qrCodeScannerView)
     }
 
-    func showAsset(_ event: Session.Event) {
+    func showAsset(_ event: Session.Event, isRedesignEnabled: Bool) {
 
         let cryptoCurrency = (
-            try? event.context.decode(blockchain.app.deep_link.asset.code, as: CryptoCurrency.self)
+            try? event.context.decode(blockchain.app.deep_link.asset.code) as CryptoCurrency
         ) ?? .bitcoin
 
-        let builder = AssetDetailsBuilder(
-            accountsRouter: accountsRouter(),
-            currency: cryptoCurrency,
-            exchangeProviding: exchangeProvider
-        )
-        let controller = builder.build()
-        topMostViewControllerProvider.topMostViewController?.present(controller, animated: true)
+        if isRedesignEnabled {
+            let navigationController = UINavigationController()
+            navigationController.setViewControllers(
+                [
+                    UIHostingController(
+                        rootView: CoinAdapterView(
+                            cryptoCurrency: cryptoCurrency,
+                            app: app,
+                            dismiss: { [weak navigationController] in
+                                navigationController?.dismiss(animated: true)
+                            }
+                        )
+                    )
+                ],
+                animated: false
+            )
+            topMostViewControllerProvider.topMostViewController?.present(navigationController, animated: true)
+        } else {
+
+            let builder = AssetDetailsBuilder(
+                accountsRouter: accountsRouter(),
+                currency: cryptoCurrency,
+                exchangeProviding: exchangeProvider
+            )
+            let controller = builder.build()
+            topMostViewControllerProvider.topMostViewController?.present(controller, animated: true)
+        }
     }
 
     func showTransactionBuy(_ event: Session.Event) {
         do {
-            let code = try event.context.decode(blockchain.app.deep_link.buy.crypto.code, as: String.self)
-            guard let cryptoCurrency = CryptoCurrency(code: code) else {
-                throw DeepLinkRoutingError.nocrypto
-            }
+            let cryptoCurrency = try event.context.decode(blockchain.app.deep_link.buy.crypto.code) as CryptoCurrency
             coincore
                 .cryptoAccounts(for: cryptoCurrency)
                 .receive(on: DispatchQueue.main)
@@ -158,30 +179,86 @@ final class DeepLinkCoordinator: DeepLinkCoordinatorAPI {
     }
 
     func showTransactionSend(_ event: Session.Event) {
-        do {
-            let code = try event.context.decode(blockchain.app.deep_link.send.crypto.code, as: String.self)
-            guard let cryptoCurrency = CryptoCurrency(code: code) else {
-                throw DeepLinkRoutingError.nocrypto
-            }
-            coincore.cryptoAccounts(for: cryptoCurrency)
-                .receive(on: DispatchQueue.main)
-                .sink(to: DeepLinkCoordinator.showTransactionSend(with:), on: self)
-                .store(in: &bag)
-        } catch {
-            transactionsRouter.presentTransactionFlow(to: .send(nil, nil))
-                .subscribe()
-                .store(in: &bag)
+
+        // If there is no crypto currency, show landing send.
+        guard let cryptoCurrency = try? event.context.decode(
+            blockchain.app.deep_link.send.crypto.code,
+            as: CryptoCurrency.self
+        ) else {
+            showTransactionSendLanding()
+            return
         }
+
+        showTransactionSend(
+            cryptoCurrency: cryptoCurrency,
+            destination: try? event.context.decode(
+                blockchain.app.deep_link.send.destination,
+                as: String.self
+            )
+        )
     }
 
-    func showTransactionSend(with accounts: [CryptoAccount]) {
+    private func showTransactionSendLanding() {
         transactionsRouter
-            .presentTransactionFlow(to: .send(accounts.first, nil))
+            .presentTransactionFlow(to: .send(nil, nil))
             .subscribe()
             .store(in: &bag)
     }
 
+    private func showTransactionSend(
+        cryptoCurrency: CryptoCurrency,
+        destination: String?
+    ) {
+        let defaultAccount = coincore.cryptoAccounts(for: cryptoCurrency)
+            .map(\.first)
+            .eraseError()
+        let target = transactionTarget(
+            from: destination,
+            cryptoCurrency: cryptoCurrency
+        )
+        .optional()
+        .replaceError(with: nil)
+        .eraseError()
+
+        defaultAccount
+            .zip(target)
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] defaultAccount, target -> AnyPublisher<TransactionFlowResult, Never> in
+                guard let self = self else {
+                    return .just(.abandoned)
+                }
+                return self
+                    .transactionsRouter
+                    .presentTransactionFlow(to: .send(defaultAccount, target))
+            }
+            .subscribe()
+            .store(in: &bag)
+    }
+
+    /// Creates transaction target from given string.
+    private func transactionTarget(
+        from string: String?,
+        cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<CryptoReceiveAddress, Error> {
+        payloadFactory
+            .create(fromString: string, asset: cryptoCurrency)
+            .eraseError()
+            .flatMap { target -> AnyPublisher<CryptoReceiveAddress, Error> in
+                switch target {
+                case .bitpay(let address):
+                    return BitPayInvoiceTarget
+                        .make(from: address, asset: cryptoCurrency)
+                        .map { $0 as CryptoReceiveAddress }
+                        .eraseError()
+                        .eraseToAnyPublisher()
+                case .address(let cryptoReceiveAddress):
+                    return .just(cryptoReceiveAddress)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
     func showActivity(_ event: Session.Event) {
-        tabSwapper().switchToActivity()
+        app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
     }
 }

@@ -36,8 +36,8 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents"),
-        .package(path: "../Money")
+        .package(path: "../Money"),
+        .package(path: "../BlockchainComponentLibrary")
     ],
     targets: [
         .target(
@@ -66,11 +66,11 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCardIssuingDomain"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "UIComponents", package: "UIComponents")
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ]
         )
     ]

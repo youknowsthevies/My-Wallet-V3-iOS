@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -25,6 +26,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let disposeBag = DisposeBag()
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let presenter: PortfolioScreenPresenter
@@ -55,25 +57,20 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     private var userHasCompletedOnboarding: AnyPublisher<Bool, Never>
 
-    private let featureFlagService: FeatureFlagsServiceAPI
-    private let presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)?
-
     // MARK: - Setup
 
     public init(
+        app: AppProtocol = DIKit.resolve(),
         fiatBalanceCellProvider: FiatBalanceCellProviding,
         userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
         @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
-        presenter: PortfolioScreenPresenter,
-        featureFlagService: FeatureFlagsServiceAPI,
-        presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)? = nil
+        presenter: PortfolioScreenPresenter
     ) {
+        self.app = app
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.userHasCompletedOnboarding = userHasCompletedOnboarding
         self.onboardingChecklistViewBuilder = onboardingChecklistViewBuilder
         self.presenter = presenter
-        self.featureFlagService = featureFlagService
-        self.presentRedesignCoinView = presentRedesignCoinView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -169,28 +166,22 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
             }
         )
 
-        Observable.combineLatest(
-            tableView.rx.modelSelected(PortfolioCellType.self),
-            featureFlagService.isEnabled(.remote(.redesignCoinView)).asObservable()
-        )
-        .subscribe(onNext: { [presenter, presentRedesignCoinView] model, isRedesignCoinViewEnabled in
-            switch model {
-            case .announcement,
-                 .totalBalance,
-                 .withdrawalLock,
-                 .cryptoSkeleton,
-                 .fiatCustodialBalances,
-                 .emptyState:
-                break
-            case .crypto(let cryptoPresenter):
-                if isRedesignCoinViewEnabled {
-                    presentRedesignCoinView?(self, cryptoPresenter.cryptoCurrency)
-                } else {
-                    presenter.router.showDetailsScreen(for: cryptoPresenter.cryptoCurrency)
+        tableView.rx.modelSelected(PortfolioCellType.self)
+            .subscribe(onNext: { [app] model in
+                switch model {
+                case .announcement,
+                     .totalBalance,
+                     .withdrawalLock,
+                     .cryptoSkeleton,
+                     .fiatCustodialBalances,
+                     .emptyState:
+                    break
+                case .crypto(let cryptoPresenter):
+                    let currency = cryptoPresenter.cryptoCurrency
+                    app.post(event: blockchain.ux.asset[currency.code].select)
                 }
-            }
-        })
-        .disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
 
         presenter.sections
             .observe(on: MainScheduler.asyncInstance)

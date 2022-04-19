@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxSwift
+import Combine
 
 /// Protocol defining object that have knowledge of the `Wallet`payload version.
 public protocol WalletUpgradingAPI: AnyObject {
@@ -13,5 +13,5 @@ public protocol WalletUpgradingAPI: AnyObject {
     /// If the Wallet is already a HD Wallet (V3+).
     var didUpgradeToV4: Bool { get }
 
-    var requiresV4Upgrade: Single<Bool> { get }
+    var requiresV4Upgrade: AnyPublisher<Bool, Error> { get }
 }

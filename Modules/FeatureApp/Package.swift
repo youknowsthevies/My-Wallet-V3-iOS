@@ -47,7 +47,8 @@ let package = Package(
         .package(path: "../UIComponents"),
         .package(path: "../Money"),
         .package(path: "../FeatureWalletConnect"),
-        .package(path: "../BlockchainComponentLibrary")
+        .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../FeatureCardIssuing")
     ],
     targets: [
         .target(
@@ -83,7 +84,9 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "FeatureWalletConnectDomain", package: "FeatureWalletConnect"),
                 .product(name: "MoneyKit", package: "Money"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "FeatureCardIssuingUI", package: "FeatureCardIssuing"),
+                .product(name: "FeatureCardIssuingDomain", package: "FeatureCardIssuing")
             ]
         ),
         .target(

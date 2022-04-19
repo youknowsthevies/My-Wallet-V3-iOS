@@ -69,7 +69,6 @@ public struct PrimarySegmentedControl<Selection: Hashable>: View {
                 }
             }
         }
-        .fixedSize()
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
         .backgroundPreferenceValue(ButtonPreferenceKey.self) { value in

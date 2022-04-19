@@ -46,6 +46,10 @@ let package = Package(
                 .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
+                ),
+                .product(
+                    name: "BlockchainNamespace",
+                    package: "BlockchainNamespace"
                 )
             ]
         ),

@@ -8,7 +8,7 @@ import NetworkError
 public struct GraphViewState: Equatable {
 
     @BindableState var selected: Int?
-    var interval: Series = .now
+    var interval: Series = .day
 
     var result: Result<GraphData, NetworkError>?
     var isFetching: Bool = false

@@ -35,7 +35,7 @@ public struct GraphView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .onAppear {
-                            viewStore.send(.request(.week))
+                            viewStore.send(.onAppear(context))
                         }
                         .padding([.leading, .trailing])
                     Spacer()
@@ -148,7 +148,7 @@ public struct GraphView: View {
                 .disabled(viewStore.isFetching)
             }
         }
-        .frame(minHeight: 420.pt)
+        .frame(maxWidth: 100.vw, minHeight: 420.pt)
     }
 
     private func timestamp(_ index: GraphData.Index) -> Text {
@@ -192,7 +192,13 @@ public struct GraphView: View {
                     ? .semantic.primary
                     : end.price < start.price ? .semantic.error : .semantic.success,
                 changeTime: Self.relativeDateFormatter.localizedString(
-                    for: (selected.map { value.series[$0] } ?? value.series[0]).timestamp,
+                    for: (
+                        selected.flatMap { selection in
+                            value.series.indices.contains(selection)
+                                ? value.series[selection]
+                                : nil
+                        } ?? value.series[0]
+                    ).timestamp,
                     relativeTo: value.series.last!.timestamp
                 )
             )

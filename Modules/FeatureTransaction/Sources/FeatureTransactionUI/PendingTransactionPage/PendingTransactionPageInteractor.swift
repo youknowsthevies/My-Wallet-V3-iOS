@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -28,25 +27,16 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
     private let pendingTransationStateProvider: PendingTransactionStateProviding
     private let transactionModel: TransactionModel
-    private let analyticsHook: TransactionAnalyticsHook
-    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
-
-    private var cancellables = Set<AnyCancellable>()
-    private var disposeBag = DisposeBag()
 
     init(
         transactionModel: TransactionModel,
         presenter: PendingTransactionPagePresentable,
-        action: AssetAction,
-        analyticsHook: TransactionAnalyticsHook = resolve(),
-        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
+        action: AssetAction
     ) {
         pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(
             action: action
         )
         self.transactionModel = transactionModel
-        self.analyticsHook = analyticsHook
-        self.sendEmailNotificationService = sendEmailNotificationService
         super.init(presenter: presenter)
     }
 
@@ -61,25 +51,6 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             .connect(state: state)
             .drive(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
-
-        let executionStatus = transactionModel.state.map(\.executionStatus)
-
-        executionStatus
-            .asObservable()
-            .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .subscribe(onNext: { [weak self] executionStatus, transactionState in
-                guard let self = self else { return }
-                switch executionStatus {
-                case .inProgress, .notStarted, .pending:
-                    break
-                case .error:
-                    self.analyticsHook.onTransactionFailure(with: transactionState)
-                case .completed:
-                    self.analyticsHook.onTransactionSuccess(with: transactionState)
-                    self.triggerSendEmailNotification(transactionState)
-                }
-            })
-            .disposed(by: disposeBag)
     }
 
     // MARK: - Private methods
@@ -91,29 +62,6 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         case .complete:
             listener?.pendingTransactionPageDidTapComplete()
         case .none:
-            break
-        }
-    }
-
-    private func triggerSendEmailNotification(_ transactionState: TransactionState) {
-        switch transactionState.action {
-        case .interestTransfer,
-             .send:
-            if transactionState.source is NonCustodialAccount {
-                sendEmailNotificationService
-                    .postSendEmailNotificationTrigger(transactionState.amount)
-                    .subscribe()
-                    .store(in: &cancellables)
-            }
-        case .deposit,
-             .receive,
-             .interestWithdraw,
-             .buy,
-             .sell,
-             .swap,
-             .withdraw,
-             .viewActivity,
-             .sign:
             break
         }
     }

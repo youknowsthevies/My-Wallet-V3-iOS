@@ -75,6 +75,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         LocalizationConstants.scanQRCode
     }
 
+    private var hasRunCameraAccessChecks: Bool = false
+
     private let requestCameraAccess: RequestCameraAccess
     private let checkCameraAccess: () -> AVAuthorizationStatus
     private let types: [QRCodeScannerType]
@@ -234,19 +236,11 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     }
 
     func viewDidAppear() {
-        switch checkCameraAccess() {
-        case .notDetermined:
-            showInformationSheetTapped?(false)
-        case .authorized,
-             .denied,
-             .restricted:
-            allowCameraAccess()
-        @unknown default:
-            showCameraAccessFailure?(
-                LocalizationConstants.Errors.error,
-                LocalizationConstants.Errors.genericError
-            )
+        guard !hasRunCameraAccessChecks else {
+            return
         }
+        runCameraChecks()
+        hasRunCameraAccessChecks = true
     }
 
     func viewWillDisappear() {
@@ -307,6 +301,22 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             return
         }
         urlOpener.open(url)
+    }
+
+    private func runCameraChecks() {
+        switch checkCameraAccess() {
+        case .notDetermined:
+            showInformationSheetTapped?(false)
+        case .authorized,
+             .denied,
+             .restricted:
+            allowCameraAccess()
+        @unknown default:
+            showCameraAccessFailure?(
+                LocalizationConstants.Errors.error,
+                LocalizationConstants.Errors.genericError
+            )
+        }
     }
 
     private func showAllowAccessSheetIfNeeded() {

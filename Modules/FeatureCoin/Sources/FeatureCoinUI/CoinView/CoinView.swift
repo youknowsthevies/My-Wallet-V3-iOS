@@ -13,10 +13,9 @@ import ToolKit
 public struct CoinView: View {
 
     let store: Store<CoinViewState, CoinViewAction>
-
     @BlockchainApp var app
+
     @Environment(\.context) var context
-    @Environment(\.presentationMode) private var presentationMode
 
     public init(store: Store<CoinViewState, CoinViewAction>) {
         self.store = store
@@ -38,10 +37,21 @@ public struct CoinView: View {
                     actions(viewStore)
                 }
             }
+            .primaryNavigation(
+                leading: {
+                    navigationLeadingView(
+                        url: viewStore.asset.logoUrl,
+                        image: viewStore.asset.logoImage
+                    )
+                },
+                title: viewStore.asset.name,
+                trailing: {
+                    dismiss(viewStore)
+                }
+            )
             .padding(.bottom, 20.pt)
             .ignoresSafeArea(.container, edges: .bottom)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear { app.post(event: blockchain.ux.asset[].ref(to: context)) }
             .onAppear { viewStore.send(.onAppear) }
             .onDisappear { viewStore.send(.onDisappear) }
             .bottomSheet(
@@ -64,7 +74,6 @@ public struct CoinView: View {
                 content: { account in
                     AccountExplainer(
                         account: account,
-                        interestRate: viewStore.interestRate,
                         onClose: {
                             withAnimation(.spring()) {
                                 viewStore.send(.set(\.$explainer, nil))
@@ -78,23 +87,31 @@ public struct CoinView: View {
     }
 
     @ViewBuilder func header(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
-        Group {
-            GraphView(
-                store: store.scope(state: \.graph, action: CoinViewAction.graph)
+        GraphView(
+            store: store.scope(state: \.graph, action: CoinViewAction.graph)
+        )
+    }
+
+    @ViewBuilder func totalBalance() -> some View {
+        WithViewStore(store) { viewStore in
+            TotalBalanceView(
+                asset: viewStore.asset,
+                accounts: viewStore.accounts,
+                trailing: {
+                    WithViewStore(store) { viewStore in
+                        if let isFavorite = viewStore.isFavorite {
+                            IconButton(icon: isFavorite ? .favorite : .favoriteEmpty) {
+                                viewStore.send(isFavorite ? .removeFromWatchlist : .addToWatchlist)
+                            }
+                        } else {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .frame(width: 28, height: 28)
+                        }
+                    }
+                }
             )
         }
-        .primaryNavigation(
-            leading: {
-                navigationLeadingView(
-                    url: viewStore.asset.logoUrl,
-                    image: viewStore.asset.logoImage
-                )
-            },
-            title: viewStore.asset.name,
-            trailing: {
-                dismiss()
-            }
-        )
     }
 
     @ViewBuilder func accounts(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
@@ -108,29 +125,26 @@ public struct CoinView: View {
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)
             } else if viewStore.asset.isTradable {
-                TotalBalanceView(
-                    asset: viewStore.asset,
-                    accounts: viewStore.accounts
-                )
-                AccountListView(
-                    accounts: viewStore.accounts,
-                    assetColor: viewStore.asset.brandColor,
-                    interestRate: viewStore.interestRate,
-                    kycStatus: viewStore.kycStatus
-                )
+                totalBalance()
+                if let status = viewStore.kycStatus {
+                    AccountListView(
+                        accounts: viewStore.accounts,
+                        asset: viewStore.asset,
+                        assetColor: viewStore.asset.brandColor,
+                        interestRate: viewStore.interestRate,
+                        kycStatus: status
+                    )
+                }
             } else {
-                TotalBalanceView(
-                    asset: viewStore.asset,
-                    accounts: viewStore.accounts
-                )
+                totalBalance()
                 AlertCard(
                     title: Localization.Label.Title.notTradable.interpolating(
                         viewStore.asset.name,
-                        viewStore.asset.code
+                        viewStore.asset.displayCode
                     ),
                     message: Localization.Label.Title.notTradableMessage.interpolating(
                         viewStore.asset.name,
-                        viewStore.asset.code
+                        viewStore.asset.displayCode
                     )
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)
@@ -195,9 +209,9 @@ public struct CoinView: View {
         }
     }
 
-    @ViewBuilder func dismiss() -> some View {
+    @ViewBuilder func dismiss(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         IconButton(icon: .closev2.circle()) {
-            presentationMode.wrappedValue.dismiss()
+            viewStore.send(.dismiss)
         }
         .frame(width: 24.pt, height: 24.pt)
     }
@@ -210,7 +224,7 @@ public struct CoinView: View {
             }
             HStack {
                 ForEach(actions.indexed(), id: \.element.event) { index, action in
-                    if index == actions.startIndex {
+                    if index == actions.index(before: actions.endIndex) {
                         PrimaryButton(
                             title: action.title,
                             leadingView: { action.icon },

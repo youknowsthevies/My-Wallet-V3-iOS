@@ -149,6 +149,7 @@ extension Icon {
     public static let `explore` = Icon(name: "Explore")
     public static let `faceID` = Icon(name: "Face ID")
     public static let `favorite` = Icon(name: "Favorite")
+    public static let `favoriteEmpty` = Icon(name: "Favorite Empty")
     public static let `filter` = Icon(name: "Filter")
     public static let `fingerprint` = Icon(name: "Fingerprint")
     public static let `flag` = Icon(name: "Flag")

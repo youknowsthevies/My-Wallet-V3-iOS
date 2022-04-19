@@ -350,6 +350,11 @@ final class TransactionAnalyticsHook {
     }
 
     func onTransactionFailure(with state: TransactionState) {
+
+        if let error = state.errorState.analytics(for: state.action) {
+            analyticsRecorder.record(event: error)
+        }
+
         let target = state.destination?.label
         switch state.action {
         case .swap:

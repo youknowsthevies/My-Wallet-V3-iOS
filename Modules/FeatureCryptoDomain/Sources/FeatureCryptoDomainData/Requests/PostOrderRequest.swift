@@ -4,17 +4,16 @@ import FeatureCryptoDomainDomain
 import Foundation
 
 public struct PostOrderRequest: Encodable {
-    var domain: String?
-    var records: [Record]?
-    var isFree: Bool?
-    // TODO: rename walletId to nabuUserId when backend changes are ready
-    var walletId: String?
-    var owner: String?
+    let domainCampaign: String
+    let domain: String
+    let owner: String
+    let records: [Record]
+    let isFree: Bool
 }
 
 struct Record: Encodable {
-    var currency: String?
-    var address: String?
+    let currency: String
+    let address: String?
 }
 
 extension Record {

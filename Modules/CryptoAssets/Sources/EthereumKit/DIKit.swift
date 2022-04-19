@@ -34,9 +34,26 @@ extension DependencyContainer {
 
         // MARK: CoinCore
 
-        factory(tag: CryptoCurrency.ethereum) { EthereumAsset(network: .ethereum) as CryptoAsset }
+        factory(tag: CryptoCurrency.ethereum) {
+            EthereumAsset(
+                network: .ethereum,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve()
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
 
         // MARK: Other
+
+        factory {
+            EthereumOnChainEngineCompanion(
+                hotWalletAddressService: DIKit.resolve()
+            ) as EthereumOnChainEngineCompanionAPI
+        }
 
         single { EthereumNonceRepository() as EthereumNonceRepositoryAPI }
 

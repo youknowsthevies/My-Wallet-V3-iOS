@@ -195,8 +195,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                     .buildTransaction(
                         amount: pendingTransaction.amount,
                         to: address!,
-                        gasPrice: BigUInt(pendingTransaction.gasPrice.amount),
-                        gasLimit: BigUInt(pendingTransaction.gasLimit),
+                        gasPrice: pendingTransaction.gasPrice,
+                        gasLimit: pendingTransaction.gasLimit,
                         nonce: nonce,
                         chainID: chainID,
                         transferType: .transfer(data: Data(hex: walletConnectTarget.transaction.data))
@@ -316,13 +316,13 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         )
     }
 
-    private func gasLimit() -> Single<BigInt> {
-        func transactionGas() -> Single<BigInt>? {
+    private func gasLimit() -> Single<BigUInt> {
+        func transactionGas() -> Single<BigUInt>? {
             walletConnectTarget.transaction.gas
-                .flatMap { BigInt($0.withoutHex, radix: 16) }
+                .flatMap { BigUInt($0.withoutHex, radix: 16) }
                 .flatMap { Single.just($0) }
         }
-        func estimateGas() -> Single<BigInt> {
+        func estimateGas() -> Single<BigUInt> {
             gasEstimateService
                 .estimateGas(
                     network: ethereumCryptoAccount.network,
@@ -333,29 +333,33 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         return transactionGas() ?? estimateGas()
     }
 
-    private func gasPrice() -> Single<CryptoValue> {
-        func transactionGasPrice() -> Single<CryptoValue>? {
+    private func gasPrice() -> Single<BigUInt> {
+        func transactionGasPrice() -> Single<BigUInt>? {
             walletConnectTarget.transaction.gasPrice
-                .flatMap { BigInt($0.withoutHex, radix: 16) }
-                .flatMap { CryptoValue(amount: $0, currency: .ethereum) }
+                .flatMap { BigUInt($0.withoutHex, radix: 16) }
                 .flatMap { Single.just($0) }
         }
-        func regularGasPrice() -> Single<CryptoValue> {
-            feeCache.valueSingle.map(\.regular)
+        func regularGasPrice() -> Single<BigUInt> {
+            feeCache.valueSingle.map { fee in
+                fee.gasPrice(feeLevel: .regular)
+            }
         }
         return transactionGasPrice() ?? regularGasPrice()
     }
 
     private func calculateFee(
         with feeLevel: FeeLevel
-    ) -> Single<(gasLimit: BigInt, gasPrice: CryptoValue, fee: CryptoValue)> {
+    ) -> Single<(gasLimit: BigUInt, gasPrice: BigUInt, fee: CryptoValue)> {
         Single
             .zip(gasLimit(), gasPrice())
             .map { gasLimit, gasPrice in
                 (
                     gasLimit,
                     gasPrice,
-                    CryptoValue(amount: gasLimit * gasPrice.amount, currency: .ethereum)
+                    CryptoValue(
+                        amount: BigInt(gasLimit * gasPrice),
+                        currency: .ethereum
+                    )
                 )
             }
     }
@@ -473,13 +477,13 @@ extension EthereumSendTransactionTarget {
 
 extension PendingTransaction {
 
-    fileprivate var gasPrice: CryptoValue! {
-        get { engineState[.gasPrice] as? CryptoValue }
+    fileprivate var gasPrice: BigUInt! {
+        get { engineState[.gasPrice] as? BigUInt }
         set { engineState[.gasPrice] = newValue }
     }
 
-    fileprivate var gasLimit: BigInt! {
-        get { engineState[.gasLimit] as? BigInt }
+    fileprivate var gasLimit: BigUInt! {
+        get { engineState[.gasLimit] as? BigUInt }
         set { engineState[.gasLimit] = newValue }
     }
 }

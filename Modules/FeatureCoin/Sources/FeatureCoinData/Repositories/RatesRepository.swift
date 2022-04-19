@@ -8,7 +8,7 @@ import NetworkError
 
 public struct RatesRepository: RatesRepositoryAPI {
 
-    let client: RatesClientAPI
+    private let client: RatesClientAPI
 
     public init(_ client: RatesClientAPI) {
         self.client = client

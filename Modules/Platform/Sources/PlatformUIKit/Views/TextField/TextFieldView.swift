@@ -102,7 +102,7 @@ public class TextFieldView: UIView {
         textFieldBackgroundView.layout(edges: .trailing, to: accessoryView)
         textFieldBackgroundView.layout(edges: .centerY, to: accessoryView)
         accessoryView.layout(dimension: .height, to: 30, priority: .init(rawValue: 251))
-        accessoryView.layout(dimension: .width, to: 0.5, priority: .defaultLow)
+        accessoryView.layout(dimension: .width, to: 0.5, priority: .defaultHigh)
 
         textField.textAlignment = .left
         titleLabel.font = .main(.medium, 12)

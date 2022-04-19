@@ -126,7 +126,10 @@ final class CredentialsStore: CredentialsStoreAPI {
                         data: guid
                     ),
                     pbkdf2Iterations: PBKDF2Iterations.guid
-                ),
+                )
+                .asObservable()
+                .take(1)
+                .asSingle(),
                 cryptoService.encrypt(
                     pair: KeyDataPair(
                         key: pinDecryptionKey,
@@ -134,6 +137,9 @@ final class CredentialsStore: CredentialsStoreAPI {
                     ),
                     pbkdf2Iterations: PBKDF2Iterations.sharedKey
                 )
+                .asObservable()
+                .take(1)
+                .asSingle()
             )
             .do(
                 onSuccess: { [weak self] payload in
@@ -177,7 +183,10 @@ final class CredentialsStore: CredentialsStoreAPI {
                         data: encryptedGuid
                     ),
                     pbkdf2Iterations: PBKDF2Iterations.guid
-                ),
+                )
+                .asObservable()
+                .take(1)
+                .asSingle(),
                 cryptoService.decrypt(
                     pair: KeyDataPair(
                         key: pinDecryptionKey,
@@ -185,6 +194,9 @@ final class CredentialsStore: CredentialsStoreAPI {
                     ),
                     pbkdf2Iterations: PBKDF2Iterations.sharedKey
                 )
+                .asObservable()
+                .take(1)
+                .asSingle()
             )
             .map { payload in
                 let (guid, sharedKey) = payload

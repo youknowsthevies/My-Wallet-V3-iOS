@@ -92,7 +92,7 @@ struct AlertButtonStyle: ButtonStyle {
             if isLoading {
                 ProgressView()
                     .progressViewStyle(
-                        ButtonProgressViewStyle(
+                        IndeterminateProgressViewStyle(
                             railColor: colorCombination.progressViewRail,
                             trackColor: colorCombination.progressViewTrack
                         )

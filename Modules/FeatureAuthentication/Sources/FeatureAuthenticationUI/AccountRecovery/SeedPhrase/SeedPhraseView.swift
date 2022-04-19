@@ -144,6 +144,23 @@ public struct SeedPhraseView: View {
                 ),
                 label: EmptyView.init
             )
+
+            PrimaryNavigationLink(
+                destination: IfLetStore(
+                    store.scope(
+                        state: \.secondPasswordNoticeState,
+                        action: SeedPhraseAction.secondPasswordNotice
+                    ),
+                    then: { store in
+                        SecondPasswordNoticeView(store: store)
+                    }
+                ),
+                isActive: viewStore.binding(
+                    get: \.isSecondPasswordNoticeVisible,
+                    send: SeedPhraseAction.setSecondPasswordNoticeVisible(_:)
+                ),
+                label: EmptyView.init
+            )
         }
         .sheet(
             isPresented: viewStore.binding(

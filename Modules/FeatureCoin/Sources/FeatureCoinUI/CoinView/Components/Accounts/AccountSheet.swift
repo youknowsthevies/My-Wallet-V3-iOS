@@ -56,7 +56,7 @@ struct AccountSheet: View {
                 if actions.contains(action) {
                     PrimaryRow(
                         title: action.title,
-                        subtitle: action.description.interpolating(account.cryptoCurrency.code),
+                        subtitle: action.description.interpolating(account.cryptoCurrency.displayCode),
                         leading: {
                             action.icon.circle()
                                 .accentColor(account.color)
@@ -71,7 +71,7 @@ struct AccountSheet: View {
                 } else {
                     LockedAccountRow(
                         title: action.title,
-                        subtitle: action.description.interpolating(account.cryptoCurrency.code),
+                        subtitle: action.description.interpolating(account.cryptoCurrency.displayCode),
                         icon: action.icon.circle()
                     )
                     .accessibility(identifier: action.id(\.id))
@@ -85,7 +85,7 @@ struct AccountSheet: View {
 extension Account.Snapshot {
 
     var color: Color {
-        cryptoCurrency.color ?? .black
+        cryptoCurrency.color
     }
 
     var allowedActions: [Account.Action] {
@@ -113,8 +113,10 @@ extension Account.Snapshot {
 
 extension CryptoCurrency {
 
-    var color: Color? {
+    var color: Color {
         assetModel.spotColor.map(Color.init(hex:))
+            ?? (CustodialCoinCode(rawValue: code)?.spotColor).map(Color.init(hex:))
+            ?? Color(hex: ERC20Code.spotColor(code: code))
     }
 }
 

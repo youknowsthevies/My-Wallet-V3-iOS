@@ -14,7 +14,7 @@ final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
 
     private let expectedTokenResult: RemoteNotificationTokenFetchResult
 
-    private(set) var topics = Set<RemoteNotification.Topic>()
+    private(set) var topics = Set<String>()
 
     private let shouldSubscribeToTopicsSuccessfully: Bool
 
@@ -30,7 +30,7 @@ final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
 
     func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?) {
         if shouldSubscribeToTopicsSuccessfully {
-            topics.insert(RemoteNotification.Topic(rawValue: topic)!)
+            topics.insert(topic)
             completion!(nil)
         } else {
             completion!(FakeError.subscriptionFailure)

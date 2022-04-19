@@ -1,8 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import FeatureAuthenticationDomain
-import PlatformKit
-import RxSwift
+
+enum PushNotificationError: Error {
+    case registrationFailure
+    case missingCredentials
+    case emptyCredentials
+    case couldNotBuildRequestBody
+}
 
 /// Entry Point for any remote notifications network requests and responses
 protocol RemoteNotificationNetworkServicing: AnyObject {
@@ -15,5 +21,5 @@ protocol RemoteNotificationNetworkServicing: AnyObject {
         with deviceToken: String,
         sharedKeyProvider: SharedKeyRepositoryAPI,
         guidProvider: GuidRepositoryAPI
-    ) -> Single<Void>
+    ) -> AnyPublisher<Void, PushNotificationError>
 }

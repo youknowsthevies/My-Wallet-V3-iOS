@@ -14,8 +14,12 @@ extension OrderDomainClient {
         requestBuilder: RequestBuilder(
             config: Network.Config(
                 scheme: "https",
-                host: "api.staging.blockchain.info"
-            )
+                host: "api.staging.blockchain.info",
+                components: ["nabu-gateway"]
+            ),
+            headers: [
+                "Authorization": "Bearer Token"
+            ]
         )
     )
 
@@ -34,8 +38,12 @@ extension OrderDomainClient {
                 requestBuilder: RequestBuilder(
                     config: Network.Config(
                         scheme: "https",
-                        host: "api.staging.blockchain.info"
-                    )
+                        host: "api.staging.blockchain.info",
+                        components: ["nabu-gateway"]
+                    ),
+                    headers: [
+                        "Authorization": "Bearer Token"
+                    ]
                 )
             ),
             communicator

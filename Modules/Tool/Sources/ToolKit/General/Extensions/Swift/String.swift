@@ -47,3 +47,39 @@ extension NewTypeString {
 extension NewTypeString {
     public static func < (lhs: Self, rhs: Self) -> Bool { lhs.value < rhs.value }
 }
+
+extension String {
+
+    @inlinable public func snakeCase() -> String {
+        guard !isEmpty else { return self }
+
+        var words: [Range<String.Index>] = []
+        var start = startIndex
+        var search = index(after: start)..<endIndex
+
+        while let upperCaseRange = rangeOfCharacter(from: CharacterSet.uppercaseLetters, range: search) {
+            let untilUpperCase = start..<upperCaseRange.lowerBound
+            words.append(untilUpperCase)
+
+            search = upperCaseRange.lowerBound..<search.upperBound
+            guard let lowerCaseRange = rangeOfCharacter(from: CharacterSet.lowercaseLetters, range: search) else {
+                start = search.lowerBound
+                break
+            }
+
+            let nextCharacterAfterCapital = index(after: upperCaseRange.lowerBound)
+            if lowerCaseRange.lowerBound == nextCharacterAfterCapital {
+                start = upperCaseRange.lowerBound
+            } else {
+                let beforeLowerIndex = index(before: lowerCaseRange.lowerBound)
+                words.append(upperCaseRange.lowerBound..<beforeLowerIndex)
+                start = beforeLowerIndex
+            }
+            search = lowerCaseRange.upperBound..<search.upperBound
+        }
+        words.append(start..<search.upperBound)
+        return words
+            .map { self[$0].lowercased() }
+            .joined(separator: "_")
+    }
+}

@@ -5,13 +5,14 @@ import XCTest
 
 final class StellarReceiveAddressTests: XCTestCase {
 
-    func testStellarReceiveAddressAbsoluteURLIsCorrect() throws {
+    func testQRCodeMetadataConformance() throws {
         let address = StellarReceiveAddress(
             address: StellarTestData.address,
             label: StellarTestData.label,
             memo: StellarTestData.memo
         )
-        XCTAssertEqual(address.metadata.absoluteString, StellarTestData.urlStringWithMemo)
+        XCTAssertEqual(address.qrCodeMetadata.content, StellarTestData.urlStringWithMemo)
+        XCTAssertEqual(address.qrCodeMetadata.title, StellarTestData.address)
     }
 
     func testSEP7URIWithMemoTypeText() throws {

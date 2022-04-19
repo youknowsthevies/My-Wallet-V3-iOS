@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import Localization
 import MoneyKit
@@ -20,27 +21,24 @@ public final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let disposeBag = DisposeBag()
     private let presenter: PricesScreenPresenter
     private let tableView = UITableView()
     private let searchBar = UISearchBar()
     public typealias CustomSelectionActionClosure = (CryptoCurrency) -> Void
     private let customSelectionActionClosure: CustomSelectionActionClosure?
-    private let featureFlagService: FeatureFlagsServiceAPI
-    private let presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)?
 
     // MARK: - Setup
 
     public init(
+        app: AppProtocol = DIKit.resolve(),
         presenter: PricesScreenPresenter,
-        featureFlagService: FeatureFlagsServiceAPI,
-        customSelectionActionClosure: CustomSelectionActionClosure? = nil,
-        presentRedesignCoinView: ((UIViewController, CryptoCurrency) -> Void)? = nil
+        customSelectionActionClosure: CustomSelectionActionClosure? = nil
     ) {
+        self.app = app
         self.presenter = presenter
-        self.featureFlagService = featureFlagService
         self.customSelectionActionClosure = customSelectionActionClosure
-        self.presentRedesignCoinView = presentRedesignCoinView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -152,26 +150,20 @@ public final class PricesViewController: BaseScreenViewController {
             }
         )
 
-        Observable.combineLatest(
-            tableView.rx.modelSelected(PricesCellType.self),
-            featureFlagService.isEnabled(.remote(.redesignCoinView)).asObservable()
-        )
-        .subscribe(onNext: { [weak self] model, isRedesignCoinViewEnabled in
-            switch model {
-            case .emptyState:
-                break
-            case .currency(let cryptoCurrency, _):
-                if let customSelectionActionClosure = self?.customSelectionActionClosure {
-                    customSelectionActionClosure(cryptoCurrency)
-                } else if isRedesignCoinViewEnabled {
-                    guard let self = self else { return }
-                    self.presentRedesignCoinView?(self, cryptoCurrency)
-                } else {
-                    self?.presenter.router.showDetailsScreen(for: cryptoCurrency)
+        tableView.rx.modelSelected(PricesCellType.self)
+            .subscribe(onNext: { [weak self] model in
+                switch model {
+                case .emptyState:
+                    break
+                case .currency(let currency, _):
+                    if let customSelectionActionClosure = self?.customSelectionActionClosure {
+                        customSelectionActionClosure(currency)
+                    } else {
+                        self?.app.post(event: blockchain.ux.asset[currency.code].select)
+                    }
                 }
-            }
-        })
-        .disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
 
         presenter.sections
             .observe(on: MainScheduler.asyncInstance)

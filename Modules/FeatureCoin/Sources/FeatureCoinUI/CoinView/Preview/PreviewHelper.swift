@@ -14,6 +14,7 @@ extension AssetDetails {
     static func preview(
         name: String = "Bitcoin",
         code: String = "BTC",
+        displayCode: String = "BTC",
         brandColor: Color = .orange,
         // swiftlint:disable:next line_length
         about: String = "The world’s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoins are divisible into smaller units known as satoshis — each satoshi is worth 0.00000001 bitcoin.",
@@ -21,17 +22,21 @@ extension AssetDetails {
         logoUrl: URL? = URL(string: "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
         logoImage: Image? = nil,
         isTradable: Bool = true,
-        onWatchlist: Bool = true
+        supportsCustodial: Bool = true,
+        supportsInterest: Bool = true
     ) -> AssetDetails {
         AssetDetails(
             name: name,
             code: code,
+            displayCode: displayCode,
             brandColor: brandColor,
             about: about,
             website: website,
             logoUrl: logoUrl,
             logoImage: logoImage,
-            isTradable: isTradable
+            isTradable: isTradable,
+            supportsCustodial: supportsCustodial,
+            supportsInterest: supportsInterest
         )
     }
 }
@@ -122,6 +127,24 @@ enum PreviewHelper {
             code: String
         ) -> AnyPublisher<Double, NetworkError> {
             .just(5 / 3)
+        }
+    }
+
+    class WatchlistRepository: WatchlistRepositoryAPI {
+        func addToWatchlist(
+            _ assetCode: String
+        ) -> AnyPublisher<Void, NetworkError> {
+            .just(())
+        }
+
+        func removeFromWatchlist(
+            _ assetCode: String
+        ) -> AnyPublisher<Void, NetworkError> {
+            .just(())
+        }
+
+        func getWatchlist() -> AnyPublisher<Set<String>, NetworkError> {
+            .just(Set())
         }
     }
 }

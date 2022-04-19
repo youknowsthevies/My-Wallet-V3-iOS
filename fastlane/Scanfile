@@ -1,4 +1,4 @@
-clean(true)
+clean(false)
 skip_build(true)
 project "Blockchain.xcodeproj"
 configuration("Debug Staging")

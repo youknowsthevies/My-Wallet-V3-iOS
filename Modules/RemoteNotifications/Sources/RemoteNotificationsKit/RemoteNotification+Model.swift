@@ -7,25 +7,11 @@ public enum RemoteNotification {
     /// A data bag for push notification format
     public enum NotificationType {
 
-        // MARK: - Cases
-
-        /// Received bitcoin transaction
-        case bitcoinTransactionReceived
-
-        // TODO: Delete this once the type logic is handled (parsing & generalizing)
         case general
-
-        // MARK: - Setup
-
-        // TODO: Parse data into readable format. Consider creating a parser to do it
-        init(using info: [String: Any]) {
-            self = .general
-        }
     }
 
-    // TODO: Add topics here
     public enum Topic: String {
-        case todo = "todo_topics"
+        case remoteConfig = "PUSH_RC"
     }
 
     /// Remote notification token representation

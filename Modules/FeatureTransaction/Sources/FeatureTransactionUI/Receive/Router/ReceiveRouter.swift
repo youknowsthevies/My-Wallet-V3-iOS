@@ -67,10 +67,10 @@ final class ReceiveRouter: ReceiveRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    func shareDetails(for metadata: CryptoAssetQRMetadata, currencyType: CurrencyType) {
+    func shareDetails(for metadata: QRCodeMetadata, currencyType: CurrencyType) {
         let displayCode = currencyType.displayCode
         let prefix = String(format: LocalizedString.Text.pleaseSendXTo, displayCode)
-        let message = "\(prefix) \(metadata.absoluteString)"
+        let message = "\(prefix) \(metadata.content)"
         let subject = String(format: LocalizedString.Text.xPaymentRequest, displayCode)
         let activityViewController = UIActivityViewController(activityItems: [message], applicationActivities: nil)
         activityViewController.excludedActivityTypes = [.assignToContact, .addToReadingList, .postToFacebook]

@@ -43,10 +43,12 @@ public enum SeedPhraseAction: Equatable {
     case setResetAccountBottomSheetVisible(Bool)
     case setLostFundsWarningScreenVisible(Bool)
     case setImportWalletScreenVisible(Bool)
+    case setSecondPasswordNoticeVisible(Bool)
     case resetPassword(ResetPasswordAction)
     case resetAccountWarning(ResetAccountWarningAction)
     case lostFundsWarning(LostFundsWarningAction)
     case importWallet(ImportWalletAction)
+    case secondPasswordNotice(SecondPasswordNotice.Action)
     case restoreWallet(WalletRecovery)
     case restored(Result<EmptyValue, WalletRecoveryError>)
     case imported(Result<EmptyValue, WalletRecoveryError>)
@@ -74,10 +76,12 @@ public struct SeedPhraseState: Equatable {
     var isResetAccountBottomSheetVisible: Bool
     var isLostFundsWarningScreenVisible: Bool
     var isImportWalletScreenVisible: Bool
+    var isSecondPasswordNoticeVisible: Bool
     var resetPasswordState: ResetPasswordState?
     var resetAccountWarningState: ResetAccountWarningState?
     var lostFundsWarningState: LostFundsWarningState?
     var importWalletState: ImportWalletState?
+    var secondPasswordNoticeState: SecondPasswordNotice.State?
     var failureAlert: AlertState<SeedPhraseAction>?
     var isLoading: Bool
 
@@ -95,6 +99,7 @@ public struct SeedPhraseState: Equatable {
         isResetAccountBottomSheetVisible = false
         isLostFundsWarningScreenVisible = false
         isImportWalletScreenVisible = false
+        isSecondPasswordNoticeVisible = false
         failureAlert = nil
         isLoading = false
     }
@@ -135,6 +140,17 @@ struct SeedPhraseEnvironment {
 }
 
 let seedPhraseReducer = Reducer.combine(
+    secondPasswordNoticeReducer
+        .optional()
+        .pullback(
+            state: \SeedPhraseState.secondPasswordNoticeState,
+            action: /SeedPhraseAction.secondPasswordNotice,
+            environment: {
+                SecondPasswordNotice.Environment(
+                    externalAppOpener: $0.externalAppOpener
+                )
+            }
+        ),
     importWalletReducer
         .optional()
         .pullback(
@@ -239,6 +255,13 @@ let seedPhraseReducer = Reducer.combine(
             state.isImportWalletScreenVisible = isVisible
             if isVisible {
                 state.importWalletState = .init(mnemonic: state.seedPhrase)
+            }
+            return .none
+
+        case .setSecondPasswordNoticeVisible(let isVisible):
+            state.isSecondPasswordNoticeVisible = isVisible
+            if isVisible {
+                state.secondPasswordNoticeState = .init()
             }
             return .none
 
@@ -347,6 +370,9 @@ let seedPhraseReducer = Reducer.combine(
             return Effect(value: .triggerAuthenticate)
 
         case .importWallet:
+            return .none
+
+        case .secondPasswordNotice:
             return .none
 
         case .restoreWallet(.metadataRecovery(let mnemonic)):

@@ -141,6 +141,7 @@ func defineDependencies() {
         DependencyContainer.featureCardPaymentDomain
         DependencyContainer.featureCardIssuingDomain
         DependencyContainer.featureCardIssuingData
+        DependencyContainer.featureCardIssuingUI
         DependencyContainer.featureCardPaymentUI
         DependencyContainer.featureCardPaymentData
         #if INTERNAL_BUILD

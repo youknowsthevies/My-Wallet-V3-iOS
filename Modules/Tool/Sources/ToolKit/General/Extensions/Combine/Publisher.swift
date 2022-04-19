@@ -6,6 +6,16 @@ import Foundation
 
 extension Publisher where Failure == Never {
 
+    public func sink<Root, T, U>(
+        to handler: @escaping (Root) -> (T, U) -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject, Output == (T, U) {
+        sink { [weak root] value in
+            guard let root = root else { return }
+            handler(root)(value.0, value.1)
+        }
+    }
+
     public func sink<Root>(
         to handler: @escaping (Root) -> (Output) -> Void,
         on root: Root

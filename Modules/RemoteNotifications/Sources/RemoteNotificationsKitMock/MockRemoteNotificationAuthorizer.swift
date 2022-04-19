@@ -2,18 +2,23 @@
 
 import Combine
 @testable import RemoteNotificationsKit
-import RxSwift
 import UserNotifications
 
 final class MockRemoteNotificationAuthorizer {
     private let expectedAuthorizationStatus: UNAuthorizationStatus
-    private let authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>
+    private let authorizationRequestExpectedStatus: Result<
+        Void,
+        RemoteNotificationAuthorizerError
+    >
 
-    var requestAuthorizationIfNeededPublisherCalled = false
+    var requestAuthorizationIfNeededCalled = false
 
     init(
         expectedAuthorizationStatus: UNAuthorizationStatus,
-        authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>
+        authorizationRequestExpectedStatus: Result<
+            Void,
+            RemoteNotificationAuthorizerError
+        >
     ) {
         self.expectedAuthorizationStatus = expectedAuthorizationStatus
         self.authorizationRequestExpectedStatus = authorizationRequestExpectedStatus
@@ -23,7 +28,7 @@ final class MockRemoteNotificationAuthorizer {
 // MARK: - RemoteNotificationAuthorizationStatusProviding
 
 extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusProviding {
-    var status: Single<UNAuthorizationStatus> {
+    var status: AnyPublisher<UNAuthorizationStatus, Never> {
         .just(expectedAuthorizationStatus)
     }
 }
@@ -31,11 +36,14 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatu
 // MARK: - RemoteNotificationRegistering
 
 extension MockRemoteNotificationAuthorizer: RemoteNotificationRegistering {
-    func registerForRemoteNotificationsIfAuthorized() -> Single<Void> {
+    func registerForRemoteNotificationsIfAuthorized() -> AnyPublisher<
+        Void,
+        RemoteNotificationAuthorizerError
+    > {
         if expectedAuthorizationStatus == .authorized {
             return .just(())
         } else {
-            return .error(RemoteNotificationAuthorizer.ServiceError.unauthorizedStatus)
+            return .failure(.unauthorizedStatus)
         }
     }
 }
@@ -43,15 +51,13 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationRegistering {
 // MARK: - RemoteNotificationAuthorizing
 
 extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting {
-    func requestAuthorizationIfNeeded() -> Single<Void> {
-        authorizationRequestExpectedStatus.single
-    }
-
-    func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error> {
-        requestAuthorizationIfNeededPublisherCalled = true
-        return authorizationRequestExpectedStatus.single
-            .asCompletable()
-            .asPublisher()
+    func requestAuthorizationIfNeeded() -> AnyPublisher<
+        Void,
+        RemoteNotificationAuthorizerError
+    > {
+        requestAuthorizationIfNeededCalled = true
+        return authorizationRequestExpectedStatus
+            .publisher
             .eraseToAnyPublisher()
     }
 }

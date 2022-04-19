@@ -5,18 +5,16 @@ import MoneyKit
 import PlatformKit
 
 /// A URI scheme that conforms to BIP21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
-public struct BIP21URI<Token: BitcoinChainToken>: CryptoAssetQRMetadata {
+public struct BIP21URI<Token: BitcoinChainToken> {
 
     public let address: String
-    public let includeScheme: Bool
-
-    /// Conformance to `CryptoAssetQRMetadata`, this is not the BIP21URI.
+    public let amount: CryptoValue?
     public var absoluteString: String {
         let prefix = includeScheme ? "\(Token.coin.uriScheme):" : ""
         return "\(prefix)\(address)"
     }
 
-    public let amount: CryptoValue?
+    private let includeScheme: Bool
 
     init(address: String, amount: String?, includeScheme: Bool) {
         self.address = address

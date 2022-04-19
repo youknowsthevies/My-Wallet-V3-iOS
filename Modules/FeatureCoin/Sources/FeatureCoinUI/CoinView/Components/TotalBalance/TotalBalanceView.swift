@@ -13,11 +13,11 @@ struct TotalBalanceView<Trailing: View>: View {
 
     let asset: AssetDetails
     let accounts: [Account.Snapshot]
-    let trailing: () -> Trailing
+    @ViewBuilder let trailing: () -> Trailing
 
     var body: some View {
         BalanceSectionHeader(
-            header: Localization.totalBalance.interpolating(asset.code),
+            header: Localization.totalBalance.interpolating(asset.displayCode),
             title: accounts.fiatBalance?.displayString ?? 6.of(".").joined(),
             subtitle: accounts.cryptoBalance?.displayString ?? 10.of(".").joined(),
             trailing: trailing
@@ -28,23 +28,14 @@ struct TotalBalanceView<Trailing: View>: View {
     }
 }
 
-extension TotalBalanceView where Trailing == EmptyView {
-
-    init(
-        asset: AssetDetails,
-        accounts: [Account.Snapshot]
-    ) {
-        self.init(asset: asset, accounts: accounts, trailing: EmptyView.init)
-    }
-}
-
 // swiftlint:disable type_name
 struct TotalBalanceView_PreviewProvider: PreviewProvider {
 
     static var previews: some View {
         TotalBalanceView(
             asset: .preview(),
-            accounts: []
+            accounts: [],
+            trailing: { EmptyView() }
         )
     }
 }

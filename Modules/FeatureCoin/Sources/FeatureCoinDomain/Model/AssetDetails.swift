@@ -7,30 +7,39 @@ public struct AssetDetails: Equatable {
 
     public let name: String
     public let code: String
+    public let displayCode: String
     public var brandColor: Color
     public let about: String?
     public let website: URL?
     public let logoUrl: URL?
     public let logoImage: Image?
     public var isTradable: Bool
+    public var supportsCustodial: Bool
+    public var supportsInterest: Bool
 
     public init(
         name: String,
         code: String,
+        displayCode: String,
         brandColor: Color,
         about: String?,
         website: URL?,
         logoUrl: URL?,
         logoImage: Image?,
-        isTradable: Bool
+        isTradable: Bool,
+        supportsCustodial: Bool,
+        supportsInterest: Bool
     ) {
         self.name = name
         self.code = code
+        self.displayCode = displayCode
         self.brandColor = brandColor
         self.about = about
         self.website = website
         self.logoUrl = logoUrl
         self.logoImage = logoImage
         self.isTradable = isTradable
+        self.supportsCustodial = supportsCustodial
+        self.supportsInterest = supportsInterest
     }
 }

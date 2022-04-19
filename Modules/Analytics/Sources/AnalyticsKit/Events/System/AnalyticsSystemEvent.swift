@@ -19,6 +19,23 @@ enum SystemEvent: AnalyticsEvent {
     case pushNotificationTapped(ApplicationPushNotificationParamaters)
 }
 
+public enum ClientEvent: AnalyticsEvent {
+
+    public var type: AnalyticsEventType { .nabu }
+
+    case clientError(
+        error: String,
+        networkEndpoint: String? = nil,
+        networkErrorCode: String? = nil,
+        networkErrorDescription: String? = nil,
+        networkErrorId: String? = nil,
+        networkErrorType: String? = nil,
+        source: String,
+        title: String,
+        action: String? = nil
+    )
+}
+
 extension SystemEvent {
 
     var type: AnalyticsEventType { .nabu }

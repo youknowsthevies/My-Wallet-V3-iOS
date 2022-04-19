@@ -13,7 +13,10 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 
     var defaultWallet: Single<BitcoinCashWalletAccount> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap(weak: self) { (self, _) -> Single<BitcoinCashWalletAccount> in
                 self.fetchDefaultWallet()
             }
@@ -21,7 +24,10 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 
     var wallets: Single<[BitcoinCashWalletAccount]> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap(weak: self) { (self, _) -> Single<[BitcoinCashWalletAccount]> in
                 self.fetchAllWallets()
             }
@@ -42,9 +48,28 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 
     func receiveAddress(forXPub xpub: String) -> Single<String> {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitialized
+            .asObservable()
+            .take(1)
+            .asSingle()
             .map(weak: self) { (self, _) -> String in
                 let result = self.wallet.getBitcoinCashReceiveAddress(forXPub: xpub)
+                switch result {
+                case .success(let address):
+                    return address
+                case .failure(let error):
+                    fatalError(String(describing: error))
+                }
+            }
+            .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
+    }
+
+    func firstReceiveAddress(forXPub xpub: String) -> Single<String> {
+        reactiveWallet
+            .waitUntilInitialized
+            .asSingle()
+            .map(weak: self) { (self, _) -> String in
+                let result = self.wallet.getBitcoinCashFirstReceiveAddress(forXPub: xpub)
                 switch result {
                 case .success(let address):
                     return address
@@ -79,13 +104,17 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
         }
         return reactiveWallet
             .waitUntilInitialized
+            .asObservable()
             .flatMap { setNote.asObservable() }
             .asCompletable()
     }
 
     func update(accountIndex: Int, label: String) -> Completable {
         reactiveWallet
-            .waitUntilInitializedSingle
+            .waitUntilInitializedFirst
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
                 self.wallet.updateAccountLabel(.bitcoinCash, index: accountIndex, label: label)
             }

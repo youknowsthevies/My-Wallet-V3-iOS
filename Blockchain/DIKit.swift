@@ -9,6 +9,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
@@ -31,6 +32,8 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseMessaging
+import FirebaseRemoteConfig
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -145,7 +148,7 @@ extension DependencyContainer {
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(
-                markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+                markBitpayUrl: { BitpayService.shared.content = $0 },
                 isBitPayURL: BitPayLinkRouter.isBitPayURL,
                 isPinSet: isPinSet
             )
@@ -356,7 +359,12 @@ extension DependencyContainer {
 
         // MARK: - AppFeatureConfigurator
 
-        single { AppFeatureConfigurator() }
+        single {
+            AppFeatureConfigurator(
+                cacheSuite: DIKit.resolve(),
+                remoteConfig: RemoteConfig.remoteConfig()
+            )
+        }
 
         factory { () -> FeatureConfiguratorAPI in
             let configurator: AppFeatureConfigurator = DIKit.resolve()
@@ -400,6 +408,11 @@ extension DependencyContainer {
         factory { () -> SettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
+        }
+
+        factory { () -> SettingsServiceCombineAPI in
+            let settings: SettingsServiceAPI = DIKit.resolve()
+            return settings as SettingsServiceCombineAPI
         }
 
         factory { () -> FiatCurrencyServiceAPI in
@@ -467,7 +480,14 @@ extension DependencyContainer {
             return relay as RemoteNotificationBackgroundReceiving
         }
 
-        single { RemoteNotificationRelay() }
+        single {
+            RemoteNotificationRelay(
+                cacheSuite: DIKit.resolve(),
+                userNotificationCenter: UNUserNotificationCenter.current(),
+                messagingService: Messaging.messaging(),
+                secureChannelNotificationRelay: DIKit.resolve()
+            )
+        }
 
         // MARK: Helpers
 
@@ -683,6 +703,15 @@ extension DependencyContainer {
             RatesRepository(DIKit.resolve())
         }
 
+        single { () -> WatchlistRepositoryAPI in
+            WatchlistRepository(
+                WatchlistClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                )
+            )
+        }
+
         // MARK: Feature Product
 
         factory { () -> FeatureProductsDomain.ProductsServiceAPI in
@@ -707,10 +736,17 @@ extension DependencyContainer {
         }
 
         factory { () -> OrderDomainRepositoryAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve()
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve()
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OrderDomainClient(networkAdapter: adapter, requestBuilder: builder)
             return OrderDomainRepository(apiClient: client)
+        }
+
+        factory { () -> ClaimEligibilityRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = ClaimEligibilityClient(networkAdapter: adapter, requestBuilder: builder)
+            return ClaimEligibilityRepository(apiClient: client)
         }
 
         // MARK: Pulse Network Debugging

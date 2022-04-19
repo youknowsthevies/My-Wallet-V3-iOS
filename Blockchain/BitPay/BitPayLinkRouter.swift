@@ -1,20 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
-import RxSwift
 
+/// Handles Bitcoin and Bitcoin Cash BitPay deep links.
 class BitPayLinkRouter: DeepLinkRouting {
 
     // MARK: - Private Properties
 
+    @LazyInject private var coincore: CoincoreAPI
+    @LazyInject private var tab: TabSwapping
+
+    private var cancellables: Set<AnyCancellable> = []
     private let service: BitpayServiceProtocol
-
-    @LazyInject var tab: TabSwapping
-    @LazyInject var coincore: CoincoreAPI
-
-    private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
@@ -31,33 +32,49 @@ class BitPayLinkRouter: DeepLinkRouting {
     // MARK: - DeepLinkRouting
 
     func routeIfNeeded() -> Bool {
-        guard let bitpayURL: URL = service.contentRelay.value else { return false }
+        guard let bitpayURL = service.content else {
+            return false
+        }
+
+        service.content = nil
 
         let data = bitpayURL.absoluteString
-        let asset = coincore[.bitcoin]
-        let transactionPair = Single.zip(
-            BitPayInvoiceTarget.make(from: data, asset: .bitcoin),
-            asset.defaultAccount.asSingle()
-        )
-        BitPayInvoiceTarget
-            .isBitPay(data)
-            .andThen(BitPayInvoiceTarget.isBitcoin(data))
-            .andThen(transactionPair)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] target, defaultAccount in
+
+        guard BitPayInvoiceTarget.isBitPay(data) else {
+            return true
+        }
+
+        if BitPayInvoiceTarget.isBitcoin(data) {
+            handle(data: data, cryptoCurrency: .bitcoin)
+        } else if BitPayInvoiceTarget.isBitcoinCash(data) {
+            handle(data: data, cryptoCurrency: .bitcoinCash)
+        }
+
+        return true
+    }
+
+    private func handle(data: String, cryptoCurrency: CryptoCurrency) {
+        let asset = coincore[cryptoCurrency]
+        let target = BitPayInvoiceTarget
+            .make(from: data, asset: cryptoCurrency)
+            .eraseError()
+        let account = asset
+            .defaultAccount
+            .eraseError()
+
+        account.zip(target)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] account, target in
                 UIView.animate(
                     withDuration: 0.3,
                     animations: { [weak self] in
                         self?.tab.switchToSend()
                     },
                     completion: { [weak self] _ in
-                        self?.tab.send(from: defaultAccount, target: target)
+                        self?.tab.send(from: account, target: target)
                     }
                 )
-            })
-            .disposed(by: disposeBag)
-
-        service.contentRelay.accept(nil)
-        return true
+            }
+            .store(in: &cancellables)
     }
 }

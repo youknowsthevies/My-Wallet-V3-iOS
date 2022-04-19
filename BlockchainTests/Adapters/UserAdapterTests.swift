@@ -2,6 +2,7 @@
 
 @testable import Blockchain
 import Combine
+@testable import FeatureAppDomain
 import FeatureCardPaymentDomain
 import FeatureKYCDomainMock
 import FeatureProductsDomain

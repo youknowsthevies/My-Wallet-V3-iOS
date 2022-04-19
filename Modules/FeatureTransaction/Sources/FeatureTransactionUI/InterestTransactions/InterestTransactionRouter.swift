@@ -91,9 +91,6 @@ final class InterestTransactionRouter: RIBs.Router<InterestTransactionInteractab
         guard let topViewController = topMostViewControllerProviding.topMostViewController else {
             fatalError("Expected a ViewController")
         }
-        guard topViewController is UINavigationController == false else {
-            fatalError("Cannot present a `UINavigationController` over another.")
-        }
         guard viewController is UINavigationController == false else {
             topViewController.present(viewController, animated: true, completion: nil)
             return
@@ -102,7 +99,10 @@ final class InterestTransactionRouter: RIBs.Router<InterestTransactionInteractab
         topViewController.present(navController, animated: true, completion: nil)
     }
 
-    private func dismissTopMost(weak object: InterestTransactionRouter, _ selector: @escaping (InterestTransactionRouter) -> Void) {
+    private func dismissTopMost(
+        weak object: InterestTransactionRouter,
+        _ selector: @escaping (InterestTransactionRouter) -> Void
+    ) {
         guard let viewController = topMostViewControllerProviding.topMostViewController else {
             selector(object)
             return

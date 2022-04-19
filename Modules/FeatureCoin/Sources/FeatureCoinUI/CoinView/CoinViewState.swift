@@ -16,6 +16,7 @@ public struct CoinViewState: Equatable {
     public var accounts: [Account.Snapshot]
     public var interestRate: Double?
     public var error: CoinViewError?
+    public var isFavorite: Bool?
 
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
@@ -23,21 +24,24 @@ public struct CoinViewState: Equatable {
     public var graph = GraphViewState()
 
     var actions: [ButtonAction] {
-        guard asset.isTradable else {
+        if !asset.isTradable || accounts.isEmpty {
             return accounts.hasPositiveBalanceForSelling ? [.send] : []
         }
-        let (buy, sell, receive) = (
+        let (buy, sell, send, receive) = (
             action(.buy, whenAccountCan: .buy),
             action(.sell, whenAccountCan: .sell),
+            action(.send, whenAccountCan: .send),
             action(.receive, whenAccountCan: .receive)
         )
-        guard accounts.hasPositiveBalanceForSelling else {
-            return [receive, buy].compacted().array
+        if kycStatus?.canSellCrypto == false || !accounts.hasPositiveBalanceForSelling {
+            return [receive, buy].compactMap { $0 }
         }
-        guard kycStatus?.canSellCrypto == true else {
-            return [receive, buy].compacted().array
+        let actions = [sell, buy].compactMap { $0 }
+        if actions.isEmpty {
+            return [send, receive].compactMap { $0 }
+        } else {
+            return actions
         }
-        return [sell, buy].compacted().array
     }
 
     private func action(_ action: ButtonAction, whenAccountCan accountAction: Account.Action) -> ButtonAction? {

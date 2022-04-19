@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
@@ -152,6 +153,7 @@ struct DomainCheckView_Previews: PreviewProvider {
                 reducer: domainCheckoutReducer,
                 environment: DomainCheckoutEnvironment(
                     mainQueue: .main,
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     orderDomainRepository: OrderDomainRepository(
                         apiClient: OrderDomainClient.mock
                     ),

@@ -79,7 +79,7 @@ enum RootViewRoute: NavigationRoute {
                 .identity(blockchain.ux.user.account)
                 .ignoresSafeArea(.container, edges: .bottom)
         case .coinView(let currency):
-            CoinAdapterView(cryptoCurrency: currency)
+            CoinAdapterView(cryptoCurrency: currency, dismiss: { ViewStore(store.stateless).send(.dismiss()) })
                 .identity(blockchain.ux.asset)
         }
     }
