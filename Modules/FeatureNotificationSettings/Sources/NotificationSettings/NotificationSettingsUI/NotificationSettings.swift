@@ -15,7 +15,7 @@ import FeatureNotificationSettingsDetailsUI
 
 public struct NotificationSettingsState: Hashable, NavigationState {
     public var route: RouteIntent<NotificationsSettingsRoute>?
-    var notificationDetailsState: NotificationSettingsDetailsState?
+    public var notificationDetailsState: NotificationSettingsDetailsState?
 
     public var notificationPrefrences: [NotificationPreference]?
     
@@ -29,8 +29,9 @@ public struct NotificationSettingsState: Hashable, NavigationState {
 public enum NotificationSettingsAction: Equatable, NavigationAction {
     case onAppear
     case onDisappear
+    case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationSettingsDetailsAction)
-    case fetchedSettings(Result<[NotificationPreference], NetworkError>)
+    case onFetchedSettings(Result<[NotificationPreference], NetworkError>)
     case route(RouteIntent<NotificationsSettingsRoute>?)
 }
 
@@ -41,7 +42,6 @@ public enum NotificationsSettingsRoute: NavigationRoute {
         switch self {
             
         case .showDetails(let preference):
-//          store.state.notificationDetailsState?.notificationPreference = preference
            return IfLetStore(
                 store.scope(
                     state: \.notificationDetailsState,
@@ -88,7 +88,7 @@ public let featureNotificationReducer = Reducer<
                 .fetchSettings()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map(NotificationSettingsAction.fetchedSettings)
+                .map(NotificationSettingsAction.onFetchedSettings)
           
         
     case .route(let routeItent):
@@ -102,7 +102,11 @@ public let featureNotificationReducer = Reducer<
         print(action)
         return .none
         
-    case .fetchedSettings(let result):
+    case .onPreferenceSelected(let preference):
+        state.notificationDetailsState = NotificationSettingsDetailsState(notificationPreference: preference)
+        return .none
+        
+    case .onFetchedSettings(let result):
         state.notificationPrefrences = try? result.get()
         return .none
     }
@@ -113,7 +117,7 @@ public struct FeatureNotificationSettingsEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let notificationSettingsRepository: NotificationSettingsRepositoryAPI
     
-    internal init(mainQueue: AnySchedulerOf<DispatchQueue>,
+    public init(mainQueue: AnySchedulerOf<DispatchQueue>,
                   notificationSettingsRepository: NotificationSettingsRepositoryAPI) {
         self.mainQueue = mainQueue
         self.notificationSettingsRepository = notificationSettingsRepository
