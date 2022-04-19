@@ -41,6 +41,7 @@ public enum NotificationsSettingsRoute: NavigationRoute {
         switch self {
             
         case .showDetails(let preference):
+//          store.state.notificationDetailsState?.notificationPreference = preference
            return IfLetStore(
                 store.scope(
                     state: \.notificationDetailsState,
@@ -60,7 +61,7 @@ public enum NotificationsSettingsRoute: NavigationRoute {
 }
 
 
-let mainAppReducer = Reducer<NotificationSettingsState, NotificationSettingsAction, FeatureNotificationSettingsEnvironment>.combine(
+let featureReducer = Reducer<NotificationSettingsState, NotificationSettingsAction, FeatureNotificationSettingsEnvironment>.combine(
     notificationSettingsDetailsReducer
         .optional()
         .pullback(
@@ -100,7 +101,7 @@ public let featureNotificationReducer = Reducer<
     case .notificationDetailsChanged(let action):
         print(action)
         return .none
-    
+        
     case .fetchedSettings(let result):
         state.notificationPrefrences = try? result.get()
         return .none
