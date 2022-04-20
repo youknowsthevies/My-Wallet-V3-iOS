@@ -6,6 +6,8 @@
 	<string>$(INTERCOM_API_KEY)</string>
 	<key>intercomAppId</key>
 	<string>$(INTERCOM_APP_ID)</string>
+	<key>embraceAppId</key>
+	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
 	<key>CHECKOUT_ENV</key>

@@ -13,6 +13,7 @@ import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
+import ObservabilityDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -49,6 +50,7 @@ public struct AppEnvironment {
     var crashlyticsRecorder: Recording
     var openBanking: OpenBanking
     var cardService: CardServiceAPI
+    var observabilityService: ObservabilityServiceAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -122,7 +124,8 @@ public struct AppEnvironment {
         appStoreOpener: AppStoreOpening,
         secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String,
-        externalAppOpener: ExternalAppOpener
+        externalAppOpener: ExternalAppOpener,
+        observabilityService: ObservabilityServiceAPI
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
@@ -171,5 +174,6 @@ public struct AppEnvironment {
         self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
         self.externalAppOpener = externalAppOpener
+        self.observabilityService = observabilityService
     }
 }

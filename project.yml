@@ -228,6 +228,8 @@ packages:
     path: Modules/FeatureKYC
   FeatureNFT:
     path: Modules/FeatureNFT
+  Observability:
+    path: Modules/Observability
   FeatureOpenBanking:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
@@ -411,6 +413,7 @@ targets:
         product: NetworkErrors
       - package: Money
         product: MoneyKit
+      - package: Observability
       - package: Platform
         product: PlatformKit
       - package: Platform
