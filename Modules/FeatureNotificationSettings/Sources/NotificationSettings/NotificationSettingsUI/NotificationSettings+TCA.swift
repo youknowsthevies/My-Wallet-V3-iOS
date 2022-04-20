@@ -14,21 +14,34 @@ import NetworkError
 import FeatureNotificationSettingsDetailsUI
 
 public struct NotificationSettingsState: Hashable, NavigationState {
+    public enum ViewState: Hashable {
+        case idle
+        case loading
+        case data(notificationDetailsState: [NotificationPreference])
+        case error
+    }
+    
     public var route: RouteIntent<NotificationsSettingsRoute>?
+    public var viewState: ViewState
     public var notificationDetailsState: NotificationSettingsDetailsState?
-
+    //    public var isLoading: Bool
+    
     public var notificationPrefrences: [NotificationPreference]?
     
     public init(route: RouteIntent<NotificationsSettingsRoute>? = nil,
-                notificationPreferences: [NotificationPreference]? = nil) {
+                viewState: ViewState,
+                isLoading: Bool = true) {
         self.route = route
-        self.notificationPrefrences = notificationPreferences
+        self.viewState = viewState
+        //        self.notificationPrefrences = notificationPreferences
+        //        self.isLoading = isLoading
     }
 }
 
 public enum NotificationSettingsAction: Equatable, NavigationAction {
     case onAppear
     case onDisappear
+    case onReloadTap
     case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationSettingsDetailsAction)
     case onFetchedSettings(Result<[NotificationPreference], NetworkError>)
@@ -42,7 +55,7 @@ public enum NotificationsSettingsRoute: NavigationRoute {
         switch self {
             
         case .showDetails(let preference):
-           return IfLetStore(
+            return IfLetStore(
                 store.scope(
                     state: \.notificationDetailsState,
                     action: NotificationSettingsAction.notificationDetailsChanged
@@ -51,11 +64,11 @@ public enum NotificationsSettingsRoute: NavigationRoute {
                     NotificationSettingsDetailsView(store: store)
                 }
             )
-
-//            return NotificationSettingsDetailsView(store: .init(initialState:
-//                    .init(notificationPreference: preference),
-//                                                                reducer: notificationSettingsDetailsReducer,
-//                                                                environment: NotificationSettingsDetailsEnvironment()))
+            
+            //            return NotificationSettingsDetailsView(store: .init(initialState:
+            //                    .init(notificationPreference: preference),
+            //                                                                reducer: notificationSettingsDetailsReducer,
+            //                                                                environment: NotificationSettingsDetailsEnvironment()))
         }
     }
 }
@@ -82,14 +95,14 @@ public let featureNotificationReducer = Reducer<
     
     switch action {
     case .onAppear:
-        return
-            environment
-                .notificationSettingsRepository
-                .fetchSettings()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map(NotificationSettingsAction.onFetchedSettings)
-          
+        state.viewState = .loading
+        return environment
+            .notificationSettingsRepository
+            .fetchSettings()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map(NotificationSettingsAction.onFetchedSettings)
+        
         
     case .route(let routeItent):
         state.route = routeItent
@@ -97,7 +110,16 @@ public let featureNotificationReducer = Reducer<
         
     case .onDisappear:
         return .none
-    
+        
+    case .onReloadTap:
+        state.viewState = .loading
+        return environment
+            .notificationSettingsRepository
+            .fetchSettings()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map(NotificationSettingsAction.onFetchedSettings)
+        
     case .notificationDetailsChanged(let action):
         print(action)
         return .none
@@ -107,8 +129,15 @@ public let featureNotificationReducer = Reducer<
         return .none
         
     case .onFetchedSettings(let result):
-        state.notificationPrefrences = try? result.get()
-        return .none
+        switch result {
+        case .success(let preferences) :
+            state.viewState = .data(notificationDetailsState: preferences)
+            return .none
+            
+        case .failure(let error):
+            state.viewState = .error
+            return .none
+        }
     }
 }
 
@@ -118,7 +147,7 @@ public struct FeatureNotificationSettingsEnvironment {
     public let notificationSettingsRepository: NotificationSettingsRepositoryAPI
     
     public init(mainQueue: AnySchedulerOf<DispatchQueue>,
-                  notificationSettingsRepository: NotificationSettingsRepositoryAPI) {
+                notificationSettingsRepository: NotificationSettingsRepositoryAPI) {
         self.mainQueue = mainQueue
         self.notificationSettingsRepository = notificationSettingsRepository
     }

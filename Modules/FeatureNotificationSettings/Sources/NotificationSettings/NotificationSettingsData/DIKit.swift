@@ -8,12 +8,16 @@
 import Foundation
 import FeatureNotificationSettingsDomain
 import DIKit
+import NetworkKit
 
 extension DependencyContainer {
     // MARK: - FeatureNotificationSettingsDomain Module
     
     public static var featureNotificationSettingsDataKit = module {
-        factory { NotificationSettingsRepository(client: DIKit
-            .resolve()) as NotificationSettingsRepositoryAPI }
+        factory { () -> NotificationSettingsRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = NotificationsSettingsClient(networkAdapter: adapter, requestBuilder: builder)
+            return NotificationSettingsRepository(client: client) as NotificationSettingsRepositoryAPI }
     }
 }
