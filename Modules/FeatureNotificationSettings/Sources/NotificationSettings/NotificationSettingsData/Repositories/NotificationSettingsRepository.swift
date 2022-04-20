@@ -19,7 +19,8 @@ public struct NotificationSettingsRepository: NotificationSettingsRepositoryAPI 
     }
 
     public func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {
-        client.fetchSettings()
+        client
+            .fetchSettings()
             .map({ response in
                 let availableMethods = response.notificationMethods
                 
