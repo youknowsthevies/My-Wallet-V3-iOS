@@ -532,7 +532,16 @@ public enum LocalizationConstants {
             "Buy & Sell",
             comment: "Tab item: buy and sell"
         )
+        public static let rewards = NSLocalizedString(
+            "Rewards",
+            comment: "Tab item: rewards"
+        )
     }
+
+    public static let openWebsite = NSLocalizedString(
+        "Open Website",
+        comment: "Open Website"
+    )
 
     public enum FrequentActionItem {
 

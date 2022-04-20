@@ -17,45 +17,39 @@ struct RootViewState: Equatable, NavigationState {
 
     var route: RouteIntent<RootViewRoute>?
 
-    @BindableState var tab: Tag = blockchain.ux.user.portfolio[]
-    @BindableState var fab: FrequentAction
-
+    @BindableState var tabs: OrderedSet<Tab>?
+    @BindableState var tab: Tag.Reference = blockchain.ux.user.portfolio[].reference
+    @BindableState var fab: FrequentActionState
     @BindableState var buyAndSell: BuyAndSell = .init()
 }
 
 extension RootViewState {
 
     struct BuyAndSell: Equatable {
-
         var segment: Int = 0
     }
 
-    struct FrequentAction: Equatable {
+    struct FrequentActionState: Equatable {
 
         var isOn: Bool = false
         var animate: Bool
-        var data: Data = .init()
+        var data: Data?
 
         struct Data: Codable, Equatable {
-
-            var list: [Tag] = [
-                blockchain.ux.frequent.action.swap[],
-                blockchain.ux.frequent.action.send[],
-                blockchain.ux.frequent.action.receive[],
-                blockchain.ux.frequent.action.rewards[]
-            ]
-
-            var buttons: [Tag] = [
-                blockchain.ux.frequent.action.sell[],
-                blockchain.ux.frequent.action.buy[]
-            ]
+            var list: [FrequentAction]
+            var buttons: [FrequentAction]
         }
+    }
+
+    var hideFAB: Bool {
+        guard let tabs = tabs else { return true }
+        return tabs.lazy.map(\.ref.tag).doesNotContain(blockchain.ux.frequent.action[])
     }
 }
 
 enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<RootViewRoute>?)
-    case tab(Tag)
+    case tab(Tag.Reference)
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onAppear
@@ -80,7 +74,7 @@ enum RootViewRoute: NavigationRoute {
                 .ignoresSafeArea(.container, edges: .bottom)
         case .coinView(let currency):
             CoinAdapterView(cryptoCurrency: currency, dismiss: { ViewStore(store.stateless).send(.dismiss()) })
-                .identity(blockchain.ux.asset)
+                .identity(blockchain.ux.asset[currency.code])
         }
     }
 }
@@ -95,6 +89,7 @@ let rootViewReducer = Reducer<
     RootViewAction,
     RootViewEnvironment
 > { state, action, environment in
+    typealias FrequentActionData = RootViewState.FrequentActionState.Data
     switch action {
     case .tab(let tab):
         state.tab = tab
@@ -106,9 +101,19 @@ let rootViewReducer = Reducer<
         state.fab.animate = false
         return .none
     case .onAppear:
-        return .fireAndForget {
-            environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
-        }
+        return .merge(
+            .fireAndForget {
+                environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
+            },
+            environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
+                .compactMap(\.value)
+                .eraseToEffect()
+                .map { .binding(.set(\.$fab.data, $0)) },
+            environment.app.publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
+                .compactMap(\.value)
+                .eraseToEffect()
+                .map { .binding(.set(\.$tabs, $0)) }
+        )
     case .onDisappear:
         return .fireAndForget {
             environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: false)

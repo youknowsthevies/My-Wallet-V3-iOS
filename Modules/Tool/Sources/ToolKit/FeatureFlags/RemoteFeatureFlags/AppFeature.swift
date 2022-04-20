@@ -99,7 +99,7 @@ public enum AppFeature: Int, CaseIterable {
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
-    public var remoteEnabledKey: String? {
+    public var remoteEnabledKey: String {
         switch self {
         case .interestWithdrawAndDeposit:
             return "ios_interest_deposit_withdraw"

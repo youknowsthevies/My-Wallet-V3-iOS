@@ -134,6 +134,14 @@ public func ~= (lhs: Tag, rhs: Tag) -> Bool {
     rhs.is(lhs)
 }
 
+public func ~= (lhs: L, rhs: Tag.Reference) -> Bool {
+    rhs.tag.is(lhs[])
+}
+
+public func ~= (lhs: Tag.Reference, rhs: L) -> Bool {
+    rhs[].is(lhs.tag)
+}
+
 extension Tag {
 
     public func isAncestor(of other: Tag) -> Bool {

@@ -123,15 +123,15 @@ final class SessionStateTests: XCTestCase {
 
         state.set(blockchain.user.id, to: id)
 
-        state.set(blockchain.app.configuration.is.biometric.enabled, to: true)
+        state.set(blockchain.app.configuration.test.shared.preference, to: true)
 
         do {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.is.biometric.enabled), true)
+            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[id, "blockchain.app.configuration.is.biometric.enabled"].unwrap() as? Bool,
+                object[id, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }
@@ -142,9 +142,9 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.is.biometric.enabled), true)
+            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[id, "blockchain.app.configuration.is.biometric.enabled"].unwrap() as? Bool,
+                object[id, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }

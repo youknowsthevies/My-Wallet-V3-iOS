@@ -171,22 +171,22 @@ extension RootViewController {
     func handle(state: RootViewState, action: RootViewAction) {
         switch action {
         case .frequentAction(let frequentAction):
-            switch frequentAction {
-            case .swap:
+            switch frequentAction.tag {
+            case blockchain.ux.frequent.action.swap:
                 handleSwapCrypto(account: nil)
-            case .send:
+            case blockchain.ux.frequent.action.send:
                 handleSendCrypto()
-            case .receive:
+            case blockchain.ux.frequent.action.receive:
                 handleReceiveCrypto()
-            case .rewards:
+            case blockchain.ux.frequent.action.rewards:
                 handleRewards()
-            case .deposit:
+            case blockchain.ux.frequent.action.deposit:
                 handleDeposit()
-            case .withdraw:
+            case blockchain.ux.frequent.action.withdraw:
                 handleWithdraw()
-            case .buy:
+            case blockchain.ux.frequent.action.buy:
                 handleBuyCrypto(currency: .bitcoin)
-            case .sell:
+            case blockchain.ux.frequent.action.sell:
                 handleSellCrypto(account: nil)
             default:
                 assertionFailure("Unhandled action \(action)")

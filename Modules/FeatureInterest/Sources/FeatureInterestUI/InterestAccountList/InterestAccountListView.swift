@@ -24,6 +24,7 @@ struct InterestAccountListView: View {
     weak var delegate: InterestAccountListViewDelegate?
 
     let store: Store<InterestAccountListState, InterestAccountListAction>
+    let embeddedInNavigationView: Bool
 
     var body: some View {
         WithViewStore(store) { viewStore in
@@ -39,36 +40,42 @@ struct InterestAccountListView: View {
                     InterestAccountListErrorView(action: {
                         viewStore.send(.setupInterestAccountListScreen)
                     })
-                } else {
+                } else if embeddedInNavigationView {
                     PrimaryNavigationView {
-                        List {
-                            if !viewStore.isKYCVerified {
-                                InterestIdentityVerificationView {
-                                    delegate?.didTapVerifyMyIdentity()
-                                }
-                                .listRowInsets(EdgeInsets())
-                            }
-                            ForEachStore(
-                                store.scope(
-                                    state: \.interestAccountDetails,
-                                    action: InterestAccountListAction.interestAccountButtonTapped
-                                )
-                            ) { cellStore in
-                                InterestAccountListItem(store: cellStore)
-                            }
-                        }
-                        .whiteNavigationBarStyle()
-                        .listStyle(PlainListStyle())
-                        .navigationTitle(LocalizationId.title)
-                        .navigationBarTitleDisplayMode(.inline)
-                        .navigationRoute(in: store)
+                        list(in: viewStore)
+                            .whiteNavigationBarStyle()
+                            .navigationTitle(LocalizationId.title)
+                            .navigationBarTitleDisplayMode(.inline)
                     }
+                } else {
+                    list(in: viewStore)
                 }
             }
             .onAppear {
                 viewStore.send(.setupInterestAccountListScreen)
             }
         }
+    }
+
+    func list(in viewStore: ViewStore<InterestAccountListState, InterestAccountListAction>) -> some View {
+        List {
+            if !viewStore.isKYCVerified {
+                InterestIdentityVerificationView {
+                    delegate?.didTapVerifyMyIdentity()
+                }
+                .listRowInsets(EdgeInsets())
+            }
+            ForEachStore(
+                store.scope(
+                    state: \.interestAccountDetails,
+                    action: InterestAccountListAction.interestAccountButtonTapped
+                )
+            ) { cellStore in
+                InterestAccountListItem(store: cellStore)
+            }
+        }
+        .listStyle(PlainListStyle())
+        .navigationRoute(in: store)
     }
 }
 
@@ -103,7 +110,8 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     transactionRouterAPI: NoOpTransactionsRouter(),
                     mainQueue: .main
                 )
-            )
+            ),
+            embeddedInNavigationView: true
         )
     }
 }

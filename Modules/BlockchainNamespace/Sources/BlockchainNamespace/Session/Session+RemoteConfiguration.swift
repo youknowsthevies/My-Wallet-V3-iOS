@@ -13,22 +13,22 @@ extension Session {
 
         public var allKeys: [String] { Array(fetched.keys) }
 
-        private var fetched: [String: Any] {
+        private var fetched: [String: Any?] {
             get { _fetched.value }
             set { _fetched.send(newValue) }
         }
 
-        private var _fetched: CurrentValueSubject<[String: Any], Never> = .init([:])
+        private var _fetched: CurrentValueSubject<[String: Any?], Never> = .init([:])
         private var fetch: ((AppProtocol, Bool) -> Void)?
         private var bag: Set<AnyCancellable> = []
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
-            default defaultValue: Tag.Context = [:]
+            default defaultValue: Default = [:]
         ) {
             fetch = { [unowned self] app, isStale in
                 Task {
-                    var configuration: [String: Any] = defaultValue.dictionary.mapKeys { key in
+                    var configuration: [String: Any?] = defaultValue.dictionary.mapKeys { key in
                         key.idToFirebaseConfigurationKeyDefault()
                     }
 
@@ -42,7 +42,7 @@ extension Session {
                     }
 
                     do {
-                        let status = try await remote.fetch(withExpirationDuration: expiration)
+                        _ = try await remote.fetch(withExpirationDuration: expiration)
                         _ = try await remote.activate()
                     } catch {
                         print("😱", "unable to fetch remote configuration", error)
@@ -116,7 +116,7 @@ extension Session {
                 .flatMap { configuration -> Just<FetchResult> in
                     switch configuration[firstOf: key.firebaseConfigurationKeys] {
                     case let value?:
-                        return Just(.value(value, key.metadata(.remoteConfiguration)))
+                        return Just(.value(value as Any, key.metadata(.remoteConfiguration)))
                     case nil:
                         return Just(.error(.keyDoesNotExist(key), key.metadata(.remoteConfiguration)))
                     }
@@ -124,12 +124,21 @@ extension Session {
                 .eraseToAnyPublisher()
         }
 
+        public func override(_ key: String, with value: Any) {
+            fetched[key] = value
+        }
+
+        public func get(_ key: String) throws -> Any? {
+            guard isSynchronized else { throw Error.notSynchronized }
+            return fetched[key]
+        }
+
         public func publisher(for string: String) -> AnyPublisher<Any?, Never> {
             _isSynchronized
                 .combineLatest(_fetched)
                 .filter(\.0)
                 .map(\.1)
-                .map { configuration -> Any? in configuration[string] }
+                .map { configuration -> Any? in configuration[string] as Any? }
                 .eraseToAnyPublisher()
         }
 
@@ -203,5 +212,15 @@ extension Dictionary {
             return value
         }
         return nil
+    }
+}
+
+extension Session.RemoteConfiguration {
+
+    public struct Default: ExpressibleByDictionaryLiteral {
+        let dictionary: [Tag.Reference: Any?]
+        public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
+            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key, $0.1) })
+        }
     }
 }
