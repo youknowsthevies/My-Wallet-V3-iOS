@@ -366,7 +366,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private func showNotificationsSettingsScreen() {
         let presenter = topViewController
         let notificationCenterView = FeatureNotificationSettingsView(store: .init(
-                initialState: .init(),
+                initialState: .init(viewState: .idle),
                 reducer: featureNotificationReducer,
                 environment: FeatureNotificationSettingsEnvironment(mainQueue: .main,
                                                                     notificationSettingsRepository: DIKit.resolve())
