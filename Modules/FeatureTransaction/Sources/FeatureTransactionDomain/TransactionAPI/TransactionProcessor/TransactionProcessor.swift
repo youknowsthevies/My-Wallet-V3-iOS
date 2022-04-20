@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
 import MoneyKit
 import PlatformKit
 import RxRelay
@@ -42,7 +44,9 @@ public final class TransactionProcessor {
     private let engine: TransactionEngine
     private let notificationCenter: NotificationCenter
     private let pendingTxSubject: BehaviorSubject<PendingTransaction>
+    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
@@ -50,10 +54,12 @@ public final class TransactionProcessor {
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
         engine: TransactionEngine,
-        notificationCenter: NotificationCenter = .default
+        notificationCenter: NotificationCenter = .default,
+        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
         self.engine = engine
         self.notificationCenter = notificationCenter
+        self.sendEmailNotificationService = sendEmailNotificationService
         pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
         engine.start(
             sourceAccount: sourceAccount,
@@ -195,8 +201,10 @@ public final class TransactionProcessor {
                     .catchAndReturn(transactionResult)
             }
             .do(
-                afterSuccess: { [notificationCenter] _ in
-                    notificationCenter.post(
+                afterSuccess: { [weak self] transactionResult in
+                    guard let self = self else { return }
+                    self.triggerSendEmailNotification(transactionResult)
+                    self.notificationCenter.post(
                         name: .transaction,
                         object: nil
                     )
@@ -246,6 +254,21 @@ public final class TransactionProcessor {
     }
 
     // MARK: - Private methods
+
+    private func triggerSendEmailNotification(_ transactionResult: TransactionResult) {
+        switch transactionResult {
+        case .hashed(txHash: let txHash, amount: .some(let amount)):
+            sendEmailNotificationService
+                .postSendEmailNotificationTrigger(
+                    moneyValue: amount,
+                    txHash: txHash
+                )
+                .subscribe()
+                .store(in: &cancellables)
+        default:
+            break
+        }
+    }
 
     // Called back by the engine if it has received an external signal and the existing confirmation set
     // requires a refresh

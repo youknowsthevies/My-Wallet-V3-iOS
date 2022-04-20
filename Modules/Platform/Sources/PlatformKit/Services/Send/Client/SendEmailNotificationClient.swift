@@ -19,6 +19,8 @@ final class SendEmailNotificationClient: SendEmailNotificationClientAPI {
         let sharedKey: String
         let currency: String
         let amount: String
+        let network: String
+        let txHash: String
     }
 
     // MARK: - Properties
@@ -46,7 +48,9 @@ final class SendEmailNotificationClient: SendEmailNotificationClientAPI {
                 URLQueryItem(name: "guid", value: payload.guid),
                 URLQueryItem(name: "sharedKey", value: payload.sharedKey),
                 URLQueryItem(name: "currency", value: payload.currency),
-                URLQueryItem(name: "amount", value: payload.amount)
+                URLQueryItem(name: "amount", value: payload.amount),
+                URLQueryItem(name: "network", value: payload.network),
+                URLQueryItem(name: "txHash", value: payload.txHash)
             ]
         )
         return networkAdapter.perform(request: request!)

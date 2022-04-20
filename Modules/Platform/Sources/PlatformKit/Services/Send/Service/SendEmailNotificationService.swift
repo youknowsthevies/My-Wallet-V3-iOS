@@ -9,8 +9,10 @@ import NetworkKit
 import ToolKit
 
 public protocol SendEmailNotificationServiceAPI {
+
     func postSendEmailNotificationTrigger(
-        _ moneyValue: MoneyValue
+        moneyValue: MoneyValue,
+        txHash: String
     ) -> AnyPublisher<Void, Never>
 }
 
@@ -31,7 +33,8 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
     }
 
     public func postSendEmailNotificationTrigger(
-        _ moneyValue: MoneyValue
+        moneyValue: MoneyValue,
+        txHash: String
     ) -> AnyPublisher<Void, Never> {
         credentialsRepository.credentials
             .ignoreFailure()
@@ -43,7 +46,9 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
                     amount: moneyValue.toDisplayString(
                         includeSymbol: false,
                         locale: Locale.US // Locale is enforced to ensure the format of the amount.
-                    )
+                    ),
+                    network: moneyValue.code,
+                    txHash: txHash
                 )
             }
             .flatMap { [client] payload in
