@@ -11,6 +11,7 @@ import SwiftUI
 import FeatureNotificationSettingsDomain
 import Mocks
 import FeatureNotificationSettingsData
+import UIComponentsKit
 
 public struct FeatureNotificationSettingsView: View {
     var store: Store<NotificationSettingsState, NotificationSettingsAction>
@@ -23,16 +24,28 @@ public struct FeatureNotificationSettingsView: View {
     
     public var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(alignment: .leading, spacing: 20) {
-                headerSection
-                optionsSection
-                Spacer()
+            PrimaryNavigationView {
+                VStack(alignment: .leading, spacing: 20) {
+                    headerSection
+                    
+                    switch viewStore.state.viewState {
+                    case .idle :
+                        EmptyView()
+                    case .loading:
+                        LoadingStateView(title: "")
+                    case .data:
+                        optionsSection
+                        Spacer()
+                    case .error:
+                        errorSection
+                    }
+                }
+                .navigationRoute(in: store)
             }
-            .navigationRoute(in: store)
-            .onAppear(perform: {
-                viewStore.send(.onAppear)
-            })
         }
+        .onAppear(perform: {
+            viewStore.send(.onAppear)
+        })
     }
 }
 
@@ -53,8 +66,8 @@ extension FeatureNotificationSettingsView {
     var optionsSection: some View {
         WithViewStore(store) { viewStore in
             VStack(alignment:.leading, spacing: 10) {
-                if let notificationPreferences = viewStore.notificationPrefrences {
-                    ForEach(notificationPreferences) { notificationPreference in
+                if case .data(let preferences) = viewStore.state.viewState {
+                    ForEach(preferences) { notificationPreference in
                         PrimaryRow(
                             title: notificationPreference.title,
                             subtitle: notificationPreference.preferenceDescription,
@@ -71,23 +84,53 @@ extension FeatureNotificationSettingsView {
             .padding(.top, 0)
         }
     }
-}
-
-struct FeatureNotificationSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        let notificationPrefences: [NotificationPreference] = [
-            MockGenerator.transactionalNotificationPreference,
-            MockGenerator.marketingNotificationPreference,
-            MockGenerator.priceAlertNotificationPreference,
-            MockGenerator.securityNotificationPreference
-        ]
-        PrimaryNavigationView {
-            FeatureNotificationSettingsView(
-                store: .init(
-                    initialState: .init(notificationPreferences: notificationPrefences),
-                    reducer: featureNotificationReducer,
-                    environment: FeatureNotificationSettingsEnvironment(mainQueue: .main, notificationSettingsRepository: NotificationSettingsRepositoryMock()))
-            )
+    
+    var errorSection: some View {
+        WithViewStore(store) { viewStore in
+            VStack {
+                AlertCard(title: "Notification settings failed to load",
+                          message: "There was a problem fetching your notifications settings. Please reload or try again later.",
+                          variant: .warning,
+                          isBordered: true,
+                          onCloseTapped: nil)
+                .padding(Spacing.padding3)
+                Spacer()
+                HStack {
+                    Text("Failed to load notification settings")
+                        .foregroundColor(Color.WalletSemantic.warning)
+                        .padding(.leading, Spacing.padding2)
+                    Spacer()
+                    Button("Reload") {
+                        viewStore.send(.onAppear)
+                    }
+                    .foregroundColor(Color.WalletSemantic.primary)
+                    .padding(.trailing, Spacing.padding2)
+                }
+                .frame(maxWidth: .infinity, maxHeight: 48)
+                .background(Color.WalletSemantic.background)
+                .padding(.bottom, 50)
+            }
         }
     }
 }
+
+
+//struct FeatureNotificationSettingsView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let notificationPrefences: [NotificationPreference] = [
+//            MockGenerator.transactionalNotificationPreference,
+//            MockGenerator.marketingNotificationPreference,
+//            MockGenerator.priceAlertNotificationPreference,
+//            MockGenerator.securityNotificationPreference
+//        ]
+//
+//        PrimaryNavigationView {
+//            FeatureNotificationSettingsView(
+//                store: .init(
+//                    initialState: .init(notificationPreferences: notificationPrefences),
+//                    reducer: featureNotificationReducer,
+//                    environment: FeatureNotificationSettingsEnvironment(mainQueue: .main, notificationSettingsRepository: NotificationSettingsRepositoryMock()))
+//            )
+//        }
+//    }
+//}
