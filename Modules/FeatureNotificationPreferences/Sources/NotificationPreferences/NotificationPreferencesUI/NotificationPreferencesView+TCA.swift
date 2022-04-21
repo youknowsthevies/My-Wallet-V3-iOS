@@ -24,7 +24,6 @@ public struct NotificationPreferencesState: Hashable, NavigationState {
     public var route: RouteIntent<NotificationsSettingsRoute>?
     public var viewState: ViewState
     public var notificationDetailsState: NotificationPreferencesDetailsState?
-    //    public var isLoading: Bool
     
     public var notificationPrefrences: [NotificationPreference]?
     
@@ -33,8 +32,6 @@ public struct NotificationPreferencesState: Hashable, NavigationState {
                 isLoading: Bool = true) {
         self.route = route
         self.viewState = viewState
-        //        self.notificationPrefrences = notificationPreferences
-        //        self.isLoading = isLoading
     }
 }
 
@@ -121,8 +118,19 @@ public let featureNotificationReducer = Reducer<
             .map(NotificationPreferencesAction.onFetchedSettings)
         
     case .notificationDetailsChanged(let action):
-        print(action)
-        return .none
+        switch action {
+        case .save(let updatedPreferences):
+            return  environment
+                    .updatePreferencesService
+                    .update(updatedPreferences)
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map({ update in
+                        NotificationPreferencesAction.onReloadTap
+                    })
+        default:
+            return .none
+        }
         
     case .onPreferenceSelected(let preference):
         state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
@@ -145,10 +153,13 @@ public let featureNotificationReducer = Reducer<
 public struct FeatureNotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
-    
+    public let updatePreferencesService: UpdateContactPreferencesServiceAPI
+
     public init(mainQueue: AnySchedulerOf<DispatchQueue>,
-                notificationPreferencesRepository: NotificationPreferencesRepositoryAPI) {
+                notificationPreferencesRepository: NotificationPreferencesRepositoryAPI,
+                updatePreferencesService: UpdateContactPreferencesServiceAPI) {
         self.mainQueue = mainQueue
         self.notificationPreferencesRepository = notificationPreferencesRepository
+        self.updatePreferencesService = updatePreferencesService
     }
 }

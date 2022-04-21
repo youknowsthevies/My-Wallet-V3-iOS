@@ -41,7 +41,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -55,6 +56,11 @@ let package = Package(
                     name: "Localization",
                     package: "Localization"
                 ),
+                .product(
+                    name: "NetworkError",
+                    package: "NetworkErrors"
+                ),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(
                     name: "DIKit",
                     package: "DIKit"
@@ -113,6 +119,7 @@ let package = Package(
                     name: "NetworkError",
                     package: "NetworkErrors"
                 ),
+                .product(name: "UIComponents", package: "UIComponents"),
                 .product(
                     name: "ComposableArchitectureExtensions",
                     package: "ComposableArchitectureExtensions"
@@ -124,6 +131,9 @@ let package = Package(
             name: "FeatureNotificationPreferencesDetailsUI",
             dependencies: [
                 .target(name: "FeatureNotificationPreferencesDetailsDomain"),
+                .target(
+                    name: "FeatureNotificationPreferencesDomain"
+                ),
                 .target(name: "Mocks"),
                 .product(
                     name: "ComposableArchitecture",
@@ -201,5 +211,13 @@ let package = Package(
             ],
             path: "Sources/Mocks"
         ),
+        .testTarget(
+            name: "FeatureNotificationPreferencesUITests",
+            dependencies: [
+                .target(name: "FeatureNotificationPreferencesUI"),
+                .target(name: "FeatureNotificationPreferencesData"),
+                .target(name: "FeatureNotificationPreferencesDomain")
+            ]
+        )
     ]
 )
