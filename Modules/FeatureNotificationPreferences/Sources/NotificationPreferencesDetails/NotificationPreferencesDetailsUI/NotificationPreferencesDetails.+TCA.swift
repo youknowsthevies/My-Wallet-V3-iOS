@@ -1,59 +1,47 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+//
+//  NotificationPreferencesActivityTogglesView.swift
+//  FeatureBuilder
+//
+//  Created by Augustin Udrea on 12/04/2022.
+//
 
 import ComposableArchitecture
-import FeatureNotificationPreferencesDomain
 import Foundation
-
-internal struct Switch: Equatable, Hashable {
-    var method: NotificationMethod
-    var isOn: Bool
-}
+import FeatureNotificationPreferencesDomain
 
 public struct NotificationPreferencesDetailsState: Equatable, Hashable {
     public let notificationPreference: NotificationPreference
-    @BindableState var pushSwitch: Switch = Switch(method: .push, isOn: false)
-    @BindableState var emailSwitch: Switch = Switch(method: .email, isOn: false)
-    @BindableState var smsSwitch: Switch = Switch(method: .sms, isOn: false)
-    @BindableState var inAppSwitch: Switch = Switch(method: .inApp, isOn: false)
-
+    @BindableState var pushSwitchIsOn: Bool = false
+    @BindableState var emailSwitchIsOn: Bool = false
+    @BindableState var smsSwitchIsOn: Bool = false
+    @BindableState var inAppSwitchIsOn: Bool = false
+    
     public init(notificationPreference: NotificationPreference) {
         self.notificationPreference = notificationPreference
-
+        
         for methodInfo in notificationPreference.enabledMethods {
             switch methodInfo.method {
             case .email:
-                pushSwitch.isOn = true
+                emailSwitchIsOn = true
             case .inApp:
-                inAppSwitch.isOn = true
+                inAppSwitchIsOn = true
             case .push:
-                pushSwitch.isOn = true
+                pushSwitchIsOn = true
             case .sms:
-                smsSwitch.isOn = true
+                smsSwitchIsOn = true
             }
         }
-    }
-
-    public var updatedPreferences: UpdatedPreferences {
-        let preferences = [pushSwitch, emailSwitch, smsSwitch, inAppSwitch]
-            .filter { controlSwitch in
-                let availableMethods = notificationPreference.allAvailableMethods.compactMap(\.method)
-                return availableMethods.contains(controlSwitch.method)
-            }
-            .map { UpdatedNotificationPreference(
-                contactMethod: $0.method.rawValue,
-                channel: notificationPreference.type.rawValue,
-                action: $0.isOn ? "ENABLE" : "DISABLE"
-            )
-            }
-        return UpdatedPreferences(preferences: preferences)
     }
 }
 
 public enum NotificationPreferencesDetailsAction: Equatable, BindableAction {
-    case save
+    case onDissapear
+    case save([UpdatedNotificationPreference])
     case binding(BindingAction<NotificationPreferencesDetailsState>)
 }
 
-public struct NotificationPreferencesDetailsEnvironment {
-    public init() {}
+public struct NotificationPreferencesDetailsEnvironment{
+    public init() {
+        
+    }
 }

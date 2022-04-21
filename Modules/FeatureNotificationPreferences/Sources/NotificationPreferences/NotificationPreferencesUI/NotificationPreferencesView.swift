@@ -1,11 +1,15 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+//
+//  FeatureNotificationPreferencesView.swift
+//  FeatureBuilder
+//
+//  Created by Augustin Udrea on 08/04/2022.
+//
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
-import FeatureNotificationPreferencesDomain
-import Localization
-import Mocks
 import SwiftUI
+import FeatureNotificationPreferencesDomain
+import Mocks
 import UIComponentsKit
 
 public struct FeatureNotificationPreferencesView: View {
@@ -13,20 +17,20 @@ public struct FeatureNotificationPreferencesView: View {
     @Environment(\.presentationMode) var presentationMode
 
     @ObservedObject var viewStore: ViewStore<NotificationPreferencesState, NotificationPreferencesAction>
-
-    public init(store: Store<NotificationPreferencesState, NotificationPreferencesAction>) {
+    
+    public init(store: Store<NotificationPreferencesState,NotificationPreferencesAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
-
+    
     public var body: some View {
         WithViewStore(store) { viewStore in
             PrimaryNavigationView {
                 VStack(alignment: .leading, spacing: 20) {
                     headerSection
-
+                    
                     switch viewStore.state.viewState {
-                    case .idle:
+                    case .idle :
                         EmptyView()
                     case .loading:
                         LoadingStateView(title: "")
@@ -53,66 +57,73 @@ public struct FeatureNotificationPreferencesView: View {
 extension FeatureNotificationPreferencesView {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(LocalizationConstants.NotificationPreferences.NotificationScreen.Title.titleString)
+            Text("Wallet Activity")
                 .typography(.title3)
-            Text(LocalizationConstants.NotificationPreferences.NotificationScreen.Description.descriptionString)
+            Text("Get notified about important activity like buys, sells, transfers and rewards")
                 .typography(.paragraph1)
                 .foregroundColor(Color.WalletSemantic.body)
+            
         }
         .padding(.horizontal, Spacing.padding3)
     }
-
+    
     var optionsSection: some View {
         WithViewStore(store) { viewStore in
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment:.leading, spacing: 10) {
                 if case .data(let preferences) = viewStore.state.viewState {
                     ForEach(preferences) { notificationPreference in
                         PrimaryRow(
                             title: notificationPreference.title,
                             subtitle: notificationPreference.preferenceDescription,
                             trailing: { Icon.chevronRight
-                                .frame(width: 24, height: 24)
-                                .accentColor(.semantic.muted)
+                                    .frame(width: 24, height: 24)
+                                    .accentColor(.semantic.muted)
                             },
                             action: {
-                                viewStore.send(.onPreferenceSelected(notificationPreference))
-                                viewStore.send(.route(.navigate(to: .showDetails)))
-                            }
-                        )
+                                viewStore.send(.route(.navigate(to: .showDetails(notificationPreference: notificationPreference))))
+                            })
                     }
                 }
             }
-            .padding(.top, 66)
+            .padding(.top, 0)
         }
     }
-
+    
     var errorSection: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: 8, content: {
+            VStack {
+                AlertCard(title: "Notification settings failed to load",
+                          message: "There was a problem fetching your notifications settings. Please reload or try again later.",
+                          variant: .warning,
+                          isBordered: true,
+                          onCloseTapped: nil)
+                .padding(Spacing.padding3)
                 Spacer()
-                Text(LocalizationConstants.NotificationPreferences.Error.Title.titleString)
-                    .multilineTextAlignment(.center)
-                    .typography(.title3)
-                    .padding(.horizontal, Spacing.padding3)
-                    .foregroundColor(Color.WalletSemantic.title)
-
-                Text(LocalizationConstants.NotificationPreferences.Error.Description.descriptionString)
-                    .multilineTextAlignment(.center)
-                    .typography(.caption1)
-                    .padding(.horizontal, Spacing.padding3)
-                    .foregroundColor(Color.WalletSemantic.muted)
-                Spacer()
-                PrimaryButton(title: LocalizationConstants.NotificationPreferences.Error.RetryButton.tryAgainString) {
-                    viewStore.send(.onReloadTap)
+                AlertToast(text: "Reload", variant: .warning, icon: .repeat) {
+                    viewStore.send(.onAppear)
                 }
-                .padding(.horizontal, Spacing.padding3)
-                .padding(.bottom, Spacing.padding2)
-
-                MinimalButton(title: LocalizationConstants.NotificationPreferences.Error.GoBackButton.goBackString) {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .padding(.horizontal, Spacing.padding3)
-            })
+            }
         }
     }
 }
+
+
+//struct FeatureNotificationPreferencesView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let notificationPrefences: [NotificationPreference] = [
+//            MockGenerator.transactionalNotificationPreference,
+//            MockGenerator.marketingNotificationPreference,
+//            MockGenerator.priceAlertNotificationPreference,
+//            MockGenerator.securityNotificationPreference
+//        ]
+//
+//        PrimaryNavigationView {
+//            FeatureNotificationPreferencesView(
+//                store: .init(
+//                    initialState: .init(notificationPreferences: notificationPrefences),
+//                    reducer: featureNotificationReducer,
+//                    environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main, NotificationPreferencesRepository: NotificationPreferencesRepositoryMock()))
+//            )
+//        }
+//    }
+//}

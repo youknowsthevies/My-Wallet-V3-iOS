@@ -1,28 +1,28 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+//
+//  File.swift
+//  
+//
+//  Created by Augustin Udrea on 21/04/2022.
+//
 
-import Combine
-import FeatureNotificationPreferencesData
-import FeatureNotificationPreferencesDomain
 import Foundation
-import Mocks
-import NabuNetworkError
+import FeatureNotificationPreferencesDomain
+import FeatureNotificationPreferencesData
+import Combine
 import NetworkError
 
 class NotificationPreferencesRepositoryMock: NotificationPreferencesRepositoryAPI {
     // MARK: - Mock Properties
-
     var fetchSettingsCalled = false
-    var updateCalled = false
-
-    var fetchPreferencesSubject = CurrentValueSubject<[NotificationPreference], NetworkError>([])
-
-    func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError> {
+    func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {
         fetchSettingsCalled = true
-        return fetchPreferencesSubject.eraseToAnyPublisher()
+        return .just([MockGenerator.securityNotificationPreference])
     }
+}
 
-    func update(preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
-        updateCalled = true
+
+class UpdateContactPreferencesServiceMock: UpdateContactPreferencesServiceAPI {
+    func update(_ preferences: [UpdatedNotificationPreference] ) -> AnyPublisher<Void, NabuNetworkError> {
         return .just(())
     }
 }

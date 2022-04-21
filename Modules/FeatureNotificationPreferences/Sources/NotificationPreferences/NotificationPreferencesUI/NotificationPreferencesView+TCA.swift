@@ -1,53 +1,43 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+//
+//  FeatureNotificationPreferences.swift
+//  FeatureBuilder
+//
+//  Created by Augustin Udrea on 08/04/2022.
+//
 
+import Foundation
 import ComposableArchitecture
 import ComposableNavigation
-import FeatureNotificationPreferencesDetailsUI
-import FeatureNotificationPreferencesDomain
-import Foundation
-import NetworkError
 import SwiftUI
-
-// MARK: - State
+import FeatureNotificationPreferencesDomain
+import NetworkError
+import FeatureNotificationPreferencesDetailsUI
 
 public struct NotificationPreferencesState: Hashable, NavigationState {
-    public enum ViewState: Equatable, Hashable {
-        public static func == (lhs: ViewState, rhs: ViewState) -> Bool {
-            switch (lhs, rhs) {
-            case (.idle, .idle), (.loading, .loading), (.data, .data), (.error, .error):
-                return true
-            default:
-                return false
-            }
-        }
-
+    public enum ViewState: Hashable {
         case idle
         case loading
         case data(notificationDetailsState: [NotificationPreference])
         case error
     }
-
+    
     public var route: RouteIntent<NotificationsSettingsRoute>?
     public var viewState: ViewState
     public var notificationDetailsState: NotificationPreferencesDetailsState?
-
+    
     public var notificationPrefrences: [NotificationPreference]?
-
-    public init(
-        route: RouteIntent<NotificationsSettingsRoute>? = nil,
-        notificationDetailsState: NotificationPreferencesDetailsState? = nil,
-        viewState: ViewState
-    ) {
+    
+    public init(route: RouteIntent<NotificationsSettingsRoute>? = nil,
+                viewState: ViewState,
+                isLoading: Bool = true) {
         self.route = route
-        self.notificationDetailsState = notificationDetailsState
         self.viewState = viewState
     }
 }
 
-// MARK: - Actions
-
 public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case onAppear
+    case onDisappear
     case onReloadTap
     case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationPreferencesDetailsAction)
@@ -55,15 +45,13 @@ public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case route(RouteIntent<NotificationsSettingsRoute>?)
 }
 
-// MARK: - Routing
-
 public enum NotificationsSettingsRoute: NavigationRoute {
-    case showDetails
-
+    case showDetails(notificationPreference: NotificationPreference)
+    
     public func destination(in store: Store<NotificationPreferencesState, NotificationPreferencesAction>) -> some View {
         switch self {
-
-        case .showDetails:
+            
+        case .showDetails(let preference):
             return IfLetStore(
                 store.scope(
                     state: \.notificationDetailsState,
@@ -73,83 +61,87 @@ public enum NotificationsSettingsRoute: NavigationRoute {
                     NotificationPreferencesDetailsView(store: store)
                 }
             )
+            
+            //            return NotificationPreferencesDetailsView(store: .init(initialState:
+            //                    .init(notificationPreference: preference),
+            //                                                                reducer: notificationPreferencesDetailsReducer,
+            //                                                                environment: NotificationPreferencesDetailsEnvironment()))
         }
     }
 }
 
-// MARK: - Main Reducer
 
-let mainReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
+let featureReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
     notificationPreferencesDetailsReducer
         .optional()
         .pullback(
             state: \.notificationDetailsState,
             action: /NotificationPreferencesAction.notificationDetailsChanged,
-            environment: { _ -> NotificationPreferencesDetailsEnvironment in
+            environment: { environment -> NotificationPreferencesDetailsEnvironment in
                 NotificationPreferencesDetailsEnvironment()
             }
         ),
-    notificationPreferencesReducer
+    featureNotificationReducer
 )
 
-// MARK: - First screen reducer
-
-public let notificationPreferencesReducer = Reducer<
+public let featureNotificationReducer = Reducer<
     NotificationPreferencesState,
     NotificationPreferencesAction,
     FeatureNotificationPreferencesEnvironment
 > { state, action, environment in
-
+    
     switch action {
     case .onAppear:
         state.viewState = .loading
-
         return environment
             .notificationPreferencesRepository
-            .fetchPreferences()
+            .fetchSettings()
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .map(NotificationPreferencesAction.onFetchedSettings)
-
+        
+        
     case .route(let routeItent):
         state.route = routeItent
         return .none
-
+        
+    case .onDisappear:
+        return .none
+        
     case .onReloadTap:
+        state.viewState = .loading
         return environment
             .notificationPreferencesRepository
-            .fetchPreferences()
+            .fetchSettings()
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .map(NotificationPreferencesAction.onFetchedSettings)
-
+        
     case .notificationDetailsChanged(let action):
         switch action {
-        case .save:
-            guard let preferences = state.notificationDetailsState?.updatedPreferences else { return .none }
-            return environment
-                .notificationPreferencesRepository
-                .update(preferences: preferences)
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { _ in
-                    NotificationPreferencesAction.onReloadTap
-                }
-
-        case .binding:
+        case .save(let updatedPreferences):
+            return  environment
+                    .updatePreferencesService
+                    .update(updatedPreferences)
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map({ update in
+                        NotificationPreferencesAction.onReloadTap
+                    })
+        default:
             return .none
         }
-
+        
     case .onPreferenceSelected(let preference):
         state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
         return .none
-
+        
     case .onFetchedSettings(let result):
         switch result {
-        case .success(let preferences):
+        case .success(let preferences) :
             state.viewState = .data(notificationDetailsState: preferences)
             return .none
-
+            
         case .failure(let error):
             state.viewState = .error
             return .none
@@ -157,17 +149,17 @@ public let notificationPreferencesReducer = Reducer<
     }
 }
 
-// MARK: - Environment
 
 public struct FeatureNotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
+    public let updatePreferencesService: UpdateContactPreferencesServiceAPI
 
-    public init(
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
-    ) {
+    public init(mainQueue: AnySchedulerOf<DispatchQueue>,
+                notificationPreferencesRepository: NotificationPreferencesRepositoryAPI,
+                updatePreferencesService: UpdateContactPreferencesServiceAPI) {
         self.mainQueue = mainQueue
         self.notificationPreferencesRepository = notificationPreferencesRepository
+        self.updatePreferencesService = updatePreferencesService
     }
 }
