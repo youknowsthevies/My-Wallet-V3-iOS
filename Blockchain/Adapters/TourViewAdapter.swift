@@ -48,8 +48,8 @@ public struct TourViewAdapter: View {
         .onReceive(featureFlagService.isEnabled(.remote(.newOnboardingTour))) { isEnabled in
             newTourEnabled = isEnabled
         }
-        .onReceive(featureFlagService.isEnabled(.local(.disableGUIDLogin))) { isDisabled in
-            manualLoginEnabled = !isDisabled
+        .onReceive(featureFlagService.isEnabled(.local(.manualGUIDLogin))) { isEnabled in
+            manualLoginEnabled = isEnabled
         }
     }
 }
