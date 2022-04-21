@@ -33,7 +33,7 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             ]
         )
         
-        state = featureFlagService.isEnabled(.remote(.applePay))
+        state = featureFlagService.isEnabled(.remote(.notificationPreferences))
             .last()
             .map { notificationSettingsEnabled -> SettingsSectionLoadingState in
                 
