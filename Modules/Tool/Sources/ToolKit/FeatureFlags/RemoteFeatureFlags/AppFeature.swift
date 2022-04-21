@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Apple Pay
     case applePay
 
+    /// Enable Notification Preferences
+    case notificationPreferences
+    
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
@@ -153,6 +156,8 @@ extension AppFeature {
             return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
+        case .notificationPreferences:
+            return "ios_ff_notification_preferences"
         }
     }
 
@@ -210,6 +215,8 @@ extension AppFeature {
         case .blockchainDomains:
             return true
         case .redesignCoinView:
+            return true
+        case .notificationPreferences:
             return true
         }
     }
