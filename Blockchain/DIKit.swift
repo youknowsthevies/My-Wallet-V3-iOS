@@ -645,7 +645,7 @@ extension DependencyContainer {
         // MARK: Account Picker
 
         factory { () -> AccountPickerViewControllable in
-            let controller = LoadableAccountPickerControllable()
+            let controller = FeatureAccountPickerControllableAdapter()
             return controller as AccountPickerViewControllable
         }
 
