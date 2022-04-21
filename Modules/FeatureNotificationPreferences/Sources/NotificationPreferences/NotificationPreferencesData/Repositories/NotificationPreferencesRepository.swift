@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 import Combine
 import NetworkError
 
-public struct NotificationSettingsRepository: NotificationSettingsRepositoryAPI {
+public struct NotificationPreferencesRepository: NotificationPreferencesRepositoryAPI {
 
     private let client: NotificationsSettingsClient
 

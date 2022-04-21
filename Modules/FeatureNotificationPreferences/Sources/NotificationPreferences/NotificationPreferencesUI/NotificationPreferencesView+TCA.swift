@@ -1,5 +1,5 @@
 //
-//  FeatureNotificationSettings.swift
+//  FeatureNotificationPreferences.swift
 //  FeatureBuilder
 //
 //  Created by Augustin Udrea on 08/04/2022.
@@ -9,11 +9,11 @@ import Foundation
 import ComposableArchitecture
 import ComposableNavigation
 import SwiftUI
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 import NetworkError
-import FeatureNotificationSettingsDetailsUI
+import FeatureNotificationPreferencesDetailsUI
 
-public struct NotificationSettingsState: Hashable, NavigationState {
+public struct NotificationPreferencesState: Hashable, NavigationState {
     public enum ViewState: Hashable {
         case idle
         case loading
@@ -23,7 +23,7 @@ public struct NotificationSettingsState: Hashable, NavigationState {
     
     public var route: RouteIntent<NotificationsSettingsRoute>?
     public var viewState: ViewState
-    public var notificationDetailsState: NotificationSettingsDetailsState?
+    public var notificationDetailsState: NotificationPreferencesDetailsState?
     //    public var isLoading: Bool
     
     public var notificationPrefrences: [NotificationPreference]?
@@ -38,12 +38,12 @@ public struct NotificationSettingsState: Hashable, NavigationState {
     }
 }
 
-public enum NotificationSettingsAction: Equatable, NavigationAction {
+public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case onAppear
     case onDisappear
     case onReloadTap
     case onPreferenceSelected(NotificationPreference)
-    case notificationDetailsChanged(NotificationSettingsDetailsAction)
+    case notificationDetailsChanged(NotificationPreferencesDetailsAction)
     case onFetchedSettings(Result<[NotificationPreference], NetworkError>)
     case route(RouteIntent<NotificationsSettingsRoute>?)
 }
@@ -51,57 +51,57 @@ public enum NotificationSettingsAction: Equatable, NavigationAction {
 public enum NotificationsSettingsRoute: NavigationRoute {
     case showDetails(notificationPreference: NotificationPreference)
     
-    public func destination(in store: Store<NotificationSettingsState, NotificationSettingsAction>) -> some View {
+    public func destination(in store: Store<NotificationPreferencesState, NotificationPreferencesAction>) -> some View {
         switch self {
             
         case .showDetails(let preference):
             return IfLetStore(
                 store.scope(
                     state: \.notificationDetailsState,
-                    action: NotificationSettingsAction.notificationDetailsChanged
+                    action: NotificationPreferencesAction.notificationDetailsChanged
                 ),
                 then: { store in
-                    NotificationSettingsDetailsView(store: store)
+                    NotificationPreferencesDetailsView(store: store)
                 }
             )
             
-            //            return NotificationSettingsDetailsView(store: .init(initialState:
+            //            return NotificationPreferencesDetailsView(store: .init(initialState:
             //                    .init(notificationPreference: preference),
-            //                                                                reducer: notificationSettingsDetailsReducer,
-            //                                                                environment: NotificationSettingsDetailsEnvironment()))
+            //                                                                reducer: notificationPreferencesDetailsReducer,
+            //                                                                environment: NotificationPreferencesDetailsEnvironment()))
         }
     }
 }
 
 
-let featureReducer = Reducer<NotificationSettingsState, NotificationSettingsAction, FeatureNotificationSettingsEnvironment>.combine(
-    notificationSettingsDetailsReducer
+let featureReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
+    notificationPreferencesDetailsReducer
         .optional()
         .pullback(
             state: \.notificationDetailsState,
-            action: /NotificationSettingsAction.notificationDetailsChanged,
-            environment: { environment -> NotificationSettingsDetailsEnvironment in
-                NotificationSettingsDetailsEnvironment()
+            action: /NotificationPreferencesAction.notificationDetailsChanged,
+            environment: { environment -> NotificationPreferencesDetailsEnvironment in
+                NotificationPreferencesDetailsEnvironment()
             }
         ),
     featureNotificationReducer
 )
 
 public let featureNotificationReducer = Reducer<
-    NotificationSettingsState,
-    NotificationSettingsAction,
-    FeatureNotificationSettingsEnvironment
+    NotificationPreferencesState,
+    NotificationPreferencesAction,
+    FeatureNotificationPreferencesEnvironment
 > { state, action, environment in
     
     switch action {
     case .onAppear:
         state.viewState = .loading
         return environment
-            .notificationSettingsRepository
+            .notificationPreferencesRepository
             .fetchSettings()
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map(NotificationSettingsAction.onFetchedSettings)
+            .map(NotificationPreferencesAction.onFetchedSettings)
         
         
     case .route(let routeItent):
@@ -114,18 +114,18 @@ public let featureNotificationReducer = Reducer<
     case .onReloadTap:
         state.viewState = .loading
         return environment
-            .notificationSettingsRepository
+            .notificationPreferencesRepository
             .fetchSettings()
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map(NotificationSettingsAction.onFetchedSettings)
+            .map(NotificationPreferencesAction.onFetchedSettings)
         
     case .notificationDetailsChanged(let action):
         print(action)
         return .none
         
     case .onPreferenceSelected(let preference):
-        state.notificationDetailsState = NotificationSettingsDetailsState(notificationPreference: preference)
+        state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
         return .none
         
     case .onFetchedSettings(let result):
@@ -142,13 +142,13 @@ public let featureNotificationReducer = Reducer<
 }
 
 
-public struct FeatureNotificationSettingsEnvironment {
+public struct FeatureNotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
-    public let notificationSettingsRepository: NotificationSettingsRepositoryAPI
+    public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
     
     public init(mainQueue: AnySchedulerOf<DispatchQueue>,
-                notificationSettingsRepository: NotificationSettingsRepositoryAPI) {
+                notificationPreferencesRepository: NotificationPreferencesRepositoryAPI) {
         self.mainQueue = mainQueue
-        self.notificationSettingsRepository = notificationSettingsRepository
+        self.notificationPreferencesRepository = notificationPreferencesRepository
     }
 }
