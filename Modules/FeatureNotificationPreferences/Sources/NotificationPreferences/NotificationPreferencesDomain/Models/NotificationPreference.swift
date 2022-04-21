@@ -8,7 +8,9 @@
 import Foundation
 
 struct NotificationInfo {
-    public init(preferences: [NotificationPreference], notificationMethods: [NotificationMethodInfo], language: String) {
+    public init(preferences: [NotificationPreference],
+                notificationMethods: [NotificationMethodInfo],
+                language: String) {
         self.preferences = preferences
         self.notificationMethods = notificationMethods
         self.language = language
@@ -20,7 +22,11 @@ struct NotificationInfo {
 }
 
 public struct NotificationMethodInfo: Hashable, Identifiable {
-    public init(id: UUID = UUID(), method: NotificationMethod, title: String, configured: Bool, verified: Bool) {
+    public init(id: UUID = UUID(),
+                method: NotificationMethod,
+                title: String,
+                configured: Bool,
+                verified: Bool) {
         self.id = id
         self.method = method
         self.title = title

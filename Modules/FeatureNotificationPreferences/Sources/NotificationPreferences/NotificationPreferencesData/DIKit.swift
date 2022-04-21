@@ -19,5 +19,8 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationsSettingsClient(networkAdapter: adapter, requestBuilder: builder)
             return NotificationPreferencesRepository(client: client) as NotificationPreferencesRepositoryAPI}
+        
+        factory { UpdateContactPreferencesService() as UpdateContactPreferencesServiceAPI }
+
     }
 }

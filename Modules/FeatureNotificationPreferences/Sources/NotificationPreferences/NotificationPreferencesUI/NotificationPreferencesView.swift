@@ -10,11 +10,12 @@ import ComposableArchitecture
 import SwiftUI
 import FeatureNotificationPreferencesDomain
 import Mocks
-import FeatureNotificationPreferencesData
 import UIComponentsKit
 
 public struct FeatureNotificationPreferencesView: View {
     var store: Store<NotificationPreferencesState, NotificationPreferencesAction>
+    @Environment(\.presentationMode) var presentationMode
+
     @ObservedObject var viewStore: ViewStore<NotificationPreferencesState, NotificationPreferencesAction>
     
     public init(store: Store<NotificationPreferencesState,NotificationPreferencesAction>) {
@@ -40,7 +41,11 @@ public struct FeatureNotificationPreferencesView: View {
                         errorSection
                     }
                 }
+                .navigationBarTitleDisplayMode(.inline)
                 .navigationRoute(in: store)
+                .trailingNavigationButton(.close) {
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
         }
         .onAppear(perform: {
@@ -61,7 +66,6 @@ extension FeatureNotificationPreferencesView {
         }
         .padding(.horizontal, Spacing.padding3)
     }
-    
     
     var optionsSection: some View {
         WithViewStore(store) { viewStore in
@@ -95,20 +99,9 @@ extension FeatureNotificationPreferencesView {
                           onCloseTapped: nil)
                 .padding(Spacing.padding3)
                 Spacer()
-                HStack {
-                    Text("Failed to load notification settings")
-                        .foregroundColor(Color.WalletSemantic.warning)
-                        .padding(.leading, Spacing.padding2)
-                    Spacer()
-                    Button("Reload") {
-                        viewStore.send(.onAppear)
-                    }
-                    .foregroundColor(Color.WalletSemantic.primary)
-                    .padding(.trailing, Spacing.padding2)
+                AlertToast(text: "Reload", variant: .warning, icon: .repeat) {
+                    viewStore.send(.onAppear)
                 }
-                .frame(maxWidth: .infinity, maxHeight: 48)
-                .background(Color.WalletSemantic.background)
-                .padding(.bottom, 50)
             }
         }
     }
