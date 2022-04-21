@@ -4,25 +4,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "FeatureNotificationSettings",
+    name: "FeatureNotificationPreferences",
     defaultLocalization: "en",
     platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
-        .library(name: "FeatureNotificationSettings", targets: [
-            "FeatureNotificationSettingsDomain",
-            "FeatureNotificationSettingsUI",
-            "FeatureNotificationSettingsData"
+        .library(name: "FeatureNotificationPreferences", targets: [
+            "FeatureNotificationPreferencesDomain",
+            "FeatureNotificationPreferencesUI",
+            "FeatureNotificationPreferencesData"
         ]),
-        .library(name: "FeatureNotificationSettingsDetails", targets:["FeatureNotificationSettingsDetailsUI",
-                    "FeatureNotificationSettingsDetailsData",
-                    "FeatureNotificationSettingsDetailsDomain"]),
+        .library(name: "FeatureNotificationPreferencesDetails", targets:["FeatureNotificationPreferencesDetailsUI",
+                    "FeatureNotificationPreferencesDetailsData",
+                    "FeatureNotificationPreferencesDetailsDomain"]),
         .library(name: "Mocks", targets: ["Mocks"]),
-        .library(name: "FeatureNotificationSettingsDomain", targets: ["FeatureNotificationSettingsDomain"]),
-        .library(name: "FeatureNotificationSettingsUI", targets: ["FeatureNotificationSettingsUI"]),
-        .library(name: "FeatureNotificationSettingsData", targets: ["FeatureNotificationSettingsData"]),
-        .library(name: "FeatureNotificationSettingsDetailsUI", targets: ["FeatureNotificationSettingsDetailsUI"]),
-        .library(name: "FeatureNotificationSettingsDetailsData", targets: ["FeatureNotificationSettingsDetailsData"]),
-        .library(name: "FeatureNotificationSettingsDetailsDomain", targets: ["FeatureNotificationSettingsDetailsDomain"])
+        .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
+        .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
+        .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
+        .library(name: "FeatureNotificationPreferencesDetailsUI", targets: ["FeatureNotificationPreferencesDetailsUI"]),
+        .library(name: "FeatureNotificationPreferencesDetailsData", targets: ["FeatureNotificationPreferencesDetailsData"]),
+        .library(name: "FeatureNotificationPreferencesDetailsDomain", targets: ["FeatureNotificationPreferencesDetailsDomain"])
     ],
     dependencies: [
         .package(
@@ -45,7 +45,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "FeatureNotificationSettingsDomain",
+            name: "FeatureNotificationPreferencesDomain",
             dependencies: [
                 .product(
                     name: "NetworkError",
@@ -64,13 +64,13 @@ let package = Package(
                     package: "BlockchainComponentLibrary"
                 )
             ],
-            path: "Sources/NotificationSettings/NotificationSettingsDomain"
+            path: "Sources/NotificationPreferences/NotificationPreferencesDomain"
         ),
         .target(
-            name: "FeatureNotificationSettingsData",
+            name: "FeatureNotificationPreferencesData",
             dependencies: [
                 .target(
-                    name: "FeatureNotificationSettingsDomain"
+                    name: "FeatureNotificationPreferencesDomain"
                 ),
                 .product(
                     name: "NetworkKit",
@@ -81,13 +81,13 @@ let package = Package(
                     package: "NetworkErrors"
                 )
             ],
-            path: "Sources/NotificationSettings/NotificationSettingsData"
+            path: "Sources/NotificationPreferences/NotificationPreferencesData"
         ),
         .target(
-            name: "FeatureNotificationSettingsUI",
+            name: "FeatureNotificationPreferencesUI",
             dependencies: [
-                .target(name: "FeatureNotificationSettingsDomain"),
-                .target(name: "FeatureNotificationSettingsDetailsUI"),
+                .target(name: "FeatureNotificationPreferencesDomain"),
+                .target(name: "FeatureNotificationPreferencesDetailsUI"),
                 .target(name: "Mocks"),
                 .product(
                     name: "ComposableArchitecture",
@@ -118,12 +118,12 @@ let package = Package(
                     package: "ComposableArchitectureExtensions"
                 )
             ],
-            path: "Sources/NotificationSettings/NotificationSettingsUI"
+            path: "Sources/NotificationPreferences/NotificationPreferencesUI"
         ),
         .target(
-            name: "FeatureNotificationSettingsDetailsUI",
+            name: "FeatureNotificationPreferencesDetailsUI",
             dependencies: [
-                .target(name: "FeatureNotificationSettingsDetailsDomain"),
+                .target(name: "FeatureNotificationPreferencesDetailsDomain"),
                 .target(name: "Mocks"),
                 .product(
                     name: "ComposableArchitecture",
@@ -154,12 +154,12 @@ let package = Package(
                     package: "ComposableArchitectureExtensions"
                 )
             ],
-            path: "Sources/NotificationSettingsDetails/NotificationSettingsDetailsUI"
+            path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsUI"
         ),.target(
-            name: "FeatureNotificationSettingsDetailsData",
+            name: "FeatureNotificationPreferencesDetailsData",
             dependencies: [
                 .target(
-                    name: "FeatureNotificationSettingsDetailsDomain"
+                    name: "FeatureNotificationPreferencesDetailsDomain"
                 ),
                 .product(
                     name: "NetworkKit",
@@ -170,10 +170,10 @@ let package = Package(
                     package: "NetworkErrors"
                 )
             ],
-            path: "Sources/NotificationSettingsDetails/NotificationSettingsDetailsData"
+            path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsData"
         ),
         .target(
-            name: "FeatureNotificationSettingsDetailsDomain",
+            name: "FeatureNotificationPreferencesDetailsDomain",
             dependencies: [
                 .product(
                     name: "NetworkError",
@@ -192,12 +192,12 @@ let package = Package(
                     package: "BlockchainComponentLibrary"
                 )
             ],
-            path: "Sources/NotificationSettingsDetails/NotificationSettingsDetailsDomain"
+            path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsDomain"
         ),
         .target(
             name: "Mocks",
             dependencies: [
-                .target(name: "FeatureNotificationSettingsDomain")
+                .target(name: "FeatureNotificationPreferencesDomain")
             ],
             path: "Sources/Mocks"
         ),

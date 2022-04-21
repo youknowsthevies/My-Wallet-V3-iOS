@@ -15,8 +15,8 @@ import FeatureCardPaymentData
 import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
-import FeatureNotificationSettingsDomain
-import FeatureNotificationSettingsData
+import FeatureNotificationPreferencesDomain
+import FeatureNotificationPreferencesData
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
@@ -111,7 +111,7 @@ func defineDependencies() {
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit
-        DependencyContainer.featureNotificationSettingsDomainKit
+        DependencyContainer.FeatureNotificationPreferencesDomainKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
@@ -150,7 +150,7 @@ func defineDependencies() {
         DependencyContainer.featureCardIssuingUI
         DependencyContainer.featureCardPaymentUI
         DependencyContainer.featureCardPaymentData
-        DependencyContainer.featureNotificationSettingsDataKit
+        DependencyContainer.FeatureNotificationPreferencesDataKit
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

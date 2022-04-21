@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 import Combine
 import NetworkError
 
@@ -99,7 +99,7 @@ public struct MockGenerator {
     )
 }
 
-public class NotificationSettingsRepositoryMock: NotificationSettingsRepositoryAPI {
+public class NotificationPreferencesRepositoryMock: NotificationPreferencesRepositoryAPI {
     var subject = PassthroughSubject<[NotificationPreference], NetworkError>()
     public init() {}
     public func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {

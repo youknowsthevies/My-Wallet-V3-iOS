@@ -51,7 +51,7 @@ let package = Package(
         .package(path: "../WalletPayload"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../FeatureCardPayment"),
-        .package(path: "../FeatureNotificationSettings")
+        .package(path: "../FeatureNotificationPreferences")
     ],
     targets: [
         .target(
@@ -86,7 +86,7 @@ let package = Package(
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "FeatureCardPaymentUI", package: "FeatureCardPayment"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
-                .product(name: "FeatureNotificationSettingsUI", package: "FeatureNotificationSettings")
+                .product(name: "FeatureNotificationPreferencesUI", package: "FeatureNotificationPreferences")
 
             ]
         ),

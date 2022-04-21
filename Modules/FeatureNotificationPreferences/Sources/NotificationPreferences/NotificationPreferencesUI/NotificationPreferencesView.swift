@@ -1,5 +1,5 @@
 //
-//  FeatureNotificationSettingsView.swift
+//  FeatureNotificationPreferencesView.swift
 //  FeatureBuilder
 //
 //  Created by Augustin Udrea on 08/04/2022.
@@ -8,16 +8,16 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import SwiftUI
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 import Mocks
-import FeatureNotificationSettingsData
+import FeatureNotificationPreferencesData
 import UIComponentsKit
 
-public struct FeatureNotificationSettingsView: View {
-    var store: Store<NotificationSettingsState, NotificationSettingsAction>
-    @ObservedObject var viewStore: ViewStore<NotificationSettingsState, NotificationSettingsAction>
+public struct FeatureNotificationPreferencesView: View {
+    var store: Store<NotificationPreferencesState, NotificationPreferencesAction>
+    @ObservedObject var viewStore: ViewStore<NotificationPreferencesState, NotificationPreferencesAction>
     
-    public init(store: Store<NotificationSettingsState,NotificationSettingsAction>) {
+    public init(store: Store<NotificationPreferencesState,NotificationPreferencesAction>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
@@ -49,7 +49,7 @@ public struct FeatureNotificationSettingsView: View {
     }
 }
 
-extension FeatureNotificationSettingsView {
+extension FeatureNotificationPreferencesView {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("Wallet Activity")
@@ -115,7 +115,7 @@ extension FeatureNotificationSettingsView {
 }
 
 
-//struct FeatureNotificationSettingsView_Previews: PreviewProvider {
+//struct FeatureNotificationPreferencesView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        let notificationPrefences: [NotificationPreference] = [
 //            MockGenerator.transactionalNotificationPreference,
@@ -125,11 +125,11 @@ extension FeatureNotificationSettingsView {
 //        ]
 //
 //        PrimaryNavigationView {
-//            FeatureNotificationSettingsView(
+//            FeatureNotificationPreferencesView(
 //                store: .init(
 //                    initialState: .init(notificationPreferences: notificationPrefences),
 //                    reducer: featureNotificationReducer,
-//                    environment: FeatureNotificationSettingsEnvironment(mainQueue: .main, notificationSettingsRepository: NotificationSettingsRepositoryMock()))
+//                    environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main, NotificationPreferencesRepository: NotificationPreferencesRepositoryMock()))
 //            )
 //        }
 //    }

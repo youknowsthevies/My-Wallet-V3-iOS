@@ -9,6 +9,6 @@ import Foundation
 import NetworkError
 import Combine
 
-public protocol NotificationSettingsRepositoryAPI {
+public protocol NotificationPreferencesRepositoryAPI {
     func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError>
 }
