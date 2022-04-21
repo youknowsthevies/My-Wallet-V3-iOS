@@ -75,9 +75,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: - Account Picker
 
-    /// New SwiftUI account picker from `FeatureAccountPicker`
-    case swiftUIAccountPicker
-
     // MARK: - Onboarding
 
     /// New tour view from `FeatureTour`
@@ -133,8 +130,6 @@ extension AppFeature {
             return "ios_use_new_limits_ui"
         case .newQuoteForSimpleBuy:
             return "ios_ff_new_pricing"
-        case .swiftUIAccountPicker:
-            return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
         case .newOnboardingTour:
@@ -190,8 +185,6 @@ extension AppFeature {
         case .newLimitsUIEnabled:
             return true
         case .newQuoteForSimpleBuy:
-            return true
-        case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
             return true
