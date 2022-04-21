@@ -30,18 +30,22 @@ final class ERC20TokenAccountsMapper {
     func toDomain(tokenAccountsResponse: ERC20TokenAccountsResponse) -> ERC20TokenAccounts {
         tokenAccountsResponse.tokenAccounts
             .reduce(into: [:]) { accounts, account in
-                if let tokenCurrency = CryptoCurrency(
+                guard let tokenCurrency = CryptoCurrency(
                     erc20Address: account.tokenHash,
                     enabledCurrenciesService: enabledCurrenciesService
-                ), let balance = CryptoValue.create(
+                ) else {
+                    return
+                }
+                guard let balance = CryptoValue.create(
                     minor: account.balance,
                     currency: tokenCurrency
-                ) {
-                    accounts[tokenCurrency] = ERC20TokenAccount(
-                        balance: balance,
-                        tokenSymbol: account.tokenSymbol
-                    )
+                ) else {
+                    return
                 }
+
+                accounts[tokenCurrency] = ERC20TokenAccount(
+                    balance: balance
+                )
             }
     }
 }

@@ -5,6 +5,7 @@ public enum AssetModelType: Hashable {
 
     public enum ERC20ParentChain: String {
         case ethereum = "ETH"
+        case polygon = "MATIC"
     }
 
     public enum CeloParentChain: String {
@@ -22,6 +23,24 @@ public enum AssetModelType: Hashable {
 
     /// A fiat asset.
     case fiat
+
+    public var erc20ContractAddress: String? {
+        switch self {
+        case .erc20(let contractAddress, _):
+            return contractAddress
+        case .coin, .fiat, .celoToken:
+            return nil
+        }
+    }
+
+    public var erc20ParentChain: ERC20ParentChain? {
+        switch self {
+        case .erc20(_, let parentChain):
+            return parentChain
+        case .coin, .fiat, .celoToken:
+            return nil
+        }
+    }
 
     public var isERC20: Bool {
         switch self {

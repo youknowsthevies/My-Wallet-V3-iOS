@@ -51,13 +51,14 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
                     return .just(nil)
                 }
                 return walletOptions.walletOptions
-                    .map { walletOptions -> String? in
-                        guard let addressesForProduct = walletOptions.hotWalletAddresses?[product.rawValue] else {
+                    .asPublisher()
+                    .map(\.hotWalletAddresses?[product.rawValue])
+                    .map { addresses -> String? in
+                        guard let code = code(for: cryptoCurrency) else {
                             return nil
                         }
-                        return addressesForProduct[code(for: cryptoCurrency)]
+                        return addresses?[code]
                     }
-                    .asPublisher()
                     .replaceError(with: nil)
                     .eraseToAnyPublisher()
             }
@@ -65,7 +66,7 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
     }
 
     private func isEnabled(cryptoCurrency: CryptoCurrency) -> AnyPublisher<Bool, Never> {
-        guard cryptoCurrency.isERC20 || cryptoCurrency == .ethereum else {
+        guard code(for: cryptoCurrency) != nil else {
             // No App support.
             return .just(false)
         }
@@ -73,7 +74,13 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
     }
 }
 
-private func code(for cryptoCurrency: CryptoCurrency) -> String {
-    let parent: CryptoCurrency = cryptoCurrency.isERC20 ? .ethereum : cryptoCurrency
-    return parent.code.lowercased()
+private func code(for cryptoCurrency: CryptoCurrency) -> String? {
+    switch cryptoCurrency {
+    case .ethereum:
+        return cryptoCurrency.code.lowercased()
+    case let model where model.assetModel.kind.erc20ParentChain == .ethereum:
+        return CryptoCurrency.ethereum.code.lowercased()
+    default:
+        return nil
+    }
 }

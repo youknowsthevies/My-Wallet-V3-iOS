@@ -10,7 +10,8 @@ protocol TransactionPushClientAPI: AnyObject {
 
     /// Push transaction.
     func push(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
 }
 
@@ -45,20 +46,26 @@ final class APIClient: TransactionPushClientAPI,
 
     /// Privately used endpoint data
     private enum Endpoint {
-        static let fees: [String] = ["mempool", "fees", "eth"]
-        static let pushTx: [String] = ["eth", "pushtx"]
-    }
 
-    /// Privately used endpoint data
-    private enum EndpointV2 {
-        private static let base: [String] = ["v2", "eth", "data"]
-
-        static func transactions(for address: String) -> [String] {
-            base + ["account", address, "transactions"]
+        static func fees(network: EVMNetwork) -> String {
+            switch network {
+            case .ethereum:
+                return "/mempool/fees/eth"
+            case .polygon:
+                return "/mempool/fees/matic"
+            }
         }
 
-        static func transaction(with hash: String) -> [String] {
-            base + ["transaction", hash]
+        static var pushTx: String {
+            "/currency/evm/pushTx"
+        }
+
+        static func transactions(for address: String) -> String {
+            "/v2/eth/data/account/\(address)/transactions"
+        }
+
+        static func transaction(with hash: String) -> String {
+            "/v2/eth/data/transaction/\(hash)"
         }
     }
 
@@ -83,15 +90,31 @@ final class APIClient: TransactionPushClientAPI,
     func fees(
         cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
-        guard cryptoCurrency == .ethereum || cryptoCurrency.isERC20 else {
-            fatalError("Using Ethereum APIClient for incompatible CryptoCurrency")
+        fees(
+            contractAddress: cryptoCurrency.assetModel.kind.erc20ContractAddress,
+            network: network(from: cryptoCurrency)
+        )
+    }
+
+    private func network(from cryptoCurrency: CryptoCurrency) -> EVMNetwork {
+        guard let network = cryptoCurrency.assetModel.evmNetwork else {
+            let code = cryptoCurrency.code
+            let chain = cryptoCurrency.assetModel.kind.erc20ParentChain?.rawValue ?? ""
+            fatalError("Incompatible Asset: '\(code)', chain: '\(chain)'.")
         }
+        return network
+    }
+
+    private func fees(
+        contractAddress: String?,
+        network: EVMNetwork
+    ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         var parameters: [URLQueryItem] = []
-        if let contractAddress = cryptoCurrency.erc20ContractAddress {
+        if let contractAddress = contractAddress {
             parameters.append(URLQueryItem(name: "contractAddress", value: contractAddress))
         }
         let request = requestBuilder.get(
-            path: Endpoint.fees,
+            path: Endpoint.fees(network: network),
             parameters: parameters
         )!
         return networkAdapter.perform(request: request)
@@ -99,15 +122,17 @@ final class APIClient: TransactionPushClientAPI,
 
     /// Pushes a transaction
     func push(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
         let pushTxRequest = PushTxRequest(
             rawTx: transaction.rawTransaction,
+            network: network.rawValue,
             api_code: apiCode
         )
         let data = try? JSONEncoder().encode(pushTxRequest)
         let request = requestBuilder.post(
-            path: Endpoint.pushTx,
+            path: "/currency/evm/pushTx",
             body: data,
             recordErrors: true
         )!
@@ -118,7 +143,7 @@ final class APIClient: TransactionPushClientAPI,
         network: EVMNetwork,
         with hash: String
     ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> {
-        let path = EndpointV2.transaction(with: hash)
+        let path = Endpoint.transaction(with: hash)
         let request = requestBuilder.get(path: path)!
         return networkAdapter.perform(request: request)
     }
@@ -128,7 +153,7 @@ final class APIClient: TransactionPushClientAPI,
         network: EVMNetwork,
         for account: String
     ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError> {
-        let path = EndpointV2.transactions(for: account)
+        let path = Endpoint.transactions(for: account)
         let request = requestBuilder.get(path: path)!
         return networkAdapter
             .perform(
@@ -137,16 +162,5 @@ final class APIClient: TransactionPushClientAPI,
             )
             .map(\.transactions)
             .eraseToAnyPublisher()
-    }
-}
-
-extension CryptoCurrency {
-    var erc20ContractAddress: String? {
-        switch assetModel.kind {
-        case .erc20(let contractAddress, _):
-            return contractAddress
-        default:
-            return nil
-        }
     }
 }

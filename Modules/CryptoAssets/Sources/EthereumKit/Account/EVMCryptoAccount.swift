@@ -18,7 +18,9 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
     let network: EVMNetwork
 
     func createTransactionEngine() -> Any {
-        EthereumOnChainTransactionEngineFactory()
+        EthereumOnChainTransactionEngineFactory(
+            network: network
+        )
     }
 
     var actionableBalance: Single<MoneyValue> {
@@ -95,6 +97,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         EthereumReceiveAddress(
             address: publicKey,
             label: label,
+            network: network,
             onTxCompleted: onTxCompleted
         )!
     }

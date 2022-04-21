@@ -38,7 +38,7 @@ final class ERC20HistoricalTransactionService: ERC20HistoricalTransactionService
         erc20Asset: AssetModel,
         address: EthereumAddress
     ) -> Single<[ERC20HistoricalTransaction]> {
-        guard let contractAddress = erc20Asset.contractAddress?.publicKey else {
+        guard let contractAddress = erc20Asset.kind.erc20ContractAddress else {
             return .just([])
         }
         let key = Key(erc20Asset: erc20Asset, address: address)

@@ -14,12 +14,14 @@ public enum EthereumTransactionSendingServiceError: Error {
 
 protocol EthereumTransactionSendingServiceAPI {
     func send(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 
     func signAndSend(
         transaction: EthereumTransactionCandidate,
-        keyPair: EthereumKeyPair
+        keyPair: EthereumKeyPair,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 }
 
@@ -38,21 +40,23 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
 
     func signAndSend(
         transaction: EthereumTransactionCandidate,
-        keyPair: EthereumKeyPair
+        keyPair: EthereumKeyPair,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
         transactionSigner
             .sign(transaction: transaction, keyPair: keyPair)
             .mapError(EthereumTransactionSendingServiceError.signingError)
             .flatMap { [send] finalised in
-                send(finalised)
+                send(finalised, network)
             }
             .eraseToAnyPublisher()
     }
 
     func send(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
-        client.push(transaction: transaction)
+        client.push(transaction: transaction, network: network)
             .mapError(EthereumTransactionSendingServiceError.pushTransactionFailed)
             .flatMap { response in
                 EthereumTransactionPublished.create(

@@ -120,7 +120,13 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
-                .refreshERC20AssetsCache()
+                .refreshEthereumERC20AssetsCache()
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .fireAndForget(),
+
+            environment.supportedAssetsRemoteService
+                .refreshPolygonERC20AssetsCache()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),

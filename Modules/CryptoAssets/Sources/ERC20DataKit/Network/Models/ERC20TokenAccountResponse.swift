@@ -8,10 +8,4 @@ struct ERC20TokenAccountResponse: Codable {
 
     /// The balance of the account, in minor units.
     let balance: String
-
-    /// The number of transfers that this account have.
-    let transferCount: String
-
-    /// The symbol of the ERC-20 token (e.g. `AAVE`, `YFI`, etc.).
-    let tokenSymbol: String
 }

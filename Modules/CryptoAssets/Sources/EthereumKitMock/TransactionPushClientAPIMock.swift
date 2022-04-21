@@ -12,7 +12,8 @@ class TransactionPushClientAPIMock: TransactionPushClientAPI {
         .just(EthereumPushTxResponse(txHash: "txHash"))
 
     func push(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
         lastPushedTransaction = transaction
         return pushTransactionValue

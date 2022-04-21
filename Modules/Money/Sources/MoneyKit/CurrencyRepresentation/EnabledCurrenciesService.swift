@@ -18,9 +18,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
 
-    var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
-        [.USD]
-    }
+    let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD]
 
     var allEnabledCurrencies: [CurrencyType] {
         defer { allEnabledCurrenciesLock.unlock() }
@@ -42,6 +40,8 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .ethereum,
             .bitcoinCash,
             .stellar
+            // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
+            // .polygon
         ]
     }
 
@@ -53,25 +53,34 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .compactMap(\.cryptoCurrency)
     }
 
-    private var erc20Currencies: [CryptoCurrency] {
-        repository.erc20Assets
+    private var ethereumERC20Currencies: [CryptoCurrency] {
+        repository.ethereumERC20Assets
             .currencies
-            .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
             .filter(\.kind.isERC20)
             .compactMap(\.cryptoCurrency)
     }
 
-    private lazy var allEnabledCryptoCurrenciesLazy: [CryptoCurrency] = (nonCustodialCryptoCurrencies + custodialCurrencies + erc20Currencies)
-        .unique
-        .sorted()
+    // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
+    // private var polygonERC20Currencies: [CryptoCurrency] {
+    //    repository.polygonERC20Assets
+    //        .currencies
+    //        .filter { PolygonERC20CodeAllowList.allCases.map(\.rawValue).contains($0.code) }
+    //        .filter(\.kind.isERC20)
+    //        .compactMap(\.cryptoCurrency)
+    // }
 
-    private lazy var allEnabledCurrenciesLazy: [CurrencyType] = {
-        let crypto: [CurrencyType] = allEnabledCryptoCurrencies
-            .map { .crypto($0) }
-        let fiat: [CurrencyType] = allEnabledFiatCurrencies
-            .map { .fiat($0) }
-        return crypto + fiat
-    }()
+    private lazy var allEnabledCryptoCurrenciesLazy: [CryptoCurrency] = (
+        nonCustodialCryptoCurrencies
+            + custodialCurrencies
+            + ethereumERC20Currencies
+        // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
+        // + polygonERC20Currencies
+    )
+    .unique
+    .sorted()
+
+    private lazy var allEnabledCurrenciesLazy: [CurrencyType] = allEnabledCryptoCurrencies.map(CurrencyType.crypto)
+        + allEnabledFiatCurrencies.map(CurrencyType.fiat)
 
     private let allEnabledCryptoCurrenciesLock = NSLock()
     private let allEnabledCurrenciesLock = NSLock()

@@ -39,7 +39,24 @@ extension DependencyContainer {
                 network: .ethereum,
                 repository: DIKit.resolve(),
                 addressFactory: EthereumExternalAssetAddressFactory(
-                    enabledCurrenciesService: DIKit.resolve()
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .ethereum
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
+        // MARK: CoinCore
+
+        factory(tag: CryptoCurrency.polygon) {
+            EVMAsset(
+                network: .polygon,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .polygon
                 ),
                 errorRecorder: DIKit.resolve(),
                 exchangeAccountProvider: DIKit.resolve(),

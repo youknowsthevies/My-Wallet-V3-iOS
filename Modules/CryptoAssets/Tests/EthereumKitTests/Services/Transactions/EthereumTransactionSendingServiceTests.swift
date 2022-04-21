@@ -57,7 +57,11 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         let keyPair = MockEthereumWalletTestData.keyPair
 
         let sendObservable: Observable<EthereumTransactionPublished> = subject
-            .signAndSend(transaction: .defaultMock, keyPair: keyPair)
+            .signAndSend(
+                transaction: .defaultMock,
+                keyPair: keyPair,
+                network: .ethereum
+            )
             .asObservable()
 
         // Act

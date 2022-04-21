@@ -8,7 +8,8 @@ import ToolKit
 
 public protocol SupportedAssetsRemoteServiceAPI {
     func refreshCustodialAssetsCache() -> AnyPublisher<Void, Never>
-    func refreshERC20AssetsCache() -> AnyPublisher<Void, Never>
+    func refreshEthereumERC20AssetsCache() -> AnyPublisher<Void, Never>
+    func refreshPolygonERC20AssetsCache() -> AnyPublisher<Void, Never>
 }
 
 final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
@@ -48,14 +49,14 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func refreshERC20AssetsCache() -> AnyPublisher<Void, Never> {
-        client.erc20Assets
+    func refreshEthereumERC20AssetsCache() -> AnyPublisher<Void, Never> {
+        client.ethereumERC20Assets
             .eraseError()
             .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
                 fileIO
                     .write(
                         response,
-                        to: filePathProvider.remoteERC20Assets!,
+                        to: filePathProvider.remoteEthereumERC20Assets!,
                         encodedUsing: jsonDecoder
                     )
                     .eraseError()
@@ -64,5 +65,25 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
             }
             .replaceError(with: ())
             .eraseToAnyPublisher()
+    }
+
+    func refreshPolygonERC20AssetsCache() -> AnyPublisher<Void, Never> {
+        .just(())
+        // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
+        //    client.polygonERC20Assets
+        //        .eraseError()
+        //        .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
+        //            fileIO
+        //                .write(
+        //                    response,
+        //                    to: filePathProvider.remotePolygonERC20Assets!,
+        //                    encodedUsing: jsonDecoder
+        //                )
+        //                .eraseError()
+        //                .publisher
+        //                .eraseToAnyPublisher()
+        //        }
+        //        .replaceError(with: ())
+        //        .eraseToAnyPublisher()
     }
 }

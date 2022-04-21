@@ -5,11 +5,14 @@ import MoneyKit
 
 public enum EVMNetwork: String, Hashable {
     case ethereum = "ETH"
+    case polygon = "MATIC"
 
     public var chainID: BigUInt {
         switch self {
         case .ethereum:
             return 1
+        case .polygon:
+            return 137
         }
     }
 
@@ -17,6 +20,8 @@ public enum EVMNetwork: String, Hashable {
         switch self {
         case .ethereum:
             return .ethereum
+        case .polygon:
+            return .polygon
         }
     }
 
@@ -24,6 +29,8 @@ public enum EVMNetwork: String, Hashable {
         switch self {
         case .ethereum:
             return .ethereum
+        case .polygon:
+            return .polygon
         }
     }
 }
@@ -31,10 +38,14 @@ public enum EVMNetwork: String, Hashable {
 extension AssetModel {
 
     public var evmNetwork: EVMNetwork? {
-        if self == .ethereum {
+        switch self {
+        case .ethereum:
             return .ethereum
+        case .polygon:
+            return .polygon
+        default:
+            return kind.evmNetwork
         }
-        return kind.evmNetwork
     }
 }
 
@@ -58,6 +69,8 @@ extension AssetModelType.ERC20ParentChain {
         switch self {
         case .ethereum:
             return .ethereum
+        case .polygon:
+            return .polygon
         }
     }
 }

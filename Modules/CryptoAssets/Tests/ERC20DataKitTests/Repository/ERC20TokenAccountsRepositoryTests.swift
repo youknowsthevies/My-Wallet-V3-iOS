@@ -83,7 +83,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValue: ERC20TokenAccounts = fetchAccounts
@@ -107,7 +107,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValue: ERC20TokenAccounts = newValue
@@ -128,7 +128,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValue: ERC20TokenAccounts = fetchAccounts
@@ -177,7 +177,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValues: [Result<ERC20TokenAccounts, ERC20TokenAccountsError>] = [
@@ -204,7 +204,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValue: Result<ERC20TokenAccounts, ERC20TokenAccountsError> = .success(fetchAccounts)
@@ -228,7 +228,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let address = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
         let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey)
         let newValue: ERC20TokenAccounts = [
-            currency: .init(balance: .one(currency: currency), tokenSymbol: currency.code)
+            currency: .init(balance: .one(currency: currency))
         ]
 
         let expectedValue: Result<ERC20TokenAccounts, ERC20TokenAccountsError> = .success(newValue)

@@ -159,6 +159,18 @@ extension AssetModel {
         spotColor: "000000",
         sortIndex: 4
     )
+
+    public static let polygon = AssetModel(
+        code: "MATIC.MATIC",
+        displayCode: "MATIC (Polygon)",
+        kind: .coin(minimumOnChainConfirmations: 128),
+        name: "Polygon",
+        precision: 18,
+        products: [.privateKey],
+        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png",
+        spotColor: nil,
+        sortIndex: 5
+    )
 }
 
 extension AssetModelType {

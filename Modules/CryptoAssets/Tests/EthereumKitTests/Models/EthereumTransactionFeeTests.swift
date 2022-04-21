@@ -10,11 +10,13 @@ class EthereumTransactionFeeTests: XCTestCase {
     var sut: EthereumTransactionFee!
 
     override func setUp() {
+        super.setUp()
         sut = EthereumTransactionFee(
             regular: 5,
             priority: 7,
             gasLimit: 11,
-            gasLimitContract: 13
+            gasLimitContract: 13,
+            network: .ethereum
         )
     }
 

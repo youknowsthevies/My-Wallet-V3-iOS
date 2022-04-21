@@ -55,11 +55,14 @@ final class RPCClient: LatestBlockClientAPI,
 
     private enum Endpoint {
         private static let ethereumNode: [String] = ["eth", "nodes", "rpc"]
+        private static let polygonNode: [String] = ["matic-bor", "nodes", "rpc"]
 
         static func nodePath(for network: EVMNetwork) -> [String] {
             switch network {
             case .ethereum:
                 return ethereumNode
+            case .polygon:
+                return polygonNode
             }
         }
     }

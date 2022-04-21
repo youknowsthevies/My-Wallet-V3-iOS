@@ -40,6 +40,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumFeeServiceAPI
     private let gasEstimateService: GasEstimateServiceAPI
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
+    private let network: EVMNetwork
     private let priceService: PriceServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionSigningService: EthereumTransactionSigningServiceAPI
@@ -59,6 +60,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
     init(
         requireSecondPassword: Bool,
+        network: EVMNetwork,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
@@ -75,6 +77,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.feeService = feeService
         self.gasEstimateService = gasEstimateService
         self.keyPairProvider = keyPairProvider
+        self.network = network
         self.priceService = priceService
         self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
@@ -226,10 +229,11 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 }
         case .send:
             return transactionPublisher.asSingle()
-                .flatMap { [ethereumTransactionDispatcher] candidate in
+                .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
-                        secondPassword: secondPassword
+                        secondPassword: secondPassword,
+                        network: network
                     )
                 }
                 .map(\.transactionHash)

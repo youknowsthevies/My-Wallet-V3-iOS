@@ -5,11 +5,8 @@ import MoneyKit
 
 extension AssetModel {
     var contractAddress: EthereumAddress? {
-        switch kind {
-        case .erc20(let contractAddress, _):
-            return EthereumAddress(address: contractAddress)
-        default:
-            return nil
-        }
+        kind
+            .erc20ContractAddress
+            .flatMap(EthereumAddress.init(address:))
     }
 }
