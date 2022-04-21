@@ -32,7 +32,7 @@ final class WelcomeReducerTests: XCTestCase {
         mockMainQueue = DispatchQueue.test
         dummyUserDefaults = UserDefaults(suiteName: "welcome.reducer.tests.defaults")!
         mockFeatureFlagsService = MockFeatureFlagsService()
-        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
+        mockFeatureFlagsService.disable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
         testStore = TestStore(
             initialState: .init(),
             reducer: welcomeReducer,
@@ -77,7 +77,7 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_internal() {
         BuildFlag.isInternal = true
-        mockFeatureFlagsService.disable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
+        mockFeatureFlagsService.enable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
         }
@@ -88,7 +88,7 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_start_does_not_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_not_internal() {
         BuildFlag.isInternal = false
-        mockFeatureFlagsService.disable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
+        mockFeatureFlagsService.enable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
             state.manualPairingEnabled = false

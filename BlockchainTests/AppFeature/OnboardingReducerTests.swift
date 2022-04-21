@@ -53,7 +53,7 @@ class OnboardingReducerTests: XCTestCase {
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         // disable the manual login
-        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
+        mockFeatureFlagsService.disable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
     }
 
     override func tearDownWithError() throws {
