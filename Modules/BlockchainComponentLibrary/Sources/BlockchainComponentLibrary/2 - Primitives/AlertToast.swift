@@ -8,11 +8,12 @@ import SwiftUI
 ///
 /// [AlertToast](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=212%3A5937)
 public struct AlertToast: View {
-
+    
     private let text: String
     private let variant: Variant
     private var icon: Icon?
-
+    private var action: (() -> Void)?
+    
     /// Create an AlertToast view
     /// - Parameters:
     ///   - text: Text displayed in the toast
@@ -21,13 +22,15 @@ public struct AlertToast: View {
     public init(
         text: String,
         variant: Variant = .default,
-        icon: Icon? = nil
+        icon: Icon? = nil,
+        action: (() -> Void)? = nil
     ) {
         self.text = text
         self.variant = variant
         self.icon = icon
+        self.action = action
     }
-
+    
     public var body: some View {
         HStack(spacing: 8) {
             if let icon = self.icon {
@@ -64,9 +67,14 @@ public struct AlertToast: View {
                         y: 3
                     )
             }
+        ) .gesture(
+            TapGesture()
+                .onEnded { _ in
+                    action?()
+                }
         )
     }
-
+    
     /// Style variant for AlertToast
     public struct Variant {
         fileprivate let backgroundColor: Color
@@ -81,21 +89,21 @@ extension AlertToast.Variant {
         textColor: .init(light: .palette.white, dark: .palette.grey900),
         iconColor: .init(light: .palette.white, dark: .palette.grey900)
     )
-
+    
     // success
     public static let success = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.green600),
         textColor: .init(light: .palette.green400, dark: .palette.white),
         iconColor: .init(light: .palette.green400, dark: .palette.white)
     )
-
+    
     // warning
     public static let warning = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.orange400),
         textColor: .init(light: .palette.orange400, dark: .palette.dark800),
         iconColor: .init(light: .palette.orange400, dark: .palette.dark800)
     )
-
+    
     // error
     public static let error = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.red600),
@@ -114,7 +122,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Default")
-
+            
             VStack {
                 AlertToast(text: "Default", variant: .default, icon: .refresh)
                 AlertToast(text: "Default", variant: .default, icon: .refresh)
@@ -122,7 +130,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Default + Icon")
-
+            
             VStack {
                 AlertToast(text: "Success", variant: .success)
                 AlertToast(text: "Success", variant: .success)
@@ -130,7 +138,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Success")
-
+            
             VStack {
                 AlertToast(text: "Success", variant: .success, icon: .checkCircle)
                 AlertToast(text: "Success", variant: .success, icon: .checkCircle)
@@ -138,7 +146,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Success + Icon")
-
+            
             VStack {
                 AlertToast(text: "Warning", variant: .warning)
                 AlertToast(text: "Warning", variant: .warning)
@@ -146,7 +154,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Warning")
-
+            
             VStack {
                 AlertToast(text: "Warning", variant: .warning, icon: .alert)
                 AlertToast(text: "Warning", variant: .warning, icon: .alert)
@@ -154,7 +162,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Warning + Icon")
-
+            
             VStack {
                 AlertToast(text: "Error", variant: .error)
                 AlertToast(text: "Error", variant: .error)
@@ -162,7 +170,7 @@ struct AlertToast_Previews: PreviewProvider {
             }
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Error")
-
+            
             VStack {
                 AlertToast(text: "Error", variant: .error, icon: .error)
                 AlertToast(text: "Error", variant: .error, icon: .error)

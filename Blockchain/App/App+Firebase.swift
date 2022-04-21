@@ -21,7 +21,6 @@ extension AppProtocol {
         observers.insert(CoinViewAnalytics(app: self, analytics: recorder))
         observers.insert(FirebaseAnalytics(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
-        observers.insert(NotificationLanguageObserver(app: self))
         observers.insert(resolve() as DeepLinkCoordinator)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))

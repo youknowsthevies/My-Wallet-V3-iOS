@@ -36,6 +36,7 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
 
 public enum NotificationPreferencesDetailsAction: Equatable, BindableAction {
     case onDissapear
+    case save([UpdatedNotificationPreference])
     case binding(BindingAction<NotificationPreferencesDetailsState>)
 }
 
