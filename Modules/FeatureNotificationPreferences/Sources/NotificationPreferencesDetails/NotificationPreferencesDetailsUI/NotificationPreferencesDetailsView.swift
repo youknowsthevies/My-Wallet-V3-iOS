@@ -1,5 +1,5 @@
 //
-//  NotificationSettingsActivityTogglesViewView.swift
+//  NotificationPreferencesActivityTogglesViewView.swift
 //  FeatureBuilder
 //
 //  Created by Augustin Udrea on 12/04/2022.
@@ -10,11 +10,11 @@ import ComposableArchitecture
 import BlockchainComponentLibrary
 import Mocks
 
-public struct NotificationSettingsDetailsView: View {
-    var store: Store<NotificationSettingsDetailsState, NotificationSettingsDetailsAction>
-    @ObservedObject var viewStore: ViewStore<NotificationSettingsDetailsState, NotificationSettingsDetailsAction>
+public struct NotificationPreferencesDetailsView: View {
+    var store: Store<NotificationPreferencesDetailsState, NotificationPreferencesDetailsAction>
+    @ObservedObject var viewStore: ViewStore<NotificationPreferencesDetailsState, NotificationPreferencesDetailsAction>
     
-    public init(store: Store<NotificationSettingsDetailsState, NotificationSettingsDetailsAction>) {
+    public init(store: Store<NotificationPreferencesDetailsState, NotificationPreferencesDetailsAction>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
@@ -30,7 +30,7 @@ public struct NotificationSettingsDetailsView: View {
 }
 
 
-extension NotificationSettingsDetailsView {
+extension NotificationPreferencesDetailsView {
    @ViewBuilder func controlsViewSection() -> some View {
         WithViewStore(store) { viewStore in
             let requiredMethods = viewStore.notificationPreference.requiredMethods.map {$0.method}
@@ -96,15 +96,15 @@ extension NotificationSettingsDetailsView {
 }
 
 
-struct NotificationSettingsDetailsViewView_Previews: PreviewProvider {
+struct NotificationPreferencesDetailsViewView_Previews: PreviewProvider {
     static var previews: some View {
         let notificationPreference = MockGenerator.marketingNotificationPreference
         PrimaryNavigationView {
-            NotificationSettingsDetailsView(
+            NotificationPreferencesDetailsView(
                 store: .init(
                     initialState: .init(notificationPreference: notificationPreference),
-                    reducer: notificationSettingsDetailsReducer,
-                    environment: NotificationSettingsDetailsEnvironment())
+                    reducer: notificationPreferencesDetailsReducer,
+                    environment: NotificationPreferencesDetailsEnvironment())
                     )
                 }
         }

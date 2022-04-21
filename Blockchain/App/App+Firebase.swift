@@ -3,7 +3,7 @@ import AnalyticsKit
 import DIKit
 import FeatureAppUI
 import FeatureCoinUI
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 import Firebase
 import FirebaseProtocol
 

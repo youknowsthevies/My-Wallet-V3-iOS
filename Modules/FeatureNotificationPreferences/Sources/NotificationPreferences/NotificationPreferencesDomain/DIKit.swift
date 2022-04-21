@@ -8,9 +8,9 @@
 import DIKit
 
 extension DependencyContainer {
-    // MARK: - FeatureNotificationSettingsDomain Module
+    // MARK: - FeatureNotificationPreferencesDomain Module
 
-    public static var featureNotificationSettingsDomainKit = module {
+    public static var FeatureNotificationPreferencesDomainKit = module {
         single { ContactLanguagePreferenceService() as ContactLanguagePreferenceServiceAPI }
     }
 }

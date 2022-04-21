@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 
 public struct NotificationInfoResponse: Decodable {
     let preferences: [NotificationPreferenceResponse]

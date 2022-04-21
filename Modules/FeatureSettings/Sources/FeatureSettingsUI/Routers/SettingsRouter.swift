@@ -19,7 +19,7 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
-import FeatureNotificationSettingsUI
+import FeatureNotificationPreferencesUI
 
 public enum CardOrderingResult {
     case created
@@ -364,14 +364,13 @@ final class SettingsRouter: SettingsRouterAPI {
     
     private func showNotificationsSettingsScreen() {
         let presenter = topViewController
-        let notificationCenterView = FeatureNotificationSettingsView(store: .init(
+        let notificationCenterView = FeatureNotificationPreferencesView(store: .init(
                 initialState: .init(viewState: .idle),
                 reducer: featureNotificationReducer,
-                environment: FeatureNotificationSettingsEnvironment(mainQueue: .main,
-                                                                    notificationSettingsRepository: DIKit.resolve())
+                environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main,
+                                                                    notificationPreferencesRepository: DIKit.resolve())
         ))
         presenter.present(notificationCenterView)
-        
     }
     
     private func showBankLinkingFlow(currency: FiatCurrency) {

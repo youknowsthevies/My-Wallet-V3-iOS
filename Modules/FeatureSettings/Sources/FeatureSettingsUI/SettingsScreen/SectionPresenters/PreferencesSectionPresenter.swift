@@ -35,11 +35,11 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
         
         state = featureFlagService.isEnabled(.remote(.notificationPreferences))
             .last()
-            .map { notificationSettingsEnabled -> SettingsSectionLoadingState in
+            .map { NotificationPreferencesEnabled -> SettingsSectionLoadingState in
                 
-                let notificationSettingsCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
-                if notificationSettingsEnabled && viewModel.items.contains(notificationSettingsCell) == false {
-                    viewModel.items.append(notificationSettingsCell)
+                let NotificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
+                if NotificationPreferencesEnabled && viewModel.items.contains(NotificationPreferencesCell) == false {
+                    viewModel.items.append(NotificationPreferencesCell)
                 }
                 return .loaded(next: .some(viewModel))
             }

@@ -238,8 +238,8 @@ packages:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
-  FeatureNotificationSettings:
-    path: Modules/FeatureNotificationSettings
+  FeatureNotificationPreferences:
+    path: Modules/FeatureNotificationPreferences
   FeatureTour:
     path: Modules/FeatureTour
   FeatureTransaction:
@@ -345,7 +345,7 @@ targets:
       - package: FeatureDebug
       - package: FeatureForm
       - package: FeatureInterest
-      - package: FeatureNotificationSettings
+      - package: FeatureNotificationPreferences
       - package: FeatureKYC
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
