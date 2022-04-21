@@ -40,14 +40,6 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
         let allERC20 = Set(enabledCurrenciesService.allEnabledCryptoCurrencies.filter(\.isERC20))
         return coincore.allAccounts
             .map(\.accounts)
-            .map { accounts -> [BlockchainAccount] in
-                let present: Set<CryptoCurrency> = Set(accounts.map(\.currencyType).compactMap(\.cryptoCurrency))
-                let missingERC20: Set<CryptoCurrency> = allERC20.subtracting(present)
-                let newAccounts = missingERC20.map { cryptoCurrency in
-                    ReceivePlaceholderCryptoAccount(asset: cryptoCurrency)
-                }
-                return (accounts + newAccounts)
-            }
             .eraseError()
             .flatMapFilter(
                 action: .receive,
@@ -61,6 +53,14 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
                     errorRecorder.error(error)
                 }
             )
+            .map { accounts -> [BlockchainAccount] in
+                let present: Set<CryptoCurrency> = Set(accounts.map(\.currencyType).compactMap(\.cryptoCurrency))
+                let missingERC20: Set<CryptoCurrency> = allERC20.subtracting(present)
+                let newAccounts = missingERC20.map { cryptoCurrency in
+                    ReceivePlaceholderCryptoAccount(asset: cryptoCurrency)
+                }
+                return (accounts + newAccounts)
+            }
             .asObservable()
     }
 
