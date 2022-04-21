@@ -1,5 +1,5 @@
 //
-//  NotificationSettingsActivityTogglesView.swift
+//  NotificationPreferencesActivityTogglesView.swift
 //  FeatureBuilder
 //
 //  Created by Augustin Udrea on 12/04/2022.
@@ -7,9 +7,9 @@
 
 import ComposableArchitecture
 import Foundation
-import FeatureNotificationSettingsDomain
+import FeatureNotificationPreferencesDomain
 
-public struct NotificationSettingsDetailsState: Equatable, Hashable {
+public struct NotificationPreferencesDetailsState: Equatable, Hashable {
     public let notificationPreference: NotificationPreference
     @BindableState var pushSwitchIsOn: Bool = false
     @BindableState var emailSwitchIsOn: Bool = false
@@ -34,12 +34,12 @@ public struct NotificationSettingsDetailsState: Equatable, Hashable {
     }
 }
 
-public enum NotificationSettingsDetailsAction: Equatable, BindableAction {
+public enum NotificationPreferencesDetailsAction: Equatable, BindableAction {
     case onDissapear
-    case binding(BindingAction<NotificationSettingsDetailsState>)
+    case binding(BindingAction<NotificationPreferencesDetailsState>)
 }
 
-public struct NotificationSettingsDetailsEnvironment{
+public struct NotificationPreferencesDetailsEnvironment{
     public init() {
         
     }
