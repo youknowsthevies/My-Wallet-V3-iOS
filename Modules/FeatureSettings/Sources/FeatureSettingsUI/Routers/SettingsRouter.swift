@@ -368,8 +368,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 initialState: .init(viewState: .idle),
                 reducer: featureNotificationReducer,
                 environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main,
-                                                                       notificationPreferencesRepository: DIKit.resolve(),
-                                                                       updatePreferencesService: DIKit.resolve())))
+                                                                       notificationPreferencesRepository: DIKit.resolve())))
         presenter.present(notificationCenterView)
     }
     

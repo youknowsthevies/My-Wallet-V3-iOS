@@ -10,5 +10,6 @@ import NetworkError
 import Combine
 
 public protocol NotificationPreferencesRepositoryAPI {
-    func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError>
+    func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError>
+    func update(preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError>
 }

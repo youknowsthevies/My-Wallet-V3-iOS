@@ -15,7 +15,7 @@ import UIComponentsKit
 public struct FeatureNotificationPreferencesView: View {
     var store: Store<NotificationPreferencesState, NotificationPreferencesAction>
     @Environment(\.presentationMode) var presentationMode
-
+    
     @ObservedObject var viewStore: ViewStore<NotificationPreferencesState, NotificationPreferencesAction>
     
     public init(store: Store<NotificationPreferencesState,NotificationPreferencesAction>) {
@@ -80,50 +80,43 @@ extension FeatureNotificationPreferencesView {
                                     .accentColor(.semantic.muted)
                             },
                             action: {
-                                viewStore.send(.route(.navigate(to: .showDetails(notificationPreference: notificationPreference))))
+                                viewStore.send(.onPreferenceSelected(notificationPreference))
+                                viewStore.send(.route(.navigate(to: .showDetails)))
                             })
                     }
                 }
             }
-            .padding(.top, 0)
+            .padding(.top, 66)
         }
     }
     
     var errorSection: some View {
         WithViewStore(store) { viewStore in
-            VStack {
-                AlertCard(title: "Notification settings failed to load",
-                          message: "There was a problem fetching your notifications settings. Please reload or try again later.",
-                          variant: .warning,
-                          isBordered: true,
-                          onCloseTapped: nil)
-                .padding(Spacing.padding3)
+            VStack(spacing: 8, content: {
                 Spacer()
-                AlertToast(text: "Reload", variant: .warning, icon: .repeat) {
-                    viewStore.send(.onAppear)
+                Text("Notification settings failed to load")
+                    .multilineTextAlignment(.center)
+                    .typography(.title3)
+                    .padding(.horizontal, Spacing.padding3)
+                    .foregroundColor(Color.WalletSemantic.title)
+
+                Text("There was a problem fetching your notifications settings. Please reload or try again later.")
+                    .multilineTextAlignment(.center)
+                    .typography(.caption1)
+                    .padding(.horizontal, Spacing.padding3)
+                    .foregroundColor(Color.WalletSemantic.muted)
+                Spacer()
+                PrimaryButton(title: "Try Again") {
+                    viewStore.send(.onReloadTap)
                 }
-            }
+                .padding(.horizontal, Spacing.padding3)
+                .padding(.bottom, Spacing.padding2)
+                
+                MinimalButton(title: "Go Back") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .padding(.horizontal, Spacing.padding3)
+            })
         }
     }
 }
-
-
-//struct FeatureNotificationPreferencesView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let notificationPrefences: [NotificationPreference] = [
-//            MockGenerator.transactionalNotificationPreference,
-//            MockGenerator.marketingNotificationPreference,
-//            MockGenerator.priceAlertNotificationPreference,
-//            MockGenerator.securityNotificationPreference
-//        ]
-//
-//        PrimaryNavigationView {
-//            FeatureNotificationPreferencesView(
-//                store: .init(
-//                    initialState: .init(notificationPreferences: notificationPrefences),
-//                    reducer: featureNotificationReducer,
-//                    environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main, NotificationPreferencesRepository: NotificationPreferencesRepositoryMock()))
-//            )
-//        }
-//    }
-//}

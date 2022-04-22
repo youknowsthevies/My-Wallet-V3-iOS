@@ -10,19 +10,23 @@ import FeatureNotificationPreferencesDomain
 import FeatureNotificationPreferencesData
 import Combine
 import NetworkError
+import NabuNetworkError
+import Mocks
 
 class NotificationPreferencesRepositoryMock: NotificationPreferencesRepositoryAPI {
     // MARK: - Mock Properties
     var fetchSettingsCalled = false
-    func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {
+    var updateCalled = false
+    
+    var fetchPreferencesSubject = CurrentValueSubject<[NotificationPreference],NetworkError>([])
+    
+    func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError> {
         fetchSettingsCalled = true
-        return .just([MockGenerator.securityNotificationPreference])
+        return fetchPreferencesSubject.eraseToAnyPublisher()
     }
-}
-
-
-class UpdateContactPreferencesServiceMock: UpdateContactPreferencesServiceAPI {
-    func update(_ preferences: [UpdatedNotificationPreference] ) -> AnyPublisher<Void, NabuNetworkError> {
+    
+    func update(preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
+        updateCalled = true
         return .just(())
     }
 }

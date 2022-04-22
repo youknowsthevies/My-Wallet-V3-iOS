@@ -55,6 +55,9 @@ public struct NotificationPreference: Hashable, Identifiable {
     public let type: PreferenceType
     public let title, preferenceDescription: String
     public let requiredMethods, optionalMethods, enabledMethods: [NotificationMethodInfo]
+    public var allAvailableMethods: [NotificationMethodInfo] {
+        requiredMethods + optionalMethods
+    }
 }
 
 
