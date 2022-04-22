@@ -1,11 +1,16 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+//
+//  MockGenerator.swift
+//  FeatureBuilder
+//
+//  Created by Augustin Udrea on 12/04/2022.
+//
 
-import Combine
-import FeatureNotificationPreferencesDomain
 import Foundation
+import FeatureNotificationPreferencesDomain
+import Combine
 import NetworkError
 
-public enum MockGenerator {
+public struct MockGenerator {
     static let emailMethod = NotificationMethodInfo(
         id: UUID(),
         method: .email,
@@ -13,7 +18,7 @@ public enum MockGenerator {
         configured: true,
         verified: true
     )
-
+    
     static let inAppMethod = NotificationMethodInfo(
         id: UUID(),
         method: .inApp,
@@ -21,7 +26,7 @@ public enum MockGenerator {
         configured: true,
         verified: true
     )
-
+    
     static let smsMethod = NotificationMethodInfo(
         id: UUID(),
         method: .sms,
@@ -29,7 +34,7 @@ public enum MockGenerator {
         configured: true,
         verified: true
     )
-
+    
     static let pushMethod = NotificationMethodInfo(
         id: UUID(),
         method: .push,
@@ -37,22 +42,22 @@ public enum MockGenerator {
         configured: true,
         verified: true
     )
-
+    
     static let requiredMethods = [
         emailMethod
     ]
-
+    
     static let optionalMethods = [
         emailMethod,
         inAppMethod,
         smsMethod
     ]
-
+    
     static let enabledMethods = [
         inAppMethod,
         emailMethod
     ]
-
+    
     public static let priceAlertNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .priceAlert,
@@ -62,7 +67,7 @@ public enum MockGenerator {
         optionalMethods: optionalMethods,
         enabledMethods: enabledMethods
     )
-
+    
     public static let transactionalNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .transactional,
@@ -72,7 +77,7 @@ public enum MockGenerator {
         optionalMethods: optionalMethods,
         enabledMethods: enabledMethods
     )
-
+    
     public static let securityNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .security,
@@ -82,7 +87,7 @@ public enum MockGenerator {
         optionalMethods: optionalMethods,
         enabledMethods: enabledMethods
     )
-
+    
     public static let marketingNotificationPreference = NotificationPreference(
         id: UUID(),
         type: .marketing,
@@ -92,29 +97,19 @@ public enum MockGenerator {
         optionalMethods: optionalMethods,
         enabledMethods: enabledMethods
     )
-
-    public static let updatedNotificationPreference = UpdatedNotificationPreference(
-        contactMethod: NotificationMethod.inApp.rawValue,
-        channel: PreferenceType.marketing.rawValue,
-        action: "ENABLE"
-    )
-    static let updatedPreferencesBundle = [
-        UpdatedNotificationPreference(
-            contactMethod: NotificationMethod.inApp.rawValue,
-            channel: PreferenceType.marketing.rawValue,
-            action: "ENABLE"
-        ),
-        UpdatedNotificationPreference(
-            contactMethod: NotificationMethod.sms.rawValue,
-            channel: PreferenceType.marketing.rawValue,
-            action: "ENABLE"
-        ),
-        UpdatedNotificationPreference(
-            contactMethod: NotificationMethod.push.rawValue,
-            channel: PreferenceType.marketing.rawValue,
-            action: "ENABLE"
-        )
+    
+    
+    public static let updatedNotificationPreference = UpdatedNotificationPreference(contactMethod: NotificationMethod.inApp.rawValue,
+                                                                                    channel: PreferenceType.marketing.rawValue,
+                                                                                    action: "ENABLE")
+    public static let updatedPreferencesBundle = [UpdatedNotificationPreference(contactMethod: NotificationMethod.inApp.rawValue,
+                                                                                channel: PreferenceType.marketing.rawValue,
+                                                                                action: "ENABLE"),
+                                                  UpdatedNotificationPreference(contactMethod: NotificationMethod.sms.rawValue,
+                                                                                channel: PreferenceType.marketing.rawValue,
+                                                                                action: "ENABLE"),
+                                                  UpdatedNotificationPreference(contactMethod: NotificationMethod.push.rawValue,
+                                                                                channel: PreferenceType.marketing.rawValue,
+                                                                                action: "ENABLE")
     ]
-
-    public static let updatedPreferences = UpdatedPreferences(preferences: updatedPreferencesBundle)
 }
