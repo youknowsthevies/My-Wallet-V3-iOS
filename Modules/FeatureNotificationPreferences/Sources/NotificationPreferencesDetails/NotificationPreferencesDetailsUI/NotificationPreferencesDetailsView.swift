@@ -38,33 +38,36 @@ extension NotificationPreferencesDetailsView {
             let allMethods = (viewStore.notificationPreference.requiredMethods + viewStore.notificationPreference.optionalMethods)
                 .uniqued { $0.id }
             
-            VStack(spacing: 24) {
+            VStack(spacing: 30) {
                 ForEach(allMethods, id: \.self) { methodInfo in
                     switch methodInfo.method {
                     case .push:
                         controlView(label: methodInfo.title,
                                      mandatory: requiredMethods.contains(.push),
-                                     isOn: viewStore.binding(\.$pushSwitchIsOn))
+                                    isOn: viewStore.binding(\.$pushSwitch.isOn))
                         
                     case .email:
                          controlView(label: methodInfo.title,
                                      mandatory: requiredMethods.contains(.email),
-                                     isOn: viewStore.binding(\.$emailSwitchIsOn))
+                                     isOn: viewStore.binding(\.$emailSwitch.isOn))
                         
                     case .sms:
                          controlView(label: methodInfo.title,
                                      mandatory: requiredMethods.contains(.sms),
-                                     isOn: viewStore.binding(\.$smsSwitchIsOn))
+                                     isOn: viewStore.binding(\.$smsSwitch.isOn))
                         
                     case .inApp:
                          controlView(label: methodInfo.title,
                                      mandatory: requiredMethods.contains(.inApp),
-                                     isOn: viewStore.binding(\.$inAppSwitchIsOn))
+                                     isOn: viewStore.binding(\.$inAppSwitch.isOn))
                         
                     }
                 }
             }
             .padding(.top, 50)
+        }
+        .onDisappear {
+            viewStore.send(.save)
         }
     }
     
