@@ -8,6 +8,6 @@ extension DependencyContainer {
 
     public static var featureSettingsUI = module {
 
-        factory { SettingsRouter() as SettingsRouterAPI }
+        single { SettingsRouter() as SettingsRouterAPI }
     }
 }
