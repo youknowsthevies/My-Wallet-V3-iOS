@@ -13,16 +13,12 @@ let package = Package(
             "FeatureNotificationPreferencesUI",
             "FeatureNotificationPreferencesData"
         ]),
-        .library(name: "FeatureNotificationPreferencesDetails", targets:["FeatureNotificationPreferencesDetailsUI",
-                    "FeatureNotificationPreferencesDetailsData",
-                    "FeatureNotificationPreferencesDetailsDomain"]),
+        .library(name: "FeatureNotificationPreferencesDetails", targets:["FeatureNotificationPreferencesDetailsUI"]),
         .library(name: "Mocks", targets: ["Mocks"]),
         .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
         .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
         .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
         .library(name: "FeatureNotificationPreferencesDetailsUI", targets: ["FeatureNotificationPreferencesDetailsUI"]),
-        .library(name: "FeatureNotificationPreferencesDetailsData", targets: ["FeatureNotificationPreferencesDetailsData"]),
-        .library(name: "FeatureNotificationPreferencesDetailsDomain", targets: ["FeatureNotificationPreferencesDetailsDomain"])
     ],
     dependencies: [
         .package(
@@ -61,10 +57,6 @@ let package = Package(
                     package: "NetworkErrors"
                 ),
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
-                .product(
-                    name: "DIKit",
-                    package: "DIKit"
-                ),
                 .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
@@ -130,7 +122,6 @@ let package = Package(
         .target(
             name: "FeatureNotificationPreferencesDetailsUI",
             dependencies: [
-                .target(name: "FeatureNotificationPreferencesDetailsDomain"),
                 .target(
                     name: "FeatureNotificationPreferencesDomain"
                 ),
@@ -165,44 +156,6 @@ let package = Package(
                 )
             ],
             path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsUI"
-        ),.target(
-            name: "FeatureNotificationPreferencesDetailsData",
-            dependencies: [
-                .target(
-                    name: "FeatureNotificationPreferencesDetailsDomain"
-                ),
-                .product(
-                    name: "NetworkKit",
-                    package: "Network"
-                ),
-                .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
-                )
-            ],
-            path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsData"
-        ),
-        .target(
-            name: "FeatureNotificationPreferencesDetailsDomain",
-            dependencies: [
-                .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
-                ),
-                .product(
-                    name: "Localization",
-                    package: "Localization"
-                ),
-                .product(
-                    name: "DIKit",
-                    package: "DIKit"
-                ),
-                .product(
-                    name: "BlockchainComponentLibrary",
-                    package: "BlockchainComponentLibrary"
-                )
-            ],
-            path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsDomain"
         ),
         .target(
             name: "Mocks",
@@ -216,7 +169,8 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureNotificationPreferencesUI"),
                 .target(name: "FeatureNotificationPreferencesData"),
-                .target(name: "FeatureNotificationPreferencesDomain")
+                .target(name: "FeatureNotificationPreferencesDomain"),
+                .target(name: "Mocks")
             ]
         )
     ]

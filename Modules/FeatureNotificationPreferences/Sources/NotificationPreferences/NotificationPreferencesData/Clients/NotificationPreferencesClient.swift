@@ -8,13 +8,18 @@
 import Combine
 import NetworkError
 import NetworkKit
+import FeatureNotificationPreferencesDomain
 
-public protocol NotificationsSettingsClientAPI {
+public protocol NotificationPreferencesClientAPI {
     func fetchSettings() -> AnyPublisher<NotificationInfoResponse, NetworkError>
+    func update(_ preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError>
 }
 
-public struct NotificationsSettingsClient: NotificationsSettingsClientAPI {
+public struct NotificationPreferencesClient: NotificationPreferencesClientAPI {
     // MARK: - Private Properties
+    private enum Path {
+        static let contactPreferences = ["users", "contact-preferences"]
+    }
 
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
@@ -31,12 +36,21 @@ public struct NotificationsSettingsClient: NotificationsSettingsClientAPI {
 
     public func fetchSettings() -> AnyPublisher<NotificationInfoResponse, NetworkError> {
         let request = requestBuilder.get(
-            path: "/users/contact-preferences",
+            path: Path.contactPreferences,
             authenticated: true
         )!
 
         return networkAdapter
             .perform(request: request)
+    }
+    
+    public func update(_ preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
+        let request = requestBuilder.put(
+            path: Path.contactPreferences,
+            body: try? preferences.encode(),
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
     }
 }
 

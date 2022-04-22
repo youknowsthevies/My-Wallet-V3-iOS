@@ -7,6 +7,14 @@
 
 import Foundation
 
+
+public struct UpdatedPreferences: Encodable, Equatable {
+    public init(preferences: [UpdatedNotificationPreference]) {
+        self.preferences = preferences
+    }
+    let preferences: [UpdatedNotificationPreference]
+}
+
 public struct UpdatedNotificationPreference: Encodable, Equatable {
     public init(contactMethod: String, channel: String, action: String) {
         self.contactMethod = contactMethod
@@ -17,6 +25,4 @@ public struct UpdatedNotificationPreference: Encodable, Equatable {
     let contactMethod: String
     let channel: String
     let action: String
-    
-
 }

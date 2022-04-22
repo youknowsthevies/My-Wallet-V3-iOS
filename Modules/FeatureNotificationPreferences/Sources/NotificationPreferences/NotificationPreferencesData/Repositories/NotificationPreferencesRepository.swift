@@ -11,14 +11,13 @@ import Combine
 import NetworkError
 
 public struct NotificationPreferencesRepository: NotificationPreferencesRepositoryAPI {
+    private let client: NotificationPreferencesClient
 
-    private let client: NotificationsSettingsClient
-
-    public init(client: NotificationsSettingsClient) {
+    public init(client: NotificationPreferencesClient) {
         self.client = client
     }
 
-    public func fetchSettings() -> AnyPublisher<[NotificationPreference], NetworkError> {
+    public func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError> {
         client
             .fetchSettings()
             .map({ response in
@@ -28,6 +27,12 @@ public struct NotificationPreferencesRepository: NotificationPreferencesReposito
                     .preferences
                     .map{$0.toNotificationPreference(with: availableMethods)}
             })
+            .eraseToAnyPublisher()
+    }
+    
+    public func update(preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
+        client
+            .update(preferences)
             .eraseToAnyPublisher()
     }
 }
@@ -61,7 +66,9 @@ extension NotificationPreferenceResponse {
             })
 
         return NotificationPreference(id: UUID(),
-                                      type: type, title: title, preferenceDescription: preferenceDescription,
+                                      type: type,
+                                      title: title,
+                                      preferenceDescription: description,
                                       requiredMethods: requiredMethods,
                                       optionalMethods: optionalMethods,
                                       enabledMethods: enabledMethods)

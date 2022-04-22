@@ -110,7 +110,6 @@ func defineDependencies() {
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit
-        DependencyContainer.FeatureNotificationPreferencesDomainKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
@@ -150,7 +149,7 @@ func defineDependencies() {
         DependencyContainer.featureCardIssuingUI
         DependencyContainer.featureCardPaymentUI
         DependencyContainer.featureCardPaymentData
-        DependencyContainer.FeatureNotificationPreferencesDataKit
+        DependencyContainer.featureNotificationPreferencesDataKit
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif
