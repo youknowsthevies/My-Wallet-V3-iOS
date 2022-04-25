@@ -39,7 +39,8 @@ extension NotificationMethodInfoResponse {
 }
 
 extension NotificationPreferenceResponse {
-    public func toNotificationPreference(with availableMethods: [NotificationMethodInfoResponse]) -> NotificationPreference {
+    public func toNotificationPreference(with
+                                         availableMethods: [NotificationMethodInfoResponse]) -> NotificationPreference {
 
         let requiredMethods: [NotificationMethodInfo] = requiredMethods
             .compactMap { currentMethod in

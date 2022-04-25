@@ -351,14 +351,17 @@ final class SettingsRouter: SettingsRouterAPI {
             }
         }
     }
-    
+
     private func showNotificationsSettingsScreen() {
         let presenter = topViewController
         let notificationCenterView = FeatureNotificationPreferencesView(store: .init(
-                initialState: .init(viewState: .idle),
-                reducer: notificationPreferencesReducer,
-                environment: FeatureNotificationPreferencesEnvironment(mainQueue: .main,
-                                                                       notificationPreferencesRepository: DIKit.resolve())))
+            initialState: .init(viewState: .idle),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: .main,
+                notificationPreferencesRepository: DIKit.resolve()
+            )
+        ))
         presenter.present(notificationCenterView)
     }
 

@@ -2,7 +2,7 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
-import Mocks
+import FeatureNotificationPreferencesMocks
 import SwiftUI
 
 public struct NotificationPreferencesDetailsView: View {

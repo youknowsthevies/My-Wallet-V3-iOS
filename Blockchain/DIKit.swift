@@ -773,7 +773,7 @@ extension DependencyContainer {
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
-            return NotificationPreferencesRepository(client: client) as NotificationPreferencesRepositoryAPI
+            return NotificationPreferencesRepository(client: client)
         }
 
         // MARK: Pulse Network Debugging
