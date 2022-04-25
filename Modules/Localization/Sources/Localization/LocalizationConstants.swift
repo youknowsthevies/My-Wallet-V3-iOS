@@ -745,7 +745,7 @@ public enum LocalizationConstants {
 
             public enum Features {
                 public static let exchangeWillBeAbleTo = NSLocalizedString("Our Exchange will be able to:", comment: "")
-                public static let shareStatus = NSLocalizedString("Share your Verified or Basic Level status for unlimited trading", comment: "")
+                public static let shareStatus = NSLocalizedString("Share your Full or Limited Access status for unlimited trading", comment: "")
                 public static let shareAddresses = NSLocalizedString("Sync addresses with your Wallet so you can securely sweep crypto between accounts", comment: "")
                 public static let lowFees = NSLocalizedString("Low Fees", comment: "")
                 public static let builtByBlockchain = NSLocalizedString("Built by Blockchain.com", comment: "")
@@ -1250,7 +1250,7 @@ public enum LocalizationConstants {
                 comment: "Airdrop intro screen: learn more link"
             )
             public static let ctaButton = NSLocalizedString(
-                "Upgrade to Verified. Get $10",
+                "Upgrade to get Full Access. Get $10",
                 comment: "Airdrop intro screen: CTA button"
             )
             public enum InfoCell {

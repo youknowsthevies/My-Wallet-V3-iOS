@@ -79,32 +79,32 @@ extension LocalizationConstants {
                 )
 
                 public static let goldLimitsTitle = NSLocalizedString(
-                    "Verified Limits",
-                    comment: "Verified Limits - Title"
+                    "Full Access",
+                    comment: "Full Access Limits - Title"
                 )
                 public static let silverLimitsTitle = NSLocalizedString(
-                    "Basic Limits",
-                    comment: "Basic Limits - Title"
+                    "Limited Access",
+                    comment: "Limited Access Limits - Title"
                 )
                 public static let goldLimitsMessage = NSLocalizedString(
                     "Buy & Sell. Earn Rewards.",
-                    comment: "Verified Limits - Message"
+                    comment: "Full Access Limits - Message"
                 )
                 public static let silverLimitsMessage = NSLocalizedString(
                     "Unlock Trade Accounts and Swap.",
-                    comment: "Basic Limits - Message"
+                    comment: "Limited Access Limits - Message"
                 )
                 public static let goldLimitsDetails = NSLocalizedString(
                     "Connect your bank or card to your Wallet. Hold cash in your wallet. Earn crypto with Rewards.",
-                    comment: "Verified Limits - Details"
+                    comment: "Full Access Limits - Details"
                 )
                 public static let silverLimitsDetails = NSLocalizedString(
                     "Unclock Swap - our in-app exchange.",
-                    comment: "Basic Limits - Details"
+                    comment: "Limited Access Limits - Details"
                 )
                 public static let silverLimitsNote = NSLocalizedString(
-                    "Includes Basic Features",
-                    comment: "Basic Limits Note"
+                    "Includes Limited Access Features",
+                    comment: "Limited Access Limits Note"
                 )
             }
 
@@ -136,7 +136,7 @@ extension LocalizationConstants {
                 comment: "Limits overview page - header - message for tier0 users"
             )
             public static let headerTitle_tier1 = NSLocalizedString(
-                "Upgrade to Verified Limits",
+                "Get Full Access",
                 comment: "Limits overview page - header - title for tier1 users"
             )
             public static let headerMessage_tier1 = NSLocalizedString(
@@ -401,11 +401,11 @@ extension LocalizationConstants {
             comment: "Tier 0 Verification"
         )
         public static let tierOneVerification = NSLocalizedString(
-            "Basic Level",
+            "Limited Access Level",
             comment: "Tier 1 Verification"
         )
         public static let tierTwoVerification = NSLocalizedString(
-            "Verified Level",
+            "Full Access Level",
             comment: "Tier 2 Verification"
         )
         public static let annualSwapLimit = NSLocalizedString(
@@ -474,7 +474,7 @@ extension LocalizationConstants {
             comment: "Available Today"
         )
         public static let tierTwoVerificationIsBeingReviewed = NSLocalizedString(
-            "Your Verified level verification is currently being reviewed by a Blockchain Support Member.",
+            "Your Full Access level verification is currently being reviewed by a Blockchain Support Member.",
             comment: "The Tiers overview screen when the user is approved for Tier 1 but they are in review for Tier 2"
         )
         public static let tierOneRequirements = NSLocalizedString(
@@ -483,7 +483,7 @@ extension LocalizationConstants {
         )
         // TODO: how should we handle conditional strings? What if the mobile requirement gets added back?
         public static let tierTwoRequirements = NSLocalizedString(
-            "Requires Basic level, Govt. ID and a Selfie",
+            "Requires Limited Access level, Govt. ID and a Selfie",
             comment: "A descriptions of the requirements to complete Tier 2 verification"
         )
         public static let notNow = NSLocalizedString(
@@ -511,7 +511,7 @@ extension LocalizationConstants {
             comment: "Text displayed to the user notifying them that they implicitly agree to Blockchain’s terms of service and privacy policy when they start the KYC process."
         )
         public static let completingTierTwoAutoEligible = NSLocalizedString(
-            "By completing the Verified Level requirements you are automatically eligible for our airdrop program.",
+            "By completing the Full Access level requirements you are automatically eligible for our airdrop program.",
             comment: "Description of what the user gets out of completing Tier 2 verification that is seen at the bottom of the Tiers screen. This particular description is when the user has been Tier 1 verified."
         )
         public static let needSomeHelp = NSLocalizedString("Need some help?", comment: "Need some help?")

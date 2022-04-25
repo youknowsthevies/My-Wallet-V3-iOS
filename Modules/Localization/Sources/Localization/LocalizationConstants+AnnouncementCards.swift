@@ -115,7 +115,7 @@ extension LocalizationConstants {
 
         public enum BlockstackAirdropRegisteredMini {
             public static let title = NSLocalizedString(
-                "A Reward for Being Verified Level",
+                "A Reward for having Full Access level",
                 comment: "STX airdrop registered announcement mini card title"
             )
             public static let description = NSLocalizedString(
@@ -333,7 +333,7 @@ extension LocalizationConstants {
                     comment: ""
                 )
                 public static let description = NSLocalizedString(
-                    "Upgrade to Verified and Swap faster, with higher limits, lower fees, and a better experience.",
+                    "Get Full Access and Swap faster, with higher limits, lower fees, and a better experience.",
                     comment: ""
                 )
                 public static let ctaButton = NSLocalizedString(

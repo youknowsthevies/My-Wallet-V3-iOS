@@ -25,72 +25,76 @@ struct UnlockTradingBenefit: Equatable, Identifiable {
 
 extension UnlockTradingBenefit {
 
-    static let basicBenefits: [UnlockTradingBenefit] = [
-        UnlockTradingBenefit(
-            id: "kyc.tier.basic",
-            title: L10n.benefit_basicTier_title,
-            message: nil,
-            iconName: "icon-verified",
-            iconTint: .semantic.silver,
-            iconRenderingMode: .template,
-            status: .badge(L10n.benefit_basicTier_badgeTitle)
-        ),
-        UnlockTradingBenefit(
-            id: "send.receive.crypto.basic",
-            title: L10n.benefit_basic_sendAndReceive_title,
-            message: L10n.benefit_basic_sendAndReceive_info,
-            iconName: "icon-send",
-            iconTint: nil,
-            iconRenderingMode: .original,
-            status: .enabled
-        ),
-        UnlockTradingBenefit(
-            id: "swap.crypto.basic",
-            title: L10n.benefit_basic_swap_title,
-            message: L10n.benefit_basic_swap_info,
-            iconName: "icon-swap-2",
-            iconTint: nil,
-            iconRenderingMode: .original,
-            status: .enabled
-        )
-    ]
+    static func basicBenefits(active: Bool) -> [UnlockTradingBenefit] {
+        [
+            UnlockTradingBenefit(
+                id: "kyc.tier.basic",
+                title: L10n.benefit_basicTier_title,
+                message: nil,
+                iconName: "icon-verified",
+                iconTint: .semantic.silver,
+                iconRenderingMode: .template,
+                status: .badge(active ? L10n.benefit_tier_active_badgeTitle : L10n.benefit_tier_nonActive_badgeTitle)
+            ),
+            UnlockTradingBenefit(
+                id: "send.receive.crypto.basic",
+                title: L10n.benefit_basic_sendAndReceive_title,
+                message: L10n.benefit_basic_sendAndReceive_info,
+                iconName: "icon-send",
+                iconTint: nil,
+                iconRenderingMode: .original,
+                status: .enabled
+            ),
+            UnlockTradingBenefit(
+                id: "swap.crypto.basic",
+                title: L10n.benefit_basic_swap_title,
+                message: L10n.benefit_basic_swap_info,
+                iconName: "icon-swap-2",
+                iconTint: nil,
+                iconRenderingMode: .original,
+                status: .enabled
+            )
+        ]
+    }
 
-    static let verifiedBenefits: [UnlockTradingBenefit] = [
-        UnlockTradingBenefit(
-            id: "kyc.tier.verified",
-            title: L10n.benefit_verifiedTier_title,
-            message: nil,
-            iconName: "icon-verified",
-            iconTint: nil,
-            iconRenderingMode: .template,
-            status: .badge(L10n.benefit_verifiedTier_badgeTitle)
-        ),
-        UnlockTradingBenefit(
-            id: "swap.crypto.verified",
-            title: L10n.benefit_verified_swap_title,
-            message: L10n.benefit_verified_swap_info,
-            iconName: "icon-swap",
-            iconTint: nil,
-            iconRenderingMode: .original,
-            status: .enabled
-        ),
-        UnlockTradingBenefit(
-            id: "buy.sell.crypto.verified",
-            title: L10n.benefit_verified_buyAndSell_title,
-            message: L10n.benefit_verified_buyAndSell_info,
-            iconName: "icon-buy",
-            iconTint: nil,
-            iconRenderingMode: .original,
-            status: .enabled
-        ),
-        UnlockTradingBenefit(
-            id: "rewards.verified",
-            title: L10n.benefit_verified_rewards_title,
-            message: L10n.benefit_verified_rewards_info,
-            iconName: "icon-interest",
-            iconTint: nil,
-            iconRenderingMode: .template,
-            status: .enabled
-        )
-    ]
+    static func verifiedBenefits(active: Bool) -> [UnlockTradingBenefit] {
+        [
+            UnlockTradingBenefit(
+                id: "kyc.tier.verified",
+                title: L10n.benefit_verifiedTier_title,
+                message: nil,
+                iconName: "icon-verified",
+                iconTint: nil,
+                iconRenderingMode: .template,
+                status: .badge(active ? L10n.benefit_tier_active_badgeTitle : L10n.benefit_tier_nonActive_badgeTitle)
+            ),
+            UnlockTradingBenefit(
+                id: "swap.crypto.verified",
+                title: L10n.benefit_verified_swap_title,
+                message: L10n.benefit_verified_swap_info,
+                iconName: "icon-swap",
+                iconTint: nil,
+                iconRenderingMode: .original,
+                status: .enabled
+            ),
+            UnlockTradingBenefit(
+                id: "buy.sell.crypto.verified",
+                title: L10n.benefit_verified_buyAndSell_title,
+                message: L10n.benefit_verified_buyAndSell_info,
+                iconName: "icon-buy",
+                iconTint: nil,
+                iconRenderingMode: .original,
+                status: .enabled
+            ),
+            UnlockTradingBenefit(
+                id: "rewards.verified",
+                title: L10n.benefit_verified_rewards_title,
+                message: L10n.benefit_verified_rewards_info,
+                iconName: "icon-interest",
+                iconTint: nil,
+                iconRenderingMode: .template,
+                status: .enabled
+            )
+        ]
+    }
 }
