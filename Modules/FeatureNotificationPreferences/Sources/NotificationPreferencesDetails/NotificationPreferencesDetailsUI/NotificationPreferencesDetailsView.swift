@@ -29,8 +29,12 @@ extension NotificationPreferencesDetailsView {
         WithViewStore(store) { viewStore in
             let requiredMethods = viewStore.notificationPreference.requiredMethods.map(\.method)
 
-            let allMethods = (viewStore.notificationPreference.requiredMethods + viewStore.notificationPreference.optionalMethods)
-                .uniqued { $0.id }
+            let allMethods = (
+                viewStore.notificationPreference.requiredMethods
+                    +
+                    viewStore.notificationPreference.optionalMethods
+            )
+            .uniqued { $0.id }
 
             VStack(spacing: 30) {
                 ForEach(allMethods, id: \.self) { methodInfo in

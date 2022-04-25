@@ -43,17 +43,17 @@ extension NotificationPreferenceResponse {
 
         let requiredMethods: [NotificationMethodInfo] = requiredMethods
             .compactMap { currentMethod in
-                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+                availableMethods.first(where: { $0.method == currentMethod })?.toNotificationMethodInfo()
             }
 
         let optionalMethods: [NotificationMethodInfo] = optionalMethods
             .compactMap { currentMethod in
-                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+                availableMethods.first(where: { $0.method == currentMethod })?.toNotificationMethodInfo()
             }
 
         let enabledMethods: [NotificationMethodInfo] = enabledMethods
             .compactMap { currentMethod in
-                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+                availableMethods.first(where: { $0.method == currentMethod })?.toNotificationMethodInfo()
             }
 
         return NotificationPreference(

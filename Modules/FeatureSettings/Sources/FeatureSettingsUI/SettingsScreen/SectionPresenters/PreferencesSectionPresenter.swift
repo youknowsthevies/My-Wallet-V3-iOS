@@ -7,16 +7,16 @@ import RxSwift
 import ToolKit
 
 final class PreferencesSectionPresenter: SettingsSectionPresenting {
-    
+
     // MARK: - SettingsSectionPresenting
-    
+
     let sectionType: SettingsSectionType = .preferences
 
     var state: Observable<SettingsSectionLoadingState>
 
     private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
-    
+
     init(
         emailNotificationService: EmailNotificationSettingsServiceAPI,
         preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor,
