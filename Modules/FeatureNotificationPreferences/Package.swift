@@ -44,7 +44,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../Test")
+        .package(path: "../Test"),
     ],
     targets: [
         .target(
