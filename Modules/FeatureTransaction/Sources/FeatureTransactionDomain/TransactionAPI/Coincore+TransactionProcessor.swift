@@ -326,7 +326,7 @@ extension CoincoreAPI {
                 TransactionProcessor(
                     sourceAccount: account,
                     transactionTarget: receiveAddress,
-                    engine: TradingToOnChainTransactionEngine(quotesEngine: QuotesEngine())
+                    engine: TradingToOnChainTransactionEngine()
                 )
             }
     }

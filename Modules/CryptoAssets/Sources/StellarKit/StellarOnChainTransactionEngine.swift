@@ -184,8 +184,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     asset: .crypto(.stellar)
                 ),
                 selectedFiatCurrency: fiatCurrency,
-                minimumLimit: nil,
-                maximumLimit: nil
+                limits: nil
             )
             transaction.setMemo(memo: memoModel)
             return transaction

@@ -132,6 +132,20 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             }
     }
 
+    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        onChainEngine
+            .validateAmount(pendingTransaction: pendingTransaction)
+            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
+                switch pendingTransaction.validationState {
+                case .canExecute:
+                    return self.defaultValidateAmount(pendingTransaction: pendingTransaction)
+                default:
+                    return .just(pendingTransaction)
+                }
+            }
+            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+    }
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine
             .doValidateAll(pendingTransaction: pendingTransaction)
