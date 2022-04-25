@@ -20,7 +20,6 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
-import FeatureNotificationPreferencesUI
 
 public enum CardOrderingResult {
     case created
@@ -41,7 +40,6 @@ public protocol ExchangeCoordinating: AnyObject {
 }
 
 public protocol PaymentMethodsLinkerAPI {
-    
     func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
@@ -51,16 +49,12 @@ public protocol PaymentMethodsLinkerAPI {
 }
 
 public protocol KYCRouterAPI {
-    
     func presentLimitsOverview(from presenter: UIViewController)
 }
 
 final class SettingsRouter: SettingsRouterAPI {
-    
     private let app: AppProtocol = resolve()
-    
     typealias AnalyticsEvent = AnalyticsEvents.Settings
-    
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
     let navigationRouter: NavigationRouterAPI
@@ -68,7 +62,6 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Routers
     
     private lazy var updateMobileRouter = UpdateMobileRouter(navigationRouter: navigationRouter)
-    
     private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
     
     // MARK: - Private
@@ -76,7 +69,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
-    
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let authenticationCoordinator: AuthenticationCoordinating
@@ -89,10 +81,8 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let externalActionsProvider: ExternalActionsProviderAPI
-    
     private let kycRouter: KYCRouterAPI
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-    
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
