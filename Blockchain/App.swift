@@ -149,7 +149,6 @@ func defineDependencies() {
         DependencyContainer.featureCardIssuingUI
         DependencyContainer.featureCardPaymentUI
         DependencyContainer.featureCardPaymentData
-        DependencyContainer.featureNotificationPreferencesDataKit
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif
