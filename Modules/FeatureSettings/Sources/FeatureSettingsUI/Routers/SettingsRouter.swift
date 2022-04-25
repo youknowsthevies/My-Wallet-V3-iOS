@@ -20,6 +20,7 @@ import SwiftUI
 import ToolKit
 import UIKit
 import WebKit
+import FeatureNotificationPreferencesUI
 
 public enum CardOrderingResult {
     case created
@@ -40,7 +41,7 @@ public protocol ExchangeCoordinating: AnyObject {
 }
 
 public protocol PaymentMethodsLinkerAPI {
-
+    
     func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
@@ -50,32 +51,32 @@ public protocol PaymentMethodsLinkerAPI {
 }
 
 public protocol KYCRouterAPI {
-
+    
     func presentLimitsOverview(from presenter: UIViewController)
 }
 
 final class SettingsRouter: SettingsRouterAPI {
-
+    
     private let app: AppProtocol = resolve()
-
+    
     typealias AnalyticsEvent = AnalyticsEvents.Settings
-
+    
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
     let navigationRouter: NavigationRouterAPI
-
+    
     // MARK: - Routers
-
+    
     private lazy var updateMobileRouter = UpdateMobileRouter(navigationRouter: navigationRouter)
-
+    
     private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
-
+    
     // MARK: - Private
-
+    
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
-
+    
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let authenticationCoordinator: AuthenticationCoordinating
@@ -88,14 +89,14 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let externalActionsProvider: ExternalActionsProviderAPI
-
+    
     private let kycRouter: KYCRouterAPI
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-
+    
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
-
+    
     private var topViewController: UIViewController {
         let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
         guard let viewController = topViewController else {
@@ -103,7 +104,7 @@ final class SettingsRouter: SettingsRouterAPI {
         }
         return viewController
     }
-
+    
     init(
         builder: SettingsBuilding = SettingsBuilder(),
         wallet: WalletRecoveryVerifing = resolve(),
@@ -143,19 +144,19 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.externalActionsProvider = externalActionsProvider
-
+        
         previousRelay
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-
+        
         actionRelay
             .bindAndCatch(weak: self) { (self, action) in
                 self.handle(action: action)
             }
             .disposed(by: disposeBag)
-
+        
         addCardCompletionRelay
             .bindAndCatch(weak: self) { (self) in
                 cardListService
@@ -166,7 +167,7 @@ final class SettingsRouter: SettingsRouterAPI {
             }
             .disposed(by: disposeBag)
     }
-
+    
     func makeViewController() -> SettingsViewController {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
@@ -177,11 +178,11 @@ final class SettingsRouter: SettingsRouterAPI {
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         return SettingsViewController(presenter: presenter)
     }
-
+    
     func presentSettings() {
         navigationRouter.present(viewController: makeViewController(), using: .modalOverTopMost)
     }
-
+    
     func dismiss() {
         guard let navController = navigationRouter.navigationControllerAPI else { return }
         if navController.viewControllersCount > 1 {
@@ -191,7 +192,7 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.navigationControllerAPI = nil
         }
     }
-
+    
     // swiftlint:disable:next cyclomatic_complexity function_body_length
     private func handle(action: SettingsScreenAction) {
         switch action {
@@ -272,10 +273,10 @@ final class SettingsRouter: SettingsRouterAPI {
                     navController.present(alert, animated: true)
                 })
                 .disposed(by: disposeBag)
-
+            
         case .presentTradeLimits:
             kycRouter.presentLimitsOverview(from: topViewController)
-
+            
         case .launchPIT:
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
@@ -310,8 +311,8 @@ final class SettingsRouter: SettingsRouterAPI {
                     let controller = SFSafariViewController(url: support)
                     self.navigationRouter.present(viewController: controller)
                 case .dismiss,
-                     .pop,
-                     .payload:
+                        .pop,
+                        .payload:
                     break
                 }
             }
@@ -341,7 +342,7 @@ final class SettingsRouter: SettingsRouterAPI {
             break
         }
     }
-
+    
     private func showCardIssuingFlow() {
         let cardIssuing: CardIssuingViewControllerAPI = resolve()
         let nav = navigationRouter.navigationControllerAPI
@@ -352,7 +353,7 @@ final class SettingsRouter: SettingsRouterAPI {
             animated: true
         )
     }
-
+    
     private func showCardLinkingFlow() {
         let presenter = topViewController
         paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
@@ -382,7 +383,7 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.dismiss(animated: true, completion: nil)
         }
     }
-
+    
     private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {
         let selectionService = FiatCurrencySelectionService(defaultSelectedData: selectedCurrency)
         let interactor = SelectionScreenInteractor(service: selectionService)
@@ -394,7 +395,7 @@ final class SettingsRouter: SettingsRouterAPI {
         let viewController = SelectionScreenViewController(presenter: presenter)
         viewController.isModalInPresentation = true
         navigationRouter.present(viewController: viewController)
-
+        
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
             .flatMap { currency -> Single<FiatCurrency> in
@@ -429,6 +430,6 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             .disposed(by: disposeBag)
     }
-
+    
     private lazy var sheetPresenter = BottomSheetPresenting()
 }
