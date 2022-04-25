@@ -31,6 +31,11 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
+        .package(
+            name: "SnapshotTesting",
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
+            from: "1.9.0"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -38,7 +43,8 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(
@@ -170,7 +176,9 @@ let package = Package(
                 .target(name: "FeatureNotificationPreferencesUI"),
                 .target(name: "FeatureNotificationPreferencesData"),
                 .target(name: "FeatureNotificationPreferencesDomain"),
-                .target(name: "Mocks")
+                .target(name: "Mocks"),
+                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
+                .product(name: "TestKit", package: "Test")
             ]
         )
     ]

@@ -1,17 +1,17 @@
 //
 //  File.swift
-//
+//  
 //
 //  Created by Augustin Udrea on 25/04/2022.
 //
 
-import ComposableArchitecture
-@testable import FeatureNotificationPreferencesUI
 import Foundation
-import Mocks
 import SnapshotTesting
-import TestKit
+@testable import FeatureNotificationPreferencesUI
 import XCTest
+import ComposableArchitecture
+import Mocks
+import TestKit
 
 final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     private let mainScheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
@@ -28,22 +28,20 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
 
         isRecording = Config.recordingSnapshots
         notificationRepoMock = NotificationPreferencesRepositoryMock()
-
-        let preferencesToReturn = [
-            MockGenerator.marketingNotificationPreference,
-            MockGenerator.transactionalNotificationPreference,
-            MockGenerator.priceAlertNotificationPreference
-        ]
+        
+        let preferencesToReturn = [MockGenerator.marketingNotificationPreference,
+                                   MockGenerator.transactionalNotificationPreference,
+                                   MockGenerator.priceAlertNotificationPreference]
         notificationRepoMock.fetchPreferencesSubject.send(preferencesToReturn)
+
 
         rootStore = .init(
             initialState: .init(viewState: .idle),
             reducer: notificationPreferencesReducer,
-            environment: FeatureNotificationPreferencesEnvironment(
-                mainQueue: mainScheduler.eraseToAnyScheduler(),
-                notificationPreferencesRepository: notificationRepoMock
-            )
-        )
+            environment: FeatureNotificationPreferencesEnvironment(mainQueue: mainScheduler.eraseToAnyScheduler(),
+                                                                   notificationPreferencesRepository: notificationRepoMock))
+
+        
     }
 
     override func tearDownWithError() throws {
@@ -58,14 +56,14 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         mainScheduler.advance()
         assert(view, on: .iPhoneSe)
     }
-
+    
     func test_iPhoneXR_snapshot_display_notification_preferences() throws {
         let view = FeatureNotificationPreferencesView(store: rootStore)
         view.viewStore.send(.onAppear)
         mainScheduler.advance()
         assert(view, on: .iPhoneXr)
     }
-
+    
     func test_iPhoneXsMax_snapshot_display_notification_preferences() throws {
         let view = FeatureNotificationPreferencesView(store: rootStore)
         view.viewStore.send(.onAppear)
