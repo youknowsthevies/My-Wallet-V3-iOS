@@ -256,6 +256,9 @@ public final class TransactionProcessor {
     // MARK: - Private methods
 
     private func triggerSendEmailNotification(_ transactionResult: TransactionResult) {
+        guard engine.sourceAccount is NonCustodialAccount else {
+            return
+        }
         switch transactionResult {
         case .hashed(txHash: let txHash, amount: .some(let amount)):
             sendEmailNotificationService

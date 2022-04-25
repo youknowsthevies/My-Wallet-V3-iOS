@@ -119,7 +119,15 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
                     feeForFullAvailable: .zero(currency: asset),
                     feeSelection: .init(selectedLevel: .none, availableLevels: [.none]),
                     selectedFiatCurrency: fiatCurrency,
-                    minimumLimit: limits.moneyValue
+                    limits: .init(
+                        currencyType: limits.currencyType,
+                        minimum: limits.moneyValue,
+                        maximum: nil,
+                        maximumDaily: nil,
+                        maximumAnnual: nil,
+                        effectiveLimit: nil,
+                        suggestedUpgrade: nil
+                    )
                 )
             }
     }
