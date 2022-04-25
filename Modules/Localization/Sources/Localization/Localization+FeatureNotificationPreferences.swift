@@ -1,9 +1,4 @@
-//
-//  File.swift
-//  
-//
-//  Created by Augustin Udrea on 25/04/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 
@@ -13,6 +8,7 @@ extension LocalizationConstants {
             public enum Title {}
             public enum Description {}
         }
+
         public enum Error {
             public enum Title {}
             public enum Description {}
