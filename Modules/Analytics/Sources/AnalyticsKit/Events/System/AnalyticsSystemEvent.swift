@@ -14,7 +14,6 @@ enum SystemEvent: AnalyticsEvent {
     case applicationInstalled(ApplicationSystemEventParamaters)
     case applicationOpened(ApplicationOpenedSystemEventParamaters)
     case applicationUpdated(ApplicationUpdatedSystemEventParamaters)
-
     case pushNotificationReceived(ApplicationPushNotificationParamaters)
     case pushNotificationTapped(ApplicationPushNotificationParamaters)
 }

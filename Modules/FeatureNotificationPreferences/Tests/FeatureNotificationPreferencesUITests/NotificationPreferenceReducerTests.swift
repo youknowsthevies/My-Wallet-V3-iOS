@@ -1,16 +1,13 @@
-//
-//  File.swift
-//  
-//
-//  Created by Augustin Udrea on 21/04/2022.
-//
-
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+ 
 import ComposableArchitecture
 import XCTest
 @testable import FeatureNotificationPreferencesUI
 import NetworkError
 import UIComponentsKit
 import Mocks
+import FeatureNotificationPreferencesDetailsUI
+import ComposableNavigation
 
 class NotificationPreferencesReducerTest: XCTestCase {
     private var testStore: TestStore<
@@ -29,7 +26,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
         notificationRepoMock = NotificationPreferencesRepositoryMock()
         testStore = TestStore(
             initialState: .init(viewState: .idle),
-            reducer: featureNotificationReducer,
+            reducer: notificationPreferencesReducer,
             environment: FeatureNotificationPreferencesEnvironment(mainQueue: mainScheduler.eraseToAnyScheduler(),
                                                                    notificationPreferencesRepository: notificationRepoMock)
         )
@@ -71,10 +68,34 @@ class NotificationPreferencesReducerTest: XCTestCase {
         }
     }
         
-    func test_onSaveSettings() {            
+    func test_onSaveSettings_reload_triggered() {
+        testStore = TestStore(initialState:
+                .init(notificationDetailsState:
+                        NotificationPreferencesDetailsState(
+                            notificationPreference: MockGenerator.marketingNotificationPreference),
+                      viewState: .idle),
+                              reducer: mainReducer,
+                              environment: FeatureNotificationPreferencesEnvironment(
+                              mainQueue: mainScheduler.eraseToAnyScheduler(),
+                              notificationPreferencesRepository: notificationRepoMock))
+        
         testStore.send(.notificationDetailsChanged(.save))
         mainScheduler.advance()
         XCTAssertTrue(notificationRepoMock.updateCalled)
         testStore.receive(.onReloadTap)
     }
+    
+    func test_OnPreferenceSelected() {
+        let selectedPreference = MockGenerator.marketingNotificationPreference
+        testStore.send(.onPreferenceSelected(selectedPreference)) { state in
+            state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: selectedPreference)
+       }
+    }
+    
+    func test_navigate_to_details_route() {
+        testStore.send(.route(.navigate(to: .showDetails))) { state in
+            state.route = RouteIntent.navigate(to: .showDetails)
+        }
+    }
+                       
 }
