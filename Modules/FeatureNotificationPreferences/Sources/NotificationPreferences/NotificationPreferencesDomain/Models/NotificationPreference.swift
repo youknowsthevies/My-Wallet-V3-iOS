@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct NotificationInfo {
+public struct NotificationInfo {
     public init(
         preferences: [NotificationPreference],
         notificationMethods: [NotificationMethodInfo]
