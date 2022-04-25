@@ -4,7 +4,7 @@ import ComposableArchitecture
 import ComposableNavigation
 import FeatureNotificationPreferencesDetailsUI
 @testable import FeatureNotificationPreferencesUI
-import Mocks
+import FeatureNotificationPreferencesMocks
 import NetworkError
 import UIComponentsKit
 import XCTest
@@ -15,7 +15,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
         NotificationPreferencesState,
         NotificationPreferencesAction,
         NotificationPreferencesAction,
-        FeatureNotificationPreferencesEnvironment
+        NotificationPreferencesEnvironment
     >!
 
     private let mainScheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
@@ -27,7 +27,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
         testStore = TestStore(
             initialState: .init(viewState: .idle),
             reducer: notificationPreferencesReducer,
-            environment: FeatureNotificationPreferencesEnvironment(
+            environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
             )
@@ -79,7 +79,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
                 viewState: .idle
             ),
             reducer: mainReducer,
-            environment: FeatureNotificationPreferencesEnvironment(
+            environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
             )

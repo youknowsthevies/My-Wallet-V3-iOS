@@ -12,14 +12,14 @@ import SwiftUI
 
 public struct NotificationPreferencesState: Hashable, NavigationState {
     public enum ViewState: Equatable, Hashable {
-        public static func == (lhs: ViewState, rhs: ViewState) -> Bool {
-            switch (lhs, rhs) {
-            case (.idle, .idle), (.loading, .loading), (.data, .data), (.error, .error):
-                return true
-            default:
-                return false
-            }
-        }
+//        public static func == (lhs: ViewState, rhs: ViewState) -> Bool {
+//            switch (lhs, rhs) {
+//            case (.idle, .idle), (.loading, .loading), (.data, .data), (.error, .error):
+//                return true
+//            default:
+//                return false
+//            }
+//        }
 
         case idle
         case loading
@@ -79,7 +79,10 @@ public enum NotificationsSettingsRoute: NavigationRoute {
 
 // MARK: - Main Reducer
 
-let mainReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
+let mainReducer = Reducer<NotificationPreferencesState,
+                            NotificationPreferencesAction,
+                            NotificationPreferencesEnvironment>
+    .combine(
     notificationPreferencesDetailsReducer
         .optional()
         .pullback(
@@ -97,7 +100,7 @@ let mainReducer = Reducer<NotificationPreferencesState, NotificationPreferencesA
 public let notificationPreferencesReducer = Reducer<
     NotificationPreferencesState,
     NotificationPreferencesAction,
-    FeatureNotificationPreferencesEnvironment
+    NotificationPreferencesEnvironment
 > { state, action, environment in
 
     switch action {
@@ -159,7 +162,7 @@ public let notificationPreferencesReducer = Reducer<
 
 // MARK: - Environment
 
-public struct FeatureNotificationPreferencesEnvironment {
+public struct NotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
 

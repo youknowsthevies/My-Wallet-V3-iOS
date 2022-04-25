@@ -14,7 +14,7 @@ let package = Package(
             "FeatureNotificationPreferencesData"
         ]),
         .library(name: "FeatureNotificationPreferencesDetails", targets: ["FeatureNotificationPreferencesDetailsUI"]),
-        .library(name: "Mocks", targets: ["Mocks"]),
+        .library(name: "FeatureNotificationPreferencesMocks", targets: ["FeatureNotificationPreferencesMocks"]),
         .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
         .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
         .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
@@ -25,11 +25,6 @@ let package = Package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.34.0"
-        ),
-        .package(
-            name: "DIKit",
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
         ),
         .package(
             name: "SnapshotTesting",
@@ -92,7 +87,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureNotificationPreferencesDomain"),
                 .target(name: "FeatureNotificationPreferencesDetailsUI"),
-                .target(name: "Mocks"),
+                .target(name: "FeatureNotificationPreferencesMocks"),
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -131,7 +126,7 @@ let package = Package(
                 .target(
                     name: "FeatureNotificationPreferencesDomain"
                 ),
-                .target(name: "Mocks"),
+                .target(name: "FeatureNotificationPreferencesMocks"),
                 .product(
                     name: "ComposableArchitecture",
                     package: "swift-composable-architecture"
@@ -164,7 +159,7 @@ let package = Package(
             path: "Sources/NotificationPreferencesDetails/NotificationPreferencesDetailsUI"
         ),
         .target(
-            name: "Mocks",
+            name: "FeatureNotificationPreferencesMocks",
             dependencies: [
                 .target(name: "FeatureNotificationPreferencesDomain")
             ],
@@ -176,7 +171,7 @@ let package = Package(
                 .target(name: "FeatureNotificationPreferencesUI"),
                 .target(name: "FeatureNotificationPreferencesData"),
                 .target(name: "FeatureNotificationPreferencesDomain"),
-                .target(name: "Mocks"),
+                .target(name: "FeatureNotificationPreferencesMocks"),
                 .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "TestKit", package: "Test")
             ]

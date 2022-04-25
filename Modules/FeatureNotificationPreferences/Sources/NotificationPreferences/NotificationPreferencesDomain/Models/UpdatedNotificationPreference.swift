@@ -3,21 +3,21 @@
 import Foundation
 
 public struct UpdatedPreferences: Encodable, Equatable {
+    let preferences: [UpdatedNotificationPreference]
+
     public init(preferences: [UpdatedNotificationPreference]) {
         self.preferences = preferences
     }
-
-    let preferences: [UpdatedNotificationPreference]
 }
 
 public struct UpdatedNotificationPreference: Encodable, Equatable {
+    let contactMethod: String
+    let channel: String
+    let action: String
+
     public init(contactMethod: String, channel: String, action: String) {
         self.contactMethod = contactMethod
         self.channel = channel
         self.action = action
     }
-
-    let contactMethod: String
-    let channel: String
-    let action: String
 }

@@ -3,7 +3,7 @@
 import ComposableArchitecture
 @testable import FeatureNotificationPreferencesUI
 import Foundation
-import Mocks
+import FeatureNotificationPreferencesMocks
 import SnapshotTesting
 import TestKit
 import XCTest
@@ -34,7 +34,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         rootStore = .init(
             initialState: .init(viewState: .idle),
             reducer: notificationPreferencesReducer,
-            environment: FeatureNotificationPreferencesEnvironment(
+            environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
             )
