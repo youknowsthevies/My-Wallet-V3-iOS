@@ -16,7 +16,7 @@ public struct PendingTransaction: Equatable {
     }
 
     public var amount: MoneyValue
-    // The source account actionable balance minus the fees for the current fee level.
+    /// The source account actionable balance minus the fees for the current fee level.
     public var available: MoneyValue
     public var selectedFiatCurrency: FiatCurrency
     public var feeSelection: FeeSelection
@@ -44,11 +44,6 @@ public struct PendingTransaction: Equatable {
 
     // this struct has become too big for Swift to handle :(
     private var _limits: Reference<TransactionLimits?>
-    // TODO: remove limits below in favour of limits struct above
-    private var minimumLimit: MoneyValue?
-    private var maximumLimit: MoneyValue?
-    private var maximumDailyLimit: MoneyValue?
-    private var maximumAnnualLimit: MoneyValue?
 
     public init(
         amount: MoneyValue,
@@ -58,10 +53,6 @@ public struct PendingTransaction: Equatable {
         feeSelection: FeeSelection,
         selectedFiatCurrency: FiatCurrency,
         limits: TransactionLimits? = nil,
-        minimumLimit: MoneyValue? = nil,
-        maximumLimit: MoneyValue? = nil,
-        maximumDailyLimit: MoneyValue? = nil,
-        maximumAnnualLimit: MoneyValue? = nil,
         nativeBitcoinTransactionEnabled: Bool = false
     ) {
         self.amount = amount
@@ -71,10 +62,6 @@ public struct PendingTransaction: Equatable {
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
         _limits = Reference(limits)
-        self.minimumLimit = minimumLimit
-        self.maximumLimit = maximumLimit
-        self.maximumDailyLimit = maximumDailyLimit
-        self.maximumAnnualLimit = maximumAnnualLimit
         self.nativeBitcoinTransactionEnabled = nativeBitcoinTransactionEnabled
     }
 
@@ -178,11 +165,7 @@ public struct PendingTransaction: Equatable {
             && lhs.feeLevel == rhs.feeLevel
             && lhs.confirmations == rhs.confirmations
             && lhs.limits == rhs.limits
-            && lhs.minimumLimit == rhs.minimumLimit
-            && lhs.maximumLimit == rhs.maximumLimit
             && lhs.validationState == rhs.validationState
-            && lhs.maximumDailyLimit == rhs.maximumDailyLimit
-            && lhs.maximumAnnualLimit == rhs.maximumAnnualLimit
     }
 }
 
@@ -203,29 +186,32 @@ extension PendingTransaction {
     }
 
     public var minLimit: MoneyValue {
-        limits?.minimum ?? minimumLimit ?? .zero(currency: amount.currency)
+        limits?.minimum ?? .zero(currency: amount.currency)
     }
 
     public var maxLimit: MoneyValue {
-        limits?.maximum ?? maximumLimit ?? available
+        limits?.maximum ?? available
     }
 
     public var maxDailyLimit: MoneyValue {
-        limits?.maximumDaily ?? maximumDailyLimit ?? maxLimit
+        limits?.maximumDaily ?? maxLimit
     }
 
     public var maxAnnualLimit: MoneyValue {
-        limits?.maximumAnnual ?? maximumAnnualLimit ?? maxDailyLimit
+        limits?.maximumAnnual ?? maxDailyLimit
     }
 
     /// The minimum spending limit
     public var minSpendable: MoneyValue {
-        limits?.minimum ?? minimumLimit ?? .zero(currency: amount.currency)
+        limits?.minimum ?? .zero(currency: amount.currency)
     }
 
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `limits.minimum` or `maximumLimit` as `CryptoValues` and return whichever is smaller.
     public var maxSpendable: MoneyValue {
+        guard let maxLimit = limits?.maximum else {
+            return available
+        }
         guard let availableMaximumLimit = try? maxLimit - feeAmount else {
             return available
         }
