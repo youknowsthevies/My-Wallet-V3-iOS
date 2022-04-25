@@ -43,6 +43,7 @@ import StellarKit
 import ToolKit
 import WalletPayloadKit
 import FeatureNotificationPreferencesData
+import FeatureNotificationPreferencesDomain
 
 // MARK: - Settings Dependencies
 

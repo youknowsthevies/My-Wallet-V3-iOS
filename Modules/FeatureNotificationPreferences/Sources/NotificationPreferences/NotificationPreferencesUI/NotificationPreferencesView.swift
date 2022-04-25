@@ -6,6 +6,7 @@ import SwiftUI
 import FeatureNotificationPreferencesDomain
 import Mocks
 import UIComponentsKit
+import Localization
 
 public struct FeatureNotificationPreferencesView: View {
     var store: Store<NotificationPreferencesState, NotificationPreferencesAction>
@@ -52,9 +53,9 @@ public struct FeatureNotificationPreferencesView: View {
 extension FeatureNotificationPreferencesView {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Wallet Activity")
+            Text(LocalizationConstants.NotificationPreferences.NotificationScreen.Title.titleString)
                 .typography(.title3)
-            Text("Get notified about important activity like buys, sells, transfers and rewards")
+            Text(LocalizationConstants.NotificationPreferences.NotificationScreen.Description.descriptionString)
                 .typography(.paragraph1)
                 .foregroundColor(Color.WalletSemantic.body)
             
@@ -89,25 +90,25 @@ extension FeatureNotificationPreferencesView {
         WithViewStore(store) { viewStore in
             VStack(spacing: 8, content: {
                 Spacer()
-                Text("Notification settings failed to load")
+                Text(LocalizationConstants.NotificationPreferences.Error.Title.titleString)
                     .multilineTextAlignment(.center)
                     .typography(.title3)
                     .padding(.horizontal, Spacing.padding3)
                     .foregroundColor(Color.WalletSemantic.title)
 
-                Text("There was a problem fetching your notifications settings. Please reload or try again later.")
+                Text(LocalizationConstants.NotificationPreferences.Error.Description.descriptionString)
                     .multilineTextAlignment(.center)
                     .typography(.caption1)
                     .padding(.horizontal, Spacing.padding3)
                     .foregroundColor(Color.WalletSemantic.muted)
                 Spacer()
-                PrimaryButton(title: "Try Again") {
+                PrimaryButton(title: LocalizationConstants.NotificationPreferences.Error.RetryButton.tryAgainString) {
                     viewStore.send(.onReloadTap)
                 }
                 .padding(.horizontal, Spacing.padding3)
                 .padding(.bottom, Spacing.padding2)
                 
-                MinimalButton(title: "Go Back") {
+                MinimalButton(title: LocalizationConstants.NotificationPreferences.Error.GoBackButton.goBackString) {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .padding(.horizontal, Spacing.padding3)
