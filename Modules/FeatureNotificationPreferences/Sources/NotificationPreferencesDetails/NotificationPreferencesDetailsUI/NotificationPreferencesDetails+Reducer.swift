@@ -1,9 +1,4 @@
-//
-//  NotificationPreferencesActivityTogglesView+Reducer.swift
-//  FeatureBuilder
-//
-//  Created by Augustin Udrea on 12/04/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
 import Foundation

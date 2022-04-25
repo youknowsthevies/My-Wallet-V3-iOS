@@ -1,9 +1,4 @@
-//
-//  NotificationPreferencesActivityTogglesViewView.swift
-//  FeatureBuilder
-//
-//  Created by Augustin Udrea on 12/04/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import SwiftUI
 import ComposableArchitecture
