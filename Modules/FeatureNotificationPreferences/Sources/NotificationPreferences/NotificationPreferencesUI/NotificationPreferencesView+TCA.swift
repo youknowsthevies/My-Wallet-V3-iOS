@@ -1,9 +1,4 @@
-//
-//  FeatureNotificationPreferences.swift
-//  FeatureBuilder
-//
-//  Created by Augustin Udrea on 08/04/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 import ComposableArchitecture
@@ -13,6 +8,7 @@ import FeatureNotificationPreferencesDomain
 import NetworkError
 import FeatureNotificationPreferencesDetailsUI
 
+//MARK: - State
 public struct NotificationPreferencesState: Hashable, NavigationState {
     public enum ViewState: Equatable, Hashable {
         public static func == (lhs: ViewState, rhs: ViewState) -> Bool {
@@ -44,9 +40,9 @@ public struct NotificationPreferencesState: Hashable, NavigationState {
     }
 }
 
+//MARK: - Actions
 public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case onAppear
-    case onDisappear
     case onReloadTap
     case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationPreferencesDetailsAction)
@@ -54,6 +50,7 @@ public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case route(RouteIntent<NotificationsSettingsRoute>?)
 }
 
+//MARK: - Routing
 public enum NotificationsSettingsRoute: NavigationRoute {
     case showDetails
     
@@ -74,8 +71,8 @@ public enum NotificationsSettingsRoute: NavigationRoute {
     }
 }
 
-
-let featureReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
+//MARK: - Main Reducer
+let mainReducer = Reducer<NotificationPreferencesState, NotificationPreferencesAction, FeatureNotificationPreferencesEnvironment>.combine(
     notificationPreferencesDetailsReducer
         .optional()
         .pullback(
@@ -85,10 +82,11 @@ let featureReducer = Reducer<NotificationPreferencesState, NotificationPreferenc
                 NotificationPreferencesDetailsEnvironment()
             }
         ),
-    featureNotificationReducer
+    notificationPreferencesReducer
 )
 
-public let featureNotificationReducer = Reducer<
+//MARK: - First screen reducer
+public let notificationPreferencesReducer = Reducer<
     NotificationPreferencesState,
     NotificationPreferencesAction,
     FeatureNotificationPreferencesEnvironment
@@ -108,10 +106,7 @@ public let featureNotificationReducer = Reducer<
     case .route(let routeItent):
         state.route = routeItent
         return .none
-        
-    case .onDisappear:
-        return .none
-        
+                
     case .onReloadTap:
         return environment
             .notificationPreferencesRepository
@@ -155,7 +150,7 @@ public let featureNotificationReducer = Reducer<
     
 }
 
-
+//MARK: - Environment
 public struct FeatureNotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI

@@ -1,9 +1,4 @@
-//
-//  MockGenerator.swift
-//  FeatureBuilder
-//
-//  Created by Augustin Udrea on 12/04/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 import FeatureNotificationPreferencesDomain
@@ -102,7 +97,7 @@ public struct MockGenerator {
     public static let updatedNotificationPreference = UpdatedNotificationPreference(contactMethod: NotificationMethod.inApp.rawValue,
                                                                                     channel: PreferenceType.marketing.rawValue,
                                                                                     action: "ENABLE")
-    public static let updatedPreferencesBundle = [UpdatedNotificationPreference(contactMethod: NotificationMethod.inApp.rawValue,
+    static let updatedPreferencesBundle = [UpdatedNotificationPreference(contactMethod: NotificationMethod.inApp.rawValue,
                                                                                 channel: PreferenceType.marketing.rawValue,
                                                                                 action: "ENABLE"),
                                                   UpdatedNotificationPreference(contactMethod: NotificationMethod.sms.rawValue,
@@ -112,4 +107,6 @@ public struct MockGenerator {
                                                                                 channel: PreferenceType.marketing.rawValue,
                                                                                 action: "ENABLE")
     ]
+    
+    public static let updatedPreferences = UpdatedPreferences(preferences: updatedPreferencesBundle)
 }
