@@ -34,7 +34,15 @@ public struct NotificationMethodInfo: Hashable, Identifiable {
 }
 
 public struct NotificationPreference: Hashable, Identifiable {
-    public init(id: UUID = UUID(), type: PreferenceType, title: String, preferenceDescription: String, requiredMethods: [NotificationMethodInfo], optionalMethods: [NotificationMethodInfo], enabledMethods: [NotificationMethodInfo]) {
+    public init(
+        id: UUID = UUID(),
+        type: PreferenceType,
+        title: String,
+        preferenceDescription: String,
+        requiredMethods: [NotificationMethodInfo],
+        optionalMethods: [NotificationMethodInfo],
+        enabledMethods: [NotificationMethodInfo]
+    ) {
         self.id = id
         self.type = type
         self.title = title

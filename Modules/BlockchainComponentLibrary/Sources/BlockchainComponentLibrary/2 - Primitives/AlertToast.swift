@@ -21,7 +21,8 @@ public struct AlertToast: View {
     public init(
         text: String,
         variant: Variant = .default,
-        icon: Icon? = nil) {
+        icon: Icon? = nil
+    ) {
         self.text = text
         self.variant = variant
         self.icon = icon
