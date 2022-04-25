@@ -51,7 +51,8 @@ final class InterestTransferTransactionStateProvider: PendingTransactionStatePro
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
+            action: state.action
         )
     }
 
@@ -65,7 +66,8 @@ final class InterestTransferTransactionStateProvider: PendingTransactionStatePro
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            )
+            ),
+            action: state.action
         )
     }
 
@@ -84,7 +86,9 @@ final class InterestTransferTransactionStateProvider: PendingTransactionStatePro
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }

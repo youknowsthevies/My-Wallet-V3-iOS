@@ -158,12 +158,18 @@ public enum NabuErrorCode: Int, Codable, Equatable {
     case notAvailableInLegalEntity = 172
 
     /// Card Payments
-    case cardInsufficientFunds = 10000
-    case cardBankDecline = 10001
-    case cardDuplicate = 10002
-    case cardBlockchainDecline = 10003
-    case cardAcquirerDecline = 10004
-    case cardPaymentNotSupported = 10005
-    case cardCreateFailed = 10006
-    case cardPaymentFailed = 10007
+    case cardInsufficientFunds = 10000 // Insufficient funds
+    case cardBankDecline = 10001 // Bank decline
+    case cardDuplicate = 10002 // Card duplicate
+    case cardBlockchainDecline = 10003 // Blockchain decline
+    case cardAcquirerDecline = 10004 // Acquirer decline
+    case cardPaymentNotSupported = 10005 // Payment not supported
+    case cardCreateFailed = 10006 // Card not accepted
+    case cardPaymentFailed = 10007 // Payment failed
+    case cardCreateAbandoned = 10008 // Card authentication abandoned
+    case cardCreateExpired = 10009 // Card authentication expired
+    case cardCreateBankDeclined = 10010 // Card authentication bank decline
+    case cardCreateDebitOnly = 10011 // Only debit cards are accepted for this operation
+    case cardPaymentDebitOnly = 10012 // Only debit cards are accepted for this operation
+    case cardCreateNoToken = 10013 // Card not accepted
 }

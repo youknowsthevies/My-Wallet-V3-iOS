@@ -1516,11 +1516,21 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardBankDeclineTitle = NSLocalizedString(
+        "The Bank has declined this card",
+        comment: "The Bank has declined this card"
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "The card you tried to use has been declined by your bank, please try again or another payment method.",
+        comment: "The card you tried to use has been declined by your bank, please try again or another payment method."
+    )
+
+    public static let cardCreateBankDeclinedTitle = NSLocalizedString(
         "Failed To Add Card",
         comment: "Failed To Add Card"
     )
 
-    public static let cardBankDecline = NSLocalizedString(
+    public static let cardCreateBankDeclined = NSLocalizedString(
         "The card you tried to add has failed, please try again or another payment method.",
         comment: "The card you tried to add has failed, please try again or another payment method."
     )
@@ -1573,6 +1583,56 @@ extension LocalizationConstants.Transaction.Error {
     public static let cardPaymentFailed = NSLocalizedString(
         "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again.",
         comment: "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again."
+    )
+
+    public static let cardCreateAbandonedTitle = NSLocalizedString(
+        "Did you forget to authorise your card payment?",
+        comment: "Did you forget to authorise your card payment?"
+    )
+
+    public static let cardCreateAbandoned = NSLocalizedString(
+        "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method.",
+        comment: "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method."
+    )
+
+    public static let cardCreateExpiredTitle = NSLocalizedString(
+        "Did you forget to authorise your card payment?",
+        comment: "Did you forget to authorise your card payment?"
+    )
+
+    public static let cardCreateExpired = NSLocalizedString(
+        "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method.",
+        comment: "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method."
+    )
+
+    public static let cardCreateDebitOnlyTitle = NSLocalizedString(
+        "Invalid Card",
+        comment: "Invalid Card"
+    )
+
+    public static let cardCreateDebitOnly = NSLocalizedString(
+        "The card you tried to add has failed because at the moment we only support debit from this provider, please try another payment method.",
+        comment: "The card you tried to add has failed because at the moment we only support debit from this provider, please try another payment method."
+    )
+
+    public static let cardPaymentDebitOnlyTitle = NSLocalizedString(
+        "Payment Failed",
+        comment: "Payment Failed"
+    )
+
+    public static let cardPaymentDebitOnly = NSLocalizedString(
+        "Your payment has failed because at the moment we only support debit from this provider, please try another payment method.",
+        comment: "Your payment has failed because at the moment we only support debit from this provider, please try another payment method."
+    )
+
+    public static let cardCreateNoTokenTitle = NSLocalizedString(
+        "Card Not Supported",
+        comment: "Card not accepted"
+    )
+
+    public static let cardCreateNoToken = NSLocalizedString(
+        "The card you tried to add has failed, please try again or another payment method.",
+        comment: "The card you tried to add has failed, please try again or another payment method."
     )
 
     public static let orderNotCancellable = NSLocalizedString(

@@ -318,6 +318,8 @@ extension TransactionErrorState {
             return Localization.cardInsufficientFundsTitle
         case .cardBankDecline:
             return Localization.cardBankDeclineTitle
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclinedTitle
         case .cardDuplicate:
             return Localization.cardDuplicateTitle
         case .cardBlockchainDecline:
@@ -330,6 +332,16 @@ extension TransactionErrorState {
             return Localization.cardCreateFailedTitle
         case .cardPaymentFailed:
             return Localization.cardPaymentFailedTitle
+        case .cardCreateAbandoned:
+            return Localization.cardCreateAbandonedTitle
+        case .cardCreateExpired:
+            return Localization.cardCreateExpiredTitle
+        case .cardCreateDebitOnly:
+            return Localization.cardCreateDebitOnlyTitle
+        case .cardPaymentDebitOnly:
+            return Localization.cardPaymentDebitOnlyTitle
+        case .cardCreateNoToken:
+            return Localization.cardCreateNoTokenTitle
         default:
             return nil
         }
@@ -384,6 +396,8 @@ extension TransactionErrorState {
             return Localization.cardInsufficientFunds
         case .cardBankDecline:
             return Localization.cardBankDecline
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclined
         case .cardDuplicate:
             return Localization.cardDuplicate
         case .cardBlockchainDecline:
@@ -396,6 +410,18 @@ extension TransactionErrorState {
             return Localization.cardCreateFailed
         case .cardPaymentFailed:
             return Localization.cardPaymentFailed
+        case .cardCreateAbandoned:
+            return Localization.cardCreateAbandoned
+        case .cardCreateExpired:
+            return Localization.cardCreateExpired
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclined
+        case .cardCreateDebitOnly:
+            return Localization.cardCreateDebitOnly
+        case .cardPaymentDebitOnly:
+            return Localization.cardPaymentDebitOnly
+        case .cardCreateNoToken:
+            return Localization.cardCreateNoToken
         default:
             return nil
         }
