@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
 import FeatureNotificationPreferencesDomain
+import Foundation
 
 public struct NotificationInfoResponse: Decodable {
     let preferences: [NotificationPreferenceResponse]
@@ -10,6 +10,7 @@ public struct NotificationInfoResponse: Decodable {
 }
 
 // MARK: - NotificationMethodInfoResponse
+
 struct NotificationMethodInfoResponse: Decodable {
     let method: NotificationMethod
     let title: String
@@ -18,6 +19,7 @@ struct NotificationMethodInfoResponse: Decodable {
 }
 
 // MARK: - NotificationPreferenceResponse
+
 struct NotificationPreferenceResponse: Decodable {
     let type: PreferenceType
     let title: String

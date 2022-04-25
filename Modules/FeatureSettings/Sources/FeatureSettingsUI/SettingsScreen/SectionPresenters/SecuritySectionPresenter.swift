@@ -11,9 +11,9 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .security
 
     var state: Observable<SettingsSectionLoadingState> {
-        return .just(
-                .loaded(next:
-                        .some(
+        .just(
+            .loaded(next:
+                .some(
                     .init(
                         sectionType: sectionType,
                         items: [

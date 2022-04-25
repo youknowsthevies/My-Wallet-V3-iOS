@@ -3,32 +3,36 @@
 import Foundation
 
 struct NotificationInfo {
-    public init(preferences: [NotificationPreference],
-                notificationMethods: [NotificationMethodInfo],
-                language: String) {
+    public init(
+        preferences: [NotificationPreference],
+        notificationMethods: [NotificationMethodInfo],
+        language: String
+    ) {
         self.preferences = preferences
         self.notificationMethods = notificationMethods
         self.language = language
     }
-    
+
     let preferences: [NotificationPreference]
     let notificationMethods: [NotificationMethodInfo]
     let language: String
 }
 
 public struct NotificationMethodInfo: Hashable, Identifiable {
-    public init(id: UUID = UUID(),
-                method: NotificationMethod,
-                title: String,
-                configured: Bool,
-                verified: Bool) {
+    public init(
+        id: UUID = UUID(),
+        method: NotificationMethod,
+        title: String,
+        configured: Bool,
+        verified: Bool
+    ) {
         self.id = id
         self.method = method
         self.title = title
         self.configured = configured
         self.verified = verified
     }
-        
+
     public var id = UUID()
     public let method: NotificationMethod
     public let title: String
@@ -45,7 +49,7 @@ public struct NotificationPreference: Hashable, Identifiable {
         self.optionalMethods = optionalMethods
         self.enabledMethods = enabledMethods
     }
-    
+
     public var id = UUID()
     public let type: PreferenceType
     public let title, preferenceDescription: String
@@ -55,7 +59,6 @@ public struct NotificationPreference: Hashable, Identifiable {
     }
 }
 
-
 public enum PreferenceType: String, Decodable {
     case transactional = "TRANSACTIONAL"
     case security = "SECURITY"
@@ -63,9 +66,9 @@ public enum PreferenceType: String, Decodable {
     case priceAlert = "PRICE_ALERT"
 }
 
-public enum NotificationMethod: String, Decodable,Identifiable {
+public enum NotificationMethod: String, Decodable, Identifiable {
     public var id: String { rawValue }
-    
+
     case sms = "SMS"
     case email = "EMAIL"
     case push = "PUSH"

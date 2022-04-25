@@ -62,7 +62,7 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Notification Preferences
     case notificationPreferences
-    
+
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
@@ -212,6 +212,8 @@ extension AppFeature {
         case .redesignCoinView:
             return true
         case .notificationPreferences:
+            return true
+        case .polygonSupport:
             return true
         }
     }
