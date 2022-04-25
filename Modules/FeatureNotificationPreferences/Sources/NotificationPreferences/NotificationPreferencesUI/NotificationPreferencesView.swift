@@ -2,31 +2,31 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
-import SwiftUI
 import FeatureNotificationPreferencesDomain
-import Mocks
-import UIComponentsKit
 import Localization
+import Mocks
+import SwiftUI
+import UIComponentsKit
 
 public struct FeatureNotificationPreferencesView: View {
     var store: Store<NotificationPreferencesState, NotificationPreferencesAction>
     @Environment(\.presentationMode) var presentationMode
-    
+
     @ObservedObject var viewStore: ViewStore<NotificationPreferencesState, NotificationPreferencesAction>
-    
-    public init(store: Store<NotificationPreferencesState,NotificationPreferencesAction>) {
+
+    public init(store: Store<NotificationPreferencesState, NotificationPreferencesAction>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
     }
-    
+
     public var body: some View {
         WithViewStore(store) { viewStore in
             PrimaryNavigationView {
                 VStack(alignment: .leading, spacing: 20) {
                     headerSection
-                    
+
                     switch viewStore.state.viewState {
-                    case .idle :
+                    case .idle:
                         EmptyView()
                     case .loading:
                         LoadingStateView(title: "")
@@ -58,34 +58,34 @@ extension FeatureNotificationPreferencesView {
             Text(LocalizationConstants.NotificationPreferences.NotificationScreen.Description.descriptionString)
                 .typography(.paragraph1)
                 .foregroundColor(Color.WalletSemantic.body)
-            
         }
         .padding(.horizontal, Spacing.padding3)
     }
-    
+
     var optionsSection: some View {
         WithViewStore(store) { viewStore in
-            VStack(alignment:.leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 10) {
                 if case .data(let preferences) = viewStore.state.viewState {
                     ForEach(preferences) { notificationPreference in
                         PrimaryRow(
                             title: notificationPreference.title,
                             subtitle: notificationPreference.preferenceDescription,
                             trailing: { Icon.chevronRight
-                                    .frame(width: 24, height: 24)
-                                    .accentColor(.semantic.muted)
+                                .frame(width: 24, height: 24)
+                                .accentColor(.semantic.muted)
                             },
                             action: {
                                 viewStore.send(.onPreferenceSelected(notificationPreference))
                                 viewStore.send(.route(.navigate(to: .showDetails)))
-                            })
+                            }
+                        )
                     }
                 }
             }
             .padding(.top, 66)
         }
     }
-    
+
     var errorSection: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 8, content: {
@@ -107,7 +107,7 @@ extension FeatureNotificationPreferencesView {
                 }
                 .padding(.horizontal, Spacing.padding3)
                 .padding(.bottom, Spacing.padding2)
-                
+
                 MinimalButton(title: LocalizationConstants.NotificationPreferences.Error.GoBackButton.goBackString) {
                     presentationMode.wrappedValue.dismiss()
                 }

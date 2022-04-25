@@ -1,14 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-import Foundation
 import FeatureNotificationPreferencesDomain
+import Foundation
 
 public let notificationPreferencesDetailsReducer = Reducer<
     NotificationPreferencesDetailsState,
     NotificationPreferencesDetailsAction,
     NotificationPreferencesDetailsEnvironment
-> { state, action, environment in
+> { _, action, _ in
     switch action {
     case .save:
         return .none

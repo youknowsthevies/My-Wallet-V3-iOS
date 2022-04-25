@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-import FeatureNotificationPreferencesDomain
 import Combine
+import FeatureNotificationPreferencesDomain
+import Foundation
 import NetworkError
 
 public struct NotificationPreferencesRepository: NotificationPreferencesRepositoryAPI {
@@ -15,23 +15,22 @@ public struct NotificationPreferencesRepository: NotificationPreferencesReposito
     public func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError> {
         client
             .fetchSettings()
-            .map({ response in
+            .map { response in
                 let availableMethods = response.notificationMethods
-                
+
                 return response
                     .preferences
-                    .map{$0.toNotificationPreference(with: availableMethods)}
-            })
+                    .map { $0.toNotificationPreference(with: availableMethods) }
+            }
             .eraseToAnyPublisher()
     }
-    
+
     public func update(preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
         client
             .update(preferences)
             .eraseToAnyPublisher()
     }
 }
-
 
 extension NotificationMethodInfoResponse {
     public func toNotificationMethodInfo() -> NotificationMethodInfo {
@@ -41,31 +40,30 @@ extension NotificationMethodInfoResponse {
 
 extension NotificationPreferenceResponse {
     public func toNotificationPreference(with availableMethods: [NotificationMethodInfoResponse]) -> NotificationPreference {
-        
-        let requiredMethods: [NotificationMethodInfo] = self
-            .requiredMethods
-            .compactMap({ currentMethod in
-                return availableMethods.filter{ $0.method == currentMethod}.first?.toNotificationMethodInfo()
-            })
-        
-        let optionalMethods: [NotificationMethodInfo] = self
-            .optionalMethods
-            .compactMap({ currentMethod in
-                return availableMethods.filter{ $0.method == currentMethod}.first?.toNotificationMethodInfo()
-            })
 
-        let enabledMethods: [NotificationMethodInfo] = self
-            .enabledMethods
-            .compactMap({ currentMethod in
-                return availableMethods.filter{ $0.method == currentMethod}.first?.toNotificationMethodInfo()
-            })
+        let requiredMethods: [NotificationMethodInfo] = requiredMethods
+            .compactMap { currentMethod in
+                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+            }
 
-        return NotificationPreference(id: UUID(),
-                                      type: type,
-                                      title: title,
-                                      preferenceDescription: description,
-                                      requiredMethods: requiredMethods,
-                                      optionalMethods: optionalMethods,
-                                      enabledMethods: enabledMethods)
+        let optionalMethods: [NotificationMethodInfo] = optionalMethods
+            .compactMap { currentMethod in
+                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+            }
+
+        let enabledMethods: [NotificationMethodInfo] = enabledMethods
+            .compactMap { currentMethod in
+                availableMethods.filter { $0.method == currentMethod }.first?.toNotificationMethodInfo()
+            }
+
+        return NotificationPreference(
+            id: UUID(),
+            type: type,
+            title: title,
+            preferenceDescription: description,
+            requiredMethods: requiredMethods,
+            optionalMethods: optionalMethods,
+            enabledMethods: enabledMethods
+        )
     }
 }
