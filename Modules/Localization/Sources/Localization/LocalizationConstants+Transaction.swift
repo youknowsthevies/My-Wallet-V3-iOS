@@ -1511,7 +1511,7 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardInsufficientFunds = NSLocalizedString(
-        "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
+        "It looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
         comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
     )
 
@@ -1566,8 +1566,8 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardCreateFailedTitle = NSLocalizedString(
-        "This Card Already Exists",
-        comment: "This Card Already Exists"
+        "Unable to add card",
+        comment: "Unable to add card"
     )
 
     public static let cardCreateFailed = NSLocalizedString(
