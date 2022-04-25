@@ -8,12 +8,10 @@ struct NotificationInfo {
                 language: String) {
         self.preferences = preferences
         self.notificationMethods = notificationMethods
-        self.language = language
     }
     
     let preferences: [NotificationPreference]
     let notificationMethods: [NotificationMethodInfo]
-    let language: String
 }
 
 public struct NotificationMethodInfo: Hashable, Identifiable {
