@@ -73,7 +73,7 @@ public enum AppFeature: Int, CaseIterable {
 
     case blockchainDomains
 
-    // MARK: - Account Picker
+    case polygonSupport
 
     // MARK: - Onboarding
 
@@ -148,6 +148,8 @@ extension AppFeature {
             return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
+        case .polygonSupport:
+            return "ios_ff_polygon"
         }
     }
 
@@ -203,6 +205,8 @@ extension AppFeature {
         case .blockchainDomains:
             return true
         case .redesignCoinView:
+            return true
+        case .polygonSupport:
             return true
         }
     }

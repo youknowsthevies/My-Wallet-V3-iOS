@@ -2,7 +2,6 @@
 
 import DIKit
 import Foundation
-import ToolKit
 
 public protocol EnabledCurrenciesServiceAPI {
     var allEnabledCurrencies: [CurrencyType] { get }
@@ -35,14 +34,16 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     // MARK: Private Properties
 
     private var nonCustodialCryptoCurrencies: [CryptoCurrency] {
-        [
+        var base: [CryptoCurrency] = [
             .bitcoin,
             .ethereum,
             .bitcoinCash,
             .stellar
-            // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
-            // .polygon
         ]
+        if polygonSupport.isEnabled {
+            base.append(.polygon)
+        }
+        return base
     }
 
     private var custodialCurrencies: [CryptoCurrency] {
@@ -60,21 +61,22 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .compactMap(\.cryptoCurrency)
     }
 
-    // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
-    // private var polygonERC20Currencies: [CryptoCurrency] {
-    //    repository.polygonERC20Assets
-    //        .currencies
-    //        .filter { PolygonERC20CodeAllowList.allCases.map(\.rawValue).contains($0.code) }
-    //        .filter(\.kind.isERC20)
-    //        .compactMap(\.cryptoCurrency)
-    // }
+    private var polygonERC20Currencies: [CryptoCurrency] {
+        guard polygonSupport.isEnabled else {
+            return []
+        }
+        return repository.polygonERC20Assets
+            .currencies
+            .filter { PolygonERC20CodeAllowList.allCases.map(\.rawValue).contains($0.code) }
+            .filter(\.kind.isERC20)
+            .compactMap(\.cryptoCurrency)
+    }
 
     private lazy var allEnabledCryptoCurrenciesLazy: [CryptoCurrency] = (
         nonCustodialCryptoCurrencies
             + custodialCurrencies
             + ethereumERC20Currencies
-        // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
-        // + polygonERC20Currencies
+            + polygonERC20Currencies
     )
     .unique
     .sorted()
@@ -84,16 +86,21 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     private let allEnabledCryptoCurrenciesLock = NSLock()
     private let allEnabledCurrenciesLock = NSLock()
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+
+    private let polygonSupport: PolygonSupport
     private let repository: SupportedAssetsRepositoryAPI
 
     // MARK: Init
 
     init(
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
-        repository: SupportedAssetsRepositoryAPI = resolve()
+        polygonSupport: PolygonSupport,
+        repository: SupportedAssetsRepositoryAPI
     ) {
-        self.internalFeatureFlagService = internalFeatureFlagService
+        self.polygonSupport = polygonSupport
         self.repository = repository
     }
+}
+
+public protocol PolygonSupport: AnyObject {
+    var isEnabled: Bool { get }
 }

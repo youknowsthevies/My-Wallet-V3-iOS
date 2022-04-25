@@ -99,8 +99,15 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         precondition(sourceAccount is EVMCryptoAccount)
-        precondition(sourceCryptoCurrency == .ethereum)
         precondition(transactionTarget is EthereumSendTransactionTarget)
+        precondition(
+            isCurrencyTypeValid(sourceCryptoCurrency.currencyType),
+            "Invalid source asset '\(sourceCryptoCurrency.code)'."
+        )
+    }
+
+    private func isCurrencyTypeValid(_ value: CurrencyType) -> Bool {
+        value == .crypto(network.cryptoCurrency)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -184,8 +191,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
-            fatalError("Not an ethereum value.")
+        guard isCurrencyTypeValid(pendingTransaction.amount.currencyType) else {
+            preconditionFailure("Not an \(network.rawValue) value.")
         }
         let address = walletConnectTarget.transaction.to
             .flatMap { EthereumAddress(address: $0) }
@@ -356,13 +363,13 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<(gasLimit: BigUInt, gasPrice: BigUInt, fee: CryptoValue)> {
         Single
             .zip(gasLimit(), gasPrice())
-            .map { gasLimit, gasPrice in
+            .map { [network] gasLimit, gasPrice in
                 (
                     gasLimit,
                     gasPrice,
                     CryptoValue(
                         amount: BigInt(gasLimit * gasPrice),
-                        currency: .ethereum
+                        currency: network.cryptoCurrency
                     )
                 )
             }
@@ -423,8 +430,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .ethereum)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .ethereum))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.cryptoCurrency)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.cryptoCurrency))
         )
         .map { sourceExchangeRatePair, amount, feeAmount in
             (
@@ -458,21 +465,20 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
 extension EthereumSendTransactionTarget {
     func pendingTransacation(fiatCurrency: FiatCurrency) -> PendingTransaction {
-        let ethereum: CryptoCurrency = .ethereum
-        let zeroEthereum: MoneyValue = .zero(currency: ethereum)
+        let zeroMoneyValue: MoneyValue = .zero(currency: network.cryptoCurrency)
         let amount: MoneyValue = transaction.value
             .flatMap { BigInt($0.withoutHex, radix: 16) }
-            .flatMap { MoneyValue(amount: $0, currency: .crypto(ethereum)) }
-            ?? zeroEthereum
+            .flatMap { MoneyValue(amount: $0, currency: .crypto(network.cryptoCurrency)) }
+            ?? zeroMoneyValue
         return PendingTransaction(
             amount: amount,
-            available: zeroEthereum,
-            feeAmount: zeroEthereum,
-            feeForFullAvailable: zeroEthereum,
+            available: zeroMoneyValue,
+            feeAmount: zeroMoneyValue,
+            feeForFullAvailable: zeroMoneyValue,
             feeSelection: .init(
                 selectedLevel: .regular,
                 availableLevels: [.regular],
-                asset: .crypto(ethereum)
+                asset: .crypto(network.cryptoCurrency)
             ),
             selectedFiatCurrency: fiatCurrency
         )

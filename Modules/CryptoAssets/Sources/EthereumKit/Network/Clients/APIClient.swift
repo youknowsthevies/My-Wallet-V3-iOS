@@ -56,8 +56,13 @@ final class APIClient: TransactionPushClientAPI,
             }
         }
 
-        static var pushTx: String {
-            "/currency/evm/pushTx"
+        static func pushTx(network: EVMNetwork) -> String {
+            switch network {
+            case .ethereum:
+                return "/eth/pushtx"
+            case .polygon:
+                return "/currency/evm/pushTx"
+            }
         }
 
         static func transactions(for address: String) -> String {
@@ -132,7 +137,7 @@ final class APIClient: TransactionPushClientAPI,
         )
         let data = try? JSONEncoder().encode(pushTxRequest)
         let request = requestBuilder.post(
-            path: "/currency/evm/pushTx",
+            path: Endpoint.pushTx(network: network),
             body: data,
             recordErrors: true
         )!

@@ -36,6 +36,7 @@ import FeatureTransactionUI
 import FeatureWalletConnectData
 import FirebaseMessaging
 import FirebaseRemoteConfig
+import MoneyKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -375,6 +376,10 @@ extension DependencyContainer {
         factory { () -> RxFeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
+        }
+
+        factory {
+            PolygonSupport(app: DIKit.resolve()) as MoneyKit.PolygonSupport
         }
 
         // MARK: - UserInformationServiceProvider

@@ -3,9 +3,18 @@
 import BigInt
 import MoneyKit
 
-public enum EVMNetwork: String, Hashable {
+public enum EVMNetwork: String, Hashable, CaseIterable {
     case ethereum = "ETH"
     case polygon = "MATIC"
+
+    public var name: String {
+        switch self {
+        case .ethereum:
+            return "Ethereum"
+        case .polygon:
+            return "Polygon"
+        }
+    }
 
     public var chainID: BigUInt {
         switch self {
@@ -14,6 +23,13 @@ public enum EVMNetwork: String, Hashable {
         case .polygon:
             return 137
         }
+    }
+
+    public init?(chainID: BigUInt) {
+        guard let match = EVMNetwork.allCases.first(where: { $0.chainID == chainID }) else {
+            return nil
+        }
+        self = match
     }
 
     public var assetModel: AssetModel {

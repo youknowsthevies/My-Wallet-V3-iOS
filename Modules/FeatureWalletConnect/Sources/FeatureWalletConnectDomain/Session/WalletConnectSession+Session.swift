@@ -14,17 +14,17 @@ extension WalletConnectSession {
         return Session(
             url: wcURL,
             dAppInfo: dAppInfo,
-            walletInfo: walletInfo.walletInfo
+            walletInfo: walletInfo.walletInfo(chainID: dAppInfo.chainId ?? 1)
         )
     }
 }
 
 extension WalletConnectSession.WalletInfo {
-    fileprivate var walletInfo: Session.WalletInfo {
+    fileprivate func walletInfo(chainID: Int) -> Session.WalletInfo {
         Session.WalletInfo(
             approved: true,
             accounts: [],
-            chainId: 1,
+            chainId: chainID,
             peerId: clientId,
             peerMeta: .blockchain
         )

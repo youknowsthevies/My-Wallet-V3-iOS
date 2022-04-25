@@ -2,7 +2,6 @@
 
 import DIKit
 import Foundation
-import ToolKit
 
 public protocol SupportedAssetsFilePathProviderAPI {
     var remoteEthereumERC20Assets: URL? { get }

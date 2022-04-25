@@ -68,22 +68,20 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
     }
 
     func refreshPolygonERC20AssetsCache() -> AnyPublisher<Void, Never> {
-        .just(())
-        // TODO: (paulo) IOS-5614 Uncomment this when safe for first release.
-        //    client.polygonERC20Assets
-        //        .eraseError()
-        //        .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
-        //            fileIO
-        //                .write(
-        //                    response,
-        //                    to: filePathProvider.remotePolygonERC20Assets!,
-        //                    encodedUsing: jsonDecoder
-        //                )
-        //                .eraseError()
-        //                .publisher
-        //                .eraseToAnyPublisher()
-        //        }
-        //        .replaceError(with: ())
-        //        .eraseToAnyPublisher()
+        client.polygonERC20Assets
+            .eraseError()
+            .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
+                fileIO
+                    .write(
+                        response,
+                        to: filePathProvider.remotePolygonERC20Assets!,
+                        encodedUsing: jsonDecoder
+                    )
+                    .eraseError()
+                    .publisher
+                    .eraseToAnyPublisher()
+            }
+            .replaceError(with: ())
+            .eraseToAnyPublisher()
     }
 }
