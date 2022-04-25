@@ -12,7 +12,6 @@ public struct AlertToast: View {
     private let text: String
     private let variant: Variant
     private var icon: Icon?
-    private var action: (() -> Void)?
 
     /// Create an AlertToast view
     /// - Parameters:
@@ -22,13 +21,10 @@ public struct AlertToast: View {
     public init(
         text: String,
         variant: Variant = .default,
-        icon: Icon? = nil,
-        action: (() -> Void)? = nil
-    ) {
+        icon: Icon? = nil) {
         self.text = text
         self.variant = variant
         self.icon = icon
-        self.action = action
     }
     
     public var body: some View {
@@ -67,11 +63,6 @@ public struct AlertToast: View {
                         y: 3
                     )
             }
-        ).gesture(
-            TapGesture()
-                .onEnded { _ in
-                    action?()
-                }
         )
     }
     

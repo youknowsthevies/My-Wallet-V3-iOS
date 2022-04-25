@@ -6,7 +6,6 @@ import Foundation
 public struct NotificationInfoResponse: Decodable {
     let preferences: [NotificationPreferenceResponse]
     let notificationMethods: [NotificationMethodInfoResponse]
-//    let language: String
 }
 
 // MARK: - NotificationMethodInfoResponse

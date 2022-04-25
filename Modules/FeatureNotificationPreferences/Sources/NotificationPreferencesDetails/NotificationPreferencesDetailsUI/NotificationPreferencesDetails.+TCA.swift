@@ -36,7 +36,7 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
     public var updatedPreferences: UpdatedPreferences {
         let preferences = [pushSwitch, emailSwitch, smsSwitch, inAppSwitch]
             .filter { controlSwitch in
-                let availableMethods = notificationPreference.allAvailableMethods.compactMap(\.method)
+                let availableMethods = notificationPreference.allAvailableMethods.map(\.method)
                 return availableMethods.contains(controlSwitch.method)
             }
             .map { UpdatedNotificationPreference(

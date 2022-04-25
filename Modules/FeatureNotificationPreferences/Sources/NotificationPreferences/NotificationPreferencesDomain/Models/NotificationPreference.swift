@@ -5,17 +5,14 @@ import Foundation
 struct NotificationInfo {
     public init(
         preferences: [NotificationPreference],
-        notificationMethods: [NotificationMethodInfo],
-        language: String
+        notificationMethods: [NotificationMethodInfo]
     ) {
         self.preferences = preferences
         self.notificationMethods = notificationMethods
-        self.language = language
     }
 
     let preferences: [NotificationPreference]
     let notificationMethods: [NotificationMethodInfo]
-    let language: String
 }
 
 public struct NotificationMethodInfo: Hashable, Identifiable {
