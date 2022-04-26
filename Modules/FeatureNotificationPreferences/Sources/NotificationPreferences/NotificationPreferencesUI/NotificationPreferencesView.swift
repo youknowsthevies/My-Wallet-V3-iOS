@@ -3,8 +3,8 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureNotificationPreferencesDomain
-import Localization
 import FeatureNotificationPreferencesMocks
+import Localization
 import SwiftUI
 import UIComponentsKit
 
