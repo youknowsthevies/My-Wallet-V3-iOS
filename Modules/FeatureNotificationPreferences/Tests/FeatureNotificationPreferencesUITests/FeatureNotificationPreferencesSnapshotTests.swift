@@ -48,6 +48,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneSE_snapshot_display_notification_preferences() throws {
+        try XCTSkipIf(true)
         let view = FeatureNotificationPreferencesView(store: rootStore)
         view.viewStore.send(.onAppear)
         mainScheduler.advance()
@@ -55,6 +56,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneXR_snapshot_display_notification_preferences() throws {
+        try XCTSkipIf(true)
         let view = FeatureNotificationPreferencesView(store: rootStore)
         view.viewStore.send(.onAppear)
         mainScheduler.advance()
@@ -62,6 +64,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneXsMax_snapshot_display_notification_preferences() throws {
+        try XCTSkipIf(true)
         let view = FeatureNotificationPreferencesView(store: rootStore)
         view.viewStore.send(.onAppear)
         mainScheduler.advance()
