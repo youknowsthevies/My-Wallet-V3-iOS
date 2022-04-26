@@ -238,29 +238,6 @@ extension LocalizationConstants {
                     comment: "Coin View Graph: Retry on failure CTA"
                 )
             }
-
-            enum TimePeriod {
-                static let day = NSLocalizedString(
-                    "1D",
-                    comment: "Coin View: day time period"
-                )
-                static let week = NSLocalizedString(
-                    "1W",
-                    comment: "Coin View: week time period"
-                )
-                static let month = NSLocalizedString(
-                    "1M",
-                    comment: "Coin View: month time period"
-                )
-                static let year = NSLocalizedString(
-                    "1Y",
-                    comment: "Coin View: year time period"
-                )
-                static let all = NSLocalizedString(
-                    "ALL",
-                    comment: "Coin View: all time period"
-                )
-            }
         }
     }
 }
