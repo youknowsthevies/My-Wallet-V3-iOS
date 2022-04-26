@@ -4,7 +4,7 @@ import Combine
 import FeatureNotificationPreferencesData
 import FeatureNotificationPreferencesDomain
 import Foundation
-import Mocks
+import FeatureNotificationPreferencesMocks
 import NabuNetworkError
 import NetworkError
 
