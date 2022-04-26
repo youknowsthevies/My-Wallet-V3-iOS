@@ -323,7 +323,7 @@ extension TransactionErrorState {
         case .cardDuplicate:
             return Localization.cardDuplicateTitle
         case .cardBlockchainDecline:
-            return Localization.cardBankDeclineTitle
+            return Localization.cardBlockchainDeclineTitle
         case .cardAcquirerDecline:
             return Localization.cardAcquirerDeclineTitle
         case .cardPaymentNotSupported:
@@ -332,6 +332,8 @@ extension TransactionErrorState {
             return Localization.cardCreateFailedTitle
         case .cardPaymentFailed:
             return Localization.cardPaymentFailedTitle
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclinedTitle
         case .cardCreateAbandoned:
             return Localization.cardCreateAbandonedTitle
         case .cardCreateExpired:
@@ -401,9 +403,9 @@ extension TransactionErrorState {
         case .cardDuplicate:
             return Localization.cardDuplicate
         case .cardBlockchainDecline:
-            return Localization.cardBankDecline
+            return Localization.cardBlockchainDecline
         case .cardAcquirerDecline:
-            return Localization.cardBankDecline
+            return Localization.cardAcquirerDecline
         case .cardPaymentNotSupported:
             return Localization.cardUnsupportedPaymentMethod
         case .cardCreateFailed:
