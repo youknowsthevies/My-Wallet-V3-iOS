@@ -126,6 +126,13 @@ final class CoinViewAnalyticsTests: XCTestCase {
 
         XCTAssertEqual(analytics.session.count, events.count)
     }
+
+    func test_watchlist() {
+        app.post(event: blockchain.ux.asset["BTC"].watchlist.add)
+        XCTAssertEqual(analytics.session.count, 1)
+        app.post(event: blockchain.ux.asset["BTC"].watchlist.remove)
+        XCTAssertEqual(analytics.session.count, 2)
+    }
 }
 
 class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
