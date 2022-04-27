@@ -6,17 +6,27 @@ import PlatformKit
 public struct EthereumAddress: AssetAddress, Hashable {
 
     public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .ethereum
+    public let network: EVMNetwork
+    public var cryptoCurrency: CryptoCurrency {
+        network.cryptoCurrency
+    }
 
-    public init(string address: String) throws {
+    public init(
+        string address: String,
+        network: EVMNetwork = .ethereum
+    ) throws {
         try EthereumAddressValidator.validate(address: address)
         guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
             throw AddressValidationError.eip55ChecksumFailed
         }
         publicKey = eip55Address
+        self.network = network
     }
 
-    public init?(address: String) {
+    public init?(
+        address: String,
+        network: EVMNetwork = .ethereum
+    ) {
         try? self.init(string: address)
     }
 }

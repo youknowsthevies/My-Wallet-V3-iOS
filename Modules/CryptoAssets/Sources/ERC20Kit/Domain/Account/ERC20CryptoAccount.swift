@@ -26,10 +26,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
+        balancePublisher.asSingle()
+    }
+
+    var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balanceService
-            .balance(for: EthereumAddress(address: publicKey)!, cryptoCurrency: asset)
-            .asSingle()
-            .moneyValue
+            .balance(for: ethereumAddress, cryptoCurrency: asset)
+            .map(\.moneyValue)
+            .eraseError()
     }
 
     var pendingBalance: Single<MoneyValue> {
@@ -91,7 +95,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
         transactionsService
-            .transactions(erc20Asset: erc20Token, address: EthereumAddress(address: publicKey)!)
+            .transactions(erc20Asset: erc20Token, address: ethereumAddress)
             .map { response in
                 response
                     .map(\.activityItemEvent)
@@ -108,12 +112,16 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     /// Stream a boolean indicating if this ERC20 token has ever been transacted,
     private var hasHistory: AnyPublisher<Bool, Never> {
         erc20TokenAccountsRepository
-            .tokens(for: EthereumAddress(address: publicKey)!)
+            .tokens(for: ethereumAddress, network: network)
             .map { [asset] tokens in
                 tokens[asset] != nil
             }
             .replaceError(with: false)
             .eraseToAnyPublisher()
+    }
+
+    private var ethereumAddress: EthereumAddress {
+        EthereumAddress(address: publicKey)!
     }
 
     private var erc20ReceiveAddress: ERC20ReceiveAddress {
@@ -260,8 +268,6 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     func invalidateAccountBalance() {
-        erc20TokenAccountsRepository.invalidateERC20TokenAccountsForAddress(
-            EthereumAddress(address: publicKey)!
-        )
+        erc20TokenAccountsRepository.invalidateCache(for: ethereumAddress, network: network)
     }
 }

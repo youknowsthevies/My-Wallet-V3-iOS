@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import EthereumKit
 import MoneyKit
 import PlatformKit
@@ -29,7 +28,7 @@ final class ERC20HistoricalTransactionService: ERC20HistoricalTransactionService
     private let accountClient: ERC20AccountAPIClientAPI
     private let cache: Cache<Key, [ERC20HistoricalTransaction]>
 
-    init(accountClient: ERC20AccountAPIClientAPI = resolve()) {
+    init(accountClient: ERC20AccountAPIClientAPI) {
         self.accountClient = accountClient
         cache = .init(entryLifetime: 60)
     }

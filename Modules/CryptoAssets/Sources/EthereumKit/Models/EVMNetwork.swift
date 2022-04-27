@@ -3,7 +3,7 @@
 import BigInt
 import MoneyKit
 
-public enum EVMNetwork: String, Hashable, CaseIterable {
+public enum EVMNetwork: String, Hashable, CaseIterable, Encodable {
     case ethereum = "ETH"
     case polygon = "MATIC"
 

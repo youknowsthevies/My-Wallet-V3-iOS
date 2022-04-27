@@ -7,10 +7,10 @@ import PlatformKit
 public struct ERC20TokenAccount: Equatable {
 
     /// The balance of the account.
-    let balance: CryptoValue
+    public let balance: CryptoValue
 
     /// The `CryptoCurrency` of the ERC-20 token.
-    var currency: CryptoCurrency {
+    public var currency: CryptoCurrency {
         balance.currency
     }
 

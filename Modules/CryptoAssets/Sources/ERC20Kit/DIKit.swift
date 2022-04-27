@@ -14,12 +14,31 @@ extension DependencyContainer {
 
         factory { ERC20AssetFactory() as ERC20AssetFactoryAPI }
 
-        single { ERC20HistoricalTransactionService() as ERC20HistoricalTransactionServiceAPI }
+        single {
+            ERC20HistoricalTransactionService(
+                accountClient: DIKit.resolve()
+            ) as ERC20HistoricalTransactionServiceAPI
+        }
 
-        factory { ERC20BalanceService() as ERC20BalanceServiceAPI }
+        factory {
+            ERC20BalanceService(
+                tokenAccountsRepository: DIKit.resolve()
+            ) as ERC20BalanceServiceAPI
+        }
 
-        factory { ERC20AccountAPIClient() as ERC20AccountAPIClientAPI }
+        factory {
+            ERC20AccountAPIClient(
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve()
+            ) as ERC20AccountAPIClientAPI
+        }
 
-        factory { ERC20CryptoAssetService() as ERC20CryptoAssetServiceAPI }
+        factory {
+            ERC20CryptoAssetService(
+                accountsRepository: DIKit.resolve(),
+                enabledCurrenciesService: DIKit.resolve(),
+                coincore: DIKit.resolve()
+            ) as ERC20CryptoAssetServiceAPI
+        }
     }
 }

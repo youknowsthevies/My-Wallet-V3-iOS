@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
+import EthereumKit
 import NetworkKit
 
 /// A client in charge of interacting with the ethereum backend service, in order to fetch ERC-20 data.
@@ -9,12 +9,20 @@ import NetworkKit
 /// - Note: The `New` suffix should be removed after `ERC20DataKit` data layer migration has been completed.
 protocol ERC20AccountClientAPI {
 
+    /// Fetches the ERC-20 token accounts associated with the given ethereum account address, on the given network.
+    ///
+    /// - Parameter address: The ethereum account address to fetch the ERC-20 token accounts for.
+    /// - Parameter network: The EVMNetwork.
+    ///
+    /// - Returns: A publisher that emits a `ERC20TokenAccountsReponse` on success, or a `NetworkError` on failure.
+    func evmTokensBalances(for address: String, network: EVMNetwork) -> AnyPublisher<EVMBalancesResponse, NetworkError>
+
     /// Fetches the ERC-20 token accounts associated with the given ethereum account address.
     ///
     /// - Parameter address: The ethereum account address to fetch the ERC-20 token accounts for.
     ///
     /// - Returns: A publisher that emits a `ERC20TokenAccountsReponse` on success, or a `NetworkError` on failure.
-    func tokens(for address: String) -> AnyPublisher<ERC20TokenAccountsResponse, NetworkError>
+    func ethereumTokensBalances(for address: String) -> AnyPublisher<ERC20TokenAccountsResponse, NetworkError>
 }
 
 /// The client in charge of interacting with the ethereum backend service, in order to fetch ERC-20 data.
@@ -22,21 +30,23 @@ final class ERC20AccountClient: ERC20AccountClientAPI {
 
     // MARK: - Private Types
 
-    /// URL path and query constructors for V2 endpoints (`eth/v2`).
-    private enum EndpointV2 {
+    private enum Endpoint {
 
-        /// The URL path to the `tokens` endpoint, for a given account (e.g. `eth/v2/account/<address>/tokens`).
-        ///
-        /// - Parameter address: An ethereum account address.
-        static func tokens(for address: String) -> [String] {
-            ["eth", "v2", "account", address, "tokens"]
+        /// URL path to the `tokens` endpoint.
+        static func ethereumTokens(for address: String) -> String {
+            "/eth/v2/account/\(address)/tokens"
+        }
+
+        /// URL path to the `tokens` endpoint.
+        static var evmBalances: String {
+            "/currency/evm/balances"
         }
     }
 
     // MARK: - Private Properties
 
+    private let apiCode: APICode
     private let networkAdapter: NetworkAdapterAPI
-
     private let requestBuilder: RequestBuilder
 
     // MARK: - Setup
@@ -47,18 +57,39 @@ final class ERC20AccountClient: ERC20AccountClientAPI {
     ///   - networkAdapter: A network adapter.
     ///   - requestBuilder: A request builder.
     init(
-        networkAdapter: NetworkAdapterAPI = resolve(),
-        requestBuilder: RequestBuilder = resolve()
+        apiCode: APICode,
+        networkAdapter: NetworkAdapterAPI,
+        requestBuilder: RequestBuilder
     ) {
+        self.apiCode = apiCode
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
     // MARK: - Internal Methods
 
-    func tokens(for address: String) -> AnyPublisher<ERC20TokenAccountsResponse, NetworkError> {
-        let path = EndpointV2.tokens(for: address)
-        let request = requestBuilder.get(path: path)!
+    func evmTokensBalances(
+        for address: String,
+        network: EVMNetwork
+    ) -> AnyPublisher<EVMBalancesResponse, NetworkError> {
+        let payload = EVMBalancesRequest(
+            address: address,
+            network: network,
+            apiCode: apiCode
+        )
+        let request = requestBuilder.post(
+            path: Endpoint.evmBalances,
+            body: try? payload.encode()
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func ethereumTokensBalances(
+        for address: String
+    ) -> AnyPublisher<ERC20TokenAccountsResponse, NetworkError> {
+        let request = requestBuilder.get(
+            path: Endpoint.ethereumTokens(for: address)
+        )!
         return networkAdapter.perform(request: request)
     }
 }

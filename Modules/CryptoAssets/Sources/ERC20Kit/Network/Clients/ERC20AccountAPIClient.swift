@@ -24,8 +24,8 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
     // MARK: - Setup
 
     init(
-        networkAdapter: NetworkAdapterAPI = resolve(),
-        requestBuilder: RequestBuilder = resolve()
+        networkAdapter: NetworkAdapterAPI,
+        requestBuilder: RequestBuilder
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
