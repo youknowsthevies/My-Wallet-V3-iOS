@@ -122,7 +122,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         interestEligibilityRepository
-            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType)
             .map(\.ineligibilityReason)
             .eraseError()
     }

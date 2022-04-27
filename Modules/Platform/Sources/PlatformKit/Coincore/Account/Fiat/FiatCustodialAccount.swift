@@ -21,7 +21,7 @@ final class FiatCustodialAccount: FiatAccount {
 
     var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         interestEligibilityRepository
-            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType)
             .map(\.ineligibilityReason)
             .eraseError()
     }
