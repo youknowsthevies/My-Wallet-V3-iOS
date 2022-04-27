@@ -25,8 +25,8 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
         self.client = client
 
         let cache: AnyCache<String, [InterestAccountEligibility]> = InMemoryCache(
-            configuration: .default(),
-            refreshControl: PerpetualCacheRefreshControl()
+            configuration: .onUserStateChanged(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(
