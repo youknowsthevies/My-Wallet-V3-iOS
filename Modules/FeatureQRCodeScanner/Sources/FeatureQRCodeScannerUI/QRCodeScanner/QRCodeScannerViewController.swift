@@ -204,7 +204,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         let allowAccessStore = Store(
             initialState: AllowAccessState(
                 informationalOnly: informationalOnly,
-                showWalletConnectRow: false
+                showWalletConnectRow: true
             ),
             reducer: qrScannerAllowAccessReducer,
             environment: environment
