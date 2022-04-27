@@ -176,14 +176,8 @@ extension Reducer where State == BankState, Action == BankAction, Environment ==
 
     func analytics() -> Reducer {
         combined(
-            with: .init { state, action, environment in
+            with: .init { _, action, environment in
                 switch action {
-                case .finalise(.linked(let account, _)):
-                    return .fireAndForget { [state] in
-                        environment.analytics.record(
-                            event: .bankAccountStateTriggered(account: account, institution: state.name)
-                        )
-                    }
                 case .failure(let error):
                     return .fireAndForget {
                         environment.analytics.record(

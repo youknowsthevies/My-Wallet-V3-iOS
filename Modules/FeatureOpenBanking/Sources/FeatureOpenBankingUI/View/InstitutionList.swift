@@ -72,11 +72,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .eraseToEffect()
             case .fetched(let account):
                 state.result = .success(account)
-                return .fireAndForget {
-                    environment.analytics.record(
-                        event: .bankAccountStateTriggered(account: account)
-                    )
-                }
+                return .none
             case .showTransferDetails:
                 return .fireAndForget(environment.showTransferDetails)
             case .select(let account, let institution):
