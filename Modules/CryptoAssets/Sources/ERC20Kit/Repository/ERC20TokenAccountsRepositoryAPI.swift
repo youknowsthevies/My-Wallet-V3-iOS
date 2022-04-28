@@ -22,7 +22,7 @@ public enum ERC20TokenAccountsError: Error, Equatable, CustomStringConvertible {
 }
 
 /// A repository in charge of getting ERC-20 token accounts associated with a given ethereum account address.
-public protocol ERC20TokenAccountsRepositoryAPI {
+public protocol ERC20BalancesRepositoryAPI {
 
     /// Invalidates the `ERC20TokenAccounts` cache. This is used after a
     /// transaction completes to ensure views show the latest balance.
@@ -61,7 +61,7 @@ public protocol ERC20TokenAccountsRepositoryAPI {
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError>
 }
 
-extension ERC20TokenAccountsRepositoryAPI {
+extension ERC20BalancesRepositoryAPI {
 
     /// Invalidates the `ERC20TokenAccounts` cache. This is used after a
     /// transaction completes to ensure views show the latest balance.

@@ -8,7 +8,7 @@ import PlatformKit
 import ToolKit
 
 /// A repository in charge of getting ERC-20 token accounts associated with a given ethereum account address, providing value caching.
-final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
+final class ERC20BalancesRepository: ERC20BalancesRepositoryAPI {
 
     // MARK: - Internal Types
 
@@ -37,7 +37,7 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - client:                   An ERC-20 account client.
     ///   - enabledCurrenciesService: An enabled currencies service.
     convenience init(
-        client: ERC20AccountClientAPI,
+        client: ERC20BalancesClientAPI,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: 60)
@@ -57,7 +57,7 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - cache:                    A cache.
     ///   - enabledCurrenciesService: An enabled currencies service.
     init(
-        client: ERC20AccountClientAPI,
+        client: ERC20BalancesClientAPI,
         cache: AnyCache<ERC20TokenAccountsKey, ERC20TokenAccounts>,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {

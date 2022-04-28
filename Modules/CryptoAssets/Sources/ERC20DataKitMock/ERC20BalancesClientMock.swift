@@ -7,7 +7,7 @@ import MoneyKit
 import NetworkError
 import PlatformKit
 
-final class ERC20AccountClientMock: ERC20AccountClientAPI {
+final class ERC20BalancesClientMock: ERC20BalancesClientAPI {
 
     // MARK: - Types
 

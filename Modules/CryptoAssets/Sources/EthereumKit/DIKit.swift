@@ -16,13 +16,9 @@ extension DependencyContainer {
 
         factory { APIClient() as TransactionPushClientAPI }
 
-        factory { APIClient() as TransactionClientAPI }
-
         factory { APIClient() as TransactionFeeClientAPI }
 
         // MARK: RPCClient
-
-        factory { RPCClient() as LatestBlockClientAPI }
 
         factory { RPCClient() as EstimateGasClientAPI }
 
@@ -77,12 +73,6 @@ extension DependencyContainer {
         single { EthereumBalanceRepository() as EthereumBalanceRepositoryAPI }
 
         single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
-
-        single { LatestBlockRepository() as LatestBlockRepositoryAPI }
-
-        single { HistoricalTransactionsRepository() as HistoricalTransactionsRepositoryAPI }
-
-        single { PendingTransactionRepository() as PendingTransactionRepositoryAPI }
 
         factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
             AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())

@@ -13,7 +13,7 @@ import TestKit
 import ToolKit
 import XCTest
 
-final class ERC20TokenAccountsRepositoryTests: XCTestCase {
+final class ERC20BalancesRepositoryTests: XCTestCase {
 
     // MARK: - Private Properties
 
@@ -22,16 +22,16 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     private let ethereumAddress = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
 
     private var fetchAccounts: ERC20TokenAccounts!
-    private var client: ERC20AccountClientMock!
-    private var cache: AnyCache<ERC20TokenAccountsRepository.ERC20TokenAccountsKey, ERC20TokenAccounts>!
-    private var subject: ERC20TokenAccountsRepositoryAPI!
+    private var client: ERC20BalancesClientMock!
+    private var cache: AnyCache<ERC20BalancesRepository.ERC20TokenAccountsKey, ERC20TokenAccounts>!
+    private var subject: ERC20BalancesRepositoryAPI!
 
     // MARK: - Setup
 
     override func setUp() {
         super.setUp()
 
-        client = ERC20AccountClientMock(
+        client = ERC20BalancesClientMock(
             cryptoCurrency: currency,
             behaviour: .succeed
         )
@@ -48,7 +48,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
         let enabledCurrenciesService = MockEnabledCurrenciesService()
         enabledCurrenciesService.allEnabledCryptoCurrencies = [currency]
 
-        subject = ERC20TokenAccountsRepository(
+        subject = ERC20BalancesRepository(
             client: client,
             cache: cache,
             enabledCurrenciesService: enabledCurrenciesService
@@ -81,7 +81,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokens_staleAddress() {
         // GIVEN: an address with a stale value associated
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]
@@ -105,7 +105,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokens_presentAddress() {
         // GIVEN: an address with a present value associated
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]
@@ -126,7 +126,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokens_forceFetch() {
         // GIVEN: an address with a present value associated
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]
@@ -190,7 +190,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokensStream_staleAddress() {
         // GIVEN: an address with a stale value associated
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]
@@ -217,7 +217,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokensStream_skipStale() {
         // GIVEN: an address with a stale value
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]
@@ -241,7 +241,7 @@ final class ERC20TokenAccountsRepositoryTests: XCTestCase {
     func test_tokensStream_presentAddress() {
         // GIVEN: an address with a present value associated
         let address = ethereumAddress
-        let key = ERC20TokenAccountsRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
+        let key = ERC20BalancesRepository.ERC20TokenAccountsKey(address: address.publicKey, network: .ethereum)
         let newValue: ERC20TokenAccounts = [
             currency: .init(balance: .one(currency: currency))
         ]

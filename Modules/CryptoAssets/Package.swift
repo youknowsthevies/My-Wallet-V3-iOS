@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "BitcoinChainKit", targets: ["BitcoinChainKit"]),
         .library(name: "BitcoinKit", targets: ["BitcoinKit"]),
         .library(name: "EthereumKit", targets: ["EthereumKit"]),
+        .library(name: "EthereumDataKit", targets: ["EthereumDataKit"]),
         .library(name: "ERC20Kit", targets: ["ERC20Kit"]),
         .library(name: "ERC20DataKit", targets: ["ERC20DataKit"]),
         .library(name: "StellarKit", targets: ["StellarKit"]),
@@ -96,8 +97,8 @@ let package = Package(
         .target(
             name: "ERC20DataKit",
             dependencies: [
-                .product(name: "DIKit", package: "DIKit"),
                 .target(name: "ERC20Kit"),
+                .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "ToolKit", package: "Tool")
@@ -111,6 +112,12 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "EthereumDataKit",
+            dependencies: [
+                .target(name: "EthereumKit")
             ]
         ),
         .target(

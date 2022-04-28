@@ -39,14 +39,14 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
 
     // MARK: - Private Properties
 
-    private let tokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
+    private let tokenAccountsRepository: ERC20BalancesRepositoryAPI
 
     // MARK: - Setup
 
     /// Creates an ERC-20 balance service.
     ///
     /// - Parameter tokenAccountsRepository: An ERC-20 token accounts repository.
-    init(tokenAccountsRepository: ERC20TokenAccountsRepositoryAPI) {
+    init(tokenAccountsRepository: ERC20BalancesRepositoryAPI) {
         self.tokenAccountsRepository = tokenAccountsRepository
     }
 

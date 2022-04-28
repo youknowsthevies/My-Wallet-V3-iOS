@@ -46,24 +46,4 @@ public struct ERC20HistoricalTransaction: Hashable {
         self.fee = fee
         self.note = note
     }
-
-    init(response: ERC20TransfersResponse.Transfer, cryptoCurrency: CryptoCurrency, source: EthereumAddress) {
-        let createdAt: Date
-        if let timeSinceEpoch = Double(response.timestamp) {
-            createdAt = Date(timeIntervalSince1970: timeSinceEpoch)
-        } else {
-            createdAt = Date()
-        }
-        let fromAddress = EthereumAddress(address: response.from)!
-        self.init(
-            fromAddress: fromAddress,
-            toAddress: EthereumAddress(address: response.to)!,
-            direction: fromAddress == source ? .credit : .debit,
-            amount: CryptoValue.create(minor: response.value, currency: cryptoCurrency) ?? .zero(currency: cryptoCurrency),
-            transactionHash: response.transactionHash,
-            createdAt: createdAt,
-            fee: nil,
-            note: nil
-        )
-    }
 }

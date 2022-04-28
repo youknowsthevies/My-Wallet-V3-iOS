@@ -7,7 +7,7 @@ import MoneyKit
 import PlatformKit
 import ToolKit
 
-final class ERC20TokenAccountsRepositoryMock: ERC20TokenAccountsRepositoryAPI {
+final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
 
     // MARK: - Private Properties
 

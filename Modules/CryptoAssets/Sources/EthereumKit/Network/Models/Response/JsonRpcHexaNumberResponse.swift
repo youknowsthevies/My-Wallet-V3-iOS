@@ -5,7 +5,7 @@ import Foundation
 
 /// A Json RPC response with a hexadecimal number as 'result'.
 /// The number will be converted to a `BigInt`.
-struct JsonRpcHexaNumberResponse: Decodable {
+public struct JsonRpcHexaNumberResponse: Decodable {
 
     // MARK: Types
 
@@ -15,11 +15,11 @@ struct JsonRpcHexaNumberResponse: Decodable {
 
     // MARK: Properties
 
-    let result: BigInt
+    public let result: BigInt
 
     // MARK: Init
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let value = try container.decode(String.self, forKey: .result)
         guard let result = BigInt(value.withoutHex, radix: 16) else {

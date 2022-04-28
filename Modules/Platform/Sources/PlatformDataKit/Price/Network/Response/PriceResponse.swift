@@ -22,11 +22,11 @@ extension PriceResponse {
 
 extension PriceResponse.IndexMulti {
     struct Response: Decodable, Equatable {
-        let entries: [String: PriceResponse.Item]
+        let entries: [String: PriceResponse.Item?]
 
         init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
-            entries = try container.decode([String: PriceResponse.Item].self)
+            entries = try container.decode([String: PriceResponse.Item?].self)
         }
     }
 }

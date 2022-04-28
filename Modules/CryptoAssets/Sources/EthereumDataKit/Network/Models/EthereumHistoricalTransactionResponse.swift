@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import EthereumKit
 import Foundation
 
 struct EthereumAccountTransactionsResponse: Decodable {
@@ -10,10 +11,9 @@ struct EthereumAccountTransactionsResponse: Decodable {
 public struct EthereumHistoricalTransactionResponse: Decodable {
 
     public var createdAt: Date {
-        guard let timeInterval = timestamp.flatMap({ TimeInterval($0) }) else {
-            return Date()
-        }
-        return Date(timeIntervalSince1970: timeInterval)
+        timestamp
+            .flatMap(TimeInterval.init)
+            .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
     }
 
     public let blockNumber: String?

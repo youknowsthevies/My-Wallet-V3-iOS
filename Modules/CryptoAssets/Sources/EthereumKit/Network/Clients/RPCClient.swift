@@ -7,13 +7,6 @@ import Foundation
 import NetworkKit
 import PlatformKit
 
-protocol LatestBlockClientAPI {
-    /// Streams the latest block number.
-    func latestBlock(
-        network: EVMNetwork
-    ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
-}
-
 protocol EstimateGasClientAPI {
     /// Estimate gas (gas limit) of the given ethereum transaction.
     func estimateGas(
@@ -46,8 +39,7 @@ protocol GetBalanceClientAPI {
     ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError>
 }
 
-final class RPCClient: LatestBlockClientAPI,
-    EstimateGasClientAPI,
+final class RPCClient: EstimateGasClientAPI,
     GetBalanceClientAPI,
     GetTransactionCountClientAPI,
     GetCodeClientAPI
@@ -86,15 +78,6 @@ final class RPCClient: LatestBlockClientAPI,
     }
 
     // MARK: - RPCClient
-
-    func latestBlock(
-        network: EVMNetwork
-    ) -> AnyPublisher<JsonRpcHexaNumberResponse, NetworkError> {
-        createAndPerformHexaNumberRPCRequest(
-            network: network,
-            encodable: BlockNumberRequest()
-        )
-    }
 
     func balance(
         network: EVMNetwork,

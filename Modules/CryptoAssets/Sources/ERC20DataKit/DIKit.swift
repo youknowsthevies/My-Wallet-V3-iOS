@@ -10,18 +10,31 @@ extension DependencyContainer {
     public static var erc20DataKit = module {
 
         factory {
-            ERC20AccountClient(
+            ERC20BalancesClient(
                 apiCode: DIKit.resolve(),
                 networkAdapter: DIKit.resolve(),
                 requestBuilder: DIKit.resolve()
-            ) as ERC20AccountClientAPI
+            ) as ERC20BalancesClientAPI
+        }
+
+        factory {
+            ERC20ActivityClient(
+                apiCode: DIKit.resolve(),
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve()
+            ) as ERC20ActivityClientAPI
         }
 
         single {
-            ERC20TokenAccountsRepository(
+            ERC20BalancesRepository(
                 client: DIKit.resolve(),
                 enabledCurrenciesService: DIKit.resolve()
-            ) as ERC20TokenAccountsRepositoryAPI
+            ) as ERC20BalancesRepositoryAPI
+        }
+        single {
+            ERC20ActivityRepository(
+                client: DIKit.resolve()
+            ) as ERC20ActivityRepositoryAPI
         }
     }
 }

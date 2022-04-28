@@ -29,12 +29,12 @@ public protocol ERC20CryptoAssetServiceAPI {
 
 final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
 
-    private let accountsRepository: ERC20TokenAccountsRepositoryAPI
+    private let accountsRepository: ERC20BalancesRepositoryAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let coincore: CoincoreAPI
 
     init(
-        accountsRepository: ERC20TokenAccountsRepositoryAPI,
+        accountsRepository: ERC20BalancesRepositoryAPI,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI,
         coincore: CoincoreAPI
     ) {
