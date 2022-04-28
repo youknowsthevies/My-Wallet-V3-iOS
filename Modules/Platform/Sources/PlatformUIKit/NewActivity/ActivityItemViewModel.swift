@@ -289,8 +289,9 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                     assertionFailure("Unexpected case for interest \(interest.state)")
                     return .local(name: Icon.question.name, bundle: .componentLibrary)
                 }
+            case .cleared:
+                return .local(name: "clock-icon", bundle: .platformUIKit)
             case .refunded,
-                 .cleared,
                  .unknown:
                 assertionFailure("Unexpected case for interest \(interest.state)")
                 return .local(name: Icon.question.name, bundle: .componentLibrary)
