@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
@@ -84,6 +85,7 @@ public struct EmailLoginState: Equatable, NavigationState {
 }
 
 struct EmailLoginEnvironment {
+    let app: AppProtocol
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
@@ -98,6 +100,7 @@ struct EmailLoginEnvironment {
     let validateEmail: (String) -> Bool
 
     init(
+        app: AppProtocol,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         sessionTokenService: SessionTokenServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
@@ -111,6 +114,7 @@ struct EmailLoginEnvironment {
         accountRecoveryService: AccountRecoveryServiceAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
+        self.app = app
         self.mainQueue = mainQueue
         self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
@@ -134,6 +138,7 @@ let emailLoginReducer = Reducer.combine(
             action: /EmailLoginAction.verifyDevice,
             environment: {
                 VerifyDeviceEnvironment(
+                    app: $0.app,
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,

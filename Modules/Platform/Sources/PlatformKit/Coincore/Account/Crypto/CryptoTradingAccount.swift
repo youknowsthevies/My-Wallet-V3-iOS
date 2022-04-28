@@ -153,9 +153,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
         featureFlagsService
-            .isEnabled(
-                .remote(.interestWithdrawAndDeposit)
-            )
+            .isEnabled(.interestWithdrawAndDeposit)
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }

@@ -5,6 +5,7 @@ import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import ERC20Kit
@@ -289,8 +290,10 @@ extension DependencyContainer {
         }
 
         factory { () -> MnemonicAccessAPI in
-            let internalFeatureFlags: InternalFeatureFlagServiceAPI = DIKit.resolve()
-            if internalFeatureFlags.isEnabled(.nativeWalletPayload) {
+            let app: AppProtocol = DIKit.resolve()
+            let ref = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled[].reference
+            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
+            if isEnabled ?? false {
                 let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
                 let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
                     secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
@@ -771,5 +774,15 @@ extension DependencyContainer {
         }
 
         single { app }
+
+        factory { () -> NativeWalletFlagEnabled in
+            let app: AppProtocol = DIKit.resolve()
+            let flag: Tag.Event = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled
+            return NativeWalletFlagEnabled(
+                app.publisher(for: flag, as: Bool.self)
+                    .prefix(1)
+                    .replaceError(with: false)
+            )
+        }
     }
 }

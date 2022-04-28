@@ -64,7 +64,7 @@ import XCTest
 //    }
 //
 //    func test_routesTo_legacyBuyFlow_forCryptoAccount_featueFlagOff() throws {
-//        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.useTransactionsFlowToBuyCrypto)))
+//        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.useTransactionsFlowToBuyCrypto))
 //        let mockViewController = MockViewController()
 //        let cryptoAccount = ReceivePlaceholderCryptoAccount(
 //            asset: .bitcoin
@@ -76,7 +76,7 @@ import XCTest
 //    }
 //
 //    func test_routesTo_legacyBuyFlow_nilAccount_featueFlagOff() throws {
-//        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.useTransactionsFlowToBuyCrypto)))
+//        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.useTransactionsFlowToBuyCrypto))
 //        let mockViewController = MockViewController()
 //        let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
 //        XCTAssertPublisherCompletion(publisher)
@@ -85,7 +85,7 @@ import XCTest
 //    }
 //
 //    func test_routesTo_legacyBuyFlow_featueFlagOn_nilAccount() throws {
-//        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.useTransactionsFlowToBuyCrypto)))
+//        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.useTransactionsFlowToBuyCrypto))
 //        let mockViewController = MockViewController()
 //        let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
 //        XCTAssertPublisherCompletion(publisher)
@@ -96,7 +96,7 @@ import XCTest
 //    }
 //
 //    func test_routesTo_legacyBuyFlow_featueFlagOn_nonNilAccount() throws {
-//        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.useTransactionsFlowToBuyCrypto)))
+//        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.useTransactionsFlowToBuyCrypto))
 //        let mockViewController = MockViewController()
 //        let cryptoAccount = ReceivePlaceholderCryptoAccount(
 //            asset: .bitcoin

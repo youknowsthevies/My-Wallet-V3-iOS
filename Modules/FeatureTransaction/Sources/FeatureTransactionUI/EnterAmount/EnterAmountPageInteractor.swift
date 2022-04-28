@@ -346,7 +346,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .combineLatest(
                 transactionState,
                 featureFlagService
-                    .isEnabled(.remote(.newLimitsUIEnabled))
+                    .isEnabled(.newLimitsUIEnabled)
                     .asObservable()
             )
 

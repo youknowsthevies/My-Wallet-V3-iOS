@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -160,6 +161,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                 initialState: .init(emailAddress: ""),
                 reducer: verifyDeviceReducer,
                 environment: .init(
+                    app: App.preview,
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),

@@ -6,14 +6,11 @@ import ToolKit
 public final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
 
     public struct RecordedInvocations {
-        public var enable: [FeatureFlag] = []
-        public var disable: [FeatureFlag] = []
-        public var isEnabled: [FeatureFlag] = []
-        public var object: [FeatureFlag] = []
+        public var object: [AppFeature] = []
     }
 
     public struct StubbedResults {
-        public var object: AnyPublisher<Codable?, FeatureFlagError> = .empty()
+        public var object: AnyPublisher<Any?, FeatureFlagError> = .empty()
     }
 
     public private(set) var recordedInvocations = RecordedInvocations()
@@ -23,32 +20,36 @@ public final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
         // required
     }
 
-    private var features: [FeatureFlag: Bool] = [:]
+    private var features: [AppFeature: Bool] = [:]
 
-    public func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
+    public func enable(_ feature: AppFeature) -> AnyPublisher<Void, Never> {
         features[feature] = true
-        recordedInvocations.enable.append(feature)
         return .just(())
     }
 
-    public func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
+    public func disable(_ feature: AppFeature) -> AnyPublisher<Void, Never> {
         features[feature] = false
-        recordedInvocations.disable.append(feature)
         return .just(())
-    }
-
-    public func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
-        recordedInvocations.isEnabled.append(feature)
-        return .just(features[feature] ?? false)
     }
 
     public func object<Feature: Codable>(
-        for feature: FeatureFlag,
+        for feature: AppFeature,
         type: Feature.Type
-    ) -> AnyPublisher<Feature?, FeatureFlagError> {
+    ) -> AnyPublisher<Feature, FeatureFlagError> {
         recordedInvocations.object.append(feature)
+        if Feature.self is Bool.Type, let feature = features[feature] {
+            return .just(feature as! Feature)
+        }
         return stubbedResults.object
-            .map { $0 as? Feature }
+            .flatMap { output -> AnyPublisher<Feature, FeatureFlagError> in
+                if let feature = output as? Feature {
+                    return Just(feature).setFailureType(to: FeatureFlagError.self)
+                        .eraseToAnyPublisher()
+                } else {
+                    return Fail(outputType: Feature.self, failure: FeatureFlagError.missingKeyRawValue)
+                        .eraseToAnyPublisher()
+                }
+            }
             .eraseToAnyPublisher()
     }
 }

@@ -74,9 +74,6 @@ public struct AppEnvironment {
     var buildVersionProvider: () -> String
     var externalAppOpener: ExternalAppOpener
 
-    @available(*, deprecated, message: "Use featureFlagsService instead")
-    var internalFeatureService: InternalFeatureFlagServiceAPI
-
     public init(
         app: AppProtocol,
         nabuUserService: NabuUserServiceAPI,
@@ -99,7 +96,6 @@ public struct AppEnvironment {
         userService: NabuUserServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
-        internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
         supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
@@ -148,7 +144,6 @@ public struct AppEnvironment {
         self.userService = userService
         self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
-        self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.supportedAssetsRemoteService = supportedAssetsRemoteService
         self.sharedContainer = sharedContainer

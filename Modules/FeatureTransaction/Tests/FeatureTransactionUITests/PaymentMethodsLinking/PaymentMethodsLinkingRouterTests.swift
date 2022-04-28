@@ -106,7 +106,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         // GIVEN: The currency is GBP, which supports Open Banking
         let currency: FiatCurrency = .GBP
         // AND: Open Banking is enabled
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.openBanking)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.openBanking))
         // WHEN: The router is asked to present the link a bank flow
         let mockPresenter = MockViewController()
         let e = expectation(description: "Completion Block Called")
@@ -131,7 +131,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         // GIVEN: The currency is GBP, which supports Open Banking
         let currency: FiatCurrency = .GBP
         // AND: Open Banking is enabled
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.openBanking)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.openBanking))
         // WHEN: The router is asked to present the link a bank flow
         let mockPresenter = MockViewController()
         let e = expectation(description: "Completion Block Called")
@@ -277,7 +277,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
 
     func test_route_to_payment_linking_flow_ob_bank_selected_feature_enabled() {
         // GIVEN: Open Banking is enabled
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.openBanking)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.openBanking))
         // WHEN: The router is asked to present the generic payment linking flow
         let mockPresenter = MockViewController()
         let completionCalledExpectation = expectation(description: "Completion Block Called")
@@ -320,7 +320,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
 
     func test_route_to_payment_linking_flow_ob_bank_selected_feature_disabled() {
         // GIVEN: Open Banking is disabled
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.openBanking)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.openBanking))
         // WHEN: The router is asked to present the generic payment linking flow
         let mockPresenter = MockViewController()
         let completionCalledExpectation = expectation(description: "Completion Block Called")

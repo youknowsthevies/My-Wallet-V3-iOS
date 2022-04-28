@@ -139,7 +139,7 @@ final class LinkBankFlowRootInteractor: Interactor,
             switch data.partner {
             case .yapily:
                 featureFlagsService
-                    .isEnabled(.remote(.openBanking))
+                    .isEnabled(.openBanking)
                     .if(
                         then: { [weak self] in self?.route(to: .yapily(data: data)) },
                         else: { [weak self] in self?.route(to: .failure(.generic)) }

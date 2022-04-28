@@ -327,7 +327,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                             transactionModel.process(action: .showBankLinkingFlow)
                         case .GBP, .EUR:
                             self.featureFlagsService
-                                .isEnabled(.remote(.openBanking))
+                                .isEnabled(.openBanking)
                                 .if(
                                     then: {
                                         transactionModel.process(action: .showBankLinkingFlow)

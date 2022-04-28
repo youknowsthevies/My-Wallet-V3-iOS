@@ -86,7 +86,7 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         self.dismiss = dismiss
 
         featureFlagsService
-            .isEnabled(.remote(.blockchainDomains))
+            .isEnabled(.blockchainDomains)
             .asSingle()
             .subscribe { [weak self] enabled in
                 self?.claimFreeDomainEnabled.mutate { $0 = enabled }

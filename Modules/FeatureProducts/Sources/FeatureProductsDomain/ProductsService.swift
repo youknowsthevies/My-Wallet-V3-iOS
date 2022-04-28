@@ -28,7 +28,7 @@ public final class ProductsService: ProductsServiceAPI {
     }
 
     public func fetchProducts() -> AnyPublisher<[ProductValue], ProductsServiceError> {
-        featureFlagsService.isEnabled(.remote(.productsChecksEnabled))
+        featureFlagsService.isEnabled(.productsChecksEnabled)
             .flatMap { [repository] isEnabled -> AnyPublisher<[ProductValue], ProductsServiceError> in
                 guard isEnabled else {
                     return .just([])
@@ -41,7 +41,7 @@ public final class ProductsService: ProductsServiceAPI {
     }
 
     public func streamProducts() -> AnyPublisher<Result<[ProductValue], ProductsServiceError>, Never> {
-        featureFlagsService.isEnabled(.remote(.productsChecksEnabled))
+        featureFlagsService.isEnabled(.productsChecksEnabled)
             .flatMap { [repository] isEnabled -> AnyPublisher<Result<[ProductValue], ProductsServiceError>, Never> in
                 guard isEnabled else {
                     return .just(.success([]))
