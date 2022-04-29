@@ -1,17 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-@testable import FeatureNotificationPreferencesUI
+import CoreMedia
 import Foundation
 import FeatureNotificationPreferencesMocks
+@testable import FeatureNotificationPreferencesUI
 import SnapshotTesting
+import NetworkError
 import TestKit
 import XCTest
 
 final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     private let mainScheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
     private var notificationRepoMock: NotificationPreferencesRepositoryMock!
-
     private var rootStore: Store<NotificationPreferencesState, NotificationPreferencesAction>!
 
     enum Config {
@@ -23,51 +24,63 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
 
         isRecording = Config.recordingSnapshots
         notificationRepoMock = NotificationPreferencesRepositoryMock()
+    }
 
+    override func tearDownWithError() throws {
+        notificationRepoMock = nil
+        try super.tearDownWithError()
+    }
+
+    func test_iPhoneX_snapshot_loading_view() throws {
+        try XCTSkipIf(true)
+        rootStore = Store(
+            initialState: .init(viewState: .loading),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                notificationPreferencesRepository: notificationRepoMock
+            ))
+
+        let view = FeatureNotificationPreferencesView(store: rootStore)
+
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
+
+    }
+
+    func test_iPhoneX_snapshot_display_preferences_view() throws {
+        try XCTSkipIf(true)
         let preferencesToReturn = [
             MockGenerator.marketingNotificationPreference,
             MockGenerator.transactionalNotificationPreference,
             MockGenerator.priceAlertNotificationPreference
         ]
-        notificationRepoMock.fetchPreferencesSubject.send(preferencesToReturn)
 
-        rootStore = .init(
-            initialState: .init(viewState: .idle),
+        rootStore = Store(
+            initialState: .init(viewState: .data(notificationDetailsState: preferencesToReturn)),
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
-            )
-        )
-    }
+            ))
 
-    override func tearDownWithError() throws {
-        notificationRepoMock = nil
-        rootStore = nil
-        try super.tearDownWithError()
-    }
-
-    func test_iPhoneSE_snapshot_display_notification_preferences() throws {
-        try XCTSkipIf(true)
         let view = FeatureNotificationPreferencesView(store: rootStore)
-        view.viewStore.send(.onAppear)
-        mainScheduler.advance()
-        assert(view, on: .iPhoneSe)
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
     }
 
-    func test_iPhoneXR_snapshot_display_notification_preferences() throws {
+    func test_iPhoneX_snapshot_error_preferences_view() throws {
         try XCTSkipIf(true)
-        let view = FeatureNotificationPreferencesView(store: rootStore)
-        view.viewStore.send(.onAppear)
-        mainScheduler.advance()
-        assert(view, on: .iPhoneXr)
-    }
+        let rootStore = Store(
+            initialState: .init(viewState: .error),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                notificationPreferencesRepository: notificationRepoMock
+            ))
 
-    func test_iPhoneXsMax_snapshot_display_notification_preferences() throws {
-        try XCTSkipIf(true)
         let view = FeatureNotificationPreferencesView(store: rootStore)
-        view.viewStore.send(.onAppear)
-        mainScheduler.advance()
-        assert(view, on: .iPhoneXsMax)
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
     }
 }

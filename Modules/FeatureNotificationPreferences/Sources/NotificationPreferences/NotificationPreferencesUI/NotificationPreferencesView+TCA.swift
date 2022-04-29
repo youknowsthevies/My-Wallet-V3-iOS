@@ -12,15 +12,6 @@ import SwiftUI
 
 public struct NotificationPreferencesState: Hashable, NavigationState {
     public enum ViewState: Equatable, Hashable {
-//        public static func == (lhs: ViewState, rhs: ViewState) -> Bool {
-//            switch (lhs, rhs) {
-//            case (.idle, .idle), (.loading, .loading), (.data, .data), (.error, .error):
-//                return true
-//            default:
-//                return false
-//            }
-//        }
-
         case idle
         case loading
         case data(notificationDetailsState: [NotificationPreference])
