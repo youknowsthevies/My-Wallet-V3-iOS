@@ -70,10 +70,12 @@ public enum NotificationsSettingsRoute: NavigationRoute {
 
 // MARK: - Main Reducer
 
-let mainReducer = Reducer<NotificationPreferencesState,
-                            NotificationPreferencesAction,
-                            NotificationPreferencesEnvironment>
-    .combine(
+let mainReducer = Reducer<
+    NotificationPreferencesState,
+    NotificationPreferencesAction,
+    NotificationPreferencesEnvironment
+>
+.combine(
     notificationPreferencesDetailsReducer
         .optional()
         .pullback(

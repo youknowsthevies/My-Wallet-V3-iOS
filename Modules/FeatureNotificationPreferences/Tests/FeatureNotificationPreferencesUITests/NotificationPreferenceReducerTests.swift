@@ -3,8 +3,8 @@
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureNotificationPreferencesDetailsUI
-@testable import FeatureNotificationPreferencesUI
 import FeatureNotificationPreferencesMocks
+@testable import FeatureNotificationPreferencesUI
 import NetworkError
 import UIComponentsKit
 import XCTest
