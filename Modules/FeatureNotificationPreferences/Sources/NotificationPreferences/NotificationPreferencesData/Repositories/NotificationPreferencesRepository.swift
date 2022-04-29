@@ -14,7 +14,7 @@ public struct NotificationPreferencesRepository: NotificationPreferencesReposito
 
     public func fetchPreferences() -> AnyPublisher<[NotificationPreference], NetworkError> {
         client
-            .fetchSettings()
+            .fetchPreferences()
             .map { response in
                 let availableMethods = response.notificationMethods
 

@@ -6,7 +6,7 @@ import NetworkError
 import NetworkKit
 
 public protocol NotificationPreferencesClientAPI {
-    func fetchSettings() -> AnyPublisher<NotificationInfoResponse, NetworkError>
+    func fetchPreferences() -> AnyPublisher<NotificationInfoResponse, NetworkError>
     func update(_ preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError>
 }
 
@@ -30,7 +30,7 @@ public struct NotificationPreferencesClient: NotificationPreferencesClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    public func fetchSettings() -> AnyPublisher<NotificationInfoResponse, NetworkError> {
+    public func fetchPreferences() -> AnyPublisher<NotificationInfoResponse, NetworkError> {
         let request = requestBuilder.get(
             path: Path.contactPreferences,
             authenticated: true
