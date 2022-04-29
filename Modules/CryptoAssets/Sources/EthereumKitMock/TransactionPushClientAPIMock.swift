@@ -5,17 +5,24 @@ import Combine
 import NetworkError
 import PlatformKit
 
-class TransactionPushClientAPIMock: TransactionPushClientAPI {
+final class TransactionPushClientAPIMock: TransactionPushClientAPI {
 
     var lastPushedTransaction: EthereumTransactionEncoded?
-    var pushTransactionValue: AnyPublisher<EthereumPushTxResponse, NetworkError> =
-        .just(EthereumPushTxResponse(txHash: "txHash"))
+    var pushTransactionResult: AnyPublisher<EthereumPushTxResponse, NetworkError>!
+    var evmPushTransactionResult: AnyPublisher<EVMPushTxResponse, NetworkError>!
 
     func push(
-        transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        transaction: EthereumTransactionEncoded
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
         lastPushedTransaction = transaction
-        return pushTransactionValue
+        return pushTransactionResult
+    }
+
+    func evmPush(
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
+    ) -> AnyPublisher<EVMPushTxResponse, NetworkError> {
+        lastPushedTransaction = transaction
+        return evmPushTransactionResult
     }
 }

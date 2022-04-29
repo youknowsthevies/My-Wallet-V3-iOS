@@ -80,7 +80,12 @@ extension DependencyContainer {
 
         factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
 
-        factory { EthereumTransactionSendingService() as EthereumTransactionSendingServiceAPI }
+        factory {
+            EthereumTransactionSendingService(
+                pushService: DIKit.resolve(),
+                transactionSigner: DIKit.resolve()
+            ) as EthereumTransactionSendingServiceAPI
+        }
 
         factory { EthereumTransactionSigningService() as EthereumTransactionSigningServiceAPI }
 
@@ -103,6 +108,12 @@ extension DependencyContainer {
         factory { WalletConnectEngineFactory() as WalletConnectEngineFactoryAPI }
 
         factory { GasEstimateService() as GasEstimateServiceAPI }
+
+        factory {
+            EthereumTransactionPushService(
+                client: DIKit.resolve()
+            ) as EthereumTransactionPushServiceAPI
+        }
     }
 }
 

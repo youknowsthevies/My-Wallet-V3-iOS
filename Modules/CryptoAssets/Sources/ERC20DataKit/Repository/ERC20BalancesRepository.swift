@@ -80,6 +80,14 @@ final class ERC20BalancesRepository: ERC20BalancesRepositoryAPI {
                         client.evmTokensBalances(for: key.address, network: key.network)
                     }
                     .retry(1)
+                    .map { response -> EVMBalancesResponse.Item? in
+                        response
+                            .results
+                            .first(where: {
+                                $0.address.caseInsensitiveCompare(key.address) == .orderedSame
+                            })
+                    }
+                    .map { $0?.balances ?? [] }
                     .map(mapper.toDomain)
                     .mapError(ERC20TokenAccountsError.network)
                     .eraseToAnyPublisher()

@@ -12,14 +12,17 @@ extension EVMBalancesResponse {
     ///
     /// - Returns: A stubbed ERC-20 token account.
     static func stubbed(cryptoCurrency: CryptoCurrency) -> EVMBalancesResponse {
-        EVMBalancesResponse(
+        let balance = EVMBalancesResponse.Balance(
+            identifier: cryptoCurrency.assetModel.kind.erc20ContractAddress!,
+            currency: cryptoCurrency.code,
+            balance: "2"
+        )
+        let item = EVMBalancesResponse.Item(
             address: "",
-            balances: [
-                EVMBalancesResponse.Item(
-                    identifier: cryptoCurrency.assetModel.kind.erc20ContractAddress!,
-                    amount: "2"
-                )
-            ]
+            balances: [balance]
+        )
+        return EVMBalancesResponse(
+            results: [item]
         )
     }
 }

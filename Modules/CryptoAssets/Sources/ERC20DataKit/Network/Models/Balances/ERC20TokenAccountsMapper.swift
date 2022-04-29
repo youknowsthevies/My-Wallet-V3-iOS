@@ -42,10 +42,10 @@ final class ERC20TokenAccountsMapper {
     /// - Parameter response: An ERC-20 token accounts as a data model.
     ///
     /// - Returns: An ERC-20 token accounts as a domain model.
-    func toDomain(response: EVMBalancesResponse) -> ERC20TokenAccounts {
-        response.balances
+    func toDomain(response: [EVMBalancesResponse.Balance]) -> ERC20TokenAccounts {
+        response
             .reduce(into: [:]) { accounts, item in
-                guard let account = create(contract: item.identifier, balance: item.amount) else {
+                guard let account = create(contract: item.identifier, balance: item.balance) else {
                     return
                 }
                 accounts[account.currency] = account

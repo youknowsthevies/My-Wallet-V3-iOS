@@ -39,7 +39,7 @@ final class ERC20BalancesClient: ERC20BalancesClientAPI {
 
         /// URL path to the `tokens` endpoint.
         static var evmBalances: String {
-            "/currency/evm/balances"
+            "/currency/evm/balance"
         }
     }
 
@@ -73,7 +73,7 @@ final class ERC20BalancesClient: ERC20BalancesClientAPI {
         network: EVMNetwork
     ) -> AnyPublisher<EVMBalancesResponse, NetworkError> {
         let payload = EVMBalancesRequest(
-            address: address,
+            addresses: [address],
             network: network,
             apiCode: apiCode
         )

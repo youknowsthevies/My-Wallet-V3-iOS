@@ -32,6 +32,5 @@ struct EVMTransactionHistoryResponse: Decodable {
         let movements: [Movement]
     }
 
-    let address: String
     let history: [Item]
 }

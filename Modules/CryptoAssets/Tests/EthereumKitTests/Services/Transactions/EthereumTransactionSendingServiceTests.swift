@@ -22,11 +22,13 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
         client = TransactionPushClientAPIMock()
+        let pushService = EthereumTransactionPushService(client: client)
+        let transactionSigner = EthereumTransactionSigningService(
+            transactionSigner: EthereumSigner()
+        )
         subject = EthereumTransactionSendingService(
-            client: client,
-            transactionSigner: EthereumTransactionSigningService(
-                transactionSigner: EthereumSigner()
-            )
+            pushService: pushService,
+            transactionSigner: transactionSigner
         )
     }
 
@@ -50,7 +52,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
 
         let expectedPublished = EthereumTransactionPublished(transactionHash: finalised.transactionHash)
 
-        client.pushTransactionValue = .just(
+        client.pushTransactionResult = .just(
             EthereumPushTxResponse(txHash: expectedPublished.transactionHash)
         )
 

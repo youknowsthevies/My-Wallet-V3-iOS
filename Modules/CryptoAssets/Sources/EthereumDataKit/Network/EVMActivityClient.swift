@@ -39,7 +39,7 @@ final class EVMActivityClient: EVMActivityClientAPI {
         network: EVMNetwork
     ) -> AnyPublisher<EVMTransactionHistoryResponse, NetworkError> {
         let payload = EVMTransactionHistoryRequest(
-            address: address,
+            addresses: [address],
             network: network,
             apiCode: apiCode,
             identifier: contractAddress

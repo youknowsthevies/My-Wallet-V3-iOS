@@ -8,11 +8,16 @@ import PlatformKit
 
 protocol TransactionPushClientAPI: AnyObject {
 
-    /// Push transaction.
+    /// Pushes a Ethereum transaction.
     func push(
+        transaction: EthereumTransactionEncoded
+    ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
+
+    /// Pushes a EVM transaction
+    func evmPush(
         transaction: EthereumTransactionEncoded,
         network: EVMNetwork
-    ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
+    ) -> AnyPublisher<EVMPushTxResponse, NetworkError>
 }
 
 protocol TransactionFeeClientAPI {
@@ -38,13 +43,12 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
             }
         }
 
-        static func pushTx(network: EVMNetwork) -> String {
-            switch network {
-            case .ethereum:
-                return "/eth/pushtx"
-            case .polygon:
-                return "/currency/evm/pushTx"
-            }
+        static var pushTx: String {
+            "/eth/pushtx"
+        }
+
+        static var pushTxEVM: String {
+            "/currency/evm/pushTx"
         }
 
         static func transactions(for address: String) -> String {
@@ -107,20 +111,34 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    /// Pushes a transaction
     func push(
+        transaction: EthereumTransactionEncoded
+    ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
+        let body = PushTxRequest(
+            rawTx: transaction.rawTransaction,
+            network: EVMNetwork.ethereum.rawValue,
+            api_code: apiCode
+        )
+        let request = requestBuilder.post(
+            path: Endpoint.pushTx,
+            body: try? body.encode(),
+            recordErrors: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func evmPush(
         transaction: EthereumTransactionEncoded,
         network: EVMNetwork
-    ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
-        let pushTxRequest = PushTxRequest(
+    ) -> AnyPublisher<EVMPushTxResponse, NetworkError> {
+        let body = PushTxRequest(
             rawTx: transaction.rawTransaction,
             network: network.rawValue,
             api_code: apiCode
         )
-        let data = try? JSONEncoder().encode(pushTxRequest)
         let request = requestBuilder.post(
-            path: Endpoint.pushTx(network: network),
-            body: data,
+            path: Endpoint.pushTxEVM,
+            body: try? body.encode(),
             recordErrors: true
         )!
         return networkAdapter.perform(request: request)

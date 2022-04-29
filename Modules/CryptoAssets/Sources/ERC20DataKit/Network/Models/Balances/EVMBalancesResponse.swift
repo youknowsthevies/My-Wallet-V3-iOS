@@ -1,11 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 struct EVMBalancesResponse: Decodable {
-    struct Item: Decodable {
+    struct Balance: Decodable {
         let identifier: String
-        let amount: String
+        let currency: String
+        let balance: String
     }
 
-    let address: String
-    let balances: [Item]
+    struct Item: Decodable {
+        let address: String
+        let balances: [Balance]
+    }
+
+    let results: [Item]
 }
