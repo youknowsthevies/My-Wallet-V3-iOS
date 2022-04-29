@@ -79,7 +79,12 @@ extension DependencyContainer {
 
         single { EmailVerificationService() as EmailVerificationServiceAPI }
 
-        single { SwapActivityService() as SwapActivityServiceAPI }
+        single {
+            SwapActivityService(
+                client: DIKit.resolve(),
+                fiatCurrencyProvider: DIKit.resolve()
+            ) as SwapActivityServiceAPI
+        }
 
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
 

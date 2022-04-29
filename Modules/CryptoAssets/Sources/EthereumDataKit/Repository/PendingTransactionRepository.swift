@@ -13,6 +13,7 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
     }
 
     private let ethereumClient: TransactionClientAPI
+    private let evmClient: EVMActivityClientAPI
 
     private let cachedValue: CachedValueNew<
         Key,
@@ -21,8 +22,10 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
     >
 
     init(
-        ethereumClient: TransactionClientAPI
+        ethereumClient: TransactionClientAPI,
+        evmClient: EVMActivityClientAPI
     ) {
+        self.evmClient = evmClient
         self.ethereumClient = ethereumClient
 
         let cache: AnyCache<Key, Bool> = InMemoryCache(
@@ -32,7 +35,7 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
 
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [ethereumClient] key in
+            fetch: { [evmClient, ethereumClient] key in
                 switch key.network {
                 case .ethereum:
                     return ethereumClient
@@ -44,9 +47,19 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
                         }
                         .eraseToAnyPublisher()
                 case .polygon:
-                    // No support yet
-                    // Allow transactions for now.
-                    return .just(false)
+                    return evmClient
+                        .evmActivity(
+                            address: key.address,
+                            contractAddress: nil,
+                            network: key.network
+                        )
+                        .map(\.history)
+                        .map { history in
+                            history.contains(where: { item in
+                                item.status == .pending
+                            })
+                        }
+                        .eraseToAnyPublisher()
                 }
             }
         )

@@ -45,16 +45,12 @@ enum ActivityDetailsPresenterFactory {
             return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
         case .stellar:
             return StellarActivityDetailsPresenter(event: transactional, router: router)
-        case .ethereum:
+        case .ethereum, .polygon:
             let interactor = EthereumActivityDetailsInteractor(cryptoCurrency: transactional.currency)
             return EthereumActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
-        case .polygon:
-            fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
-        case let asset where asset.isERC20 && asset.assetModel.kind.erc20ParentChain == .ethereum:
+        case let asset where asset.isERC20:
             let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
             return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
-        case let asset where asset.isERC20 && asset.assetModel.kind.erc20ParentChain == .polygon:
-            fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
         default:
             fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
         }

@@ -41,14 +41,15 @@ public struct TransactionalActivityItemEvent {
      - Note: This is identical to `transactionHash` for all crypto assets, except Stellar. See `StellarHistoricalTransaction` for more info.
      */
     public let identifier: String
-
+    /// The transaction hash, used in Explorer URLs.
+    public let transactionHash: String
+    /// Identifier for the source of this event, may be used when necessary to retrieve the full details from a repository
+    /// that takes more than just the transaction identifier.
+    public let sourceIdentifier: String?
     public let status: EventStatus
     public let type: EventType
     public let amount: CryptoValue
     public let fee: CryptoValue
-
-    /// The transaction hash, used in Explorer URLs.
-    public let transactionHash: String
 
     public var currency: CryptoCurrency {
         amount.currency
@@ -57,6 +58,7 @@ public struct TransactionalActivityItemEvent {
     public init(
         identifier: String,
         transactionHash: String,
+        sourceIdentifier: String? = nil,
         creationDate: Date,
         status: EventStatus,
         type: EventType,
@@ -64,6 +66,7 @@ public struct TransactionalActivityItemEvent {
         fee: CryptoValue?
     ) {
         self.identifier = identifier
+        self.sourceIdentifier = sourceIdentifier
         self.transactionHash = transactionHash
         self.creationDate = creationDate
         self.status = status

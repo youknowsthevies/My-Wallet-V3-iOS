@@ -49,10 +49,12 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity.asSingle(), swapActivity)
+        nonCustodialActivity
+            .zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+            .asSingle()
     }
 
     /// The nonce (transaction count) of this account.
@@ -103,15 +105,25 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 .replaceError(with: [])
                 .eraseToAnyPublisher()
         case .polygon:
-            // TODO: IOS-5614: Paulo: Use EVM repository
-            return .just([])
+            // Use EVM repository
+            return evmActivityRepository
+                .transactions(cryptoCurrency: asset, address: publicKey)
+                .map { [publicKey] transactions in
+                    transactions
+                        .map { item in
+                            item.activityItemEvent(sourceIdentifier: publicKey)
+                        }
+                }
+                .replaceError(with: [])
+                .eraseToAnyPublisher()
         }
     }
 
-    private var swapActivity: Single<[SwapActivityItemEvent]> {
+    private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     /// Stream a boolean indicating if this ERC20 token has ever been transacted,
@@ -148,6 +160,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let erc20ActivityRepository: ERC20ActivityRepositoryAPI
+    private let evmActivityRepository: EVMActivityRepositoryAPI
     private let tradingPairsService: TradingPairsServiceAPI
 
     init(
@@ -162,7 +175,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         tradingPairsService: TradingPairsServiceAPI = resolve(),
-        erc20ActivityRepository: ERC20ActivityRepositoryAPI = resolve()
+        erc20ActivityRepository: ERC20ActivityRepositoryAPI = resolve(),
+        evmActivityRepository: EVMActivityRepositoryAPI = resolve()
     ) {
         precondition(erc20Token.kind.isERC20)
         self.publicKey = publicKey
@@ -180,6 +194,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.tradingPairsService = tradingPairsService
         self.erc20ActivityRepository = erc20ActivityRepository
+        self.evmActivityRepository = evmActivityRepository
     }
 
     private var isPairToFiatAvailable: AnyPublisher<Bool, Never> {

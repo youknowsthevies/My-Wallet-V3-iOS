@@ -61,7 +61,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity, swapActivity)
+        Single.zip(nonCustodialActivity, swapActivity.asSingle())
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
@@ -90,10 +90,11 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             .catchAndReturn([])
     }
 
-    private var swapActivity: Single<[SwapActivityItemEvent]> {
+    private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
