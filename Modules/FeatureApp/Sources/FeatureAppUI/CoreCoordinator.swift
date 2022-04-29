@@ -618,7 +618,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .mapError(ProceedToLoggedInError.coincore)
         let erc20Init = environment.erc20CryptoAssetService
             .initialize()
-            .mapError(ProceedToLoggedInError.erc20Service)
+            .replaceError(with: ())
             .eraseToAnyPublisher()
 
         return coincoreInit
