@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureNotificationPreferencesDomain
 import NetworkError
 import NetworkKit
-import FeatureNotificationPreferencesDomain
 
 public protocol NotificationPreferencesClientAPI {
     func fetchSettings() -> AnyPublisher<NotificationInfoResponse, NetworkError>
@@ -39,7 +39,7 @@ public struct NotificationPreferencesClient: NotificationPreferencesClientAPI {
         return networkAdapter
             .perform(request: request)
     }
-    
+
     public func update(_ preferences: UpdatedPreferences) -> AnyPublisher<Void, NetworkError> {
         let request = requestBuilder.put(
             path: Path.contactPreferences,
@@ -49,4 +49,3 @@ public struct NotificationPreferencesClient: NotificationPreferencesClientAPI {
         return networkAdapter.perform(request: request)
     }
 }
-

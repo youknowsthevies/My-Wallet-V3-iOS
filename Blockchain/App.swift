@@ -109,7 +109,6 @@ func defineDependencies() {
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit
-        DependencyContainer.featureNotificationSettingsDomainKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit

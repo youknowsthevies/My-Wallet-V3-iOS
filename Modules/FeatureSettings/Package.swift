@@ -87,7 +87,6 @@ let package = Package(
                 .product(name: "FeatureCardPaymentUI", package: "FeatureCardPayment"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
                 .product(name: "FeatureNotificationPreferencesUI", package: "FeatureNotificationPreferences")
-
             ]
         ),
         .target(

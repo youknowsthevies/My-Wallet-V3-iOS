@@ -356,7 +356,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private func showNotificationsSettingsScreen() {
         let presenter = topViewController
         let notificationCenterView = FeatureNotificationPreferencesView(store: .init(
-            initialState: .init(viewState: .idle),
+            initialState: .init(viewState: .loading),
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: .main,

@@ -13,12 +13,12 @@ let package = Package(
             "FeatureNotificationPreferencesUI",
             "FeatureNotificationPreferencesData"
         ]),
-        .library(name: "FeatureNotificationPreferencesDetails", targets:["FeatureNotificationPreferencesDetailsUI"]),
+        .library(name: "FeatureNotificationPreferencesDetails", targets: ["FeatureNotificationPreferencesDetailsUI"]),
         .library(name: "FeatureNotificationPreferencesMocks", targets: ["FeatureNotificationPreferencesMocks"]),
         .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
         .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
         .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
-        .library(name: "FeatureNotificationPreferencesDetailsUI", targets: ["FeatureNotificationPreferencesDetailsUI"]),
+        .library(name: "FeatureNotificationPreferencesDetailsUI", targets: ["FeatureNotificationPreferencesDetailsUI"])
     ],
     dependencies: [
         .package(
@@ -39,7 +39,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../Test"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(

@@ -29,16 +29,16 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             sectionType: sectionType,
             items: [
                 .init(cellType: .switch(.emailNotifications, emailNotificationsCellPresenter)),
-                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter)),
+                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter))
             ]
         )
-        
-        state = featureFlagService.isEnabled(.remote(.notificationPreferences))
+
+        state = featureFlagService.isEnabled(AppFeature.notificationPreferences)
             .last()
             .map { NotificationPreferencesEnabled -> SettingsSectionLoadingState in
-                
+
                 let NotificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
-                if NotificationPreferencesEnabled && viewModel.items.contains(NotificationPreferencesCell) == false {
+                if NotificationPreferencesEnabled, viewModel.items.contains(NotificationPreferencesCell) == false {
                     viewModel.items.append(NotificationPreferencesCell)
                 }
                 return .loaded(next: .some(viewModel))

@@ -23,7 +23,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         try super.setUpWithError()
 
         isRecording = Config.recordingSnapshots
-        
+
         let preferencesToReturn = [
             MockGenerator.marketingNotificationPreference,
             MockGenerator.transactionalNotificationPreference,
@@ -32,7 +32,6 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
 
         notificationRepoMock = NotificationPreferencesRepositoryMock()
         notificationRepoMock.fetchPreferencesSubject.send(preferencesToReturn)
-
     }
 
     override func tearDownWithError() throws {
