@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -40,6 +41,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
@@ -84,6 +86,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
     // MARK: - Init
 
     init(
+        app: AppProtocol = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -95,6 +98,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
         recorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
+        self.app = app
         self.featureFlagsService = featureFlagsService
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
@@ -154,7 +158,10 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
                     .displayCurrency
                     .asSingle(),
                 availableBalance,
-                featureFlagsService.isEnabled(.local(.nativeBitcoinTransaction)).asSingle()
+                app.publisher(for: blockchain.app.configuration.native.bitcoin.transaction.is.enabled, as: Bool.self)
+                    .prefix(1)
+                    .replaceError(with: false)
+                    .asSingle()
             )
             .map { [predefinedAmount] fiatCurrency, availableBalance, _ -> PendingTransaction in
                 PendingTransaction(

@@ -60,7 +60,8 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action
         )
     }
 
@@ -85,7 +86,8 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            )
+            ),
+            action: state.action
         )
     }
 
@@ -105,7 +107,9 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }

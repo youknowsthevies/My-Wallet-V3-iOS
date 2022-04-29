@@ -102,6 +102,7 @@ extension DebugView {
             ForEach(observer.data.keys, id: \.self) { key in
                 PrimaryRow(
                     title: try! key.tag.idRemainder(after: blockchain[])
+                        .replacingOccurrences(of: "app.configuration.", with: "")
                         .replacingOccurrences(of: ".", with: " ")
                         .replacingOccurrences(of: "_", with: " "),
                     description: description(for: key),
@@ -146,12 +147,12 @@ extension DebugView {
 
         func observe(on app: AppProtocol) {
             guard subscription.isNil else { return }
-            subscription = app.publisher(for: blockchain.app.configuration.debug.observers, as: [Tag.Reference].self)
+            subscription = app.publisher(for: blockchain.app.configuration.debug.observers, as: [Tag.Reference?].self)
                 .compactMap(\.value)
-                .flatMap { events in events.map(app.publisher(for:)).combineLatest() }
+                .flatMap { events in events.compacted().map(app.publisher(for:)).combineLatest() }
                 .map { results in
                     results.reduce(into: [:]) { sum, result in
-                        sum[result.metadata.ref] = try? result.value.decode(as: JSON.self)
+                        sum[result.metadata.ref] = try? result.value.decode(JSON.self)
                     }
                 }
                 .sink { [weak self] results in
@@ -163,9 +164,6 @@ extension DebugView {
     struct FeatureFlags: View {
 
         @BlockchainApp var app
-
-        var internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
-
         @State var data: [AppFeature: JSON] = [:]
 
         var body: some View {
@@ -175,10 +173,11 @@ extension DebugView {
                     Section(header: Text("Remote").typography(.title2)) {
                         remote
                     }
-                    Section(header: Text("Local").typography(.title2)) {
-                        local
-                    }
                 }
+                PrimaryButton(title: "Reset to default") {
+                    app.remoteConfiguration.clear()
+                }
+                .padding()
             }
             .listRowInsets(
                 EdgeInsets(
@@ -195,39 +194,6 @@ extension DebugView {
 
         @ViewBuilder var namespace: some View {
             NamespaceState()
-        }
-
-        @ViewBuilder var local: some View {
-            ForEach(InternalFeature.allCases, id: \.self) { feature in
-                PrimaryRow(
-                    title: feature.displayTitle,
-                    subtitle: feature.rawValue,
-                    trailing: {
-                        PrimarySwitch(
-                            accessibilityLabel: feature.displayTitle,
-                            isOn: Binding(
-                                get: { internalFeatureFlagService.isEnabled(feature) },
-                                set: { newValue in
-                                    if newValue {
-                                        internalFeatureFlagService.enable(feature)
-                                    } else {
-                                        internalFeatureFlagService.disable(feature)
-                                    }
-                                }
-                            )
-                        )
-                    }
-                )
-                .typography(.caption1)
-                .contextMenu {
-                    Button(
-                        action: { pasteboard.string = feature.rawValue },
-                        label: {
-                            Label("Copy Name", systemImage: "doc.on.doc.fill")
-                        }
-                    )
-                }
-            }
         }
 
         @ViewBuilder var remote: some View {
@@ -276,7 +242,7 @@ extension DebugView {
                 .onReceive(
                     app.remoteConfiguration
                         .publisher(for: name)
-                        .tryMap { output in try output.decode(as: JSON.self) }
+                        .tryMap { output in try output.decode(JSON.self) }
                         .replaceError(with: .null)
                 ) { json in
                     data[feature] = json
@@ -416,14 +382,14 @@ extension Binding where Value == Any? {
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) -> Binding<T?> {
         Binding<T?>(
-            get: { try? wrappedValue.decode(as: T.self, using: decoder) },
+            get: { try? wrappedValue.decode(T.self, using: decoder) },
             set: { newValue in wrappedValue = newValue }
         )
     }
 
     var isYes: Binding<Bool> {
         Binding<Bool>(
-            get: { (try? wrappedValue.decode(as: Bool.self)) == true },
+            get: { (try? wrappedValue.decode(Bool.self)) == true },
             set: { newValue in wrappedValue = newValue }
         )
     }

@@ -2,18 +2,9 @@
 
 import BigInt
 import Combine
-import DIKit
+import EthereumKit
+import NetworkError
 import ToolKit
-
-enum LatestBlockRepositoryError: Error {
-    case failed(Error)
-}
-
-protocol LatestBlockRepositoryAPI {
-    func latestBlock(
-        network: EVMNetwork
-    ) -> AnyPublisher<BigInt, LatestBlockRepositoryError>
-}
 
 final class LatestBlockRepository: LatestBlockRepositoryAPI {
 
@@ -21,10 +12,10 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
     private let cachedValue: CachedValueNew<
         EVMNetwork,
         BigInt,
-        LatestBlockRepositoryError
+        NetworkError
     >
 
-    init(client: LatestBlockClientAPI = resolve()) {
+    init(client: LatestBlockClientAPI) {
         self.client = client
 
         let cache: AnyCache<EVMNetwork, BigInt> = InMemoryCache(
@@ -37,7 +28,6 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
             fetch: { [client] network in
                 client
                     .latestBlock(network: network)
-                    .mapError(LatestBlockRepositoryError.failed)
                     .map(\.result)
                     .eraseToAnyPublisher()
             }
@@ -46,7 +36,7 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
 
     func latestBlock(
         network: EVMNetwork
-    ) -> AnyPublisher<BigInt, LatestBlockRepositoryError> {
+    ) -> AnyPublisher<BigInt, NetworkError> {
         cachedValue.get(key: network)
     }
 }

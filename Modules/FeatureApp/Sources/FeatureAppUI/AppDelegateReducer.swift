@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -70,6 +71,7 @@ extension AppDelegateAction {
 
 /// Holds the dependencies
 struct AppDelegateEnvironment {
+    var app: AppProtocol
     var appSettings: BlockchainSettings.App
     var onboardingSettings: OnboardingSettingsAPI
     var cacheSuite: CacheSuite
@@ -148,7 +150,9 @@ let appDelegateReducer = Reducer<
                 appId: context.embraceAppId
             ),
 
-            environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
+            environment.app.publisher(for: blockchain.app.configuration.SSL.pinning.is.enabled, as: Bool.self)
+                .prefix(1)
+                .replaceError(with: true)
                 .filter { $0 }
                 .map(.applyCertificatePinning)
                 .eraseToEffect(),

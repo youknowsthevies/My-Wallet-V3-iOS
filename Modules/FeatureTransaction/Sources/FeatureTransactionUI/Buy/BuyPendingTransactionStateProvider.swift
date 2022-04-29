@@ -60,7 +60,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
+            action: state.action
         )
     }
 
@@ -88,7 +89,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
-            )
+            ),
+            action: state.action
         )
     }
 
@@ -108,13 +110,14 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action
         )
     }
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         if let details = state.order as? OrderDetails, let code = details.error {
-            return bankingError(error: .code(code), icon: coreBuyIcon)
+            return bankingError(in: state, error: .code(code), icon: coreBuyIcon)
         }
         return .init(
             title: state.transactionErrorTitle,
@@ -131,7 +134,9 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }

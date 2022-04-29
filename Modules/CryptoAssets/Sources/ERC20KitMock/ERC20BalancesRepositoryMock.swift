@@ -7,7 +7,7 @@ import MoneyKit
 import PlatformKit
 import ToolKit
 
-final class ERC20TokenAccountsRepositoryMock: ERC20TokenAccountsRepositoryAPI {
+final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
 
     // MARK: - Private Properties
 
@@ -25,21 +25,24 @@ final class ERC20TokenAccountsRepositoryMock: ERC20TokenAccountsRepositoryAPI {
     // MARK: - Internal Methods
 
     func tokens(
-        for address: EthereumAddress,
+        for address: String,
+        network: EVMNetwork,
         forceFetch: Bool
     ) -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError> {
         .just(tokenAccounts)
     }
 
     func tokensStream(
-        for address: EthereumAddress,
+        for address: String,
+        network: EVMNetwork,
         skipStale: Bool
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError> {
         .just(.success(tokenAccounts))
     }
 
-    func invalidateERC20TokenAccountsForAddress(
-        _ address: EthereumAddress
+    func invalidateCache(
+        for address: String,
+        network: EVMNetwork
     ) {
         // no-op
     }

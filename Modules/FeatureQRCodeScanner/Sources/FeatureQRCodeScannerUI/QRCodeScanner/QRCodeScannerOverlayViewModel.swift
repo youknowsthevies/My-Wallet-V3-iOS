@@ -106,7 +106,7 @@ final class QRCodeScannerOverlayViewModel {
             .store(in: &cancellables)
 
         let walletConnectSessions = featureFlagsService
-            .isEnabled(.remote(.walletConnectEnabled))
+            .isEnabled(.walletConnectEnabled)
             .flatMap { [walletConnectSessionRepository] isEnabled -> AnyPublisher<[WalletConnectSession], Never> in
                 isEnabled ? walletConnectSessionRepository.retrieve()
                     : AnyPublisher<[WalletConnectSession], Never>.just([])

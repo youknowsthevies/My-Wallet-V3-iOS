@@ -65,7 +65,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         interestEligibilityRepository
-            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType)
             .map(\.ineligibilityReason)
             .eraseError()
             .eraseToAnyPublisher()
@@ -99,9 +99,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
         featureFlagsService
-            .isEnabled(
-                .remote(.interestWithdrawAndDeposit)
-            )
+            .isEnabled(.interestWithdrawAndDeposit)
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }

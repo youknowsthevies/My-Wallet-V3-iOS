@@ -609,12 +609,12 @@ extension Localization {
 
             public static let cardPaymentBankDeclined = (
                 title: NSLocalizedString(
-                    "It looks like you declined payment authorisation.",
-                    comment: "It looks like you declined payment authorisation."
+                    "The Bank has declined this card",
+                    comment: "The Bank has declined this card"
                 ),
                 subtitle: NSLocalizedString(
-                    "Want to retry this transaction?",
-                    comment: "Want to retry this transaction?"
+                    "The card you tried to use has been declined by your bank, please try again or another payment method.",
+                    comment: "The card you tried to use has been declined by your bank, please try again or another payment method."
                 ),
                 action: Bank.Action.tryAgain
             )

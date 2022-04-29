@@ -15,21 +15,6 @@ protocol TransactionPushClientAPI: AnyObject {
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
 }
 
-protocol TransactionClientAPI {
-
-    /// Get a transaction detail with given hash.
-    func transaction(
-        network: EVMNetwork,
-        with hash: String
-    ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError>
-
-    /// Get a transactions for account.
-    func transactions(
-        network: EVMNetwork,
-        for account: String
-    ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError>
-}
-
 protocol TransactionFeeClientAPI {
 
     func fees(
@@ -37,10 +22,7 @@ protocol TransactionFeeClientAPI {
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError>
 }
 
-final class APIClient: TransactionPushClientAPI,
-    TransactionClientAPI,
-    TransactionFeeClientAPI
-{
+final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
 
     // MARK: - Types
 
@@ -142,30 +124,5 @@ final class APIClient: TransactionPushClientAPI,
             recordErrors: true
         )!
         return networkAdapter.perform(request: request)
-    }
-
-    func transaction(
-        network: EVMNetwork,
-        with hash: String
-    ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> {
-        let path = Endpoint.transaction(with: hash)
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter.perform(request: request)
-    }
-
-    /// Fetches transactions for an address - returns an array of transactions
-    func transactions(
-        network: EVMNetwork,
-        for account: String
-    ) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError> {
-        let path = Endpoint.transactions(for: account)
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter
-            .perform(
-                request: request,
-                responseType: EthereumAccountTransactionsResponse.self
-            )
-            .map(\.transactions)
-            .eraseToAnyPublisher()
     }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import ComposableArchitecture
 @testable import ComposableNavigation
 @testable import FeatureAuthenticationUI
@@ -30,6 +31,7 @@ final class EmailLoginReducerTests: XCTestCase {
             initialState: .init(),
             reducer: emailLoginReducer,
             environment: EmailLoginEnvironment(
+                app: App.test,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),

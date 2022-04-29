@@ -79,7 +79,7 @@ extension Tag.Context {
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
         try FetchResult.value(self[key] as Any, key.key.metadata())
-            .decode(as: T.self, decoder: decoder)
+            .decode(T.self, using: decoder)
             .get()
     }
 }

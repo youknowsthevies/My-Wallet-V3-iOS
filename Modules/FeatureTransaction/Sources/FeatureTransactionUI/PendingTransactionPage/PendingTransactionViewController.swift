@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -19,7 +21,10 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
     private let disposeBag = DisposeBag()
     private let compositeStatusView = CompositeStatusView(edge: 72.0)
 
-    init() {
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
+
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+        self.analyticsRecorder = analyticsRecorder
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -116,6 +121,17 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
         state
             .compactMap(\.secondaryButtonViewModel)
             .drive(secondaryButton.rx.viewModel)
+            .disposed(by: disposeBag)
+
+        state.asObservable()
+            .distinctUntilChanged(at: \.error)
+            .subscribe(
+                onNext: { [analyticsRecorder] state in
+                    if let error = state.error, let event = error.analytics(for: state.action) {
+                        analyticsRecorder.record(event: event)
+                    }
+                }
+            )
             .disposed(by: disposeBag)
 
         let closeTapped = closeTriggered

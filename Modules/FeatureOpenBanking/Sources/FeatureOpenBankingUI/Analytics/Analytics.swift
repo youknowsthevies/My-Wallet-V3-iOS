@@ -11,11 +11,6 @@ extension AnalyticsEvents.New {
             case settings = "SETTINGS"
         }
 
-        case bankAccountStateTriggered(
-            account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
-            institution: String? = nil
-        )
-
         case linkBankConditionsApproved(
             account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
             institution: String,
@@ -31,17 +26,6 @@ extension AnalyticsEvents.New {
 
         var params: [String: Any]? {
             switch self {
-            case .bankAccountStateTriggered(let account, let institution):
-                return [
-                    "bank_name": (account.details?.bankName ?? institution ?? "").uppercased(),
-                    "currency": account.currency ?? "",
-                    "entity": account.attributes.entity,
-                    "institution_name": institution ?? "",
-                    "partner": account.partner,
-                    "service": "OPEN_BANKING",
-                    "state": account.state?.value ?? "",
-                    "type": "BANK_TRANSFER"
-                ]
             case .linkBankConditionsApproved(let account, let institution, let origin):
                 return [
                     "origin": origin.rawValue,

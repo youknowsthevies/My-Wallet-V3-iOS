@@ -43,7 +43,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 guard !cacheSuite.bool(forKey: Constant.sendToDomainAnnouncementViewed) else {
                     return .just(false)
                 }
-                return featureFlagsService.isEnabled(.remote(.sendToDomainsAnnouncement))
+                return featureFlagsService.isEnabled(.sendToDomainsAnnouncement)
             }
             .eraseToAnyPublisher()
     }

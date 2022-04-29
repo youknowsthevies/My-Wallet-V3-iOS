@@ -62,7 +62,8 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action
         )
     }
 
@@ -89,7 +90,8 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            )
+            ),
+            action: state.action
         )
     }
 
@@ -106,6 +108,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
         )
         if let details = state.order as? OrderDetails, let code = details.error {
             return bankingError(
+                in: state,
                 error: .code(code),
                 icon: icon
             )
@@ -123,7 +126,9 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }

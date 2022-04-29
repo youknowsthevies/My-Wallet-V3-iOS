@@ -199,7 +199,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
                         .eraseToAnyPublisher()
                 case .walletConnect:
                     return featureFlagsService
-                        .isEnabled(.remote(.walletConnectEnabled))
+                        .isEnabled(.walletConnectEnabled)
                         .flatMap { isEnabled -> AnyPublisher<QRCodeScannerResultType?, Never> in
                             isEnabled ? .just(result) : .just(nil)
                         }
@@ -293,7 +293,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     }
 
     func showsWalletConnectRow() -> AnyPublisher<Bool, Never> {
-        featureFlagsService.isEnabled(.remote(.walletConnectEnabled))
+        featureFlagsService.isEnabled(.walletConnectEnabled)
     }
 
     func openWalletConnectArticle(url: String) {

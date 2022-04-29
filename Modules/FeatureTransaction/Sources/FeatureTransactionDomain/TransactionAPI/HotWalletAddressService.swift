@@ -70,7 +70,7 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
             // No App support.
             return .just(false)
         }
-        return featureFlagsService.isEnabled(.remote(.hotWalletCustodial))
+        return featureFlagsService.isEnabled(.hotWalletCustodial)
     }
 }
 

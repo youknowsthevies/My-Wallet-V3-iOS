@@ -6,17 +6,33 @@ import XCTest
 @available(iOS 15.0, macOS 12.0, *) // Replace with `async()` API when merged
 final class SessionRemoteConfigurationTests: XCTestCase {
 
-    let app = App(
-        remote: Mock.RemoteConfiguration(
+    var preferences: Mock.UserDefaults!
+    var app: AppProtocol!
+
+    override func setUp() {
+        super.setUp()
+        preferences = Mock.UserDefaults()
+        preferences.set(
             [
-                .remote: [
-                    "ios_ff_apple_pay_is_enabled": true,
-                    "blockchain_app_configuration_announcements": ["1", "2", "3"],
-                    "blockchain_app_configuration_deep_link_rules": []
-                ]
-            ]
+                blockchain.app.configuration.manual.login.is.enabled(\.id): false
+            ],
+            forKey: blockchain.session.configuration(\.id)
         )
-    )
+        app = App(
+            remoteConfiguration: Session.RemoteConfiguration(
+                remote: Mock.RemoteConfiguration(
+                    [
+                        .remote: [
+                            "ios_ff_apple_pay": true,
+                            "blockchain_app_configuration_announcements": ["1", "2", "3"],
+                            "blockchain_app_configuration_deep_link_rules": []
+                        ]
+                    ]
+                ),
+                preferences: preferences
+            )
+        )
+    }
 
     func test_fetch() async throws {
 
@@ -82,7 +98,12 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertEqual(
             app.remoteConfiguration.allKeys.set,
-            ["ios_ff_apple_pay_is_enabled", "blockchain_app_configuration_announcements", "blockchain_app_configuration_deep_link_rules"].set
+            [
+                "ios_ff_apple_pay",
+                "blockchain.app.configuration.manual.login.is.enabled",
+                "blockchain_app_configuration_announcements",
+                "blockchain_app_configuration_deep_link_rules"
+            ].set
         )
     }
 
@@ -91,8 +112,9 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         let app = App(
             remoteConfiguration: .init(
                 remote: Mock.RemoteConfiguration(),
+                preferences: Mock.Preferences(),
                 default: [
-                    blockchain.app.configuration.apple.pay.is.enabled[].reference: true
+                    blockchain.app.configuration.apple.pay.is.enabled: true
                 ]
             )
         )
@@ -128,6 +150,37 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             .wait()
 
         XCTAssertTrue(isEnabled)
+    }
+
+    func test_with_preferences() async throws {
+
+        do {
+            let isEnabled = try await app.publisher(
+                for: blockchain.app.configuration.manual.login.is.enabled,
+                as: Bool.self
+            )
+            .wait()
+
+            XCTAssertFalse(isEnabled)
+        }
+
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: true)
+
+        do {
+            let isEnabled = try await app.publisher(
+                for: blockchain.app.configuration.manual.login.is.enabled,
+                as: Bool.self
+            )
+            .wait()
+
+            XCTAssertTrue(isEnabled)
+
+            let preference = preferences.dictionary(
+                forKey: blockchain.session.configuration(\.id)
+            )?[blockchain.app.configuration.manual.login.is.enabled(\.id)]
+
+            XCTAssertTrue(preference as? Bool == true)
+        }
     }
 }
 

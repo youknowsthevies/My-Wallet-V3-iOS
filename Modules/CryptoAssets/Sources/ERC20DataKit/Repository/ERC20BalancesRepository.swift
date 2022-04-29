@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import ERC20Kit
 import EthereumKit
 import MoneyKit
@@ -9,15 +8,17 @@ import PlatformKit
 import ToolKit
 
 /// A repository in charge of getting ERC-20 token accounts associated with a given ethereum account address, providing value caching.
-final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
+final class ERC20BalancesRepository: ERC20BalancesRepositoryAPI {
 
     // MARK: - Internal Types
 
     /// An ERC-20 token accounts key, used as cache index and network request parameter.
     struct ERC20TokenAccountsKey: Hashable {
 
-        /// The ethereum account address.
+        /// EVM account public key.
         let address: String
+        /// EVM network.
+        let network: EVMNetwork
     }
 
     // MARK: - Private Properties
@@ -36,8 +37,8 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - client:                   An ERC-20 account client.
     ///   - enabledCurrenciesService: An enabled currencies service.
     convenience init(
-        client: ERC20AccountClientAPI = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        client: ERC20BalancesClientAPI,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: 60)
         let cache = InMemoryCache<ERC20TokenAccountsKey, ERC20TokenAccounts>(
@@ -56,51 +57,71 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - cache:                    A cache.
     ///   - enabledCurrenciesService: An enabled currencies service.
     init(
-        client: ERC20AccountClientAPI = resolve(),
+        client: ERC20BalancesClientAPI,
         cache: AnyCache<ERC20TokenAccountsKey, ERC20TokenAccounts>,
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         let mapper = ERC20TokenAccountsMapper(enabledCurrenciesService: enabledCurrenciesService)
 
         cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
-                client.tokens(for: key.address)
+                switch key.network {
+                case .ethereum:
+                    return Deferred {
+                        client.ethereumTokensBalances(for: key.address)
+                    }
+                    .retry(1)
                     .map(mapper.toDomain)
                     .mapError(ERC20TokenAccountsError.network)
-                    .retry(1)
                     .eraseToAnyPublisher()
+                case .polygon:
+                    return Deferred {
+                        client.evmTokensBalances(for: key.address, network: key.network)
+                    }
+                    .retry(1)
+                    .map(mapper.toDomain)
+                    .mapError(ERC20TokenAccountsError.network)
+                    .eraseToAnyPublisher()
+                }
             }
         )
     }
 
     // MARK: - Internal Methods
 
-    func invalidateERC20TokenAccountsForAddress(
-        _ address: EthereumAddress
-    ) {
+    func invalidateCache(for address: String, network: EVMNetwork) {
         cachedValue.invalidateCacheWithKey(
-            ERC20TokenAccountsKey(address: address.publicKey)
+            createKey(address: address, network: network)
         )
     }
 
     func tokens(
-        for address: EthereumAddress,
+        for address: String,
+        network: EVMNetwork,
         forceFetch: Bool
     ) -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError> {
         cachedValue.get(
-            key: ERC20TokenAccountsKey(address: address.publicKey),
+            key: createKey(address: address, network: network),
             forceFetch: forceFetch
         )
     }
 
     func tokensStream(
-        for address: EthereumAddress,
+        for address: String,
+        network: EVMNetwork,
         skipStale: Bool
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError> {
         cachedValue.stream(
-            key: ERC20TokenAccountsKey(address: address.publicKey),
+            key: createKey(address: address, network: network),
             skipStale: skipStale
         )
+    }
+
+    private func createKey(
+        address: String,
+        network: EVMNetwork
+    ) -> ERC20TokenAccountsKey {
+        ERC20TokenAccountsKey(address: address.lowercased(), network: network)
     }
 }

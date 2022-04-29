@@ -129,6 +129,7 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
             statusDescription = LocalizedString.manualReview
             badgeType = .default(accessibilitySuffix: statusDescription)
         case .pending,
+             .cleared,
              .processing:
             statusDescription = LocalizedString.pending
             badgeType = .default(accessibilitySuffix: statusDescription)
@@ -137,7 +138,6 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
             statusDescription = LocalizedString.failed
             badgeType = .destructive
         case .refunded,
-             .cleared,
              .unknown:
             unimplemented()
         }

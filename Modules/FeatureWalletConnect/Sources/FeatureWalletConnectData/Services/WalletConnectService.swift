@@ -245,7 +245,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
     }
 
     func connect(_ url: String) {
-        featureFlagService.isEnabled(.remote(.walletConnectEnabled))
+        featureFlagService.isEnabled(.walletConnectEnabled)
             .sink { [weak self] isEnabled in
                 guard isEnabled,
                       let wcUrl = WCURL(url)

@@ -73,7 +73,7 @@ final class CardUpdateService: CardUpdateServiceAPI {
         currency: AnyPublisher<FiatCurrency, Never>
     ) -> AnyPublisher<PartnerAuthorizationData, Error> {
         let cardAcquirerTokens = featureFlagsService
-            .isEnabled(.remote(.newCardAcquirers))
+            .isEnabled(.newCardAcquirers)
             .flatMap { [cardAcquirersRepository] enabled -> AnyPublisher<[String: String], Never> in
                 enabled ? cardAcquirersRepository.tokenize(card) : .just([:])
             }

@@ -154,7 +154,9 @@ final class TransactionInteractor {
             return coincore
                 .cryptoAccounts(supporting: .interestTransfer)
                 .asSingle()
-                .map { $0.filter { $0.currencyType == account.currencyType } }
+                .map { accounts in
+                    accounts.filter { $0.currencyType == account.currencyType }
+                }
 
         case .buy:
             // TODO: the new limits API will require an amount

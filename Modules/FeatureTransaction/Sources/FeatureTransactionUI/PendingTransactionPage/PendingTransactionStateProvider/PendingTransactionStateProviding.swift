@@ -14,6 +14,7 @@ protocol PendingTransactionStateProviding: AnyObject {
 extension PendingTransactionStateProviding {
 
     func bankingError(
+        in state: TransactionState,
         error: OpenBanking.Error,
         icon: CompositeStatusViewType.Composite.BaseViewType
     ) -> PendingTransactionPageState {
@@ -33,7 +34,9 @@ extension PendingTransactionStateProviding {
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }
