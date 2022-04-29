@@ -25,7 +25,6 @@ public enum AnnouncementType: String, Codable {
     case interestFunds = "interest_funds"
     case newAsset = "new_asset"
     case assetRename = "asset_rename"
-    case celoEUR = "celo_eur_jan22"
     case ukEntitySwitch = "uk_entity_switch_2022"
     case claimFreeCryptoDomain = "claim_free_crypto_domain"
     case walletConnect = "wallet_connect"
@@ -70,8 +69,6 @@ public enum AnnouncementType: String, Codable {
             return .fiatFundsNoKYC
         case .interestFunds:
             return .interestFunds
-        case .celoEUR:
-            return .celoEUR
         case .ukEntitySwitch:
             return .ukEntitySwitch
         case .claimFreeCryptoDomain:
