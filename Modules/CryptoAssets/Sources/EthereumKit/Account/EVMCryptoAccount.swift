@@ -56,10 +56,12 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity.asSingle(), swapActivity)
+        nonCustodialActivity
+            .zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+            .asSingle()
     }
 
     var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {
@@ -94,8 +96,17 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
                 .replaceError(with: [])
                 .eraseToAnyPublisher()
         case .polygon:
-            // TODO: IOS-5614: Paulo: Use EVM repository
-            return .just([])
+            // Use EVM repository
+            return evmActivityRepository
+                .transactions(cryptoCurrency: asset, address: publicKey)
+                .map { [publicKey] transactions in
+                    transactions
+                        .map { item in
+                            item.activityItemEvent(sourceIdentifier: publicKey)
+                        }
+                }
+                .replaceError(with: [])
+                .eraseToAnyPublisher()
         }
     }
 
@@ -112,10 +123,11 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         EthereumAddress(address: publicKey, network: network)!
     }
 
-    private var swapActivity: Single<[SwapActivityItemEvent]> {
+    private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
@@ -133,6 +145,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
     private let priceService: PriceServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let activityRepository: HistoricalTransactionsRepositoryAPI
+    private let evmActivityRepository: EVMActivityRepositoryAPI
 
     init(
         network: EVMNetwork,
@@ -140,6 +153,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         label: String? = nil,
         hdAccountIndex: Int,
         activityRepository: HistoricalTransactionsRepositoryAPI = resolve(),
+        evmActivityRepository: EVMActivityRepositoryAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         bridge: EthereumWalletBridgeAPI = resolve(),
         ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
@@ -155,6 +169,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         self.hdAccountIndex = hdAccountIndex
         self.priceService = priceService
         self.activityRepository = activityRepository
+        self.evmActivityRepository = evmActivityRepository
         self.swapTransactionsService = swapTransactionsService
         self.ethereumBalanceRepository = ethereumBalanceRepository
         self.bridge = bridge

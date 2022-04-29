@@ -9,6 +9,16 @@ extension DependencyContainer {
 
     public static var ethereumDataKit = module {
 
+        // MARK: Client
+
+        factory {
+            EVMActivityClient(
+                apiCode: DIKit.resolve(),
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve()
+            ) as EVMActivityClientAPI
+        }
+
         factory {
             TransactionClient(
                 networkAdapter: DIKit.resolve(),
@@ -24,9 +34,19 @@ extension DependencyContainer {
             ) as LatestBlockClientAPI
         }
 
+        // MARK: Repository
+
+        single {
+            EVMActivityRepository(
+                client: DIKit.resolve(),
+                latestBlockRepository: DIKit.resolve()
+            ) as EVMActivityRepositoryAPI
+        }
+
         single {
             PendingTransactionRepository(
-                ethereumClient: DIKit.resolve()
+                ethereumClient: DIKit.resolve(),
+                evmClient: DIKit.resolve()
             ) as PendingTransactionRepositoryAPI
         }
 
