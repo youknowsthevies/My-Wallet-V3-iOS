@@ -12,6 +12,7 @@ public protocol NotificationPreferencesClientAPI {
 
 public struct NotificationPreferencesClient: NotificationPreferencesClientAPI {
     // MARK: - Private Properties
+
     private enum Path {
         static let contactPreferences = ["users", "contact-preferences"]
     }
