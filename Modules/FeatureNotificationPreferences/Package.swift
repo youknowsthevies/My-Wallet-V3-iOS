@@ -14,7 +14,7 @@ let package = Package(
             "FeatureNotificationPreferencesData"
         ]),
         .library(name: "FeatureNotificationPreferencesDetails", targets:["FeatureNotificationPreferencesDetailsUI"]),
-        .library(name: "Mocks", targets: ["Mocks"]),
+        .library(name: "FeatureNotificationPreferencesMocks", targets: ["FeatureNotificationPreferencesMocks"]),
         .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
         .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
         .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
@@ -163,7 +163,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureNotificationPreferencesDomain")
             ],
-            path: "Sources/Mocks"
+            path: "Sources/FeatureNotificationPreferencesMocks"
         ),
         .testTarget(
             name: "FeatureNotificationPreferencesUITests",
