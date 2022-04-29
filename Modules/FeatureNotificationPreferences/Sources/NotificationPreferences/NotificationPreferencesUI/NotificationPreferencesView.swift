@@ -26,8 +26,6 @@ public struct FeatureNotificationPreferencesView: View {
                     headerSection
 
                     switch viewStore.state.viewState {
-                    case .idle:
-                        EmptyView()
                     case .loading:
                         LoadingStateView(title: "")
                     case .data:

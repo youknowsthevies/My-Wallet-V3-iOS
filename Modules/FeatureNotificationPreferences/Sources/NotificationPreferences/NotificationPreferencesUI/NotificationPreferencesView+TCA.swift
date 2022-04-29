@@ -12,7 +12,6 @@ import SwiftUI
 
 public struct NotificationPreferencesState: Hashable, NavigationState {
     public enum ViewState: Equatable, Hashable {
-        case idle
         case loading
         case data(notificationDetailsState: [NotificationPreference])
         case error
@@ -98,8 +97,6 @@ public let notificationPreferencesReducer = Reducer<
 
     switch action {
     case .onAppear:
-        state.viewState = .loading
-
         return environment
             .notificationPreferencesRepository
             .fetchPreferences()
@@ -112,6 +109,7 @@ public let notificationPreferencesReducer = Reducer<
         return .none
 
     case .onReloadTap:
+        state.viewState = .loading
         return environment
             .notificationPreferencesRepository
             .fetchPreferences()
