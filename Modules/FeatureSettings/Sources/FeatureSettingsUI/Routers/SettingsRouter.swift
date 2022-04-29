@@ -65,6 +65,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
 
     // MARK: - Private
+
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter

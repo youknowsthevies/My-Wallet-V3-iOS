@@ -250,7 +250,7 @@ extension WalletInfo {
         guard let unified = unified,
               let upgradeable = upgradeable,
               let mergeable = mergeable,
-              self.userType != nil
+              userType != nil
         else {
             return false
         }

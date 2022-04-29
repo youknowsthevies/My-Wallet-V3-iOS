@@ -2,11 +2,11 @@
 
 import ComposableArchitecture
 import CoreMedia
-import Foundation
 import FeatureNotificationPreferencesMocks
 @testable import FeatureNotificationPreferencesUI
-import SnapshotTesting
+import Foundation
 import NetworkError
+import SnapshotTesting
 import TestKit
 import XCTest
 
@@ -39,13 +39,13 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
-            ))
+            )
+        )
 
         let view = FeatureNotificationPreferencesView(store: rootStore)
 
         assert(view, on: .iPhoneX)
         assert(view, on: .iPhone8)
-
     }
 
     func test_iPhoneX_snapshot_display_preferences_view() throws {
@@ -62,7 +62,8 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
-            ))
+            )
+        )
 
         let view = FeatureNotificationPreferencesView(store: rootStore)
         assert(view, on: .iPhoneX)
@@ -77,7 +78,8 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock
-            ))
+            )
+        )
 
         let view = FeatureNotificationPreferencesView(store: rootStore)
         assert(view, on: .iPhoneX)
