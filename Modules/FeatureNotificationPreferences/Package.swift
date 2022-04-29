@@ -174,6 +174,9 @@ let package = Package(
                 .target(name: "FeatureNotificationPreferencesMocks"),
                 .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "TestKit", package: "Test")
+            ],
+            exclude: [
+                "FeatureNotificationPreferencesUITests/__Snapshots__"
             ]
         )
     ]
