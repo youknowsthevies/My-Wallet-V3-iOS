@@ -23,7 +23,16 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         try super.setUpWithError()
 
         isRecording = Config.recordingSnapshots
+        
+        let preferencesToReturn = [
+            MockGenerator.marketingNotificationPreference,
+            MockGenerator.transactionalNotificationPreference,
+            MockGenerator.priceAlertNotificationPreference
+        ]
+
         notificationRepoMock = NotificationPreferencesRepositoryMock()
+        notificationRepoMock.fetchPreferencesSubject.send(preferencesToReturn)
+
     }
 
     override func tearDownWithError() throws {
@@ -32,7 +41,6 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneX_snapshot_loading_view() throws {
-        try XCTSkipIf(true)
         rootStore = Store(
             initialState: .init(viewState: .loading),
             reducer: notificationPreferencesReducer,
@@ -43,13 +51,11 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         )
 
         let view = FeatureNotificationPreferencesView(store: rootStore)
-
         assert(view, on: .iPhoneX)
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_display_preferences_view() throws {
-        try XCTSkipIf(true)
         let preferencesToReturn = [
             MockGenerator.marketingNotificationPreference,
             MockGenerator.transactionalNotificationPreference,
@@ -71,7 +77,6 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneX_snapshot_error_preferences_view() throws {
-        try XCTSkipIf(true)
         let rootStore = Store(
             initialState: .init(viewState: .error),
             reducer: notificationPreferencesReducer,

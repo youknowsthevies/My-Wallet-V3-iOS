@@ -25,7 +25,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
         try super.setUpWithError()
         notificationRepoMock = NotificationPreferencesRepositoryMock()
         testStore = TestStore(
-            initialState: .init(viewState: .idle),
+            initialState: .init(viewState: .loading),
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
@@ -76,7 +76,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
                 notificationDetailsState:
                 NotificationPreferencesDetailsState(
                     notificationPreference: MockGenerator.marketingNotificationPreference),
-                viewState: .idle
+                viewState: .loading
             ),
             reducer: mainReducer,
             environment: NotificationPreferencesEnvironment(
