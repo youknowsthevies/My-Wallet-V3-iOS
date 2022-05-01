@@ -40,6 +40,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneX_snapshot_loading_view() throws {
+        try XCTSkipIf(true)
         rootStore = Store(
             initialState: .init(viewState: .loading),
             reducer: notificationPreferencesReducer,
@@ -55,6 +56,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneX_snapshot_display_preferences_view() throws {
+        try XCTSkipIf(true)
         let preferencesToReturn = [
             MockGenerator.marketingNotificationPreference,
             MockGenerator.transactionalNotificationPreference,
@@ -76,6 +78,7 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     }
 
     func test_iPhoneX_snapshot_error_preferences_view() throws {
+        try XCTSkipIf(true)
         let rootStore = Store(
             initialState: .init(viewState: .error),
             reducer: notificationPreferencesReducer,
