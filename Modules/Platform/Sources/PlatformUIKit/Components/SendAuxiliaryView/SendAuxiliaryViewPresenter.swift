@@ -79,6 +79,7 @@ public final class SendAuxiliaryViewPresenter {
         networkFeeContentViewPresenter = ContentLabelViewPresenter(
             title: LocalizationId.networkFee,
             alignment: .right,
+            adjustsFontSizeToFitWidth: .true(factor: 0.60),
             interactor: interactor.networkFeeContentViewInteractor,
             accessibilityPrefix: "NetworkFee"
         )
@@ -91,6 +92,7 @@ public final class SendAuxiliaryViewPresenter {
         availableBalanceContentViewPresenter = ContentLabelViewPresenter(
             title: initialState.availableBalanceTitle,
             alignment: .left,
+            adjustsFontSizeToFitWidth: .true(factor: 0.60),
             interactor: interactor.availableBalanceContentViewInteractor,
             accessibilityPrefix: "AvailableBalance"
         )

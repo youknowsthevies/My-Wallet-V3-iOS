@@ -112,6 +112,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             font: descriptors.primaryFont,
             color: descriptors.primaryTextColor,
             alignment: .left,
+            adjustsFontSizeToFitWidth: .true(factor: 0.75),
             accessibility: .id(AccessibilityId.ActivityCell.titleLabel)
         )
     }
