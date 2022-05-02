@@ -1,9 +1,4 @@
-//
-//  File.swift
-//
-//
-//  Created by Augustin Udrea on 02/05/2022.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import Foundation
