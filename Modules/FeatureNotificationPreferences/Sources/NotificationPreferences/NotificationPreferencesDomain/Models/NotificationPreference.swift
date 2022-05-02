@@ -69,6 +69,19 @@ public enum PreferenceType: String, Decodable {
     case security = "SECURITY"
     case marketing = "MARKETING"
     case priceAlert = "PRICE_ALERT"
+
+    public var analyticsValue: String {
+        switch self {
+        case .transactional:
+            return "WALLET_ACTIVITY"
+        case .priceAlert:
+            return "PRICE_ALERTS"
+        case .marketing:
+            return "NEWS"
+        case .security:
+            return "SECURITY_ALERTS"
+        }
+    }
 }
 
 public enum NotificationMethod: String, Decodable, Identifiable {

@@ -71,6 +71,9 @@ extension NotificationPreferencesDetailsView {
             }
             .padding(.top, 50)
         }
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
         .onDisappear {
             viewStore.send(.save)
         }

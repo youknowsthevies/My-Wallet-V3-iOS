@@ -360,7 +360,8 @@ final class SettingsRouter: SettingsRouterAPI {
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: .main,
-                notificationPreferencesRepository: DIKit.resolve()
+                notificationPreferencesRepository: DIKit.resolve(),
+                analyticsRecorder: DIKit.resolve()
             )
         ))
         presenter.present(notificationCenterView)

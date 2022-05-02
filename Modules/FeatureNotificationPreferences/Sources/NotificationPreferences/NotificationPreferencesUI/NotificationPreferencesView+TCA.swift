@@ -7,6 +7,7 @@ import FeatureNotificationPreferencesDomain
 import Foundation
 import NetworkError
 import SwiftUI
+import AnalyticsKit
 
 // MARK: - State
 
@@ -38,6 +39,7 @@ public struct NotificationPreferencesState: Hashable, NavigationState {
 
 public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case onAppear
+    case onDissapear
     case onReloadTap
     case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationPreferencesDetailsAction)
@@ -86,10 +88,12 @@ let mainReducer = Reducer<
         ),
     notificationPreferencesReducer
 )
-
 // MARK: - First screen reducer
 
-public let notificationPreferencesReducer = Reducer<
+
+public let notificationPreferencesReducer = Reducer
+    .combine(
+Reducer<
     NotificationPreferencesState,
     NotificationPreferencesAction,
     NotificationPreferencesEnvironment
@@ -130,12 +134,15 @@ public let notificationPreferencesReducer = Reducer<
                     NotificationPreferencesAction.onReloadTap
                 }
 
-        case .binding:
+        case .binding, .onAppear:
             return .none
         }
 
     case .onPreferenceSelected(let preference):
         state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
+        return .none
+
+    case .onDissapear:
         return .none
 
     case .onFetchedSettings(let result):
@@ -150,18 +157,89 @@ public let notificationPreferencesReducer = Reducer<
         }
     }
 }
+).analytics()
 
 // MARK: - Environment
 
 public struct NotificationPreferencesEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
+    public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        notificationPreferencesRepository: NotificationPreferencesRepositoryAPI
+        notificationPreferencesRepository: NotificationPreferencesRepositoryAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
+        self.analyticsRecorder = analyticsRecorder
         self.notificationPreferencesRepository = notificationPreferencesRepository
+    }
+}
+
+
+// MARK: - Analytics Extensions
+extension NotificationPreferencesState {
+    func analyticsEvent(for action: NotificationPreferencesAction) -> AnalyticsEvent? {
+        switch action {
+        case .onAppear:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferencesEvents
+                .notificationViewed
+
+        case .onPreferenceSelected(let preference):
+            return AnalyticsEvents
+                .New
+                .NotificationPreferencesEvents
+                .notificationPreferencesClicked(optionSelection: preference.type.analyticsValue)
+
+        case .onDissapear:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferencesEvents
+                .notificationsClosed
+
+        case .notificationDetailsChanged(let action):
+            switch action {
+            case .save:
+                return self.notificationDetailsState?.updatedAnalyticsEvent
+
+            case .onAppear:
+                guard let viewedPreference = self.notificationDetailsState?.notificationPreference else { return .none }
+                return AnalyticsEvents
+                    .New
+                    .NotificationPreferencesEvents
+                    .notificationPreferencesViewed(option_viewed: viewedPreference.type.analyticsValue)
+            default:
+                return nil
+            }
+
+        default :
+            return nil
+        }
+    }
+}
+
+extension Reducer where
+Action == NotificationPreferencesAction,
+State == NotificationPreferencesState,
+Environment == NotificationPreferencesEnvironment
+{
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+            NotificationPreferencesState,
+            NotificationPreferencesAction,
+            NotificationPreferencesEnvironment
+            > { state, action, env in
+                guard let event = state.analyticsEvent(for: action) else {
+                    return .none
+                }
+                return .fireAndForget {
+                    env.analyticsRecorder.record(event: event)
+                }
+            }
+        )
     }
 }
