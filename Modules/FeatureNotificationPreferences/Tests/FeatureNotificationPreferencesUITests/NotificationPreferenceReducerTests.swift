@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureNotificationPreferencesDetailsUI
@@ -8,7 +9,6 @@ import FeatureNotificationPreferencesMocks
 import NetworkError
 import UIComponentsKit
 import XCTest
-import AnalyticsKitMock
 
 class NotificationPreferencesReducerTest: XCTestCase {
     private var testStore: TestStore<
