@@ -1,12 +1,12 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Augustin Udrea on 02/05/2022.
 //
 
-import Foundation
 import AnalyticsKit
+import Foundation
 
 extension AnalyticsEvents.New {
     enum NotificationPreferencesEvents: AnalyticsEvent {

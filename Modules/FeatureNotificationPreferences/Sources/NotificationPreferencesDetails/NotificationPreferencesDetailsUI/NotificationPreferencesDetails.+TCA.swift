@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import FeatureNotificationPreferencesDomain
 import Foundation
-import AnalyticsKit
 
 internal struct Switch: Equatable, Hashable {
     var method: NotificationMethod
@@ -56,36 +56,43 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
             return AnalyticsEvents
                 .New
                 .NotificationPreferenceDetailsEvents
-                .walletActivitySetUp(email: .init(emailSwitch.isOn),
-                                     in_app: .init(inAppSwitch.isOn),
-                                     push: .init(pushSwitch.isOn),
-                                     sms: .init(smsSwitch.isOn))
+                .walletActivitySetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
         case .marketing:
             return AnalyticsEvents
                 .New
                 .NotificationPreferenceDetailsEvents
-                .newsSetUp(email: .init(emailSwitch.isOn),
-                           in_app: .init(inAppSwitch.isOn),
-                           push: .init(pushSwitch.isOn),
-                           sms: .init(smsSwitch.isOn))
+                .newsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
 
         case .priceAlert:
             return AnalyticsEvents
                 .New
                 .NotificationPreferenceDetailsEvents
-                .priceAlertsSetUp(email: .init(emailSwitch.isOn),
-                                  in_app: .init(inAppSwitch.isOn),
-                                  push: .init(pushSwitch.isOn))
-            
+                .priceAlertsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn)
+                )
+
         case .security:
             return AnalyticsEvents
                 .New
                 .NotificationPreferenceDetailsEvents
-                .securityAlertsSetUp(email: .init(emailSwitch.isOn),
-                                     in_app: .init(inAppSwitch.isOn),
-                                     push: .init(pushSwitch.isOn),
-                                     sms: .init(smsSwitch.isOn))
-
+                .securityAlertsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
         }
     }
 }

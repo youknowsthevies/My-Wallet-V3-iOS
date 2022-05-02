@@ -1,36 +1,44 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Augustin Udrea on 02/05/2022.
 //
 
-import Foundation
 import AnalyticsKit
+import Foundation
 
 extension AnalyticsEvents.New {
     enum NotificationPreferenceDetailsEvents: AnalyticsEvent {
 
         var type: AnalyticsEventType { .nabu }
 
-        case priceAlertsSetUp(email: SwitchValue,
-                              in_app: SwitchValue,
-                              push: SwitchValue)
-        
-        case securityAlertsSetUp(email: SwitchValue,
-                                 in_app: SwitchValue,
-                                 push: SwitchValue,
-                                 sms: SwitchValue)
+        case priceAlertsSetUp(
+            email: SwitchValue,
+            in_app: SwitchValue,
+            push: SwitchValue
+        )
 
-        case walletActivitySetUp(email: SwitchValue,
-                                 in_app: SwitchValue,
-                                 push: SwitchValue,
-                                 sms: SwitchValue)
+        case securityAlertsSetUp(
+            email: SwitchValue,
+            in_app: SwitchValue,
+            push: SwitchValue,
+            sms: SwitchValue
+        )
 
-        case newsSetUp(email: SwitchValue,
-                       in_app: SwitchValue,
-                       push: SwitchValue,
-                       sms: SwitchValue)
+        case walletActivitySetUp(
+            email: SwitchValue,
+            in_app: SwitchValue,
+            push: SwitchValue,
+            sms: SwitchValue
+        )
+
+        case newsSetUp(
+            email: SwitchValue,
+            in_app: SwitchValue,
+            push: SwitchValue,
+            sms: SwitchValue
+        )
 
         enum Origin: String, StringRawRepresentable {
             case notificationPrefences = "NOTIFICATION_PREFERENCES"

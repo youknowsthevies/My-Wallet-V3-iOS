@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureNotificationPreferencesDetailsUI
@@ -7,7 +8,6 @@ import FeatureNotificationPreferencesDomain
 import Foundation
 import NetworkError
 import SwiftUI
-import AnalyticsKit
 
 // MARK: - State
 
@@ -89,82 +89,82 @@ let mainReducer = Reducer<
         ),
     notificationPreferencesReducer
 )
-// MARK: - First screen reducer
 
+// MARK: - First screen reducer
 
 public let notificationPreferencesReducer = Reducer
     .combine(
-Reducer<
-    NotificationPreferencesState,
-    NotificationPreferencesAction,
-    NotificationPreferencesEnvironment
-> { state, action, environment in
+        Reducer<
+            NotificationPreferencesState,
+            NotificationPreferencesAction,
+            NotificationPreferencesEnvironment
+        > { state, action, environment in
 
-    switch action {
-    case .onAppear:
-        return environment
-            .notificationPreferencesRepository
-            .fetchPreferences()
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map(NotificationPreferencesAction.onFetchedSettings)
+            switch action {
+            case .onAppear:
+                return environment
+                    .notificationPreferencesRepository
+                    .fetchPreferences()
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map(NotificationPreferencesAction.onFetchedSettings)
 
-    case .route(let routeItent):
-        state.route = routeItent
-        return .none
+            case .route(let routeItent):
+                state.route = routeItent
+                return .none
 
-    case .onReloadTap:
-        state.viewState = .loading
-        return environment
-            .notificationPreferencesRepository
-            .fetchPreferences()
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map(NotificationPreferencesAction.onFetchedSettings)
+            case .onReloadTap:
+                state.viewState = .loading
+                return environment
+                    .notificationPreferencesRepository
+                    .fetchPreferences()
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map(NotificationPreferencesAction.onFetchedSettings)
 
-    case .notificationDetailsChanged(let action):
-        switch action {
-        case .save:
-            guard let preferences = state.notificationDetailsState?.updatedPreferences else { return .none }
-            return environment
-                .notificationPreferencesRepository
-                .update(preferences: preferences)
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map({ result in
-                    if case .failure(let error) = result {
-                        return NotificationPreferencesAction.onSaveFailed
-                    }
-                    return NotificationPreferencesAction.onReloadTap
-                })
+            case .notificationDetailsChanged(let action):
+                switch action {
+                case .save:
+                    guard let preferences = state.notificationDetailsState?.updatedPreferences else { return .none }
+                    return environment
+                        .notificationPreferencesRepository
+                        .update(preferences: preferences)
+                        .receive(on: environment.mainQueue)
+                        .catchToEffect()
+                        .map { result in
+                            if case .failure(let error) = result {
+                                return NotificationPreferencesAction.onSaveFailed
+                            }
+                            return NotificationPreferencesAction.onReloadTap
+                        }
 
-        case .binding, .onAppear:
-            return .none
+                case .binding, .onAppear:
+                    return .none
+                }
+
+            case .onSaveFailed:
+                return Effect(value: .onReloadTap)
+
+            case .onPreferenceSelected(let preference):
+                state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
+                return .none
+
+            case .onDissapear:
+                return .none
+
+            case .onFetchedSettings(let result):
+                switch result {
+                case .success(let preferences):
+                    state.viewState = .data(notificationDetailsState: preferences)
+                    return .none
+
+                case .failure(let error):
+                    state.viewState = .error
+                    return .none
+                }
+            }
         }
-
-    case .onSaveFailed:
-        return Effect(value: .onReloadTap)
-
-    case .onPreferenceSelected(let preference):
-        state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
-        return .none
-
-    case .onDissapear:
-        return .none
-
-    case .onFetchedSettings(let result):
-        switch result {
-        case .success(let preferences):
-            state.viewState = .data(notificationDetailsState: preferences)
-            return .none
-
-        case .failure(let error):
-            state.viewState = .error
-            return .none
-        }
-    }
-}
-).analytics()
+    ).analytics()
 
 // MARK: - Environment
 
@@ -184,8 +184,8 @@ public struct NotificationPreferencesEnvironment {
     }
 }
 
-
 // MARK: - Analytics Extensions
+
 extension NotificationPreferencesState {
     func analyticsEvent(for action: NotificationPreferencesAction) -> AnalyticsEvent? {
         switch action {
@@ -208,7 +208,7 @@ extension NotificationPreferencesState {
                 .notificationsClosed
 
         case .onSaveFailed:
-            guard let viewedPreference = self.notificationDetailsState?.notificationPreference else { return .none }
+            guard let viewedPreference = notificationDetailsState?.notificationPreference else { return .none }
             return AnalyticsEvents
                 .New
                 .NotificationPreferencesEvents
@@ -217,10 +217,10 @@ extension NotificationPreferencesState {
         case .notificationDetailsChanged(let action):
             switch action {
             case .save:
-                return self.notificationDetailsState?.updatedAnalyticsEvent
+                return notificationDetailsState?.updatedAnalyticsEvent
 
             case .onAppear:
-                guard let viewedPreference = self.notificationDetailsState?.notificationPreference else { return .none }
+                guard let viewedPreference = notificationDetailsState?.notificationPreference else { return .none }
                 return AnalyticsEvents
                     .New
                     .NotificationPreferencesEvents
@@ -229,23 +229,23 @@ extension NotificationPreferencesState {
                 return nil
             }
 
-        default :
+        default:
             return nil
         }
     }
 }
 
 extension Reducer where
-Action == NotificationPreferencesAction,
-State == NotificationPreferencesState,
-Environment == NotificationPreferencesEnvironment
+    Action == NotificationPreferencesAction,
+    State == NotificationPreferencesState,
+    Environment == NotificationPreferencesEnvironment
 {
     fileprivate func analytics() -> Self {
         combined(
             with: Reducer<
-            NotificationPreferencesState,
-            NotificationPreferencesAction,
-            NotificationPreferencesEnvironment
+                NotificationPreferencesState,
+                NotificationPreferencesAction,
+                NotificationPreferencesEnvironment
             > { state, action, env in
                 guard let event = state.analyticsEvent(for: action) else {
                     return .none
