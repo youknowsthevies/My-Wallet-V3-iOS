@@ -16,6 +16,7 @@ import FeatureCardPaymentData
 import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
+import FeatureNotificationPreferencesDomain
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData

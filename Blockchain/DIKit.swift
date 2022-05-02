@@ -24,6 +24,8 @@ import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureNFTData
 import FeatureNFTDomain
+import FeatureNotificationPreferencesData
+import FeatureNotificationPreferencesDomain
 import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
@@ -761,6 +763,15 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = ClaimEligibilityClient(networkAdapter: adapter, requestBuilder: builder)
             return ClaimEligibilityRepository(apiClient: client)
+        }
+
+        // MARK: Feature Notification Preferences
+
+        factory { () -> NotificationPreferencesRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
+            return NotificationPreferencesRepository(client: client)
         }
 
         // MARK: Pulse Network Debugging
