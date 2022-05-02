@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import FeatureNotificationPreferencesDomain
 import Foundation
@@ -47,10 +48,58 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
             }
         return UpdatedPreferences(preferences: preferences)
     }
+
+    public var updatedAnalyticsEvent: AnalyticsEvent? {
+        switch notificationPreference.type {
+
+        case .transactional:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferenceDetailsEvents
+                .walletActivitySetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
+        case .marketing:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferenceDetailsEvents
+                .newsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
+
+        case .priceAlert:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferenceDetailsEvents
+                .priceAlertsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn)
+                )
+
+        case .security:
+            return AnalyticsEvents
+                .New
+                .NotificationPreferenceDetailsEvents
+                .securityAlertsSetUp(
+                    email: .init(emailSwitch.isOn),
+                    in_app: .init(inAppSwitch.isOn),
+                    push: .init(pushSwitch.isOn),
+                    sms: .init(smsSwitch.isOn)
+                )
+        }
+    }
 }
 
 public enum NotificationPreferencesDetailsAction: Equatable, BindableAction {
     case save
+    case onAppear
     case binding(BindingAction<NotificationPreferencesDetailsState>)
 }
 

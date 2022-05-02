@@ -45,6 +45,9 @@ public struct FeatureNotificationPreferencesView: View {
         .onAppear(perform: {
             viewStore.send(.onAppear)
         })
+        .onDisappear {
+            viewStore.send(.onDissapear)
+        }
     }
 }
 

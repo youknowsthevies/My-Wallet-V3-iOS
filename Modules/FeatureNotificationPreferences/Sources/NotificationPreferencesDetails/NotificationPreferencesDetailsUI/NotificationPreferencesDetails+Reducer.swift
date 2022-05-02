@@ -10,6 +10,8 @@ public let notificationPreferencesDetailsReducer = Reducer<
     NotificationPreferencesDetailsEnvironment
 > { _, action, _ in
     switch action {
+    case .onAppear:
+        return .none
     case .save:
         return .none
     case .binding:

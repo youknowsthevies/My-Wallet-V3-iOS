@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureNotificationPreferencesDetailsUI
@@ -29,7 +30,8 @@ class NotificationPreferencesReducerTest: XCTestCase {
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
-                notificationPreferencesRepository: notificationRepoMock
+                notificationPreferencesRepository: notificationRepoMock,
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }
@@ -81,7 +83,8 @@ class NotificationPreferencesReducerTest: XCTestCase {
             reducer: mainReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
-                notificationPreferencesRepository: notificationRepoMock
+                notificationPreferencesRepository: notificationRepoMock,
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
 
