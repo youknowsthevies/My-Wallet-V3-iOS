@@ -51,6 +51,7 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
 
     public var updatedAnalyticsEvent: AnalyticsEvent? {
         switch notificationPreference.type {
+
         case .transactional:
             return AnalyticsEvents
                 .New
@@ -74,9 +75,8 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
                 .NotificationPreferenceDetailsEvents
                 .priceAlertsSetUp(email: .init(emailSwitch.isOn),
                                   in_app: .init(inAppSwitch.isOn),
-                                  push: .init(pushSwitch.isOn),
-                                  sms: .init(smsSwitch.isOn))
-
+                                  push: .init(pushSwitch.isOn))
+            
         case .security:
             return AnalyticsEvents
                 .New

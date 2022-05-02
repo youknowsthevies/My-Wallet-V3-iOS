@@ -41,6 +41,7 @@ public enum NotificationPreferencesAction: Equatable, NavigationAction {
     case onAppear
     case onDissapear
     case onReloadTap
+    case onSaveFailed
     case onPreferenceSelected(NotificationPreference)
     case notificationDetailsChanged(NotificationPreferencesDetailsAction)
     case onFetchedSettings(Result<[NotificationPreference], NetworkError>)
@@ -130,13 +131,19 @@ Reducer<
                 .update(preferences: preferences)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { _ in
-                    NotificationPreferencesAction.onReloadTap
-                }
+                .map({ result in
+                    if case .failure(let error) = result {
+                        return NotificationPreferencesAction.onSaveFailed
+                    }
+                    return NotificationPreferencesAction.onReloadTap
+                })
 
         case .binding, .onAppear:
             return .none
         }
+
+    case .onSaveFailed:
+        return Effect(value: .onReloadTap)
 
     case .onPreferenceSelected(let preference):
         state.notificationDetailsState = NotificationPreferencesDetailsState(notificationPreference: preference)
@@ -199,6 +206,13 @@ extension NotificationPreferencesState {
                 .New
                 .NotificationPreferencesEvents
                 .notificationsClosed
+
+        case .onSaveFailed:
+            guard let viewedPreference = self.notificationDetailsState?.notificationPreference else { return .none }
+            return AnalyticsEvents
+                .New
+                .NotificationPreferencesEvents
+                .statusChangeError(origin: viewedPreference.type.analyticsValue)
 
         case .notificationDetailsChanged(let action):
             switch action {

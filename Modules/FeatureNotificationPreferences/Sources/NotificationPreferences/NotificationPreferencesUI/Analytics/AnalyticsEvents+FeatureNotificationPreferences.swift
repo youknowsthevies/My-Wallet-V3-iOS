@@ -10,19 +10,13 @@ import AnalyticsKit
 
 extension AnalyticsEvents.New {
     enum NotificationPreferencesEvents: AnalyticsEvent {
-
         var type: AnalyticsEventType { .nabu }
 
-        case notificationClicked
         case notificationPreferencesClicked(optionSelection: String)
         case notificationPreferencesViewed(option_viewed: String)
         case notificationViewed
         case notificationsClosed
-        case statusChangeError(origin: Origin)
-
-        enum Origin: String, StringRawRepresentable {
-            case notificationPrefences = "NOTIFICATION_PREFERENCES"
-        }
+        case statusChangeError(origin: String)
     }
 }
 

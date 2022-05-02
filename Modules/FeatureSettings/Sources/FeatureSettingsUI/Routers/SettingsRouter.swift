@@ -354,6 +354,7 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showNotificationsSettingsScreen() {
+        analyticsRecording.record(event: AnalyticsEvents.New.Settings.notificationClicked)
         let presenter = topViewController
         let notificationCenterView = FeatureNotificationPreferencesView(store: .init(
             initialState: .init(viewState: .loading),

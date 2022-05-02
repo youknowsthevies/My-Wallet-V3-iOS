@@ -15,9 +15,8 @@ extension AnalyticsEvents.New {
 
         case priceAlertsSetUp(email: SwitchValue,
                               in_app: SwitchValue,
-                              push: SwitchValue,
-                              sms: SwitchValue)
-
+                              push: SwitchValue)
+        
         case securityAlertsSetUp(email: SwitchValue,
                                  in_app: SwitchValue,
                                  push: SwitchValue,
