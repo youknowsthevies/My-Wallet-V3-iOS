@@ -228,6 +228,8 @@ packages:
     path: Modules/FeatureKYC
   FeatureNFT:
     path: Modules/FeatureNFT
+  Observability:
+    path: Modules/Observability
   FeatureOpenBanking:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
@@ -238,6 +240,8 @@ packages:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
+  FeatureNotificationPreferences:
+    path: Modules/FeatureNotificationPreferences
   FeatureTour:
     path: Modules/FeatureTour
   FeatureTransaction:
@@ -343,6 +347,7 @@ targets:
       - package: FeatureDebug
       - package: FeatureForm
       - package: FeatureInterest
+      - package: FeatureNotificationPreferences
       - package: FeatureKYC
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
@@ -390,6 +395,8 @@ targets:
       - package: CryptoAssets
         product: EthereumKit
       - package: CryptoAssets
+        product: EthereumDataKit
+      - package: CryptoAssets
         product: ERC20Kit
       - package: CryptoAssets
         product: ERC20DataKit
@@ -411,6 +418,7 @@ targets:
         product: NetworkErrors
       - package: Money
         product: MoneyKit
+      - package: Observability
       - package: Platform
         product: PlatformKit
       - package: Platform

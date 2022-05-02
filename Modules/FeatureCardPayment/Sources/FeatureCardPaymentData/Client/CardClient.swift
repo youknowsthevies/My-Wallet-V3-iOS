@@ -119,17 +119,17 @@ final class CardClient: CardClientAPI {
 
     // MARK: - CardActivationClientAPI
 
-    /// EveryPay Only (Other provider would need different methods)
     /// Attempt to register the card method with the partner.
     /// Successful response should have card object and status should move to ACTIVE.
     /// - Parameters:
     ///   - id: ID of the card
     ///   - url: Everypay only - URL to return to after card verified
-    ///   - token: Session token
+    ///   - cvv: Card verification value
     /// - Returns: The card details
     func activateCard(
         by id: String,
-        url: String
+        url: String,
+        cvv: String
     ) -> AnyPublisher<ActivateCardResponse.Partner, NabuNetworkError> {
         struct Attributes: Encodable {
             struct EveryPay: Encodable {
@@ -138,16 +138,18 @@ final class CardClient: CardClientAPI {
 
             let everypay: EveryPay?
             let redirectURL: String
+            let cvv: String
             let useOnlyAlreadyValidatedCardRef = false
 
-            init(redirectURL: String) {
+            init(redirectURL: String, cvv: String) {
                 everypay = .init(customerUrl: redirectURL)
+                self.cvv = cvv
                 self.redirectURL = redirectURL
             }
         }
 
         let path = Path.activateCard(with: id)
-        let payload = Attributes(redirectURL: url)
+        let payload = Attributes(redirectURL: url, cvv: cvv)
 
         let request = requestBuilder.post(
             path: path,

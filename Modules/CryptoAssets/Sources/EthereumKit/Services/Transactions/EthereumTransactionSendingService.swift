@@ -1,10 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
 import Combine
-import DIKit
-import PlatformKit
-import RxSwift
 
 public enum EthereumTransactionSendingServiceError: Error {
     case pushTransactionFailed(Error)
@@ -14,50 +10,54 @@ public enum EthereumTransactionSendingServiceError: Error {
 
 protocol EthereumTransactionSendingServiceAPI {
     func send(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 
     func signAndSend(
         transaction: EthereumTransactionCandidate,
-        keyPair: EthereumKeyPair
+        keyPair: EthereumKeyPair,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 }
 
 final class EthereumTransactionSendingService: EthereumTransactionSendingServiceAPI {
 
-    private let client: TransactionPushClientAPI
+    private let pushService: EthereumTransactionPushServiceAPI
     private let transactionSigner: EthereumTransactionSigningServiceAPI
 
     init(
-        client: TransactionPushClientAPI = resolve(),
-        transactionSigner: EthereumTransactionSigningServiceAPI = resolve()
+        pushService: EthereumTransactionPushServiceAPI,
+        transactionSigner: EthereumTransactionSigningServiceAPI
     ) {
-        self.client = client
+        self.pushService = pushService
         self.transactionSigner = transactionSigner
     }
 
     func signAndSend(
         transaction: EthereumTransactionCandidate,
-        keyPair: EthereumKeyPair
+        keyPair: EthereumKeyPair,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
         transactionSigner
             .sign(transaction: transaction, keyPair: keyPair)
             .mapError(EthereumTransactionSendingServiceError.signingError)
             .flatMap { [send] finalised in
-                send(finalised)
+                send(finalised, network)
             }
             .eraseToAnyPublisher()
     }
 
     func send(
-        transaction: EthereumTransactionEncoded
+        transaction: EthereumTransactionEncoded,
+        network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
-        client.push(transaction: transaction)
+        pushService.push(transaction: transaction, network: network)
             .mapError(EthereumTransactionSendingServiceError.pushTransactionFailed)
-            .flatMap { response in
+            .flatMap { transactionHash in
                 EthereumTransactionPublished.create(
                     transaction: transaction,
-                    responseHash: response.txHash
+                    responseHash: transactionHash
                 )
                 .publisher
                 .mapError(EthereumTransactionSendingServiceError.pushTransactionMalformed)

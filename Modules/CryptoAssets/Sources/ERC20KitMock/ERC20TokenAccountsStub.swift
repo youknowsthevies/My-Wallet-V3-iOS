@@ -27,8 +27,7 @@ extension ERC20TokenAccount {
     /// - Returns: A stubbed ERC-20 token account.
     static func stubbed(cryptoCurrency: CryptoCurrency) -> ERC20TokenAccount {
         .init(
-            balance: .create(major: 2, currency: cryptoCurrency),
-            tokenSymbol: cryptoCurrency.code
+            balance: .create(major: 2, currency: cryptoCurrency)
         )
     }
 }

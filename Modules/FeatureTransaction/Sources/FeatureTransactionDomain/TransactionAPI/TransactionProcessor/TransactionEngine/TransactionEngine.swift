@@ -475,6 +475,10 @@ extension TransactionEngine {
 extension TransactionEngine {
 
     public func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        defaultValidateAmount(pendingTransaction: pendingTransaction)
+    }
+
+    public func defaultValidateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         guard let sourceAccount = sourceAccount, transactionTarget != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
@@ -491,24 +495,11 @@ extension TransactionEngine {
                 let amountInSourceCurrency = pendingTransaction.amount.convert(
                     using: exchangeRates.amountToSourceRate
                 )
-                let feeInSourceCurrency = pendingTransaction.feeAmount.convert(
-                    using: exchangeRates.onChainFeeToSourceRate
-                )
+
                 let transactionLimitsInSourceCurrency = try self.transactionLimitsInSourceCurrency(
                     from: pendingTransaction,
                     exchangeRates: exchangeRates
                 )
-                // calculate available balance
-                let availableBalanceInSourceCurrency = try sourceBalance - feeInSourceCurrency
-
-                // validate the transaction
-                if self.sourceAsset.cryptoCurrency?.isERC20 != true {
-                    guard try sourceBalance >= feeInSourceCurrency else {
-                        throw TransactionValidationFailure(
-                            state: .belowFees(feeInSourceCurrency, sourceBalance)
-                        )
-                    }
-                }
 
                 // rate using to display limits errors in the input currency
                 let sourceToInputAmountRate = MoneyValuePair(
@@ -518,12 +509,31 @@ extension TransactionEngine {
 
                 try self.validate(
                     amountInSourceCurrency,
-                    hasAmountUpToSourceLimit: availableBalanceInSourceCurrency,
+                    isWithin: transactionLimitsInSourceCurrency,
                     sourceToAmountRate: sourceToInputAmountRate
                 )
+
+                // For ERC20 don't include the fee in validation (because ERC20 fee is in ETH)
+                guard self.sourceAsset.cryptoCurrency?.isERC20 != true else {
+                    return
+                }
+
+                let feeInSourceCurrency = pendingTransaction.feeAmount.convert(
+                    using: exchangeRates.onChainFeeToSourceRate
+                )
+
+                guard try sourceBalance >= feeInSourceCurrency else {
+                    throw TransactionValidationFailure(
+                        state: .belowFees(feeInSourceCurrency, sourceBalance)
+                    )
+                }
+
+                // calculate available balance
+                let availableBalanceInSourceCurrency = try sourceBalance - feeInSourceCurrency
+
                 try self.validate(
                     amountInSourceCurrency,
-                    isWithin: transactionLimitsInSourceCurrency,
+                    hasAmountUpToSourceLimit: availableBalanceInSourceCurrency,
                     sourceToAmountRate: sourceToInputAmountRate
                 )
             }

@@ -43,6 +43,19 @@ public class App: AppProtocol {
         )
     }
 
+    @_disfavoredOverload
+    public convenience init(
+        language: Language = Language.root.language,
+        state: Session.State = .init(),
+        remoteConfiguration: Session.RemoteConfiguration
+    ) {
+        self.init(
+            language: language,
+            state: state,
+            remoteConfiguration: remoteConfiguration
+        )
+    }
+
     init(
         language: Language = Language.root.language,
         events: Session.Events = .init(),
@@ -203,7 +216,7 @@ extension AppProtocol {
 
     public func publisher<T>(for event: Tag.Event, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
         publisher(for: event.key)
-            .decode(as: T.self)
+            .decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
@@ -228,7 +241,16 @@ extension App {
 
     public static var preview: AppProtocol = App()
 
-    public convenience init() { self.init(remote: Mock.RemoteConfiguration()) }
+    public convenience init() {
+        let preferences: Preferences = Mock.Preferences()
+        self.init(
+            state: Session.State([:], preferences: preferences),
+            remoteConfiguration: Session.RemoteConfiguration(
+                remote: Mock.RemoteConfiguration(),
+                preferences: preferences
+            )
+        )
+    }
 }
 
 #if DEBUG

@@ -14,98 +14,6 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-/// Helper for `Either<Loading, Either<Left, Right>>`
-typealias LoadableEitherViewController<
-    Left: ViewControllerProvider,
-    Right: ViewControllerProvider
-> = EitherViewController<
-    UIHostingController<LoadingStateView>,
-    Either<Left, Right>
->
-
-/// Async switching controller to pick the appropriate controller based on the feature flag
-class LoadableAccountPickerControllable: LoadableEitherViewController<
-    FeatureAccountPickerControllableAdapter,
-    AccountPickerViewController
->,
-    AccountPickerViewControllable
-{
-    var shouldOverrideNavigationEffects: Bool = false
-
-    private var state: Driver<AccountPickerPresenter.State>?
-    private let effects = BehaviorRelay<AccountPickerInteractor.Effects>(value: .none)
-    private var disposeBag = DisposeBag()
-    private var cancellables = Set<AnyCancellable>()
-
-    @LazyInject private var featureFlagService: FeatureFlagsServiceAPI
-
-    typealias Child = Either<
-        UIHostingController<LoadingStateView>,
-        Either<
-            FeatureAccountPickerControllableAdapter,
-            AccountPickerViewController
-        >
-    >
-
-    init() {
-        super.init(child: .left(UIHostingController(rootView: LoadingStateView(title: ""))))
-
-        featureFlagService.isEnabled(.remote(.swiftUIAccountPicker))
-            .sink { [weak self] isEnabled in
-                guard let self = self else { return }
-
-                switch isEnabled {
-                case true:
-                    self.child = .right(.left(FeatureAccountPickerControllableAdapter()))
-                case false:
-                    self.child = .right(.right(AccountPickerViewController()))
-                }
-            }
-            .store(in: &cancellables)
-    }
-
-    func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects> {
-        self.state = state
-
-        defer {
-            connectChildIfPossible()
-        }
-
-        return effects.asDriverCatchError()
-    }
-
-    func connectChildIfPossible() {
-        guard let controllable = child.viewController as? AccountPickerViewControllable,
-              let state = state
-        else {
-            return
-        }
-
-        controllable
-            .connect(state: state)
-            .drive(effects)
-            .disposed(by: disposeBag)
-    }
-
-    override func updateChild(from oldValue: Child) {
-        super.updateChild(from: oldValue)
-
-        disposeBag = DisposeBag()
-    }
-
-    override func updateChild(to newValue: Child) {
-        if let controllable = newValue.viewController as? AccountPickerViewControllable {
-            controllable.shouldOverrideNavigationEffects = shouldOverrideNavigationEffects
-        }
-
-        disposeBag = DisposeBag()
-
-        connectChildIfPossible()
-
-        super.updateChild(to: newValue)
-    }
-}
-
 class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
     // MARK: - Private Properties
@@ -121,17 +29,17 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let header = PassthroughSubject<HeaderStyle, Error>()
 
     fileprivate lazy var environment = AccountPickerEnvironment(
-        rowSelected: { [unowned self] (identifier: AnyHashable) -> Void in
-            let viewModel = self.model(for: identifier)
-            if let viewModel = viewModel {
-                self.modelSelectedRelay.accept(viewModel)
+        rowSelected: { [weak self, modelSelectedRelay] (identifier: AnyHashable) -> Void in
+            if let viewModel = self?.model(for: identifier) {
+                modelSelectedRelay.accept(viewModel)
             }
         },
-        backButtonTapped: { [unowned self] in self.backButtonRelay.accept(()) },
-        closeButtonTapped: { [unowned self] in self.closeButtonRelay.accept(()) },
-        search: { [unowned self] searchText in self.searchRelay.accept(searchText) },
-        sections: { [unowned self] in self.sections.eraseToAnyPublisher() },
-        updateSingleAccounts: { [unowned self] ids in
+        backButtonTapped: { [backButtonRelay] in backButtonRelay.accept(()) },
+        closeButtonTapped: { [closeButtonRelay] in closeButtonRelay.accept(()) },
+        search: { [searchRelay] searchText in searchRelay.accept(searchText) },
+        sections: { [sections] in sections.eraseToAnyPublisher() },
+        updateSingleAccounts: { [weak self] ids in
+            guard let self = self else { return .empty() }
             let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
             let publishers = presenters
                 .compactMap { id, presenter
@@ -171,7 +79,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                 .map { Dictionary($0) { _, right in right } } // Don't care which value we take, just no dupes
                 .eraseToAnyPublisher()
         },
-        updateAccountGroups: { [unowned self] ids in
+        updateAccountGroups: { [weak self] ids in
+            guard let self = self else { return .empty() }
             let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
             let publishers = presenters
                 .compactMap { id, presenter

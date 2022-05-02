@@ -93,7 +93,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             subtitle: walletConnectTarget.dAppAddress
         )
         let network = TransactionConfirmation.Model.Network(
-            network: AssetModel.ethereum.name
+            network: walletConnectTarget.network.name
         )
         let message = TransactionConfirmation.Model.Message(
             dAppName: walletConnectTarget.dAppName,

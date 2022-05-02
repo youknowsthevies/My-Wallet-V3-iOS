@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import ComposableArchitecture
 import FeatureAuthenticationUI
 import FeatureTourUI
@@ -9,6 +10,8 @@ import ToolKit
 import UIComponentsKit
 
 public struct TourViewAdapter: View {
+
+    @BlockchainApp var app
 
     private let store: Store<WelcomeState, WelcomeAction>
     private let featureFlagService: FeatureFlagsServiceAPI
@@ -45,11 +48,16 @@ public struct TourViewAdapter: View {
                     .navigationBarHidden(true)
             }
         }
-        .onReceive(featureFlagService.isEnabled(.remote(.newOnboardingTour))) { isEnabled in
+        .onReceive(featureFlagService.isEnabled(.newOnboardingTour)) { isEnabled in
             newTourEnabled = isEnabled
         }
-        .onReceive(featureFlagService.isEnabled(.local(.disableGUIDLogin))) { isDisabled in
-            manualLoginEnabled = !isDisabled
+        .onReceive(
+            app
+                .publisher(for: blockchain.app.configuration.manual.login.is.enabled, as: Bool.self)
+                .prefix(1)
+                .replaceError(with: false)
+        ) { isEnabled in
+            manualLoginEnabled = isEnabled
         }
     }
 }

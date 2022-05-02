@@ -7,7 +7,11 @@ import PlatformKit
 import RxSwift
 
 public protocol EthereumTransactionDispatcherAPI {
-    func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished>
+    func send(
+        transaction: EthereumTransactionCandidate,
+        secondPassword: String,
+        network: EVMNetwork
+    ) -> Single<EthereumTransactionPublished>
 }
 
 final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
@@ -26,17 +30,26 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
         self.transactionSendingService = transactionSendingService
     }
 
-    func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished> {
+    func send(
+        transaction: EthereumTransactionCandidate,
+        secondPassword: String,
+        network: EVMNetwork
+    ) -> Single<EthereumTransactionPublished> {
         keyPairProvider.keyPair(with: secondPassword)
             .flatMap { [transactionSendingService] keyPair -> Single<EthereumTransactionPublished> in
                 transactionSendingService.signAndSend(
                     transaction: transaction,
-                    keyPair: keyPair
+                    keyPair: keyPair,
+                    network: network
                 )
                 .asSingle()
             }
             .flatMap { [bridge] transaction -> Single<EthereumTransactionPublished> in
-                bridge.recordLast(transaction: transaction)
+                if network == .ethereum {
+                    return bridge.recordLast(transaction: transaction)
+                } else {
+                    return .just(transaction)
+                }
             }
     }
 }

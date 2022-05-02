@@ -5,6 +5,7 @@ import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 final class SecuritySectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .security

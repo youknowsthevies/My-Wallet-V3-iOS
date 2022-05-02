@@ -22,8 +22,8 @@ public final class InterestAccountDetailsScreenInteractor {
 
     var canWithdraw: Single<Bool> {
         account
-            .actions
-            .map { $0.contains(.interestWithdraw) }
+            .can(perform: .interestWithdraw)
+            .asSingle()
     }
 
     var canDeposit: Single<Bool> {

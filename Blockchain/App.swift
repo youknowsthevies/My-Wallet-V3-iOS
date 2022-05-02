@@ -6,6 +6,7 @@ import Combine
 import ComposableArchitecture
 @_exported import DIKit
 import ERC20DataKit
+import EthereumDataKit
 import FeatureActivityData
 import FeatureAppDomain
 import FeatureAppUI
@@ -15,6 +16,7 @@ import FeatureCardPaymentData
 import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
+import FeatureNotificationPreferencesDomain
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
@@ -84,7 +86,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         window.setRootViewController(hostingController)
         let context = AppDelegateContext(
             intercomApiKey: CustomerSupportChatConfiguration.apiKey,
-            intercomAppId: CustomerSupportChatConfiguration.appId
+            intercomAppId: CustomerSupportChatConfiguration.appId,
+            embraceAppId: ObservabilityConfiguration.appId
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true
@@ -109,6 +112,7 @@ func defineDependencies() {
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
+        DependencyContainer.ethereumDataKit
         DependencyContainer.erc20Kit
         DependencyContainer.erc20DataKit
         DependencyContainer.bitcoinChainKit

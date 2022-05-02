@@ -1,6 +1,12 @@
 blockchain:
 	app:
 		configuration:
+			SSL:
+				pinning:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			announcements:
 			+ blockchain.session.configuration.value
 			apple:
@@ -9,19 +15,48 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
-			deep_link:
-				rules:
-				+ blockchain.session.configuration.value
-			google:
-				pay:
+			card:
+				issuing:
 					is:
 						enabled:
 						+ blockchain.db.type.boolean
-			is:
-				biometric:
-					enabled:
-					+ blockchain.session.state.preference.value
-					+ blockchain.session.state.shared.value
+						+ blockchain.session.configuration.value
+			customer:
+				support:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+			debug:
+				observers:
+				+ blockchain.db.type.array.of.tags
+				+ blockchain.session.configuration.value
+			deep_link:
+				rules:
+				+ blockchain.session.configuration.value
+			frequent:
+				action:
+				+ blockchain.db.type.any
+				+ blockchain.session.configuration.value
+			manual:
+				login:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+			native:
+				bitcoin:
+					transaction:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+				wallet:
+					payload:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			redesign:
 				coinview:
 				+ blockchain.db.type.boolean
@@ -32,9 +67,26 @@ blockchain:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.preference.value
 					+ blockchain.session.state.shared.value
-			wallet:
-				options:
-				+ blockchain.session.configuration.value
+			request:
+				console:
+					logging:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
+			tabs:
+			+ blockchain.db.type.array.of.tags
+			+ blockchain.session.configuration.value
+			test:
+				shared:
+					preference:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.preference.value
+					+ blockchain.session.state.shared.value
+			unified:
+				sign_in:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 		deep_link:
 			activity:
 				transaction:
@@ -309,6 +361,11 @@ blockchain:
 			+ blockchain.db.type.string
 			last:
 			+ blockchain.db.type.string
+		token:
+			firebase:
+				installation:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 		wallet:
 		+ blockchain.db.collection
 			is:
@@ -431,6 +488,9 @@ blockchain:
 			+ blockchain.db.collection
 				select:
 				+ blockchain.ux.type.action
+		maintenance:
+		+ blockchain.db.collection
+		+ blockchain.ux.type.story
 		payment:
 			method:
 				open:
@@ -620,3 +680,8 @@ blockchain:
 			+ blockchain.ux.type.story
 			portfolio:
 			+ blockchain.ux.type.story
+			rewards:
+			+ blockchain.ux.type.story
+		web:
+		+ blockchain.db.collection
+		+ blockchain.ux.type.story

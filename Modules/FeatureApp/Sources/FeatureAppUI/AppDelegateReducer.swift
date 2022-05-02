@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -7,6 +8,7 @@ import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
+import ObservabilityDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -22,12 +24,16 @@ public struct AppDelegateContext: Equatable {
     let intercomApiKey: String
     let intercomAppId: String
 
+    let embraceAppId: String
+
     public init(
         intercomApiKey: String,
-        intercomAppId: String
+        intercomAppId: String,
+        embraceAppId: String
     ) {
         self.intercomApiKey = intercomApiKey
         self.intercomAppId = intercomAppId
+        self.embraceAppId = embraceAppId
     }
 }
 
@@ -65,6 +71,7 @@ extension AppDelegateAction {
 
 /// Holds the dependencies
 struct AppDelegateEnvironment {
+    var app: AppProtocol
     var appSettings: BlockchainSettings.App
     var onboardingSettings: OnboardingSettingsAPI
     var cacheSuite: CacheSuite
@@ -78,6 +85,7 @@ struct AppDelegateEnvironment {
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
+    var observabilityService: ObservabilityServiceAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -114,7 +122,13 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
-                .refreshERC20AssetsCache()
+                .refreshEthereumERC20AssetsCache()
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .fireAndForget(),
+
+            environment.supportedAssetsRemoteService
+                .refreshPolygonERC20AssetsCache()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
@@ -131,7 +145,14 @@ let appDelegateReducer = Reducer<
                 appId: context.intercomAppId
             ),
 
-            environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
+            initializeObservability(
+                using: environment.observabilityService,
+                appId: context.embraceAppId
+            ),
+
+            environment.app.publisher(for: blockchain.app.configuration.SSL.pinning.is.enabled, as: Bool.self)
+                .prefix(1)
+                .replaceError(with: true)
                 .filter { $0 }
                 .map(.applyCertificatePinning)
                 .eraseToEffect(),
@@ -221,6 +242,15 @@ private func initializeCustomerChatSupport(
 ) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.initializeWithAcccountKey(apiKey, appId: appId)
+    }
+}
+
+private func initializeObservability(
+    using service: ObservabilityServiceAPI,
+    appId: String
+) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        service.start(with: appId)
     }
 }
 

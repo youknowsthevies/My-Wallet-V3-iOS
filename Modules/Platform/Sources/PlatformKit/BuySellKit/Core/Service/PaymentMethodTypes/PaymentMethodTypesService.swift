@@ -224,7 +224,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     .map(\.isTier2Approved)
                     .mapError(PaymentMethodTypesServiceError.other),
                 featureFlagsService
-                    .isEnabled(.remote(.openBanking))
+                    .isEnabled(.openBanking)
                     .mapError(PaymentMethodTypesServiceError.other)
             )
             .flatMap { [methodTypes] fiatCurrency, isTier2Approved, isOpenBankingEnabled in

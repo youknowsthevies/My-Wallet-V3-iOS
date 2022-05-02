@@ -33,7 +33,7 @@ public protocol BlockchainAccount: Account {
     var pendingBalance: Single<MoneyValue> { get }
 
     /// Emits `Set` containing all actions this account can execute.
-    var actions: Single<AvailableActions> { get }
+    var actions: AnyPublisher<AvailableActions, Error> { get }
 
     var activity: Single<[ActivityItemEvent]> { get }
 
@@ -42,6 +42,12 @@ public protocol BlockchainAccount: Account {
     /// Depending of the account implementation, this may not strictly mean a positive balance.
     /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
     var isFunded: Single<Bool> { get }
+
+    /// Indicates if this account is funded.
+    ///
+    /// Depending of the account implementation, this may not strictly mean a positive balance.
+    /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
+    var isFundedPublisher: AnyPublisher<Bool, Error> { get }
 
     /// The reason why the BlockchainAccount is ineligible for Interest.
     /// This will be `.eligible` if the account is eligible
@@ -68,10 +74,14 @@ public protocol BlockchainAccount: Account {
     func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error>
 
     /// Checks if this account can execute the given action.
-    func can(perform action: AssetAction) -> Single<Bool>
+    ///
+    /// You should implement this method so it consumes the lesser amount of remote resources as possible.
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error>
 
     /// The `ReceiveAddress` for the given account
     var receiveAddress: Single<ReceiveAddress> { get }
+
+    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> { get }
 
     /// The balance, not including uncleared and locked,
     /// that the user is able to utilize in a transaction
@@ -83,32 +93,45 @@ public protocol BlockchainAccount: Account {
 
 extension BlockchainAccount {
 
+    /// The `ReceiveAddress` for the given account
+    public var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
+        receiveAddress.asPublisher()
+            .eraseToAnyPublisher()
+    }
+
     public var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balance.asPublisher()
             .eraseToAnyPublisher()
     }
 
-    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
-        let single: Single<Bool> = can(perform: action)
-        return single.asPublisher()
+    public var isFunded: Single<Bool> {
+        balance.map(\.isPositive)
+    }
+
+    /// Account balance is positive.
+    public var isFundedPublisher: AnyPublisher<Bool, Error> {
+        balancePublisher.map(\.isPositive)
             .eraseToAnyPublisher()
     }
 
-    public func actionsPublisher() -> AnyPublisher<[AssetAction], Error> {
+    public var actions: AnyPublisher<AvailableActions, Error> {
         AssetAction.allCases
             .map { action in
-                can(perform: action).map { value in (action: action, perform: value) }
+                can(perform: action)
+                    .map { canPerform in
+                        (action: action, canPerform: canPerform)
+                    }
             }
             .merge()
             .collect()
             .map { actions -> [AssetAction] in
-                actions.filter(\.perform).map(\.action)
+                actions
+                    .filter(\.canPerform)
+                    .map(\.action)
             }
+            .map(AvailableActions.init)
             .eraseToAnyPublisher()
     }
-}
-
-extension BlockchainAccount {
 
     public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         .just(.eligible)

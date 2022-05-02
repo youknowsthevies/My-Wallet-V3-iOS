@@ -1,3 +1,4 @@
+import BlockchainNamespace
 import Combine
 import FeatureCardPaymentDomain
 import PassKit
@@ -6,17 +7,20 @@ import ToolKit
 
 final class ApplePayAdapter: ApplePayEligibleServiceAPI {
 
+    private let app: AppProtocol
     private let eligibleMethodsClient: PaymentEligibleMethodsClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let tiersService: KYCTiersServiceAPI
 
     init(
+        app: AppProtocol,
         fiatCurrencyService: FiatCurrencyServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         eligibleMethodsClient: PaymentEligibleMethodsClientAPI,
         tiersService: KYCTiersServiceAPI
     ) {
+        self.app = app
         self.fiatCurrencyService = fiatCurrencyService
         self.featureFlagsService = featureFlagsService
         self.tiersService = tiersService
@@ -28,12 +32,9 @@ final class ApplePayAdapter: ApplePayEligibleServiceAPI {
             return .just(false)
         }
 
-        return Publishers
-            .Zip(
-                featureFlagsService.isEnabled(.local(.applePay)),
-                featureFlagsService.isEnabled(.remote(.applePay))
-            )
-            .map { $0 || $1 }
+        return app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
+            .prefix(1)
+            .replaceError(with: false)
             .eraseToAnyPublisher()
     }
 

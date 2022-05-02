@@ -123,8 +123,15 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
                 feeForFullAvailable: .zero(currency: sourceAsset),
                 feeSelection: .empty(asset: sourceAsset),
                 selectedFiatCurrency: fiatCurrency,
-                minimumLimit: minimum,
-                maximumLimit: maximum
+                limits: .init(
+                    currencyType: minimum.currencyType,
+                    minimum: minimum,
+                    maximum: maximum,
+                    maximumDaily: nil,
+                    maximumAnnual: nil,
+                    effectiveLimit: nil,
+                    suggestedUpgrade: nil
+                )
             )
         }
     }

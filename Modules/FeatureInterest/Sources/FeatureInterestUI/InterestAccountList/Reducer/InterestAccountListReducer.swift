@@ -66,6 +66,9 @@ let interestAccountListReducer = Reducer.combine(
             return .none
 
         case .setupInterestAccountListScreen:
+            if state.loadingStatus == .loaded {
+                return .none
+            }
             state.loadingStatus = .fetchingAccountStatus
             return environment
                 .kycVerificationService

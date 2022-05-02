@@ -35,7 +35,7 @@ public struct GraphView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .onAppear {
-                            viewStore.send(.request(.week))
+                            viewStore.send(.onAppear(context))
                         }
                         .padding([.leading, .trailing])
                     Spacer()
@@ -128,11 +128,11 @@ public struct GraphView: View {
                 Spacer()
                 PrimarySegmentedControl(
                     items: [
-                        PrimarySegmentedControl.Item(title: Localization.TimePeriod.day, identifier: .day),
-                        PrimarySegmentedControl.Item(title: Localization.TimePeriod.week, identifier: .week),
-                        PrimarySegmentedControl.Item(title: Localization.TimePeriod.month, identifier: .month),
-                        PrimarySegmentedControl.Item(title: Localization.TimePeriod.year, identifier: .year),
-                        PrimarySegmentedControl.Item(title: Localization.TimePeriod.all, identifier: .all)
+                        PrimarySegmentedControl.Item(title: "1D", identifier: .day),
+                        PrimarySegmentedControl.Item(title: "1W", identifier: .week),
+                        PrimarySegmentedControl.Item(title: "1M", identifier: .month),
+                        PrimarySegmentedControl.Item(title: "1Y", identifier: .year),
+                        PrimarySegmentedControl.Item(title: "ALL", identifier: .all)
                     ],
                     selection: Binding(
                         get: { viewStore.interval },

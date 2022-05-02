@@ -46,17 +46,20 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
         transactionTarget as! EthereumRawTransactionTarget
     }
 
-    private let sendingService: EthereumTransactionSendingServiceAPI
     private let feeService: EthereumFeeServiceAPI
+    private let network: EVMNetwork
+    private let sendingService: EthereumTransactionSendingServiceAPI
 
     init(
-        sendingService: EthereumTransactionSendingServiceAPI = resolve(),
-        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        network: EVMNetwork,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        feeService: EthereumFeeServiceAPI = resolve()
+        feeService: EthereumFeeServiceAPI = resolve(),
+        sendingService: EthereumTransactionSendingServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.currencyConversionService = currencyConversionService
         self.feeService = feeService
+        self.network = network
         self.sendingService = sendingService
         self.walletCurrencyService = walletCurrencyService
     }
@@ -153,7 +156,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
             encodedTransaction: walletConnectTarget.rawTransaction
         )
         return sendingService
-            .send(transaction: encodedTransaction)
+            .send(transaction: encodedTransaction, network: network)
             .map(\.transactionHash)
             .map { transactionHash -> TransactionResult in
                 .hashed(txHash: transactionHash, amount: pendingTransaction.amount)

@@ -20,9 +20,14 @@ enum EthereumAddressFactoryError: Error {
 final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let network: EVMNetwork
 
-    init(enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
+    init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        network: EVMNetwork
+    ) {
         self.enabledCurrenciesService = enabledCurrenciesService
+        self.network = network
     }
 
     func makeExternalAssetAddress(
@@ -56,6 +61,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // Creates BIP21URI from url.
         guard let eip681URI = EIP681URI(
             url: address,
+            network: network,
             enabledCurrenciesService: enabledCurrenciesService
         ) else {
             return .failure(.invalidAddress)
@@ -64,7 +70,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         guard Self.validate(address: eip681URI.address) else {
             return .failure(.invalidAddress)
         }
-        guard eip681URI.cryptoCurrency == .ethereum else {
+        guard eip681URI.cryptoCurrency == network.cryptoCurrency else {
             return .failure(.wrongAsset)
         }
         // Creates BitcoinChainReceiveAddress from 'BIP21URI'.
@@ -95,6 +101,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         guard let receiveAddress = EthereumReceiveAddress(
             address: address,
             label: replaceLabel ? address : label,
+            network: network,
             onTxCompleted: onTxCompleted
         ) else {
             return .failure(.invalidAddress)

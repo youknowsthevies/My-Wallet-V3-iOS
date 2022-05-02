@@ -3,12 +3,17 @@
 import FeatureOpenBankingDomain
 import Localization
 import MoneyKit
+import ToolKit
 
 public struct LinkedBankData {
-    public enum Partner: String {
-        case yodlee = "YODLEE"
-        case yapily = "YAPILY"
-        case none = "NONE"
+    public struct Partner: NewTypeString {
+        public let value: String
+        public init(_ value: String) { self.value = value }
+
+        public static let yodlee: Self = "YODLEE"
+        public static let yapily: Self = "YAPILY"
+        public static let plaid: Self = "PLAID"
+        public static let none: Self = "NONE"
     }
 
     public struct Account {
@@ -63,10 +68,7 @@ public struct LinkedBankData {
         errorCode = response.errorCode
         entity = response.attributes?.entity
         paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
-        guard let partner = Partner(rawValue: response.partner) else {
-            return nil
-        }
-        self.partner = partner
+        partner = Partner(response.partner)
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
@@ -93,7 +95,7 @@ extension OpenBanking.BankAccount {
     public init(_ linkedBankData: LinkedBankData) {
         self.init(
             id: .init(linkedBankData.identifier),
-            partner: linkedBankData.partner.rawValue,
+            partner: linkedBankData.partner.value,
             state: .init(linkedBankData.state.rawValue),
             currency: linkedBankData.currency.code,
             details: .init(

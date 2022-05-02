@@ -23,7 +23,7 @@ import UIKit
 /// # Figma
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
-public struct Icon: View, Hashable {
+public struct Icon: View, Hashable, Codable {
 
     public let name: String
 
@@ -78,6 +78,24 @@ public struct Icon: View, Hashable {
             .renderingMode(renderingMode)
             .resizable()
             .scaledToFit()
+    }
+
+    enum Key: String, CodingKey {
+        case name, circle
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Key.self)
+        name = try container.decode(String.self, forKey: .name)
+        circle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
+        renderingMode = .template
+        circleColor = .accentColor.opacity(0.15)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(circle, forKey: .circle)
     }
 }
 

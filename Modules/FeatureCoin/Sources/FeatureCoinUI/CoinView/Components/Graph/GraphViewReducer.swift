@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import ComposableArchitecture
+import ComposableArchitectureExtensions
+import FeatureCoinDomain
 
 public let graphViewReducer = Reducer<
     GraphViewState,
@@ -9,6 +12,13 @@ public let graphViewReducer = Reducer<
 > { state, action, environment in
     struct FetchID: Hashable {}
     switch action {
+    case .onAppear(let context):
+        let series = (
+            environment.app.state
+                .result(for: blockchain.ux.asset.chart.interval[].ref(to: context))
+                .value as? Series
+        ) ?? state.interval
+        return Effect(value: .request(series, force: true))
     case .request(let interval, let force):
         guard force || interval != state.interval else {
             return .none

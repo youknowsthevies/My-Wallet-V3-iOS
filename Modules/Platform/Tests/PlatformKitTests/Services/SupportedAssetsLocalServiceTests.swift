@@ -27,25 +27,25 @@ final class SupportedAssetsServiceTests: XCTestCase {
     }
 
     func testDecodesFromRemoteFile() {
-        fileProviderMock.remoteERC20Assets = createValidFile()
-        XCTAssertNoThrow(try sut.erc20Assets.get())
+        fileProviderMock.remoteEthereumERC20Assets = createValidFile()
+        XCTAssertNoThrow(try sut.ethereumERC20Assets.get())
     }
 
     func testDecodesFromLocalFileIfRemoteMissing() {
-        fileProviderMock.localERC20Assets = createValidFile()
-        XCTAssertNoThrow(try sut.erc20Assets.get())
+        fileProviderMock.localEthereumERC20Assets = createValidFile()
+        XCTAssertNoThrow(try sut.ethereumERC20Assets.get())
     }
 
     func testDecodesFromLocalFileIfRemoteMalformed() {
-        fileProviderMock.remoteERC20Assets = createEmptyFile()
-        fileProviderMock.localERC20Assets = createValidFile()
-        XCTAssertNoThrow(try sut.erc20Assets.get())
+        fileProviderMock.remoteEthereumERC20Assets = createEmptyFile()
+        fileProviderMock.localEthereumERC20Assets = createValidFile()
+        XCTAssertNoThrow(try sut.ethereumERC20Assets.get())
     }
 
     func testThrowsIfRemoteMalformedAndLocalIsMalformed() {
-        fileProviderMock.remoteERC20Assets = createEmptyFile()
-        fileProviderMock.localERC20Assets = createEmptyFile()
-        XCTAssertThrowsError(try sut.erc20Assets.get()) { error in
+        fileProviderMock.remoteEthereumERC20Assets = createEmptyFile()
+        fileProviderMock.localEthereumERC20Assets = createEmptyFile()
+        XCTAssertThrowsError(try sut.ethereumERC20Assets.get()) { error in
             switch error {
             case SupportedAssetsLocalError.decodingFailed:
                 break
@@ -56,8 +56,8 @@ final class SupportedAssetsServiceTests: XCTestCase {
     }
 
     func testThrowsIfRemoteMissingAndLocalIsMalformed() {
-        fileProviderMock.localERC20Assets = createEmptyFile()
-        XCTAssertThrowsError(try sut.erc20Assets.get()) { error in
+        fileProviderMock.localEthereumERC20Assets = createEmptyFile()
+        XCTAssertThrowsError(try sut.ethereumERC20Assets.get()) { error in
             switch error {
             case SupportedAssetsLocalError.decodingFailed:
                 break
@@ -68,7 +68,7 @@ final class SupportedAssetsServiceTests: XCTestCase {
     }
 
     func testThrowsIfRemoteAndLocalAreMissing() {
-        XCTAssertThrowsError(try sut.erc20Assets.get()) { error in
+        XCTAssertThrowsError(try sut.ethereumERC20Assets.get()) { error in
             switch error {
             case SupportedAssetsLocalError.missingLocalFile:
                 break

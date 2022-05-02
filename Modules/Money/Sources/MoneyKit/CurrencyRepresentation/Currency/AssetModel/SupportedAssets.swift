@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import ToolKit
 
 /// A list of supported assets.
 struct SupportedAssets {

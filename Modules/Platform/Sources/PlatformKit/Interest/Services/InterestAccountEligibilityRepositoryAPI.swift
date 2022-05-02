@@ -5,10 +5,6 @@ import MoneyKit
 
 public protocol InterestAccountEligibilityRepositoryAPI {
 
-    /// Fetches all interest eligible currencies
-    func fetchAllInterestEnabledCurrencies()
-        -> AnyPublisher<[CurrencyType], InterestAccountEligibilityError>
-
     /// Fetches all `InterestAccountEligibility` objects.
     func fetchAllInterestAccountEligibility()
         -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
@@ -17,6 +13,6 @@ public protocol InterestAccountEligibilityRepositoryAPI {
     /// currency code.
     /// - Parameter code: A currency code
     func fetchInterestAccountEligibilityForCurrencyCode(
-        _ code: String
+        _ currency: CurrencyType
     ) -> AnyPublisher<InterestAccountEligibility, InterestAccountEligibilityError>
 }

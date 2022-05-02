@@ -79,7 +79,12 @@ extension DependencyContainer {
 
         single { EmailVerificationService() as EmailVerificationServiceAPI }
 
-        single { SwapActivityService() as SwapActivityServiceAPI }
+        single {
+            SwapActivityService(
+                client: DIKit.resolve(),
+                fiatCurrencyProvider: DIKit.resolve()
+            ) as SwapActivityServiceAPI
+        }
 
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
 
@@ -172,6 +177,11 @@ extension DependencyContainer {
         factory { () -> SupportedPairsClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as SupportedPairsClientAPI
+        }
+
+        factory { () -> TradingPairsClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as TradingPairsClientAPI
         }
 
         factory { () -> BeneficiariesClientAPI in
@@ -285,6 +295,8 @@ extension DependencyContainer {
         factory { PaymentAccountService() as PaymentAccountServiceAPI }
 
         single { SupportedPairsInteractorService() as SupportedPairsInteractorServiceAPI }
+
+        single { TradingPairsService() as TradingPairsServiceAPI }
 
         factory { SupportedPairsService() as SupportedPairsServiceAPI }
 

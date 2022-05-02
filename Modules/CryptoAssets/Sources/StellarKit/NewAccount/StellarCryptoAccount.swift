@@ -36,52 +36,33 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var actions: Single<AvailableActions> {
-        Single.zip(
-            isFunded,
-            isInterestTransferAvailable.asSingle()
-        )
-        .map { isFunded, isInterestEnabled -> AvailableActions in
-            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-            if isFunded {
-                base.insert(.swap)
-                base.insert(.sell)
-                if isInterestEnabled {
-                    base.insert(.interestTransfer)
-                }
-            }
-            return base
-        }
-    }
-
     var receiveAddress: Single<ReceiveAddress> {
         .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 
     var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity, swapActivity)
+        Single.zip(nonCustodialActivity, swapActivity.asSingle())
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
-        Single.zip(
-            canPerformInterestTransfer(),
-            isInterestWithdrawAndDepositEnabled
-                .asSingle()
-        )
-        .map { $0.0 && $0.1 }
-        .asPublisher()
-        .replaceError(with: false)
-        .eraseToAnyPublisher()
+        guard asset.supports(product: .interestBalance) else {
+            return .just(false)
+        }
+        return isInterestWithdrawAndDepositEnabled
+            .zip(canPerformInterestTransfer)
+            .map { isEnabled, canPerform in
+                isEnabled && canPerform
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
         featureFlagsService
-            .isEnabled(
-                .remote(.interestWithdrawAndDeposit)
-            )
+            .isEnabled(.interestWithdrawAndDeposit)
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }
@@ -96,10 +77,11 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             .catchAndReturn([])
     }
 
-    private var swapActivity: Single<[SwapActivityItemEvent]> {
+    private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     private let featureFlagsService: FeatureFlagsServiceAPI
@@ -145,28 +127,26 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .receive,
              .send,
-             .viewActivity,
-             .buy:
+             .buy,
+             .viewActivity:
             return .just(true)
-        case .interestTransfer:
-            return isInterestTransferAvailable
-                .asSingle()
-                .flatMap { [isFunded] isEnabled in
-                    isEnabled ? isFunded : .just(false)
-                }
         case .deposit,
              .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)
-        case .sell:
-            return isFunded
-        case .swap:
-            return isFunded
+        case .interestTransfer:
+            return isInterestTransferAvailable
+                .flatMap { [isFundedPublisher] isEnabled in
+                    isEnabled ? isFundedPublisher : .just(false)
+                }
+                .eraseToAnyPublisher()
+        case .sell, .swap:
+            return isFundedPublisher
         }
     }
 

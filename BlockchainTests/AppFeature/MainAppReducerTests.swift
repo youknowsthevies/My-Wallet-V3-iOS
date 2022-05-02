@@ -270,9 +270,6 @@ final class MainAppReducerTests: XCTestCase {
         }
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
-        testStore.receive(.onboarding(.welcomeScreen(.setManualPairingEnabled))) { state in
-            state.onboarding?.welcomeState?.manualPairingEnabled = true
-        }
         testStore.send(.onboarding(.welcomeScreen(.enter(into: .manualLogin)))) { state in
             state.onboarding?.welcomeState?.route = RouteIntent(route: .manualLogin, action: .enterInto())
             state.onboarding?.welcomeState?.manualCredentialsState = .init()
@@ -653,7 +650,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_session_mismatch_deeplink_show_show_authorization() {
-        mockFeatureFlagsService.enable(.remote(.pollingForEmailLogin))
+        mockFeatureFlagsService.enable(.pollingForEmailLogin)
             .subscribe().store(in: &cancellables)
         mockDeviceVerificationService.expectedSessionMismatch = true
         let requestInfo = LoginRequestInfo(

@@ -18,7 +18,7 @@ final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI, PlatformKit
 
     private var sift: AnyPublisher<Sift?, Never> {
         featureFetcher
-            .isEnabled(.remote(.siftScienceEnabled))
+            .isEnabled(.siftScienceEnabled)
             .map { isEnabled in
                 isEnabled ? Sift.sharedInstance() : nil
             }

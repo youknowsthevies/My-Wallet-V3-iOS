@@ -15,6 +15,7 @@ import UIKit
 /// Acts as a container for Pin screen and Login screen
 final class OnboardingHostingController: UIViewController {
 
+    let app: AppProtocol
     let store: Store<Onboarding.State, Onboarding.Action>
     let viewStore: ViewStore<Onboarding.State, Onboarding.Action>
 
@@ -29,11 +30,13 @@ final class OnboardingHostingController: UIViewController {
     private var recoverWalletNavigationController: UINavigationController?
 
     init(
+        app: AppProtocol = resolve(),
         store: Store<Onboarding.State, Onboarding.Action>,
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         webViewService: WebViewServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
     ) {
+        self.app = app
         self.store = store
         viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
@@ -120,6 +123,7 @@ final class OnboardingHostingController: UIViewController {
                 .primaryNavigation()
                 .navigationBarHidden(true)
         }
+        .app(app)
     }
 
     @ViewBuilder

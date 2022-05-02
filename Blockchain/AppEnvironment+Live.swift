@@ -34,7 +34,6 @@ extension AppEnvironment {
             userService: resolve(),
             deviceVerificationService: resolve(),
             featureFlagsService: resolve(),
-            internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
             supportedAssetsRemoteService: resolve(),
             sharedContainer: .default,
@@ -62,7 +61,8 @@ extension AppEnvironment {
             appStoreOpener: resolve(),
             secondPasswordPrompter: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber,
-            externalAppOpener: resolve()
+            externalAppOpener: resolve(),
+            observabilityService: resolve()
         )
     }
 }

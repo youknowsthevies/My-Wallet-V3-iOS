@@ -117,17 +117,21 @@ extension AccountGroup {
         accounts.forEach { $0.invalidateAccountBalance() }
     }
 
-    public var actions: Single<AvailableActions> {
-        Single.zip(accounts.map(\.actions))
+    public var actions: AnyPublisher<AvailableActions, Error> {
+        accounts
+            .map(\.actions)
+            .zip()
             .map { actions -> AvailableActions in
                 actions.reduce(into: AvailableActions()) { $0.formUnion($1) }
             }
+            .eraseToAnyPublisher()
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
-        Single
-            .just(accounts.map { $0.can(perform: action) })
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
+        accounts
+            .map { $0.can(perform: action) }
             .flatMapConcatFirst()
+            .eraseToAnyPublisher()
     }
 }
 

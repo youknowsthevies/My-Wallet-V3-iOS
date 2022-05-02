@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -72,6 +73,7 @@ public struct WelcomeState: Equatable, NavigationState {
 }
 
 public struct WelcomeEnvironment {
+    let app: AppProtocol
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let passwordValidator: PasswordValidatorAPI
     let sessionTokenService: SessionTokenServiceAPI
@@ -88,6 +90,7 @@ public struct WelcomeEnvironment {
     let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
+        app: AppProtocol,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         passwordValidator: PasswordValidatorAPI = resolve(),
         sessionTokenService: SessionTokenServiceAPI = resolve(),
@@ -103,6 +106,7 @@ public struct WelcomeEnvironment {
         accountRecoveryService: AccountRecoveryServiceAPI = DIKit.resolve(),
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
+        self.app = app
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator
         self.sessionTokenService = sessionTokenService
@@ -145,6 +149,7 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.emailLogin,
             environment: {
                 EmailLoginEnvironment(
+                    app: $0.app,
                     mainQueue: $0.mainQueue,
                     sessionTokenService: $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
@@ -227,11 +232,12 @@ public let welcomeReducer = Reducer.combine(
         case .start:
             state.buildVersion = environment.buildVersionProvider()
             if BuildFlag.isInternal {
-                return environment
-                    .featureFlagsService
-                    .isEnabled(.local(.disableGUIDLogin))
+                return environment.app
+                    .publisher(for: blockchain.app.configuration.manual.login.is.enabled, as: Bool.self)
+                    .prefix(1)
+                    .replaceError(with: false)
                     .flatMap { isEnabled -> Effect<WelcomeAction, Never> in
-                        guard !isEnabled else {
+                        guard isEnabled else {
                             return .none
                         }
                         return Effect(value: .setManualPairingEnabled)

@@ -13,6 +13,7 @@ import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
+import ObservabilityDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -49,6 +50,7 @@ public struct AppEnvironment {
     var crashlyticsRecorder: Recording
     var openBanking: OpenBanking
     var cardService: CardServiceAPI
+    var observabilityService: ObservabilityServiceAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -72,9 +74,6 @@ public struct AppEnvironment {
     var buildVersionProvider: () -> String
     var externalAppOpener: ExternalAppOpener
 
-    @available(*, deprecated, message: "Use featureFlagsService instead")
-    var internalFeatureService: InternalFeatureFlagServiceAPI
-
     public init(
         app: AppProtocol,
         nabuUserService: NabuUserServiceAPI,
@@ -97,7 +96,6 @@ public struct AppEnvironment {
         userService: NabuUserServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
-        internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
         supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
@@ -122,7 +120,8 @@ public struct AppEnvironment {
         appStoreOpener: AppStoreOpening,
         secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String,
-        externalAppOpener: ExternalAppOpener
+        externalAppOpener: ExternalAppOpener,
+        observabilityService: ObservabilityServiceAPI
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
@@ -145,7 +144,6 @@ public struct AppEnvironment {
         self.userService = userService
         self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
-        self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.supportedAssetsRemoteService = supportedAssetsRemoteService
         self.sharedContainer = sharedContainer
@@ -171,5 +169,6 @@ public struct AppEnvironment {
         self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
         self.externalAppOpener = externalAppOpener
+        self.observabilityService = observabilityService
     }
 }

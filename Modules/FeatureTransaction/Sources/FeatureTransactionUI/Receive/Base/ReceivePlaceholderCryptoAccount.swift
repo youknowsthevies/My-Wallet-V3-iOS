@@ -26,10 +26,6 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just(.zero(currency: asset))
     }
 
-    var actions: Single<AvailableActions> {
-        .just([])
-    }
-
     var activity: Single<[ActivityItemEvent]> {
         .just([])
     }
@@ -42,7 +38,7 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just(.zero(baseCurrency: asset.currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         .just(true)
     }
 

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -8,6 +9,8 @@ import RIBs
 import RxRelay
 import RxSwift
 import ToolKit
+
+// swiftlint:disable file_length
 
 enum TransitionType: Equatable {
     case push
@@ -151,6 +154,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let analyticsHook: TransactionAnalyticsHook
     private let messageRecorder: MessageRecording
 
+    private var cancellables = Set<AnyCancellable>()
+
     init(
         transactionModel: TransactionModel,
         action: AssetAction,
@@ -247,6 +252,13 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     self?.finishFlow()
                 }
             )
+            .disposeOnDeactivate(interactor: self)
+
+        transactionModel.state
+            .filter { $0.executionStatus == .error }
+            .subscribe(onNext: { [analyticsHook] transactionState in
+                analyticsHook.onTransactionFailure(with: transactionState)
+            })
             .disposeOnDeactivate(interactor: self)
     }
 
@@ -667,7 +679,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             }
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
-        case .funds, .applePay:
+        case .funds:
+            transactionModel.process(action: .showBankWiringInstructions)
+        case .applePay:
             // Nothing to link, move on to the next step
             transactionModel.process(action: .prepareTransaction)
         }

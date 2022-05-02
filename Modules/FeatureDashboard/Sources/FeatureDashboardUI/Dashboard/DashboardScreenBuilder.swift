@@ -10,18 +10,15 @@ public final class DashboardScreenBuilder {
 
     private let drawerRouter: DrawerRouting
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let qrCodeScannerRouter: QRCodeScannerRouting
 
     public init(
         drawerRouter: DrawerRouting = resolve(),
         fiatBalanceCellProvider: FiatBalanceCellProviding = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         qrCodeScannerRouter: QRCodeScannerRouting = resolve()
     ) {
         self.drawerRouter = drawerRouter
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
-        self.internalFeatureFlagService = internalFeatureFlagService
         self.qrCodeScannerRouter = qrCodeScannerRouter
     }
 

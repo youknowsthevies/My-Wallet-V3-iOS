@@ -17,7 +17,7 @@ struct TotalBalanceView<Trailing: View>: View {
 
     var body: some View {
         BalanceSectionHeader(
-            header: Localization.totalBalance.interpolating(currency.code),
+            header: Localization.totalBalance.interpolating(currency.displayCode),
             title: accounts.fiatBalance?.displayString ?? 6.of(".").joined(),
             subtitle: accounts.cryptoBalance?.displayString ?? 10.of(".").joined(),
             trailing: trailing

@@ -1,15 +1,31 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureNFTDomain
+import Foundation
 import NabuNetworkError
 import NetworkKit
 import ToolKit
 
-final class APIClient {
+public protocol FeatureNFTClientAPI {
+    func fetchAssetsFromEthereumAddress(
+        _ address: String
+    ) -> AnyPublisher<[AssetResponse], NabuNetworkError>
+}
 
-    private enum Path {}
+public final class APIClient: FeatureNFTClientAPI {
 
-    private enum Parameter {}
+    private enum Path {
+        static let assets = [
+            "explorer-gateway",
+            "nft",
+            "assets"
+        ]
+    }
+
+    private enum Parameter {
+        static let owner = "owner"
+    }
 
     // MARK: - Private Properties
 
@@ -18,11 +34,30 @@ final class APIClient {
 
     // MARK: - Setup
 
-    init(
+    public init(
         networkAdapter: NetworkAdapterAPI,
         requestBuilder: RequestBuilder
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
+    }
+
+    // MARK: - FeatureNFTClientAPI
+
+    public func fetchAssetsFromEthereumAddress(
+        _ address: String
+    ) -> AnyPublisher<[AssetResponse], NabuNetworkError> {
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.owner,
+                value: address
+            )
+        ]
+        let request = requestBuilder.post(
+            path: Path.assets,
+            parameters: parameters,
+            contentType: .json
+        )!
+        return networkAdapter.perform(request: request)
     }
 }

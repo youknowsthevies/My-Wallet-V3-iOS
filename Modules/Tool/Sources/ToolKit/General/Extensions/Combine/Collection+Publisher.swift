@@ -82,3 +82,25 @@ extension RandomAccessCollection where Element: Publisher {
     private var _2: Index { index(after: _1) }
     private var _3: Index { index(after: _2) }
 }
+
+extension RandomAccessCollection where Element: Publisher, Element.Output == Bool {
+
+    /// `FlatMap` all `Publisher`, creating a concatenated stream that returns `true` at first chance.
+    public func flatMapConcatFirst() -> AnyPublisher<Element.Output, Element.Failure> {
+        reduce(AnyPublisher<Element.Output, Element.Failure>.just(false)) { stream, thisPublisher in
+            stream
+                .flatMap { result -> AnyPublisher<Element.Output, Element.Failure> in
+                    switch result {
+                    case true:
+                        // If the stream result was true, return.
+                        return .just(true)
+                    case false:
+                        // Else, concatenate stream on the array.
+                        return thisPublisher
+                            .eraseToAnyPublisher()
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+}

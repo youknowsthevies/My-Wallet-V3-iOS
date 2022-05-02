@@ -24,28 +24,6 @@ extension Result {
     }
 }
 
-extension Result {
-    public var maybe: Maybe<Success> {
-        switch self {
-        case .success(let value):
-            return Maybe.just(value)
-        case .failure:
-            return Maybe.empty()
-        }
-    }
-}
-
-extension Result {
-    public var singleEvent: SingleEvent<Success> {
-        switch self {
-        case .success(let value):
-            return .success(value)
-        case .failure(let error):
-            return .error(error)
-        }
-    }
-}
-
 extension SingleEvent {
     public static func error(_ error: Failure) -> Self {
         .failure(error)

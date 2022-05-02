@@ -26,6 +26,11 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.34.0"
         ),
+        .package(
+            name: "Embrace",
+            url: "https://github.com/embrace-io/embrace-spm",
+            from: "5.7.7"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../CryptoAssets"),
         .package(path: "../FeatureDashboard"),
@@ -48,7 +53,8 @@ let package = Package(
         .package(path: "../Money"),
         .package(path: "../FeatureWalletConnect"),
         .package(path: "../BlockchainComponentLibrary"),
-        .package(path: "../FeatureCardIssuing")
+        .package(path: "../FeatureCardIssuing"),
+        .package(path: "../Observability")
     ],
     targets: [
         .target(
@@ -59,6 +65,7 @@ let package = Package(
                 .product(name: "BitcoinChainKit", package: "CryptoAssets"),
                 .product(name: "ERC20Kit", package: "CryptoAssets"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
+                .product(name: "Embrace", package: "Embrace"),
                 .product(name: "FeatureDebugUI", package: "FeatureDebug"),
                 .product(name: "FeatureDashboardUI", package: "FeatureDashboard"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
@@ -86,7 +93,8 @@ let package = Package(
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "FeatureCardIssuingUI", package: "FeatureCardIssuing"),
-                .product(name: "FeatureCardIssuingDomain", package: "FeatureCardIssuing")
+                .product(name: "FeatureCardIssuingDomain", package: "FeatureCardIssuing"),
+                .product(name: "ObservabilityDomain", package: "Observability")
             ]
         ),
         .target(

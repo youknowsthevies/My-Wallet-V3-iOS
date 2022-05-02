@@ -17,7 +17,7 @@ public final class InterestAccountListHostingController: UIViewController, Inter
 
     private let contentView: UIHostingController<InterestAccountListView>
 
-    public init() {
+    public init(embeddedInNavigationView: Bool) {
         contentView = UIHostingController(
             rootView: InterestAccountListView(
                 store: .init(
@@ -27,7 +27,8 @@ public final class InterestAccountListHostingController: UIViewController, Inter
                     ),
                     reducer: interestAccountListReducer,
                     environment: InterestAccountSelectionEnvironment.default
-                )
+                ),
+                embeddedInNavigationView: embeddedInNavigationView
             )
         )
         super.init(nibName: nil, bundle: nil)

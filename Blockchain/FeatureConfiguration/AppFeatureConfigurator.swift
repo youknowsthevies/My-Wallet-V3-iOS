@@ -38,14 +38,11 @@ extension AppFeatureConfigurator: FeatureFetching {
         for key: AppFeature,
         as type: Feature.Type
     ) -> AnyPublisher<Feature, FeatureFlagError> {
-        guard let keyRawValue = key.remoteEnabledKey else {
-            return .failure(.missingKeyRawValue)
-        }
-        return app.remoteConfiguration
-            .publisher(for: keyRawValue)
+        app.remoteConfiguration
+            .publisher(for: key.remoteEnabledKey)
             .prefix(1)
             .tryMap { data -> Feature in
-                try data.decode(as: Feature.self)
+                try data.decode(Feature.self)
             }
             .mapError(FeatureFlagError.decodingError)
             .timeout(

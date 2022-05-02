@@ -72,10 +72,6 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(currency: asset))
     }
 
-    public var actions: Single<AvailableActions> {
-        .just([])
-    }
-
     public var isFunded: Single<Bool> {
         .just(true)
     }
@@ -95,12 +91,12 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
-        .just(false)
-    }
-
     public func invalidateAccountBalance() {
         // NO-OP
+    }
+
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
+        .just(false)
     }
 
     public let featureFlagsService: FeatureFlagsServiceAPI

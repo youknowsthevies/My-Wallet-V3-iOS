@@ -9,8 +9,10 @@ import NetworkKit
 import ToolKit
 
 public protocol SendEmailNotificationServiceAPI {
+
     func postSendEmailNotificationTrigger(
-        _ moneyValue: MoneyValue
+        moneyValue: MoneyValue,
+        txHash: String
     ) -> AnyPublisher<Void, Never>
 }
 
@@ -31,16 +33,24 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
     }
 
     public func postSendEmailNotificationTrigger(
-        _ moneyValue: MoneyValue
+        moneyValue: MoneyValue,
+        txHash: String
     ) -> AnyPublisher<Void, Never> {
         credentialsRepository.credentials
             .ignoreFailure()
             .map { guid, sharedKey in
-                SendEmailNotificationClient.Payload(
+                let assetModel = moneyValue.currency.cryptoCurrency?.assetModel
+                let network = assetModel?.kind.erc20ParentChain?.rawValue ?? moneyValue.code
+                return SendEmailNotificationClient.Payload(
                     guid: guid,
                     sharedKey: sharedKey,
                     currency: moneyValue.code,
-                    amount: moneyValue.toDisplayString(includeSymbol: false)
+                    amount: moneyValue.toDisplayString(
+                        includeSymbol: false,
+                        locale: Locale.US // Locale is enforced to ensure the format of the amount.
+                    ),
+                    network: network,
+                    txHash: txHash
                 )
             }
             .flatMap { [client] payload in

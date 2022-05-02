@@ -349,7 +349,7 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            actionsPublisher: account.actionsPublisher()
+            actionsPublisher: account.actions
                 .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
                 .eraseToAnyPublisher(),
             cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),

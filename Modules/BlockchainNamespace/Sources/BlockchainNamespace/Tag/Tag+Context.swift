@@ -79,7 +79,7 @@ extension Tag.Context {
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
         try FetchResult.value(self[key] as Any, key.key.metadata())
-            .decode(as: T.self, decoder: decoder)
+            .decode(T.self, using: decoder)
             .get()
     }
 }
@@ -128,7 +128,10 @@ extension Tag: TaggedEvent {
 
 extension Tag.Reference: TaggedEvent {
     public var key: Tag.Reference { self }
-    public func key(_ context: Tag.Context) -> Tag.Reference { ref(to: context) }
+    public func key(_ context: Tag.Context) -> Tag.Reference {
+        if context.isEmpty { return self }
+        return ref(to: context)
+    }
 }
 
 extension TaggedEvent {

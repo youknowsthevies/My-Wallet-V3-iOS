@@ -34,10 +34,6 @@ extension SellTransactionEngine {
 
     // MARK: - TransactionEngine
 
-    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmount(pendingTransaction: pendingTransaction)
-    }
-
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
         .just(amount)
     }
@@ -135,6 +131,14 @@ extension SellTransactionEngine {
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
         pendingTransaction.quoteSubscription?.dispose()
         quotesEngine.stop()
+    }
+
+    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        defaultDoValidateAll(pendingTransaction: pendingTransaction)
+    }
+
+    func defaultDoValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmount(pendingTransaction: pendingTransaction)
     }
 
     // MARK: - Exchange Rates

@@ -315,7 +315,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         sendAuxiliaryViewInteractor
             .availableBalanceTapped
-            .withLatestFrom(spendable.map(\.max))
+            .withLatestFrom(spendable.map(\.cryptoMax))
             .subscribe(onNext: { [weak self] maxSpendable in
                 self?.amountViewInteractor.set(amount: maxSpendable)
             })
@@ -346,7 +346,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .combineLatest(
                 transactionState,
                 featureFlagService
-                    .isEnabled(.remote(.newLimitsUIEnabled))
+                    .isEnabled(.newLimitsUIEnabled)
                     .asObservable()
             )
 

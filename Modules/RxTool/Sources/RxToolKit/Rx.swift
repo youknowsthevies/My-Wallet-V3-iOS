@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 import RxSwift
 
 extension CompositeDisposable {
@@ -31,20 +30,5 @@ extension PrimitiveSequenceType where Trait == SingleTrait {
 
     public func mapToVoid() -> Single<Void> {
         map { _ in () }
-    }
-}
-
-extension Publisher {
-
-    public func asSingle() -> Single<Output> {
-        asObservable()
-            .take(1)
-            .asSingle()
-    }
-
-    public func asCompletable() -> Completable {
-        asObservable()
-            .ignoreElements()
-            .asCompletable()
     }
 }

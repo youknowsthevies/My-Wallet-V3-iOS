@@ -6,22 +6,10 @@ public class NoOpFeatureFlagsService: FeatureFlagsServiceAPI {
 
     public init() {}
 
-    public func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
-        .empty()
-    }
-
-    public func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
-        .empty()
-    }
-
-    public func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
-        .empty()
-    }
-
     public func object<Feature>(
-        for feature: FeatureFlag,
+        for feature: AppFeature,
         type: Feature.Type
-    ) -> AnyPublisher<Feature?, FeatureFlagError> where Feature: Decodable, Feature: Encodable {
+    ) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable, Feature: Encodable {
         .empty()
     }
 }

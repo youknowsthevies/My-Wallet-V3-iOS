@@ -4,12 +4,6 @@ import RxSwift
 
 extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
 
-    public func onErrorComplete() -> Completable {
-        `catch` { _ in
-            .empty()
-        }
-    }
-
     public static func fromCallable(_ callable: @escaping () throws -> Void) -> Completable {
         Completable.create { observer in
             do {

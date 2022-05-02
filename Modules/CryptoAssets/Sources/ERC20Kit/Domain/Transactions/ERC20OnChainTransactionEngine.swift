@@ -225,6 +225,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         let erc20CryptoAccount = erc20CryptoAccount
         let erc20Token = erc20Token
+        let network = erc20CryptoAccount.network
         let transactionBuildingService = transactionBuildingService
         let destinationAddresses = ethereumOnChainEngineCompanion
             .destinationAddresses(
@@ -260,7 +261,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                                 isContract: true
                             ),
                             nonce: nonce,
-                            chainID: erc20CryptoAccount.network.chainID,
+                            chainID: network.chainID,
                             contractAddress: erc20Token.contractAddress
                         ).publisher
                     }
@@ -269,7 +270,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher.send(
                     transaction: candidate,
-                    secondPassword: secondPassword
+                    secondPassword: secondPassword,
+                    network: network
                 )
             }
             .map(\.transactionHash)

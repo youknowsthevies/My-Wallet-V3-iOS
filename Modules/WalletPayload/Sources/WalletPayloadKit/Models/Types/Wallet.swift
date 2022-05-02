@@ -22,6 +22,10 @@ public struct NativeWallet: Equatable {
         hdWallets.first
     }
 
+    var isHDWallet: Bool {
+        !hdWallets.isEmpty
+    }
+
     var spendableActiveAddresses: [String] {
         addresses.lazy
             .filter { !$0.isArchived && !$0.isWatchOnly }

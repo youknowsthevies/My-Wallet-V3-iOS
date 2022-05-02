@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 @testable import ComposableNavigation
@@ -35,6 +36,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             initialState: .init(emailAddress: ""),
             reducer: verifyDeviceReducer,
             environment: .init(
+                app: App.test,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlagsService: mockFeatureFlagsService,
@@ -64,7 +66,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_on_appear_should_poll_wallet_info() {
-        mockFeatureFlagsService.enable(.remote(.pollingForEmailLogin))
+        mockFeatureFlagsService.enable(.pollingForEmailLogin)
             .subscribe().store(in: &cancellables)
         testStore.send(.onAppear)
         testStore.receive(.pollWalletInfo)

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import FeatureAuthenticationDomain
@@ -16,6 +17,7 @@ import XCTest
 
 class OnboardingReducerTests: XCTestCase {
 
+    var app: AppProtocol!
     var settingsApp: MockBlockchainSettingsApp!
     var mockCredentialsStore: CredentialsStoreAPIMock!
     var mockAlertPresenter: MockAlertViewPresenter!
@@ -33,6 +35,7 @@ class OnboardingReducerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
+        app = App.test
         settingsApp = MockBlockchainSettingsApp()
         mockCredentialsStore = CredentialsStoreAPIMock()
 
@@ -53,10 +56,11 @@ class OnboardingReducerTests: XCTestCase {
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         // disable the manual login
-        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: false)
     }
 
     override func tearDownWithError() throws {
+        app = nil
         settingsApp = nil
         mockCredentialsStore = nil
         mockAlertPresenter = nil
@@ -83,6 +87,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -116,6 +121,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -153,6 +159,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -186,6 +193,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -223,6 +231,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -260,6 +269,7 @@ class OnboardingReducerTests: XCTestCase {
             initialState: Onboarding.State(),
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
+                app: app,
                 appSettings: settingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,

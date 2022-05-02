@@ -11,8 +11,11 @@ struct WalletConnectEngineFactory: WalletConnectEngineFactoryAPI {
         switch target {
         case is EthereumSignMessageTarget:
             return WalletConnectSignMessageEngine()
-        case is EthereumSendTransactionTarget:
-            return WalletConnectTransactionEngine(requireSecondPassword: false)
+        case let target as EthereumSendTransactionTarget:
+            return WalletConnectTransactionEngine(
+                requireSecondPassword: false,
+                network: target.network
+            )
         default:
             fatalError("Transaction target '\(type(of: target))' not supported.")
         }

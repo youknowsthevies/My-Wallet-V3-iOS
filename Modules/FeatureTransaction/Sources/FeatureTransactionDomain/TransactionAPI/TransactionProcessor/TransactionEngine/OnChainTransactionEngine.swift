@@ -25,10 +25,19 @@ extension OnChainTransactionEngine {
     public func defaultAssertInputsValid() {
         switch transactionTarget {
         case let target as CryptoReceiveAddress:
-            precondition(!target.address.isEmpty)
-            precondition(sourceCryptoAccount.asset == target.asset)
+            precondition(
+                !target.address.isEmpty,
+                "Target address is empty."
+            )
+            precondition(
+                sourceCryptoAccount.asset == target.asset,
+                "Source asset '\(sourceCryptoAccount.asset.code)' is not equal to target asset '\(target.asset.code)'."
+            )
         case let target as CryptoAccount:
-            precondition(sourceCryptoAccount.asset == target.asset)
+            precondition(
+                sourceCryptoAccount.asset == target.asset,
+                "Source asset '\(sourceCryptoAccount.asset.code)' is not equal to target asset '\(target.asset.code)'."
+            )
         default:
             preconditionFailure(
                 "\(String(describing: transactionTarget)) is not CryptoReceiveAddress nor SingleAccount."

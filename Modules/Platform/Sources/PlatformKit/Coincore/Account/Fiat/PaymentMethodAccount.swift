@@ -60,11 +60,7 @@ public final class PaymentMethodAccount: FiatAccount {
         .just(paymentMethodType.balance)
     }
 
-    public var actions: Single<AvailableActions> {
-        .just([.buy])
-    }
-
-    public func can(perform action: AssetAction) -> Single<Bool> {
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error>{
         .just(action == .buy)
     }
 

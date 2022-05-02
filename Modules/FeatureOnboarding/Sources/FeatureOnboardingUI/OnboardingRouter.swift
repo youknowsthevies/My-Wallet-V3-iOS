@@ -131,7 +131,7 @@ public final class OnboardingRouter: OnboardingRouterAPI {
     }
 
     private func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
-        featureFlagsService.isEnabled(.remote(.showEmailVerificationInOnboarding))
+        featureFlagsService.isEnabled(.showEmailVerificationInOnboarding)
             .receive(on: mainQueue)
             .flatMap { [kycRouter] shouldShowEmailVerification -> AnyPublisher<OnboardingResult, Never> in
                 guard shouldShowEmailVerification else {

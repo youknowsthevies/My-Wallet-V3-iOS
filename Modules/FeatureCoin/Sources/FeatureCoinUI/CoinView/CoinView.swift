@@ -124,7 +124,7 @@ public struct CoinView: View {
                 if let status = viewStore.kycStatus {
                     AccountListView(
                         accounts: viewStore.accounts,
-                        assetColor: viewStore.currency.color,
+                        currency: viewStore.currency,
                         interestRate: viewStore.interestRate,
                         kycStatus: status
                     )
@@ -134,11 +134,11 @@ public struct CoinView: View {
                 AlertCard(
                     title: Localization.Label.Title.notTradable.interpolating(
                         viewStore.currency.name,
-                        viewStore.currency.code
+                        viewStore.currency.displayCode
                     ),
                     message: Localization.Label.Title.notTradableMessage.interpolating(
                         viewStore.currency.name,
-                        viewStore.currency.code
+                        viewStore.currency.displayCode
                     )
                 )
                 .padding([.leading, .trailing, .top], Spacing.padding2)

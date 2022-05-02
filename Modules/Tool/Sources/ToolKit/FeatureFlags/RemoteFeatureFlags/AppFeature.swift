@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Apple Pay
     case applePay
 
+    /// Enable Notification Preferences
+    case notificationPreferences
+
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
@@ -73,10 +76,7 @@ public enum AppFeature: Int, CaseIterable {
 
     case blockchainDomains
 
-    // MARK: - Account Picker
-
-    /// New SwiftUI account picker from `FeatureAccountPicker`
-    case swiftUIAccountPicker
+    case polygonSupport
 
     // MARK: - Onboarding
 
@@ -99,7 +99,7 @@ public enum AppFeature: Int, CaseIterable {
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
-    public var remoteEnabledKey: String? {
+    public var remoteEnabledKey: String {
         switch self {
         case .interestWithdrawAndDeposit:
             return "ios_interest_deposit_withdraw"
@@ -133,8 +133,6 @@ extension AppFeature {
             return "ios_use_new_limits_ui"
         case .newQuoteForSimpleBuy:
             return "ios_ff_new_pricing"
-        case .swiftUIAccountPicker:
-            return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
         case .newOnboardingTour:
@@ -153,6 +151,10 @@ extension AppFeature {
             return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
+        case .notificationPreferences:
+            return "ios_ff_notification_preferences"
+        case .polygonSupport:
+            return "ios_ff_polygon"
         }
     }
 
@@ -191,8 +193,6 @@ extension AppFeature {
             return true
         case .newQuoteForSimpleBuy:
             return true
-        case .swiftUIAccountPicker:
-            return true
         case .walletConnectEnabled:
             return true
         case .newOnboardingTour:
@@ -210,6 +210,10 @@ extension AppFeature {
         case .blockchainDomains:
             return true
         case .redesignCoinView:
+            return true
+        case .notificationPreferences:
+            return true
+        case .polygonSupport:
             return true
         }
     }
