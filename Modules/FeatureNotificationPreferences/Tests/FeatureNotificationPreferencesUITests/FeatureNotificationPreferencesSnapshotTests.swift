@@ -39,57 +39,57 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-//    func test_iPhoneX_snapshot_loading_view() throws {
-//        try XCTSkipIf(true)
-//        rootStore = Store(
-//            initialState: .init(viewState: .loading),
-//            reducer: notificationPreferencesReducer,
-//            environment: NotificationPreferencesEnvironment(
-//                mainQueue: mainScheduler.eraseToAnyScheduler(),
-//                notificationPreferencesRepository: notificationRepoMock
-//            )
-//        )
-//
-//        let view = FeatureNotificationPreferencesView(store: rootStore)
-//        assert(view, on: .iPhoneX)
-//        assert(view, on: .iPhone8)
-//    }
-//
-//    func test_iPhoneX_snapshot_display_preferences_view() throws {
-//        try XCTSkipIf(true)
-//        let preferencesToReturn = [
-//            MockGenerator.marketingNotificationPreference,
-//            MockGenerator.transactionalNotificationPreference,
-//            MockGenerator.priceAlertNotificationPreference
-//        ]
-//
-//        rootStore = Store(
-//            initialState: .init(viewState: .data(notificationDetailsState: preferencesToReturn)),
-//            reducer: notificationPreferencesReducer,
-//            environment: NotificationPreferencesEnvironment(
-//                mainQueue: mainScheduler.eraseToAnyScheduler(),
-//                notificationPreferencesRepository: notificationRepoMock
-//            )
-//        )
-//
-//        let view = FeatureNotificationPreferencesView(store: rootStore)
-//        assert(view, on: .iPhoneX)
-//        assert(view, on: .iPhone8)
-//    }
-//
-//    func test_iPhoneX_snapshot_error_preferences_view() throws {
-//        try XCTSkipIf(true)
-//        let rootStore = Store(
-//            initialState: .init(viewState: .error),
-//            reducer: notificationPreferencesReducer,
-//            environment: NotificationPreferencesEnvironment(
-//                mainQueue: mainScheduler.eraseToAnyScheduler(),
-//                notificationPreferencesRepository: notificationRepoMock
-//            )
-//        )
-//
-//        let view = FeatureNotificationPreferencesView(store: rootStore)
-//        assert(view, on: .iPhoneX)
-//        assert(view, on: .iPhone8)
-//    }
+    func test_iPhoneX_snapshot_loading_view() throws {
+        try XCTSkipIf(true)
+        rootStore = Store(
+            initialState: .init(viewState: .loading),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                notificationPreferencesRepository: notificationRepoMock
+            )
+        )
+
+        let view = FeatureNotificationPreferencesView(store: rootStore)
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
+    }
+
+    func test_iPhoneX_snapshot_display_preferences_view() throws {
+        try XCTSkipIf(true)
+        let preferencesToReturn = [
+            MockGenerator.marketingNotificationPreference,
+            MockGenerator.transactionalNotificationPreference,
+            MockGenerator.priceAlertNotificationPreference
+        ]
+
+        rootStore = Store(
+            initialState: .init(viewState: .data(notificationDetailsState: preferencesToReturn)),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                notificationPreferencesRepository: notificationRepoMock
+            )
+        )
+
+        let view = FeatureNotificationPreferencesView(store: rootStore)
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
+    }
+
+    func test_iPhoneX_snapshot_error_preferences_view() throws {
+        try XCTSkipIf(true)
+        let rootStore = Store(
+            initialState: .init(viewState: .error),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                notificationPreferencesRepository: notificationRepoMock
+            )
+        )
+
+        let view = FeatureNotificationPreferencesView(store: rootStore)
+        assert(view, on: .iPhoneX)
+        assert(view, on: .iPhone8)
+    }
 }

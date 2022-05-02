@@ -8,6 +8,7 @@ import FeatureNotificationPreferencesMocks
 import NetworkError
 import UIComponentsKit
 import XCTest
+import AnalyticsKitMock
 
 class NotificationPreferencesReducerTest: XCTestCase {
     private var testStore: TestStore<
@@ -29,7 +30,8 @@ class NotificationPreferencesReducerTest: XCTestCase {
             reducer: notificationPreferencesReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
-                notificationPreferencesRepository: notificationRepoMock
+                notificationPreferencesRepository: notificationRepoMock,
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }
@@ -81,7 +83,8 @@ class NotificationPreferencesReducerTest: XCTestCase {
             reducer: mainReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
-                notificationPreferencesRepository: notificationRepoMock
+                notificationPreferencesRepository: notificationRepoMock,
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
 

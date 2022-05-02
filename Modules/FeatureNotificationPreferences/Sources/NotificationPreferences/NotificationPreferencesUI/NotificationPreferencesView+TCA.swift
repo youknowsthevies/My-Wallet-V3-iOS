@@ -164,7 +164,8 @@ public let notificationPreferencesReducer = Reducer
                 }
             }
         }
-    ).analytics()
+    )
+    .analytics()
 
 // MARK: - Environment
 
