@@ -358,7 +358,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             topGuide.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 16),
             topGuide.bottomAnchor.constraint(equalTo: qrCodeImageView.topAnchor),
             bottomGuide.topAnchor.constraint(equalTo: qrCodeImageView.bottomAnchor),
-            bottomGuide.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -16),
+            bottomGuide.bottomAnchor.constraint(equalTo: domainHeaderLabel.topAnchor, constant: -16),
             topGuide.heightAnchor.constraint(equalTo: bottomGuide.heightAnchor)
         ])
         contentSizeObserver = scrollView.observe(\.contentSize) { scrollView, _ in
