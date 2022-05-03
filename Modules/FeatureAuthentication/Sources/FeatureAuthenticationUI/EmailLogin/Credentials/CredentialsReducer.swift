@@ -10,12 +10,13 @@ import ToolKit
 
 // MARK: - Type
 
-public enum CredentialsAction: Equatable, NavigationAction {
+public enum CredentialsAction: Equatable, NavigationAction, BindableAction {
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
 
+    case binding(BindingAction<CredentialsState>)
     case route(RouteIntent<CredentialsRoute>?)
     case alert(AlertAction)
     case continueButtonTapped
@@ -27,6 +28,7 @@ public enum CredentialsAction: Equatable, NavigationAction {
     case twoFA(TwoFAAction)
     case seedPhrase(SeedPhraseAction)
     case secondPasswordNotice(SecondPasswordNotice.Action)
+    case customerSupport(SupportViewAction)
     case showAccountLockedError(Bool)
     case openExternalLink(URL)
     case none
@@ -46,11 +48,13 @@ private typealias CredentialsLocalization = LocalizationConstants.FeatureAuthent
 
 public struct CredentialsState: Equatable, NavigationState {
     public var route: RouteIntent<CredentialsRoute>?
+    @BindableState var supportSheetShown: Bool = false
     var walletPairingState: WalletPairingState
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var seedPhraseState: SeedPhraseState?
     var secondPasswordNoticeState: SecondPasswordNotice.State?
+    var customerSupportState: SupportViewState?
     var nabuInfo: WalletInfo.Nabu?
     var isManualPairing: Bool
     var isTwoFactorOTPVerified: Bool
@@ -71,6 +75,7 @@ public struct CredentialsState: Equatable, NavigationState {
         twoFAState: TwoFAState? = nil,
         seedPhraseState: SeedPhraseState? = nil,
         secondPasswordNoticeState: SecondPasswordNotice.State? = nil,
+        customerSupportState: SupportViewState? = nil,
         nabuInfo: WalletInfo.Nabu? = nil,
         isManualPairing: Bool = false,
         isTwoFactorOTPVerified: Bool = false,
@@ -86,6 +91,7 @@ public struct CredentialsState: Equatable, NavigationState {
         self.twoFAState = twoFAState
         self.seedPhraseState = seedPhraseState
         self.secondPasswordNoticeState = secondPasswordNoticeState
+        self.customerSupportState = customerSupportState
         self.nabuInfo = nabuInfo
         self.isManualPairing = isManualPairing
         self.isTwoFactorOTPVerified = isTwoFactorOTPVerified
@@ -214,6 +220,15 @@ let credentialsReducer = Reducer.combine(
                 )
             }
         ),
+    supportViewReducer
+        .optional()
+        .pullback(
+            state: \CredentialsState.customerSupportState,
+            action: /CredentialsAction.customerSupport,
+            environment: { _ in
+                SupportViewEnvironment.default
+            }
+        ),
     Reducer<
         CredentialsState,
         CredentialsAction,
@@ -221,6 +236,16 @@ let credentialsReducer = Reducer.combine(
             // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
+        case .binding(.set(\.$supportSheetShown, true)):
+            state.customerSupportState = .init(
+                applicationVersion: Bundle.applicationVersion ?? "",
+                bundleIdentifier: Bundle.main.bundleIdentifier ?? ""
+            )
+            return .none
+
+        case .binding:
+            return .none
+
         case .alert(.show(let title, let message)):
             state.isLoading = false
             state.credentialsFailureAlert = AlertState(
@@ -392,11 +417,13 @@ let credentialsReducer = Reducer.combine(
              .password,
              .seedPhrase,
              .secondPasswordNotice,
+             .customerSupport,
              .none:
             return .none
         }
     }
 )
+.binding()
 .routing()
 .analytics()
 
