@@ -40,7 +40,9 @@ public final class CoinViewAnalytics: Session.Observer {
         chartInterval,
         transaction,
         accountSheet,
-        exchangeConnect
+        exchangeConnect,
+        watchlistAdd,
+        watchlistRemove
     ]
 
     lazy var asset = app.on(blockchain.ux.asset) { [analytics] event in
@@ -143,16 +145,14 @@ public final class CoinViewAnalytics: Session.Observer {
         blockchain.ux.asset.account.send,
         blockchain.ux.asset.account.swap
     ) { [analytics] event in
-
         guard let account = event.context[blockchain.ux.asset.account] as? Account.Snapshot else { return }
-        guard let transactionType = AnalyticsEvents.New.CoinViewAnalyticsEvent.TransactionType(event.tag) else { return }
+        guard let transaction = AnalyticsEvents.New.CoinViewAnalyticsEvent.TransactionType(event.tag) else { return }
         let accountType = AnalyticsEvents.New.CoinViewAnalyticsEvent.AccountType(account)
-
         try analytics.record(
             event: .transactionTypeClicked(
                 currency: event.reference.context.decode(blockchain.ux.asset.id) as String,
                 accountType: accountType,
-                transactionType: transactionType
+                transactionType: transaction
             )
         )
     }
@@ -171,6 +171,22 @@ public final class CoinViewAnalytics: Session.Observer {
     lazy var exchangeConnect = app.on(blockchain.ux.asset.account.exchange.connect) { [analytics] event in
         try analytics.record(
             event: .connectToTheExchangeActioned(
+                currency: event.reference.context.decode(blockchain.ux.asset.id) as String
+            )
+        )
+    }
+
+    lazy var watchlistAdd = app.on(blockchain.ux.asset.watchlist.add) { [analytics] event in
+        try analytics.record(
+            event: .coinAddedToWatchlist(
+                currency: event.reference.context.decode(blockchain.ux.asset.id) as String
+            )
+        )
+    }
+
+    lazy var watchlistRemove = app.on(blockchain.ux.asset.watchlist.remove) { [analytics] event in
+        try analytics.record(
+            event: .coinRemovedFromWatchlist(
                 currency: event.reference.context.decode(blockchain.ux.asset.id) as String
             )
         )

@@ -37,6 +37,9 @@ extension AnalyticsEvents.New {
 
         case connectToTheExchangeActioned(currency: String, origin: Origin = .coinView)
 
+        case coinAddedToWatchlist(currency: String, origin: Origin = .coinView)
+        case coinRemovedFromWatchlist(currency: String, origin: Origin = .coinView)
+
         enum Origin: String, StringRawRepresentable {
             case coinView = "COIN_VIEW"
         }
@@ -62,6 +65,7 @@ extension AnalyticsEvents.New {
             case swap = "SWAP"
             case withdraw = "WITHDRAW"
 
+            // swiftlint:disable cyclomatic_complexity
             init?(_ tag: Tag) {
                 switch tag {
                 case blockchain.ux.asset.account.activity:
