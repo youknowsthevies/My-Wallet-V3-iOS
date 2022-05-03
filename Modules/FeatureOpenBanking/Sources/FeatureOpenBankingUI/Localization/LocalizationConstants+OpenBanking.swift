@@ -706,7 +706,7 @@ extension Localization {
                     "The Bank has declined this card",
                     comment: "The Bank has declined this card"
                 ),
-                    "The card you tried to use has been declined by your bank, please try again or another payment method.",
+                "The card you tried to use has been declined by your bank, please try again or another payment method.",
                 subtitle: NSLocalizedString(
                     "Your bank declined this card. Please try again or choose another payment method.",
                     comment: "Your bank declined this card. Please try again or choose another payment method."

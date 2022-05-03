@@ -75,8 +75,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
         #if INTERNAL_BUILD
         debugCoordinator.enableDebugMenu(for: window)
-        let featureFlagService: FeatureFlagsServiceAPI = resolve()
-        featureFlagService.enable(.local(.manualGUIDLogin))
         #endif
 
         let hostingController = AppHostingController(
