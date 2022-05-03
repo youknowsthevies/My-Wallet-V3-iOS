@@ -116,7 +116,7 @@ public struct CredentialsView: View {
 
             Button(
                 action: {
-                    viewStore.send(.set(\.$supportSheetShown, true))
+                    viewStore.send(.navigate(to: .seedPhrase))
                 },
                 label: {
                     Text(LocalizedString.Link.troubleLogInLink)
