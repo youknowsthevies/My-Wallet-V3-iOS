@@ -2,11 +2,12 @@
 
 import Combine
 import DIKit
+import EthereumKit
 import Foundation
 import PlatformKit
 
 public protocol WalletConnectAccountProviderAPI {
-    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> { get }
+    func defaultAccount(network: EVMNetwork) -> AnyPublisher<SingleAccount, CryptoAssetError>
 }
 
 final class WalletConnectAccountProvider {
@@ -19,20 +20,18 @@ final class WalletConnectAccountProvider {
 }
 
 extension WalletConnectAccountProvider: WalletConnectAccountProviderAPI {
-    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        coincore[.ethereum].defaultAccount
+    func defaultAccount(network: EVMNetwork) -> AnyPublisher<SingleAccount, CryptoAssetError> {
+        coincore[network.cryptoCurrency].defaultAccount
     }
 }
 
 extension WalletConnectAccountProvider: WalletConnectPublicKeyProviderAPI {
-    var publicKey: AnyPublisher<String, Error> {
-        defaultAccount
+    func publicKey(network: EVMNetwork) -> AnyPublisher<String, Error> {
+        defaultAccount(network: network)
             .eraseError()
             .flatMap { account -> AnyPublisher<String, Error> in
-                account.receiveAddress
+                account.receiveAddressPublisher
                     .map { address in address.address }
-                    .asPublisher()
-                    .eraseError()
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

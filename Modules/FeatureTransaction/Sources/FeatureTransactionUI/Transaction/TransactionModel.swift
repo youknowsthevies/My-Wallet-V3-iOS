@@ -628,24 +628,12 @@ extension PaymentMethodAccount {
 
 extension LinkedBankData {
     fileprivate var isYapily: Bool {
-        switch partner {
-        case .yapily:
-            return true
-        case .none,
-             .yodlee:
-            return false
-        }
+        partner == .yapily
     }
 }
 
 extension LinkedBankAccount {
     fileprivate var isYapily: Bool {
-        switch partner {
-        case .yapily:
-            return true
-        case .none,
-             .yodlee:
-            return false
-        }
+        partner == .yapily
     }
 }

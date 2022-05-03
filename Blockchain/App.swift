@@ -6,6 +6,7 @@ import Combine
 import ComposableArchitecture
 @_exported import DIKit
 import ERC20DataKit
+import EthereumDataKit
 import FeatureActivityData
 import FeatureAppDomain
 import FeatureAppUI
@@ -15,6 +16,7 @@ import FeatureCardPaymentData
 import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
+import FeatureNotificationPreferencesDomain
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
@@ -112,6 +114,7 @@ func defineDependencies() {
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
+        DependencyContainer.ethereumDataKit
         DependencyContainer.erc20Kit
         DependencyContainer.erc20DataKit
         DependencyContainer.bitcoinChainKit

@@ -42,7 +42,7 @@ class CardListRepository: CardListRepositoryAPI {
         cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
-                featureFlagsService.isEnabled(.remote(.newCardAcquirers))
+                featureFlagsService.isEnabled(.newCardAcquirers)
                     .setFailureType(to: NabuNetworkError.self)
                     .flatMap { isEnabled -> AnyPublisher<[CardData], NabuNetworkError> in
                         cardListClient

@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Apple Pay
     case applePay
 
+    /// Enable Notification Preferences
+    case notificationPreferences
+
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
@@ -73,7 +76,7 @@ public enum AppFeature: Int, CaseIterable {
 
     case blockchainDomains
 
-    // MARK: - Account Picker
+    case polygonSupport
 
     // MARK: - Onboarding
 
@@ -148,6 +151,10 @@ extension AppFeature {
             return "ios_ff_blockchain_domains"
         case .redesignCoinView:
             return "ios_ff_redesign_coinview"
+        case .notificationPreferences:
+            return "ios_ff_notification_preferences"
+        case .polygonSupport:
+            return "ios_ff_polygon"
         }
     }
 
@@ -203,6 +210,10 @@ extension AppFeature {
         case .blockchainDomains:
             return true
         case .redesignCoinView:
+            return true
+        case .notificationPreferences:
+            return true
+        case .polygonSupport:
             return true
         }
     }

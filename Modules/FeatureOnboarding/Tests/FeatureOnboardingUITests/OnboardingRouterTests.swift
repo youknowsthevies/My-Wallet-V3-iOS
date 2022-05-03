@@ -43,7 +43,7 @@ final class OnboardingRouterTests: XCTestCase {
 
     func test_skipsEmailVerification_if_feature_is_disabled_then_presents_ui_tour() throws {
         // GIVEN: Email Verification at Onboarding is DISABLED
-        let featureFlagPublisher = mockFeatureFlagService.disable(.remote(.showEmailVerificationInOnboarding))
+        let featureFlagPublisher = mockFeatureFlagService.disable(.showEmailVerificationInOnboarding)
         XCTAssertPublisherCompletion(featureFlagPublisher)
 
         // WHEN: The OnboardingRouter is asked to present onboarding
@@ -78,7 +78,7 @@ final class OnboardingRouterTests: XCTestCase {
 
     func test_skipsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_ev_completed() throws {
         // GIVEN: Email Verification at Onboarding is ENABLED
-        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        let featureFlagPublisher = mockFeatureFlagService.enable(.showEmailVerificationInOnboarding)
         XCTAssertPublisherCompletion(featureFlagPublisher)
 
         // AND: A mock email verification publisher
@@ -122,7 +122,7 @@ final class OnboardingRouterTests: XCTestCase {
 
     func test_showsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_ev_abandoned() throws {
         // GIVEN: Email Verification at Onboarding is ENABLED
-        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        let featureFlagPublisher = mockFeatureFlagService.enable(.showEmailVerificationInOnboarding)
         XCTAssertPublisherCompletion(featureFlagPublisher)
 
         // AND: A mock email verification publisher
@@ -166,7 +166,7 @@ final class OnboardingRouterTests: XCTestCase {
 
     func test_showsEmailVerification_if_feature_is_enabled_then_presents_ui_tour_then_buy() throws {
         // GIVEN: Email Verification at Onboarding is ENABLED
-        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
+        let featureFlagPublisher = mockFeatureFlagService.enable(.showEmailVerificationInOnboarding)
         XCTAssertPublisherCompletion(featureFlagPublisher)
 
         // AND: A mock email verification publisher

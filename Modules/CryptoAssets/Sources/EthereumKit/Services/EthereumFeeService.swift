@@ -17,17 +17,19 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
     // MARK: - CryptoFeeServiceAPI
 
     func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
-        client
+        let network = cryptoCurrency.assetModel.evmNetwork!
+        return client
             .fees(cryptoCurrency: cryptoCurrency)
             .map { response in
                 EthereumTransactionFee(
                     regular: response.regular,
                     priority: response.priority,
                     gasLimit: response.gasLimit,
-                    gasLimitContract: response.gasLimitContract
+                    gasLimitContract: response.gasLimitContract,
+                    network: network
                 )
             }
-            .replaceError(with: .default)
+            .replaceError(with: EthereumTransactionFee.default(network: network))
             .eraseToAnyPublisher()
     }
 

@@ -89,9 +89,9 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             onComplete: { [service, action] validate in
                 presenter?.dismiss(animated: true) {
                     if validate {
-                        service.acceptConnection(action)
+                        service.acceptConnection(session: session, completion: action)
                     } else {
-                        service.denyConnection(action)
+                        service.denyConnection(session: session, completion: action)
                     }
                 }
             }

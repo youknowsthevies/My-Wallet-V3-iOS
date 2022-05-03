@@ -4,7 +4,8 @@ import DIKit
 import ToolKit
 
 protocol SupportedAssetsRepositoryAPI {
-    var erc20Assets: SupportedAssets { get }
+    var ethereumERC20Assets: SupportedAssets { get }
+    var polygonERC20Assets: SupportedAssets { get }
     var custodialAssets: SupportedAssets { get }
 }
 
@@ -12,13 +13,25 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
 
     let localService: SupportedAssetsServiceAPI
 
-    private(set) lazy var erc20Assets: SupportedAssets = {
-        switch localService.erc20Assets {
+    private(set) lazy var ethereumERC20Assets: SupportedAssets = {
+        switch localService.ethereumERC20Assets {
         case .success(let response):
             return SupportedAssets(response: response)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
+            }
+            return SupportedAssets.empty
+        }
+    }()
+
+    private(set) lazy var polygonERC20Assets: SupportedAssets = {
+        switch localService.polygonERC20Assets {
+        case .success(let response):
+            return SupportedAssets(response: response)
+        case .failure(let error):
+            if BuildFlag.isInternal {
+                fatalError("Can' load local Polygon ERC20 assets. \(error.localizedDescription)")
             }
             return SupportedAssets.empty
         }

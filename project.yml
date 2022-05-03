@@ -240,6 +240,8 @@ packages:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
+  FeatureNotificationPreferences:
+    path: Modules/FeatureNotificationPreferences
   FeatureTour:
     path: Modules/FeatureTour
   FeatureTransaction:
@@ -345,6 +347,7 @@ targets:
       - package: FeatureDebug
       - package: FeatureForm
       - package: FeatureInterest
+      - package: FeatureNotificationPreferences
       - package: FeatureKYC
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
@@ -391,6 +394,8 @@ targets:
         product: BitcoinKit
       - package: CryptoAssets
         product: EthereumKit
+      - package: CryptoAssets
+        product: EthereumDataKit
       - package: CryptoAssets
         product: ERC20Kit
       - package: CryptoAssets

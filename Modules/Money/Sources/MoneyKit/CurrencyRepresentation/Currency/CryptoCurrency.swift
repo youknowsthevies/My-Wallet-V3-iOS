@@ -153,4 +153,6 @@ extension CryptoCurrency {
     public static let ethereum = AssetModel.ethereum.cryptoCurrency!
 
     public static let stellar = AssetModel.stellar.cryptoCurrency!
+
+    public static let polygon = AssetModel.polygon.cryptoCurrency!
 }

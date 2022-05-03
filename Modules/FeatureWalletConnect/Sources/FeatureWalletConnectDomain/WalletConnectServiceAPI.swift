@@ -33,6 +33,12 @@ public protocol WalletConnectServiceAPI {
 
     func connect(_ url: String)
     func disconnect(_ session: Session)
-    func acceptConnection(_ completion: @escaping (Session.WalletInfo) -> Void)
-    func denyConnection(_ completion: @escaping (Session.WalletInfo) -> Void)
+    func acceptConnection(
+        session: Session,
+        completion: @escaping (Session.WalletInfo) -> Void
+    )
+    func denyConnection(
+        session: Session,
+        completion: @escaping (Session.WalletInfo) -> Void
+    )
 }

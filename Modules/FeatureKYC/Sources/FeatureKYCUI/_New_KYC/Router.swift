@@ -382,7 +382,7 @@ public class Router: Routing {
                 })
                 .store(in: &cancellables)
         }
-        return featureFlagsService.isEnabled(.remote(.newLimitsUIEnabled))
+        return featureFlagsService.isEnabled(.newLimitsUIEnabled)
             .receive(on: DispatchQueue.main)
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .sink { [analyticsRecorder, kycService, disposeBag, internalPresentKYC, openURL] newLimitsUIEnabled in

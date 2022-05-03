@@ -73,7 +73,7 @@ final class CardUpdateService: CardUpdateServiceAPI {
         currency: AnyPublisher<FiatCurrency, Never>
     ) -> AnyPublisher<PartnerAuthorizationData, Error> {
         let cardAcquirerTokens = featureFlagsService
-            .isEnabled(.remote(.newCardAcquirers))
+            .isEnabled(.newCardAcquirers)
             .flatMap { [cardAcquirersRepository] enabled -> AnyPublisher<[String: String], Never> in
                 enabled ? cardAcquirersRepository.tokenize(card) : .just([:])
             }
@@ -104,20 +104,22 @@ final class CardUpdateService: CardUpdateServiceAPI {
             }
 
         // 2. Activate the card
-        // swiftlint:disable line_length
-        let activateCard = createCard.flatMap { [cardClient] payload -> AnyPublisher<(cardId: String, partner: ActivateCardResponse.Partner), NabuNetworkError> in
-            cardClient.activateCard(
-                by: payload.identifier,
-                url: PartnerAuthorizationData.exitLink
-            )
-            .map {
-                (cardId: payload.identifier, partner: $0)
+        typealias ActivationPayload = (cardId: String, partner: ActivateCardResponse.Partner)
+        let activateCard =
+            createCard.flatMap { [cardClient] payload -> AnyPublisher<ActivationPayload, NabuNetworkError> in
+                cardClient.activateCard(
+                    by: payload.identifier,
+                    url: PartnerAuthorizationData.exitLink,
+                    cvv: card.cvv
+                )
+                .map {
+                    (cardId: payload.identifier, partner: $0)
+                }
+                .handleEvents(receiveCompletion: { [weak self] _ in
+                    self?.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
+                })
+                .eraseToAnyPublisher()
             }
-            .handleEvents(receiveCompletion: { [weak self] _ in
-                self?.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
-            })
-            .eraseToAnyPublisher()
-        }
 
         // 3. Authorize the card
         let authorizeCard = activateCard

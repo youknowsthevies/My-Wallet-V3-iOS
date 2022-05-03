@@ -42,7 +42,7 @@ extension AppFeatureConfigurator: FeatureFetching {
             .publisher(for: key.remoteEnabledKey)
             .prefix(1)
             .tryMap { data -> Feature in
-                try data.decode(as: Feature.self)
+                try data.decode(Feature.self)
             }
             .mapError(FeatureFlagError.decodingError)
             .timeout(

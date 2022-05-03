@@ -7,6 +7,7 @@ public protocol CardActivationClientAPI: AnyObject {
 
     func activateCard(
         by id: String,
-        url: String
+        url: String,
+        cvv: String
     ) -> AnyPublisher<ActivateCardResponse.Partner, NabuNetworkError>
 }

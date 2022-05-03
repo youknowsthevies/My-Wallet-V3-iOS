@@ -129,7 +129,7 @@ extension LocalizationConstants.Transaction.Notices {
     )
 
     public static let verifyToUnlockMoreTradingNoticeMessage = NSLocalizedString(
-        "You can only complete one transaction with a Basic level account.",
+        "You can only complete one transaction with a Limited Access level account.",
         comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - message"
     )
 
@@ -223,7 +223,7 @@ extension LocalizationConstants.Transaction.Receive.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to the Trading Account in seconds by completing your profile and getting Basic access.",
+        "Get access to the Trading Account in seconds by completing your profile and getting Limited Access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -267,7 +267,7 @@ extension LocalizationConstants.Transaction.Swap.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to swap in seconds by completing your profile and getting Basic access.",
+        "Get access to swap in seconds by completing your profile and getting Limited Access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -1345,11 +1345,11 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Error recovery message - input over the user's personal maximum limit"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_single = NSLocalizedString(
-        "You can buy up to **%@** per transaction. Upgrade to Verified & buy larger amounts with your bank or card.",
+        "You can buy up to **%@** per transaction. Get Full Access & buy larger amounts with your bank or card.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_gold = NSLocalizedString(
-        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Verified to buy more.",
+        "You can only buy **%@**. You have **%@ remaining**. Get Full Access to buy more.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_other = NSLocalizedString(
@@ -1556,7 +1556,7 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardDuplicateTitle = NSLocalizedString(
-        "This card already exists",
+        "This Card Already Exists",
         comment: "This Card Already Exists"
     )
 

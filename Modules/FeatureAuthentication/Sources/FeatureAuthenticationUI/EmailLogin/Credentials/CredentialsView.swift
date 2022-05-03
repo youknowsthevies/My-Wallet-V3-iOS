@@ -192,17 +192,27 @@ public struct CredentialsView: View {
         .navigationRoute(in: store)
         .primaryNavigation(title: LocalizedString.navigationTitle) {
             Button {
-                viewStore.send(.continueButtonTapped)
+                viewStore.send(.set(\.$supportSheetShown, true))
             } label: {
-                Text(LocalizedString.Button.next)
-                    .typography(.paragraph2)
-                    .foregroundColor(
-                        viewStore.walletPairingState.walletGuid.isEmpty ? .semantic.muted : .semantic.primary
-                    )
+                Icon
+                    .questionCircle
+                    .frame(width: 24, height: 24)
+                    .accentColor(.semantic.muted)
             }
-            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
             .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.nextButton)
         }
+        .bottomSheet(
+            isPresented: viewStore.binding(\.$supportSheetShown),
+            content: {
+                IfLetStore(
+                    store.scope(
+                        state: \.customerSupportState,
+                        action: CredentialsAction.customerSupport
+                    ),
+                    then: SupportView.init(store:)
+                )
+            }
+        )
         .onAppear {
             viewStore.send(.didAppear(context: context))
         }

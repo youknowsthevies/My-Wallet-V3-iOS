@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import FeatureAppDomain
@@ -63,6 +64,7 @@ public enum Onboarding {
     }
 
     public struct Environment {
+        let app: AppProtocol
         var appSettings: BlockchainSettingsAppAPI
         var credentialsStore: CredentialsStoreAPI
         var alertPresenter: AlertViewPresenterAPI
@@ -88,6 +90,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             action: /Onboarding.Action.welcomeScreen,
             environment: {
                 WelcomeEnvironment(
+                    app: $0.app,
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
