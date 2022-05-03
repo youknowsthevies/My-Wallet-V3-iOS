@@ -42,7 +42,6 @@ extension AnnouncementRecord {
         case interestFunds
         case newAsset(code: String)
         case assetRename(code: String)
-        case celoEUR
         case ukEntitySwitch
         case walletConnect
 
@@ -106,8 +105,6 @@ extension AnnouncementRecord {
                 key = "cache-new-asset-\(code)"
             case .assetRename(let code):
                 key = "cache-asset-rename-\(code)"
-            case .celoEUR:
-                key = "cache-celo-eur"
             case .ukEntitySwitch:
                 key = "uk-entity-switch-2022"
             case .walletConnect:

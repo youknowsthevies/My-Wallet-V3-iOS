@@ -10,7 +10,6 @@ import ToolKit
 
 private typealias Localization = LocalizationConstants.AnnouncementCards.UKEntitySwap
 
-/// This is an announcement that introduces CeloEUR draw.
 final class UKEntitySwitchAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     let userCountry: Country?

@@ -26,8 +26,8 @@ struct AnnouncementPreliminaryData {
 
     // MARK: Properties
 
-    /// CeloEUR CryptoCurrency if it exists.
-    let celoEUR: CryptoCurrency?
+    /// User is able to claim free Blockchain.com domain.
+    let claimFreeDomainEligible: Bool
 
     /// Announcement New Asset
     let newAsset: CryptoCurrency?
@@ -73,28 +73,28 @@ struct AnnouncementPreliminaryData {
     private let simpleBuyEventCache: EventCache
 
     init(
-        user: NabuUser,
-        tiers: KYC.UserTiers,
-        isSDDEligible: Bool,
-        countries: [CountryData],
-        simpleBuyEventCache: EventCache = resolve(),
-        authenticatorType: WalletAuthenticatorType,
-        hasAnyWalletBalance: Bool,
-        newAsset: CryptoCurrency?,
         assetRename: AssetRename?,
+        authenticatorType: WalletAuthenticatorType,
+        claimFreeDomainEligible: Bool,
+        countries: [CountryData],
+        hasAnyWalletBalance: Bool,
+        isSDDEligible: Bool,
+        newAsset: CryptoCurrency?,
         simpleBuy: SimpleBuy,
-        celoEUR: CryptoCurrency?
+        simpleBuyEventCache: EventCache = resolve(),
+        tiers: KYC.UserTiers,
+        user: NabuUser
     ) {
-        self.user = user
-        self.tiers = tiers
-        self.isSDDEligible = isSDDEligible
-        self.simpleBuyEventCache = simpleBuyEventCache
-        self.authenticatorType = authenticatorType
-        self.hasAnyWalletBalance = hasAnyWalletBalance
-        self.newAsset = newAsset
         self.assetRename = assetRename
+        self.authenticatorType = authenticatorType
+        self.claimFreeDomainEligible = claimFreeDomainEligible
+        self.hasAnyWalletBalance = hasAnyWalletBalance
+        self.isSDDEligible = isSDDEligible
+        self.newAsset = newAsset
         self.simpleBuy = simpleBuy
-        self.celoEUR = celoEUR
+        self.simpleBuyEventCache = simpleBuyEventCache
+        self.tiers = tiers
+        self.user = user
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }

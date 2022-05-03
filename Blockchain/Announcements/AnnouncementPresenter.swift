@@ -59,8 +59,6 @@ final class AnnouncementPresenter {
 
     private let coincore: CoincoreAPI
     private let nabuUserService: NabuUserServiceAPI
-    private let claimEligibilityRepository: ClaimEligibilityRepositoryAPI
-    private var claimFreeDomainEligible: Atomic<Bool> = .init(false)
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -94,8 +92,7 @@ final class AnnouncementPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
-        nabuUserService: NabuUserServiceAPI = DIKit.resolve(),
-        claimEligibilityRepository: ClaimEligibilityRepositoryAPI = DIKit.resolve()
+        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
     ) {
         self.app = app
         self.interactor = interactor
@@ -119,7 +116,6 @@ final class AnnouncementPresenter {
         self.accountsRouter = accountsRouter
         self.coincore = coincore
         self.nabuUserService = nabuUserService
-        self.claimEligibilityRepository = claimEligibilityRepository
 
         announcement
             .asObservable()
@@ -129,13 +125,6 @@ final class AnnouncementPresenter {
                 self.currentAnnouncement = nil
             }
             .disposed(by: disposeBag)
-
-        claimEligibilityRepository
-            .checkClaimEligibility()
-            .sink { [weak self] enabled in
-                self?.claimFreeDomainEligible.mutate { $0 = enabled }
-            }
-            .store(in: &cancellables)
     }
 
     /// Refreshes announcements on demand
@@ -174,20 +163,17 @@ final class AnnouncementPresenter {
     ) -> AnnouncementDisplayAction {
         // For other users, keep the current logic in place
         for type in metadata.order {
-            // IOS-6127: wallets with no balance should show no announcements
-            // NOTE: Need to do this here to ensure we show the announcement for ukEntitySwitch or claim domain no matter what.
-            guard preliminaryData.hasAnyWalletBalance || type == .ukEntitySwitch || type == .claimFreeCryptoDomain
-            else {
+            // Wallets with no balance should show no announcements
+            guard preliminaryData.hasAnyWalletBalance || type.showsWhenWalletHasNoBalance else {
                 return .none
             }
 
             let announcement: Announcement
             switch type {
             case .claimFreeCryptoDomain:
-                guard claimFreeDomainEligible.value else {
-                    return .none
-                }
-                announcement = claimFreeCryptoDomainAnnoucement
+                announcement = claimFreeCryptoDomainAnnouncement(
+                    claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
+                )
             case .resubmitDocumentsAfterRecovery:
                 announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
@@ -253,12 +239,6 @@ final class AnnouncementPresenter {
                 announcement = assetRename(
                     data: preliminaryData.assetRename
                 )
-            case .celoEUR:
-                announcement = celoEUR(
-                    celoEUR: preliminaryData.celoEUR,
-                    user: preliminaryData.user,
-                    tiers: preliminaryData.tiers
-                )
             case .ukEntitySwitch:
                 announcement = ukEntitySwitch(user: preliminaryData.user)
             case .walletConnect:
@@ -289,6 +269,18 @@ final class AnnouncementPresenter {
     /// Hides whichever announcement is now displaying
     private func hideAnnouncement() {
         announcementRelay.accept(.hide)
+    }
+}
+
+extension AnnouncementType {
+    var showsWhenWalletHasNoBalance: Bool {
+        switch self {
+        case .claimFreeCryptoDomain,
+             .ukEntitySwitch:
+            return true
+        default:
+            return false
+        }
     }
 }
 
@@ -438,31 +430,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Computes CeloEUR card announcement.
-    private func celoEUR(
-        celoEUR: CryptoCurrency?,
-        user: NabuUser,
-        tiers: KYC.UserTiers
-    ) -> Announcement {
-        CeloEURAnnouncement(
-            celoEUR: celoEUR,
-            tiers: tiers,
-            userCountry: user.address?.country,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [topMostViewControllerProvider, webViewServiceAPI] in
-                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
-                    return
-                }
-                webViewServiceAPI.openSafari(
-                    url: "https://www.blockchain.com/getceur",
-                    from: topMostViewController
-                )
-            }
-        )
-    }
-
     private func ukEntitySwitch(user: NabuUser) -> Announcement {
         UKEntitySwitchAnnouncement(
             userCountry: user.address?.country,
@@ -559,9 +526,12 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Claim Free Crypto Domain Annoucement for eligible users
-    private var claimFreeCryptoDomainAnnoucement: Announcement {
+    /// Claim Free Crypto Domain Announcement for eligible users
+    private func claimFreeCryptoDomainAnnouncement(
+        claimFreeDomainEligible: Bool
+    ) -> Announcement {
         ClaimFreeCryptoDomainAnnouncement(
+            claimFreeDomainEligible: claimFreeDomainEligible,
             action: { [coincore, nabuUserService, navigationRouter] in
                 let vc = ClaimIntroductionHostingController(
                     mainQueue: .main,

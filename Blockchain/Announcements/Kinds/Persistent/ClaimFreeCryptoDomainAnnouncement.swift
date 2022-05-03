@@ -59,38 +59,28 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
     }
 
     var shouldShow: Bool {
-        claimFreeDomainEnabled.value
+        claimFreeDomainEligible
     }
 
     let type = AnnouncementType.claimFreeCryptoDomain
-    let featureFlagsService: FeatureFlagsServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let action: CardAnnouncementAction
     let dismiss: CardAnnouncementAction
 
-    private var claimFreeDomainEnabled: Atomic<Bool> = .init(false)
-
+    private let claimFreeDomainEligible: Bool
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(
-        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        claimFreeDomainEligible: Bool,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         action: @escaping CardAnnouncementAction,
         dismiss: @escaping CardAnnouncementAction
     ) {
-        self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.action = action
         self.dismiss = dismiss
-
-        featureFlagsService
-            .isEnabled(.blockchainDomains)
-            .asSingle()
-            .subscribe { [weak self] enabled in
-                self?.claimFreeDomainEnabled.mutate { $0 = enabled }
-            }
-            .disposed(by: disposeBag)
+        self.claimFreeDomainEligible = claimFreeDomainEligible
     }
 }
