@@ -91,8 +91,8 @@ public struct ChartBalance: View {
                     }
                 }
             }
-            .scaledToFit()
-            .minimumScaleFactor(0.8)
+            .minimumScaleFactor(0.75)
+            .lineLimit(1)
 
             Spacer()
         }

@@ -198,7 +198,6 @@ extension TransactionLimitsService {
         repository
             .fetchTradeLimits(
                 sourceCurrency: fiatCurrency.currencyType,
-                destinationCurrency: destination.currency,
                 product: product
             )
             .mapError(TransactionLimitsServiceError.network)

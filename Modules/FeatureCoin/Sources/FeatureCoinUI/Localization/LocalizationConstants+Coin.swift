@@ -61,6 +61,10 @@ extension LocalizationConstants {
                     "Receive",
                     comment: "Coin View: Receive CTA"
                 )
+                static let readMore = NSLocalizedString(
+                    "Read More",
+                    comment: "Coin View: Read More and expand on the Asset Description"
+                )
             }
         }
 

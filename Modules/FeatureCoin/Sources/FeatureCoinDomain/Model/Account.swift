@@ -223,9 +223,9 @@ extension Collection where Element == Account.Snapshot {
     }
 
     public var hasPositiveBalanceForSelling: Bool {
-        filter { account in
-            [.privateKey, .trading].contains(account.accountType)
-        }.fiatBalance?.isPositive ?? false
+        first(where: { account in account.accountType == .trading })?.fiat.isPositive
+            ?? first(where: { account in account.accountType == .privateKey })?.fiat.isPositive
+            ?? false
     }
 }
 

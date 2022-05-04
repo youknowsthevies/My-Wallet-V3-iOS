@@ -48,6 +48,7 @@ struct AccountSheet: View {
                 title: account.fiat.displayString,
                 subtitle: account.crypto.displayString
             )
+            .padding([.top, .bottom], 8.pt)
             let resolved = isNotVerified && account.isPrivateKey
                 ? [.send, .receive, .swap, .sell, .activity]
                 : actions
