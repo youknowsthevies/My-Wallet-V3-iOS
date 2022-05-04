@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -8,6 +9,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 import UIComponentsKit
+import UIKit
 
 final class ReceiveScreenViewController: BaseScreenViewController {
     private typealias LocalizedString = LocalizationConstants.Receive
@@ -22,36 +24,27 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
     private let qrCodeImageView = UIImageView()
 
-    private let domainHeaderLabel = UILabel()
-    private let domainSeparator = UIView()
-    private let domainLabel = UILabel()
-    private let addressHeaderLabel = UILabel()
-    private let addressSeparator = UIView()
-    private let addressLabel = UILabel()
-    private let memoHeaderLabel = UILabel()
-    private let memoSeparator = UIView()
-    private let memoLabel = UILabel()
+    private let alertCardView = UIView()
+    private let domainItem = ItemView()
+    private let addressItem = ItemView()
+    private let memoItem = ItemView()
     private let memoNoteContainer = UIView()
     private let memoNoteTextView = InteractableTextView()
     private let copyButton = ButtonView()
     private let shareButton = ButtonView()
 
-    private var memoNoteContainerToLabelConstraint: NSLayoutConstraint!
     private var memoNoteContainerHeightConstraint: NSLayoutConstraint!
-    private var memoLabelToSeparatorConstraint: NSLayoutConstraint!
-    private var memoHeaderToAddressLabelConstraint: NSLayoutConstraint!
-    private var memoHeaderHeightConstraint: NSLayoutConstraint!
     private var copyButtonToMemoNoteConstraint: NSLayoutConstraint!
     private var contentSizeObserver: NSKeyValueObservation?
 
     private var copyButtonTopOffset: CGFloat {
         switch DevicePresenter.type {
         case .superCompact:
-            return 16
+            return 0
         case .compact,
              .regular,
              .max:
-            return 48
+            return 32
         }
     }
 
@@ -71,18 +64,18 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupView()
         setupNavigationBar()
-        setupPresenter()
 
-        // Prevent unecessary rendering
+        // Prevent unnecessary rendering
         displayMemo(show: false)
+        domainItem.show(false)
+
+        setupPresenter()
     }
 
     private func setupPresenter() {
-        domainHeaderLabel.content = presenter.walletDomainLabelContent
-
-        addressHeaderLabel.content = presenter.walletAddressLabelContent
-
-        memoHeaderLabel.content = presenter.memoLabelContent
+        domainItem.headerLabel.content = presenter.walletDomainLabelContent
+        addressItem.headerLabel.content = presenter.walletAddressLabelContent
+        memoItem.headerLabel.content = presenter.memoLabelContent
 
         presenter.domainLabelContentPresenting
             .state
@@ -90,15 +83,22 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
-                    if !content.labelContent.isEmpty {
-                        self?.domainLabel.isHidden = false
-                        self?.domainSeparator.isHidden = false
-                        self?.domainHeaderLabel.isHidden = false
-                        self?.domainLabel.content = content.labelContent
-                    }
+                    self?.domainItem.show(!content.labelContent.text.isEmpty)
+                    self?.domainItem.contentLabel.content = content.labelContent
+                    self?.view.setNeedsLayout()
+                    self?.view.layoutIfNeeded()
                 case .loading:
-                    self?.domainLabel.text = nil
+                    self?.domainItem.contentLabel.text = nil
                 }
+            })
+            .disposed(by: disposeBag)
+
+        presenter.alertContentRelay
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .take(1)
+            .subscribe(onNext: { [weak self] content in
+                self?.installAlert(title: content.title, subtitle: content.subtitle)
             })
             .disposed(by: disposeBag)
 
@@ -108,9 +108,9 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             .subscribe(onNext: { [weak self] state in
                 switch state {
                 case .loaded(next: let content):
-                    self?.addressLabel.content = content.labelContent
+                    self?.addressItem.contentLabel.content = content.labelContent
                 case .loading:
-                    self?.addressLabel.text = nil
+                    self?.addressItem.contentLabel.text = nil
                 }
             })
             .disposed(by: disposeBag)
@@ -122,9 +122,9 @@ final class ReceiveScreenViewController: BaseScreenViewController {
                 switch state {
                 case .loaded(next: let content):
                     self?.displayMemo(show: !content.labelContent.text.isEmpty)
-                    self?.memoLabel.content = content.labelContent
+                    self?.memoItem.contentLabel.content = content.labelContent
                 case .loading:
-                    self?.memoLabel.text = nil
+                    self?.memoItem.contentLabel.text = nil
                 }
             })
             .disposed(by: disposeBag)
@@ -169,15 +169,11 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
     private func displayMemo(show: Bool) {
         memoNoteContainer.isHidden = !show
-        memoLabel.isHidden = !show
-        memoSeparator.isHidden = !show
-        memoHeaderLabel.isHidden = !show
-        memoNoteContainerToLabelConstraint.constant = show ? 16 : 0
+        memoItem.show(show)
         memoNoteContainerHeightConstraint.isActive = !show
-        memoLabelToSeparatorConstraint.constant = show ? 16 : 0
-        memoHeaderToAddressLabelConstraint.constant = show ? 16 : 0
-        memoHeaderHeightConstraint.isActive = !show
         copyButtonToMemoNoteConstraint.constant = show ? 16 : copyButtonTopOffset
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
     }
 
     private func setupNavigationBar() {
@@ -187,6 +183,24 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             trailingButtonStyle: .close
         )
         titleViewStyle = .text(value: presenter.title)
+    }
+
+    private func installAlert(title: String, subtitle: String) {
+        alertCardView.isHidden = false
+        let alertCard = AlertCard(
+            title: title,
+            message: subtitle
+        )
+        let hostingController = UIHostingController(rootView: alertCard)
+        hostingController.view.invalidateIntrinsicContentSize()
+        addChild(hostingController)
+        alertCardView.addSubview(hostingController.view)
+        let insets = UIEdgeInsets(horizontal: 24, vertical: 8)
+        hostingController.view.constraint(
+            edgesTo: alertCardView,
+            insets: insets
+        )
+        hostingController.didMove(toParent: self)
     }
 
     private func setupView() {
@@ -210,15 +224,10 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         contentView.addSubview(thumbImageView)
         contentView.addSubview(assetImageView)
         contentView.addSubview(qrCodeImageView)
-        contentView.addSubview(domainHeaderLabel)
-        contentView.addSubview(domainSeparator)
-        contentView.addSubview(domainLabel)
-        contentView.addSubview(addressHeaderLabel)
-        contentView.addSubview(addressSeparator)
-        contentView.addSubview(addressLabel)
-        contentView.addSubview(memoHeaderLabel)
-        contentView.addSubview(memoSeparator)
-        contentView.addSubview(memoLabel)
+        contentView.addSubview(domainItem)
+        contentView.addSubview(addressItem)
+        contentView.addSubview(alertCardView)
+        contentView.addSubview(memoItem)
         contentView.addSubview(memoNoteContainer)
         contentView.addSubview(copyButton)
         contentView.addSubview(shareButton)
@@ -270,7 +279,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         memoNoteContainer.backgroundColor = .mediumBackground
         memoNoteContainer.layer.cornerRadius = 8
         memoNoteContainer.layoutToSuperview(axis: .horizontal, offset: 24)
-        memoNoteContainerToLabelConstraint = memoNoteContainer.layout(edge: .top, to: .bottom, of: memoLabel, offset: 16)
+        memoNoteContainer.layout(edge: .top, to: .bottom, of: memoItem)
         memoNoteContainerHeightConstraint = memoNoteContainer.layout(dimension: .height, to: 0, activate: false)
         memoNoteContainer.addSubview(memoNoteTextView)
 
@@ -281,65 +290,24 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         memoNoteTextView.layoutToSuperview(axis: .horizontal, offset: 12)
         memoNoteTextView.layoutToSuperview(axis: .vertical, offset: 12)
 
-        // MARK: Memo Label
+        // MARK: Memo Item
 
-        memoLabel.layoutToSuperview(axis: .horizontal, offset: 24)
-        memoLabelToSeparatorConstraint = memoLabel.layout(edge: .top, to: .bottom, of: memoSeparator, offset: 16)
-        memoLabel.numberOfLines = 0
+        memoItem.layoutToSuperview(axis: .horizontal)
+        memoItem.layout(edge: .top, to: .bottom, of: alertCardView)
 
-        // MARK: Memo Separator
+        // MARK: Domain Item
 
-        memoSeparator.backgroundColor = .lightBorder
-        memoSeparator.layout(dimension: .height, to: 1)
-        memoSeparator.layout(edge: .leading, to: .trailing, of: memoHeaderLabel, offset: 8)
-        memoSeparator.layoutToSuperview(.trailing)
-        memoSeparator.layout(edge: .bottom, to: .lastBaseline, of: memoHeaderLabel)
+        domainItem.layoutToSuperview(axis: .horizontal)
 
-        // MARK: Memo Header
+        // MARK: Address Item
 
-        memoHeaderLabel.layoutToSuperview(.leading, offset: 24)
-        memoHeaderToAddressLabelConstraint = memoHeaderLabel.layout(edge: .top, to: .bottom, of: addressLabel, offset: 16)
-        memoHeaderHeightConstraint = memoHeaderLabel.layout(dimension: .height, to: 0, activate: false)
+        addressItem.layoutToSuperview(axis: .horizontal)
+        addressItem.layout(edge: .top, to: .bottom, of: domainItem)
 
-        // MARK: Domain Label
+        // MARK: Alert Card View
 
-        domainLabel.isHidden = true
-        domainLabel.layoutToSuperview(axis: .horizontal, offset: 24)
-        domainLabel.layout(edge: .top, to: .bottom, of: domainSeparator, offset: 16)
-        domainLabel.numberOfLines = 0
-
-        // MARK: Domain Separator
-
-        domainSeparator.isHidden = true
-        domainSeparator.backgroundColor = .lightBorder
-        domainSeparator.layout(dimension: .height, to: 1)
-        domainSeparator.layout(edge: .leading, to: .trailing, of: domainHeaderLabel, offset: 8)
-        domainSeparator.layoutToSuperview(.trailing)
-        domainSeparator.layout(edge: .bottom, to: .lastBaseline, of: domainHeaderLabel)
-        domainSeparator.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -56).isActive = true
-
-        // MARK: Domain Header
-
-        domainHeaderLabel.isHidden = true
-        domainHeaderLabel.layoutToSuperview(.leading, offset: 24)
-
-        // MARK: Address Label
-
-        addressLabel.layoutToSuperview(axis: .horizontal, offset: 24)
-        addressLabel.layout(edge: .top, to: .bottom, of: addressSeparator, offset: 16)
-        addressLabel.numberOfLines = 0
-
-        // MARK: Address Separator
-
-        addressSeparator.backgroundColor = .lightBorder
-        addressSeparator.layout(dimension: .height, to: 1)
-        addressSeparator.layout(edge: .leading, to: .trailing, of: addressHeaderLabel, offset: 8)
-        addressSeparator.layoutToSuperview(.trailing)
-        addressSeparator.layout(edge: .bottom, to: .lastBaseline, of: addressHeaderLabel)
-
-        // MARK: Address Header
-
-        addressHeaderLabel.layoutToSuperview(.leading, offset: 24)
+        alertCardView.layoutToSuperview(axis: .horizontal)
+        alertCardView.layout(edge: .top, to: .bottom, of: addressItem)
 
         // MARK: QRCode ImageView
 
@@ -358,11 +326,66 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             topGuide.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 16),
             topGuide.bottomAnchor.constraint(equalTo: qrCodeImageView.topAnchor),
             bottomGuide.topAnchor.constraint(equalTo: qrCodeImageView.bottomAnchor),
-            bottomGuide.bottomAnchor.constraint(equalTo: domainHeaderLabel.topAnchor, constant: -16),
+            bottomGuide.bottomAnchor.constraint(equalTo: domainItem.topAnchor, constant: -16),
             topGuide.heightAnchor.constraint(equalTo: bottomGuide.heightAnchor)
         ])
         contentSizeObserver = scrollView.observe(\.contentSize) { scrollView, _ in
             scrollView.isScrollEnabled = scrollView.contentSize.height > scrollView.frame.height
+        }
+    }
+}
+
+extension ReceiveScreenViewController {
+    /// A receive screen item, composed of Header, Content, and a separator.
+    final class ItemView: UIView {
+
+        let contentLabel = UILabel()
+        let headerLabel = UILabel()
+        let separator = UILabel()
+
+        private var zeroHeightConstraint: NSLayoutConstraint!
+
+        init() {
+            super.init(frame: .zero)
+            addSubview(contentLabel)
+            addSubview(headerLabel)
+            addSubview(separator)
+
+            // MARK: Header
+
+            headerLabel.layoutToSuperview(.top, offset: 0)
+            headerLabel.layoutToSuperview(.leading, offset: 24)
+            headerLabel.verticalContentHuggingPriority = .required
+
+            // MARK: Domain Label
+
+            contentLabel.layoutToSuperview(axis: .horizontal, offset: 24)
+            contentLabel.layout(edge: .top, to: .bottom, of: separator, offset: 16)
+            contentLabel.layout(edge: .bottom, to: .bottom, of: self, offset: -16)
+            contentLabel.numberOfLines = 0
+            contentLabel.verticalContentHuggingPriority = .required
+
+            // MARK: Domain Separator
+
+            separator.backgroundColor = .lightBorder
+            separator.layout(dimension: .height, to: 1)
+            separator.layout(edge: .leading, to: .trailing, of: headerLabel, offset: 8)
+            separator.layoutToSuperview(.trailing)
+            separator.layout(edge: .bottom, to: .lastBaseline, of: headerLabel)
+
+            zeroHeightConstraint = layout(dimension: .height, to: 0, activate: false)
+            verticalContentHuggingPriority = .required
+        }
+
+        required init?(coder: NSCoder) { nil }
+
+        func show(_ flag: Bool) {
+            zeroHeightConstraint.isActive = !flag
+            isHidden = !flag
+            contentLabel.isHidden = !flag
+            headerLabel.isHidden = !flag
+            separator.isHidden = !flag
+            setNeedsLayout()
         }
     }
 }
