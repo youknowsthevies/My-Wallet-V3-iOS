@@ -14,19 +14,24 @@ struct ClaimBenefitsView: View {
     @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
-        VStack(alignment: .center, spacing: Spacing.padding3) {
-            benefitsHeader
-                .padding([.leading, .trailing], Spacing.padding3)
-            benefitsList
-            Spacer()
-            PrimaryButton(title: LocalizedString.claimButton) {
-                presentationMode.wrappedValue.dismiss()
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .center, spacing: Spacing.padding3) {
+                    benefitsHeader
+                        .padding([.leading, .trailing], Spacing.padding3)
+                    benefitsList
+                    Spacer()
+                    PrimaryButton(title: LocalizedString.claimButton) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .padding([.leading, .trailing, .bottom], Spacing.padding3)
+                    .accessibility(identifier: Accessibility.ctaButton)
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .primaryNavigation(trailing: { closeButton })
             }
-            .padding([.leading, .trailing], Spacing.padding3)
-            .accessibility(identifier: Accessibility.ctaButton)
+            .frame(height: geometry.size.height)
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .primaryNavigation(trailing: { closeButton })
     }
 
     private var closeButton: some View {
