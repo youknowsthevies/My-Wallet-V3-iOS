@@ -297,28 +297,20 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func presentLinkPaymentMethod(transactionModel: TransactionModel) {
-        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        let viewController = viewController.uiviewController
+        let presenter = viewController.topMostViewController ?? viewController
         paymentMethodLinker.presentAccountLinkingFlow(from: presenter) { [weak self] result in
-            presenter.dismiss(animated: true) {
-                guard let self = self else { return }
+            guard let self = self else { return }
+            viewController.dismiss(animated: true) {
                 switch result {
                 case .abandoned:
                     transactionModel.process(action: .returnToPreviousStep)
                 case .completed(let paymentMethod):
                     switch paymentMethod.type {
                     case .applePay:
-                        self.interactor.didSelectSourceAccount(
-                            account: PaymentMethodAccount.applePay(from: paymentMethod)
+                        transactionModel.process(
+                            action: .sourceAccountSelected(PaymentMethodAccount.applePay(from: paymentMethod))
                         )
-                        transactionModel
-                            .state
-                            .asPublisher()
-                            .receive(on: DispatchQueue.main)
-                            .compactMap(\.destination)
-                            .sink(receiveValue: { [weak self] destination in
-                                self?.interactor.didSelectDestinationAccount(target: destination)
-                            })
-                            .store(in: &self.cancellables)
                     case .bankAccount:
                         transactionModel.process(action: .showBankWiringInstructions)
                     case .bankTransfer:
