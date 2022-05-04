@@ -11,6 +11,7 @@ public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction
     case update(Result<(KYCStatus, [Account.Snapshot]), Error>)
     case fetchedInterestRate(Result<Double, NetworkError>)
     case fetchedAssetInformation(Result<AssetInformation, NetworkError>)
+    case refresh
     case reset
     case graph(GraphViewAction)
     case observation(BlockchainNamespaceObservation)

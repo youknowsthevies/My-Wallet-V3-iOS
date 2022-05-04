@@ -443,6 +443,8 @@ blockchain:
 						cancel:
 				buys:
 					notification:
+			refresh:
+			+ blockchain.ux.type.analytics.action
 			select:
 			+ blockchain.ux.type.action
 			sell:

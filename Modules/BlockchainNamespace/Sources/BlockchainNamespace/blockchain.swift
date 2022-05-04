@@ -1501,6 +1501,7 @@ public extension I_blockchain_ux_asset {
 	var `error`: L_blockchain_ux_asset_error { .init("\(__).error") }
 	var `receive`: L_blockchain_ux_asset_receive { .init("\(__).receive") }
 	var `recurring`: L_blockchain_ux_asset_recurring { .init("\(__).recurring") }
+	var `refresh`: L_blockchain_ux_asset_refresh { .init("\(__).refresh") }
 	var `select`: L_blockchain_ux_asset_select { .init("\(__).select") }
 	var `sell`: L_blockchain_ux_asset_sell { .init("\(__).sell") }
 	var `send`: L_blockchain_ux_asset_send { .init("\(__).send") }
@@ -1725,6 +1726,10 @@ public final class L_blockchain_ux_asset_recurring_buys_notification: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.recurring.buys.notification", comment: "") }
 }
 public protocol I_blockchain_ux_asset_recurring_buys_notification: I {}
+public final class L_blockchain_ux_asset_refresh: L, I_blockchain_ux_asset_refresh {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.refresh", comment: "") }
+}
+public protocol I_blockchain_ux_asset_refresh: I_blockchain_ux_type_analytics_action {}
 public final class L_blockchain_ux_asset_select: L, I_blockchain_ux_asset_select {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.select", comment: "") }
 }
