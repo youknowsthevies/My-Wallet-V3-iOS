@@ -1471,7 +1471,6 @@ Blockchain.com никогда не будет просить просмотре�
 "Signed" = "Подписано";
 "Signing" = "Подписание";
 "SMS Code" = "Код из СМС";
-"Support Center" = "Центр поддержки";
 "Taking you to %@" = "Переходим к %@";
 "Tap to Refresh" = "Нажмите, чтобы обновить";
 "The device approval link has expired, please try again." = "Срок действия ссылки для утверждения устройства истек, попробуйте еще раз.";
@@ -1500,11 +1499,11 @@ Blockchain.com никогда не будет просить просмотре�
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Минимальная сумма вывода для компенсации комиссии составляет **%@**.";
 "Too many active orders" = "Слишком много активных ордеров";
 "Transaction in progress" = "Транзакция выполняется";
-"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our |SUPPORT_CENTER|." = "К определенным банкам и эмитентам карт могут применяться ограничения на транзакции. \
+"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our [Support Center](https://blockchain.com)." = "К определенным банкам и эмитентам карт могут применяться ограничения на транзакции. \
 \
 Лимиты покупок или депозита определяются многими факторами, включая завершение проверки вашего аккаунта, историю покупок, тип оплаты и многое другое. \
 \
- Узнайте больше о торговых счетах, лимитах и функциях, посетив наш |SUPPORT_CENTER|.";
+ Узнайте больше о торговых счетах, лимитах и функциях, посетив наш [Центр поддержки](https://blockchain.com).";
 "Transfer from..." = "Перевод из...";
 "Transferred" = "Переданы";
 "Unlock Swap - our in-app exchange." = "Разблокируйте «Обмен» – нашу функцию обмена в приложении.";
@@ -1563,7 +1562,7 @@ Blockchain.com никогда не будет просить просмотре�
 "Country of Residence" = "Страна проживания";
 "Create Your Account." = "Создать аккаунт.";
 "Enter your password" = "Введите пароль";
-"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my |RECOVERY_PHRASE| to access my funds. By creating a wallet, you agree to Blockchain’s" = "Я понимаю, что Blockchain.com никогда не хранит пароли и поэтому не может восстановить или сбросить мой пароль. Если я потеряю доступ к своему кошельку, я буду должен(-на) использовать |RECOVERY_PHRASE| для доступа к своим средствам. Создавая кошелек, вы соглашаетесь с Blockchain";
+"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my **%@** to access my funds. By creating a wallet, you agree to Blockchain’s" = "Я понимаю, что Blockchain.com никогда не хранит пароли и поэтому не может восстановить или сбросить мой пароль. Если я потеряю доступ к своему кошельку, я буду должен(-на) использовать **%@** для доступа к своим средствам. Создавая кошелек, вы соглашаетесь с Blockchain";
 "If you need to change your Country or State, please contact our customer support." = "Если вам нужно изменить страну или штат, обратитесь в нашу службу поддержки.";
 "Let’s get you set up." = "Давайте зададим настройки.";
 "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning." = "Заставьте свою криптовалюту работать. Зарабатывайте до 10% в месяц, ничего не делая. Мгновенно вносите средства на счет и начинайте зарабатывать.";

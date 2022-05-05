@@ -1469,7 +1469,6 @@ Hesabına Yükseltin";
 "Signed" = "Oturum Açıldı";
 "Signing" = "Oturum açılıyor";
 "SMS Code" = "SMS Kodu";
-"Support Center" = "Destek Merkezi";
 "Taking you to %@" = "%@ sayfasına yönlendiriliyorsunuz";
 "Tap to Refresh" = "Yenilemek İçin Dokunun";
 "The device approval link has expired, please try again." = "Cihaz onay bağlantısının süresi doldu, lütfen tekrar deneyin.";
@@ -1498,11 +1497,11 @@ Hesabına Yükseltin";
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Ücretleri dengelemek amacıyla minimum **%@** tutarında para çekme işlemi yapılabilir.";
 "Too many active orders" = "Çok fazla aktif emir";
 "Transaction in progress" = "İşlem devam ediyor";
-"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our |SUPPORT_CENTER|." = "Bazı bankalar ve kart veren kuruluşlar için işlem limitleri geçerli olabilir. \
+"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our [Support Center](https://blockchain.com)." = "Bazı bankalar ve kart veren kuruluşlar için işlem limitleri geçerli olabilir. \
 \
 Satın alma veya para yatırma limitleri, hesabınızda tamamlanan doğrulama, satın alma geçmişiniz, ödeme türünüz ve daha fazlası dahil olmak üzere birçok faktör tarafından belirlenir. \
 \
-|SUPPORT_CENTER|'ımızı ziyaret ederek Alım Satım Hesapları, Limitler ve özellikler hakkında daha fazla bilgi edinin.";
+[Destek Merkezi](https://blockchain.com)'ımızı ziyaret ederek Alım Satım Hesapları, Limitler ve özellikler hakkında daha fazla bilgi edinin.";
 "Transfer from..." = "Şuradan transfer...";
 "Transferred" = "Transfer edilen";
 "Unlock Swap - our in-app exchange." = "Swap Kilidini Aç - uygulama içi borsamız.";
@@ -1559,7 +1558,7 @@ Bugün Kripto Satın Alın.";
 "Country of Residence" = "İkamet Edilen Ülke";
 "Create Your Account." = "Hesabınızı oluşturun.";
 "Enter your password" = "Şifrenizi girin";
-"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my |RECOVERY_PHRASE| to access my funds. By creating a wallet, you agree to Blockchain’s" = "Blockchain.com'un asla şifreleri saklamadığını ve bu nedenle şifremi kurtaramadığını veya sıfırlayamadığını anlıyorum. Cüzdanıma erişimi kaybedersem, fonlarıma erişmek için |RECOVERY_PHRASE| ifademi kullanmam gerekir. Bir cüzdan oluşturarak, Blockchain'in";
+"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my **%@** to access my funds. By creating a wallet, you agree to Blockchain’s" = "Blockchain.com'un asla şifreleri saklamadığını ve bu nedenle şifremi kurtaramadığını veya sıfırlayamadığını anlıyorum. Cüzdanıma erişimi kaybedersem, fonlarıma erişmek için **%@** ifademi kullanmam gerekir. Bir cüzdan oluşturarak, Blockchain'in";
 "If you need to change your Country or State, please contact our customer support." = "Ülkenizi veya Eyaletinizi değiştirmeniz gerekirse lütfen müşteri destek ekibimizle iletişime geçin.";
 "Let’s get you set up." = "Hadi sizi hazırlayalım.";
 "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning." = "Kripto paranızı çalıştırın. Hiçbir şey yapmadan aylık %10'a kadar kazanın. Anında para yatırıp kazanmaya başlayın.";
