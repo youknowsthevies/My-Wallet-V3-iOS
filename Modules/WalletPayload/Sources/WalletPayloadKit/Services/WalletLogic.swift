@@ -17,11 +17,13 @@ protocol WalletLogicAPI {
     ) -> AnyPublisher<WalletState, WalletError>
 
     /// Initialises a `Wallet` using the given payload data
-    /// - Parameter payload: A `Data` value representing a valid decrypted wallet payload
+    /// - Parameter payload: A `WalletPayload` value
+    /// - Parameter decryptedWallet: A `Data` value representing a valid decrypted wallet payload
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
         with password: String,
-        payload: Data
+        payload: WalletPayload,
+        decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError>
 
     /// Initialises a `Wallet` from metadata using the given seed phrase
@@ -35,11 +37,13 @@ protocol WalletLogicAPI {
 
     /// Initialises a `Wallet` after recovery using the given payload data
     /// - Parameter password: A `String` value representing user's password
-    /// - Parameter payload: A `Data` value representing a valid decrypted wallet payload
+    /// - Parameter payload: A `WalletPayload` value
+    /// - Parameter decryptedWallet: A `Data` value representing a valid decrypted wallet payload
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initializeAfterMetadataRecovery(
         with password: String,
-        payload: Data
+        payload: WalletPayload,
+        decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError>
 }
 
@@ -77,48 +81,50 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(walletState)
             }
-            .flatMap { walletState -> AnyPublisher<NativeWallet, WalletError> in
-                guard let wallet = walletState.wallet else {
+            .flatMap { walletState -> AnyPublisher<Wrapper, WalletError> in
+                guard let wrapper = walletState.wrapper else {
                     return .failure(.initialization(.missingWallet))
                 }
-                return .just(wallet)
+                return .just(wrapper)
             }
-            .flatMap { [initialiseMetadataWithSecondPassword, tempPassword] wallet
+            .flatMap { [initialiseMetadataWithSecondPassword, tempPassword] wrapper
                 -> AnyPublisher<WalletState, WalletError> in
                 guard let tempPassword = tempPassword else {
                     return .failure(.initialization(.unknown))
                 }
-                return initialiseMetadataWithSecondPassword(wallet, tempPassword, secondPassword)
+                return initialiseMetadataWithSecondPassword(wrapper, tempPassword, secondPassword)
             }
             .eraseToAnyPublisher()
     }
 
     func initialize(
         with password: String,
-        payload: Data
+        payload: WalletPayload,
+        decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError> {
-        decoder(payload)
-            .flatMap { [holder] wallet -> AnyPublisher<NativeWallet?, WalletError> in
-                holder.hold(walletState: .partially(loaded: .justWallet(wallet)))
-                    .map(\.wallet)
+        decoder(payload, decryptedWallet)
+            .flatMap { [holder] wrapper -> AnyPublisher<Wrapper?, WalletError> in
+                holder.hold(walletState: .partially(loaded: .justWrapper(wrapper)))
+                    .map(\.wrapper)
                     .setFailureType(to: WalletError.self)
                     .eraseToAnyPublisher()
             }
-            .flatMap { wallet -> AnyPublisher<NativeWallet, WalletError> in
-                guard let wallet = wallet else {
+            .flatMap { wrapper -> AnyPublisher<Wrapper, WalletError> in
+                guard let wrapper = wrapper else {
                     return .failure(.initialization(.missingWallet))
                 }
-                return .just(wallet)
+                return .just(wrapper)
             }
-            .flatMap { [initialiseMetadata] wallet -> AnyPublisher<WalletState, WalletError> in
-                initialiseMetadata(wallet, password)
+            .flatMap { [initialiseMetadata] wrapper -> AnyPublisher<WalletState, WalletError> in
+                initialiseMetadata(wrapper, password)
             }
             .eraseToAnyPublisher()
     }
 
     func initializeAfterMetadataRecovery(
         with password: String,
-        payload: Data
+        payload: WalletPayload,
+        decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError> {
         holder.walletStatePublisher
             .first()
@@ -128,13 +134,13 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [decoder] metadataState -> AnyPublisher<(NativeWallet, MetadataState), WalletError> in
-                decoder(payload)
+            .flatMap { [decoder] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+                decoder(payload, decryptedWallet)
                     .map { ($0, metadataState) }
                     .eraseToAnyPublisher()
             }
-            .flatMap { [holder] wallet, metadataState -> AnyPublisher<WalletState, WalletError> in
-                holder.hold(walletState: .loaded(wallet: wallet, metadata: metadataState))
+            .flatMap { [holder] wrapper, metadataState -> AnyPublisher<WalletState, WalletError> in
+                holder.hold(walletState: .loaded(wrapper: wrapper, metadata: metadataState))
                     .first()
                     .mapError()
                     .eraseToAnyPublisher()
@@ -174,48 +180,48 @@ final class WalletLogic: WalletLogicAPI {
     // MARK: - Private
 
     private func initialiseMetadataWithSecondPassword(
-        with wallet: NativeWallet,
+        with wrapper: Wrapper,
         password: String,
         secondPassword: String
     ) -> AnyPublisher<WalletState, WalletError> {
-        guard wallet.doubleEncrypted else {
+        guard wrapper.wallet.doubleEncrypted else {
             fatalError("This method should only be called if a secondPassword is needed")
         }
-        return initialiseMetadata(with: wallet, password: password, secondPassword: secondPassword)
+        return initialiseMetadata(with: wrapper, password: password, secondPassword: secondPassword)
     }
 
     private func initialiseMetadata(
-        with wallet: NativeWallet,
+        with wrapper: Wrapper,
         password: String
     ) -> AnyPublisher<WalletState, WalletError> {
-        if wallet.doubleEncrypted {
+        if wrapper.wallet.doubleEncrypted {
             tempPassword = password
             return .failure(.initialization(.needsSecondPassword))
         }
-        return initialiseMetadata(with: wallet, password: password, secondPassword: nil)
+        return initialiseMetadata(with: wrapper, password: password, secondPassword: nil)
     }
 
     private func initialiseMetadata(
-        with wallet: NativeWallet,
+        with wrapper: Wrapper,
         password: String,
         secondPassword: String?
     ) -> AnyPublisher<WalletState, WalletError> {
         provideMetadataInput(
             password: password,
             secondPassword: secondPassword,
-            wallet: wallet
+            wallet: wrapper.wallet
         )
         .map { input in
-            (input, wallet)
+            (input, wrapper)
         }
-        .flatMap { [metadata] input, wallet -> AnyPublisher<WalletState, WalletError> in
+        .flatMap { [metadata] input, wrapper -> AnyPublisher<WalletState, WalletError> in
             metadata.initialize(
                 credentials: input.credentials,
                 masterKey: input.masterKey,
                 payloadIsDoubleEncrypted: input.payloadIsDoubleEncrypted
             )
             .map { metadataState -> WalletState in
-                .loaded(wallet: wallet, metadata: metadataState)
+                .loaded(wrapper: wrapper, metadata: metadataState)
             }
             .replaceError(with: .initialization(.metadataInitialization))
             .eraseToAnyPublisher()

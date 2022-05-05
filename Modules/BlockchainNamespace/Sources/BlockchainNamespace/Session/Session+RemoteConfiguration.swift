@@ -8,38 +8,49 @@ extension Session {
 
     public class RemoteConfiguration {
 
-        enum RemoteConfigConstants {
-            static let cacheSuiteKey: String = "FIREBASE_REMOTE_CONFIG_STALE"
-        }
-
         public var isSynchronized: Bool { _isSynchronized.value }
         private let _isSynchronized: CurrentValueSubject<Bool, Never> = .init(false)
 
         public var allKeys: [String] { Array(fetched.keys) }
 
-        private var fetched: [String: Any] {
+        private var fetched: [String: Any?] {
             get { _fetched.value }
             set { _fetched.send(newValue) }
         }
 
-        private var _fetched: CurrentValueSubject<[String: Any], Never> = .init([:])
-        private let preferences: UserDefaults
+        private var _fetched: CurrentValueSubject<[String: Any?], Never> = .init([:])
+        private var fetch: ((AppProtocol, Bool) -> Void)?
+        private var bag: Set<AnyCancellable> = []
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
-            default defaultValue: [Tag.Reference: Any] = [:],
-            preferences: UserDefaults = .standard
+            default defaultValue: Default = [:]
         ) {
-            self.preferences = preferences
-            Task {
-                var configuration: [String: Any] = defaultValue.mapKeys { key in
-                    key.idToFirebaseConfigurationKeyDefault()
-                }
+            fetch = { [unowned self] app, isStale in
+                Task {
+                    var configuration: [String: Any?] = defaultValue.dictionary.mapKeys { key in
+                        key.idToFirebaseConfigurationKeyDefault()
+                    }
 
-                do {
-                    let status = try await remote.fetch(withExpirationDuration: expiration)
-                    guard status == .success else { return }
-                    _ = try await remote.activate()
+                    let expiration: TimeInterval
+                    if isStale {
+                        expiration = 0 // Instant
+                    } else if isDebug {
+                        expiration = 30 // 30 seconds
+                    } else {
+                        expiration = 3600 // 1 hour
+                    }
+
+                    do {
+                        _ = try await remote.fetch(withExpirationDuration: expiration)
+                        _ = try await remote.activate()
+                    } catch {
+                        print("😱", "unable to fetch remote configuration", error)
+                        #if DEBUG
+                        fatalError(String(describing: error))
+                        #endif
+                    }
+
                     let keys = remote.allKeys(from: .remote)
                     for key in keys {
                         do {
@@ -51,17 +62,24 @@ extension Session {
                             configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
                         }
                     }
-                } catch {
-                    print("😱", "unable to fetch remote configuration", error)
-                    #if DEBUG
-                    fatalError(String(describing: error))
-                    #endif
-                }
 
-                _fetched.send(configuration)
-                _isSynchronized.send(true)
-                clearIsStale()
+                    _fetched.send(configuration)
+                    _isSynchronized.send(true)
+                    app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
+                }
             }
+        }
+
+        func start(app: AppProtocol) {
+            app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
+                .replaceError(with: false)
+                .scan((stale: false, count: 0)) { ($1, $0.count + 1) }
+                .sink { [unowned self] stale, count in
+                    if stale || count == 1 {
+                        fetch?(app, stale)
+                    }
+                }
+                .store(in: &bag)
         }
 
         public func override(_ key: Tag.Reference, with value: Any) {
@@ -98,7 +116,7 @@ extension Session {
                 .flatMap { configuration -> Just<FetchResult> in
                     switch configuration[firstOf: key.firebaseConfigurationKeys] {
                     case let value?:
-                        return Just(.value(value, key.metadata(.remoteConfiguration)))
+                        return Just(.value(value as Any, key.metadata(.remoteConfiguration)))
                     case nil:
                         return Just(.error(.keyDoesNotExist(key), key.metadata(.remoteConfiguration)))
                     }
@@ -106,19 +124,22 @@ extension Session {
                 .eraseToAnyPublisher()
         }
 
-        /// The expiration time interval to be used.
-        private var expiration: TimeInterval {
-            if isStale {
-                return 0
-            } else if isDebug {
-                return 30 // 30 seconds
-            }
-            return 3600 // 1 hour
+        public func override(_ key: String, with value: Any) {
+            fetched[key] = value
         }
 
-        /// Flag indicating if RemoteConfig is set as Stale.
-        private var isStale: Bool {
-            preferences.bool(forKey: RemoteConfigConstants.cacheSuiteKey)
+        public func get(_ key: String) throws -> Any? {
+            guard isSynchronized else { throw Error.notSynchronized }
+            return fetched[key]
+        }
+
+        public func publisher(for string: String) -> AnyPublisher<Any?, Never> {
+            _isSynchronized
+                .combineLatest(_fetched)
+                .filter(\.0)
+                .map(\.1)
+                .map { configuration -> Any? in configuration[string] as Any? }
+                .eraseToAnyPublisher()
         }
 
         /// Determines if the app has the `DEBUG` build flag.
@@ -128,10 +149,6 @@ extension Session {
             #else
             return false
             #endif
-        }
-
-        private func clearIsStale() {
-            preferences.set(false, forKey: RemoteConfigConstants.cacheSuiteKey)
         }
     }
 }
@@ -195,5 +212,15 @@ extension Dictionary {
             return value
         }
         return nil
+    }
+}
+
+extension Session.RemoteConfiguration {
+
+    public struct Default: ExpressibleByDictionaryLiteral {
+        let dictionary: [Tag.Reference: Any?]
+        public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
+            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key, $0.1) })
+        }
     }
 }

@@ -43,11 +43,11 @@ final class WalletFetcher: WalletFetcherAPI {
 
     func fetch(using password: String) -> AnyPublisher<WalletFetchedContext, WalletError> {
         walletRepo
-            .encryptedPayload
+            .walletPayload
             .first()
             .receive(on: operationsQueue)
-            .flatMap { [payloadCrypto] payloadWrapper -> AnyPublisher<String, WalletError> in
-                guard !payloadWrapper.payload.isEmpty else {
+            .flatMap { [payloadCrypto] walletPayload -> AnyPublisher<(WalletPayload, String), WalletError> in
+                guard let payloadWrapper = walletPayload.payloadWrapper, !payloadWrapper.payload.isEmpty else {
                     return .failure(WalletError.payloadNotFound)
                 }
                 return payloadCrypto.decryptWallet(
@@ -55,15 +55,16 @@ final class WalletFetcher: WalletFetcherAPI {
                     password: password
                 )
                 .publisher
+                .map { (walletPayload, $0) }
                 .mapError { _ in WalletError.decryption(.decryptionError) }
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletLogic] string -> AnyPublisher<WalletState, WalletError> in
-                guard let data = string.data(using: .utf8) else {
+            .flatMap { [walletLogic] walletPayload, decryptedPayload -> AnyPublisher<WalletState, WalletError> in
+                guard let data = decryptedPayload.data(using: .utf8) else {
                     return .failure(.decryption(.decryptionError))
                 }
                 return walletLogic
-                    .initialize(with: password, payload: data)
+                    .initialize(with: password, payload: walletPayload, decryptedWallet: data)
             }
             .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
                 guard let wallet = walletState.wallet else {

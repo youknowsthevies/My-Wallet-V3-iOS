@@ -41,7 +41,6 @@ final class MainAppReducerTests: XCTestCase {
     var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockCoincore: MockCoincore!
-    var mockFeatureConfigurator: MockFeatureConfigurator!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var mockSiftService: MockSiftService!
     var onboardingSettings: MockOnboardingSettings!
@@ -93,7 +92,6 @@ final class MainAppReducerTests: XCTestCase {
             authorizer: mockRemoteNotificationAuthorizer
         )
         mockCoincore = MockCoincore()
-        mockFeatureConfigurator = MockFeatureConfigurator()
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         mockSiftService = MockSiftService()
         onboardingSettings = MockOnboardingSettings()
@@ -131,7 +129,6 @@ final class MainAppReducerTests: XCTestCase {
                 userService: MockNabuUserService(),
                 deviceVerificationService: mockDeviceVerificationService,
                 featureFlagsService: mockFeatureFlagsService,
-                appFeatureConfigurator: mockFeatureConfigurator,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
                 blockchainSettings: mockSettingsApp,
                 credentialsStore: mockCredentialsStore,
@@ -172,7 +169,6 @@ final class MainAppReducerTests: XCTestCase {
         mockRemoteNotificationAuthorizer = nil
         mockRemoteNotificationServiceContainer = nil
         mockCoincore = nil
-        mockFeatureConfigurator = nil
         mockAnalyticsRecorder = nil
         mockSiftService = nil
         onboardingSettings = nil
@@ -249,14 +245,6 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertTrue(mockCredentialsStore.expectedPinDataCalled)
     }
 
-    func test_sending_start_should_correct_outputs() {
-        testStore.send(.start) { state in
-            state.onboarding = Onboarding.State()
-            state.loggedIn = nil
-        }
-        XCTAssertTrue(mockFeatureConfigurator.initializeCalled)
-    }
-
     func test_verify_didDecryptWallet_action_updates_appSettings() {
         testStore.send(
             .didDecryptWallet(.init(guid: "a", sharedKey: "b", passwordPartHash: "c"))
@@ -282,9 +270,6 @@ final class MainAppReducerTests: XCTestCase {
         }
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
-        testStore.receive(.onboarding(.welcomeScreen(.setManualPairingEnabled))) { state in
-            state.onboarding?.welcomeState?.manualPairingEnabled = true
-        }
         testStore.send(.onboarding(.welcomeScreen(.enter(into: .manualLogin)))) { state in
             state.onboarding?.welcomeState?.route = RouteIntent(route: .manualLogin, action: .enterInto())
             state.onboarding?.welcomeState?.manualCredentialsState = .init()

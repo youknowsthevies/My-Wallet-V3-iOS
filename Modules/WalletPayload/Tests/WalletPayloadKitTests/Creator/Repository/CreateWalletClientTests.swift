@@ -119,7 +119,6 @@ class CreateWalletClientTests: XCTestCase {
             payloadChecksum: "",
             language: "en",
             syncPubKeys: false,
-            warChecksum: "",
             wallet: wallet
         )
     }

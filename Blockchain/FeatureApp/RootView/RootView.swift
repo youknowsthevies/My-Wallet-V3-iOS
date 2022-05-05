@@ -5,55 +5,40 @@ import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
+import FeatureInterestUI
 import Localization
 import MoneyKit
 import SwiftUI
 
-struct Tab: Hashable, Identifiable {
-    var id: String { tag.id }
-    var tag: Tag
+struct Tab: Hashable, Identifiable, Codable {
+    var id: AnyHashable { tag }
+    var tag: Tag.Reference
     var name: String
+    var title, message: String?
+    var url: URL?
     var icon: Icon
 }
 
 extension Tab: CustomStringConvertible {
-
-    var description: String { id }
+    var description: String { tag.string }
 }
 
 extension Tab {
 
-    typealias Localization = LocalizationConstants.TabItems
+    var ref: Tag.Reference { tag }
 
-    static let allTabs: [L: Tab] = [
-        blockchain.ux.user.portfolio: Tab(
-            tag: blockchain.ux.user.portfolio[],
-            name: Localization.home,
-            icon: .home
-        ),
-        blockchain.ux.prices: Tab(
-            tag: blockchain.ux.prices[],
-            name: Localization.prices,
-            icon: .lineChartUp
-        ),
-        blockchain.ux.buy_and_sell: Tab(
-            tag: blockchain.ux.buy_and_sell[],
-            name: Localization.buyAndSell,
-            icon: .cart
-        ),
-        blockchain.ux.user.activity: Tab(
-            tag: blockchain.ux.user.activity[],
-            name: Localization.activity,
-            icon: .pending
-        )
-    ]
+    // swiftlint:disable force_try
 
-    func entry() -> Tag {
-        tag["entry"]!
+    // OA Add support for pathing directly into a reference
+    // e.g. ref.descendant(blockchain.ux.type.story, \.entry)
+    func entry() -> Tag.Reference {
+        try! ref.tag.as(blockchain.ux.type.story).entry[].ref(to: ref.context)
     }
 }
 
 struct RootView: View {
+
+    @Environment(\.openURL) var openURL
 
     let store: Store<RootViewState, RootViewAction>
 
@@ -72,22 +57,11 @@ struct RootView: View {
         WithViewStore(store) { viewStore in
             Group {
                 TabView(selection: viewStore.binding(\.$tab)) {
-                    tab(blockchain.ux.user.portfolio) {
-                        PortfolioView(store: store.stateless)
-                    }
-                    tab(blockchain.ux.prices) {
-                        PricesView(store: store.stateless)
-                    }
-                    fab()
-                    tab(blockchain.ux.buy_and_sell) {
-                        BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
-                    }
-                    tab(blockchain.ux.user.activity) {
-                        ActivityView()
-                    }
+                    tabs(in: viewStore)
                 }
                 .overlay(
                     FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
+                        .if(viewStore.hideFAB, then: { view in view.hidden() })
                         .identity(blockchain.ux.frequent.action)
                         .background(
                             Circle()
@@ -104,18 +78,21 @@ struct RootView: View {
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             }
             .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
-                FrequentActionView(
-                    list: viewStore.fab.data.list,
-                    buttons: viewStore.fab.data.buttons
-                ) { action in
-                    withAnimation {
-                        viewStore.send(.frequentAction(action))
+                IfLetStore(store.scope(state: \.fab.data)) { store in
+                    WithViewStore(store) { viewStore in
+                        FrequentActionView(
+                            list: viewStore.list,
+                            buttons: viewStore.buttons
+                        ) { action in
+                            withAnimation {
+                                viewStore.send(.frequentAction(action))
+                            }
+                        }
                     }
                 }
             }
             .on(blockchain.ux.home.tab.select) { event in
-                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id, as: Tag.self)))
-                viewStore.send(.dismiss())
+                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
             }
             .onAppear {
                 viewStore.send(.onAppear)
@@ -128,51 +105,92 @@ struct RootView: View {
         .app(Blockchain.app)
     }
 
-    func fab() -> some View {
-        Icon.blockchain
-            .frame(width: 32.pt, height: 32.pt)
-            .tabItem { Color.clear }
+    func tabs(in viewStore: ViewStore<RootViewState, RootViewAction>) -> some View {
+        ForEach(viewStore.tabs ?? []) { tab in
+            tabItem(tab) {
+                switch tab.tag {
+                case blockchain.ux.user.portfolio:
+                    PortfolioView(store: store.stateless)
+                case blockchain.ux.prices:
+                    PricesView(store: store.stateless)
+                case blockchain.ux.frequent.action:
+                    Icon.blockchain
+                        .frame(width: 32.pt, height: 32.pt)
+                case blockchain.ux.buy_and_sell:
+                    BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
+                case blockchain.ux.user.rewards:
+                    RewardsView()
+                case blockchain.ux.user.activity:
+                    ActivityView()
+                case blockchain.ux.maintenance:
+                    maintenance(tab)
+                case blockchain.ux.web:
+                    if let url = tab.url {
+                        WebView(url: url)
+                    } else {
+                        maintenance(tab)
+                    }
+                default:
+                    #if DEBUG
+                    fatalError("Unhandled \(tab)")
+                    #else
+                    maintenance(tab)
+                    #endif
+                }
+            }
+        }
     }
 
-    @ViewBuilder func tab<Content>(
-        _ id: L,
+    func maintenance(_ tab: Tab) -> some View {
+        VStack(spacing: Spacing.padding3) {
+            tab.icon
+                .frame(width: 30.vw)
+                .aspectRatio(contentMode: .fit)
+            if let title = tab.title {
+                Text(title.localized())
+                    .typography(.title3)
+                    .foregroundColor(.semantic.title)
+            }
+            if let message = tab.message {
+                Text(message.localized())
+                    .typography(.body1)
+                    .foregroundColor(.semantic.body)
+            }
+            Spacer()
+            if let url = tab.url {
+                Button(LocalizationConstants.openWebsite) {
+                    openURL(url)
+                }
+            }
+        }
+        .multilineTextAlignment(.center)
+        .padding()
+    }
+
+    @ViewBuilder func tabItem<Content>(
+        _ tab: Tab,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View where Content: View {
-        let tab = Tab.allTabs[id]!
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
-                    leading: {
-                        account()
-                    },
-                    title: tab.name,
-                    trailing: {
-                        QR()
-                    }
+                    leading: account,
+                    title: tab.name.localized(),
+                    trailing: QR
                 )
         }
         .tabItem {
             Label(
                 title: {
-                    Text(tab.name)
+                    Text(tab.name.localized())
                         .typography(.micro)
                 },
                 icon: { tab.icon.image }
             )
             .identity(tab.entry())
         }
-        .tag(tab.tag)
-        .identity(tab.tag)
-    }
-
-    func tab<Content, Scope>(
-        _ id: L,
-        state: @escaping (RootViewState) -> Scope,
-        @ViewBuilder content: @escaping (Scope) -> Content
-    ) -> some View where Content: View, Scope: Equatable {
-        WithViewStore(store.scope(state: state)) { viewStore in
-            self.tab(id) { content(viewStore.state) }
-        }
+        .tag(tab.ref)
+        .identity(tab.ref)
     }
 
     @ViewBuilder func QR() -> some View {
@@ -205,18 +223,8 @@ extension Color {
 extension View {
 
     @ViewBuilder
-    func identity(_ tag: L) -> some View {
-        identity(tag[])
-    }
-
-    @ViewBuilder
-    func identity(_ tag: Tag) -> some View {
-        identity(tag.reference)
-    }
-
-    @ViewBuilder
-    func identity(_ tag: Tag.Reference) -> some View {
-        id(tag.string)
-            .accessibility(identifier: tag.string)
+    func identity(_ tag: Tag.Event, in context: Tag.Context = [:]) -> some View {
+        id(tag.description)
+            .accessibility(identifier: tag.description)
     }
 }

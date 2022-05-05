@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Embrace
+import FeatureCoinData
+import FeatureCoinDomain
 import FeatureOpenBankingUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
 import FeatureTransactionUI
+import ObservabilityDomain
 import PlatformUIKit
 import ToolKit
 import UIKit
@@ -76,6 +80,21 @@ extension DependencyContainer {
                 cardIssuingBuilder: DIKit.resolve(),
                 nabuUserService: DIKit.resolve()
             ) as FeatureSettingsUI.CardIssuingViewControllerAPI
+        }
+
+        single { () -> AssetInformationRepositoryAPI in
+            AssetInformationRepository(
+                AssetInformationClient(
+                    networkAdapter: DIKit.resolve(),
+                    requestBuilder: DIKit.resolve()
+                )
+            )
+        }
+
+        factory { () -> ObservabilityServiceAPI in
+            ObservabilityService(
+                client: Embrace.sharedInstance()
+            )
         }
     }
 }

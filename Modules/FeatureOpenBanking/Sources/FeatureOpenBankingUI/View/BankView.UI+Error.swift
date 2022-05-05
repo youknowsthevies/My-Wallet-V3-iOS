@@ -273,6 +273,42 @@ extension BankState.UI {
                 .cancel
             ]
         ),
+        .cardCreateAbandoned: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateAbandoned.title,
+                subtitle: Localization.Bank.Error.cardCreateAbandoned.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateAbandoned.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardCreateBankDeclined: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateBankDeclined.title,
+                subtitle: Localization.Bank.Error.cardCreateBankDeclined.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateBankDeclined.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardCreateDebitOnly: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateDebitOnly.title,
+                subtitle: Localization.Bank.Error.cardCreateDebitOnly.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateDebitOnly.action, action: .request),
+                .cancel
+            ]
+        ),
         .cardCreateDuplicate: .init(
             info: .init(
                 media: .inherited,
@@ -285,15 +321,39 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        .cardPaymentFailed: .init(
+        .cardCreateExpired: .init(
             info: .init(
                 media: .inherited,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.cardPaymentFailed.title,
-                subtitle: Localization.Bank.Error.cardPaymentFailed.subtitle
+                title: Localization.Bank.Error.cardCreateExpired.title,
+                subtitle: Localization.Bank.Error.cardCreateExpired.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.cardPaymentFailed.action, action: .request),
+                .retry(label: Localization.Bank.Error.cardCreateExpired.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardCreateFailed: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateFailed.title,
+                subtitle: Localization.Bank.Error.cardCreateFailed.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateFailed.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardCreateNoToken: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardCreateNoToken.title,
+                subtitle: Localization.Bank.Error.cardCreateNoToken.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardCreateDuplicate.action, action: .request),
                 .cancel
             ]
         ),
@@ -309,6 +369,30 @@ extension BankState.UI {
                 .cancel
             ]
         ),
+        .cardPaymentBankDeclined: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentBankDeclined.title,
+                subtitle: Localization.Bank.Error.cardPaymentBankDeclined.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentBankDeclined.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentDebitOnly: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentDebitOnly.title,
+                subtitle: Localization.Bank.Error.cardPaymentDebitOnly.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentDebitOnly.action, action: .request),
+                .cancel
+            ]
+        ),
         .cardPaymentExpired: .init(
             info: .init(
                 media: .inherited,
@@ -318,6 +402,18 @@ extension BankState.UI {
             ),
             action: [
                 .retry(label: Localization.Bank.Error.cardPaymentExpired.action, action: .request),
+                .cancel
+            ]
+        ),
+        .cardPaymentFailed: .init(
+            info: .init(
+                media: .inherited,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.cardPaymentFailed.title,
+                subtitle: Localization.Bank.Error.cardPaymentFailed.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.cardPaymentFailed.action, action: .request),
                 .cancel
             ]
         ),
@@ -333,15 +429,15 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        .cardPaymentBankDeclined: .init(
+        .cardPaymentNotSupported: .init(
             info: .init(
                 media: .inherited,
-                overlay: .init(media: .error),
-                title: Localization.Bank.Error.cardPaymentBankDeclined.title,
-                subtitle: Localization.Bank.Error.cardPaymentBankDeclined.subtitle
+                overlay: .init(media: .cross),
+                title: Localization.Bank.Error.cardPaymentNotSupported.title,
+                subtitle: Localization.Bank.Error.cardPaymentNotSupported.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.cardPaymentBankDeclined.action, action: .request),
+                .retry(label: Localization.Bank.Error.cardPaymentNotSupported.action, action: .request),
                 .cancel
             ]
         )

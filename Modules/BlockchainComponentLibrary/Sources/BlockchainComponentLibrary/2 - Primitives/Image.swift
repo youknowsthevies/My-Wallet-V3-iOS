@@ -177,12 +177,16 @@ extension Backport.ContentView {
     /// Hides the separator on a `View` that is shown in
     /// a `List`.
     @ViewBuilder public func hideListRowSeparator() -> some View {
+        #if os(iOS)
         if #available(iOS 15, *) {
             content
                 .listRowSeparator(.hidden)
         } else {
             content
         }
+        #else
+        content
+        #endif
     }
 
     /// Adds a `PrimaryDivider` at the bottom of the View.
@@ -198,6 +202,7 @@ extension Backport.ContentView {
     /// Hides the separator on a `View` that is shown in
     /// a `List` and adds a `PrimaryDivider` at the bottom of the View.
     @ViewBuilder public func hideListRowSepartorAndAddDivider() -> some View {
+        #if os(iOS)
         if #available(iOS 15, *) {
             content
                 .listRowSeparator(.hidden)
@@ -205,6 +210,9 @@ extension Backport.ContentView {
         } else {
             content
         }
+        #else
+        content
+        #endif
     }
 }
 

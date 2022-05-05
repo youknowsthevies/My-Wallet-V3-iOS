@@ -13,6 +13,7 @@ import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
+import ObservabilityDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -49,6 +50,7 @@ public struct AppEnvironment {
     var crashlyticsRecorder: Recording
     var openBanking: OpenBanking
     var cardService: CardServiceAPI
+    var observabilityService: ObservabilityServiceAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -74,8 +76,6 @@ public struct AppEnvironment {
 
     @available(*, deprecated, message: "Use featureFlagsService instead")
     var internalFeatureService: InternalFeatureFlagServiceAPI
-    @available(*, deprecated, message: "Use featureFlagsService instead")
-    var appFeatureConfigurator: FeatureConfiguratorAPI
 
     public init(
         app: AppProtocol,
@@ -117,7 +117,6 @@ public struct AppEnvironment {
         walletUpgradeService: WalletUpgradeServicing,
         walletRepoPersistence: WalletRepoPersistenceAPI,
         exchangeRepository: ExchangeAccountRepositoryAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI,
         blockchainSettings: BlockchainSettings.App,
         credentialsStore: CredentialsStoreAPI,
         urlSession: URLSession,
@@ -125,7 +124,8 @@ public struct AppEnvironment {
         appStoreOpener: AppStoreOpening,
         secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String,
-        externalAppOpener: ExternalAppOpener
+        externalAppOpener: ExternalAppOpener,
+        observabilityService: ObservabilityServiceAPI
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
@@ -164,7 +164,6 @@ public struct AppEnvironment {
         self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
         self.exchangeRepository = exchangeRepository
-        self.appFeatureConfigurator = appFeatureConfigurator
         self.blockchainSettings = blockchainSettings
         self.credentialsStore = credentialsStore
         self.urlSession = urlSession
@@ -175,5 +174,6 @@ public struct AppEnvironment {
         self.secondPasswordPrompter = secondPasswordPrompter
         self.cardService = cardService
         self.externalAppOpener = externalAppOpener
+        self.observabilityService = observabilityService
     }
 }

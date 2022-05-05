@@ -36,43 +36,12 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var actions: Single<AvailableActions> {
-        Single.zip(
-            isFunded,
-            isPairToFiatAvailable,
-            hasHistory.asSingle(),
-            isInterestTransferAvailable.asSingle()
-        )
-        .map { isFunded, isPairToFiatAvailable, hasHistory, isInterestEnabled -> AvailableActions in
-            var base: AvailableActions = [.receive]
-            if hasHistory || isFunded {
-                base.insert(.viewActivity)
-            }
-            if isPairToFiatAvailable {
-                base.insert(.buy)
-            }
-            if isFunded {
-                base.formUnion([.send, .swap])
-            }
-            if isFunded {
-                base.insert(.sell)
-            }
-            if isFunded, isInterestEnabled {
-                base.insert(.interestTransfer)
-            }
-            return base
-        }
+    var receiveAddress: Single<ReceiveAddress> {
+        .just(erc20ReceiveAddress)
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .just(
-            ERC20ReceiveAddress(
-                asset: asset,
-                address: publicKey,
-                label: label,
-                onTxCompleted: onTxCompleted
-            )!
-        )
+    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
+        .just(erc20ReceiveAddress)
     }
 
     var activity: Single<[ActivityItemEvent]> {
@@ -99,15 +68,16 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
-        Single.zip(
-            canPerformInterestTransfer(),
-            isInterestWithdrawAndDepositEnabled
-                .asSingle()
-        )
-        .map { $0.0 && $0.1 }
-        .asPublisher()
-        .replaceError(with: false)
-        .eraseToAnyPublisher()
+        guard asset.supports(product: .interestBalance) else {
+            return .just(false)
+        }
+        return isInterestWithdrawAndDepositEnabled
+            .zip(canPerformInterestTransfer)
+            .map { isEnabled, canPerform in
+                isEnabled && canPerform
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
@@ -143,7 +113,16 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 tokens[asset] != nil
             }
             .replaceError(with: false)
-            .ignoreFailure()
+            .eraseToAnyPublisher()
+    }
+
+    private var erc20ReceiveAddress: ERC20ReceiveAddress {
+        ERC20ReceiveAddress(
+            asset: asset,
+            address: publicKey,
+            label: label,
+            onTxCompleted: onTxCompleted
+        )!
     }
 
     private let balanceService: ERC20BalanceServiceAPI
@@ -190,58 +169,82 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.transactionsService = transactionsService
     }
 
-    private var isPairToFiatAvailable: Single<Bool> {
-        supportedPairsInteractorService
+    private var isPairToFiatAvailable: AnyPublisher<Bool, Never> {
+        guard asset.supports(product: .custodialWalletBalance) else {
+            return .just(false)
+        }
+        return supportedPairsInteractorService
             .pairs
-            .take(1)
-            .asSingle()
+            .asPublisher()
+            .prefix(1)
             .map { [asset] pairs in
                 pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
-    private var isPairToCryptoAvailable: Single<Bool> {
+    private var isPairToCryptoAvailable: AnyPublisher<Bool, Never> {
         tradingPairsService
             .tradingPairs
-            .asSingle()
             .map { [asset] tradingPairs in
                 tradingPairs.contains { pair in
                     pair.sourceCurrencyType == asset
                 }
             }
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
-    func can(perform action: AssetAction) -> Single<Bool> {
+    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .receive:
             return .just(true)
         case .interestTransfer:
             return isInterestTransferAvailable
-                .asSingle()
-                .flatMap { [isFunded] isEnabled in
-                    isEnabled ? isFunded : .just(false)
+                .flatMap { [isFundedPublisher] isEnabled in
+                    isEnabled ? isFundedPublisher : .just(false)
                 }
+                .eraseToAnyPublisher()
         case .deposit,
              .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)
         case .viewActivity:
-            return hasHistory.asSingle()
+            return hasHistory
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .send:
-            return isFunded
+            return isFundedPublisher
         case .swap:
-            return Single.zip(isPairToCryptoAvailable, isFunded).map {
-                $0.0 && $0.1
-            }
+            return isPairToCryptoAvailable
+                .flatMap { [isFundedPublisher] isPairToCryptoAvailable -> AnyPublisher<Bool, Never> in
+                    guard isPairToCryptoAvailable else {
+                        return .just(false)
+                    }
+                    return isFundedPublisher
+                        .replaceError(with: false)
+                        .eraseToAnyPublisher()
+                }
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .buy:
             return isPairToFiatAvailable
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .sell:
-            return Single.zip(isPairToFiatAvailable, isFunded).map {
-                $0.0 && $0.1
-            }
+            return isPairToFiatAvailable
+                .flatMap { [isFundedPublisher] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
+                    guard isPairToFiatAvailable else {
+                        return .just(false)
+                    }
+                    return isFundedPublisher
+                        .replaceError(with: false)
+                        .eraseToAnyPublisher()
+                }
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         }
     }
 

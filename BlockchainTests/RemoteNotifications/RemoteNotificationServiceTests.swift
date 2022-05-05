@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
+import BlockchainNamespace
 import Combine
 import DIKit
 import NetworkKit
@@ -50,6 +51,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             options: [.alert, .badge, .sound]
         )
         let relay = RemoteNotificationRelay(
+            app: App.test,
             cacheSuite: resolve(),
             userNotificationCenter: userNotificationCenter,
             messagingService: messagingService,

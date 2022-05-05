@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformKit
 import PlatformUIKit
 
 struct PendingTransactionPageState {
@@ -24,10 +25,13 @@ struct PendingTransactionPageState {
     let effect: Effect
     let primaryButtonViewModel: ButtonViewModel?
     let secondaryButtonViewModel: ButtonViewModel?
+    let action: AssetAction
+    let error: TransactionErrorState?
 
     static let empty: PendingTransactionPageState = .init(
         title: "",
-        subtitle: ""
+        subtitle: "",
+        action: .buy
     )
 
     init(
@@ -36,7 +40,9 @@ struct PendingTransactionPageState {
         compositeViewType: CompositeStatusViewType = .none,
         effect: Effect = .none,
         primaryButtonViewModel: ButtonViewModel? = nil,
-        secondaryButtonViewModel: ButtonViewModel? = nil
+        secondaryButtonViewModel: ButtonViewModel? = nil,
+        action: AssetAction,
+        error: TransactionErrorState? = nil
     ) {
         self.title = .init(
             text: title,
@@ -58,6 +64,8 @@ struct PendingTransactionPageState {
         self.primaryButtonViewModel = primaryButtonViewModel
         self.secondaryButtonViewModel = secondaryButtonViewModel
         self.effect = effect
+        self.action = action
+        self.error = error
     }
 }
 

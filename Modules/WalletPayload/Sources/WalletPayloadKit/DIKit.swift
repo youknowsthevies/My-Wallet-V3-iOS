@@ -39,7 +39,7 @@ extension DependencyContainer {
 
         factory { () -> WalletLogic in
             let walletCreator: WalletDecoderAPI = DIKit.resolve()
-            let decoder = walletCreator.createWallet(from:)
+            let decoder = walletCreator.createWallet
             return WalletLogic(
                 holder: DIKit.resolve(),
                 decoder: decoder,

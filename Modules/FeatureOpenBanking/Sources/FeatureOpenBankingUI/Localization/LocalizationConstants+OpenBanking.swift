@@ -557,6 +557,42 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
+            public static let cardCreateAbandoned = (
+                title: NSLocalizedString(
+                    "Did you authorize your card payment?",
+                    comment: "Did you authorize your card payment?"
+                ),
+                subtitle: NSLocalizedString(
+                    "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+                    comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardCreateBankDeclined = (
+                title: NSLocalizedString(
+                    "Failed to Add Card",
+                    comment: "Failed to Add Card"
+                ),
+                subtitle: NSLocalizedString(
+                    "Blockchain.com only allows debit payments for this card. Please choose a different payment method.",
+                    comment: "Blockchain.com only allows debit payments for this card. Please choose a different payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
+            public static let cardCreateDebitOnly = (
+                title: NSLocalizedString(
+                    "Invalid Card",
+                    comment: "Invalid Card"
+                ),
+                subtitle: NSLocalizedString(
+                    "Blockchain.com only allows debit payments for this card. Please choose a different payment method.",
+                    comment: "Blockchain.com only allows debit payments for this card. Please choose a different payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
             public static let cardCreateDuplicate = (
                 title: NSLocalizedString(
                     "Duplicate Card",
@@ -569,28 +605,86 @@ extension Localization {
                 action: Bank.Action.cancel
             )
 
+            public static let cardCreateExpired = (
+                title: NSLocalizedString(
+                    "Did you forget to authorize your card payment?",
+                    comment: "Did you forget to authorize your card payment?"
+                ),
+                subtitle: NSLocalizedString(
+                    "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+                    comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardCreateFailed = (
+                title: NSLocalizedString(
+                    "Unable to add card",
+                    comment: "Unable to add card"
+                ),
+                subtitle: NSLocalizedString(
+                    "Blockchain.com was unable to add your card. Please try again or choose a different payment method.",
+                    comment: "Blockchain.com was unable to add your card. Please try again or choose a different payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
+            public static let cardCreateNoToken = (
+                title: NSLocalizedString(
+                    "Card Not Supported",
+                    comment: "Card Not Supported"
+                ),
+                subtitle: NSLocalizedString(
+                    "We were unable to add your card. Please try again or choose a different payment method.",
+                    comment: "We were unable to add your card. Please try again or choose a different payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
             public static let cardPaymentFailed = (
                 title: NSLocalizedString(
                     "Payment Failed",
                     comment: "Payment Failed"
                 ),
                 subtitle: NSLocalizedString(
-                    "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again.",
-                    comment: "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again."
+                    "This payment was unsuccessful. Please try again or choose a different payment method.",
+                    comment: "This payment was unsuccessful. Please try again or choose a different payment method."
                 ),
                 action: Bank.Action.tryAgain
             )
 
-            public static let cardPaymentAbandoned = cardPaymentExpired
+            public static let cardPaymentAbandoned = (
+                title: NSLocalizedString(
+                    "Did you authorize your card payment?",
+                    comment: "Did you authorize your card payment?"
+                ),
+                subtitle: NSLocalizedString(
+                    "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+                    comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let cardPaymentDebitOnly = (
+                title: NSLocalizedString(
+                    "Payment Failed",
+                    comment: "Payment Failed"
+                ),
+                subtitle: NSLocalizedString(
+                    "This payment method was unsuccessful. Please try another payment method.",
+                    comment: "This payment method was unsuccessful. Please try another payment method."
+                ),
+                action: Bank.Action.tryAgain
+            )
 
             public static let cardPaymentExpired = (
                 title: NSLocalizedString(
-                    "Did you forget to authorise your card payment?",
-                    comment: "Did you forget to authorise your card payment?"
+                    "Did you forget to authorize your card payment?",
+                    comment: "Did you forget to authorize your card payment?"
                 ),
                 subtitle: NSLocalizedString(
-                    "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method.",
-                    comment: "Authorising ensures the security of your payments and varies bank-to-bank. If you receive this message repeatedly, consider trying again with a different payment method."
+                    "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+                    comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
                 ),
                 action: Bank.Action.tryAgain
             )
@@ -601,20 +695,32 @@ extension Localization {
                     comment: "Insufficient Funds"
                 ),
                 subtitle: NSLocalizedString(
-                    "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
-                    comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
+                    "This payment method lacks sufficient funds. You can add funds or choose a different method.",
+                    comment: "This payment method lacks sufficient funds. You can add funds or choose a different method."
                 ),
-                action: Bank.Action.tryAgain
+                action: Bank.Action.tryAnotherMethod
             )
 
             public static let cardPaymentBankDeclined = (
                 title: NSLocalizedString(
-                    "It looks like you declined payment authorisation.",
-                    comment: "It looks like you declined payment authorisation."
+                    "The Bank has declined this card",
+                    comment: "The Bank has declined this card"
                 ),
                 subtitle: NSLocalizedString(
-                    "Want to retry this transaction?",
-                    comment: "Want to retry this transaction?"
+                    "Your bank declined this card. Please try again or choose another payment method.",
+                    comment: "Your bank declined this card. Please try again or choose another payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
+            public static let cardPaymentNotSupported = (
+                title: NSLocalizedString(
+                    "Card Not Supported",
+                    comment: "Card Not Supported"
+                ),
+                subtitle: NSLocalizedString(
+                    "We were unable to add your card. Please try again or choose a different payment method.",
+                    comment: "We were unable to add your card. Please try again or choose a different payment method."
                 ),
                 action: Bank.Action.tryAgain
             )

@@ -158,23 +158,23 @@ extension Tag.Reference {
 extension Tag.Reference: Equatable {
 
     public static func == (lhs: Tag.Reference, rhs: Tag.Reference) -> Bool {
-        lhs.string == rhs.string
+        lhs.string == rhs.string && lhs.context == rhs.context
     }
 
     public static func == (lhs: Tag.Reference, rhs: Tag) -> Bool {
-        lhs.string == rhs.id
+        lhs.string == rhs.id && lhs.context.isEmpty
     }
 
     public static func == (lhs: Tag.Reference, rhs: L) -> Bool {
-        lhs.string == rhs(\.id)
+        lhs.string == rhs(\.id) && lhs.context.isEmpty
     }
 
     public static func != (lhs: Tag.Reference, rhs: Tag) -> Bool {
-        lhs.string != rhs.id
+        !(lhs == rhs)
     }
 
     public static func != (lhs: Tag.Reference, rhs: L) -> Bool {
-        lhs.string != rhs(\.id)
+        !(lhs == rhs)
     }
 }
 

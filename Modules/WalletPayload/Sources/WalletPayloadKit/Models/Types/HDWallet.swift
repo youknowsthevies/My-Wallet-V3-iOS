@@ -90,5 +90,5 @@ private func generateAccount(
 ) -> Account {
     let derivations = generateDerivations(masterSeedHex: masterSeedHex, index: index)
     let label = index > 0 ? "\(label)\(index + 1)" : label
-    return createAccount(label: label, derivations: derivations)
+    return createAccount(label: label, index: index, derivations: derivations)
 }

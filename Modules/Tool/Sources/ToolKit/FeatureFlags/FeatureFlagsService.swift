@@ -25,26 +25,8 @@ public enum BuildFlag {
 
 public enum FeatureFlagError: Error {
     case decodingError(Error)
-}
-
-/// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a
-/// remote based feature flag system
-public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring {}
-
-public enum FeatureConfigurationError: Error {
     case missingKeyRawValue
-    case missingValue
-    case decodingError
-}
-
-public protocol FeatureInitializer: AnyObject {
-    func initialize()
-}
-
-/// Any feature remote configuration protocol
-public protocol FeatureConfiguring: AnyObject {
-    func configuration(for feature: AppFeature) -> AppFeatureConfiguration
-    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError>
+    case timeout
 }
 
 /// This is the interface all modules should use for feature flags.
@@ -69,30 +51,23 @@ extension FeatureFlagsServiceAPI {
 }
 
 public protocol FeatureFetching: AnyObject {
-    func fetch<Feature: Decodable>(for key: AppFeature, as type: Feature.Type) -> AnyPublisher<Feature, FeatureFlagError>
+    func fetch<Feature: Decodable>(
+        for key: AppFeature,
+        as type: Feature.Type
+    ) -> AnyPublisher<Feature, FeatureFlagError>
 }
 
-extension FeatureFetching {
-
-    public func fetch<Feature: Decodable>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> {
-        fetch(for: key, as: Feature.self)
-    }
-}
-
-class FeatureFlagsService: FeatureFlagsServiceAPI {
+final class FeatureFlagsService: FeatureFlagsServiceAPI {
 
     private let localFeatureFlagsService: InternalFeatureFlagServiceAPI
     private let remoteFeatureFlagsService: FeatureFetching
-    private let appFeatureConfigurator: FeatureConfiguratorAPI
 
     init(
         localFeatureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
-        remoteFeatureFlagsService: FeatureFetching = resolve(),
-        appFeatureConfigurator: FeatureConfiguratorAPI = resolve()
+        remoteFeatureFlagsService: FeatureFetching = resolve()
     ) {
         self.localFeatureFlagsService = localFeatureFlagsService
         self.remoteFeatureFlagsService = remoteFeatureFlagsService
-        self.appFeatureConfigurator = appFeatureConfigurator
     }
 
     func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
@@ -126,7 +101,8 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
             return .just(localFeatureFlagsService.isEnabled(featureFlag))
 
         case .remote(let featureFlag):
-            return remoteFeatureFlagsService.fetch(for: featureFlag)
+            return remoteFeatureFlagsService
+                .fetch(for: featureFlag, as: Bool.self)
                 .replaceError(with: false)
                 .eraseToAnyPublisher()
         }
@@ -141,11 +117,8 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
             unimplemented("Objects are not yet supported for local feature flags")
 
         case .remote(let featureFlag):
-            return remoteFeatureFlagsService.fetch(for: featureFlag)
-                .mapError { error in
-                    FeatureFlagError.decodingError(error)
-                }
-                .eraseToAnyPublisher()
+            return remoteFeatureFlagsService
+                .fetch(for: featureFlag, as: Feature?.self)
         }
     }
 }

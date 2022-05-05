@@ -47,29 +47,26 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
     }
 
     private let sections: [SearchableSection]
-    private let selectedItem: SearchableItem<Identifier>?
     private let cancelButtonTitle: String
     private let searchPlaceholder: String
     private let searchTolerance: Double
-    private let onSelection: (SearchableItem<Identifier>) -> Void
 
+    @Binding private var selectedItem: SearchableItem<Identifier>?
     @State private var searching: Bool = false
     @State private var searchQuery: String = ""
 
     public init(
         sections: [SearchableSection],
-        selectedItem: SearchableItem<Identifier>? = nil,
+        selectedItem: Binding<SearchableItem<Identifier>?>,
         cancelButtonTitle: String = "",
         searchPlaceholder: String = "",
-        searchTolerance: Double = 0.3,
-        onSelection: @escaping (SearchableItem<Identifier>) -> Void
+        searchTolerance: Double = 0.3
     ) {
         self.sections = sections
-        self.selectedItem = selectedItem
+        _selectedItem = selectedItem
         self.cancelButtonTitle = cancelButtonTitle
         self.searchPlaceholder = searchPlaceholder
         self.searchTolerance = searchTolerance
-        self.onSelection = onSelection
     }
 
     public var body: some View {
@@ -112,7 +109,8 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
             cancelButtonText: cancelButtonTitle,
             placeholder: searchPlaceholder,
             onReturnTapped: {
-                searching = true
+                // make search bar resign first responder
+                searching = false
             }
         )
     }
@@ -132,7 +130,8 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
                 }
             },
             action: {
-                onSelection(item)
+                searching = false // Fixes a bug on item selection while searching
+                selectedItem = item
             }
         )
     }

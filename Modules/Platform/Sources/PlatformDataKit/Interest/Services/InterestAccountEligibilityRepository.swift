@@ -3,12 +3,19 @@
 import Combine
 import DIKit
 import MoneyKit
+import NabuNetworkError
 import PlatformKit
+import ToolKit
 
 final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI {
 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let client: InterestAccountEligibilityClientAPI
+    private let cachedValue: CachedValueNew<
+        String,
+        [InterestAccountEligibility],
+        InterestAccountEligibilityError
+    >
 
     init(
         client: InterestAccountEligibilityClientAPI = resolve(),
@@ -16,53 +23,59 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.client = client
-    }
 
-    func fetchAllInterestEnabledCurrencies()
-        -> AnyPublisher<[CurrencyType], InterestAccountEligibilityError>
-    {
-        client
-            .fetchInterestEnabledCurrenciesResponse()
-            .mapError(InterestAccountEligibilityError.networkError)
-            .map(\.instruments)
-            .map { currencyCodes in
-                currencyCodes.compactMap { try? CurrencyType(code: $0) }
+        let cache: AnyCache<String, [InterestAccountEligibility]> = InMemoryCache(
+            configuration: .onUserStateChanged(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
+        ).eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client] _ in
+
+                func enabledCurrencies() -> AnyPublisher<[CurrencyType], NabuNetworkError> {
+                    client
+                        .fetchInterestEnabledCurrenciesResponse()
+                        .map(\.instruments)
+                        .map { currencyCodes in
+                            currencyCodes.compactMap { try? CurrencyType(code: $0) }
+                        }
+                        .eraseToAnyPublisher()
+                }
+
+                return client.fetchInterestAccountEligibilityResponse()
+                    .zip(enabledCurrencies())
+                    .map { eligbilityResponse, enabledCurrencies -> [InterestAccountEligibility] in
+                        enabledCurrencies
+                            .map { asset -> InterestAccountEligibility in
+                                guard let eligibility = eligbilityResponse[asset] else {
+                                    return InterestAccountEligibility.notEligible(currencyType: asset)
+                                }
+                                return InterestAccountEligibility(currencyType: asset, interestEligibility: eligibility)
+                            }
+                    }
+                    .mapError(InterestAccountEligibilityError.networkError)
+                    .eraseToAnyPublisher()
             }
-            .eraseToAnyPublisher()
+        )
     }
 
     func fetchAllInterestAccountEligibility()
         -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
     {
-        fetchInterestAccountEligibilities()
-            .eraseToAnyPublisher()
+        cachedValue.get(key: #file).eraseToAnyPublisher()
     }
 
     func fetchInterestAccountEligibilityForCurrencyCode(
-        _ code: String
+        _ currency: CurrencyType
     ) -> AnyPublisher<InterestAccountEligibility, InterestAccountEligibilityError> {
-        fetchInterestAccountEligibilities()
-            .map { $0.filter { $0.currencyType.code == code } }
-            .compactMap(\.first)
-            .eraseToAnyPublisher()
-    }
-
-    private func fetchInterestAccountEligibilities()
-        -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
-    {
-        client
-            .fetchInterestAccountEligibilityResponse()
-            .mapError(InterestAccountEligibilityError.networkError)
-            .zip(fetchAllInterestEnabledCurrencies())
-            .map { eligbilityResponse, enabledCurrencies -> [InterestAccountEligibility] in
-                enabledCurrencies
-                    .map { asset -> InterestAccountEligibility in
-                        guard let eligibility = eligbilityResponse[asset] else {
-                            return InterestAccountEligibility.notEligible(currencyType: asset)
-                        }
-                        return InterestAccountEligibility(currencyType: asset, interestEligibility: eligibility)
-                    }
+        cachedValue.get(key: #file)
+            .map { eligibilities in
+                eligibilities.first { eligibility in
+                    eligibility.currencyType.code == currency.code
+                }
             }
+            .replaceNil(with: .notEligible(currencyType: currency))
             .eraseToAnyPublisher()
     }
 }

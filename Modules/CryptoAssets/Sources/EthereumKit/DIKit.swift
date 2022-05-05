@@ -35,7 +35,7 @@ extension DependencyContainer {
         // MARK: CoinCore
 
         factory(tag: CryptoCurrency.ethereum) {
-            EthereumAsset(
+            EVMAsset(
                 network: .ethereum,
                 repository: DIKit.resolve(),
                 addressFactory: EthereumExternalAssetAddressFactory(

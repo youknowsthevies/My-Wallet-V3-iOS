@@ -24,7 +24,7 @@ extension DependencyContainer {
             return client as InterestAccountReceiveAddressClientAPI
         }
 
-        factory { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
+        single { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
 
         factory { InterestAccountReceiveAddressRepository() as InterestAccountReceiveAddressRepositoryAPI }
 

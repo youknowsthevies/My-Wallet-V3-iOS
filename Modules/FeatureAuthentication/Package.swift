@@ -37,7 +37,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.18.0"
+            from: "0.34.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -69,6 +69,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),

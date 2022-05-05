@@ -126,7 +126,7 @@ public final class WalletPayloadServiceOld: WalletPayloadServiceAPI {
                     .mapError()
             }
             .flatMap { [walletRepository] _ -> AnyPublisher<Void, WalletPayloadServiceError> in
-                if let rawPayload = payload.payload?.stringRepresentation, !rawPayload.isEmpty {
+                if let rawPayload = payload.payloadWrapper?.stringRepresentation, !rawPayload.isEmpty {
                     return walletRepository.set(payload: rawPayload)
                         .mapError()
                 }

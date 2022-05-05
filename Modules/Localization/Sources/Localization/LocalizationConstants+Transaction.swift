@@ -1511,22 +1511,42 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardInsufficientFunds = NSLocalizedString(
-        "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
+        "It looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again.",
         comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
     )
 
     public static let cardBankDeclineTitle = NSLocalizedString(
+        "The Bank has declined this card",
+        comment: "The Bank has declined this card"
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "The card you tried to use has been declined by your bank, please try again or another payment method.",
+        comment: "The card you tried to use has been declined by your bank, please try again or another payment method."
+    )
+
+    public static let cardCreateBankDeclinedTitle = NSLocalizedString(
         "Failed To Add Card",
         comment: "Failed To Add Card"
     )
 
-    public static let cardBankDecline = NSLocalizedString(
-        "The card you tried to add has failed, please try again or another payment method.",
-        comment: "The card you tried to add has failed, please try again or another payment method."
+    public static let cardCreateBankDeclined = NSLocalizedString(
+        "Blockchain.com only allows debit payments for this card. Please choose a different payment method.",
+        comment: "Blockchain.com only allows debit payments for this card. Please choose a different payment method."
+    )
+
+    public static let cardBlockchainDeclineTitle = NSLocalizedString(
+        "Blocked",
+        comment: "Blocked"
+    )
+
+    public static let cardBlockchainDecline = NSLocalizedString(
+        "Blockchain.com does not allow payments from this card. Please choose a different payment method.",
+        comment: "Blockchain.com does not allow payments from this card. Please choose a different payment method."
     )
 
     public static let cardAcquirerDeclineTitle = NSLocalizedString(
-        "Blocked By Card Issuer",
+        "Blocked by Card Issuer",
         comment: "Blocked By Card Issuer"
     )
 
@@ -1536,7 +1556,7 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardDuplicateTitle = NSLocalizedString(
-        "This Card Already Exists",
+        "This card already exists",
         comment: "This Card Already Exists"
     )
 
@@ -1551,18 +1571,18 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardUnsupportedPaymentMethod = NSLocalizedString(
-        "We don't support this card, please try another bank or payment method.",
-        comment: "We don't support this card, please try another bank or payment method."
+        "Blockchain.com does not support payments from this card. Please choose a different payment method.",
+        comment: "Blockchain.com does not support payments from this card. Please choose a different payment method."
     )
 
     public static let cardCreateFailedTitle = NSLocalizedString(
-        "This Card Already Exists",
-        comment: "This Card Already Exists"
+        "Unable to add card",
+        comment: "Unable to add card"
     )
 
     public static let cardCreateFailed = NSLocalizedString(
-        "The card you tried to add has failed, please try again or another payment method.",
-        comment: "The card you tried to add has failed, please try again or another payment method."
+        "Blockchain.com was unable to add your card. Please try again or choose a different payment method.",
+        comment: "Blockchain.com was unable to add your card. Please try again or choose a different payment method."
     )
 
     public static let cardPaymentFailedTitle = NSLocalizedString(
@@ -1571,8 +1591,58 @@ extension LocalizationConstants.Transaction.Error {
     )
 
     public static let cardPaymentFailed = NSLocalizedString(
-        "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again.",
-        comment: "Your payment has failed with our legacy system. However we have an upgraded system available for early access, simply verify your card details to try-again."
+        "This payment was unsuccessful. Please try again or choose a different payment method.",
+        comment: "This payment was unsuccessful. Please try again or choose a different payment method."
+    )
+
+    public static let cardCreateAbandonedTitle = NSLocalizedString(
+        "Did you authorize your card payment?",
+        comment: "Did you authorize your card payment?"
+    )
+
+    public static let cardCreateAbandoned = NSLocalizedString(
+        "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+        comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
+    )
+
+    public static let cardCreateExpiredTitle = NSLocalizedString(
+        "Did you forget to authorize your card payment?",
+        comment: "Did you forget to authorize your card payment?"
+    )
+
+    public static let cardCreateExpired = NSLocalizedString(
+        "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method.",
+        comment: "Authorizing your card payments is a great way to increase the security of your transactions. If you see this message repeatedly, consider choosing a different payment method."
+    )
+
+    public static let cardCreateDebitOnlyTitle = NSLocalizedString(
+        "Invalid Card",
+        comment: "Invalid Card"
+    )
+
+    public static let cardCreateDebitOnly = NSLocalizedString(
+        "Blockchain.com only allows debit payments for this card. Please choose a different payment method.",
+        comment: "Blockchain.com only allows debit payments for this card. Please choose a different payment method."
+    )
+
+    public static let cardPaymentDebitOnlyTitle = NSLocalizedString(
+        "Payment Failed",
+        comment: "Payment Failed"
+    )
+
+    public static let cardPaymentDebitOnly = NSLocalizedString(
+        "This payment method was unsuccessful. Please try another payment method.",
+        comment: "This payment method was unsuccessful. Please try another payment method."
+    )
+
+    public static let cardCreateNoTokenTitle = NSLocalizedString(
+        "Card Not Supported",
+        comment: "Card not accepted"
+    )
+
+    public static let cardCreateNoToken = NSLocalizedString(
+        "We were unable to add your card. Please try again or choose a different payment method.",
+        comment: "We were unable to add your card. Please try again or choose a different payment method."
     )
 
     public static let orderNotCancellable = NSLocalizedString(

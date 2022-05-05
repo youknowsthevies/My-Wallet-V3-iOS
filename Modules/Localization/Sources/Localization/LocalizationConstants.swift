@@ -145,6 +145,11 @@ public enum LocalizationConstants {
     public enum Authentication {
 
         public enum CountryAndStatePickers {
+            public static let suggestedSelectionTitle = NSLocalizedString(
+                "Suggested",
+                comment: "Country and State Pickers: Suggested Section Title"
+            )
+
             public static let countriesPickerTitle = NSLocalizedString(
                 "Select Your Country",
                 comment: "Country Picker: Page Title"
@@ -527,7 +532,16 @@ public enum LocalizationConstants {
             "Buy & Sell",
             comment: "Tab item: buy and sell"
         )
+        public static let rewards = NSLocalizedString(
+            "Rewards",
+            comment: "Tab item: rewards"
+        )
     }
+
+    public static let openWebsite = NSLocalizedString(
+        "Open Website",
+        comment: "Open Website"
+    )
 
     public enum FrequentActionItem {
 

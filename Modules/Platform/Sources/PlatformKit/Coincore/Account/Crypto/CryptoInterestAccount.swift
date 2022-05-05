@@ -9,7 +9,7 @@ import ToolKit
 
 public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
-    private enum Error: LocalizedError {
+    private enum CryptoInterestAccountError: LocalizedError {
         case loadingFailed(asset: String, label: String, action: AssetAction, error: String)
 
         var errorDescription: String? {
@@ -63,11 +63,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .onNilJustReturn(.zero(currency: currencyType))
     }
 
-    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Swift.Error> {
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
         interestEligibilityRepository
-            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType)
             .map(\.ineligibilityReason)
             .eraseError()
+            .eraseToAnyPublisher()
     }
 
     public var actionableBalance: Single<MoneyValue> {
@@ -81,19 +82,19 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .onNilJustReturn(.zero(currency: currencyType))
     }
 
-    public var actions: Single<AvailableActions> {
-        canPerformInterestWithdraw()
-            .map { canPerformWithdraw in
-                canPerformWithdraw ? [.interestWithdraw, .viewActivity] : [.viewActivity]
-            }
+    public var activity: Single<[ActivityItemEvent]> {
+        activityPublisher
+            .asSingle()
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    private var activityPublisher: AnyPublisher<[ActivityItemEvent], Never> {
         interestActivityEventRepository
             .fetchInterestActivityItemEventsForCryptoCurrency(asset)
+            .map { events in
+                events.map(ActivityItemEvent.interest)
+            }
             .replaceError(with: [])
-            .map { $0.map { .interest($0) } }
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
@@ -141,14 +142,17 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         featureFlagsService = featureFlagService
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .interestWithdraw:
             return canPerformInterestWithdraw()
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .viewActivity:
-            return activity
-                .map(\.count)
-                .map { $0 > 0 }
+            return activityPublisher
+                .map { !$0.isEmpty }
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .buy,
              .deposit,
              .interestTransfer,
@@ -165,7 +169,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public func balancePair(
         fiatCurrency: FiatCurrency,
         at time: PriceTime
-    ) -> AnyPublisher<MoneyValuePair, Swift.Error> {
+    ) -> AnyPublisher<MoneyValuePair, Error> {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
@@ -176,25 +180,21 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .eraseToAnyPublisher()
     }
 
-    private func canPerformInterestWithdraw() -> Single<Bool> {
-        Single
-            .zip(
-                isInterestWithdrawAndDepositEnabled
-                    .asSingle(),
-                actionableBalance.map(\.isPositive)
-            )
-            .map { $0.0 && $0.1 }
-            .flatMap(weak: self) { (self, isAvailable) -> Single<Bool> in
+    private func canPerformInterestWithdraw() -> AnyPublisher<Bool, Never> {
+        isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
+            .zip(actionableBalance.map(\.isPositive).asPublisher())
+            .map { enabled, positiveBalance in
+                enabled && positiveBalance
+            }
+            .flatMap { [disabledReason] isAvailable -> AnyPublisher<Bool, Error> in
                 guard isAvailable else {
                     return .just(false)
                 }
-                return self
-                    .disabledReason
-                    .map(\.isEligible)
-                    .asSingle()
+                return disabledReason.map(\.isEligible)
+                    .eraseToAnyPublisher()
             }
-            .catch { [label, asset] error in
-                throw Error.loadingFailed(
+            .mapError { [label, asset] error -> CryptoInterestAccountError in
+                .loadingFailed(
                     asset: asset.code,
                     label: label,
                     action: .interestWithdraw,
@@ -202,7 +202,8 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     public func invalidateAccountBalance() {

@@ -13,7 +13,6 @@ final class TargetSelectionInteractor {
 
     private let coincore: CoincoreAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
-    private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
@@ -21,12 +20,10 @@ final class TargetSelectionInteractor {
         coincore: CoincoreAPI = resolve(),
         nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()
     ) {
         self.coincore = coincore
         self.linkedBanksFactory = linkedBanksFactory
-        self.featureFetcher = featureFetcher
         self.nameResolutionService = nameResolutionService
         self.analyticsRecorder = analyticsRecorder
     }

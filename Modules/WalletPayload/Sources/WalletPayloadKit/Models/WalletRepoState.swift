@@ -11,14 +11,14 @@ public struct WalletRepoState: Equatable, Codable {
     /// Stores informational related properties
     public var properties: WalletProperties
 
-    /// Returns the encrypted wallet payload - (Base64, AES 256)
-    public var encryptedPayload: WalletPayloadWrapper
+    /// Returns the wallet payload
+    public var walletPayload: WalletPayload
 
     /// Provides an empty state
     public static let empty = WalletRepoState(
         credentials: .empty,
         properties: .empty,
-        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")
+        walletPayload: .empty
     )
 }
 

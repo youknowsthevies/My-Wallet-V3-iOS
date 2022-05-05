@@ -124,6 +124,10 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         }
     }
 
+    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmount(pendingTransaction: pendingTransaction)
+    }
+
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let quote = quote.take(1).asSingle()
         return Single

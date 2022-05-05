@@ -73,6 +73,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
         #if INTERNAL_BUILD
         debugCoordinator.enableDebugMenu(for: window)
+        let featureFlagService: FeatureFlagsServiceAPI = resolve()
+        featureFlagService.enable(.local(.manualGUIDLogin))
         #endif
 
         let hostingController = AppHostingController(
@@ -84,7 +86,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         window.setRootViewController(hostingController)
         let context = AppDelegateContext(
             intercomApiKey: CustomerSupportChatConfiguration.apiKey,
-            intercomAppId: CustomerSupportChatConfiguration.appId
+            intercomAppId: CustomerSupportChatConfiguration.appId,
+            embraceAppId: ObservabilityConfiguration.appId
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true

@@ -11,7 +11,7 @@ struct WalletResponse: Equatable, Codable {
     let metadataHDNode: String?
     let options: OptionsResponse
     let addresses: [AddressResponse]
-    let hdWallets: [HDWalletResponse]
+    let hdWallets: [HDWalletResponse]?
 
     enum CodingKeys: String, CodingKey {
         case guid
@@ -34,7 +34,7 @@ extension NativeWallet {
             doublePasswordHash: blockchainWallet.doublePasswordHash,
             metadataHDNode: blockchainWallet.metadataHDNode,
             options: WalletPayloadKit.Options.from(model: blockchainWallet.options),
-            hdWallets: blockchainWallet.hdWallets.map(WalletPayloadKit.HDWallet.from(model:)),
+            hdWallets: blockchainWallet.hdWallets?.map(WalletPayloadKit.HDWallet.from(model:)) ?? [],
             addresses: blockchainWallet.addresses.map(WalletPayloadKit.Address.from(model:))
         )
     }

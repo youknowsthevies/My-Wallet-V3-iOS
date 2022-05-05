@@ -13,10 +13,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let accountType: AccountType = .external
     public let isDefault: Bool = false
 
-    public var actions: Single<AvailableActions> {
-        .just(.init())
-    }
-
     public var actionableBalance: Single<MoneyValue> {
         .just(.zero(currency: fiatCurrency))
     }
@@ -55,10 +51,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just([])
     }
 
-    public func invalidateAccountBalance() {
-        // no-op
-    }
-
     public let fiatCurrency: FiatCurrency
     public private(set) lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
 
@@ -94,11 +86,15 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - BlockchainAccount
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
+        .just(false)
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
-        actions.map { $0.contains(action) }
+    public func invalidateAccountBalance() {
+        // no-op
+    }
+
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 }

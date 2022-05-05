@@ -105,8 +105,8 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchTabToDashboard() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(blockchain.ux.user.portfolio[]))
+        dismiss(animated: true) {
+            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.portfolio].select)
         }
     }
 
@@ -123,14 +123,14 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchToActivity() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(blockchain.ux.user.activity[]))
+        dismiss(animated: true) {
+            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
         }
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(blockchain.ux.user.activity[]))
+        dismiss(animated: true) {
+            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
         }
     }
 
@@ -298,7 +298,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleRewards() {
-        let interestAccountList = InterestAccountListHostingController()
+        let interestAccountList = InterestAccountListHostingController(embeddedInNavigationView: true)
         interestAccountList.delegate = self
         topMostViewController?.present(
             interestAccountList,

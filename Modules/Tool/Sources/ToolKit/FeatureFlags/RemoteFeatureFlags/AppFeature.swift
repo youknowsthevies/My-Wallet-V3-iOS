@@ -5,10 +5,6 @@ import Foundation
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
 public enum AppFeature: Int, CaseIterable {
 
-    // MARK: - Local features
-
-    case biometry
-
     // MARK: - Firebase features
 
     /// The announcements
@@ -79,9 +75,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: - Account Picker
 
-    /// New SwiftUI account picker from `FeatureAccountPicker`
-    case swiftUIAccountPicker
-
     // MARK: - Onboarding
 
     /// New tour view from `FeatureTour`
@@ -103,7 +96,7 @@ public enum AppFeature: Int, CaseIterable {
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
-    public var remoteEnabledKey: String? {
+    public var remoteEnabledKey: String {
         switch self {
         case .interestWithdrawAndDeposit:
             return "ios_interest_deposit_withdraw"
@@ -115,8 +108,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .biometry:
-            return nil
         case .showEmailVerificationInOnboarding:
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
@@ -139,8 +130,6 @@ extension AppFeature {
             return "ios_use_new_limits_ui"
         case .newQuoteForSimpleBuy:
             return "ios_ff_new_pricing"
-        case .swiftUIAccountPicker:
-            return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
         case .newOnboardingTour:
@@ -175,8 +164,6 @@ extension AppFeature {
             return false
         case .siftScienceEnabled:
             return false
-        case .biometry:
-            return false
         case .showEmailVerificationInOnboarding:
             return false
         case .showEmailVerificationInBuyFlow:
@@ -198,8 +185,6 @@ extension AppFeature {
         case .newLimitsUIEnabled:
             return true
         case .newQuoteForSimpleBuy:
-            return true
-        case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
             return true

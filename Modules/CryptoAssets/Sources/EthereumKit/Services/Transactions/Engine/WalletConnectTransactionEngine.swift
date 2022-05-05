@@ -51,8 +51,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         transactionTarget as! EthereumSendTransactionTarget
     }
 
-    private var ethereumCryptoAccount: EthereumCryptoAccount {
-        sourceAccount as! EthereumCryptoAccount
+    private var evmCryptoAccount: EVMCryptoAccount {
+        sourceAccount as! EVMCryptoAccount
     }
 
     // MARK: - Init
@@ -95,7 +95,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     func assertInputsValid() {
-        precondition(sourceAccount is EthereumCryptoAccount)
+        precondition(sourceAccount is EVMCryptoAccount)
         precondition(sourceCryptoCurrency == .ethereum)
         precondition(transactionTarget is EthereumSendTransactionTarget)
     }
@@ -187,8 +187,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         let address = walletConnectTarget.transaction.to
             .flatMap { EthereumAddress(address: $0) }
 
-        let chainID = ethereumCryptoAccount.network.chainID
-        let transactionPublisher = ethereumCryptoAccount.nonce
+        let chainID = evmCryptoAccount.network.chainID
+        let transactionPublisher = evmCryptoAccount.nonce
             .eraseError()
             .flatMap { [transactionBuildingService, walletConnectTarget] nonce in
                 transactionBuildingService
@@ -325,7 +325,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         func estimateGas() -> Single<BigUInt> {
             gasEstimateService
                 .estimateGas(
-                    network: ethereumCryptoAccount.network,
+                    network: evmCryptoAccount.network,
                     transaction: walletConnectTarget.transaction
                 )
                 .asSingle()
@@ -378,8 +378,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         pendingTransactionRepository
             .isWaitingOnTransaction(
-                network: ethereumCryptoAccount.network,
-                address: ethereumCryptoAccount.publicKey
+                network: evmCryptoAccount.network,
+                address: evmCryptoAccount.publicKey
             )
             .replaceError(with: true)
             .flatMap { isWaitingOnTransaction in

@@ -7,6 +7,7 @@ import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
+import ObservabilityDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -22,12 +23,16 @@ public struct AppDelegateContext: Equatable {
     let intercomApiKey: String
     let intercomAppId: String
 
+    let embraceAppId: String
+
     public init(
         intercomApiKey: String,
-        intercomAppId: String
+        intercomAppId: String,
+        embraceAppId: String
     ) {
         self.intercomApiKey = intercomApiKey
         self.intercomAppId = intercomAppId
+        self.embraceAppId = embraceAppId
     }
 }
 
@@ -78,6 +83,7 @@ struct AppDelegateEnvironment {
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
+    var observabilityService: ObservabilityServiceAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -129,6 +135,11 @@ let appDelegateReducer = Reducer<
                 using: environment.customerSupportChatService,
                 apiKey: context.intercomApiKey,
                 appId: context.intercomAppId
+            ),
+
+            initializeObservability(
+                using: environment.observabilityService,
+                appId: context.embraceAppId
             ),
 
             environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
@@ -221,6 +232,15 @@ private func initializeCustomerChatSupport(
 ) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.initializeWithAcccountKey(apiKey, appId: appId)
+    }
+}
+
+private func initializeObservability(
+    using service: ObservabilityServiceAPI,
+    appId: String
+) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        service.start(with: appId)
     }
 }
 

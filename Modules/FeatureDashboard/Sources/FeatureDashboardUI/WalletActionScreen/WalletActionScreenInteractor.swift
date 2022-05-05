@@ -15,7 +15,9 @@ protocol WalletActionScreenInteracting: AnyObject {
 final class WalletActionScreenInteractor: WalletActionScreenInteracting {
 
     var availableActions: Single<AvailableActions> {
-        account.actions
+        account
+            .actions
+            .asSingle()
     }
 
     var accountType: SingleAccountType {

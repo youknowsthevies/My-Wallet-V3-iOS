@@ -483,6 +483,14 @@ extension LocalizationConstants.FeatureAuthentication {
                 "your@email.com",
                 comment: "Create Account screen: email text field placeholder"
             )
+            public static let country = NSLocalizedString(
+                "Country of Residence",
+                comment: "Create Account screen: Country placeholder"
+            )
+            public static let state = NSLocalizedString(
+                "State of Residence",
+                comment: "Create Account screen: State placeholder"
+            )
         }
 
         public enum PasswordStrengthIndicator {

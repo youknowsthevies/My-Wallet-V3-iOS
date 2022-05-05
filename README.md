@@ -13,6 +13,9 @@ Ruby-Gems: 3.0.3
 Swiftlint: 0.46.5+
 Swiftformat: 0.49.5+
 
+If you are using a M1 you might need to update ruby to version 2.7.5 or 3.x.x. Postponing the upgrade now so we don't disturb the current builds until the CI is updated to M1 and everybody get their M1s.
+
+
 # Building
 
 ## Install Xcode
@@ -88,12 +91,14 @@ You will be installing:
 
 Check [nvm installaton instructions](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 
 Install the correct node version:
 
     $ nvm install 8.17.0
     $ nvm use 8.17.0
+
+If nvm is failing to install, please make sure you are installing it with the curl command above. If it still fails, check their website for a possibly newer installer.
 
 ### Install Yarn
     $ brew install yarn
@@ -106,6 +111,36 @@ Install the correct node version:
 ### Install and build js files
     $ sh scripts/install-js.sh && sh scripts/build-js.sh
 
+If the above command is failing you might need to fix the missing python binary on systems with python3 installed.
+
+#### Install python3 using homebrew:
+
+    $ brew install python3
+
+You should see those Caveats at the end of a successful installation:
+
+```console
+==> Caveats
+Python has been installed as
+/opt/homebrew/bin/python3
+
+Unversioned symlinks `python`, `python-config`, `pip` etc. pointing to
+`python3`, `python3-config`, `pip3` etc., respectively, have been installed into
+/opt/homebrew/opt/python@3.9/libexec/bin
+```
+
+The first lines tells us python3 binary was installed.
+
+The second part tells us that there are unversioned aliases also installed in another directory that is not in our PATH but we can add to it if we want to make those unversioned aliases available.
+
+To do so, edit your `~/.zshrc` or `~/.bashrc` depending on which shell do you use. 
+Find a line that starts with `export PATH` and add the aliases path to it.
+Example below:
+
+```console
+BREW_PYTHON="$(brew --prefix python3)/libexec/bin"
+export PATH=$HOME/bin:/usr/local/bin:$BREW_PYTHON:$PATH
+```
 
 ## Prepare OpenSSL
 

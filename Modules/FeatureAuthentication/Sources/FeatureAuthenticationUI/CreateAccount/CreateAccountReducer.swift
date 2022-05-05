@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -43,11 +44,9 @@ public enum CreateAccountRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.countriesPickerTitle,
                     subtitle: LocalizedStrings.countriesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$pickerSelection, nil))
+                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
                 ) {
-                    CountryPickerView(selectedItem: viewStore.country) {
-                        viewStore.send(.set(\.$country, $0))
-                    }
+                    CountryPickerView(selectedItem: viewStore.binding(\.$country))
                 }
             }
 
@@ -56,11 +55,9 @@ public enum CreateAccountRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.statesPickerTitle,
                     subtitle: LocalizedStrings.statesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$pickerSelection, nil))
+                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
                 ) {
-                    StatePickerView(selectedItem: viewStore.countryState) {
-                        viewStore.send(.set(\.$countryState, $0))
-                    }
+                    StatePickerView(selectedItem: viewStore.binding(\.$countryState))
                 }
             }
         }
@@ -72,6 +69,8 @@ public struct CreateAccountState: Equatable, NavigationState {
     public enum InputValidationError: Equatable {
         case invalidEmail
         case weakPassword
+        case noCountrySelected
+        case noCountryStateSelected
         case termsNotAccepted
     }
 
@@ -95,25 +94,25 @@ public struct CreateAccountState: Equatable, NavigationState {
         case password
     }
 
-    enum PickerSelection: Hashable {
+    enum AddressSegmentPicker: Hashable {
         case country
-        case state
+        case countryState
     }
 
+    public var route: RouteIntent<CreateAccountRoute>?
     public var context: CreateAccountContext
 
     // User Input
     @BindableState public var emailAddress: String
     @BindableState public var password: String
-    @BindableState public var country: SearchableItem<String>
+    @BindableState public var country: SearchableItem<String>?
     @BindableState public var countryState: SearchableItem<String>?
     @BindableState public var termsAccepted: Bool = false
 
     // Form interaction
     @BindableState public var passwordFieldTextVisible: Bool = false
-    public var route: RouteIntent<CreateAccountRoute>?
     @BindableState public var selectedInputField: Field?
-    @BindableState var pickerSelection: PickerSelection?
+    @BindableState var selectedAddressSegmentPicker: AddressSegmentPicker?
 
     // Validation
     public var validatingInput: Bool = false
@@ -127,24 +126,25 @@ public struct CreateAccountState: Equatable, NavigationState {
         validatingInput || inputValidationState.isInvalid || isCreatingWallet
     }
 
+    var shouldDisplayCountryStateField: Bool {
+        country?.id.lowercased() == "us"
+    }
+
     public init(
         context: CreateAccountContext,
         countries: [SearchableItem<String>] = CountryPickerView.countries,
-        states: [SearchableItem<String>] = StatePickerView.usaStates,
-        locale: Locale = .current
+        states: [SearchableItem<String>] = StatePickerView.usaStates
     ) {
         self.context = context
         emailAddress = ""
         password = ""
         passwordStrength = .none
         inputValidationState = .unknown
-        country = countries.first(where: { String(describing: $0.id) == locale.regionCode }) ?? countries[0]
-        countryState = country.id == "US" ? states[0] : nil
-        failureAlert = nil
     }
 }
 
 public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
+
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
@@ -157,6 +157,7 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case createAccount
     case importAccount(_ mnemonic: String)
     case createButtonTapped
+    case didValidateAfterFormSubmission
     case didUpdatePasswordStrenght(PasswordValidationScore)
     case didUpdateInputValidation(CreateAccountState.InputValidationState)
     case openExternalLink(URL)
@@ -191,37 +192,38 @@ let createAccountReducer = Reducer<
 > { state, action, environment in
     switch action {
     case .binding(\.$emailAddress):
-        state.inputValidationState = .unknown
-        return .none
+        return Effect(value: .didUpdateInputValidation(.unknown))
 
     case .binding(\.$password):
-        state.inputValidationState = .unknown
-        return Effect(value: .validatePasswordStrength)
+        return .merge(
+            Effect(value: .didUpdateInputValidation(.unknown)),
+            Effect(value: .validatePasswordStrength)
+        )
 
     case .binding(\.$termsAccepted):
-        state.inputValidationState = .unknown
-        return .none
+        return Effect(value: .didUpdateInputValidation(.unknown))
 
     case .binding(\.$country):
-        if state.country.id == "US" {
-            state.countryState = StatePickerView.usaStates[0]
-        } else {
-            state.countryState = nil
-        }
-        return Effect(value: .set(\.$pickerSelection, nil))
+        return .merge(
+            Effect(value: .didUpdateInputValidation(.unknown)),
+            Effect(value: .set(\.$selectedAddressSegmentPicker, nil))
+        )
 
     case .binding(\.$countryState):
-        return Effect(value: .set(\.$pickerSelection, nil))
+        return .merge(
+            Effect(value: .didUpdateInputValidation(.unknown)),
+            Effect(value: .set(\.$selectedAddressSegmentPicker, nil))
+        )
 
-    case .binding(\.$pickerSelection):
-        guard let selection = state.pickerSelection else {
+    case .binding(\.$selectedAddressSegmentPicker):
+        guard let selection = state.selectedAddressSegmentPicker else {
             return Effect(value: .dismiss())
         }
         state.selectedInputField = nil
         switch selection {
         case .country:
             return .enter(into: .countryPicker, context: .none)
-        case .state:
+        case .countryState:
             return .enter(into: .statePicker, context: .none)
         }
 
@@ -244,8 +246,15 @@ let createAccountReducer = Reducer<
         )
 
     case .createOrImportWallet(.createWallet):
+        guard state.inputValidationState == .valid else {
+            return .none
+        }
         return Effect(value: .createAccount)
+
     case .createOrImportWallet(.importWallet(let mnemonic)):
+        guard state.inputValidationState == .valid else {
+            return .none
+        }
         return Effect(value: .importAccount(mnemonic))
 
     case .importAccount(let mnemonic):
@@ -270,7 +279,7 @@ let createAccountReducer = Reducer<
          .accountImported(.failure(let error)):
         state.isCreatingWallet = false
         let title = LocalizationConstants.Errors.error
-        let message = error.localizedDescription
+        let message = String(describing: error)
         return .merge(
             Effect(
                 value: .alert(
@@ -283,13 +292,19 @@ let createAccountReducer = Reducer<
 
     case .accountCreation(.success(let context)),
          .accountImported(.success(.left(let context))):
+        guard let selectedCountry = state.country else {
+            return Effect(value: .didUpdateInputValidation(.invalid(.noCountrySelected)))
+        }
+        guard state.countryState != nil || !state.shouldDisplayCountryStateField else {
+            return Effect(value: .didUpdateInputValidation(.invalid(.noCountryStateSelected)))
+        }
         return .concatenate(
             Effect(value: .triggerAuthenticate),
             .merge(
                 .cancel(id: CreateAccountIds.CreationId()),
                 .cancel(id: CreateAccountIds.ImportId()),
                 environment.walletCreationService
-                    .setResidentialInfo(state.country.id.description, state.countryState?.id.description)
+                    .setResidentialInfo(selectedCountry.id, state.countryState?.id)
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .fireAndForget(),
@@ -308,30 +323,20 @@ let createAccountReducer = Reducer<
     case .createButtonTapped:
         state.validatingInput = true
         state.selectedInputField = nil
-        guard state.emailAddress.isEmail else {
-            return Effect(value: .didUpdateInputValidation(.invalid(.invalidEmail)))
+        return Effect.concatenate(
+            environment
+                .validateInputs(state: state)
+                .map(CreateAccountAction.didUpdateInputValidation)
+                .receive(on: environment.mainQueue)
+                .eraseToEffect(),
+            Effect(value: .didValidateAfterFormSubmission)
+        )
+
+    case .didValidateAfterFormSubmission:
+        guard !state.inputValidationState.isInvalid else {
+            return .none
         }
-        let didAcceptTerm = state.termsAccepted
-        return environment
-            .passwordValidator
-            .validate(password: state.password)
-            .map { passwordStrength -> CreateAccountState.InputValidationState in
-                guard passwordStrength.isValid else {
-                    return .invalid(.weakPassword)
-                }
-                guard didAcceptTerm else {
-                    return .invalid(.termsNotAccepted)
-                }
-                return .valid
-            }
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map { result -> CreateAccountAction in
-                guard case .success(let validationState) = result else {
-                    return .didUpdateInputValidation(.unknown)
-                }
-                return .didUpdateInputValidation(validationState)
-            }
+        return Effect(value: .createOrImportWallet(state.context))
 
     case .didUpdatePasswordStrenght(let score):
         state.passwordStrength = score
@@ -340,10 +345,7 @@ let createAccountReducer = Reducer<
     case .didUpdateInputValidation(let validationState):
         state.validatingInput = false
         state.inputValidationState = validationState
-        guard validationState == .valid else {
-            return .none
-        }
-        return Effect(value: .createOrImportWallet(state.context))
+        return .none
 
     case .openExternalLink(let url):
         environment.externalAppOpener.open(url)
@@ -396,6 +398,38 @@ let createAccountReducer = Reducer<
 }
 .binding()
 .analytics()
+
+extension CreateAccountEnvironment {
+
+    fileprivate func validateInputs(
+        state: CreateAccountState
+    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
+        guard state.emailAddress.isEmail else {
+            return .just(.invalid(.invalidEmail))
+        }
+        let didAcceptTerm = state.termsAccepted
+        let hasValidCountry = state.country != nil
+        let hasValidCountryState = state.countryState != nil || !state.shouldDisplayCountryStateField
+        return passwordValidator
+            .validate(password: state.password)
+            .map { passwordStrength -> CreateAccountState.InputValidationState in
+                guard passwordStrength.isValid else {
+                    return .invalid(.weakPassword)
+                }
+                guard hasValidCountry else {
+                    return .invalid(.noCountrySelected)
+                }
+                guard hasValidCountryState else {
+                    return .invalid(.noCountryStateSelected)
+                }
+                guard didAcceptTerm else {
+                    return .invalid(.termsNotAccepted)
+                }
+                return .valid
+            }
+            .eraseToAnyPublisher()
+    }
+}
 
 // MARK: - Private
 

@@ -11,11 +11,41 @@ final class InterestActivityItemEventRepository: InterestActivityItemEventReposi
     // MARK: - Private Properties
 
     private let client: InterestActivityItemEventClientAPI
+    private let cachedValue: CachedValueNew<
+        CryptoCurrency,
+        [InterestActivityItemEvent],
+        InterestActivityRepositoryError
+    >
 
     // MARK: - Init
 
     init(client: InterestActivityItemEventClientAPI = resolve()) {
         self.client = client
+        let cache = InMemoryCache<CryptoCurrency, [InterestActivityItemEvent]>(
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+        )
+        .eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { key in
+                client
+                    .fetchInterestActivityItemEventsForCryptoCurrency(
+                        key
+                    )
+                    .map(\.items)
+                    .mapError(InterestActivityRepositoryError.networkError)
+                    .map { items -> [InterestActivityItemEvent] in
+                        items.map { response in
+                            InterestActivityItemEvent(
+                                response,
+                                currency: key
+                            )
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+        )
     }
 
     // MARK: - InterestActivityItemEventRepositoryAPI
@@ -23,21 +53,7 @@ final class InterestActivityItemEventRepository: InterestActivityItemEventReposi
     func fetchInterestActivityItemEventsForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<[InterestActivityItemEvent], InterestActivityRepositoryError> {
-        client
-            .fetchInterestActivityItemEventsForCryptoCurrency(
-                cryptoCurrency
-            )
-            .map(\.items)
-            .mapError(InterestActivityRepositoryError.networkError)
-            .map { items -> [InterestActivityItemEvent] in
-                items.map { response in
-                    InterestActivityItemEvent(
-                        response,
-                        currency: cryptoCurrency
-                    )
-                }
-            }
-            .eraseToAnyPublisher()
+        cachedValue.get(key: cryptoCurrency)
     }
 }
 

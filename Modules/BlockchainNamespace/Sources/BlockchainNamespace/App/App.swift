@@ -43,6 +43,19 @@ public class App: AppProtocol {
         )
     }
 
+    @_disfavoredOverload
+    public convenience init(
+        language: Language = Language.root.language,
+        state: Session.State = .init(),
+        remoteConfiguration: Session.RemoteConfiguration
+    ) {
+        self.init(
+            language: language,
+            state: state,
+            remoteConfiguration: remoteConfiguration
+        )
+    }
+
     init(
         language: Language = Language.root.language,
         events: Session.Events = .init(),
@@ -61,6 +74,7 @@ public class App: AppProtocol {
     private func start() {
         state.app = self
         deepLinks.start()
+        remoteConfiguration.start(app: self)
         #if DEBUG
         _ = logger
         #endif

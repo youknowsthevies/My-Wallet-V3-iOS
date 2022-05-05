@@ -1,12 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
-import RxSwift
+import ToolKit
 
 final class ReceiveScreenInteractor {
+
+    private typealias AddressAndDomainsPublisher = AnyPublisher<
+        (address: ReceiveAddress, domainNames: [String]),
+        Never
+    >
 
     struct State {
         let qrCodeMetadata: QRCodeMetadata
@@ -19,21 +25,29 @@ final class ReceiveScreenInteractor {
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let receiveRouter: ReceiveRouterAPI
 
-    var state: Single<State> {
-        account
-            .receiveAddress
-            .flatMap { [resolutionService] receiveAddress -> Single<(ReceiveAddress, [String])> in
-                resolutionService
-                    .reverseResolve(address: receiveAddress.address)
-                    .map { (receiveAddress, $0) }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        self?.analyticsRecorder.record(event: AnalyticsEvents.New.Receive.receiveDomainReverseResolved)
-                    })
-                    .asSingle()
+    var state: AnyPublisher<State?, Never> {
+        account.receiveAddressPublisher
+            .flatMap { [resolutionService, analyticsRecorder] receiveAddress -> AddressAndDomainsPublisher in
+                resolutionService.reverseResolve(address: receiveAddress.address)
+                    .handleEvents(
+                        receiveOutput: { [analyticsRecorder] _ in
+                            analyticsRecorder.record(
+                                event: AnalyticsEvents.New.Receive.receiveDomainReverseResolved
+                            )
+                        }
+                    )
+                    .replaceError(with: [])
+                    .map { domains in
+                        (receiveAddress, domains)
+                    }
+                    .eraseToAnyPublisher()
             }
-            .map { address, domainNames -> State in
+            .map { [account] address, domainNames -> State? in
                 guard let metadataProvider = address as? QRCodeMetadataProvider else {
-                    throw ReceiveAddressError.notSupported
+                    if BuildFlag.isInternal {
+                        fatalError("Account/Currency not supported: \(account.identifier) \(address.currencyType.code)")
+                    }
+                    return nil
                 }
                 return State(
                     qrCodeMetadata: metadataProvider.qrCodeMetadata,
@@ -41,6 +55,8 @@ final class ReceiveScreenInteractor {
                     memo: address.memo
                 )
             }
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
     }
 
     init(

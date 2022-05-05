@@ -3,7 +3,7 @@
 import MoneyKit
 import PlatformKit
 
-struct InterestEligibilityResponse: Decodable {
+struct InterestEligibilityResponse: Decodable, Equatable {
 
     // MARK: - Properties
 

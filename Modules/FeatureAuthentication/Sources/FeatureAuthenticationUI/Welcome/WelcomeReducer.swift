@@ -229,9 +229,9 @@ public let welcomeReducer = Reducer.combine(
             if BuildFlag.isInternal {
                 return environment
                     .featureFlagsService
-                    .isEnabled(.local(.disableGUIDLogin))
+                    .isEnabled(.local(.manualGUIDLogin))
                     .flatMap { isEnabled -> Effect<WelcomeAction, Never> in
-                        guard !isEnabled else {
+                        guard isEnabled else {
                             return .none
                         }
                         return Effect(value: .setManualPairingEnabled)

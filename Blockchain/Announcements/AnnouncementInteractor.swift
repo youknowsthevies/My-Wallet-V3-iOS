@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
+import FeatureCryptoDomainDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -24,10 +25,11 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let assetRenameAnnouncement: Single<AssetRenameAnnouncementFeature> = featureFetcher
-            .fetch(for: .assetRenameAnnouncement)
-        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = assetRenameAnnouncement
-            .flatMap { [enabledCurrenciesService, coincore] data -> Single<AnnouncementPreliminaryData.AssetRename?> in
+        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
+            .fetch(for: .assetRenameAnnouncement, as: AssetRenameAnnouncementFeature.self)
+            .eraseError()
+            .flatMap { [enabledCurrenciesService, coincore] data
+                -> AnyPublisher<AnnouncementPreliminaryData.AssetRename?, Error> in
                 guard let cryptoCurrency = CryptoCurrency(
                     code: data.networkTicker,
                     enabledCurrenciesService: enabledCurrenciesService
@@ -36,8 +38,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 }
                 return coincore[cryptoCurrency]
                     .accountGroup(filter: .all)
-                    .asSingle()
-                    .flatMap(\.balance)
+                    .flatMap(\.balancePublisher)
                     .map { balance in
                         AnnouncementPreliminaryData.AssetRename(
                             asset: cryptoCurrency,
@@ -45,8 +46,11 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                             balance: balance
                         )
                     }
+                    .eraseError()
+                    .eraseToAnyPublisher()
             }
-            .catchAndReturn(nil)
+            .replaceError(with: nil)
+            .asSingle()
 
         let hasLinkedBanks = beneficiariesService.hasLinkedBank
             .take(1)
@@ -90,35 +94,37 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 values.contains(true)
             }
 
-        let authenticatorType = repository.authenticatorType
+        let authenticatorType = repository.authenticatorType.asSingle()
         let newAsset: Single<CryptoCurrency?> = featureFetcher
-            .fetchString(for: .newAssetAnnouncement)
+            .fetch(for: .newAssetAnnouncement, as: String.self)
             .map { [enabledCurrenciesService] code -> CryptoCurrency? in
                 CryptoCurrency(
                     code: code,
                     enabledCurrenciesService: enabledCurrenciesService
                 )
             }
-            .catchAndReturn(nil)
+            .replaceError(with: nil)
+            .asSingle()
 
-        let celoEUR: CryptoCurrency? = enabledCurrenciesService
-            .allEnabledCryptoCurrencies
-            .first { cryptoCurrency in
-                cryptoCurrency.isCeloToken
-                    && cryptoCurrency.code.uppercased() == "CEUR"
+        let claimFreeDomainEligible = featureFetcher
+            .fetch(for: .blockchainDomains, as: Bool.self)
+            .flatMap { [claimEligibilityRepository] isEnabled in
+                isEnabled ? claimEligibilityRepository.checkClaimEligibility() : .just(false)
             }
+            .asSingle()
 
         return Single.zip(
             nabuUser,
             tiers,
             countries,
-            authenticatorType.asSingle(),
+            authenticatorType,
             hasAnyWalletBalance,
             Single.zip(
                 newAsset,
                 assetRename,
                 simpleBuy,
-                sddEligibility
+                sddEligibility,
+                claimFreeDomainEligible
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
@@ -132,20 +138,21 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     newAsset,
                     assetRename,
                     simpleBuy,
-                    isSDDEligible
+                    isSDDEligible,
+                    claimFreeDomainEligible
                 )
             ) = payload
             return AnnouncementPreliminaryData(
-                user: user,
-                tiers: tiers,
-                isSDDEligible: isSDDEligible,
-                countries: countries,
-                authenticatorType: authenticatorType,
-                hasAnyWalletBalance: hasAnyWalletBalance,
-                newAsset: newAsset,
                 assetRename: assetRename,
+                authenticatorType: authenticatorType,
+                claimFreeDomainEligible: claimFreeDomainEligible,
+                countries: countries,
+                hasAnyWalletBalance: hasAnyWalletBalance,
+                isSDDEligible: isSDDEligible,
+                newAsset: newAsset,
                 simpleBuy: simpleBuy,
-                celoEUR: celoEUR
+                tiers: tiers,
+                user: user
             )
         }
         .observe(on: MainScheduler.instance)
@@ -153,46 +160,49 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
     // MARK: - Private properties
 
-    private let repository: AuthenticatorRepositoryAPI
-    private let wallet: WalletProtocol
-    private let userService: NabuUserServiceAPI
-    private let tiersService: KYCTiersServiceAPI
-    private let infoService: GeneralInformationServiceAPI
-    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
-    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
-    private let simpleBuyEligibilityService: EligibilityServiceAPI
-    private let featureFetcher: RxFeatureFetching
-    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let claimEligibilityRepository: ClaimEligibilityRepositoryAPI
     private let coincore: CoincoreAPI
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let featureFetcher: FeatureFetching
+    private let infoService: GeneralInformationServiceAPI
+    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
+    private let repository: AuthenticatorRepositoryAPI
+    private let simpleBuyEligibilityService: EligibilityServiceAPI
+    private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
+    private let tiersService: KYCTiersServiceAPI
+    private let userService: NabuUserServiceAPI
+    private let wallet: WalletProtocol
 
     // MARK: - Setup
 
     init(
-        repository: AuthenticatorRepositoryAPI = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet,
-        userService: NabuUserServiceAPI = resolve(),
-        tiersService: KYCTiersServiceAPI = resolve(),
-        featureFetcher: RxFeatureFetching = resolve(),
-        infoService: GeneralInformationServiceAPI = resolve(),
-        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         beneficiariesService: BeneficiariesServiceAPI = resolve(),
-        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
-        simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
+        claimEligibilityRepository: ClaimEligibilityRepositoryAPI = resolve(),
+        coincore: CoincoreAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        coincore: CoincoreAPI = resolve()
+        featureFetcher: FeatureFetching = resolve(),
+        infoService: GeneralInformationServiceAPI = resolve(),
+        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+        repository: AuthenticatorRepositoryAPI = resolve(),
+        simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
+        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        userService: NabuUserServiceAPI = resolve(),
+        wallet: WalletProtocol = WalletManager.shared.wallet
     ) {
-        self.repository = repository
-        self.wallet = wallet
-        self.userService = userService
-        self.tiersService = tiersService
-        self.infoService = infoService
-        self.supportedPairsInteractor = supportedPairsInteractor
         self.beneficiariesService = beneficiariesService
-        self.pendingOrderDetailsService = pendingOrderDetailsService
-        self.simpleBuyEligibilityService = simpleBuyEligibilityService
+        self.claimEligibilityRepository = claimEligibilityRepository
         self.coincore = coincore
-        self.featureFetcher = featureFetcher
         self.enabledCurrenciesService = enabledCurrenciesService
+        self.featureFetcher = featureFetcher
+        self.infoService = infoService
+        self.pendingOrderDetailsService = pendingOrderDetailsService
+        self.repository = repository
+        self.simpleBuyEligibilityService = simpleBuyEligibilityService
+        self.supportedPairsInteractor = supportedPairsInteractor
+        self.tiersService = tiersService
+        self.userService = userService
+        self.wallet = wallet
     }
 }

@@ -36,13 +36,17 @@ public let coinViewReducer = Reducer<
                     .catchToEffect()
                     .map(CoinViewAction.update),
                 environment.interestRatesRepository
-                    .fetchRate(code: state.asset.code)
+                    .fetchRate(code: state.currency.code)
                     .result()
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .map(CoinViewAction.fetchedInterestRate),
+                environment.assetInformationService
+                    .fetch()
+                    .catchToEffect()
+                    .map(CoinViewAction.fetchedAssetInformation),
                 environment.app.publisher(
-                    for: blockchain.ux.asset[state.asset.code].watchlist.is.on,
+                    for: blockchain.ux.asset[state.currency.code].watchlist.is.on,
                     as: Bool.self
                 )
                 .compactMap(\.value)
@@ -50,7 +54,7 @@ public let coinViewReducer = Reducer<
                 .eraseToEffect()
                 .map(CoinViewAction.isOnWatchlist),
                 .fireAndForget { [state] in
-                    environment.app.post(event: blockchain.ux.asset[state.asset.code])
+                    environment.app.post(event: blockchain.ux.asset[state.currency.code])
                 }
             )
 
@@ -61,6 +65,10 @@ public let coinViewReducer = Reducer<
             state.interestRate = try? result.get()
             return .none
 
+        case .fetchedAssetInformation(let result):
+            state.information = try? result.get()
+            return .none
+
         case .isOnWatchlist(let isFavorite):
             state.isFavorite = isFavorite
             return .none
@@ -69,7 +77,7 @@ public let coinViewReducer = Reducer<
             state.isFavorite = nil
             return .fireAndForget { [state] in
                 environment.app.post(
-                    event: blockchain.ux.asset[state.asset.code].watchlist.add
+                    event: blockchain.ux.asset[state.currency.code].watchlist.add
                 )
             }
 
@@ -77,7 +85,7 @@ public let coinViewReducer = Reducer<
             state.isFavorite = nil
             return .fireAndForget { [state] in
                 environment.app.post(
-                    event: blockchain.ux.asset[state.asset.code].watchlist.remove
+                    event: blockchain.ux.asset[state.currency.code].watchlist.remove
                 )
             }
 

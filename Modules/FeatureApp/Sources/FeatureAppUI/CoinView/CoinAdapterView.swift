@@ -34,6 +34,7 @@ public struct CoinAdapterView: View {
         userAdapter: UserAdapterAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        assetInformationRepository: AssetInformationRepositoryAPI = resolve(),
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
         ratesRepository: RatesRepositoryAPI = resolve(),
         watchlistRepository: WatchlistRepositoryAPI = resolve(),
@@ -43,7 +44,7 @@ public struct CoinAdapterView: View {
         self.app = app
         store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
-                asset: AssetDetails(cryptoCurrency: cryptoCurrency)
+                currency: cryptoCurrency
             ),
             reducer: coinViewReducer,
             environment: CoinViewEnvironment(
@@ -73,6 +74,10 @@ public struct CoinAdapterView: View {
                         }
                         .eraseToAnyPublisher()
                 },
+                assetInformationService: AssetInformationService(
+                    currency: cryptoCurrency,
+                    repository: assetInformationRepository
+                ),
                 historicalPriceService: HistoricalPriceService(
                     base: cryptoCurrency,
                     displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
@@ -104,7 +109,7 @@ public final class CoinViewObserver: Session.Observer {
     let app: AppProtocol
     let transactionsRouter: TransactionsRouterAPI
     let coincore: CoincoreAPI
-    let kycRouter: KYCAdapter
+    let kycRouter: KYCRouterAPI
     let defaults: UserDefaults
     let application: URLOpener
     let topViewController: TopMostViewControllerProviding
@@ -115,7 +120,7 @@ public final class CoinViewObserver: Session.Observer {
         app: AppProtocol,
         transactionsRouter: TransactionsRouterAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
-        kycRouter: KYCAdapter = KYCAdapter(),
+        kycRouter: KYCRouterAPI = resolve(),
         defaults: UserDefaults = .standard,
         application: URLOpener = resolve(),
         topViewController: TopMostViewControllerProviding = resolve(),
@@ -135,21 +140,21 @@ public final class CoinViewObserver: Session.Observer {
 
     var observers: [BlockchainEventSubscription] {
         [
-            select,
+            activity,
             buy,
-            sell,
+            exchangeDeposit,
+            exchangeWithdraw,
+            explainerReset,
+            kyc,
             receive,
-            send,
-            swap,
-            rewardsWithdraw,
             rewardsDeposit,
             rewardsSummary,
-            exchangeWithdraw,
-            exchangeDeposit,
-            kyc,
-            activity,
-            website,
-            explainerReset
+            rewardsWithdraw,
+            select,
+            sell,
+            send,
+            swap,
+            website
         ]
     }
 
@@ -276,37 +281,8 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] event in
-        let viewController = topViewController.topMostViewController!
-        guard
-            let result = await kycRouter.presentKYCUpgradeFlow(from: viewController).values.first,
-            result != .abandoned
-        else {
-            return
-        }
-        if event.reference.context[blockchain.ux.asset.account.id] != nil {
-            app.post(
-                event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context)
-            )
-        } else {
-            let account: BlockchainAccount.Type
-            typealias AccountType = FeatureCoinDomain.Account.AccountType
-            switch try event.context.decode(blockchain.ux.asset.account.type) as AccountType {
-            case .trading:
-                account = CryptoTradingAccount.self
-            case .interest:
-                account = CryptoInterestAccount.self
-            case .exchange:
-                account = CryptoExchangeAccount.self
-            case .privateKey:
-                return
-            }
-            try await app.post(
-                event: blockchain.ux.asset.account.sheet[].ref(to: event.reference.context + [
-                    blockchain.ux.asset.account.id: custodialAccount(account, from: event).identifier
-                ])
-            )
-        }
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ in
+        kycRouter.start(tier: .tier2, parentFlow: .coin)
     }
 
     lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ in
@@ -373,7 +349,7 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            actionsPublisher: account.actionsPublisher()
+            actionsPublisher: account.actions
                 .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
                 .eraseToAnyPublisher(),
             cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),
@@ -443,26 +419,6 @@ extension FeatureCoinDomain.KYCStatus {
         case .gold:
             self = .gold
         }
-    }
-}
-
-extension AssetDetails {
-
-    init(cryptoCurrency: CryptoCurrency) {
-        self.init(
-            name: cryptoCurrency.name,
-            code: cryptoCurrency.code,
-            displayCode: cryptoCurrency.displayCode,
-            brandColor: cryptoCurrency.brandColor,
-            about: nil,
-            website: nil,
-            logoUrl: cryptoCurrency.assetModel.logoPngUrl.flatMap(URL.init(string:)),
-            logoImage: cryptoCurrency.assetModel.logoResource.image,
-            isTradable: cryptoCurrency.supports(product: .custodialWalletBalance)
-                || cryptoCurrency.supports(product: .privateKey),
-            supportsCustodial: cryptoCurrency.supports(product: .custodialWalletBalance),
-            supportsInterest: cryptoCurrency.supports(product: .interestBalance)
-        )
     }
 }
 

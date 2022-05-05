@@ -140,20 +140,24 @@ final class ReceiveScreenPresenter {
             .share(replay: 1)
 
         let qrCodeMetadata = state
-            .map(\.qrCodeMetadata)
+            .map { state in
+                state?.qrCodeMetadata
+            }
 
         qrCodeMetadata
-            .map { metadata -> QRCodeAPI? in
-                QRCode(string: metadata.content)
+            .map { metadata -> UIImage? in
+                guard let content = metadata?.content else {
+                    return nil
+                }
+                return QRCode(string: content)?.image
             }
-            .map { $0?.image }
-            .catchAndReturn(nil)
             .bindAndCatch(to: qrCodeRelay)
             .disposed(by: disposeBag)
 
         qrCodeMetadata
-            .map(\.title)
-            .catchAndReturn("")
+            .map { metadata -> String in
+                metadata?.title ?? ""
+            }
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
             .bindAndCatch(to: addressLabelContentPresenting.interactor.stateRelay)
@@ -169,8 +173,9 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         state
-            .map(\.memo)
-            .catchAndReturn(nil)
+            .map { state -> String? in
+                state?.memo ?? nil
+            }
             .compactMap { $0 }
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
@@ -178,8 +183,9 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         state
-            .map(\.domainNames)
-            .map(\.first)
+            .map { state -> String? in
+                state?.domainNames.first
+            }
             .compactMap { $0 }
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
@@ -205,7 +211,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .withLatestFrom(qrCodeMetadata.map(\.title))
+            .withLatestFrom(qrCodeMetadata.map { $0?.title })
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 
@@ -247,7 +253,12 @@ final class ReceiveScreenPresenter {
         shareButton.tapRelay
             .withLatestFrom(qrCodeMetadata)
             .subscribe(onNext: { [weak self] metadata in
-                guard let self = self else { return }
+                guard let self = self else {
+                    return
+                }
+                guard let metadata = metadata else {
+                    return
+                }
                 let currencyType = self.interactor.account.currencyType
                 self.interactor.receiveRouter.shareDetails(
                     for: metadata,

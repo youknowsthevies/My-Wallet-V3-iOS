@@ -169,10 +169,10 @@ packages:
     version: 1.9.0
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    version: 0.32.0
+    version: 0.34.0
   Intercom:
     url: https://github.com/intercom/intercom-ios.git
-    version: 11.1.0
+    version: 12.1.0
   DIKit:
     url: https://github.com/jackpooleybc/DIKit.git
     branch: safe-property-wrappers
@@ -181,13 +181,13 @@ packages:
     version: 5.3.0
   RxSwift:
     url: https://github.com/ReactiveX/RxSwift.git
-    version: 6.2.0
+    version: 6.5.0
   RIBs:
     url: https://github.com/uber/RIBs.git
-    version: 0.12.1
+    version: 0.12.2
   Pulse:
     url: https://github.com/kean/Pulse.git
-    version: 0.20.0
+    version: 0.20.2
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -226,6 +226,10 @@ packages:
     path: Modules/FeatureInterest
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureNFT:
+    path: Modules/FeatureNFT
+  Observability:
+    path: Modules/Observability
   FeatureOpenBanking:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
@@ -342,6 +346,7 @@ targets:
       - package: FeatureForm
       - package: FeatureInterest
       - package: FeatureKYC
+      - package: FeatureNFT
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
@@ -408,6 +413,7 @@ targets:
         product: NetworkErrors
       - package: Money
         product: MoneyKit
+      - package: Observability
       - package: Platform
         product: PlatformKit
       - package: Platform
@@ -568,22 +574,6 @@ targets:
     - createIntermediateGroups: true
       path: Modules/WalletPayload/Sources/WalletPayloadKitMock
     type: bundle.unit-test
-  OnboardingDemo:
-    dependencies:
-      - package: FeatureOnboarding
-        product: FeatureOnboardingUI
-      - package: FeatureKYC
-      - package: Platform
-        product: PlatformKit
-      - package: Platform
-        product: PlatformDataKit
-      - package: Platform
-        product: PlatformUIKit
-    platform: iOS
-    sources:
-      - createIntermediateGroups: true
-        path: Modules/FeatureOnboarding/OnboardingDemo
-    type: application
   CryptoDomainDemo:
     dependencies:
       - package: FeatureCryptoDomain

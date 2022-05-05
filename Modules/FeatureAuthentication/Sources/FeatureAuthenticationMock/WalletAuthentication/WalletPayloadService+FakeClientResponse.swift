@@ -22,7 +22,8 @@ extension WalletPayloadClient.Response {
             language: language,
             serverTime: serverTime,
             payload: payload,
-            shouldSyncPubkeys: shouldSyncPubkeys
+            shouldSyncPubkeys: shouldSyncPubkeys,
+            payloadChecksum: ""
         )
     }
 }

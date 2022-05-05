@@ -15,7 +15,7 @@ public protocol AnyDecoderProtocol: AnyObject, Decoder {
     func convert<T>(_ any: Any, to: T.Type) throws -> Any?
 }
 
-open class AnyDecoder: AnyDecoderProtocol {
+open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
 
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey: Any] = [:]
@@ -70,10 +70,14 @@ open class AnyDecoder: AnyDecoderProtocol {
             return number.doubleValue
         case (let number as NSNumber, is CGFloat.Type):
             return number.doubleValue
+        case (let boolean as Bool, is String.Type):
+            return boolean.description
         case (let string as String, is Int.Type):
             return Int(string)
         case (let string as String, is Bool.Type):
             return Bool(string)
+        case (let string as CustomStringConvertible, is String.Type):
+            return string.description
         default:
             switch Wrapper<T>.self {
             case let rawRepresentable as AnyRawRepresentable.Type:

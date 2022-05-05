@@ -6,6 +6,8 @@
 	<string>$(INTERCOM_API_KEY)</string>
 	<key>intercomAppId</key>
 	<string>$(INTERCOM_APP_ID)</string>
+	<key>embraceAppId</key>
+	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
 	<key>CHECKOUT_ENV</key>
@@ -47,7 +49,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>202204.1.0</string>
+	<string>202204.2.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -62,7 +64,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>8</string>
 	<key>COMMIT_HASH</key>
 	<string>${COMMIT_HASH}</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

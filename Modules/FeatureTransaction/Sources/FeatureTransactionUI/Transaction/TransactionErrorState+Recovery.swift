@@ -2,6 +2,7 @@
 
 // swiftlint:disable file_length
 
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -73,7 +74,10 @@ extension TransactionErrorState {
         case .fatalError(let fatalError):
             switch fatalError {
             case .generic(let error):
-                if
+                if let error = error as? OpenBanking.Error {
+                    let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                    return ui.info.title
+                } else if
                     let error = error as? OrderConfirmationServiceError,
                     case .nabu(.nabuError(let networkError)) = error
                 {
@@ -96,7 +100,7 @@ extension TransactionErrorState {
                 text = nil
             }
         case .nabuError(let error):
-            text = transactionErrorTitle(for: error.code, action: action)
+            text = transactionErrorTitle(for: error.code, action: action) ?? error.serverDescription
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
@@ -288,8 +292,11 @@ extension TransactionErrorState {
         let errorDescription: String
         switch fatalError {
         case .generic(let error):
-            if let error = error as? OrderConfirmationServiceError, case .nabu(let networkError) = error {
-                errorDescription = transactionErrorDescription(for: networkError, action: action)
+            if let error = error as? OpenBanking.Error {
+                let ui = BankState.UI.errors[error, default: BankState.UI.defaultError]
+                errorDescription = ui.info.subtitle
+            } else if let error = error as? OrderConfirmationServiceError, case .nabu(let nabu) = error {
+                errorDescription = transactionErrorDescription(for: nabu, action: action)
             } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {
@@ -311,10 +318,12 @@ extension TransactionErrorState {
             return Localization.cardInsufficientFundsTitle
         case .cardBankDecline:
             return Localization.cardBankDeclineTitle
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclinedTitle
         case .cardDuplicate:
             return Localization.cardDuplicateTitle
         case .cardBlockchainDecline:
-            return Localization.cardBankDeclineTitle
+            return Localization.cardBlockchainDeclineTitle
         case .cardAcquirerDecline:
             return Localization.cardAcquirerDeclineTitle
         case .cardPaymentNotSupported:
@@ -323,6 +332,18 @@ extension TransactionErrorState {
             return Localization.cardCreateFailedTitle
         case .cardPaymentFailed:
             return Localization.cardPaymentFailedTitle
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclinedTitle
+        case .cardCreateAbandoned:
+            return Localization.cardCreateAbandonedTitle
+        case .cardCreateExpired:
+            return Localization.cardCreateExpiredTitle
+        case .cardCreateDebitOnly:
+            return Localization.cardCreateDebitOnlyTitle
+        case .cardPaymentDebitOnly:
+            return Localization.cardPaymentDebitOnlyTitle
+        case .cardCreateNoToken:
+            return Localization.cardCreateNoTokenTitle
         default:
             return nil
         }
@@ -377,18 +398,32 @@ extension TransactionErrorState {
             return Localization.cardInsufficientFunds
         case .cardBankDecline:
             return Localization.cardBankDecline
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclined
         case .cardDuplicate:
             return Localization.cardDuplicate
         case .cardBlockchainDecline:
-            return Localization.cardBankDecline
+            return Localization.cardBlockchainDecline
         case .cardAcquirerDecline:
-            return Localization.cardBankDecline
+            return Localization.cardAcquirerDecline
         case .cardPaymentNotSupported:
             return Localization.cardUnsupportedPaymentMethod
         case .cardCreateFailed:
             return Localization.cardCreateFailed
         case .cardPaymentFailed:
             return Localization.cardPaymentFailed
+        case .cardCreateAbandoned:
+            return Localization.cardCreateAbandoned
+        case .cardCreateExpired:
+            return Localization.cardCreateExpired
+        case .cardCreateBankDeclined:
+            return Localization.cardCreateBankDeclined
+        case .cardCreateDebitOnly:
+            return Localization.cardCreateDebitOnly
+        case .cardPaymentDebitOnly:
+            return Localization.cardPaymentDebitOnly
+        case .cardCreateNoToken:
+            return Localization.cardCreateNoToken
         default:
             return nil
         }

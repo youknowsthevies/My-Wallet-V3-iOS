@@ -9,26 +9,36 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			debug:
+				observers:
+				+ blockchain.db.type.array.of.tags
+				+ blockchain.session.configuration.value
 			deep_link:
 				rules:
 				+ blockchain.session.configuration.value
-			google:
-				pay:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-			is:
-				biometric:
-					enabled:
-					+ blockchain.session.state.preference.value
-					+ blockchain.session.state.shared.value
+			frequent:
+				action:
+				+ blockchain.db.type.any
+				+ blockchain.session.configuration.value
 			redesign:
 				coinview:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.configuration.value
-			wallet:
-				options:
-				+ blockchain.session.configuration.value
+			remote:
+				is:
+					stale:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.preference.value
+					+ blockchain.session.state.shared.value
+			tabs:
+			+ blockchain.db.type.array.of.tags
+			+ blockchain.session.configuration.value
+			test:
+				shared:
+					preference:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.preference.value
+					+ blockchain.session.state.shared.value
 		deep_link:
 			activity:
 				transaction:
@@ -303,6 +313,11 @@ blockchain:
 			+ blockchain.db.type.string
 			last:
 			+ blockchain.db.type.string
+		token:
+			firebase:
+				installation:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 		wallet:
 		+ blockchain.db.collection
 			is:
@@ -425,6 +440,9 @@ blockchain:
 			+ blockchain.db.collection
 				select:
 				+ blockchain.ux.type.action
+		maintenance:
+		+ blockchain.db.collection
+		+ blockchain.ux.type.story
 		payment:
 			method:
 				open:
@@ -614,3 +632,8 @@ blockchain:
 			+ blockchain.ux.type.story
 			portfolio:
 			+ blockchain.ux.type.story
+			rewards:
+			+ blockchain.ux.type.story
+		web:
+		+ blockchain.db.collection
+		+ blockchain.ux.type.story

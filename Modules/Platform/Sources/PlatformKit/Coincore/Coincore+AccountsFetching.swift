@@ -6,67 +6,7 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {
-    /// Filters an `[BlockchainAccount]` for only `BlockchainAccount`s that can perform the given action.
-    /// - parameter failSequence: When `true` re-throws errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
-    public func flatMapFilter(
-        action: AssetAction,
-        failSequence: Bool,
-        onFailure: ((BlockchainAccount, Error) -> Void)? = nil
-    ) -> PrimitiveSequence<SingleTrait, Element> {
-        flatMap { accounts -> Single<Element> in
-            let elements: [Single<BlockchainAccount?>] = accounts.map { account in
-                // Check if account can perform action
-                account.can(perform: action)
-                    // If account can perform, return itself, else return nil
-                    .map { $0 ? account : nil }
-                    .catch { error -> Single<BlockchainAccount?> in
-                        onFailure?(account, error)
-                        if failSequence {
-                            throw error
-                        }
-                        return .just(nil)
-                    }
-            }
-
-            return Single.zip(elements)
-                // Filter nil elements (accounts that can't perform action)
-                .map { accounts -> Element in
-                    accounts.compactMap { $0 }
-                }
-        }
-    }
-}
-
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAccount] {
-    /// Filters an `[SingleAccount]` for only `SingleAccount`s that can perform the given action.
-    /// - parameter failSequence: When `true` re-throws errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
-    public func flatMapFilter(
-        action: AssetAction,
-        failSequence: Bool,
-        onFailure: ((SingleAccount, Error) -> Void)? = nil
-    ) -> PrimitiveSequence<SingleTrait, Element> {
-        flatMap { accounts -> Single<Element> in
-            let elements: [Single<SingleAccount?>] = accounts.map { account in
-                // Check if account can perform action
-                account.can(perform: action)
-                    // If account can perform, return itself, else return nil
-                    .map { $0 ? account : nil }
-                    .catch { error -> Single<SingleAccount?> in
-                        onFailure?(account, error)
-                        if failSequence {
-                            throw error
-                        }
-                        return .just(nil)
-                    }
-            }
-            return Single.zip(elements)
-                // Filter nil elements (accounts that can't perform action)
-                .map { accounts -> Element in
-                    accounts.compactMap { $0 }
-                }
-        }
-    }
 
     /// Maps each `[SingleAccount]` object filtering out accounts that match the given `BlockchainAccount` identifier.
     public func mapFilter(excluding identifier: AnyHashable) -> PrimitiveSequence<SingleTrait, Element> {
@@ -88,7 +28,6 @@ extension AccountGroup {
             failSequence: failSequence,
             onFailure: onFailure
         )
-        .asObservable()
         .asSingle()
     }
 
@@ -103,6 +42,48 @@ extension AccountGroup {
                 failSequence: failSequence,
                 onFailure: onFailure
             )
+    }
+}
+
+extension Publisher where Output == [BlockchainAccount], Failure == Error {
+
+    /// Filters an `[BlockchainAccount]` for only `BlockchainAccount`s that can perform the given action.
+    /// - parameter failSequence: When `true` re-throws errors raised by any `BlockchainAccount.can(perform:)`.
+    ///  If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
+    public func flatMapFilter(
+        action: AssetAction? = nil,
+        failSequence: Bool = false,
+        onFailure: ((BlockchainAccount, Failure) -> Void)? = nil
+    ) -> AnyPublisher<[BlockchainAccount], Failure> {
+        flatMap { accounts -> AnyPublisher<[BlockchainAccount], Failure> in
+            guard let action = action else {
+                return .just(accounts)
+            }
+            return accounts.map { account in
+                // Check if account can perform action
+                account.can(perform: action)
+                    // If account can perform, return itself, else return nil
+                    .map { $0 ? account : nil }
+                    .tryCatch { error -> AnyPublisher<BlockchainAccount?, Failure> in
+                        Logger.shared.error(
+                            "[Coincore] Error checking if account can perform '\(action)' => \(error)"
+                        )
+                        onFailure?(account, error)
+                        if failSequence {
+                            throw error
+                        }
+                        return .just(nil)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .zip()
+            // Filter nil elements (accounts that can't perform action)
+            .map { accounts in
+                accounts.compactMap { $0 }
+            }
+            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 }
 
@@ -143,6 +124,9 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
         .eraseToAnyPublisher()
     }
 
+    /// Filters an `[SingleAccount]` for only `SingleAccount`s that can perform the given action.
+    /// - parameter failSequence: When `true` re-throws errors raised by any `SingleAccount.can(perform:)`.
+    ///  If this is set to `false`, filters out from the emitted element any account whose `SingleAccount.can(perform:)` failed.
     public func flatMapFilter(
         action: AssetAction? = nil,
         failSequence: Bool = false,

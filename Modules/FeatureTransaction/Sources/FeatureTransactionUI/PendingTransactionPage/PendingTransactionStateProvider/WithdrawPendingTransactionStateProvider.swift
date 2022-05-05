@@ -62,7 +62,8 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 )
             ),
             effect: .complete,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action
         )
     }
 
@@ -89,7 +90,8 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            )
+            ),
+            action: state.action
         )
     }
 
@@ -117,7 +119,9 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 )
             ),
             effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            action: state.action,
+            error: state.errorState
         )
     }
 }

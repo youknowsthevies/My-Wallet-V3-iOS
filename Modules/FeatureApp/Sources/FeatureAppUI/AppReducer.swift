@@ -58,6 +58,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
                     featureFlagService: $0.featureFlagsService,
+                    observabilityService: $0.observabilityService,
                     mainQueue: $0.mainQueue
                 )
             }
@@ -82,7 +83,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     userService: $0.userService,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,

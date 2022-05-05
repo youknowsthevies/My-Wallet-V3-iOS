@@ -1,18 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import ToolKit
 
-public struct OrdersActivityResponse: Decodable {
-    struct Item: Decodable {
-        struct ExtraAttributes: Decodable {
-            struct Beneficiary: Decodable {
+public struct OrdersActivityResponse: Decodable, Equatable {
+    struct Item: Decodable, Equatable {
+        struct ExtraAttributes: Decodable, Equatable {
+            struct Beneficiary: Decodable, Equatable {
                 let accountRef: String?
             }
 
             let beneficiary: Beneficiary?
         }
 
-        struct Amount: Decodable {
+        struct Amount: Decodable, Equatable {
             let symbol: String
         }
 
@@ -29,4 +29,14 @@ public struct OrdersActivityResponse: Decodable {
     }
 
     let items: [Item]
+}
+
+extension OrdersActivityResponse.Item {
+
+    /// Helper that maps `OrdersActivityResponse.Item.insertedAt`property into a `Date`.
+    var insertedAtDate: Date {
+        DateFormatter.sessionDateFormat.date(from: insertedAt)
+            ?? DateFormatter.iso8601Format.date(from: insertedAt)
+            ?? Date()
+    }
 }

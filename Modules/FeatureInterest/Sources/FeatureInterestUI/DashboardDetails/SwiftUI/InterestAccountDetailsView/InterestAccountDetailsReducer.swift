@@ -71,7 +71,6 @@ let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, actio
         let canWithdraw = account
             .flatMap {
                 $0.can(perform: .interestWithdraw)
-                    .asPublisher()
                     .replaceError(with: false)
             }
 

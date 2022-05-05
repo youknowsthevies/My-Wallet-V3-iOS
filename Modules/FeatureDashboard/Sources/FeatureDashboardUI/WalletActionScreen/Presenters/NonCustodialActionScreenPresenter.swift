@@ -60,7 +60,6 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
     init(
         using interactor: WalletActionScreenInteracting,
         stateService: NonCustodialActionStateServiceAPI,
-        featureConfigurator: FeatureConfiguring = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.interactor = interactor

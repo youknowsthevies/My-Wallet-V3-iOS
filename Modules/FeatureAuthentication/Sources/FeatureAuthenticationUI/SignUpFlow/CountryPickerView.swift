@@ -27,29 +27,43 @@ public struct CountryPickerView: View {
             $0.title.localizedCompare($1.title) == .orderedAscending
         }
 
-    private let selectedItem: SearchableItem<String>?
-    private let onSelection: (SearchableItem<String>) -> Void
+    @Binding private var selectedItem: SearchableItem<String>?
 
-    public init(
-        selectedItem: SearchableItem<String>?,
-        onSelection: @escaping (SearchableItem<String>) -> Void
-    ) {
-        self.selectedItem = selectedItem
-        self.onSelection = onSelection
+    private var sections: [SearchableItemPicker<String>.SearchableSection] {
+        var sections: [SearchableItemPicker<String>.SearchableSection] = []
+
+        if let currentRegionCode = Locale.current.regionCode,
+           !Self.restrictedCountryIdentifiers.contains(currentRegionCode),
+           let currentRegionName = Locale.current.localizedString(forRegionCode: currentRegionCode)
+        {
+            sections.append(
+                .init(
+                    title: LocalizedStrings.suggestedSelectionTitle,
+                    items: [SearchableItem(id: currentRegionCode, title: currentRegionName)]
+                )
+            )
+        }
+
+        sections.append(
+            .init(
+                title: LocalizedStrings.countriesSectionTitle,
+                items: CountryPickerView.countries
+            )
+        )
+
+        return sections
+    }
+
+    public init(selectedItem: Binding<SearchableItem<String>?>) {
+        _selectedItem = selectedItem
     }
 
     public var body: some View {
         SearchableItemPicker(
-            sections: [
-                .init(
-                    title: LocalizedStrings.countriesSectionTitle,
-                    items: CountryPickerView.countries
-                )
-            ],
-            selectedItem: selectedItem,
+            sections: sections,
+            selectedItem: $selectedItem,
             cancelButtonTitle: LocalizationConstants.searchCancelButtonTitle,
-            searchPlaceholder: LocalizationConstants.searchPlaceholder,
-            onSelection: onSelection
+            searchPlaceholder: LocalizationConstants.searchPlaceholder
         )
     }
 }
