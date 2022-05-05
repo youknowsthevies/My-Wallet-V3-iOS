@@ -51,6 +51,7 @@ final class WalletLogic: WalletLogicAPI {
 
     private let holder: WalletHolderAPI
     private let decoder: WalletDecoding
+    private let upgrader: WalletUpgraderAPI
     private let metadata: MetadataServiceAPI
     private let notificationCenter: NotificationCenter
 
@@ -60,11 +61,13 @@ final class WalletLogic: WalletLogicAPI {
     init(
         holder: WalletHolderAPI,
         decoder: @escaping WalletDecoding,
+        upgrader: WalletUpgraderAPI,
         metadata: MetadataServiceAPI,
         notificationCenter: NotificationCenter
     ) {
         self.holder = holder
         self.decoder = decoder
+        self.upgrader = upgrader
         self.metadata = metadata
         self.notificationCenter = notificationCenter
     }
@@ -103,6 +106,12 @@ final class WalletLogic: WalletLogicAPI {
         decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError> {
         decoder(payload, decryptedWallet)
+            .flatMap { [upgrader] wrapper -> AnyPublisher<Wrapper, WalletError> in
+                runUpgradeIfNeeded(
+                    upgrader: upgrader,
+                    wrapper: wrapper
+                )
+            }
             .flatMap { [holder] wrapper -> AnyPublisher<Wrapper?, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justWrapper(wrapper)))
                     .map(\.wrapper)
@@ -134,9 +143,14 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [decoder] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+            .flatMap { [decoder, upgrader] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
                 decoder(payload, decryptedWallet)
                     .map { ($0, metadataState) }
+                    .flatMap { wrapper, metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+                        runUpgradeIfNeeded(upgrader: upgrader, wrapper: wrapper)
+                            .map { ($0, metadataState) }
+                            .eraseToAnyPublisher()
+                    }
                     .eraseToAnyPublisher()
             }
             .flatMap { [holder] wrapper, metadataState -> AnyPublisher<WalletState, WalletError> in
@@ -244,6 +258,25 @@ final class WalletLogic: WalletLogicAPI {
         notificationCenter.post(Notification(name: .walletMetadataLoaded))
     }
 }
+
+/// Runs upgrades on the given `Wrapper` if needed
+/// - Parameters:
+///   - upgrader: A `WalletUpgraderAPI` object responsible for the upgrades
+///   - wrapper: A `Wrapper` to be upgraded
+/// - Returns: `AnyPublisher<Wrapper, WalletError>`
+private func runUpgradeIfNeeded(
+    upgrader: WalletUpgraderAPI,
+    wrapper: Wrapper
+) -> AnyPublisher<Wrapper, WalletError> {
+    guard upgrader.upgradedNeeded(wrapper: wrapper) else {
+        return .just(wrapper)
+    }
+    return upgrader.performUpgrade(wrapper: wrapper)
+        .mapError(WalletError.upgrade)
+        .eraseToAnyPublisher()
+}
+
+// MARK: - Metadata Input
 
 struct MetadataInput {
     let credentials: Credentials

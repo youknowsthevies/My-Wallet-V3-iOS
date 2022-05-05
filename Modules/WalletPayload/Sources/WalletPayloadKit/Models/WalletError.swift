@@ -11,6 +11,7 @@ public enum WalletError: LocalizedError, Equatable {
     case decryption(WalletDecryptionError)
     case encryption(WalletEncodingError)
     case recovery(WalletRecoverError)
+    case upgrade(WalletUpgradeError)
 
     public var errorDescription: String? {
         switch self {
@@ -24,6 +25,8 @@ public enum WalletError: LocalizedError, Equatable {
             return error.errorDescription
         case .encryption(let error):
             return error.errorDescription
+        case .upgrade(let error):
+            return error.localizedDescription
         case .unknown:
             return ""
         }

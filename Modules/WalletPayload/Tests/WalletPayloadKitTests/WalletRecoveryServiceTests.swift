@@ -35,10 +35,12 @@ class WalletRecoveryServiceTests: XCTestCase {
         }
 
         let mockMetadata = MetadataServiceMock()
+        let upgrader = WalletUpgrader(workflows: [])
 
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder,
+            upgrader: upgrader,
             metadata: mockMetadata,
             notificationCenter: .default
         )
@@ -93,9 +95,12 @@ class WalletRecoveryServiceTests: XCTestCase {
             )
         )
 
+        let upgrader = WalletUpgrader(workflows: [])
+
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder,
+            upgrader: upgrader,
             metadata: mockMetadata,
             notificationCenter: .default
         )
