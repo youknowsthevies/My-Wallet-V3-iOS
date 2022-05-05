@@ -215,15 +215,12 @@ private struct CreateAccountForm: View {
 
     private var agreementText: some View {
         VStack(alignment: .leading, spacing: .zero) {
-            let promptTemplate = LocalizedString.agreementPrompt
-            let recoveryPhrasePlaceholder = "|RECOVERY_PHRASE|"
-
-            let recoveryPhraseText = Text(LocalizedString.recoveryPhrase)
-                .foregroundColor(.semantic.primary)
-
-            let promptComponents = promptTemplate.components(separatedBy: recoveryPhrasePlaceholder)
-            let promptText = Text(promptComponents[0]) + recoveryPhraseText + Text(promptComponents[1]) + Text("")
-
+            let promptText = Text(
+                rich: String(
+                    format: LocalizedString.agreementPrompt,
+                    LocalizedString.recoveryPhrase
+                )
+            )
             promptText
                 .foregroundColor(.semantic.body)
                 .onTapGesture {

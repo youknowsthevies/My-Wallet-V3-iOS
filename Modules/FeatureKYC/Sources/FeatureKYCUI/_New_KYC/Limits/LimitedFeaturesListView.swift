@@ -206,19 +206,9 @@ struct LimitedFeaturesListHeader: View {
 struct LimitedFeaturesListFooter: View {
 
     var body: some View {
-        let mainText = LocalizedStrings.footerTemplate
-        let supportCenterText = Text(LocalizedStrings.supportCenterLink)
+        Text(rich: LocalizedStrings.footerText)
             .typography(.caption1)
-            .foregroundColor(.semantic.primary)
-        let components: [Text] = mainText
-            .components(separatedBy: "|SUPPORT_CENTER|")
-            .map { substring in
-                Text(substring)
-                    .typography(.caption1)
-                    .foregroundColor(.semantic.body)
-            }
-        let joined = components[0] + supportCenterText + components[1]
-        return joined
+            .foregroundColor(.semantic.body)
             .padding(Spacing.padding3)
     }
 }

@@ -118,13 +118,9 @@ extension LocalizationConstants {
                 comment: "Limits overview page title when prompting to upgrade KYC level"
             )
 
-            public static let footerTemplate = NSLocalizedString(
-                "Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our |SUPPORT_CENTER|.",
-                comment: "Page footer. |SUPPORT_CENTER| is a placeholder for formatting purposes. Don't change it!"
-            )
-            public static let supportCenterLink = NSLocalizedString(
-                "Support Center",
-                comment: "Link to support center. This is what gets inserted in place of |SUPPORT_CENTER|."
+            public static let footerText = NSLocalizedString(
+                "Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our [Support Center](https://blockchain.com).",
+                comment: "Page footer."
             )
 
             public static let headerTitle_tier0 = NSLocalizedString(

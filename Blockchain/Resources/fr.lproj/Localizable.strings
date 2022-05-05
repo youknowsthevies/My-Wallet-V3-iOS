@@ -1470,7 +1470,6 @@ unifié de Blockchain";
 "Signed" = "Signé";
 "Signing" = "Signature";
 "SMS Code" = "Code SMS";
-"Support Center" = "Centre d'assistance";
 "Taking you to %@" = "Vous êtes dirigé vers %@";
 "Tap to Refresh" = "Appuyez pour actualiser";
 "The device approval link has expired, please try again." = "Le lien d'approbation de l'appareil a expiré, veuillez réessayer.";
@@ -1499,11 +1498,11 @@ unifié de Blockchain";
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Pour compenser les frais, le montant minimum pour tout retrait est de **%@**.";
 "Too many active orders" = "Trop de commandes actives";
 "Transaction in progress" = "Transaction en cours";
-"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our |SUPPORT_CENTER|." = "Des plafonds de transaction peuvent s'appliquer à certaines banques et émetteurs de cartes. \
+"Transaction limits may apply to certain banks and card issuers.\n\nPurchase or deposit limits are determined by many factors, including verification completed on your account, your purchase history, your payment type, and more.\n\nLearn more about Trading Accounts, Limits, and features by visiting our [Support Center](https://blockchain.com)." = "Des plafonds de transaction peuvent s'appliquer à certaines banques et émetteurs de cartes. \
 \
 Les plafonds d'achat ou de dépôt sont déterminées par de nombreux facteurs, notamment la vérification effectuée sur votre compte, l'historique de vos achats, votre type de paiement, etc. \
 \
- En savoir plus sur les comptes de Trading, les limites et les fonctionnalités en visitant notre |SERVICE_D'ASSISTANCE|.";
+ En savoir plus sur les comptes de Trading, les limites et les fonctionnalités en visitant notre [Centre d'assistance](https://blockchain.com).";
 "Transfer from..." = "Transfert à partir de...";
 "Transferred" = "Transféré";
 "Unlock Swap - our in-app exchange." = "Déverrouiller Swap - notre bourse in-app.";
@@ -1560,7 +1559,7 @@ Achetez de la Crypto aujourd'hui.";
 "Country of Residence" = "Pays de résidence";
 "Create Your Account." = "Créez votre compte.";
 "Enter your password" = "Entrez votre mot de passe";
-"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my |RECOVERY_PHRASE| to access my funds. By creating a wallet, you agree to Blockchain’s" = "Je comprends que Blockchain.com ne stocke jamais les mots de passe et ne peut donc pas récupérer ou réinitialiser mon mot de passe. Si je perds l'accès à mon portefeuille, je dois utiliser ma |PHRASE DE RÉCUPÉRATION| pour accéder à mes fonds. En créant un portefeuille, vous acceptez les";
+"I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my **%@** to access my funds. By creating a wallet, you agree to Blockchain’s" = "Je comprends que Blockchain.com ne stocke jamais les mots de passe et ne peut donc pas récupérer ou réinitialiser mon mot de passe. Si je perds l'accès à mon portefeuille, je dois utiliser ma **%@** pour accéder à mes fonds. En créant un portefeuille, vous acceptez les";
 "If you need to change your Country or State, please contact our customer support." = "Si vous avez besoin de changer de pays ou d'État, veuillez contacter notre service d'assistance.";
 "Let’s get you set up." = "Et c'est parti.";
 "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning." = "Mettez votre crypto au travail. Gagnez jusqu'à 10 % par mois en ne faisant rien. Déposez instantanément et commencez à gagner.";
