@@ -44,8 +44,6 @@ public struct CoinView: View {
                     dismiss(viewStore)
                 }
             )
-            .padding(.bottom, 20.pt)
-            .ignoresSafeArea(.container, edges: .bottom)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear { viewStore.send(.onAppear) }
             .onDisappear { viewStore.send(.onDisappear) }
@@ -121,14 +119,12 @@ public struct CoinView: View {
                 .padding([.leading, .trailing, .top], Spacing.padding2)
             } else if viewStore.currency.isTradable {
                 totalBalance()
-                if let status = viewStore.kycStatus {
-                    AccountListView(
-                        accounts: viewStore.accounts,
-                        currency: viewStore.currency,
-                        interestRate: viewStore.interestRate,
-                        kycStatus: status
-                    )
-                }
+                AccountListView(
+                    accounts: viewStore.accounts,
+                    currency: viewStore.currency,
+                    interestRate: viewStore.interestRate,
+                    kycStatus: viewStore.kycStatus
+                )
             } else {
                 totalBalance()
                 AlertCard(
@@ -146,6 +142,8 @@ public struct CoinView: View {
         }
     }
 
+    @State private var isExpanded: Bool = false
+
     @ViewBuilder func about(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
         if viewStore.information?.description.nilIfEmpty == nil, viewStore.information?.website.nilIfEmpty == nil {
             EmptyView()
@@ -159,9 +157,24 @@ public struct CoinView: View {
                     .foregroundColor(.semantic.title)
                     .typography(.body2)
                     if let about = viewStore.information?.description {
-                        Text(about)
+                        Text(rich: about)
+                            .lineLimit(isExpanded ? nil : 6)
                             .typography(.paragraph1)
                             .foregroundColor(.semantic.title)
+                        if !isExpanded {
+                            Button(
+                                action: {
+                                    withAnimation {
+                                        isExpanded.toggle()
+                                    }
+                                },
+                                label: {
+                                    Text(Localization.Button.Title.readMore)
+                                        .typography(.paragraph1)
+                                        .foregroundColor(.semantic.primary)
+                                }
+                            )
+                        }
                     }
                     if let url = viewStore.information?.website {
                         Spacer()
@@ -237,7 +250,8 @@ public struct CoinView: View {
                     }
                 }
             }
-            .padding()
+            .padding([.leading, .trailing])
+            .padding(.bottom, 8.pt)
         }
     }
 }

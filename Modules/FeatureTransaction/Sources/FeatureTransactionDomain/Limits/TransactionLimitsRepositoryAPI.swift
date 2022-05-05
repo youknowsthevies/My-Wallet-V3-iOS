@@ -13,7 +13,6 @@ public protocol TransactionLimitsRepositoryAPI {
 
     func fetchTradeLimits(
         sourceCurrency: CurrencyType,
-        destinationCurrency: CurrencyType,
         product: TransactionLimitsProduct
     ) -> AnyPublisher<TradeLimits, NabuNetworkError>
 

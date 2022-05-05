@@ -64,7 +64,7 @@ struct DomainCheckoutConfirmationView: View {
         }
         .navigationBarBackButtonHidden(true)
         .multilineTextAlignment(.center)
-        .padding([.leading, .trailing], Spacing.padding3)
+        .padding([.leading, .trailing, .bottom], Spacing.padding3)
     }
 
     private var title: String {

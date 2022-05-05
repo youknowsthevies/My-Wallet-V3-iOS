@@ -6,6 +6,15 @@ public enum AssetModelType: Hashable {
     public enum ERC20ParentChain: String {
         case ethereum = "ETH"
         case polygon = "MATIC"
+
+        public var name: String {
+            switch self {
+            case .ethereum:
+                return "Ethereum"
+            case .polygon:
+                return "Polygon"
+            }
+        }
     }
 
     public enum CeloParentChain: String {

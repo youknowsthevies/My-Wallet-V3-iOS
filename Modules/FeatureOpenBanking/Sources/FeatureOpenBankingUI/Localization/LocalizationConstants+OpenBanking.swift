@@ -720,10 +720,10 @@ extension Localization {
                     comment: "Card Not Supported"
                 ),
                 subtitle: NSLocalizedString(
-                    "We were unable to add your card. Please try again or choose a different payment method.",
-                    comment: "We were unable to add your card. Please try again or choose a different payment method."
+                    "Your bank declined this card. Please try again or choose another payment method.",
+                    comment: "Your bank declined this card. Please try again or choose another payment method."
                 ),
-                action: Bank.Action.tryAgain
+                action: Bank.Action.tryAnotherMethod
             )
 
             public static let `default` = (

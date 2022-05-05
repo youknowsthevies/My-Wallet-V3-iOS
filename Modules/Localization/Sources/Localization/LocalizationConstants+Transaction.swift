@@ -1515,16 +1515,6 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
     )
 
-    public static let cardBankDeclineTitle = NSLocalizedString(
-        "The Bank has declined this card",
-        comment: "The Bank has declined this card"
-    )
-
-    public static let cardBankDecline = NSLocalizedString(
-        "The card you tried to use has been declined by your bank, please try again or another payment method.",
-        comment: "The card you tried to use has been declined by your bank, please try again or another payment method."
-    )
-
     public static let cardCreateBankDeclinedTitle = NSLocalizedString(
         "Failed To Add Card",
         comment: "Failed To Add Card"
@@ -1555,8 +1545,18 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Unfortunately your card issuer does not allow payments in the form of cryptocurrencies."
     )
 
+    public static let cardBankDeclineTitle = NSLocalizedString(
+        "The Bank has declined this card",
+        comment: "The Bank has declined this card"
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "Your bank declined this card. Please try again or choose another payment method.",
+        comment: "Your bank declined this card. Please try again or choose another payment method."
+    )
+
     public static let cardDuplicateTitle = NSLocalizedString(
-        "This Card Already Exists",
+        "This card already exists",
         comment: "This Card Already Exists"
     )
 

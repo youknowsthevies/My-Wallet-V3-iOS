@@ -204,14 +204,14 @@ extension WalletConnectService: WalletConnectServiceAPI {
         session: Session,
         completion: @escaping (Session.WalletInfo) -> Void
     ) {
-        let chainID = session.dAppInfo.chainId
-        if BuildFlag.isInternal, chainID == nil {
-            let meta = session.dAppInfo.peerMeta
-            fatalError("No ChainID: '\(meta.name)', '\(meta.url.absoluteString)'")
+        guard let network = EVMNetwork(int: session.dAppInfo.chainId) else {
+            if BuildFlag.isInternal {
+                let chainID = session.dAppInfo.chainId
+                let meta = session.dAppInfo.peerMeta
+                fatalError("Unsupported ChainID: '\(chainID ?? 0)' ,'\(meta.name)', '\(meta.url.absoluteString)'")
+            }
+            return
         }
-        let network: EVMNetwork = chainID
-            .flatMap(BigUInt.init)
-            .flatMap(EVMNetwork.init(chainID:)) ?? .ethereum
 
         publicKeyProvider
             .publicKey(network: network)
