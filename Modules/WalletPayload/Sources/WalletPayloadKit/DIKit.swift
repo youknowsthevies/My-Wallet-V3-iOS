@@ -116,6 +116,16 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> AccountCredentialsFetcherAPI in
+            let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            let userCredentialsFetcher: UserCredentialsFetcherAPI = DIKit.resolve()
+            return AccountCredentialsFetcher(
+                metadataEntryService: metadataEntryService,
+                userCredentialsFetcher: userCredentialsFetcher,
+                featureFlagService: DIKit.resolve()
+            )
+        }
+
         factory { () -> BitcoinCashEntryFetcherAPI in
             let holder: WalletHolderAPI = DIKit.resolve()
             let metadata: WalletMetadataEntryServiceAPI = DIKit.resolve()

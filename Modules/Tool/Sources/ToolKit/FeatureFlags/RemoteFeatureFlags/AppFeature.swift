@@ -19,6 +19,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
+    /// Account Credentials Metadata migration
+    case accountCredentialsMetadataMigration
+
     // MARK: Wallet Connect
 
     case walletConnectEnabled
@@ -155,6 +158,8 @@ extension AppFeature {
             return "ios_ff_notification_preferences"
         case .polygonSupport:
             return "ios_ff_polygon"
+        case .accountCredentialsMetadataMigration:
+            return "ios_ff_account_credentials_metadata_migration"
         }
     }
 
@@ -215,6 +220,8 @@ extension AppFeature {
             return true
         case .polygonSupport:
             return true
+        case .accountCredentialsMetadataMigration:
+            return false
         }
     }
 }

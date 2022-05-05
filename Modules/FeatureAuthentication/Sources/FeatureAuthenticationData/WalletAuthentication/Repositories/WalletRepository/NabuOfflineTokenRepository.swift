@@ -10,12 +10,12 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let credentialsFetcher: UserCredentialsFetcherAPI
+    private let credentialsFetcher: AccountCredentialsFetcherAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        credentialsFetcher: UserCredentialsFetcherAPI,
+        credentialsFetcher: AccountCredentialsFetcherAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
@@ -27,14 +27,16 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.offlineToken
                 }
-                return credentialsFetcher.fetchUserCredentials()
+                return credentialsFetcher.fetchAccountCredentials()
+                    .mapError { _ in MissingCredentialsError.offlineToken }
                     .map { credentials in
                         NabuOfflineToken(
-                            userId: credentials.userId,
-                            token: credentials.lifetimeToken
+                            userId: credentials.nabuUserId,
+                            token: credentials.nabuLifetimeToken,
+                            exchangeUserId: credentials.exchangeUserId,
+                            exchangeOfflineToken: credentials.exchangeLifetimeToken
                         )
                     }
-                    .mapError { _ in MissingCredentialsError.offlineToken }
                     .first()
                     .eraseToAnyPublisher()
             }
@@ -48,9 +50,11 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                     return walletRepository.set(offlineToken: offlineToken)
                 }
                 return credentialsFetcher.store(
-                    credentials: UserCredentials(
-                        userId: offlineToken.userId,
-                        lifetimeToken: offlineToken.token
+                    credentials: AccountCredentials(
+                        nabuUserId: offlineToken.userId,
+                        nabuLifetimeToken: offlineToken.token,
+                        exchangeUserId: offlineToken.exchangeUserId,
+                        exchangeLifetimeToken: offlineToken.exchangeOfflineToken
                     )
                 )
                 .mapError { _ in CredentialWritingError.offlineToken }

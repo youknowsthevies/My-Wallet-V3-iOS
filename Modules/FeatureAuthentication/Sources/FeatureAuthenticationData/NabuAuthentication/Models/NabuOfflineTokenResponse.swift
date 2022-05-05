@@ -9,16 +9,30 @@ public struct NabuOfflineTokenResponse: Decodable, Equatable {
         case userId
         case token
         case created
+        case userCredentialsId
+        case mercuryLifetimeToken
     }
 
     public let userId: String
     public let token: String
     public let created: Bool?
 
-    public init(userId: String, token: String, created: Bool? = nil) {
+    // Unified account recovery
+    public let userCredentialsId: String?
+    public let mercuryLifetimeToken: String?
+
+    public init(
+        userId: String,
+        token: String,
+        created: Bool? = nil,
+        userCredentialsId: String? = nil,
+        mercuryLifetimeToken: String? = nil
+    ) {
         self.userId = userId
         self.token = token
         self.created = created
+        self.userCredentialsId = userCredentialsId
+        self.mercuryLifetimeToken = mercuryLifetimeToken
     }
 
     public init(from decoder: Decoder) throws {
@@ -26,13 +40,17 @@ public struct NabuOfflineTokenResponse: Decodable, Equatable {
         userId = try container.decode(String.self, forKey: .userId)
         token = try container.decode(String.self, forKey: .token)
         created = try container.decodeIfPresent(Bool.self, forKey: .created)
+        userCredentialsId = try container.decodeIfPresent(String.self, forKey: .userCredentialsId)
+        mercuryLifetimeToken = try container.decodeIfPresent(String.self, forKey: .mercuryLifetimeToken)
     }
 
     public init(from token: NabuOfflineToken) {
         self.init(
             userId: token.userId,
             token: token.token,
-            created: token.created
+            created: token.created,
+            userCredentialsId: token.exchangeUserId,
+            mercuryLifetimeToken: token.exchangeOfflineToken
         )
     }
 }
@@ -43,6 +61,8 @@ extension NabuOfflineToken {
         self.init(
             userId: response.userId,
             token: response.token,
+            exchangeUserId: response.userCredentialsId,
+            exchangeOfflineToken: response.mercuryLifetimeToken,
             created: response.created
         )
     }
