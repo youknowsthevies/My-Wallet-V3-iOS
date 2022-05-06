@@ -214,13 +214,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         sourceAccount
             .map(\.currencyType)
             .map { currency -> String in
-                String(
-                    format: LocalizationConstants.TextField.Title.sendToCryptoWallet,
-                    currency.displaySymbol,
-                    currency.name
-                )
+                Self.addressFieldWarning(currency: currency)
             }
-            .bind(to: cryptoAddressViewModel.titleRelay)
+            .bind(to: cryptoAddressViewModel.subtitleRelay)
             .disposeOnDeactivate(interactor: self)
 
         sourceAccount
@@ -361,6 +357,32 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
     private func initialState() -> TargetSelectionPageState {
         TargetSelectionPageState(nextEnabled: false, destination: nil)
+    }
+
+    private static func addressFieldWarning(currency: CurrencyType) -> String {
+        func defaultWarning() -> String {
+            LocalizationConstants.TextField.Title.sendToCryptoWallet(
+                displayCode: currency.displaySymbol,
+                networkName: currency.name
+            )
+        }
+        return addressFieldERC20Warning(currency: currency)
+            ?? defaultWarning()
+    }
+
+    private static func addressFieldERC20Warning(currency: CurrencyType) -> String? {
+        let erc20ParentChain: AssetModelType.ERC20ParentChain? = currency
+            .cryptoCurrency?
+            .assetModel
+            .kind
+            .erc20ParentChain
+        return erc20ParentChain
+            .flatMap { chain -> String in
+                LocalizationConstants.TextField.Title.sendToCryptoWallet(
+                    displayCode: currency.displaySymbol,
+                    networkName: chain.name
+                )
+            }
     }
 }
 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -42,28 +43,28 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xe7-Ks-OVN">
                                             <rect key="frame" x="0.0" y="65" width="366" height="335"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ael-ne-uFl">
-                                                    <rect key="frame" x="0.0" y="0.0" width="366" height="260"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ael-ne-uFl">
+                                                    <rect key="frame" x="0.0" y="0.0" width="366" height="240"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PZo-PZ-aWw" customClass="ValidationTextFieldView" customModule="PlatformUIKit">
                                                             <rect key="frame" x="0.0" y="0.0" width="366" height="80"/>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" priority="250" constant="80" id="3NH-Y9-DR5"/>
+                                                                <constraint firstAttribute="height" constant="80" id="Bx4-BJ-LWc"/>
                                                             </constraints>
                                                         </view>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Lv-bv-CAV" customClass="ValidationTextFieldView" customModule="PlatformUIKit">
-                                                            <rect key="frame" x="0.0" y="80" width="366" height="100"/>
+                                                            <rect key="frame" x="0.0" y="80" width="366" height="80"/>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" priority="251" constant="80" id="bgG-GD-183"/>
+                                                                <constraint firstAttribute="height" constant="80" id="55T-0P-JYV"/>
                                                             </constraints>
                                                         </view>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvW-tF-anm" customClass="ValidationTextFieldView" customModule="PlatformUIKit">
-                                                            <rect key="frame" x="0.0" y="180" width="366" height="80"/>
+                                                            <rect key="frame" x="0.0" y="160" width="366" height="80"/>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" priority="252" constant="80" id="OBC-1b-N6P"/>
+                                                                <constraint firstAttribute="height" constant="80" id="cha-ti-aOq"/>
                                                             </constraints>
                                                         </view>
                                                     </subviews>
@@ -80,12 +81,11 @@
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
                                                 <constraint firstItem="b3J-0R-pID" firstAttribute="trailing" secondItem="ael-ne-uFl" secondAttribute="trailing" id="6UT-9A-9UC"/>
-                                                <constraint firstAttribute="height" priority="250" constant="225" id="MKG-ud-xFe"/>
-                                                <constraint firstItem="Yja-Mw-2Rn" firstAttribute="bottom" secondItem="b3J-0R-pID" secondAttribute="bottom" id="Xxx-nA-IMh"/>
+                                                <constraint firstAttribute="height" constant="335" id="IT3-0d-RhM"/>
+                                                <constraint firstItem="b3J-0R-pID" firstAttribute="bottom" secondItem="Yja-Mw-2Rn" secondAttribute="bottom" id="TPy-el-vTy"/>
                                                 <constraint firstItem="Yja-Mw-2Rn" firstAttribute="leading" secondItem="b3J-0R-pID" secondAttribute="leading" id="d2G-gr-zwi"/>
                                                 <constraint firstItem="ael-ne-uFl" firstAttribute="leading" secondItem="b3J-0R-pID" secondAttribute="leading" id="lKq-08-wCC"/>
                                                 <constraint firstItem="ael-ne-uFl" firstAttribute="top" secondItem="Xe7-Ks-OVN" secondAttribute="top" id="nXo-lq-nYC"/>
-                                                <constraint firstItem="Yja-Mw-2Rn" firstAttribute="top" secondItem="ael-ne-uFl" secondAttribute="bottom" constant="32" id="p7e-Xr-GkP"/>
                                                 <constraint firstItem="b3J-0R-pID" firstAttribute="trailing" secondItem="Yja-Mw-2Rn" secondAttribute="trailing" id="sSS-UO-828"/>
                                             </constraints>
                                         </view>

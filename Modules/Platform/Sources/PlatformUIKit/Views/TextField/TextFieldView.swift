@@ -4,19 +4,23 @@ import PlatformKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import UIKit
 
 /// A styled text field component with validation and password expression scoring
 public class TextFieldView: UIView {
 
+    private static let defaultTopInset: CGFloat = 8
+    private static let defaultBottomInset: CGFloat = 0
+
     /// Determines the top insert: title label to superview
-    public var topInset: CGFloat = 16 {
+    public var topInset: CGFloat = TextFieldView.defaultTopInset {
         didSet {
             topInsetConstraint.constant = topInset
             layoutIfNeeded()
         }
     }
 
-    public var bottomInset: CGFloat = 0 {
+    public var bottomInset: CGFloat = TextFieldView.defaultBottomInset {
         didSet {
             bottomInsetConstraint.constant = bottomInset
             layoutIfNeeded()
@@ -45,8 +49,12 @@ public class TextFieldView: UIView {
     private let button = UIButton()
     private let textField = UITextField()
     private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
     private var bottomInsetConstraint: NSLayoutConstraint!
     private var topInsetConstraint: NSLayoutConstraint!
+    private var subtitleLabelHeightConstraint: NSLayoutConstraint!
+    private var subtitleLabelTopConstraint: NSLayoutConstraint!
+    private var titleLabelHeightConstraint: NSLayoutConstraint!
     private var keyboardInteractionController: KeyboardInteractionController!
 
     /// Scroll view container.
@@ -78,6 +86,7 @@ public class TextFieldView: UIView {
     /// Should be called once upon instantiation
     func setup() {
         addSubview(titleLabel)
+        addSubview(subtitleLabel)
         addSubview(textFieldBackgroundView)
         addSubview(accessoryView)
         addSubview(button)
@@ -85,15 +94,33 @@ public class TextFieldView: UIView {
 
         textField.delegate = self
 
-        titleLabel.layout(dimension: .height, to: 24)
+        titleLabelHeightConstraint = titleLabel.layout(dimension: .height, to: 24)
         titleLabel.layoutToSuperview(axis: .horizontal)
-        topInsetConstraint = titleLabel.layoutToSuperview(.top, offset: 8)
-        titleLabel.layout(edge: .bottom, to: .top, of: textFieldBackgroundView, priority: .penultimateHigh)
+        topInsetConstraint = titleLabel.layoutToSuperview(.top, offset: Self.defaultTopInset)
+        titleLabel.layout(
+            edge: .bottom,
+            to: .top,
+            of: textFieldBackgroundView,
+            priority: .penultimateHigh
+        )
 
         textFieldBackgroundView.layoutToSuperview(axis: .horizontal)
-        bottomInsetConstraint = bottomAnchor.constraint(equalTo: textFieldBackgroundView.bottomAnchor)
-        bottomInsetConstraint.isActive = true
         textFieldBackgroundView.layout(dimension: .height, to: 48)
+
+        subtitleLabelHeightConstraint = subtitleLabel.layout(dimension: .height, to: 0)
+        subtitleLabel.layoutToSuperview(axis: .horizontal)
+        subtitleLabelTopConstraint = subtitleLabel.layout(
+            edge: .top,
+            to: .bottom,
+            of: textFieldBackgroundView,
+            offset: 0,
+            priority: .penultimateHigh
+        )
+        bottomInsetConstraint = bottomAnchor
+            .constraint(
+                equalTo: subtitleLabel.bottomAnchor,
+                constant: Self.defaultBottomInset
+            )
 
         textField.layout(edges: .leading, to: textFieldBackgroundView, offset: 16)
         textField.layout(edges: .bottom, .top, to: textFieldBackgroundView)
@@ -109,6 +136,12 @@ public class TextFieldView: UIView {
         titleLabel.textColor = .destructive
         titleLabel.verticalContentHuggingPriority = .required
         titleLabel.verticalContentCompressionResistancePriority = .required
+
+        subtitleLabel.font = .main(.medium, 12)
+        subtitleLabel.textColor = .destructive
+        subtitleLabel.verticalContentHuggingPriority = .required
+        subtitleLabel.verticalContentCompressionResistancePriority = .required
+        subtitleLabel.numberOfLines = 0
 
         /// Cleanup the sensitive data if necessary
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak textField, weak viewModel] _ in
@@ -145,6 +178,7 @@ public class TextFieldView: UIView {
         textField.spellCheckingType = .no
         textField.placeholder = nil
         titleLabel.font = viewModel.titleFont
+        subtitleLabel.font = viewModel.subtitleFont
 
         textFieldBackgroundView.clipsToBounds = true
         textFieldBackgroundView.backgroundColor = .clear
@@ -249,6 +283,13 @@ public class TextFieldView: UIView {
             animations: {
                 self.titleLabel.text = mode.title
                 self.titleLabel.textColor = mode.titleColor
+                self.titleLabelHeightConstraint.constant = mode.title.isEmpty ? 0 : 24
+
+                self.subtitleLabel.text = mode.subtitle
+                self.subtitleLabel.textColor = mode.titleColor
+                self.subtitleLabelHeightConstraint.isActive = mode.subtitle.isEmpty
+                self.subtitleLabelTopConstraint.constant = mode.subtitle.isEmpty ? 0 : 4
+
                 self.textFieldBackgroundView.layer.borderColor = mode.borderColor.cgColor
                 self.textField.tintColor = mode.cursorColor
             },

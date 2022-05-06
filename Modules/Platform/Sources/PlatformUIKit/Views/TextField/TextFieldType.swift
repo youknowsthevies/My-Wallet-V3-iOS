@@ -34,9 +34,6 @@ public enum TextFieldType: Hashable {
     /// Credit card number
     case cardNumber
 
-    /// Wallet identifier field
-    case walletIdentifier
-
     /// Email field
     case email
 
@@ -79,8 +76,6 @@ extension TextFieldType: CustomDebugStringConvertible {
         switch self {
         case .memo:
             return "memo"
-        case .walletIdentifier:
-            return "wallet-identifier"
         case .description:
             return "description"
         case .email:
@@ -130,8 +125,7 @@ extension TextFieldType {
     /// Whether the text field should cleanup on backgrounding
     var requiresCleanupOnBackgroundState: Bool {
         switch self {
-        case .walletIdentifier,
-             .password,
+        case .password,
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
@@ -184,8 +178,6 @@ extension TextFieldType {
             return .id(AccessibilityId.password)
         case .currentPassword:
             return .id(AccessibilityId.currentPassword)
-        case .walletIdentifier:
-            return .id(AccessibilityId.walletIdentifier)
         case .mobile:
             return .id(AccessibilityId.mobileVerification)
         case .oneTimeCode:
@@ -231,7 +223,6 @@ extension TextFieldType {
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
-             .walletIdentifier,
              .oneTimeCode,
              .cryptoAddress:
             return true
@@ -258,7 +249,6 @@ extension TextFieldType {
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
-             .walletIdentifier,
              .email,
              .backupVerification,
              .addressLine,
@@ -301,8 +291,6 @@ extension TextFieldType {
             return LocalizedString.mobile
         case .oneTimeCode:
             return LocalizedString.oneTimeCode
-        case .walletIdentifier:
-            return LocalizedString.walletIdentifier
         case .backupVerification(index: let index):
             return index.placeholder
         case .addressLine(let number):
@@ -327,8 +315,7 @@ extension TextFieldType {
         switch self {
         case .email:
             return .emailAddress
-        case .walletIdentifier,
-             .newPassword,
+        case .newPassword,
              .confirmNewPassword,
              .password,
              .currentPassword,
@@ -367,7 +354,6 @@ extension TextFieldType {
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
-             .walletIdentifier,
              .email,
              .mobile,
              .cardCVV,
@@ -385,7 +371,6 @@ extension TextFieldType {
     var isSecure: Bool {
         switch self {
         case .email,
-             .walletIdentifier,
              .backupVerification,
              .cardCVV,
              .cardholderName,
@@ -427,8 +412,6 @@ extension TextFieldType {
              .cryptoAddress,
              .memo:
             return nil
-        case .walletIdentifier:
-            return .username
         case .email:
             return .emailAddress
         case .oneTimeCode:
