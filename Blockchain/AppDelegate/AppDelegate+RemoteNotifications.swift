@@ -5,7 +5,7 @@ import UIKit
 extension AppDelegate {
 
     struct RemoteNotification: Decodable {
-        let deepLinkURL: URL?
+        let url: URL?
 
         init(decoding userInfo: [AnyHashable: Any]) throws {
             self = try AnyDecoder().decode(RemoteNotification.self, from: userInfo)
@@ -18,7 +18,7 @@ extension AppDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         if let notification = try? RemoteNotification(decoding: userInfo),
-           let url = notification.deepLinkURL
+           let url = notification.url
         {
             app.post(
                 event: blockchain.app.process.deep_link,

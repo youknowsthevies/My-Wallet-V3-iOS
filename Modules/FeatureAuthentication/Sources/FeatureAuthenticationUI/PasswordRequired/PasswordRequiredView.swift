@@ -20,14 +20,19 @@ public struct PasswordRequiredView: View {
     }
 
     public var body: some View {
-        VStack(spacing: Spacing.padding3) {
-            passwordRequiredHeader
-            passwordRequiredForm
-            Spacer()
-            forgetWalletSection
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: Spacing.padding3) {
+                    passwordRequiredHeader
+                    passwordRequiredForm
+                    Spacer()
+                    forgetWalletSection
+                }
+                .padding(Spacing.padding3)
+                .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
+            }
+            .frame(height: geometry.size.height)
         }
-        .padding(Spacing.padding3)
-        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
     }
 
     private var passwordRequiredHeader: some View {

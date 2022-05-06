@@ -146,6 +146,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.onboarding,
             environment: { environment -> Onboarding.Environment in
                 Onboarding.Environment(
+                    app: environment.app,
                     appSettings: environment.blockchainSettings,
                     credentialsStore: environment.credentialsStore,
                     alertPresenter: environment.alertPresenter,
@@ -544,7 +545,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .loginRequestReceived(let deeplink):
         return environment
             .featureFlagsService
-            .isEnabled(.remote(.pollingForEmailLogin))
+            .isEnabled(.pollingForEmailLogin)
             .flatMap { isEnabled -> Effect<CoreAppAction, Never> in
                 guard isEnabled else {
                     return .none
@@ -617,7 +618,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .mapError(ProceedToLoggedInError.coincore)
         let erc20Init = environment.erc20CryptoAssetService
             .initialize()
-            .mapError(ProceedToLoggedInError.erc20Service)
+            .replaceError(with: ())
             .eraseToAnyPublisher()
 
         return coincoreInit

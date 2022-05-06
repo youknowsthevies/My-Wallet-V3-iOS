@@ -35,14 +35,15 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Private Properties
 
+    private let ethereumAccountService: EthereumAccountServiceAPI
     private let ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI
-    private let receiveAddressFactory: ExternalAssetAddressServiceAPI
+    private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumFeeServiceAPI
-    private let ethereumAccountService: EthereumAccountServiceAPI
-    private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
+    private let network: EVMNetwork
     private let pendingTransactionRepository: PendingTransactionRepositoryAPI
-    private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
+    private let receiveAddressFactory: ExternalAssetAddressServiceAPI
+    private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
 
     private var evmCryptoAccount: EVMCryptoAccount {
         sourceAccount as! EVMCryptoAccount
@@ -51,36 +52,38 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Init
 
     init(
+        network: EVMNetwork,
         requireSecondPassword: Bool,
-        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        feeService: EthereumFeeServiceAPI = resolve(),
         ethereumAccountService: EthereumAccountServiceAPI = resolve(),
         ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI = resolve(),
-        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
+        ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
+        feeService: EthereumFeeServiceAPI = resolve(),
         pendingTransactionRepository: PendingTransactionRepositoryAPI = resolve(),
+        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
-        ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
-        self.feeService = feeService
-        self.requireSecondPassword = requireSecondPassword
         self.ethereumAccountService = ethereumAccountService
-        self.transactionBuildingService = transactionBuildingService
-        self.pendingTransactionRepository = pendingTransactionRepository
-        self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         self.ethereumOnChainEngineCompanion = ethereumOnChainEngineCompanion
+        self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
+        self.feeService = feeService
+        self.network = network
+        self.pendingTransactionRepository = pendingTransactionRepository
         self.receiveAddressFactory = receiveAddressFactory
+        self.requireSecondPassword = requireSecondPassword
+        self.transactionBuildingService = transactionBuildingService
+        self.walletCurrencyService = walletCurrencyService
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 90,
                 schedulerIdentifier: "EthereumOnChainTransactionEngine"
             )
         )
-        feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService
-                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+        feeCache.setFetch { [feeService, network] () -> Single<EthereumTransactionFee> in
+            feeService
+                .fees(cryptoCurrency: network.cryptoCurrency)
                 .asSingle()
         }
     }
@@ -88,7 +91,14 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func assertInputsValid() {
         defaultAssertInputsValid()
         precondition(sourceAccount is EVMCryptoAccount)
-        precondition(sourceCryptoCurrency == .ethereum)
+        precondition(
+            isCurrencyTypeValid(sourceCryptoCurrency.currencyType),
+            "Invalid source asset '\(sourceCryptoCurrency.code)'."
+        )
+    }
+
+    private func isCurrencyTypeValid(_ value: CurrencyType) -> Bool {
+        value == .crypto(network.cryptoCurrency)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -98,24 +108,24 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             availableBalance
         )
-        .map { [predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+        .map { [network, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
             if let predefinedAmount = predefinedAmount,
-               predefinedAmount.currency == .ethereum
+               predefinedAmount.currency == network.cryptoCurrency
             {
                 amount = predefinedAmount
             } else {
-                amount = .zero(currency: .ethereum)
+                amount = .zero(currency: network.cryptoCurrency)
             }
             return PendingTransaction(
                 amount: amount,
                 available: availableBalance,
-                feeAmount: .zero(currency: .ethereum),
-                feeForFullAvailable: .zero(currency: .ethereum),
+                feeAmount: .zero(currency: network.cryptoCurrency),
+                feeForFullAvailable: .zero(currency: network.cryptoCurrency),
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(.ethereum)
+                    asset: .crypto(network.cryptoCurrency)
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -183,10 +193,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
         guard let crypto = amount.cryptoValue else {
-            preconditionFailure("Not a `CryptoValue`")
+            preconditionFailure("Not a `CryptoValue`.")
         }
-        guard crypto.currencyType == .ethereum else {
-            preconditionFailure("Not an ethereum value")
+        guard isCurrencyTypeValid(crypto.currencyType) else {
+            preconditionFailure("Not an \(network.rawValue) value.")
         }
         return Single.zip(
             sourceAccount.actionableBalance,
@@ -242,7 +252,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currency == .crypto(.ethereum) else {
+        guard isCurrencyTypeValid(pendingTransaction.amount.currency) else {
             fatalError("Not an ethereum value.")
         }
         let evmCryptoAccount = evmCryptoAccount
@@ -290,7 +300,11 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher
-                    .send(transaction: candidate, secondPassword: secondPassword)
+                    .send(
+                        transaction: candidate,
+                        secondPassword: secondPassword,
+                        network: self.network
+                    )
             }
             .map(\.transactionHash)
             .map { transactionHash -> TransactionResult in
@@ -386,8 +400,8 @@ extension EthereumOnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .ethereum)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .ethereum))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.cryptoCurrency)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.cryptoCurrency))
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

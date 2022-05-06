@@ -12,7 +12,7 @@ extension Session {
 
         public init(
             _ data: Tag.Context = [:],
-            preferences: UserDefaults = .standard
+            preferences: Preferences = UserDefaults.standard
         ) {
             self.data = Data(preferences: preferences)
             self.data.store = data.dictionary
@@ -31,12 +31,13 @@ extension Session.State {
         private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
         private var key: DispatchSpecificKey<Data.Type>
 
-        var preferences: UserDefaults
+        var preferences: Preferences
+
         private var scope: String {
             store[blockchain.user.id.key] as? String ?? "ø"
         }
 
-        init(preferences: UserDefaults) {
+        init(preferences: Preferences) {
             key = .init(on: queue)
             self.preferences = preferences
         }
@@ -237,15 +238,6 @@ extension Session.State.Data {
         DispatchQueue.getSpecific(key: key) == nil
             ? try queue.sync(execute: work)
             : try work()
-    }
-}
-
-extension UserDefaults {
-
-    func transaction(_ key: String, _ yield: (inout Any?) -> Void) {
-        var object = object(forKey: key)
-        yield(&object)
-        set(object, forKey: key)
     }
 }
 

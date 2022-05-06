@@ -50,7 +50,8 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, W
     init(
         wallet: Wallet = Wallet()!,
         appSettings: AppSettingsAPI = resolve(),
-        reactiveWallet: ReactiveWalletAPI = resolve()
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.reactiveWallet = reactiveWallet
@@ -58,7 +59,8 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, W
         let repository = WalletRepository(
             jsContextProvider: self,
             appSettings: appSettings,
-            reactiveWallet: reactiveWallet
+            reactiveWallet: reactiveWallet,
+            featureFlagService: featureFlagService
         )
         let walletConnect = WalletConnectMetadata(
             jsContextProvider: self

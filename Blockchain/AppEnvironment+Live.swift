@@ -34,7 +34,6 @@ extension AppEnvironment {
             userService: resolve(),
             deviceVerificationService: resolve(),
             featureFlagsService: resolve(),
-            internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
             supportedAssetsRemoteService: resolve(),
             sharedContainer: .default,

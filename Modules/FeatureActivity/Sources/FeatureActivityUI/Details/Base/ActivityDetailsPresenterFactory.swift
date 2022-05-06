@@ -45,7 +45,7 @@ enum ActivityDetailsPresenterFactory {
             return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
         case .stellar:
             return StellarActivityDetailsPresenter(event: transactional, router: router)
-        case .ethereum:
+        case .ethereum, .polygon:
             let interactor = EthereumActivityDetailsInteractor(cryptoCurrency: transactional.currency)
             return EthereumActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
         case let asset where asset.isERC20:

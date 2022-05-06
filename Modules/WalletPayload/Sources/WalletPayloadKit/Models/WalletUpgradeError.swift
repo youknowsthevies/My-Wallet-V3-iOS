@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum WalletUpgradeError: Error {
+public enum WalletUpgradeError: LocalizedError, Equatable {
     case errorUpgrading(version: String)
     case upgradeFailed
     case unableToRetrieveSeedHex

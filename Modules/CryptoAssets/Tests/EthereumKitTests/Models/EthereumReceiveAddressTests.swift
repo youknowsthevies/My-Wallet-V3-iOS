@@ -31,7 +31,8 @@ final class EthereumReceiveAddressTests: XCTestCase {
             )
         ]
         factory = EthereumExternalAssetAddressFactory(
-            enabledCurrenciesService: currenciesService
+            enabledCurrenciesService: currenciesService,
+            network: .ethereum
         )
     }
 

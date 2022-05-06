@@ -26,7 +26,6 @@ final class APIClient: FeatureTransactionDomainClientAPI {
 
     fileprivate enum Parameter {
         static let minor = "minor"
-        static let networkFee = "networkFee"
         static let currency = "currency"
         static let inputCurrency = "inputCurrency"
         static let fromAccount = "fromAccount"
@@ -389,17 +388,12 @@ extension APIClient {
 
     func fetchTradeLimits(
         currency: CurrencyType,
-        networkFee: CurrencyType,
         product: TransactionLimitsProduct
     ) -> AnyPublisher<TradeLimitsResponse, NabuNetworkError> {
         var parameters: [URLQueryItem] = [
             URLQueryItem(
                 name: Parameter.currency,
                 value: currency.code
-            ),
-            URLQueryItem(
-                name: Parameter.networkFee,
-                value: networkFee.code
             ),
             URLQueryItem(
                 name: Parameter.minor,

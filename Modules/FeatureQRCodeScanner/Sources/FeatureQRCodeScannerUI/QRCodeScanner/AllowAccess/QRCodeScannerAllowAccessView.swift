@@ -19,17 +19,19 @@ struct QRCodeScannerAllowAccessView: View {
     var body: some View {
         WithViewStore(store) { viewStore in
             VStack(alignment: .center) {
-                ZStack {
+                VStack(alignment: .center) {
                     indicator
-                        .padding(.vertical, Spacing.padding1)
+                        .padding(.top, Spacing.padding1)
                     HStack(alignment: .center) {
                         Spacer()
                         closeButton(viewStore: viewStore)
-                            .padding([.top, .trailing], Spacing.padding2)
+                            .padding(.top, Spacing.padding1)
+                            .padding(.trailing, Spacing.padding2)
                     }
                 }
                 scannerHeader
                 scannerList(viewStore: viewStore)
+                    .fixedSize(horizontal: false, vertical: true)
                 if !viewStore.informationalOnly {
                     Spacer()
                     PrimaryButton(title: LocalizedString.buttonTitle) {

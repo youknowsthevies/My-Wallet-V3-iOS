@@ -8,7 +8,8 @@ import NetworkKit
 
 protocol SupportedAssetsClientAPI {
     var custodialAssets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
-    var erc20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
+    var ethereumERC20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
+    var polygonERC20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
 }
 
 final class SupportedAssetsClient: SupportedAssetsClientAPI {
@@ -18,7 +19,8 @@ final class SupportedAssetsClient: SupportedAssetsClientAPI {
     private enum Endpoint {
         static var coin: [String] { ["assets", "currencies", "coin"] }
         static var custodial: [String] { ["assets", "currencies", "custodial"] }
-        static var erc20: [String] { ["assets", "currencies", "erc20"] }
+        static var ethereumERC20: [String] { ["assets", "currencies", "erc20"] }
+        static var polygonERC20: [String] { ["assets", "currencies", "matic"] }
     }
 
     // MARK: Properties
@@ -29,9 +31,15 @@ final class SupportedAssetsClient: SupportedAssetsClientAPI {
         )
     }
 
-    var erc20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> {
+    var ethereumERC20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> {
         networkAdapter.perform(
-            request: requestBuilder.get(path: Endpoint.erc20)!
+            request: requestBuilder.get(path: Endpoint.ethereumERC20)!
+        )
+    }
+
+    var polygonERC20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> {
+        networkAdapter.perform(
+            request: requestBuilder.get(path: Endpoint.polygonERC20)!
         )
     }
 

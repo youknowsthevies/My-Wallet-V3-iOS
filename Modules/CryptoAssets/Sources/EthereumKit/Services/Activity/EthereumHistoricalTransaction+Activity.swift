@@ -24,7 +24,7 @@ extension EthereumHistoricalTransaction {
             transactionHash: transactionHash,
             creationDate: createdAt,
             status: status,
-            type: direction == .debit ? .receive : .send,
+            type: direction == .receive ? .receive : .send,
             amount: amount,
             fee: fee
         )

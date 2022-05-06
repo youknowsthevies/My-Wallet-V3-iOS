@@ -58,9 +58,21 @@ public final class SendAuxiliaryView: UIView {
 
         availableBalanceView.layoutToSuperview(.centerY)
         availableBalanceView.layoutToSuperview(.leading, offset: Spacing.outer)
+        availableBalanceView.layout(
+            edge: .trailing,
+            to: .centerX,
+            of: self,
+            relation: .equal
+        )
 
         networkFeeView.layoutToSuperview(.centerY)
         networkFeeView.layoutToSuperview(.trailing, offset: -Spacing.outer)
+        networkFeeView.layout(
+            edge: .leading,
+            to: .centerX,
+            of: self,
+            relation: .equal
+        )
 
         maxButtonView.layoutToSuperview(.centerY)
         maxButtonView.layoutToSuperview(.trailing, offset: -Spacing.outer)

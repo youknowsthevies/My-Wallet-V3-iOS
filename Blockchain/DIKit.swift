@@ -5,6 +5,7 @@ import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import ERC20Kit
@@ -23,6 +24,8 @@ import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureNFTData
 import FeatureNFTDomain
+import FeatureNotificationPreferencesData
+import FeatureNotificationPreferencesDomain
 import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
@@ -36,6 +39,7 @@ import FeatureTransactionUI
 import FeatureWalletConnectData
 import FirebaseMessaging
 import FirebaseRemoteConfig
+import MoneyKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -288,8 +292,10 @@ extension DependencyContainer {
         }
 
         factory { () -> MnemonicAccessAPI in
-            let internalFeatureFlags: InternalFeatureFlagServiceAPI = DIKit.resolve()
-            if internalFeatureFlags.isEnabled(.nativeWalletPayload) {
+            let app: AppProtocol = DIKit.resolve()
+            let ref = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled[].reference
+            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
+            if isEnabled ?? false {
                 let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
                 let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
                     secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
@@ -375,6 +381,10 @@ extension DependencyContainer {
         factory { () -> RxFeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
+        }
+
+        factory {
+            PolygonSupport(app: DIKit.resolve()) as MoneyKit.PolygonSupport
         }
 
         // MARK: - UserInformationServiceProvider
@@ -755,6 +765,15 @@ extension DependencyContainer {
             return ClaimEligibilityRepository(apiClient: client)
         }
 
+        // MARK: Feature Notification Preferences
+
+        factory { () -> NotificationPreferencesRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
+            return NotificationPreferencesRepository(client: client)
+        }
+
         // MARK: Pulse Network Debugging
 
         single {
@@ -766,5 +785,15 @@ extension DependencyContainer {
         }
 
         single { app }
+
+        factory { () -> NativeWalletFlagEnabled in
+            let app: AppProtocol = DIKit.resolve()
+            let flag: Tag.Event = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled
+            return NativeWalletFlagEnabled(
+                app.publisher(for: flag, as: Bool.self)
+                    .prefix(1)
+                    .replaceError(with: false)
+            )
+        }
     }
 }

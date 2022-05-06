@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import FeatureCardIssuingDomain
 import FeatureSettingsDomain
@@ -7,15 +8,18 @@ import ToolKit
 
 final class CardIssuingAdapter: CardIssuingAdapterAPI {
 
+    private let app: AppProtocol
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let productsService: ProductsServiceAPI
     private let cardService: CardServiceAPI
 
     init(
+        app: AppProtocol,
         featureFlagsService: FeatureFlagsServiceAPI,
         productsService: ProductsServiceAPI,
         cardService: CardServiceAPI
     ) {
+        self.app = app
         self.featureFlagsService = featureFlagsService
         self.productsService = productsService
         self.cardService = cardService
@@ -23,15 +27,15 @@ final class CardIssuingAdapter: CardIssuingAdapterAPI {
 
     func isEnabled() -> AnyPublisher<Bool, Never> {
         Publishers
-            .CombineLatest3(
-                featureFlagsService.isEnabled(.remote(.cardIssuing)),
-                featureFlagsService.isEnabled(.local(.cardIssuing)),
+            .CombineLatest(
+                app.publisher(for: blockchain.app.configuration.card.issuing.is.enabled, as: Bool.self)
+                    .prefix(1)
+                    .replaceError(with: false),
                 productsService.fetchProducts()
                     .map { !$0.isEmpty }
                     .replaceError(with: false)
-                    .eraseToAnyPublisher()
             )
-            .map { ($0 || $1) && $2 }
+            .map { $0 && $1 }
             .eraseToAnyPublisher()
     }
 

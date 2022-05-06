@@ -11,7 +11,7 @@ public protocol StellarServiceError: Error {
 
 /// `StellarAccountError` is a `TransactionValidationError` as all cases should cause
 /// a transaction to be invalid.
-public enum StellarAccountError: StellarServiceError, TransactionValidationError {
+public enum StellarAccountError: StellarServiceError {
     case noDefaultAccount
     case noXLMAccount
     case unableToSaveNewAccount
@@ -26,24 +26,6 @@ extension StellarAccountError {
             return "noDefaultAccount"
         case .unableToSaveNewAccount:
             return "unableToSaveNewAccount"
-        }
-    }
-}
-
-/// `StellarFundsError` is a `TransactionValidationError` as all cases should cause
-/// a transaction to be invalid.
-public enum StellarFundsError: StellarServiceError, TransactionValidationError {
-    case insufficientFundsForNewAccount
-    case insufficientFunds
-}
-
-extension StellarFundsError {
-    public var message: String {
-        switch self {
-        case .insufficientFundsForNewAccount:
-            return "insufficientFundsForNewAccount"
-        case .insufficientFunds:
-            return "insufficientFunds"
         }
     }
 }

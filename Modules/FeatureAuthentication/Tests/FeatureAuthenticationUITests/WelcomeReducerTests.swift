@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -15,6 +16,7 @@ import XCTest
 
 final class WelcomeReducerTests: XCTestCase {
 
+    private var app: AppProtocol!
     private var dummyUserDefaults: UserDefaults!
     private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
@@ -29,14 +31,16 @@ final class WelcomeReducerTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        app = App.test
         mockMainQueue = DispatchQueue.test
         dummyUserDefaults = UserDefaults(suiteName: "welcome.reducer.tests.defaults")!
         mockFeatureFlagsService = MockFeatureFlagsService()
-        mockFeatureFlagsService.disable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: true)
         testStore = TestStore(
             initialState: .init(),
             reducer: welcomeReducer,
             environment: WelcomeEnvironment(
+                app: app,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 passwordValidator: PasswordValidator(),
                 sessionTokenService: MockSessionTokenService(),
@@ -77,7 +81,7 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_internal() {
         BuildFlag.isInternal = true
-        mockFeatureFlagsService.enable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: true)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
         }
@@ -88,7 +92,7 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_start_does_not_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_not_internal() {
         BuildFlag.isInternal = false
-        mockFeatureFlagsService.enable(.local(.manualGUIDLogin)).subscribe().store(in: &cancellables)
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: true)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
             state.manualPairingEnabled = false

@@ -84,7 +84,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         destination: LimitsAccount,
         limitsCurrency: FiatCurrency
     ) -> TransactionLimitsServicePublisher {
-        featureFlagService.isEnabled(.remote(.newLimitsUIEnabled))
+        featureFlagService.isEnabled(.newLimitsUIEnabled)
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
                     return .just(.noLimits(for: limitsCurrency.currencyType))
@@ -104,7 +104,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
         walletCurrencyService.displayCurrencyPublisher
-            .zip(featureFlagService.isEnabled(.remote(.newLimitsUIEnabled)))
+            .zip(featureFlagService.isEnabled(.newLimitsUIEnabled))
             .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
                 let convertedTradeLimits = self
                     .fetchTradeLimits(
@@ -167,7 +167,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         .catchInactiveUserError(limitsCurrency: limitsCurrency)
         .flatMap { [featureFlagService] transactionLimits in
             featureFlagService
-                .isEnabled(.remote(.newLimitsUIEnabled))
+                .isEnabled(.newLimitsUIEnabled)
                 .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                     guard newLimitsEnabled else {
                         return .just(transactionLimits)
@@ -198,7 +198,6 @@ extension TransactionLimitsService {
         repository
             .fetchTradeLimits(
                 sourceCurrency: fiatCurrency.currencyType,
-                destinationCurrency: destination.currency,
                 product: product
             )
             .mapError(TransactionLimitsServiceError.network)

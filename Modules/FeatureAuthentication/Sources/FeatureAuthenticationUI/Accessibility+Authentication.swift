@@ -68,7 +68,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let twoFAGroup = "\(prefix)twoFAGroup"
         static let resendSMSButton = "\(prefix)resendSMSButton"
         static let resetTwoFAButton = "\(prefix)resetTwoFAButton"
-        static let nextButton = "\(prefix)nextButton"
+        static let nextButton = "\(prefix)questionCircleButton"
     }
 
     // MARK: - Account Recovery

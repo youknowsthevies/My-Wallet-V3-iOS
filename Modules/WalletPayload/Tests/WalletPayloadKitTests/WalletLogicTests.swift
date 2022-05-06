@@ -30,9 +30,12 @@ class WalletLogicTests: XCTestCase {
         }
         let metadataService = MetadataServiceMock()
 
+        let upgrader = WalletUpgrader(workflows: [])
+
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder,
+            upgrader: upgrader,
             metadata: metadataService,
             notificationCenter: .default
         )

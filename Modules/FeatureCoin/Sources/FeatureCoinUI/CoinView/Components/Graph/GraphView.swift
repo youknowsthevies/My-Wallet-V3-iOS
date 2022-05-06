@@ -148,7 +148,7 @@ public struct GraphView: View {
                 .disabled(viewStore.isFetching)
             }
         }
-        .frame(maxWidth: 100.vw, minHeight: 420.pt)
+        .frame(maxWidth: 100.vw, minHeight: 48.vh)
     }
 
     private func timestamp(_ index: GraphData.Index) -> Text {
@@ -251,6 +251,5 @@ struct GraphViewPreviewProvider: PreviewProvider {
             )
         )
         .app(App.preview)
-        .frame(height: 300.pt)
     }
 }

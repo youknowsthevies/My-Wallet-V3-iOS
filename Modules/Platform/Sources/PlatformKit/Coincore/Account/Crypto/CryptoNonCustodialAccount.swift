@@ -33,15 +33,6 @@ extension CryptoNonCustodialAccount {
         .just(false)
     }
 
-    public var isFunded: Single<Bool> {
-        balance.map(\.isPositive)
-    }
-
-    public var isFundedPublisher: AnyPublisher<Bool, Error> {
-        balancePublisher.map(\.isPositive)
-            .eraseToAnyPublisher()
-    }
-
     public func updateLabel(_ newLabel: String) -> AnyPublisher<Void, Never> {
         .just(())
     }

@@ -43,6 +43,12 @@ public protocol BlockchainAccount: Account {
     /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
     var isFunded: Single<Bool> { get }
 
+    /// Indicates if this account is funded.
+    ///
+    /// Depending of the account implementation, this may not strictly mean a positive balance.
+    /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
+    var isFundedPublisher: AnyPublisher<Bool, Error> { get }
+
     /// The reason why the BlockchainAccount is ineligible for Interest.
     /// This will be `.eligible` if the account is eligible
     var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> { get }
@@ -75,6 +81,8 @@ public protocol BlockchainAccount: Account {
     /// The `ReceiveAddress` for the given account
     var receiveAddress: Single<ReceiveAddress> { get }
 
+    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> { get }
+
     /// The balance, not including uncleared and locked,
     /// that the user is able to utilize in a transaction
     var actionableBalance: Single<MoneyValue> { get }
@@ -93,6 +101,16 @@ extension BlockchainAccount {
 
     public var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balance.asPublisher()
+            .eraseToAnyPublisher()
+    }
+
+    public var isFunded: Single<Bool> {
+        balance.map(\.isPositive)
+    }
+
+    /// Account balance is positive.
+    public var isFundedPublisher: AnyPublisher<Bool, Error> {
+        balancePublisher.map(\.isPositive)
             .eraseToAnyPublisher()
     }
 

@@ -6,7 +6,8 @@ import ToolKit
 
 /// Fetches supported assets from the app bundle.
 protocol SupportedAssetsServiceAPI {
-    var erc20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> { get }
+    var polygonERC20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> { get }
+    var ethereumERC20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> { get }
     var custodialAssets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> { get }
 }
 
@@ -19,12 +20,21 @@ enum SupportedAssetsLocalError: Error {
 
 final class SupportedAssetsService: SupportedAssetsServiceAPI {
 
-    var erc20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
-        switch remoteERC20Assets() {
+    var ethereumERC20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        switch remoteEthereumERC20Assets() {
         case .success(let response):
             return .success(response)
         case .failure:
-            return bundleERC20Assets()
+            return bundleEthereumERC20Assets()
+        }
+    }
+
+    var polygonERC20Assets: Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        switch remotePolygonERC20Assets() {
+        case .success(let response):
+            return .success(response)
+        case .failure:
+            return bundlePolygonERC20Assets()
         }
     }
 
@@ -51,17 +61,33 @@ final class SupportedAssetsService: SupportedAssetsServiceAPI {
         self.jsonDecoder = jsonDecoder
     }
 
+    /// Loads the most recently downloaded Polygon ERC20 currencies list file.
+    private func remotePolygonERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        guard let fileURL = filePathProvider.remotePolygonERC20Assets else {
+            return .failure(.missingRemoteFile)
+        }
+        return load(fileURL: fileURL)
+    }
+
+    /// Loads the Polygon ERC20 currencies list file shipped within the Bundle.
+    private func bundlePolygonERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        guard let fileURL = filePathProvider.localPolygonERC20Assets else {
+            return .failure(.missingLocalFile)
+        }
+        return load(fileURL: fileURL)
+    }
+
     /// Loads the most recently downloaded ERC20 currencies list file.
-    private func remoteERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
-        guard let fileURL = filePathProvider.remoteERC20Assets else {
+    private func remoteEthereumERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        guard let fileURL = filePathProvider.remoteEthereumERC20Assets else {
             return .failure(.missingRemoteFile)
         }
         return load(fileURL: fileURL)
     }
 
     /// Loads the ERC20 currencies list file shipped within the Bundle.
-    private func bundleERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
-        guard let fileURL = filePathProvider.localERC20Assets else {
+    private func bundleEthereumERC20Assets() -> Result<SupportedAssetsResponse, SupportedAssetsLocalError> {
+        guard let fileURL = filePathProvider.localEthereumERC20Assets else {
             return .failure(.missingLocalFile)
         }
         return load(fileURL: fileURL)

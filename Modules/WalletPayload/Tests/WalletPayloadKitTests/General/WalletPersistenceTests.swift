@@ -53,11 +53,26 @@ class WalletPersistenceTests: XCTestCase {
         let retrievedState: WalletRepoState? = retrieveWalletRepoState(
             keychainAccess: mockKeychainAccess
         )
+        // expected decoded state should not include the password
+        let retrievedExpectedState = WalletRepoState(
+            credentials: WalletCredentials(
+                guid: "guid",
+                sharedKey: "sharedKey",
+                sessionToken: "sessionToken",
+                password: ""
+            ),
+            properties: WalletProperties(
+                syncPubKeys: false,
+                language: "en",
+                authenticatorType: .standard
+            ),
+            walletPayload: .empty
+        )
 
         // then
         XCTAssertTrue(mockKeychainAccess.readCalled)
 
-        XCTAssertEqual(retrievedState, expectedState)
+        XCTAssertEqual(retrievedState, retrievedExpectedState)
     }
 
     func test_wallet_persistence_state_is_nil_in_case_of_error() throws {
@@ -129,6 +144,21 @@ class WalletPersistenceTests: XCTestCase {
         )
 
         let expectation = expectation(description: "retrieved wallet repo state")
+        // expected decoded state should not include the password
+        let retrievedExpectedState = WalletRepoState(
+            credentials: WalletCredentials(
+                guid: "guid",
+                sharedKey: "sharedKey",
+                sessionToken: "sessionToken",
+                password: ""
+            ),
+            properties: WalletProperties(
+                syncPubKeys: false,
+                language: "en",
+                authenticatorType: .standard
+            ),
+            walletPayload: .empty
+        )
         // when retrieving an initial state
         var receivedState: WalletRepoState?
         walletPersistence.retrieve()
@@ -145,7 +175,7 @@ class WalletPersistenceTests: XCTestCase {
         // then
         XCTAssertTrue(mockKeychainAccess.readCalled)
 
-        XCTAssertEqual(receivedState, expectedState)
+        XCTAssertEqual(receivedState, retrievedExpectedState)
     }
 
     func test_wallet_persistence_can_persist_changes() throws {

@@ -44,6 +44,7 @@ extension DependencyContainer {
 
         factory {
             ApplePayAdapter(
+                app: DIKit.resolve(),
                 fiatCurrencyService: DIKit.resolve(),
                 featureFlagsService: DIKit.resolve(),
                 eligibleMethodsClient: DIKit.resolve(),
@@ -53,6 +54,7 @@ extension DependencyContainer {
 
         factory {
             CardIssuingAdapter(
+                app: DIKit.resolve(),
                 featureFlagsService: DIKit.resolve(),
                 productsService: DIKit.resolve(),
                 cardService: DIKit.resolve()

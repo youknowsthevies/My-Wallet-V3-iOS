@@ -66,10 +66,12 @@ func accountWrapperDecodingStrategy(
     version4: AccountWrapper.Version4
 ) -> Result<AccountResponse, AccountStrategyDecodingError> {
     Result {
-        try DerivationResponse.Format(
+        guard let success = DerivationResponse.Format(
             rawValue: version4.defaultDerivation
-        )
-        .or(throw: AccountStrategyDecodingError.unknownDerivationType)
+        ) else {
+            throw AccountStrategyDecodingError.unknownDerivationType
+        }
+        return success
     }
     .replaceError(with: AccountStrategyDecodingError.unknownDerivationType)
     .map { defaultDerivationType in

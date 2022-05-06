@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -15,9 +16,11 @@ final class ReceiveScreenPresenter {
 
     private typealias LocalizedString = LocalizationConstants.Receive
     private typealias AccessibilityID = Accessibility.Identifier.Receive
+    typealias AlertContent = (title: String, subtitle: String)
 
     // MARK: Properties
 
+    let alertContentRelay = BehaviorRelay<AlertContent?>(value: nil)
     let nameLabelContentPresenting: LabelContentPresenting
     let balanceLabelContentPresenting: LabelContentPresenting
     let domainLabelContentPresenting: LabelContentPresenting
@@ -57,6 +60,7 @@ final class ReceiveScreenPresenter {
 
     // MARK: Setup
 
+    // swiftlint:disable function_body_length
     init(
         pasteboard: Pasteboarding = resolve(),
         eventsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -138,6 +142,29 @@ final class ReceiveScreenPresenter {
         let state = interactor.state
             .asObservable()
             .share(replay: 1)
+
+        state
+            .map { state -> AlertContent? in
+                guard let state = state else {
+                    return nil
+                }
+                let currency = state.currency
+                let erc20ParentChain: AssetModelType.ERC20ParentChain? = currency
+                    .cryptoCurrency?
+                    .assetModel
+                    .kind
+                    .erc20ParentChain
+                return erc20ParentChain
+                    .flatMap { chain -> AlertContent in
+                        let title = LocalizedString.Text
+                            .alertTitle(displayCode: currency.displayCode, networkName: chain.name)
+                        let subtitle = LocalizedString.Text
+                            .alertBody(displayCode: currency.displayCode, networkName: chain.name)
+                        return (title: title, subtitle: subtitle)
+                    }
+            }
+            .bind(to: alertContentRelay)
+            .disposed(by: disposeBag)
 
         let qrCodeMetadata = state
             .map { state in

@@ -1041,6 +1041,48 @@ MyWalletPhone.KYC = {
     }
 }
 
+MyWalletPhone.accountCredentials = {
+    update: function(nabuUserId, nabuLifetimeToken, exchangeUserId, exchangeLifetimeToken) {
+        MyWallet.wallet.accountCredentials.updateAccountCredentials(
+            {nabuUserId: nabuUserId, nabuLifetimeToken: nabuLifetimeToken, exchangeUserId: exchangeUserId, exchangeLifetimeToken: exchangeLifetimeToken},
+            objc_updateAccountCredentials_success,
+            objc_updateAccountCredentials_error
+        )
+    },
+
+    updateNabu: function(nabuUserId, nabuLifetimeToken) {
+        MyWallet.wallet.accountCredentials.updateNabuCredentials(
+            {nabuUserId: nabuUserId, nabuLifetimeToken: nabuLifetimeToken},
+            objc_updateNabuCredentials_success,
+            objc_updateNabuCredentials_error
+        )
+    },
+
+    updateExchange: function(exchangeUserId, exchangeLifetimeToken) {
+        MyWallet.wallet.accountCredentials.updateExchangeCredentials(
+            {exchangeUserId: exchangeUserId, exchangeLifetimeToken: exchangeLifetimeToken},
+            objc_updateExchangeCredentials_success,
+            objc_updateExchangeCredentials_error
+        )
+    },
+
+    nabuUserId: function() {
+        return MyWallet.wallet.accountCredentials.nabuUserId;
+    },
+
+    nabuLifetimeToken: function() {
+        return MyWallet.wallet.accountCredentials.nabuLifetimeToken;
+    },
+
+    exchangeUserId: function() {
+        return MyWallet.wallet.accountCredentials.exchangeUserId;
+    },
+
+    exchangeLifetimeToken: function() {
+        return MyWallet.wallet.accountCredentials.exchangeLifetimeToken;
+    },
+}
+
 MyWalletPhone.walletConnect = {
 
     /**

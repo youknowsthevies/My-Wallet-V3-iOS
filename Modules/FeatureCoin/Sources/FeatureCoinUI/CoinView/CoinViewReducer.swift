@@ -27,14 +27,7 @@ public let coinViewReducer = Reducer<
         case .onAppear:
             return .merge(
                 Effect(value: .observation(.start)),
-                environment.kycStatusProvider()
-                    .setFailureType(to: Error.self)
-                    .combineLatest(
-                        environment.accountsProvider().flatMap(\.snapshot)
-                    )
-                    .receive(on: environment.mainQueue.animation(.spring()))
-                    .catchToEffect()
-                    .map(CoinViewAction.update),
+                Effect(value: .refresh),
                 environment.interestRatesRepository
                     .fetchRate(code: state.currency.code)
                     .result()
@@ -55,11 +48,27 @@ public let coinViewReducer = Reducer<
                 .map(CoinViewAction.isOnWatchlist),
                 .fireAndForget { [state] in
                     environment.app.post(event: blockchain.ux.asset[state.currency.code])
-                }
+                },
+                NotificationCenter.default.publisher(for: .transaction)
+                    .eraseToEffect()
+                    .map { _ in .refresh },
+                environment.app.on(blockchain.ux.asset[state.currency.code].refresh)
+                    .eraseToEffect()
+                    .map { _ in .refresh }
             )
 
         case .onDisappear:
             return Effect(value: .observation(.stop))
+
+        case .refresh:
+            return environment.kycStatusProvider()
+                .setFailureType(to: Error.self)
+                .combineLatest(
+                    environment.accountsProvider().flatMap(\.snapshot)
+                )
+                .receive(on: environment.mainQueue.animation(.spring()))
+                .catchToEffect()
+                .map(CoinViewAction.update)
 
         case .fetchedInterestRate(let result):
             state.interestRate = try? result.get()
@@ -94,6 +103,9 @@ public let coinViewReducer = Reducer<
             case .success(let value):
                 state.kycStatus = value.0
                 state.accounts = value.1
+                if let account = state.account {
+                    state.account = state.accounts.first(where: { snapshot in snapshot.id == account.id })
+                }
             case .failure:
                 state.error = .failedToLoad
                 return .none

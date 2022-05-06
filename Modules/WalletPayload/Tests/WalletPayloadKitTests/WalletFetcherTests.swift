@@ -30,9 +30,11 @@ class WalletFetcherTests: XCTestCase {
         let decoder = WalletDecoder()
         let metadataService = MetadataServiceMock()
         let notificationCenterSpy = NotificationCenterSpy()
+        let upgrader = WalletUpgrader(workflows: [])
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder.createWallet,
+            upgrader: upgrader,
             metadata: metadataService,
             notificationCenter: notificationCenterSpy
         )

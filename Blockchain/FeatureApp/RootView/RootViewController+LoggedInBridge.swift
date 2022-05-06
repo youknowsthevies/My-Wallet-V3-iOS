@@ -311,11 +311,9 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSupport() {
-        let isSupported = Publishers.Zip(
-            featureFlagService.isEnabled(.remote(.customerSupportChat)),
-            featureFlagService.isEnabled(.local(.customerSupportChat))
-        )
-        .map { $0.0 || $0.1 }
+        let isSupported = app.publisher(for: blockchain.app.configuration.customer.support.is.enabled, as: Bool.self)
+            .prefix(1)
+            .replaceError(with: false)
         Publishers.Zip(
             isSupported,
             eligibilityService.isEligiblePublisher

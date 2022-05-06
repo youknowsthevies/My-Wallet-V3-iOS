@@ -26,7 +26,8 @@ public final class SearchDomainRepository: SearchDomainRepositoryAPI {
                 .getFreeSearchResults(searchKey: searchKey)
                 .map { response in
                     let suggestions = response.suggestions.map(SearchDomainResult.init)
-                    return suggestions
+                    let results = OrderedSet(suggestions)
+                    return Array(results)
                 }
                 .mapError(SearchDomainRepositoryError.networkError)
                 .eraseToAnyPublisher()

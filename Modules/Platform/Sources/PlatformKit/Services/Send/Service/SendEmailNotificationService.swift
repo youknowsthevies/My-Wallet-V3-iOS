@@ -39,7 +39,9 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
         credentialsRepository.credentials
             .ignoreFailure()
             .map { guid, sharedKey in
-                SendEmailNotificationClient.Payload(
+                let assetModel = moneyValue.currency.cryptoCurrency?.assetModel
+                let network = assetModel?.kind.erc20ParentChain?.rawValue ?? moneyValue.code
+                return SendEmailNotificationClient.Payload(
                     guid: guid,
                     sharedKey: sharedKey,
                     currency: moneyValue.code,
@@ -47,7 +49,7 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
                         includeSymbol: false,
                         locale: Locale.US // Locale is enforced to ensure the format of the amount.
                     ),
-                    network: moneyValue.code,
+                    network: network,
                     txHash: txHash
                 )
             }

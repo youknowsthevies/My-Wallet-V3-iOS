@@ -166,7 +166,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
             // Tier2 (Gold) verified users should be treated as SDD eligible
             return .just(SimplifiedDueDiligenceResponse(eligible: true, tier: tier.rawValue))
         }
-        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+        return featureFlagsService.isEnabled(.sddEnabled)
             .flatMap { [client] sddEnabled -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> in
                 guard sddEnabled else {
                     return .just(SimplifiedDueDiligenceResponse(eligible: false, tier: KYC.Tier.tier0.rawValue))
@@ -179,7 +179,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
-        featureFlagsService.isEnabled(.remote(.sddEnabled))
+        featureFlagsService.isEnabled(.sddEnabled)
             .flatMap { [fetchTiers, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
@@ -217,7 +217,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
             return .just(true)
         }
 
-        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+        return featureFlagsService.isEnabled(.sddEnabled)
             .flatMap { [client] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
@@ -241,7 +241,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
         let sddVerificationCheck = checkSimplifiedDueDiligenceVerification(for:pollUntilComplete:)
-        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+        return featureFlagsService.isEnabled(.sddEnabled)
             .flatMap { [fetchTiers, sddVerificationCheck] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)

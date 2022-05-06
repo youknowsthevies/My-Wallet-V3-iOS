@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -123,6 +124,7 @@ struct EmailLoginView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: emailLoginReducer,
                 environment: .init(
+                    app: App.preview,
                     mainQueue: .main,
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),

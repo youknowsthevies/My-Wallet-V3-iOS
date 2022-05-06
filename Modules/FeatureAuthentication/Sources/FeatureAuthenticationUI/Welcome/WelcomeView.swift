@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -240,6 +241,7 @@ struct WelcomeView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: welcomeReducer,
                 environment: .init(
+                    app: App.preview,
                     mainQueue: .main,
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),

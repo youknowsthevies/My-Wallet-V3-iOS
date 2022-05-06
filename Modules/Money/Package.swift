@@ -38,7 +38,8 @@ let package = Package(
             ],
             resources: [
                 .copy("Resources/local-currencies-custodial.json"),
-                .copy("Resources/local-currencies-erc20.json")
+                .copy("Resources/local-currencies-ethereum-erc20.json"),
+                .copy("Resources/local-currencies-polygon-erc20.json")
             ]
         ),
         .target(

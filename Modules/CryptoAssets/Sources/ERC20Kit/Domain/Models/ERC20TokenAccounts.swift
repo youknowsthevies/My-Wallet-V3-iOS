@@ -7,19 +7,19 @@ import PlatformKit
 public struct ERC20TokenAccount: Equatable {
 
     /// The balance of the account.
-    let balance: CryptoValue
+    public let balance: CryptoValue
 
-    /// The symbol of the ERC-20 token (e.g. `AAVE`, `YFI`, etc.)
-    let tokenSymbol: String
+    /// The `CryptoCurrency` of the ERC-20 token.
+    public var currency: CryptoCurrency {
+        balance.currency
+    }
 
     /// Creates an ERC-20 token account.
     ///
     /// - Parameters:
     ///   - balance:     An ERC-20 balance.
-    ///   - tokenSymbol: An ERC-20 token symbol.
-    public init(balance: CryptoValue, tokenSymbol: String) {
+    public init(balance: CryptoValue) {
         self.balance = balance
-        self.tokenSymbol = tokenSymbol
     }
 }
 

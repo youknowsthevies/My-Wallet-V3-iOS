@@ -144,6 +144,17 @@ public enum LocalizationConstants {
 
     public enum Authentication {
 
+        public enum Support {
+            public static let title = NSLocalizedString("Having Trouble Logging In?", comment: "Having Trouble Logging In?")
+            public static let description = NSLocalizedString("We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.", comment: "We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.")
+            public static let chatNow = NSLocalizedString("Chat Now", comment: "Chat Now")
+            public static let contactUs = NSLocalizedString("Contact Us", comment: "Contact Us")
+            public static let viewFAQ = NSLocalizedString("View FAQs", comment: "View FAQs")
+            public static let version = NSLocalizedString("iOS Version", comment: "iOS Version")
+            public static let latestVersion = NSLocalizedString("Latest Version", comment: "Latest Version")
+            public static let newVersionAvailable = NSLocalizedString("New Version Available", comment: "New Version Available")
+        }
+
         public enum CountryAndStatePickers {
             public static let suggestedSelectionTitle = NSLocalizedString(
                 "Suggested",
@@ -745,7 +756,7 @@ public enum LocalizationConstants {
 
             public enum Features {
                 public static let exchangeWillBeAbleTo = NSLocalizedString("Our Exchange will be able to:", comment: "")
-                public static let shareStatus = NSLocalizedString("Share your Verified or Basic Level status for unlimited trading", comment: "")
+                public static let shareStatus = NSLocalizedString("Share your Full or Limited Access status for unlimited trading", comment: "")
                 public static let shareAddresses = NSLocalizedString("Sync addresses with your Wallet so you can securely sweep crypto between accounts", comment: "")
                 public static let lowFees = NSLocalizedString("Low Fees", comment: "")
                 public static let builtByBlockchain = NSLocalizedString("Built by Blockchain.com", comment: "")
@@ -1250,7 +1261,7 @@ public enum LocalizationConstants {
                 comment: "Airdrop intro screen: learn more link"
             )
             public static let ctaButton = NSLocalizedString(
-                "Upgrade to Verified. Get $10",
+                "Upgrade to get Full Access. Get $10",
                 comment: "Airdrop intro screen: CTA button"
             )
             public enum InfoCell {

@@ -66,26 +66,32 @@ public enum AssetBalanceViewModel {
             public struct Descriptors {
                 let primaryFont: UIFont
                 let primaryTextColor: UIColor
+                let primaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment
                 let primaryAccessibility: Accessibility
                 let secondaryFont: UIFont
                 let secondaryTextColor: UIColor
+                let secondaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment
                 let pendingTextColor: UIColor
                 let secondaryAccessibility: Accessibility
 
                 public init(
                     primaryFont: UIFont,
                     primaryTextColor: UIColor,
+                    primaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment = .false,
                     primaryAccessibility: Accessibility,
                     secondaryFont: UIFont,
                     secondaryTextColor: UIColor,
+                    secondaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment = .false,
                     pendingTextColor: UIColor = .mutedText,
                     secondaryAccessibility: Accessibility
                 ) {
                     self.primaryFont = primaryFont
                     self.primaryTextColor = primaryTextColor
+                    self.primaryAdjustsFontSizeToFitWidth = primaryAdjustsFontSizeToFitWidth
                     self.primaryAccessibility = primaryAccessibility
                     self.secondaryFont = secondaryFont
                     self.secondaryTextColor = secondaryTextColor
+                    self.secondaryAdjustsFontSizeToFitWidth = secondaryAdjustsFontSizeToFitWidth
                     self.secondaryAccessibility = secondaryAccessibility
                     self.pendingTextColor = pendingTextColor
                 }
@@ -108,6 +114,7 @@ public enum AssetBalanceViewModel {
                     font: descriptors.primaryFont,
                     color: descriptors.primaryTextColor,
                     alignment: textAlignment,
+                    adjustsFontSizeToFitWidth: descriptors.primaryAdjustsFontSizeToFitWidth,
                     accessibility: descriptors.primaryAccessibility.with(idSuffix: value.primaryValue.code)
                 )
 
@@ -117,6 +124,7 @@ public enum AssetBalanceViewModel {
                         font: descriptors.secondaryFont,
                         color: descriptors.secondaryTextColor,
                         alignment: textAlignment,
+                        adjustsFontSizeToFitWidth: descriptors.secondaryAdjustsFontSizeToFitWidth,
                         accessibility: descriptors.secondaryAccessibility.with(idSuffix: cryptoValue.code)
                     )
                 } else {
@@ -160,14 +168,18 @@ extension AssetBalanceViewModel.Value.Presentation.Descriptors {
 
     public static func muted(
         cryptoAccessiblitySuffix: String,
-        fiatAccessiblitySuffix: String
+        fiatAccessiblitySuffix: String,
+        primaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment = .false,
+        secondaryAdjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment = .false
     ) -> Descriptors {
         Descriptors(
             primaryFont: .main(.medium, 16.0),
             primaryTextColor: .mutedText,
+            primaryAdjustsFontSizeToFitWidth: primaryAdjustsFontSizeToFitWidth,
             primaryAccessibility: .id(fiatAccessiblitySuffix),
             secondaryFont: .main(.medium, 14.0),
             secondaryTextColor: .mutedText,
+            secondaryAdjustsFontSizeToFitWidth: secondaryAdjustsFontSizeToFitWidth,
             secondaryAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
@@ -179,9 +191,11 @@ extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         Descriptors(
             primaryFont: .main(.semibold, 16.0),
             primaryTextColor: .textFieldText,
+            primaryAdjustsFontSizeToFitWidth: .true(factor: 0.7),
             primaryAccessibility: .id(fiatAccessiblitySuffix),
             secondaryFont: .main(.medium, 14.0),
             secondaryTextColor: .descriptionText,
+            secondaryAdjustsFontSizeToFitWidth: .true(factor: 0.7),
             secondaryAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }

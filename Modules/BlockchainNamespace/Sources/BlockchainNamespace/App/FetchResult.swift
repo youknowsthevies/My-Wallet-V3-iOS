@@ -152,8 +152,8 @@ extension FetchResult {
     }
 
     public func decode<T: Decodable>(
-        as type: T.Type = T.self,
-        decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+        _ type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) -> Value<T> {
         do {
             switch self {
@@ -238,10 +238,10 @@ import Combine
 extension Publisher where Output == FetchResult {
 
     public func decode<T>(
-        as _: T.Type = T.self,
+        _: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) -> AnyPublisher<FetchResult.Value<T>, Failure> {
-        map { result in result.decode(as: T.self, decoder: decoder) }
+        map { result in result.decode(T.self, using: decoder) }
             .eraseToAnyPublisher()
     }
 }
@@ -281,15 +281,15 @@ extension Dictionary where Key == Tag {
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
         try FetchResult.value(self[key] as Any, key.metadata())
-            .decode(as: T.self, decoder: decoder)
+            .decode(T.self, using: decoder)
             .get()
     }
 }
 
-extension Optional where Wrapped == Any {
+extension Optional {
 
     public func decode<T: Decodable>(
-        as type: T.Type = T.self,
+        _ type: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
         try decoder.decode(T.self, from: self as Any)

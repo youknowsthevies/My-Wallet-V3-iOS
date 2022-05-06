@@ -331,11 +331,14 @@ public final class CoinViewObserver: Session.Observer {
                         .error(message: "No account found with id \(id)")
                 )
         } else {
-            return try (accounts.first(where: { account in account is TradingAccount }) ?? accounts.first)
-                .or(
-                    throw: blockchain.ux.asset.error[]
-                        .error(message: "\(event) has no valid accounts for \(String(describing: action))")
-                )
+            return try (
+                accounts.first(where: { account in account is TradingAccount })
+                    ?? accounts.first(where: { account in account is NonCustodialAccount })
+            )
+            .or(
+                throw: blockchain.ux.asset.error[]
+                    .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+            )
         }
     }
 }

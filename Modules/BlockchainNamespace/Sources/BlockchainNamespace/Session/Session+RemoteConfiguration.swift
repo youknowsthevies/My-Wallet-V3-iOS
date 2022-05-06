@@ -21,16 +21,24 @@ extension Session {
         private var _fetched: CurrentValueSubject<[String: Any?], Never> = .init([:])
         private var fetch: ((AppProtocol, Bool) -> Void)?
         private var bag: Set<AnyCancellable> = []
+        private var preferences: Preferences
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
+            preferences: Preferences = UserDefaults.standard,
             default defaultValue: Default = [:]
         ) {
+            self.preferences = preferences
             fetch = { [unowned self] app, isStale in
                 Task {
+
+                    let cached = preferences.object(
+                        forKey: blockchain.session.configuration(\.id)
+                    ) as? [String: Any] ?? [:]
+
                     var configuration: [String: Any?] = defaultValue.dictionary.mapKeys { key in
                         key.idToFirebaseConfigurationKeyDefault()
-                    }
+                    } + cached
 
                     let expiration: TimeInterval
                     if isStale {
@@ -68,6 +76,19 @@ extension Session {
                     app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
                 }
             }
+            _fetched.sink { configuration in
+                let overrides = configuration
+                    .filter { key, _ in key.starts(with: important) }
+                    .mapKeys { key in
+                        String(key.dropFirst())
+                    }
+                preferences.transaction(blockchain.session.configuration(\.id)) { object in
+                    for (key, value) in overrides {
+                        object[key] = value
+                    }
+                }
+            }
+            .store(in: &bag)
         }
 
         func start(app: AppProtocol) {
@@ -86,11 +107,17 @@ extension Session {
             fetched[key.idToFirebaseConfigurationKeyImportant()] = value
         }
 
+        public func clear() {
+            for (key, _) in fetched where key.hasPrefix(important) {
+                fetched.removeValue(forKey: key)
+            }
+        }
+
         public func clear(_ key: Tag.Reference) {
             fetched.removeValue(forKey: key.idToFirebaseConfigurationKeyImportant())
         }
 
-        public func get(_ key: Tag.Reference) throws -> Any {
+        public func get(_ key: Tag.Reference) throws -> Any? {
             guard isSynchronized else { throw Error.notSynchronized }
             guard let value = fetched[firstOf: key.firebaseConfigurationKeys] else {
                 throw Error.keyDoesNotExist(key)
@@ -105,7 +132,7 @@ extension Session {
             guard let value = fetched[firstOf: key.firebaseConfigurationKeys] else {
                 return .error(.keyDoesNotExist(key), key.metadata(.remoteConfiguration))
             }
-            return .value(value, key.metadata(.remoteConfiguration))
+            return .value(value as Any, key.metadata(.remoteConfiguration))
         }
 
         public func publisher(for key: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
@@ -130,7 +157,7 @@ extension Session {
 
         public func get(_ key: String) throws -> Any? {
             guard isSynchronized else { throw Error.notSynchronized }
-            return fetched[key]
+            return fetched[key] as Any?
         }
 
         public func publisher(for string: String) -> AnyPublisher<Any?, Never> {
@@ -152,6 +179,8 @@ extension Session {
         }
     }
 }
+
+private let important: String = "!"
 
 extension Session.RemoteConfiguration {
 
@@ -180,11 +209,12 @@ extension Tag.Reference {
             idToFirebaseConfigurationKeyImportant(),
             idToFirebaseConfigurationKey(),
             idToFirebaseConfigurationKeyFallback(),
+            idToFirebaseConfigurationKeyIsEnabledFallback(),
             idToFirebaseConfigurationKeyDefault()
         ]
     }
 
-    fileprivate func idToFirebaseConfigurationKeyImportant() -> String { "!" + string }
+    fileprivate func idToFirebaseConfigurationKeyImportant() -> String { important + string }
     fileprivate func idToFirebaseConfigurationKeyDefault() -> String { string }
 
     fileprivate func idToFirebaseConfigurationKey() -> String {
@@ -196,6 +226,18 @@ extension Tag.Reference {
             .replacingOccurrences(
                 of: "blockchain_app_configuration",
                 with: "ios_ff"
+            )
+    }
+
+    fileprivate func idToFirebaseConfigurationKeyIsEnabledFallback() -> String {
+        idToFirebaseConfigurationKeyFallback()
+            .replacingOccurrences(
+                of: "blockchain_app_configuration",
+                with: "ios_ff"
+            )
+            .replacingOccurrences(
+                of: "_is_enabled",
+                with: ""
             )
     }
 }

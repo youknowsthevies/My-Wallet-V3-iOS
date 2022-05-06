@@ -4,16 +4,6 @@ import Foundation
 @testable import NetworkKit
 import ToolKit
 
-class InternalFeatureFlagServiceMock: InternalFeatureFlagServiceAPI {
-    func isEnabled(_ feature: InternalFeature) -> Bool {
-        true
-    }
-
-    func enable(_ feature: InternalFeature) {}
-    func enable(_ features: [InternalFeature]) {}
-    func disable(_ feature: InternalFeature) {}
-}
-
 extension NetworkRequest {
 
     final class MockBuilder {

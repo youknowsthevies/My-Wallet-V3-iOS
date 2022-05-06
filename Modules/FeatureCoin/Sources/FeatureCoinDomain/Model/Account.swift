@@ -84,14 +84,6 @@ extension Account {
             self.crypto = crypto
             self.fiat = fiat
         }
-
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
-
-        public static func == (lhs: Account.Snapshot, rhs: Account.Snapshot) -> Bool {
-            lhs.id == rhs.id
-        }
     }
 }
 
@@ -193,7 +185,10 @@ extension Collection where Element == Account {
     public var snapshot: AnyPublisher<[Account.Snapshot], Never> {
         map { account -> AnyPublisher<Account.Snapshot, Never> in
             account.cryptoBalancePublisher
-                .combineLatest(account.fiatBalancePublisher, account.actionsPublisher.replaceError(with: []))
+                .combineLatest(
+                    account.fiatBalancePublisher,
+                    account.actionsPublisher.replaceError(with: [])
+                )
                 .map { crypto, fiat, actions in
                     Account.Snapshot(
                         id: account.id,
@@ -228,9 +223,9 @@ extension Collection where Element == Account.Snapshot {
     }
 
     public var hasPositiveBalanceForSelling: Bool {
-        filter { account in
-            [.privateKey, .trading].contains(account.accountType)
-        }.fiatBalance?.isPositive ?? false
+        first(where: { account in account.accountType == .trading })?.fiat.isPositive
+            ?? first(where: { account in account.accountType == .privateKey })?.fiat.isPositive
+            ?? false
     }
 }
 

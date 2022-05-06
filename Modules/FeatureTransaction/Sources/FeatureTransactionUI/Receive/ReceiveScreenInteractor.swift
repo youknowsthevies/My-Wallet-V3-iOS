@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import ToolKit
 
@@ -15,6 +16,7 @@ final class ReceiveScreenInteractor {
     >
 
     struct State {
+        let currency: CurrencyType
         let qrCodeMetadata: QRCodeMetadata
         let domainNames: [String]
         let memo: String?
@@ -50,6 +52,7 @@ final class ReceiveScreenInteractor {
                     return nil
                 }
                 return State(
+                    currency: address.currencyType,
                     qrCodeMetadata: metadataProvider.qrCodeMetadata,
                     domainNames: domainNames,
                     memo: address.memo
