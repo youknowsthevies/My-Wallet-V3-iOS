@@ -206,12 +206,6 @@ public struct ClaimIntroductionView: View {
                             }
                             .accessibility(identifier: Accessibility.smallButton)
                             Spacer()
-                            Text(LocalizedString.instruction)
-                                .typography(.caption1)
-                                .foregroundColor(.semantic.overlay)
-                                .multilineTextAlignment(.center)
-                                .padding([.leading, .trailing], Spacing.padding3)
-                                .accessibility(identifier: Accessibility.instructionText)
                             PrimaryButton(title: LocalizedString.goButton) {
                                 viewStore.send(.navigate(to: .searchDomain))
                             }
