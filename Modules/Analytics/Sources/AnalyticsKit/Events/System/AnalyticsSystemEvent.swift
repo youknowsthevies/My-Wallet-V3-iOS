@@ -127,8 +127,7 @@ public final class SystemEventAnalytics {
 
         notificationCenter.publisher(for: UIApplication.didFinishLaunchingNotification)
             .compactMap { [pushNotificationParameters] notification in
-                pushNotificationParameters(notification)
-                    .map(SystemEvent.pushNotificationTapped)
+                SystemEvent.pushNotificationTapped(pushNotificationParameters(notification))
             }
             .sink(receiveValue: recorder.record(event:))
             .store(in: &bag)
@@ -152,29 +151,27 @@ public final class SystemEventAnalytics {
 
         notificationCenter.publisher(for: UIApplication.pushNotificationReceivedNotification)
             .compactMap { [pushNotificationParameters] notification in
-                pushNotificationParameters(notification)
-                    .map(SystemEvent.pushNotificationReceived)
+                SystemEvent.pushNotificationReceived(pushNotificationParameters(notification))
             }
             .sink(receiveValue: recorder.record(event:))
             .store(in: &bag)
     }
 
-    func pushNotificationParameters(notification: Notification) -> ApplicationPushNotificationParamaters? {
-        let key = UIApplication.LaunchOptionsKey.remoteNotification
+    func pushNotificationParameters(notification: Notification) -> ApplicationPushNotificationParamaters {
         if
-            let payload = notification.userInfo?[key] as? [String: Any],
-            let aps = payload["aps"] as? [String: Any]
+            let payload = notification.userInfo as? [String: Any]
         {
             return .init(
                 campaign: .init(
-                    content: aps["body"] as? String,
-                    medium: aps["medium"] as? String,
-                    name: aps["title"] as? String,
-                    source: aps["source"] as? String
+                    content: payload["body"] as? String,
+                    medium: payload["medium"] as? String,
+                    name: payload["title"] as? String,
+                    source: payload["source"] as? String,
+                    template: payload["template"] as? String
                 )
             )
         } else {
-            return nil
+            return .init()
         }
     }
 
@@ -196,6 +193,7 @@ public struct ApplicationPushNotificationParamaters: AnalyticsEventParameters, E
         public var medium: String? = "Push Notification"
         public var name: String?
         public var source: String?
+        public var template: String?
     }
 
     public var campaign: Campaign?
