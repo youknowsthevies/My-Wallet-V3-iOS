@@ -547,7 +547,8 @@ extension TransactionValidationState {
             return .pendingOrdersLimitReached
         case .noSourcesAvailable,
              .incorrectSourceCurrency,
-             .incorrectDestinationCurrency:
+             .incorrectDestinationCurrency,
+             .insufficientInterestWithdrawalBalance:
             return .unknownError
         }
     }
