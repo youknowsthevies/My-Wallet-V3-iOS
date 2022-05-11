@@ -35,5 +35,5 @@ public enum EntryType: Int32 {
     case walletCredentials = 12
 
     /// Account Credentials for unified accounts
-    case accountCredentials = 13
+    case accountCredentials = 14
 }
