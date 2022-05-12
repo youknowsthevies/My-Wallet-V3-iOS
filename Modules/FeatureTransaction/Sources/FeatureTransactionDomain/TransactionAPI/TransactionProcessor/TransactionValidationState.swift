@@ -45,6 +45,7 @@ public enum TransactionValidationState: Equatable {
     case optionInvalid
     case pendingOrdersLimitReached
     case transactionInFlight
+    case insufficientInterestWithdrawalBalance
 
     var isUninitialized: Bool {
         switch self {

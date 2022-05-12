@@ -1012,6 +1012,10 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         "You can start this transaction once one of the pending orders finish.",
         comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
     )
+    public static let insufficientInterestWithdrawalBalance = NSLocalizedString(
+        "You do not have sufficient balance to withdraw from your rewards account, we have a 7 day holding period for interest accounts - if you believe this to be incorrect and a problem, please contact support.",
+        comment: "User has insufficient balance to withdraw their rewards, this may be down to the customer still being inside the 7 day holding period."
+    )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
         comment: ""

@@ -98,6 +98,7 @@ public enum LocalizationConstants {
         public static let cannotOpenURLArg = NSLocalizedString("Cannot open URL %@", comment: "")
         public static let unsafeDeviceWarningMessage = NSLocalizedString("Your device appears to be jailbroken. The security of your wallet may be compromised.", comment: "")
         public static let twoStep = NSLocalizedString("An error occurred while changing 2-Step verification.", comment: "")
+        public static let network = NSLocalizedString("Network Error", comment: "Network Error title")
         public static let noInternetConnection = NSLocalizedString("No internet connection.", comment: "")
         public static let noInternetConnectionPleaseCheckNetwork = NSLocalizedString("No internet connection available. Please check your network settings.", comment: "")
         public static let warning = NSLocalizedString("Warning", comment: "")
@@ -124,6 +125,10 @@ public enum LocalizationConstants {
         )
         public static let notEnoughXForFees = NSLocalizedString("Not enough %@ for fees", comment: "Message shown when the user has attempted to send more funds than the user can spend (input amount plus fees)")
         public static let balancesGeneric = NSLocalizedString("We are experiencing a service issue that may affect displayed balances. Don't worry, your funds are safe.", comment: "Message shown when an error occurs while fetching balance or transaction history")
+        public static let noSourcesAvailable = NSLocalizedString("%@ is not available in your region.", comment: "Error title shown when there are no accounts available in your region")
+        public static let noSourcesAvailableMessage = NSLocalizedString("At the moment we do not support %@ in your region, you may still use the wallet to manage your crypto.", comment: "Error message shown when there are no accounts available in your region")
+        public static let insufficientInterestWithdrawalBalance = NSLocalizedString("Unable to Withdraw", comment: "Error title shown when the customer is unable to withdraw their crypto from the interest account.")
+        public static let insufficientInterestWithdrawalBalanceMessage = NSLocalizedString("You do not have sufficient balance to withdraw from your rewards account, we have a 7 day holding period for interest accounts - if you believe this to be incorrect and a problem, please contact support.", comment: "Error message shown when the customer is unable to withdraw their crypto from the interest account.")
     }
 
     public enum ServerStatus {
@@ -1088,6 +1093,10 @@ public enum LocalizationConstants {
             public enum Send {
                 public static let title = NSLocalizedString("Send", comment: "Send")
                 public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
+            }
+
+            public enum Sign {
+                public static let title = NSLocalizedString("Sign", comment: "Sign")
             }
 
             public enum Receive {
