@@ -192,6 +192,9 @@ public struct CredentialsView: View {
         .navigationRoute(in: store)
         .primaryNavigation(title: LocalizedString.navigationTitle) {
             Button {
+                self.isWalletIdentifierFirstResponder = false
+                self.isPasswordFieldFirstResponder = false
+                self.isTwoFAFieldFirstResponder = false
                 viewStore.send(.set(\.$supportSheetShown, true))
             } label: {
                 Icon
