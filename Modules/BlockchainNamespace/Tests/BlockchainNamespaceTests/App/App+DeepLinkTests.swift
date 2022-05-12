@@ -108,8 +108,11 @@ final class AppDeepLinkTests: XCTestCase {
     }
 
     func test_handle_deep_link_is_deferred_until_ready() throws {
+
+        let event = expectation(description: #function)
+
         app.on(blockchain.db.type.string)
-            .sink { event in self.count[event.reference.tag, default: 0] += 1 }
+            .sink { _ in event.fulfill() }
             .store(in: &bag)
 
         app.post(
@@ -121,12 +124,12 @@ final class AppDeepLinkTests: XCTestCase {
             ]
         )
 
-        XCTAssertNil(count[blockchain.db.type.string])
         XCTAssertThrowsError(try app.state.get(blockchain.db.type.string))
 
         app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
 
-        XCTAssertEqual(count[blockchain.db.type.string], 1)
+        wait(for: [event], timeout: 0.1)
+
         try XCTAssertAnyEqual(app.state.get(blockchain.db.type.string), "test")
     }
 
