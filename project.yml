@@ -42,7 +42,7 @@ schemeTemplates:
           isEnabled: false
         - variable: OS_ACTIVITY_MODE
           value: disable
-          isEnabled: true
+          isEnabled: false
       commandLineArguments:
         "-_UIConstraintBasedLayoutLogUnsatisfiable NO": true
     test:
