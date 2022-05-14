@@ -97,6 +97,8 @@ extension DependencyContainer {
 
         factory { UIDevice.current as DeviceInfo }
 
+        factory { PerformanceTracingService.live as PerformanceTracingAPI }
+
         factory { CrashlyticsRecorder() as MessageRecording }
 
         factory { CrashlyticsRecorder() as ErrorRecording }

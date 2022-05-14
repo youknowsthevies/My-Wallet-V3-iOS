@@ -33,6 +33,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockDeepLinkRouter: MockDeepLinkRouter!
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
+    var performanceTracingMock: PerformanceTracingService!
 
     var testStore: TestStore<
         LoggedIn.State,
@@ -68,6 +69,7 @@ final class LoggedInReducerTests: XCTestCase {
         mockFeatureFlagsService = MockFeatureFlagsService()
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockNabuUserService = MockNabuUserService()
+        performanceTracingMock = PerformanceTracingService.mock
 
         testStore = TestStore(
             initialState: LoggedIn.State(),
@@ -85,7 +87,8 @@ final class LoggedInReducerTests: XCTestCase {
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,
                 featureFlagsService: mockFeatureFlagsService,
-                fiatCurrencySettingsService: fiatCurrencySettingsServiceMock
+                fiatCurrencySettingsService: fiatCurrencySettingsServiceMock,
+                performanceTracing: performanceTracingMock
             )
         )
     }

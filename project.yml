@@ -293,6 +293,8 @@ targets:
       Release Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
     dependencies:
       - sdk: libicucore.tbd
+      - framework: Carthage/Build/FirebasePerformance.xcframework
+        embed: false
       - framework: Carthage/Build/FirebaseABTesting.xcframework
         embed: false
       - framework: Carthage/Build/FirebaseAnalytics.xcframework

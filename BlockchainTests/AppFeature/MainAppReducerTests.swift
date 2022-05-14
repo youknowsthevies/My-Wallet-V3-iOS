@@ -56,6 +56,8 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletPayloadService: MockWalletPayloadService!
     var mockForgetWalletService: ForgetWalletService!
 
+    var mockPerformanceTracing: PerformanceTracingService!
+
     var testStore: TestStore<
         CoreAppState,
         CoreAppState,
@@ -111,6 +113,8 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletPayloadService = MockWalletPayloadService()
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
+        mockPerformanceTracing = PerformanceTracingService.mock
+
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
@@ -149,7 +153,8 @@ final class MainAppReducerTests: XCTestCase {
                 forgetWalletService: mockForgetWalletService,
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
                 nativeWalletFlagEnabled: { .just(false) },
-                buildVersionProvider: { "" }
+                buildVersionProvider: { "" },
+                performanceTracing: mockPerformanceTracing
             )
         )
     }

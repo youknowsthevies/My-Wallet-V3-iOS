@@ -51,6 +51,7 @@ public struct AppEnvironment {
     var openBanking: OpenBanking
     var cardService: CardServiceAPI
     var observabilityService: ObservabilityServiceAPI
+    var performanceTracing: PerformanceTracingAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -121,7 +122,8 @@ public struct AppEnvironment {
         secondPasswordPrompter: SecondPasswordPromptable,
         buildVersionProvider: @escaping () -> String,
         externalAppOpener: ExternalAppOpener,
-        observabilityService: ObservabilityServiceAPI
+        observabilityService: ObservabilityServiceAPI,
+        performanceTracing: PerformanceTracingAPI
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
@@ -170,5 +172,6 @@ public struct AppEnvironment {
         self.cardService = cardService
         self.externalAppOpener = externalAppOpener
         self.observabilityService = observabilityService
+        self.performanceTracing = performanceTracing
     }
 }

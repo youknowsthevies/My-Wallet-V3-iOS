@@ -3,5 +3,6 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebasePerformanceBinary.json"
 binary "RecaptchaSDK.json" == 1.0.0
 github "SiftScience/sift-ios" "v2.1.0"
