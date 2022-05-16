@@ -154,7 +154,8 @@ final class MainAppReducerTests: XCTestCase {
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
                 nativeWalletFlagEnabled: { .just(false) },
                 buildVersionProvider: { "" },
-                performanceTracing: mockPerformanceTracing
+                performanceTracing: mockPerformanceTracing,
+                appUpgradeState: { .just(nil) }
             )
         )
     }
@@ -268,9 +269,8 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
 
-        testStore.send(.onboarding(.start)) { state in
-            state.onboarding = .init()
-            state.onboarding?.pinState = nil
+        testStore.send(.onboarding(.start))
+        testStore.receive(.onboarding(.proceedToFlow)) { state in
             state.onboarding?.welcomeState = .init()
         }
 
@@ -323,8 +323,19 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.informSecondPasswordDetected))
         testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected)))
-        testStore.receive(.onboarding(.welcomeScreen(.manualPairing(.navigate(to: .secondPasswordDetected))))) { state in
-            state.onboarding?.welcomeState?.manualCredentialsState?.route = RouteIntent(route: .secondPasswordDetected, action: .navigateTo)
+        testStore.receive(
+            .onboarding(
+                .welcomeScreen(
+                    .manualPairing(
+                        .navigate(to: .secondPasswordDetected)
+                    )
+                )
+            )
+        ) { state in
+            state.onboarding?.welcomeState?.manualCredentialsState?.route = RouteIntent(
+                route: .secondPasswordDetected,
+                action: .navigateTo
+            )
             state.onboarding?.welcomeState?.manualCredentialsState?.secondPasswordNoticeState = .init()
         }
     }
@@ -334,9 +345,9 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = String(repeating: "a", count: 36)
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         mockSettingsApp.isPinSet = false
-        testStore.send(.onboarding(.start)) { state in
-            state.onboarding = .init()
-            state.onboarding?.pinState = nil
+
+        testStore.send(.onboarding(.start))
+        testStore.receive(.onboarding(.proceedToFlow)) { state in
             state.onboarding?.passwordRequiredState = .init(
                 walletIdentifier: self.mockSettingsApp.guid ?? ""
             )
@@ -382,8 +393,9 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = String(repeating: "a", count: 36)
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         mockSettingsApp.isPinSet = true
-        testStore.send(.onboarding(.start)) { state in
-            state.onboarding = .init()
+
+        testStore.send(.onboarding(.start))
+        testStore.receive(.onboarding(.proceedToFlow)) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordRequiredState = nil
         }
@@ -423,6 +435,7 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.receive(.walletInitialized)
         mockMainQueue.advance()
+        testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
@@ -463,9 +476,10 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = String(repeating: "a", count: 36)
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         mockSettingsApp.isPinSet = true
-        testStore.send(.onboarding(.start)) { state in
-            state.onboarding = .init()
-            state.onboarding?.passwordRequiredState = nil
+
+        testStore.send(.onboarding(.start))
+        testStore.receive(.onboarding(.proceedToFlow)) { state in
+            state.onboarding?.pinState = .init()
         }
 
         testStore.receive(.onboarding(.pin(.authenticate))) { state in
@@ -503,6 +517,7 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
+        testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(true)) { state in
             state.onboarding?.pinState = nil
             state.onboarding?.walletUpgradeState = WalletUpgrade.State()
@@ -528,6 +543,7 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
+        testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
@@ -549,6 +565,7 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
+        testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
@@ -566,11 +583,12 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.loggedIn(.stop))
         testStore.receive(.requirePin) { state in
             state.loggedIn = nil
-            state.onboarding = .init()
+            state.onboarding = Onboarding.State(pinState: .init())
         }
         testStore.receive(.onboarding(.start)) { state in
             state.onboarding?.pinState = .init()
         }
+        testStore.receive(.onboarding(.proceedToFlow))
         testStore.receive(.onboarding(.pin(.authenticate))) { state in
             state.onboarding?.pinState?.authenticate = true
         }
@@ -656,7 +674,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_session_mismatch_deeplink_show_show_authorization() {
         mockFeatureFlagsService.enable(.pollingForEmailLogin)
-            .subscribe().store(in: &cancellables)
+            .subscribe()
+            .store(in: &cancellables)
         mockDeviceVerificationService.expectedSessionMismatch = true
         let requestInfo = LoginRequestInfo(
             sessionId: "",

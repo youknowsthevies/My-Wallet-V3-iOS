@@ -7,6 +7,8 @@ import ComposableArchitecture
 import DIKit
 import ERC20Kit
 import FeatureAppDomain
+import FeatureAppUpgradeDomain
+import FeatureAppUpgradeUI
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
@@ -79,6 +81,7 @@ public enum CoreAppAction: Equatable {
     case authenticated(Result<Bool, AuthenticationError>)
     case initializeWallet
     case walletInitialized
+    case checkWalletUpgrade
     case walletNeedsUpgrade(Bool)
 
     // Device Authorization
@@ -137,6 +140,7 @@ struct CoreAppEnvironment {
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
     var buildVersionProvider: () -> String
     var performanceTracing: PerformanceTracingAPI
+    var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -160,7 +164,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     featureFlagsService: environment.featureFlagsService,
                     externalAppOpener: environment.externalAppOpener,
                     forgetWalletService: environment.forgetWalletService,
-                    buildVersionProvider: environment.buildVersionProvider
+                    buildVersionProvider: environment.buildVersionProvider,
+                    appUpgradeState: environment.appUpgradeState
                 )
             }
         ),
@@ -298,7 +303,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .requirePin:
         state.loggedIn = nil
-        state.onboarding = .init()
+        state.onboarding = Onboarding.State(pinState: .init())
         return Effect(value: .onboarding(.start))
 
     case .fetchWallet(let password):
@@ -517,6 +522,9 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .map { _ in CoreAppAction.walletInitialized }
 
     case .walletInitialized:
+        return Effect(value: .checkWalletUpgrade)
+
+    case .checkWalletUpgrade:
         return environment.walletUpgradeService
             .needsWalletUpgrade
             .receive(on: environment.mainQueue)

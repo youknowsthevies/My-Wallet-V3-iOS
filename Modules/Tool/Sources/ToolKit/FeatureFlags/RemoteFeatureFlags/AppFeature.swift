@@ -10,6 +10,9 @@ public enum AppFeature: Int, CaseIterable {
     /// The announcements
     case announcements
 
+    /// The announcements
+    case appUpgradeData
+
     /// The ticker for the new asset announcement.
     case newAssetAnnouncement
 
@@ -104,6 +107,8 @@ extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
     public var remoteEnabledKey: String {
         switch self {
+        case .appUpgradeData:
+            return "ios_app_maintenance"
         case .interestWithdrawAndDeposit:
             return "ios_interest_deposit_withdraw"
         case .announcements:
@@ -171,6 +176,8 @@ extension AppFeature {
         case .assetRenameAnnouncement:
             return false
         case .interestWithdrawAndDeposit:
+            return false
+        case .appUpgradeData:
             return false
         case .announcements:
             return false

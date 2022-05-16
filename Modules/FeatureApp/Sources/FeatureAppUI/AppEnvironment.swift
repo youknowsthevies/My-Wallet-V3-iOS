@@ -74,6 +74,7 @@ public struct AppEnvironment {
     var appStoreOpener: AppStoreOpening
     var buildVersionProvider: () -> String
     var externalAppOpener: ExternalAppOpener
+    var deviceInfo: DeviceInfo
 
     public init(
         app: AppProtocol,
@@ -123,7 +124,8 @@ public struct AppEnvironment {
         buildVersionProvider: @escaping () -> String,
         externalAppOpener: ExternalAppOpener,
         observabilityService: ObservabilityServiceAPI,
-        performanceTracing: PerformanceTracingAPI
+        performanceTracing: PerformanceTracingAPI,
+        deviceInfo: DeviceInfo
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
@@ -173,5 +175,6 @@ public struct AppEnvironment {
         self.externalAppOpener = externalAppOpener
         self.observabilityService = observabilityService
         self.performanceTracing = performanceTracing
+        self.deviceInfo = deviceInfo
     }
 }

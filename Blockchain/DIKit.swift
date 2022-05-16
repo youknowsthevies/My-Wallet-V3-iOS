@@ -37,6 +37,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseDynamicLinks
 import FirebaseMessaging
 import FirebaseRemoteConfig
 import MoneyKit
@@ -167,7 +168,7 @@ extension DependencyContainer {
             return AppDeeplinkHandler(
                 deeplinkHandler: deeplinkHandler,
                 blockchainHandler: blockchainHandler,
-                firebaseHandler: FirebaseDeeplinkHandler()
+                firebaseHandler: FirebaseDeeplinkHandler(dynamicLinks: DynamicLinks.dynamicLinks())
             )
         }
 
