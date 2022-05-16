@@ -104,7 +104,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     forgetWalletService: $0.forgetWalletService,
                     secondPasswordPrompter: $0.secondPasswordPrompter,
                     nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
-                    buildVersionProvider: $0.buildVersionProvider
+                    buildVersionProvider: $0.buildVersionProvider,
+                    performanceTracing: $0.performanceTracing
                 )
             }
         ),

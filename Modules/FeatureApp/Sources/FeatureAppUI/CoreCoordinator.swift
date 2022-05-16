@@ -136,6 +136,7 @@ struct CoreAppEnvironment {
     var secondPasswordPrompter: SecondPasswordPromptable
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
     var buildVersionProvider: () -> String
+    var performanceTracing: PerformanceTracingAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -182,7 +183,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
                     featureFlagsService: environment.featureFlagsService,
-                    fiatCurrencySettingsService: environment.fiatCurrencySettingsService
+                    fiatCurrencySettingsService: environment.fiatCurrencySettingsService,
+                    performanceTracing: environment.performanceTracing
                 )
             }
         ),
@@ -683,6 +685,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .onboarding(.pin(.handleAuthentication(let password))):
+        environment.performanceTracing.begin(trace: .pinToDashboard)
         return Effect(
             value: .fetchWallet(password: password)
         )

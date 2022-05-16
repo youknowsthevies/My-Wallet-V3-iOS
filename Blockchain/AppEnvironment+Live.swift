@@ -62,7 +62,8 @@ extension AppEnvironment {
             secondPasswordPrompter: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber,
             externalAppOpener: resolve(),
-            observabilityService: resolve()
+            observabilityService: resolve(),
+            performanceTracing: resolve()
         )
     }
 }
