@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureNotificationPreferencesMocks
+import Localization
 import SwiftUI
 
 public struct NotificationPreferencesDetailsView: View {
@@ -66,6 +67,13 @@ extension NotificationPreferencesDetailsView {
                             mandatory: requiredMethods.contains(.inApp),
                             isOn: viewStore.binding(\.$inAppSwitch.isOn)
                         )
+
+                    case .browser:
+                        controlView(
+                            label: methodInfo.title,
+                            mandatory: requiredMethods.contains(.browser),
+                            isOn: viewStore.binding(\.$browserSwitch.isOn)
+                        )
                     }
                 }
             }
@@ -85,8 +93,13 @@ extension NotificationPreferencesDetailsView {
         isOn: Binding<Bool>
     ) -> some View {
         HStack {
-            Text(label)
-                .typography(.body1)
+            if mandatory {
+                Text(label + " (\(LocalizationConstants.NotificationPreferences.NotificationScreen.requiredString))")
+                    .typography(.body1)
+            } else {
+                Text(label)
+                    .typography(.body1)
+            }
             Spacer()
             PrimarySwitch(
                 variant: .blue,
@@ -94,6 +107,8 @@ extension NotificationPreferencesDetailsView {
                 isOn: isOn
             )
         }
+        .disabled(mandatory)
+        .opacity(mandatory ? 0.25 : 1.0)
     }
 
     private var headerViewSection: some View {
