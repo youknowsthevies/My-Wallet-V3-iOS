@@ -352,9 +352,11 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            actionsPublisher: account.actions
-                .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
-                .eraseToAnyPublisher(),
+            actionsPublisher: {
+                account.actions
+                    .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
+                    .eraseToAnyPublisher()
+            },
             cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),
             fiatBalancePublisher: account.fiatBalance(fiatCurrency: fiatCurrency).ignoreFailure()
         )
