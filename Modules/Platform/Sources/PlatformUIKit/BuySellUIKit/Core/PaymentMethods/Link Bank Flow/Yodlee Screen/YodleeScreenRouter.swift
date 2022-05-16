@@ -33,7 +33,7 @@ final class YodleeScreenRouter: ViewableRouter<YodleeScreenInteractable, YodleeS
     func route(to path: YodleeRoute.Path) {
         switch path {
         case .link(let url):
-            webViewService.openSafari(url: url, from: viewController.uiviewController)
+            UIApplication.shared.open(url)
         }
     }
 }
