@@ -17,23 +17,10 @@ final class YodleeRequestProvider {
             return nil
         }
 
-        let intentUrl: String = Bundle.main.plist
-            .BLOCKCHAIN_WALLET_PAGE_LINK[]
-            .flatMap(URL.https)
-            .or(default: "https://blockchainwallet.page.link")
-            .appendingPathComponent("fastlink")
-            .absoluteString
-
-        guard let extraParams = "configName=\(configValue)&intentUrl=\(intentUrl)"
-            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
-        else {
-            return nil
-        }
-
         var urlComponents = URLComponents()
         urlComponents.queryItems = [
             URLQueryItem(name: "accessToken", value: "Bearer \(token)"),
-            URLQueryItem(name: "extraParams", value: extraParams)
+            URLQueryItem(name: "extraParams", value: "configName=\(configValue)")
         ]
 
         var request = URLRequest(url: url)
