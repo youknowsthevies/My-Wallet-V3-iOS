@@ -10,7 +10,7 @@ public enum TraceID: String {
 }
 
 /// This API provides a mechanism to trace metrics from the beginning to the end of a trace
-public protocol PerformanceTracingAPI {
+public protocol PerformanceTracingServiceAPI {
 
     /// Start the trace
     /// - Parameter traceId: the unique ID to record this trace

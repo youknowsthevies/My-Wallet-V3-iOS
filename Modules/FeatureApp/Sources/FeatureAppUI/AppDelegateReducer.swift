@@ -8,7 +8,7 @@ import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
-import ObservabilityDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit

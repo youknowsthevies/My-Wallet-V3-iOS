@@ -13,7 +13,7 @@ import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
-import ObservabilityDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -51,7 +51,7 @@ public struct AppEnvironment {
     var openBanking: OpenBanking
     var cardService: CardServiceAPI
     var observabilityService: ObservabilityServiceAPI
-    var performanceTracing: PerformanceTracingAPI
+    var performanceTracing: PerformanceTracingServiceAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -123,7 +123,7 @@ public struct AppEnvironment {
         buildVersionProvider: @escaping () -> String,
         externalAppOpener: ExternalAppOpener,
         observabilityService: ObservabilityServiceAPI,
-        performanceTracing: PerformanceTracingAPI
+        performanceTracing: PerformanceTracingServiceAPI
     ) {
         self.app = app
         self.nabuUserService = nabuUserService

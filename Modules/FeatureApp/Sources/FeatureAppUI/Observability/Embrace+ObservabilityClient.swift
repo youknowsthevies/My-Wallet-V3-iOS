@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Embrace
-import ObservabilityDomain
+import ObservabilityKit
 
 extension Embrace: ObservabilityClientAPI {}

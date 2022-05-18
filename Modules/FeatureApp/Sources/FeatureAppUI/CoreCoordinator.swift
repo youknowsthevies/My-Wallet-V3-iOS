@@ -11,6 +11,7 @@ import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
 import Localization
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -136,7 +137,7 @@ struct CoreAppEnvironment {
     var secondPasswordPrompter: SecondPasswordPromptable
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
     var buildVersionProvider: () -> String
-    var performanceTracing: PerformanceTracingAPI
+    var performanceTracing: PerformanceTracingServiceAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(

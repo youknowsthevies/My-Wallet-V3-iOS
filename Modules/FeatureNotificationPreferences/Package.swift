@@ -46,10 +46,6 @@ let package = Package(
             name: "FeatureNotificationPreferencesDomain",
             dependencies: [
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
-                ),
-                .product(
                     name: "Localization",
                     package: "Localization"
                 ),
