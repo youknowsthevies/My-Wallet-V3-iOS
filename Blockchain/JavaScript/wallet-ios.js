@@ -1080,7 +1080,7 @@ MyWalletPhone.accountCredentials = {
 
     exchangeLifetimeToken: function() {
         return MyWallet.wallet.accountCredentials.exchangeLifetimeToken;
-    },
+    }
 }
 
 MyWalletPhone.walletConnect = {
