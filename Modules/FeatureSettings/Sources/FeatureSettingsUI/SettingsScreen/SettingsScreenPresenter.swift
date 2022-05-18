@@ -64,9 +64,7 @@ public final class SettingsScreenPresenter {
     ) {
         helpSectionPresenter = HelpSectionPresenter()
 
-        connectPresenter = .init(
-            exchangeConnectionStatusProvider: interactor.pitConnnectionProviding
-        )
+        connectPresenter = ConnectSectionPresenter()
 
         securitySectionPresenter = .init(
             smsTwoFactorService: interactor.smsTwoFactorService,

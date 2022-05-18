@@ -716,7 +716,7 @@ public enum LocalizationConstants {
 
     public enum Exchange {
         public static let title = NSLocalizedString("Exchange", comment: "Title for the Exchange")
-        public static let connect = NSLocalizedString("Connect", comment: "Connect")
+        public static let launch = NSLocalizedString("Launch", comment: "Launch - opens exchange website url")
         public static let connected = NSLocalizedString("Connected", comment: "Connected")
         public static let twoFactorNotEnabled = NSLocalizedString("Please enable 2FA on your Exchange account to complete deposit.", comment: "User must have 2FA enabled to deposit from send.")
         public enum Alerts {
