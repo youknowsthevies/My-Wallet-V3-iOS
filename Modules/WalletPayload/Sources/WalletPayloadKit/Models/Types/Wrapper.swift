@@ -19,14 +19,14 @@ public struct Wrapper: Equatable {
     public init(
         pbkdf2Iterations: Int,
         version: Int,
-        payloadChecksum: String,
+        payloadChecksum: String?,
         language: String,
         syncPubKeys: Bool,
         wallet: NativeWallet
     ) {
         self.pbkdf2Iterations = UInt32(pbkdf2Iterations)
         self.version = version
-        self.payloadChecksum = payloadChecksum
+        self.payloadChecksum = payloadChecksum ?? ""
         self.language = language
         self.syncPubKeys = syncPubKeys
         self.wallet = wallet
@@ -38,7 +38,7 @@ public struct Wrapper: Equatable {
     ) {
         version = walletPayload.payloadWrapper?.version ?? 4
         pbkdf2Iterations = walletPayload.payloadWrapper?.pbkdf2IterationCount ?? 5000
-        payloadChecksum = walletPayload.payloadChecksum
+        payloadChecksum = walletPayload.payloadChecksum ?? ""
         language = walletPayload.language
         syncPubKeys = walletPayload.shouldSyncPubKeys
         self.wallet = wallet
