@@ -91,9 +91,9 @@ extension BadgeAsset.Value.Interaction.BadgeItem {
         description: LocalizationConstants.unverified
     )
 
-    public static let connect: BadgeAsset.Value.Interaction.BadgeItem = .init(
-        type: .default(accessibilitySuffix: "Connect"),
-        description: LocalizationConstants.Exchange.connect
+    public static let launch: BadgeAsset.Value.Interaction.BadgeItem = .init(
+        type: .default(accessibilitySuffix: "Launch"),
+        description: LocalizationConstants.Exchange.launch
     )
 
     public static let confirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(

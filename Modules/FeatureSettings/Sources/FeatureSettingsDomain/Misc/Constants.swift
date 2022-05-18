@@ -10,6 +10,5 @@ public enum Constants {
         public static let privacyPolicy = blockchainHome + "/privacy"
         public static let cookiesPolicy = blockchainHome + "/legal/cookies"
         public static let termsOfService = blockchainHome + "/terms"
-        public static let exchangeSupport = "https://exchange-support.blockchain.com/hc/en-us"
     }
 }
