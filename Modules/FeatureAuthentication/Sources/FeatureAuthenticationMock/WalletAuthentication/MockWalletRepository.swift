@@ -15,6 +15,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var expectedPassword: String?
     var expectedSyncPubKeys = false
     var expectedOfflineToken: Result<NabuOfflineToken, MissingCredentialsError>!
+    var expectedChangePassword: Result<Void, PasswordRepositoryError>!
 
     var guid: AnyPublisher<String?, Never> {
         .just(expectedGuid)
@@ -82,6 +83,12 @@ final class MockWalletRepository: WalletRepositoryAPI {
         perform { [weak self] in
             self?.expectedPassword = password
         }
+    }
+
+    func changePassword(password: String) -> AnyPublisher<Void, PasswordRepositoryError> {
+        expectedChangePassword
+            .publisher
+            .eraseToAnyPublisher()
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
