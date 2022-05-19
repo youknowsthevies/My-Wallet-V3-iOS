@@ -11,7 +11,6 @@ struct SupportView: View {
 
     private typealias LocalizationIds = LocalizationConstants.Authentication.Support
 
-    @Environment(\.presentationMode) private var presentationMode
     private let store: Store<SupportViewState, SupportViewAction>
 
     init(
@@ -27,7 +26,6 @@ struct SupportView: View {
                     title: LocalizationIds.contactUs,
                     action: {
                         viewStore.send(.openURL(.contactUs))
-                        presentationMode.wrappedValue.dismiss()
                     },
                     style: .secondary
                 ),
@@ -35,7 +33,6 @@ struct SupportView: View {
                     title: LocalizationIds.viewFAQ,
                     action: {
                         viewStore.send(.openURL(.viewFAQ))
-                        presentationMode.wrappedValue.dismiss()
                     },
                     style: .secondary
                 )
