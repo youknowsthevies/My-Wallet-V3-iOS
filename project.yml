@@ -423,6 +423,7 @@ targets:
       - package: Money
         product: MoneyKit
       - package: Observability
+        product: ObservabilityKit
       - package: Platform
         product: PlatformKit
       - package: Platform

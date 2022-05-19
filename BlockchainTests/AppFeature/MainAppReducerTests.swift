@@ -7,6 +7,7 @@ import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -56,7 +57,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletPayloadService: MockWalletPayloadService!
     var mockForgetWalletService: ForgetWalletService!
 
-    var mockPerformanceTracing: PerformanceTracingService!
+    var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
     var testStore: TestStore<
         CoreAppState,
@@ -113,7 +114,7 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletPayloadService = MockWalletPayloadService()
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
-        mockPerformanceTracing = PerformanceTracingService.mock
+        mockPerformanceTracing = PerformanceTracing.mock
 
         testStore = TestStore(
             initialState: CoreAppState(),

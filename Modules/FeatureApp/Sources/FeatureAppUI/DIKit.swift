@@ -8,7 +8,7 @@ import FeatureOpenBankingUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
 import FeatureTransactionUI
-import ObservabilityDomain
+import ObservabilityKit
 import PlatformUIKit
 import ToolKit
 import UIKit

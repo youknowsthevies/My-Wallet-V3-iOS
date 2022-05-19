@@ -42,6 +42,7 @@ import FirebaseMessaging
 import FirebaseRemoteConfig
 import MoneyKit
 import NetworkKit
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -98,7 +99,7 @@ extension DependencyContainer {
 
         factory { UIDevice.current as DeviceInfo }
 
-        factory { PerformanceTracingService.live as PerformanceTracingAPI }
+        factory { PerformanceTracing.live as PerformanceTracingServiceAPI }
 
         factory { CrashlyticsRecorder() as MessageRecording }
 

@@ -94,7 +94,7 @@ let package = Package(
                 .product(name: "FeatureWalletConnectDomain", package: "FeatureWalletConnect"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "MoneyKit", package: "Money"),
-                .product(name: "ObservabilityDomain", package: "Observability"),
+                .product(name: "ObservabilityKit", package: "Observability"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "RemoteNotificationsKit", package: "RemoteNotifications"),

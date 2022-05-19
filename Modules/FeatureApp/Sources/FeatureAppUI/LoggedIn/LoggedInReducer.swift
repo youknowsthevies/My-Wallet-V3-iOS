@@ -7,6 +7,7 @@ import ComposableArchitecture
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import Localization
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -68,7 +69,7 @@ public enum LoggedIn {
         var deeplinkRouter: DeepLinkRouting
         var featureFlagsService: FeatureFlagsServiceAPI
         var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-        var performanceTracing: PerformanceTracingAPI
+        var performanceTracing: PerformanceTracingServiceAPI
     }
 
     public enum WalletAction: Equatable {
