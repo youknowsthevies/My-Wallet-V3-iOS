@@ -122,10 +122,3 @@ extension Accessibility.Identifier {
         public static let badge = "\(prefix).badge"
     }
 }
-
-extension Accessibility.Identifier {
-    enum MnemonicTextView {
-        static let prefix = "MnemonicTextView."
-        static let recoveryPhrase = "\(prefix)recoveryPhrase"
-    }
-}

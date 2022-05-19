@@ -165,21 +165,9 @@ extension NabuUser {
     }
 }
 
-extension NabuUser: NabuUserSunriverAirdropRegistering {
-    public var isSunriverAirdropRegistered: Bool {
-        tags?.sunriver != nil
-    }
-}
-
 extension NabuUser: NabuUserBlockstackAirdropRegistering {
     public var isBlockstackAirdropRegistered: Bool {
         tags?.blockstack != nil
-    }
-}
-
-extension NabuUser: NabuUserSimpleBuyEnabled {
-    public var isSimpleBuyEnabled: Bool {
-        tags?.simpleBuy != nil
     }
 }
 
@@ -207,46 +195,19 @@ public struct Mobile: Decodable, Equatable {
 public struct Tags: Decodable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
-        case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
-        case powerPax = "POWER_PAX"
-        case simpleBuy = "SIMPLE_BUY"
     }
 
-    public let sunriver: Sunriver?
     public let blockstack: Blockstack?
-    public let powerPax: PowerPax?
-    public let simpleBuy: SimpleBuy?
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        sunriver = try values.decodeIfPresent(Sunriver.self, forKey: .sunriver)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
-        powerPax = try values.decodeIfPresent(PowerPax.self, forKey: .powerPax)
-        simpleBuy = try values.decodeIfPresent(SimpleBuy.self, forKey: .simpleBuy)
     }
 
-    public init(
-        sunriver: Sunriver? = nil,
-        blockstack: Blockstack? = nil,
-        powerPax: PowerPax? = nil,
-        simpleBuy: SimpleBuy? = nil
-    ) {
-        self.sunriver = sunriver
+    public init(blockstack: Blockstack?) {
         self.blockstack = blockstack
-        self.powerPax = powerPax
-        self.simpleBuy = simpleBuy
     }
-
-    public struct Sunriver: Decodable, Equatable {
-        let campaignAddress: String
-
-        private enum CodingKeys: String, CodingKey {
-            case campaignAddress = "x-campaign-address"
-        }
-    }
-
-    public struct SimpleBuy: Decodable, Equatable {}
 
     public struct Blockstack: Decodable, Equatable {
         let campaignAddress: String
@@ -254,18 +215,6 @@ public struct Tags: Decodable, Equatable {
         private enum CodingKeys: String, CodingKey {
             case campaignAddress = "x-campaign-address"
         }
-    }
-
-    public struct PowerPax: Decodable, Equatable {
-        let campaignAddress: String
-
-        private enum CodingKeys: String, CodingKey {
-            case campaignAddress = "x-campaign-address"
-        }
-    }
-
-    public var containsSimpleBuy: Bool {
-        simpleBuy != nil
     }
 }
 

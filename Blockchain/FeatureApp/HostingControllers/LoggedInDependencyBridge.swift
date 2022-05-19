@@ -189,7 +189,6 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToSwap() { wrapped.switchTabToSwap() }
     func logout() { wrapped.logout() }
     func handleAccountsAndAddresses() { wrapped.handleAccountsAndAddresses() }
-    func handleAirdrops() { wrapped.handleAirdrops() }
     func handleSupport() { wrapped.handleSupport() }
     func handleSecureChannel() { wrapped.handleSecureChannel() }
 }
@@ -228,7 +227,6 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToSwap() {}
     func logout() {}
     func handleAccountsAndAddresses() {}
-    func handleAirdrops() {}
     func handleSupport() {}
     func handleSecureChannel() {}
 }

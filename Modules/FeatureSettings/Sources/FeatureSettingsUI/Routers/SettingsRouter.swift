@@ -309,8 +309,6 @@ final class SettingsRouter: SettingsRouterAPI {
             externalActionsProvider.logout()
         case .showAccountsAndAddresses:
             externalActionsProvider.handleAccountsAndAddresses()
-        case .showAirdrops:
-            externalActionsProvider.handleAirdrops()
         case .showContactSupport:
             externalActionsProvider.handleSupport()
         case .showWebLogin:

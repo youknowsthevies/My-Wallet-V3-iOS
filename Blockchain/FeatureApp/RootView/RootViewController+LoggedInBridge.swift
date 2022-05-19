@@ -483,10 +483,6 @@ extension RootViewController: LoggedInBridge {
         accountsAndAddressesNavigationController = viewController
     }
 
-    func handleAirdrops() {
-        airdropRouter.presentAirdropCenterScreen()
-    }
-
     func handleSecureChannel() {
         func show() {
             viewStore.send(.enter(into: .QR, context: .none))

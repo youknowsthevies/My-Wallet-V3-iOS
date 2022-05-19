@@ -3,19 +3,13 @@
 import Combine
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
+@testable import FeatureAuthenticationMock
 @testable import NetworkKit
-@testable import PlatformKit
-import ToolKit
+@testable import ToolKitMock
 import XCTest
 
-@testable import FeatureAuthenticationMock
-@testable import NetworkKitMock
-@testable import PlatformKitMock
-@testable import ToolKitMock
-
 // swiftlint:disable type_body_length
-
-class NabuAuthenticationExecutorTests: XCTestCase {
+final class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
     private var store: NabuTokenRepositoryAPI!
@@ -26,7 +20,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
     private var nabuUserEmailProvider: NabuUserEmailProvider = { .just("abcd@abcd.com") }
     private var deviceInfo: MockDeviceInfo!
     private var jwtService: JWTServiceMock!
-    private var siftService: SiftServiceMock!
+    private var siftService: MockSiftService!
     private var checkAuthenticated: CheckAuthenticated = { _ in .just(true) }
     private var subject: NabuAuthenticationExecutorAPI!
 
@@ -45,7 +39,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             uuidString: "uuid"
         )
         jwtService = JWTServiceMock()
-        siftService = SiftServiceMock()
+        siftService = MockSiftService()
         subject = NabuAuthenticationExecutor(
             store: store,
             errorBroadcaster: errorBroadcaster,

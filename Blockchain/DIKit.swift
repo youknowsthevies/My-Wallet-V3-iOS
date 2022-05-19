@@ -87,12 +87,6 @@ extension DependencyContainer {
             return settings as OnboardingSettingsAPI
         }
 
-        factory { AirdropRouter() as AirdropRouterAPI }
-
-        factory { AirdropCenterClient() as AirdropCenterClientAPI }
-
-        factory { AirdropCenterService() as AirdropCenterServiceAPI }
-
         factory { DeepLinkHandler() as DeepLinkHandling }
 
         factory { DeepLinkRouter() as DeepLinkRouting }

@@ -98,32 +98,6 @@ extension LocalizationConstants {
 
         // MARK: - One time
 
-        public enum BlockstackAirdropReceived {
-            public static let title = NSLocalizedString(
-                "Your Airdrop has landed",
-                comment: "STX airdrop received announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "Your Stacks are now in your wallet. We’ll let you know as soon as these are available to be used.",
-                comment: "STX airdrop received announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "View Details",
-                comment: "STX airdrop received announcement card CTA button title"
-            )
-        }
-
-        public enum BlockstackAirdropRegisteredMini {
-            public static let title = NSLocalizedString(
-                "A Reward for having Full Access level",
-                comment: "STX airdrop registered announcement mini card title"
-            )
-            public static let description = NSLocalizedString(
-                "We're airdropping you free crypto in 2020",
-                comment: "STX airdrop registered announcement mini card description"
-            )
-        }
-
         public enum IdentityVerification {
             public static let title = NSLocalizedString(
                 "Finish Verifying Your Account",
@@ -415,21 +389,6 @@ extension LocalizationConstants {
             public static let ctaButton = NSLocalizedString(
                 "Re-verify Now",
                 comment: "The title of the action on the announcement card for when a user needs to submit documents to re-verify their identity."
-            )
-        }
-
-        public enum KycAirdrop {
-            public static let title = NSLocalizedString(
-                "Want Free Crypto?",
-                comment: "Kyc airdrop announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "Verify your identity to participate in our Airdrop program and receive free crypto from future Airdrops.",
-                comment: "Kyc airdrop announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Start Verification",
-                comment: "Kyc airdrop announcement card CTA button title"
             )
         }
 

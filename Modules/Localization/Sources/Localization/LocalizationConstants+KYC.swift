@@ -172,10 +172,6 @@ extension LocalizationConstants {
             "Introducing Blockchain's faster, smarter way to trade your crypto. Upgrade now to enjoy benefits such as better prices, higher trade limits and live rates.",
             comment: "Text displayed when user is starting KYC"
         )
-        public static let welcomeMainTextSunRiverCampaign = NSLocalizedString(
-            "Complete your profile to start instantly trading crypto from the security of your wallet and become eligible for our Airdrop Program.",
-            comment: "Text displayed when user is starting KYC coming from the airdrop link"
-        )
         public static let invalidPhoneNumber = NSLocalizedString(
             "The mobile number you entered is invalid.",
             comment: "Error message displayed to the user when the phone number they entered during KYC is invalid."

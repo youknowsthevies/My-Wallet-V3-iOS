@@ -2,21 +2,19 @@
 
 import FeatureAuthenticationDomain
 
-class MockSiftService: FeatureAuthenticationDomain.SiftServiceAPI {
+final class MockSiftService: SiftServiceAPI {
 
     var enableCalled = false
+    var setUserIdCalled: (Bool, String?) = (false, nil)
+    var removeUserIdCalled = false
 
     func enable() {
         enableCalled = true
     }
 
-    var setUserIdCalled: (Bool, String?) = (false, nil)
-
     func set(userId: String) {
         setUserIdCalled = (true, userId)
     }
-
-    var removeUserIdCalled = false
 
     func removeUserId() {
         removeUserIdCalled = true

@@ -41,8 +41,6 @@ final class DeepLinkHandler: DeepLinkHandling {
         }
         Logger.shared.debug("[DeepLinkHandler] Handling deep link \(deepLink) on route \(route)")
         switch route {
-        case .xlmAirdop:
-            handleXlmAirdrop(payload.params)
         case .kyc,
              .kycVerifyEmail:
             handleKyc()
@@ -54,12 +52,6 @@ final class DeepLinkHandler: DeepLinkHandling {
         case .openBankingLink, .openBankingApprove:
             handleOpenBanking(payload.params)
         }
-    }
-
-    private func handleXlmAirdrop(_ params: [String: String]) {
-        appSettings.didTapOnAirdropDeepLink = true
-        appSettings.didAttemptToRouteForAirdrop = false
-        Analytics.setUserProperty(FirebaseAnalyticsServiceProvider.Campaigns.sunriver.rawValue, forName: "campaign")
     }
 
     private func handleKycDocumentResubmission(_ params: [String: String]) {

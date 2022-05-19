@@ -10,7 +10,6 @@ import NetworkKit
 typealias SimpleBuyClientAPI = EligibilityClientAPI &
     SupportedPairsClientAPI &
     TradingPairsClientAPI &
-    SuggestedAmountsClientAPI &
     OrderDetailsClientAPI &
     OrderCancellationClientAPI &
     PaymentAccountClientAPI &
@@ -59,7 +58,6 @@ final class APIClient: SimpleBuyClientAPI {
         static let banks = ["payments", "banks"]
         static let supportedPairs = ["simple-buy", "pairs"]
         static let tradingPairs = ["custodial", "trades", "pairs"]
-        static let suggestedAmounts = ["simple-buy", "amounts"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
         // TODO: remove old quote endpoint when the new pricing model becomes stable
@@ -146,25 +144,6 @@ final class APIClient: SimpleBuyClientAPI {
     func cancel(order id: String) -> AnyPublisher<Void, NabuNetworkError> {
         let request = requestBuilder.delete(
             path: Path.trades + [id],
-            authenticated: true
-        )!
-        return networkAdapter.perform(request: request)
-    }
-
-    // MARK: - SuggestedAmountsClientAPI
-
-    func suggestedAmounts(
-        for currency: FiatCurrency
-    ) -> AnyPublisher<SuggestedAmountsResponse, NabuNetworkError> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.currency,
-                value: currency.rawValue
-            )
-        ]
-        let request = requestBuilder.get(
-            path: Path.suggestedAmounts,
-            parameters: parameters,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

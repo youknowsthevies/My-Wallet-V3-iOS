@@ -339,7 +339,7 @@ class KYCPageTypeTests: XCTestCase {
             mobile: mobile,
             status: KYC.AccountStatus.none,
             state: NabuUser.UserState.none,
-            tags: Tags(),
+            tags: Tags(blockstack: nil),
             tiers: nil,
             needsDocumentResubmission: nil,
             productsUsed: NabuUser.ProductsUsed(exchange: false),
