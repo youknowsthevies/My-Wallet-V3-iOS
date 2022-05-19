@@ -100,7 +100,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             app.remoteConfiguration.allKeys.set,
             [
                 "ios_ff_apple_pay",
-                "blockchain.app.configuration.manual.login.is.enabled",
+                "!blockchain.app.configuration.manual.login.is.enabled",
                 "blockchain_app_configuration_announcements",
                 "blockchain_app_configuration_deep_link_rules"
             ].set

@@ -79,6 +79,7 @@ public final class L_blockchain_app_configuration: L, I_blockchain_app_configura
 public protocol I_blockchain_app_configuration: I {}
 public extension I_blockchain_app_configuration {
 	var `announcements`: L_blockchain_app_configuration_announcements { .init("\(__).announcements") }
+	var `app`: L_blockchain_app_configuration_app { .init("\(__).app") }
 	var `apple`: L_blockchain_app_configuration_apple { .init("\(__).apple") }
 	var `card`: L_blockchain_app_configuration_card { .init("\(__).card") }
 	var `customer`: L_blockchain_app_configuration_customer { .init("\(__).customer") }
@@ -87,6 +88,7 @@ public extension I_blockchain_app_configuration {
 	var `frequent`: L_blockchain_app_configuration_frequent { .init("\(__).frequent") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
+	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
@@ -99,6 +101,17 @@ public final class L_blockchain_app_configuration_announcements: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.announcements", comment: "") }
 }
 public protocol I_blockchain_app_configuration_announcements: I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_app: L, I_blockchain_app_configuration_app {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app", comment: "") }
+}
+public protocol I_blockchain_app_configuration_app: I {}
+public extension I_blockchain_app_configuration_app {
+	var `maintenance`: L_blockchain_app_configuration_app_maintenance { .init("\(__).maintenance") }
+}
+public final class L_blockchain_app_configuration_app_maintenance: L, I_blockchain_app_configuration_app_maintenance {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app.maintenance", comment: "") }
+}
+public protocol I_blockchain_app_configuration_app_maintenance: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_apple: L, I_blockchain_app_configuration_apple {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.apple", comment: "") }
 }
@@ -290,6 +303,24 @@ public final class L_blockchain_app_configuration_native_wallet_payload_is_enabl
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet.payload.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_native_wallet_payload_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_polygon: L, I_blockchain_app_configuration_polygon {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon: I {}
+public extension I_blockchain_app_configuration_polygon {
+	var `is`: L_blockchain_app_configuration_polygon_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_is: L, I_blockchain_app_configuration_polygon_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_is: I {}
+public extension I_blockchain_app_configuration_polygon_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_blockchain_app_configuration_polygon_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_redesign: L, I_blockchain_app_configuration_redesign {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign", comment: "") }
 }

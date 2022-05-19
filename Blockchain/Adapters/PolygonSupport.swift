@@ -13,11 +13,13 @@ final class PolygonSupport: MoneyKit.PolygonSupport {
     }
 
     private lazy var isEnabledLazy: Bool = {
-        let feature = AppFeature.polygonSupport.remoteEnabledKey
-        guard let value = try? app.remoteConfiguration.get(feature) else {
+        let ref = BlockchainNamespace.blockchain.app.configuration.polygon.is.enabled[].reference
+        guard let value = try? app.remoteConfiguration.get(ref) else {
             return false
         }
-        let isEnabled = value as? Bool ?? false
+        guard let isEnabled = value as? Bool else {
+            return false
+        }
         return isEnabled
     }()
 

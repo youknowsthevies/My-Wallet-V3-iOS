@@ -9,11 +9,15 @@ import UIComponentsKit
 import WalletConnectSwift
 
 public struct WalletConnectEventState: Equatable {
+
+    private typealias LocalizedString = LocalizationConstants.WalletConnect
+
     enum ConnectionState: Equatable {
         case idle
         case success
         case fail
         case details
+        case chainID(name: String)
     }
 
     let session: Session
@@ -42,88 +46,91 @@ public struct WalletConnectEventState: Equatable {
 
         switch state {
         case .idle:
-            title = String(format: LocalizationConstants.WalletConnect.dAppWantsToConnect, meta.name)
+            title = String(format: LocalizedString.Connection.dAppWantsToConnect, meta.name)
             subtitle = meta.url.host
-            secondaryButtonTitle = LocalizationConstants.cancel
-            primaryButtonTitle = LocalizationConstants.WalletConnect.confirm
+            secondaryButtonTitle = LocalizedString.cancel
+            primaryButtonTitle = LocalizedString.confirm
             primaryAction = .accept
             secondaryAction = .close
         case .fail:
-            title = String(format: LocalizationConstants.WalletConnect.dAppConnectionFail, meta.name)
-            subtitle = LocalizationConstants.WalletConnect.dAppConnectionFailMessage
-            primaryButtonTitle = LocalizationConstants.okString
+            title = String(format: LocalizedString.Connection.dAppConnectionFail, meta.name)
+            subtitle = LocalizedString.Connection.dAppConnectionFailMessage
+            primaryButtonTitle = LocalizedString.ok
             primaryAction = .close
             decorationImage = UIImage(named: "fail-decorator", in: .featureWalletConnectUI, with: nil)!
         case .success:
-            title = String(format: LocalizationConstants.WalletConnect.dAppConnectionSuccess, meta.name)
-            primaryButtonTitle = LocalizationConstants.okString
+            title = String(format: LocalizedString.Connection.dAppConnectionSuccess, meta.name)
+            primaryButtonTitle = LocalizedString.ok
             primaryAction = .close
             decorationImage = UIImage(named: "success-decorator", in: .featureWalletConnectUI, with: nil)!
         case .details:
             title = meta.name
             subtitle = meta.description
-            secondaryButtonTitle = LocalizationConstants.WalletConnect.disconnect
+            secondaryButtonTitle = LocalizedString.List.disconnect
             secondaryAction = .disconnect
             secondaryButtonColor = .textError
+        case .chainID(let name):
+            title = LocalizedString.ChangeChain.title(dAppName: meta.name, networkName: name)
+            subtitle = meta.url.host
+            primaryButtonTitle = LocalizedString.confirm
+            primaryAction = .accept
+            secondaryButtonTitle = LocalizedString.cancel
+            secondaryAction = .close
         }
     }
 
     func analyticsEvent(for action: WalletConnectEventAction) -> AnalyticsEvent? {
-        switch state {
-        case .idle:
-            switch action {
-            case .accept:
-                return AnalyticsEvents
-                    .New
-                    .WalletConnect
-                    .dappConnectionActioned(
-                        action: .confirm,
-                        appName: session.dAppInfo.peerMeta.name
-                    )
-            case .close:
-                return AnalyticsEvents
-                    .New
-                    .WalletConnect
-                    .dappConnectionActioned(
-                        action: .cancel,
-                        appName: session.dAppInfo.peerMeta.name
-                    )
-            default:
-                return nil
-            }
-        case .fail:
+        switch (state, action) {
+        case (.idle, .accept):
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .dappConnectionActioned(
+                    action: .confirm,
+                    appName: session.dAppInfo.peerMeta.name
+                )
+        case (.idle, .close):
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .dappConnectionActioned(
+                    action: .cancel,
+                    appName: session.dAppInfo.peerMeta.name
+                )
+        case (.idle, _):
+            return nil
+        case (.fail, _):
             return AnalyticsEvents
                 .New
                 .WalletConnect
                 .dappConnectionRejected(appName: session.dAppInfo.peerMeta.name)
-        case .success:
+        case (.success, _):
             return AnalyticsEvents
                 .New
                 .WalletConnect
                 .dappConnectionConfirmed(appName: session.dAppInfo.peerMeta.name)
-        case .details:
-            switch action {
-            case .disconnect:
-                return AnalyticsEvents
-                    .New
-                    .WalletConnect
-                    .connectedDappActioned(
-                        action: .disconnect,
-                        appName: session.dAppInfo.peerMeta.name,
-                        origin: .appsList
-                    )
-            case .openWebsite:
-                return AnalyticsEvents
-                    .New
-                    .WalletConnect
-                    .connectedDappActioned(
-                        action: .launch,
-                        appName: session.dAppInfo.peerMeta.name,
-                        origin: .appsList
-                    )
-            default:
-                return nil
-            }
+        case (.details, .disconnect):
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .connectedDappActioned(
+                    action: .disconnect,
+                    appName: session.dAppInfo.peerMeta.name,
+                    origin: .appsList
+                )
+        case (.details, .openWebsite):
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .connectedDappActioned(
+                    action: .launch,
+                    appName: session.dAppInfo.peerMeta.name,
+                    origin: .appsList
+                )
+        case (.details, _):
+            return nil
+        case (.chainID, _):
+            return nil
         }
     }
 }

@@ -12,6 +12,7 @@ public enum WalletConnectSessionEvent {
     case didConnect(Session)
     case didDisconnect(Session)
     case didUpdate(Session)
+    case shouldChangeChainID(Session, Request, EVMNetwork)
 }
 
 public enum WalletConnectUserEvent {
@@ -21,6 +22,7 @@ public enum WalletConnectUserEvent {
 }
 
 public enum WalletConnectResponseEvent {
+    case empty(Request)
     case invalid(Request)
     case rejected(Request)
     case signature(String, Request)
@@ -40,5 +42,13 @@ public protocol WalletConnectServiceAPI {
     func denyConnection(
         session: Session,
         completion: @escaping (Session.WalletInfo) -> Void
+    )
+
+    /// Change the chain ID from the given Session.
+    func respondToChainIDChangeRequest(
+        session: Session,
+        request: Request,
+        network: EVMNetwork,
+        approved: Bool
     )
 }

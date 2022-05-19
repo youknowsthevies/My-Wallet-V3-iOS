@@ -4,7 +4,7 @@ import Foundation
 import WalletConnectSwift
 
 extension WalletConnectSession {
-    public var session: Session? {
+    public func session(address: String) -> Session? {
         guard let wcURL = WCURL(url) else {
             return nil
         }
@@ -14,16 +14,19 @@ extension WalletConnectSession {
         return Session(
             url: wcURL,
             dAppInfo: dAppInfo,
-            walletInfo: walletInfo.walletInfo(chainID: dAppInfo.chainId ?? 1)
+            walletInfo: walletInfo.walletInfo(
+                address: address,
+                chainID: dAppInfo.chainId ?? 1
+            )
         )
     }
 }
 
 extension WalletConnectSession.WalletInfo {
-    fileprivate func walletInfo(chainID: Int) -> Session.WalletInfo {
+    fileprivate func walletInfo(address: String, chainID: Int) -> Session.WalletInfo {
         Session.WalletInfo(
             approved: true,
-            accounts: [],
+            accounts: [address],
             chainId: chainID,
             peerId: clientId,
             peerMeta: .blockchain

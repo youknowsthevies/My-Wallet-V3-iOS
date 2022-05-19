@@ -18,11 +18,7 @@ final class WalletConnectService {
     private var cancellables = [AnyCancellable]()
     private var sessionLinks = Atomic<[WCURL: Session]>([:])
 
-    private let didConnectSubject = PassthroughSubject<Session, Never>()
-    private let didFailSubject = PassthroughSubject<Session, Never>()
-    private let shouldStartSubject = PassthroughSubject<(Session, (Session.WalletInfo) -> Void), Never>()
-    private let didDisconnectSubject = PassthroughSubject<Session, Never>()
-    private let didUpdateSubject = PassthroughSubject<Session, Never>()
+    private let sessionEventsSubject = PassthroughSubject<WalletConnectSessionEvent, Never>()
     private let userEventsSubject = PassthroughSubject<WalletConnectUserEvent, Never>()
 
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
@@ -50,11 +46,16 @@ final class WalletConnectService {
     // MARK: - Private Methods
 
     private func configureServer() {
+        let sessionEvent: (WalletConnectSessionEvent) -> Void = { [sessionEventsSubject] sessionEvent in
+            sessionEventsSubject.send(sessionEvent)
+        }
         let userEvent: (WalletConnectUserEvent) -> Void = { [userEventsSubject] userEvent in
             userEventsSubject.send(userEvent)
         }
         let responseEvent: (WalletConnectResponseEvent) -> Void = { [weak server] responseEvent in
             switch responseEvent {
+            case .empty(let request):
+                server?.send(.create(string: nil, for: request))
             case .rejected(let request):
                 server?.send(.reject(request))
             case .invalid(let request):
@@ -72,48 +73,70 @@ final class WalletConnectService {
         // personal_sign, eth_sign, eth_signTypedData
         server.register(
             handler: SignRequestHandler(
-                userEvent: userEvent,
+                getSession: getSession,
                 responseEvent: responseEvent,
-                getSession: getSession
+                userEvent: userEvent
             )
         )
 
         // eth_sendTransaction, eth_signTransaction
         server.register(
             handler: TransactionRequestHandler(
-                userEvent: userEvent,
+                getSession: getSession,
                 responseEvent: responseEvent,
-                getSession: getSession
+                userEvent: userEvent
             )
         )
 
         // eth_sendRawTransaction
         server.register(
             handler: RawTransactionRequestHandler(
-                userEvent: userEvent,
+                getSession: getSession,
                 responseEvent: responseEvent,
-                getSession: getSession
+                userEvent: userEvent
             )
         )
 
         // wallet_switchEthereumChain
         server.register(
-            handler: SwitchRequestHandler(responseEvent: responseEvent)
+            handler: SwitchRequestHandler(
+                getSession: getSession,
+                responseEvent: responseEvent,
+                sessionEvent: sessionEvent
+            )
         )
 
-        sessionRepository
-            .retrieve()
-            .sink { [server, sessionLinks] sessions in
-                sessions
-                    .compactMap(\.session)
-                    .forEach { session in
-                        sessionLinks.mutate {
-                            $0[session.url] = session
-                        }
-                        try? server?.reconnect(to: session)
+        publicKeyProvider
+            .publicKey(network: .ethereum)
+            .ignoreFailure(setFailureType: Never.self)
+            .zip(sessionRepository.retrieve())
+            .map { publicKey, sessions -> [Session] in
+                print(sessions)
+                return sessions
+                    .compactMap { session in
+                        session.session(address: publicKey)
                     }
             }
+            .handleEvents(
+                receiveOutput: { [server, sessionLinks] sessions in
+                    print(sessions)
+                    sessions
+                        .forEach { session in
+                            sessionLinks.mutate {
+                                $0[session.url] = session
+                            }
+                            try? server?.reconnect(to: session)
+                        }
+                }
+            )
+            .subscribe()
             .store(in: &cancellables)
+    }
+
+    private func addOrUpdateSession(session: Session) {
+        sessionLinks.mutate {
+            $0[session.url] = session
+        }
     }
 }
 
@@ -125,17 +148,16 @@ extension WalletConnectService: ServerDelegate {
         guard let session = sessionLinks.value[url] else {
             return
         }
-        didFailSubject.send(session)
+        sessionEventsSubject.send(.didFailToConnect(session))
     }
 
     func server(_ server: Server, shouldStart session: Session, completion: @escaping (Session.WalletInfo) -> Void) {
-        sessionLinks.mutate {
-            $0[session.url] = session
-        }
-        shouldStartSubject.send((session, completion))
+        addOrUpdateSession(session: session)
+        sessionEventsSubject.send(.shouldStart(session, completion))
     }
 
     func server(_ server: Server, didConnect session: Session) {
+        addOrUpdateSession(session: session)
         sessionRepository
             .contains(session: session)
             .flatMap { [sessionRepository] containsSession in
@@ -143,9 +165,9 @@ extension WalletConnectService: ServerDelegate {
                     .store(session: session)
                     .map { containsSession }
             }
-            .sink { [didConnectSubject] containsSession in
+            .sink { [sessionEventsSubject] containsSession in
                 if !containsSession {
-                    didConnectSubject.send(session)
+                    sessionEventsSubject.send(.didConnect(session))
                 }
             }
             .store(in: &cancellables)
@@ -154,17 +176,18 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didDisconnect session: Session) {
         sessionRepository
             .remove(session: session)
-            .sink { [didDisconnectSubject] _ in
-                didDisconnectSubject.send(session)
+            .sink { [sessionEventsSubject] _ in
+                sessionEventsSubject.send(.didDisconnect(session))
             }
             .store(in: &cancellables)
     }
 
     func server(_ server: Server, didUpdate session: Session) {
+        addOrUpdateSession(session: session)
         sessionRepository
             .store(session: session)
-            .sink { [didUpdateSubject] _ in
-                didUpdateSubject.send(session)
+            .sink { [sessionEventsSubject] _ in
+                sessionEventsSubject.send(.didUpdate(session))
             }
             .store(in: &cancellables)
     }
@@ -179,25 +202,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
     }
 
     var sessionEvents: AnyPublisher<WalletConnectSessionEvent, Never> {
-        let didConnect = didConnectSubject
-            .map { WalletConnectSessionEvent.didConnect($0) }
-            .eraseToAnyPublisher()
-        let didFail = didFailSubject
-            .map { WalletConnectSessionEvent.didFailToConnect($0) }
-            .eraseToAnyPublisher()
-        let shouldStart = shouldStartSubject
-            .map { WalletConnectSessionEvent.shouldStart($0.0, $0.1) }
-            .eraseToAnyPublisher()
-        let didDisconnect = didDisconnectSubject
-            .map { WalletConnectSessionEvent.didDisconnect($0) }
-            .eraseToAnyPublisher()
-        let didUpdate = didUpdateSubject
-            .map { WalletConnectSessionEvent.didUpdate($0) }
-            .eraseToAnyPublisher()
-
-        return Publishers
-            .MergeMany(didConnect, didFail, shouldStart, didDisconnect, didUpdate)
-            .eraseToAnyPublisher()
+        sessionEventsSubject.eraseToAnyPublisher()
     }
 
     func acceptConnection(
@@ -260,12 +265,57 @@ extension WalletConnectService: WalletConnectServiceAPI {
     func disconnect(_ session: Session) {
         try? server.disconnect(from: session)
     }
+
+    func respondToChainIDChangeRequest(
+        session: Session,
+        request: Request,
+        network: EVMNetwork,
+        approved: Bool
+    ) {
+        guard approved else {
+            server?.send(.reject(request))
+            return
+        }
+
+        // Create new session information.
+        guard let oldWalletInfo = sessionLinks.value[session.url]?.walletInfo else {
+            server?.send(.reject(request))
+            return
+        }
+        let walletInfo = Session.WalletInfo(
+            approved: oldWalletInfo.approved,
+            accounts: oldWalletInfo.accounts,
+            chainId: Int(network.chainID),
+            peerId: oldWalletInfo.peerId,
+            peerMeta: oldWalletInfo.peerMeta
+        )
+        let newSession = Session(
+            url: session.url,
+            dAppInfo: session.dAppInfo,
+            walletInfo: walletInfo
+        )
+
+        // Update local cache.
+        addOrUpdateSession(session: newSession)
+
+        // Update session repository.
+        sessionRepository
+            .store(session: newSession)
+            .subscribe()
+            .store(in: &cancellables)
+
+        // Request session update.
+        try? server.updateSession(session, with: walletInfo)
+
+        // Respond accepting change.
+        server?.send(.create(string: nil, for: request))
+    }
 }
 
 extension Response {
 
     /// Response for any 'sign'/'send' method that sends back a single string as result.
-    fileprivate static func create(string: String, for request: Request) -> Response {
+    fileprivate static func create(string: String?, for request: Request) -> Response {
         guard let response = try? Response(url: request.url, value: string, id: request.id!) else {
             fatalError("Wallet Connect Response Failed: \(request.method)")
         }
