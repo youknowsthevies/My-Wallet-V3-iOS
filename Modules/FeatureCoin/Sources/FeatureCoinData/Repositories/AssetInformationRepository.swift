@@ -15,5 +15,13 @@ public struct AssetInformationRepository: AssetInformationRepositoryAPI {
 
     public func fetchInfo(_ currencyCode: String) -> AnyPublisher<AssetInformation, NetworkError> {
         client.fetchInfo(currencyCode)
+            .map {
+                AssetInformation(
+                    description: $0.description,
+                    whitepaper: $0.whitepaper,
+                    website: $0.website
+                )
+            }
+            .eraseToAnyPublisher()
     }
 }

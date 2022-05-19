@@ -64,6 +64,6 @@ class Version3WorkflowTests: XCTestCase {
             })
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation], timeout: 10)
     }
 }

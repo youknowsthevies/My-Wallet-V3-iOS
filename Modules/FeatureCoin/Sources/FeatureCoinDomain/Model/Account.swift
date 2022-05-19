@@ -280,3 +280,20 @@ extension Account.Snapshot {
         )
     }
 }
+
+extension CryptoCurrency {
+    public static let nonTradeable =
+        CryptoCurrency(
+            assetModel: AssetModel(
+                code: "NOTRADE",
+                displayCode: "NTRD",
+                kind: .coin(minimumOnChainConfirmations: 0),
+                name: "Non-Tradable Coin",
+                precision: 0,
+                products: [],
+                logoPngUrl: nil,
+                spotColor: nil,
+                sortIndex: 0
+            )
+        )!
+}

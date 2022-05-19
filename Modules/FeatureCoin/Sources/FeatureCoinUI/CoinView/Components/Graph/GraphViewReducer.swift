@@ -31,6 +31,7 @@ public let graphViewReducer = Reducer<
                 series: interval,
                 relativeTo: state.date
             )
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .map(GraphViewAction.fetched)
             .cancellable(id: FetchID())

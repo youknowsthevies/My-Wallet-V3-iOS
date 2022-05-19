@@ -96,9 +96,11 @@ public struct CoinAdapterView: View {
     }
 
     public var body: some View {
-        CoinView(store: store)
-            .app(app)
-            .context([blockchain.ux.asset.id: cryptoCurrency.code])
+        PrimaryNavigationView {
+            CoinView(store: store)
+                .app(app)
+                .context([blockchain.ux.asset.id: cryptoCurrency.code])
+        }
     }
 }
 
@@ -177,22 +179,22 @@ public final class CoinViewObserver: Session.Observer {
             .values.first?.value ?? false
 
         if isRedesignEnabled {
-            let navigationController = UINavigationController()
-            navigationController.setViewControllers(
-                [
-                    UIHostingController(
-                        rootView: CoinAdapterView(
-                            cryptoCurrency: cryptoCurrency,
-                            app: app,
-                            dismiss: { [weak navigationController] in
-                                navigationController?.dismiss(animated: true)
-                            }
-                        )
-                    )
-                ],
-                animated: false
+            var vc: UIViewController?
+            vc = UIHostingController(
+                rootView: CoinAdapterView(
+                    cryptoCurrency: cryptoCurrency,
+                    app: app,
+                    dismiss: {
+                        vc?.dismiss(animated: true)
+                    }
+                )
             )
-            topViewController.topMostViewController?.present(navigationController, animated: true)
+            if let vc = vc {
+                topViewController.topMostViewController?.present(
+                    vc,
+                    animated: true
+                )
+            }
         } else {
 
             let builder = AssetDetailsBuilder(

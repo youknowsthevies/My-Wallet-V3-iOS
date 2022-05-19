@@ -6,7 +6,7 @@ import Combine
 import FeatureCoinDomain
 import SwiftUI
 
-public final class CoinViewAnalytics: Session.Observer {
+public final class CoinViewAnalyticsObserver: Session.Observer {
 
     unowned var app: AppProtocol
     let analytics: AnalyticsEventRecorderAPI

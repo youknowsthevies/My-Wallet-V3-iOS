@@ -5,10 +5,6 @@ import Foundation
 import MoneyKit
 import NetworkError
 
-public protocol AssetInformationRepositoryAPI {
-    func fetchInfo(_ currencyCode: String) -> AnyPublisher<AssetInformation, NetworkError>
-}
-
 public class AssetInformationService {
 
     let currency: CryptoCurrency
@@ -24,16 +20,15 @@ public class AssetInformationService {
     }
 }
 
+// MARK: - Preview Helper
+
 extension AssetInformationService {
 
     public static var preview: AssetInformationService {
-        .init(currency: .bitcoin, repository: PreviewAssetInformationRepository())
+        .init(currency: .bitcoin, repository: PreviewAssetInformationRepository(.just(.preview)))
     }
-}
 
-private struct PreviewAssetInformationRepository: AssetInformationRepositoryAPI {
-
-    func fetchInfo(_ currencyCode: String) -> AnyPublisher<AssetInformation, NetworkError> {
-        Just(.preview).setFailureType(to: NetworkError.self).eraseToAnyPublisher()
+    public static var previewEmpty: AssetInformationService {
+        .init(currency: .bitcoin, repository: PreviewAssetInformationRepository())
     }
 }

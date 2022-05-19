@@ -1,14 +1,16 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import AnalyticsKit
 import BlockchainNamespace
 import FeatureCoinDomain
 @testable import FeatureCoinUI
 import XCTest
 
-final class CoinViewAnalyticsTests: XCTestCase {
+final class CoinViewAnalyticsObserverTests: XCTestCase {
 
     var app: AppProtocol!
     var analytics: AnalyticsEventRecorder!
-    var sut: CoinViewAnalytics! {
+    var sut: CoinViewAnalyticsObserver! {
         didSet { sut?.start() }
     }
 
@@ -16,7 +18,7 @@ final class CoinViewAnalyticsTests: XCTestCase {
         super.setUp()
         app = App.test
         analytics = AnalyticsEventRecorder()
-        sut = CoinViewAnalytics(app: app, analytics: analytics)
+        sut = CoinViewAnalyticsObserver(app: app, analytics: analytics)
     }
 
     override func tearDown() {

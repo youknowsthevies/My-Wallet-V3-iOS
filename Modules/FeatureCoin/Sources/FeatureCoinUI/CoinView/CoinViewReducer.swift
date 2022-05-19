@@ -36,6 +36,7 @@ public let coinViewReducer = Reducer<
                     .map(CoinViewAction.fetchedInterestRate),
                 environment.assetInformationService
                     .fetch()
+                    .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map(CoinViewAction.fetchedAssetInformation),
                 environment.app.publisher(
@@ -75,7 +76,7 @@ public let coinViewReducer = Reducer<
             return .none
 
         case .fetchedAssetInformation(let result):
-            state.information = try? result.get()
+            state.assetInformation = try? result.get()
             return .none
 
         case .isOnWatchlist(let isFavorite):
