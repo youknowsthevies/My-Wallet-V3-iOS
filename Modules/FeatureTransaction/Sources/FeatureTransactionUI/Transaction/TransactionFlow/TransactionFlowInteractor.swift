@@ -303,7 +303,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                             action: state.action
                         )
                     }
-
                 default:
                     break
                 }
