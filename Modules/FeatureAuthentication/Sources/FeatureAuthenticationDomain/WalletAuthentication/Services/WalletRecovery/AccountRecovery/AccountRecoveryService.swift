@@ -58,19 +58,14 @@ final class AccountRecoveryService: AccountRecoveryServiceAPI {
             .fetchToken(guid: guid, sharedKey: sharedKey)
             .mapError(AccountRecoveryServiceError.jwtService)
             .flatMap { [accountRecoveryRepository] jwtToken
-                -> AnyPublisher<(NabuOfflineToken, jwtToken: String), AccountRecoveryServiceError> in
-                accountRecoveryRepository
-                    .createOrGetNabuUser(jwtToken: jwtToken)
-            }
-            .flatMap { [accountRecoveryRepository] offlineToken, jwtToken
                 -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError> in
                 accountRecoveryRepository
                     .recoverUser(
-                        offlineToken: offlineToken,
                         jwtToken: jwtToken,
                         userId: userId,
                         recoveryToken: recoveryToken
                     )
+                    .eraseToAnyPublisher()
             }
             .flatMap { [credentialsRepository] offlineToken
                 -> AnyPublisher<Void, AccountRecoveryServiceError> in

@@ -50,15 +50,12 @@ final class AccountRecoveryRepository: AccountRecoveryRepositoryAPI {
     }
 
     func recoverUser(
-        offlineToken: NabuOfflineToken,
         jwtToken: String,
         userId: String,
         recoveryToken: String
     ) -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError> {
-        let response = NabuOfflineTokenResponse(from: offlineToken)
-        return userRecoveryClient
+        userRecoveryClient
             .recoverUser(
-                offlineToken: response,
                 jwt: jwtToken,
                 userId: userId,
                 recoveryToken: recoveryToken
