@@ -4,11 +4,15 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureAuthentication",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "FeatureAuthentication",
             targets: ["FeatureAuthenticationData", "FeatureAuthenticationDomain", "FeatureAuthenticationUI"]
+        ),
+        .library(
+            name: "FeatureAuthenticationData",
+            targets: ["FeatureAuthenticationData"]
         ),
         .library(
             name: "FeatureAuthenticationUI",
@@ -100,6 +104,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureAuthenticationData"),
                 .target(name: "FeatureAuthenticationMock"),
+                .product(name: "ToolKitMock", package: "Tool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "WalletPayloadDataKit", package: "WalletPayload"),
                 .product(name: "WalletPayloadKitMock", package: "WalletPayload"),

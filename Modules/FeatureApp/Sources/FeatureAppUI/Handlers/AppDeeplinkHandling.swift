@@ -4,7 +4,6 @@ import BitcoinChainKit
 import Combine
 import DIKit
 import FeatureSettingsDomain
-import FirebaseDynamicLinks
 import Foundation
 import Localization
 import PlatformKit
@@ -99,6 +98,11 @@ public struct URIContent: Equatable {
              .dynamicLinks:
             return false
         }
+    }
+
+    public init(url: URL, context: URIContent.Context) {
+        self.url = url
+        self.context = context
     }
 }
 
@@ -304,17 +308,30 @@ public final class BlockchainLinksHandler: URIHandlingAPI {
 
 // MARK: FirebaseDeeplinkHandler
 
-public final class FirebaseDeeplinkHandler: URIHandlingAPI {
-    private let dynamicLinks: DynamicLinks
+public protocol DynamicLinkAPI {
+    var minimumAppVersion: String? { get }
+    var url: URL? { get }
+}
 
-    public init(dynamicLinks: DynamicLinks = DynamicLinks.dynamicLinks()) {
+public protocol DynamicLinksAPI: AnyObject {
+
+    @discardableResult
+    func handleUniversalLink(url: URL, _ completion: @escaping (DynamicLinkAPI?, Error?) -> Void) -> Bool
+
+    func canHandle(url: URL) -> Bool
+}
+
+public final class FirebaseDeeplinkHandler: URIHandlingAPI {
+    private let dynamicLinks: DynamicLinksAPI
+
+    public init(dynamicLinks: DynamicLinksAPI) {
         self.dynamicLinks = dynamicLinks
     }
 
     public func handle(url: URL) -> AnyPublisher<DeeplinkOutcome, AppDeeplinkError> {
         Deferred { [dynamicLinks] in
             Future<DeeplinkOutcome, AppDeeplinkError> { promise in
-                dynamicLinks.handleUniversalLink(url) { dynamicLink, error in
+                dynamicLinks.handleUniversalLink(url: url) { dynamicLink, error in
                     // Check that the version of the link (if provided) is supported, if not, prompt the user to update
                     if let minimumAppVersion = dynamicLink?.minimumAppVersion.flatMap(AppVersion.init(string:)),
                        let appVersion = Bundle.applicationVersion.flatMap(AppVersion.init(string:)),
@@ -354,9 +371,7 @@ public final class FirebaseDeeplinkHandler: URIHandlingAPI {
     }
 
     public func canHandle(url: URL) -> Bool {
-        // Firebase doesn't provide a good way to check if the given url can be handled
-        // The deprecated method is the best way to check that a URL is part of DynamicLink from Firebase
-        dynamicLinks.dynamicLink(fromUniversalLink: url) != nil || dynamicLinks.matchesShortLinkFormat(url)
+        dynamicLinks.canHandle(url: url)
     }
 }
 

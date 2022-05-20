@@ -17,7 +17,7 @@ extension DependencyContainer {
 
         // MARK: - Hooks
 
-        factory { TransactionAnalyticsHook() }
+        single { TransactionAnalyticsHook() }
 
         // MARK: - Other
 

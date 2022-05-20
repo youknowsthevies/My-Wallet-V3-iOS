@@ -16,6 +16,7 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
     @BindableState var emailSwitch: Switch = Switch(method: .email, isOn: false)
     @BindableState var smsSwitch: Switch = Switch(method: .sms, isOn: false)
     @BindableState var inAppSwitch: Switch = Switch(method: .inApp, isOn: false)
+    @BindableState var browserSwitch: Switch = Switch(method: .browser, isOn: false)
 
     public init(notificationPreference: NotificationPreference) {
         self.notificationPreference = notificationPreference
@@ -23,13 +24,15 @@ public struct NotificationPreferencesDetailsState: Equatable, Hashable {
         for methodInfo in notificationPreference.enabledMethods {
             switch methodInfo.method {
             case .email:
-                pushSwitch.isOn = true
+                emailSwitch.isOn = true
             case .inApp:
                 inAppSwitch.isOn = true
             case .push:
                 pushSwitch.isOn = true
             case .sms:
                 smsSwitch.isOn = true
+            case .browser:
+                browserSwitch.isOn = true
             }
         }
     }

@@ -129,7 +129,6 @@ enum SettingsSectionType: Int, Equatable {
             case logout
             case addresses
             case contactSupport
-            case airdrops
             case cardIssuing
             case notifications
         }

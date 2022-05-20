@@ -37,7 +37,7 @@ extension AppProtocol {
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
         deepLink: DeepLinkCoordinator = resolve()
     ) {
-        observers.insert(CoinViewAnalytics(app: self, analytics: recorder))
+        observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD

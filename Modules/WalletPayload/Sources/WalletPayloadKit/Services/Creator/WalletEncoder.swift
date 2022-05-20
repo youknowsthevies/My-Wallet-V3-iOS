@@ -31,7 +31,7 @@ public struct EncodedWalletPayload: Equatable {
     }
 }
 
-/// Holds the properties required for creating a new `Wallet`
+/// Holds the properties required for creating/updating a `Wallet`
 public struct WalletCreationPayload: Equatable {
     /// The encoded `InnerWraper` with applied encryption
     public let innerPayload: Data

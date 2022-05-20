@@ -358,8 +358,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             if state.action == .buy {
                 let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
                 withdrawalLocksCheckRepository.withdrawalLocksCheck(
-                    paymentMethod: paymentMethod?.type.requestType.rawValue ?? "",
-                    currencyCode: state.source?.currencyType.code ?? ""
+                    paymentMethod: paymentMethod?.type.requestType.rawValue,
+                    currencyCode: state.source?.currencyType.code
                 )
                 .asObservable()
                 .map {

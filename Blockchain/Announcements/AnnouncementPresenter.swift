@@ -210,13 +210,6 @@ final class AnnouncementPresenter {
                     isKycSupported: preliminaryData.isKycSupported,
                     reappearanceTimeInterval: metadata.interval
                 )
-            case .kycAirdrop:
-                announcement = kycAirdrop(
-                    user: preliminaryData.user,
-                    tiers: preliminaryData.tiers,
-                    isKycSupported: preliminaryData.isKycSupported,
-                    reappearanceTimeInterval: metadata.interval
-                )
             case .verifyIdentity:
                 announcement = verifyIdentity(using: preliminaryData.user)
             case .exchangeLinking:
@@ -324,32 +317,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    // Computes kyc airdrop announcement
-    private func kycAirdrop(
-        user: NabuUser,
-        tiers: KYC.UserTiers,
-        isKycSupported: Bool,
-        reappearanceTimeInterval: TimeInterval
-    ) -> Announcement {
-        KycAirdropAnnouncement(
-            canCompleteTier2: tiers.canCompleteTier2,
-            isKycSupported: isKycSupported,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                guard let self = self else { return }
-                let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(
-                    tier: tier,
-                    parentFlow: .airdrop,
-                    from: self.tabSwapping
-                )
-            }
-        )
-    }
-
     // Computes transfer in bitcoin announcement
     private func transferBitcoin(isKycSupported: Bool, reappearanceTimeInterval: TimeInterval) -> Announcement {
         TransferInCryptoAnnouncement(
@@ -369,7 +336,6 @@ extension AnnouncementPresenter {
     /// Computes identity verification card announcement
     private func verifyIdentity(using user: NabuUser) -> Announcement {
         VerifyIdentityAnnouncement(
-            isSunriverAirdropRegistered: user.isSunriverAirdropRegistered,
             isCompletingKyc: kycSettings.isCompletingKyc,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()

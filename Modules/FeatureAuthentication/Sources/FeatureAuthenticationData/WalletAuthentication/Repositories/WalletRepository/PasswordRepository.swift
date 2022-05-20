@@ -11,15 +11,18 @@ final class PasswordRepository: PasswordRepositoryAPI {
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
     private let walletRepo: WalletRepoAPI
+    private let changePasswordService: ChangePasswordServiceAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
         walletRepo: WalletRepoAPI,
+        changePasswordService: ChangePasswordServiceAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
         self.walletRepo = walletRepo
+        self.changePasswordService = changePasswordService
         self.nativeWalletEnabled = nativeWalletEnabled
 
         password = nativeWalletEnabled()
@@ -64,8 +67,18 @@ final class PasswordRepository: PasswordRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    #warning("TODO: NativeWallet should support syncing of password change")
-    func sync() -> AnyPublisher<Void, PasswordRepositoryError> {
-        walletRepository.sync()
+    func changePassword(password: String) -> AnyPublisher<Void, PasswordRepositoryError> {
+        nativeWalletEnabled()
+            .flatMap { [walletRepository, changePasswordService] isEnabled -> AnyPublisher<Void, PasswordRepositoryError> in
+                guard isEnabled else {
+                    return walletRepository.changePassword(password: password)
+                }
+                return changePasswordService.change(password: password)
+                    .mapError { _ in
+                        PasswordRepositoryError.syncFailed
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

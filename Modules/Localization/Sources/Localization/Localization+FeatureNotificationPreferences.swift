@@ -59,3 +59,10 @@ extension LocalizationConstants.NotificationPreferences.NotificationScreen.Descr
         comment: "title"
     )
 }
+
+extension LocalizationConstants.NotificationPreferences.NotificationScreen {
+    public static let requiredString = NSLocalizedString(
+        "Required",
+        comment: "Required"
+    )
+}

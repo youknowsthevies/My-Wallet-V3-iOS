@@ -41,14 +41,12 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
             .map { guid, sharedKey in
                 let assetModel = moneyValue.currency.cryptoCurrency?.assetModel
                 let network = assetModel?.kind.erc20ParentChain?.rawValue ?? moneyValue.code
+                let amount = moneyValue.toSimpleString(includeSymbol: false)
                 return SendEmailNotificationClient.Payload(
                     guid: guid,
                     sharedKey: sharedKey,
                     currency: moneyValue.code,
-                    amount: moneyValue.toDisplayString(
-                        includeSymbol: false,
-                        locale: Locale.US // Locale is enforced to ensure the format of the amount.
-                    ),
+                    amount: amount,
                     network: network,
                     txHash: txHash
                 )

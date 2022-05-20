@@ -85,7 +85,7 @@ public struct PaymentMethodsResponse: Decodable {
         let type: String
 
         /// The boundaries of the method (min / max)
-        let limits: PaymentMethodLimits
+        let limits: PaymentMethodLimits?
 
         /// The supported subtypes of the payment method
         /// e.g for a card payment method: ["VISA", "MASTERCARD"]

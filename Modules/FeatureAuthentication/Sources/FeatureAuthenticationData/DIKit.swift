@@ -115,6 +115,7 @@ extension DependencyContainer {
             return PasswordRepository(
                 walletRepository: walletRepository.repository,
                 walletRepo: DIKit.resolve(),
+                changePasswordService: DIKit.resolve(),
                 nativeWalletEnabled: { nativeWalletFlagEnabled() }
             )
         }

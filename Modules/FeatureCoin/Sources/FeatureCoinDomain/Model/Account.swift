@@ -25,7 +25,7 @@ public struct Account: Identifiable {
     public let cryptoCurrency: CryptoCurrency
     public let fiatCurrency: FiatCurrency
 
-    public let actionsPublisher: AnyPublisher<OrderedSet<Account.Action>, Error>
+    public let actionsPublisher: () -> AnyPublisher<OrderedSet<Account.Action>, Error>
     public let cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>
     public let fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
 
@@ -35,7 +35,7 @@ public struct Account: Identifiable {
         accountType: Account.AccountType,
         cryptoCurrency: CryptoCurrency,
         fiatCurrency: FiatCurrency,
-        actionsPublisher: AnyPublisher<OrderedSet<Account.Action>, Error>,
+        actionsPublisher: @escaping () -> AnyPublisher<OrderedSet<Account.Action>, Error>,
         cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>,
         fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
     ) {
@@ -187,7 +187,7 @@ extension Collection where Element == Account {
             account.cryptoBalancePublisher
                 .combineLatest(
                     account.fiatBalancePublisher,
-                    account.actionsPublisher.replaceError(with: [])
+                    account.actionsPublisher().replaceError(with: [])
                 )
                 .map { crypto, fiat, actions in
                     Account.Snapshot(
@@ -279,4 +279,21 @@ extension Account.Snapshot {
             fiat: fiat
         )
     }
+}
+
+extension CryptoCurrency {
+    public static let nonTradeable =
+        CryptoCurrency(
+            assetModel: AssetModel(
+                code: "NOTRADE",
+                displayCode: "NTRD",
+                kind: .coin(minimumOnChainConfirmations: 0),
+                name: "Non-Tradable Coin",
+                precision: 0,
+                products: [],
+                logoPngUrl: nil,
+                spotColor: nil,
+                sortIndex: 0
+            )
+        )!
 }

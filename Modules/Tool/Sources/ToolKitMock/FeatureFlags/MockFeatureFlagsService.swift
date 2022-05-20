@@ -32,12 +32,12 @@ public final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
         return .just(())
     }
 
-    public func object<Feature: Codable>(
-        for feature: AppFeature,
-        type: Feature.Type
-    ) -> AnyPublisher<Feature, FeatureFlagError> {
-        recordedInvocations.object.append(feature)
-        if Feature.self is Bool.Type, let feature = features[feature] {
+    public func fetch<Feature>(
+        for key: AppFeature,
+        as type: Feature.Type
+    ) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable {
+        recordedInvocations.object.append(key)
+        if Feature.self is Bool.Type, let feature = features[key] {
             return .just(feature as! Feature)
         }
         return stubbedResults.object

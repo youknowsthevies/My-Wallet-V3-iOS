@@ -38,7 +38,7 @@ extension Session {
 
                     var configuration: [String: Any?] = defaultValue.dictionary.mapKeys { key in
                         key.idToFirebaseConfigurationKeyDefault()
-                    } + cached
+                    } + cached.mapKeys { important + $0 }
 
                     let expiration: TimeInterval
                     if isStale {
@@ -210,6 +210,7 @@ extension Tag.Reference {
             idToFirebaseConfigurationKey(),
             idToFirebaseConfigurationKeyFallback(),
             idToFirebaseConfigurationKeyIsEnabledFallback(),
+            idToFirebaseConfigurationKeyIsEnabledFallbackAlternative(),
             idToFirebaseConfigurationKeyDefault()
         ]
     }
@@ -217,10 +218,12 @@ extension Tag.Reference {
     fileprivate func idToFirebaseConfigurationKeyImportant() -> String { important + string }
     fileprivate func idToFirebaseConfigurationKeyDefault() -> String { string }
 
+    /// blockchain_app_configuration_path_to_leaf_is_enabled
     fileprivate func idToFirebaseConfigurationKey() -> String {
         components.joined(separator: "_")
     }
 
+    /// blockchain_app_configuration_path_to_leaf_is_enabled -> ios_ff_path_to_leaf_is_enabled
     fileprivate func idToFirebaseConfigurationKeyFallback() -> String {
         idToFirebaseConfigurationKey()
             .replacingOccurrences(
@@ -229,11 +232,25 @@ extension Tag.Reference {
             )
     }
 
+    /// blockchain_app_configuration_path_to_leaf_is_enabled -> ios_ff_path_to_leaf
     fileprivate func idToFirebaseConfigurationKeyIsEnabledFallback() -> String {
         idToFirebaseConfigurationKeyFallback()
             .replacingOccurrences(
                 of: "blockchain_app_configuration",
                 with: "ios_ff"
+            )
+            .replacingOccurrences(
+                of: "_is_enabled",
+                with: ""
+            )
+    }
+
+    /// blockchain_app_configuration_path_to_leaf_is_enabled -> ios_path_to_leaf
+    fileprivate func idToFirebaseConfigurationKeyIsEnabledFallbackAlternative() -> String {
+        idToFirebaseConfigurationKeyFallback()
+            .replacingOccurrences(
+                of: "blockchain_app_configuration",
+                with: "ios"
             )
             .replacingOccurrences(
                 of: "_is_enabled",

@@ -13,7 +13,6 @@ final class HelpSectionPresenter: SettingsSectionPresenting {
                         sectionType: sectionType,
                         items: [
                             .init(cellType: .common(.contactSupport)),
-                            .init(cellType: .common(.airdrops)),
                             .init(cellType: .common(.rateUs)),
                             .init(cellType: .common(.termsOfService)),
                             .init(cellType: .common(.privacyPolicy)),

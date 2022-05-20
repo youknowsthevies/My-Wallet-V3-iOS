@@ -45,7 +45,7 @@ final class ERC20TokenAccountsMapper {
     func toDomain(response: [EVMBalancesResponse.Balance]) -> ERC20TokenAccounts {
         response
             .reduce(into: [:]) { accounts, item in
-                guard let account = create(contract: item.identifier, balance: item.balance) else {
+                guard let account = create(contract: item.identifier, balance: item.amount) else {
                     return
                 }
                 accounts[account.currency] = account

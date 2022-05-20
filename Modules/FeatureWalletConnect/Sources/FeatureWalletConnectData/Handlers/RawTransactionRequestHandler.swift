@@ -7,6 +7,7 @@ import DIKit
 import EthereumKit
 import FeatureWalletConnectDomain
 import Foundation
+import MoneyKit
 import PlatformKit
 import ToolKit
 import WalletConnectSwift
@@ -15,23 +16,26 @@ final class RawTransactionRequestHandler: RequestHandler {
 
     private let accountProvider: WalletConnectAccountProviderAPI
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
-    private let userEvent: (WalletConnectUserEvent) -> Void
-    private let responseEvent: (WalletConnectResponseEvent) -> Void
-    private var cancellables: Set<AnyCancellable> = []
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let getSession: (WCURL) -> Session?
+    private let responseEvent: (WalletConnectResponseEvent) -> Void
+    private let userEvent: (WalletConnectUserEvent) -> Void
+    private var cancellables: Set<AnyCancellable> = []
 
     init(
         accountProvider: WalletConnectAccountProviderAPI = resolve(),
         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
-        userEvent: @escaping (WalletConnectUserEvent) -> Void,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        getSession: @escaping (WCURL) -> Session?,
         responseEvent: @escaping (WalletConnectResponseEvent) -> Void,
-        getSession: @escaping (WCURL) -> Session?
+        userEvent: @escaping (WalletConnectUserEvent) -> Void
     ) {
         self.accountProvider = accountProvider
         self.analyticsEventRecorder = analyticsEventRecorder
-        self.userEvent = userEvent
-        self.responseEvent = responseEvent
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.getSession = getSession
+        self.responseEvent = responseEvent
+        self.userEvent = userEvent
     }
 
     func canHandle(request: Request) -> Bool {
@@ -43,14 +47,18 @@ final class RawTransactionRequestHandler: RequestHandler {
             responseEvent(.invalid(request))
             return
         }
-        let chainID = session.dAppInfo.chainId
-        if BuildFlag.isInternal, chainID == nil {
-            let meta = session.dAppInfo.peerMeta
-            fatalError("No ChainID: '\(meta.name)', '\(meta.url.absoluteString)', '\(request.method)'")
+        guard let chainID = session.walletInfo?.chainId else {
+            // No chain ID
+            responseEvent(.invalid(request))
+            return
         }
-
         guard let network: EVMNetwork = EVMNetwork(int: chainID) else {
             // Chain not recognised.
+            responseEvent(.invalid(request))
+            return
+        }
+        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(network.cryptoCurrency) else {
+            // Chain recognised, but currently disabled.
             responseEvent(.invalid(request))
             return
         }

@@ -72,7 +72,7 @@ public enum NotificationsSettingsRoute: NavigationRoute {
 
 // MARK: - Main Reducer
 
-let mainReducer = Reducer<
+public let featureNotificationPreferencesMainReducer = Reducer<
     NotificationPreferencesState,
     NotificationPreferencesAction,
     NotificationPreferencesEnvironment
@@ -138,7 +138,9 @@ public let notificationPreferencesReducer = Reducer
                             return NotificationPreferencesAction.onReloadTap
                         }
 
-                case .binding, .onAppear:
+                case .binding:
+                    return .none
+                case .onAppear:
                     return .none
                 }
 

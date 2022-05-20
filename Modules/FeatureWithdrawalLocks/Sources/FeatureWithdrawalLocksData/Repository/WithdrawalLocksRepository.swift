@@ -30,10 +30,13 @@ final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
             .ignoreFailure()
             .map { [encodingDateFormatter, decodingDateFormatter, moneyValueFormatter] withdrawalLocks in
                 WithdrawalLocks(
-                    items: withdrawalLocks.locks.map { lock in
-                        .init(
+                    items: withdrawalLocks.locks.compactMap { lock in
+                        guard let fromDate = decodingDateFormatter.date(from: lock.expiresAt) else {
+                            return nil
+                        }
+                        return .init(
                             date: encodingDateFormatter.string(
-                                from: decodingDateFormatter.date(from: lock.expiresAt)!
+                                from: fromDate
                             ),
                             amount: moneyValueFormatter.formatMoney(
                                 amount: lock.amount.amount,

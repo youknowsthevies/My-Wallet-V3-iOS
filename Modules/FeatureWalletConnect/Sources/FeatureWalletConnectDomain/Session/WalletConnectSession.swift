@@ -39,7 +39,7 @@ public struct WalletConnectSession: Codable, Equatable, Hashable {
                 icons: session.dAppInfo.peerMeta.icons.map(\.absoluteString),
                 name: session.dAppInfo.peerMeta.name
             ),
-            chainId: session.dAppInfo.chainId
+            chainId: session.walletInfo?.chainId ?? session.dAppInfo.chainId
         )
         walletInfo = WalletInfo(
             clientId: session.walletInfo?.peerId ?? UUID().uuidString,

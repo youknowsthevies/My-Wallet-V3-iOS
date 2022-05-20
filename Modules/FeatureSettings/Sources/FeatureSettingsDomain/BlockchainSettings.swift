@@ -266,35 +266,6 @@ public final class BlockchainSettings: NSObject {
             }
         }
 
-        /**
-         Determines if the user deep linked into the app using the airdrop dynamic link. This value is used in various
-         places to handle the airdrop flow (e.g. prompt the user to KYC to finish the airdrop, to continue KYC'ing if
-         they have already gone through the KYC flow, etc.)
-
-         - Important:
-         This setting **MUST** be set to `false` upon logging the user out of the application.
-         */
-        @objc
-        public var didTapOnAirdropDeepLink: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
-            }
-        }
-
-        /// Determines if the app already tried to route the user for the airdrop flow as a result
-        /// of tapping on a deep link
-        public var didAttemptToRouteForAirdrop: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
-            }
-        }
-
         /// Users that are linking their Exchange account to their blockchain wallet will deep-link
         /// from the Exchange into the mobile app.
         public var exchangeLinkIdentifier: String? {
@@ -374,9 +345,7 @@ public final class BlockchainSettings: NSObject {
             clearPin()
             sendToDomainAnnouncementViewed = false
             custodySendInterstitialViewed = false
-            didTapOnAirdropDeepLink = false
             didTapOnExchangeDeepLink = false
-            didAttemptToRouteForAirdrop = false
             exchangeLinkIdentifier = nil
 
             let kycSettings: KYCSettingsAPI = resolve()

@@ -91,4 +91,5 @@ public enum NotificationMethod: String, Decodable, Identifiable {
     case email = "EMAIL"
     case push = "PUSH"
     case inApp = "IN_APP"
+    case browser = "BROWSER"
 }

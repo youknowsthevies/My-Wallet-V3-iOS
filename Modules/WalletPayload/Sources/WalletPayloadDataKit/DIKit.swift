@@ -53,8 +53,23 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> SaveWalletClientAPI in
+            let apiCode: APICode = DIKit.resolve()
+            return SaveWalletClient(
+                networkAdapter: DIKit.resolve(),
+                requestBuilder: DIKit.resolve(tag: DIKitWalletPayloadTags.walletServer),
+                apiCodeProvider: { apiCode }
+            )
+        }
+
         factory { () -> CreateWalletRepositoryAPI in
             CreateWalletRepository(
+                client: DIKit.resolve()
+            )
+        }
+
+        factory { () -> SaveWalletRepositoryAPI in
+            SaveWalletRepository(
                 client: DIKit.resolve()
             )
         }

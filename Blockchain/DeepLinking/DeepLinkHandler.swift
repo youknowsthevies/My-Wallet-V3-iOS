@@ -1,13 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainNamespace
+import Combine
 import DIKit
+import FeatureAppUI
 import FeatureKYCDomain
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import FirebaseAnalytics
+import FirebaseDynamicLinks
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 
 final class DeepLinkHandler: DeepLinkHandling {
@@ -39,8 +41,6 @@ final class DeepLinkHandler: DeepLinkHandling {
         }
         Logger.shared.debug("[DeepLinkHandler] Handling deep link \(deepLink) on route \(route)")
         switch route {
-        case .xlmAirdop:
-            handleXlmAirdrop(payload.params)
         case .kyc,
              .kycVerifyEmail:
             handleKyc()
@@ -52,12 +52,6 @@ final class DeepLinkHandler: DeepLinkHandling {
         case .openBankingLink, .openBankingApprove:
             handleOpenBanking(payload.params)
         }
-    }
-
-    private func handleXlmAirdrop(_ params: [String: String]) {
-        appSettings.didTapOnAirdropDeepLink = true
-        appSettings.didAttemptToRouteForAirdrop = false
-        Analytics.setUserProperty(FirebaseAnalyticsServiceProvider.Campaigns.sunriver.rawValue, forName: "campaign")
     }
 
     private func handleKycDocumentResubmission(_ params: [String: String]) {
@@ -95,5 +89,23 @@ final class DeepLinkHandler: DeepLinkHandling {
                 state.set(blockchain.ux.payment.method.open.banking.consent.error, to: OpenBanking.Error.code(error))
             }
         }
+    }
+}
+
+// MARK: DynamicLinksAPI
+
+extension FirebaseDynamicLinks.DynamicLink: DynamicLinkAPI {}
+
+extension FirebaseDynamicLinks.DynamicLinks: DynamicLinksAPI {
+    public func handleUniversalLink(url: URL, _ completion: @escaping (DynamicLinkAPI?, Error?) -> Void) -> Bool {
+        handleUniversalLink(url) { dynamicLink, error in
+            completion(dynamicLink, error)
+        }
+    }
+
+    public func canHandle(url: URL) -> Bool {
+        // Firebase doesn't provide a good way to check if the given url can be handled
+        // The deprecated method is the best way to check that a URL is part of DynamicLink from Firebase
+        dynamicLink(fromUniversalLink: url) != nil || matchesShortLinkFormat(url)
     }
 }

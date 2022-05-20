@@ -37,6 +37,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseDynamicLinks
 import FirebaseMessaging
 import FirebaseRemoteConfig
 import MoneyKit
@@ -85,12 +86,6 @@ extension DependencyContainer {
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI
         }
-
-        factory { AirdropRouter() as AirdropRouterAPI }
-
-        factory { AirdropCenterClient() as AirdropCenterClientAPI }
-
-        factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
         factory { DeepLinkHandler() as DeepLinkHandling }
 
@@ -168,7 +163,7 @@ extension DependencyContainer {
             return AppDeeplinkHandler(
                 deeplinkHandler: deeplinkHandler,
                 blockchainHandler: blockchainHandler,
-                firebaseHandler: FirebaseDeeplinkHandler()
+                firebaseHandler: FirebaseDeeplinkHandler(dynamicLinks: DynamicLinks.dynamicLinks())
             )
         }
 

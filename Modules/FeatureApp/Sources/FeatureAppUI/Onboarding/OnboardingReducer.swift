@@ -4,6 +4,8 @@ import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import FeatureAppDomain
+import FeatureAppUpgradeDomain
+import FeatureAppUpgradeUI
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
@@ -22,7 +24,10 @@ public enum Onboarding {
 
     public enum Action: Equatable {
         case start
+        case showAppUpgrade(AppUpgradeState)
+        case proceedToFlow
         case pin(PinCore.Action)
+        case appUpgrade(AppUpgradeAction)
         case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequiredAction)
         case welcomeScreen(WelcomeAction)
@@ -35,7 +40,8 @@ public enum Onboarding {
     }
 
     public struct State: Equatable {
-        public var pinState: PinCore.State? = .init()
+        public var pinState: PinCore.State?
+        public var appUpgradeState: AppUpgradeState?
         public var walletUpgradeState: WalletUpgrade.State?
         public var passwordRequiredState: PasswordRequiredState?
         public var welcomeState: WelcomeState?
@@ -45,7 +51,8 @@ public enum Onboarding {
         public var walletRecoveryContext: WalletRecoveryContext?
 
         public init(
-            pinState: PinCore.State? = .init(),
+            pinState: PinCore.State? = nil,
+            appUpgradeState: AppUpgradeState? = nil,
             walletUpgradeState: WalletUpgrade.State? = nil,
             passwordRequiredState: PasswordRequiredState? = nil,
             welcomeState: WelcomeState? = nil,
@@ -54,6 +61,7 @@ public enum Onboarding {
             walletCreationContext: WalletCreationContext? = nil
         ) {
             self.pinState = pinState
+            self.appUpgradeState = appUpgradeState
             self.walletUpgradeState = walletUpgradeState
             self.passwordRequiredState = passwordRequiredState
             self.welcomeState = welcomeState
@@ -78,6 +86,7 @@ public enum Onboarding {
         let externalAppOpener: ExternalAppOpener
         let forgetWalletService: ForgetWalletService
         var buildVersionProvider: () -> String
+        var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
     }
 }
 
@@ -137,10 +146,33 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 WalletUpgrade.Environment()
             }
         ),
+    appUpgradeReducer
+        .optional()
+        .pullback(
+            state: \.appUpgradeState,
+            action: /Onboarding.Action.appUpgrade,
+            environment: { _ in
+                ()
+            }
+        ),
     // swiftlint:disable closure_body_length
     Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
+        case .showAppUpgrade(let appUpgradeState):
+            state.appUpgradeState = appUpgradeState
+            return .none
+        case .appUpgrade(.skip):
+            return Effect(value: .proceedToFlow)
         case .start:
+            return environment.appUpgradeState()
+                .eraseToEffect()
+                .map { state in
+                    guard let state = state else {
+                        return .proceedToFlow
+                    }
+                    return .showAppUpgrade(state)
+                }
+        case .proceedToFlow:
             return decideFlow(
                 state: &state,
                 appSettings: environment.appSettings
@@ -264,6 +296,7 @@ func decideFlow(
     state: inout Onboarding.State,
     appSettings: BlockchainSettingsAppAPI
 ) -> Effect<Onboarding.Action, Never> {
+    state.appUpgradeState = nil
     if appSettings.guid != nil, appSettings.sharedKey != nil {
         // Original flow
         if appSettings.isPinSet {

@@ -225,8 +225,6 @@ extension UIColor {
 
     // MARK: Buttons
 
-    public static let airdropCTAButton = green600
-
     public static let destructiveButton = red600
     public static let successButton = green600
     public static let primaryButton = blue600

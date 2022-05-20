@@ -134,7 +134,11 @@ extension PriceQuoteAtTime {
         }
         self.init(
             timestamp: response.timestamp,
-            moneyValue: .create(major: price, currency: currency.currencyType)
+            moneyValue: .create(
+                major: price,
+                currency: currency.currencyType
+            ),
+            marketCap: response.marketCap
         )
     }
 }

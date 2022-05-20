@@ -21,7 +21,6 @@ extension AnalyticsEvents {
         case kycConfirmEmail
         case kycMoreInfoNeeded
         case kycWelcome
-        case kycSunriverStart
         case kycCountry
         case kycStates
         case kycProfile
@@ -80,8 +79,6 @@ extension AnalyticsEvents {
                 return "kyc_more_info_needed"
             case .kycWelcome:
                 return "kyc_welcome"
-            case .kycSunriverStart:
-                return "kyc_sunriver_start"
             case .kycCountry:
                 return "kyc_country"
             case .kycStates:

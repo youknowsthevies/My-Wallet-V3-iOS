@@ -78,7 +78,8 @@ public final class AssetPriceViewDailyInteractor: AssetPriceViewInteracting {
                     }
                 return DashboardAsset.Value.Interaction.AssetPrice(
                     currentPrice: currentPrice.moneyValue,
-                    historicalPrice: historicalPrice
+                    historicalPrice: historicalPrice,
+                    marketCap: currentPrice.marketCap
                 )
             }
             .eraseToAnyPublisher()

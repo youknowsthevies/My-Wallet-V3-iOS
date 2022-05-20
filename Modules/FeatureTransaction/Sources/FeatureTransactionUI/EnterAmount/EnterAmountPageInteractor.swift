@@ -194,7 +194,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         amountViewInteractor.maxAmountSelected
             .withLatestFrom(transactionState)
-            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .subscribe(onNext: analyticsHook.onMaxSelected(state:))
             .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor.minAmountSelected
@@ -373,6 +373,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .asObservable()
             .withLatestFrom(transactionState)
             .subscribe(onNext: { [transactionModel, analyticsHook] state in
+                analyticsHook.onEnterAmountContinue(with: state)
                 switch state.action {
                 case .buy:
                     if state.userKYCStatus?.canPurchaseCrypto == true {
@@ -383,7 +384,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 default:
                     transactionModel.process(action: .prepareTransaction)
                 }
-                analyticsHook.onEnterAmountContinue(with: state)
             })
             .disposeOnDeactivate(interactor: self)
 

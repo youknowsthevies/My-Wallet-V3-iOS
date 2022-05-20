@@ -245,7 +245,18 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         }
     }
 
-    func sync() -> AnyPublisher<Void, PasswordRepositoryError> {
+    func changePassword(password: String) -> AnyPublisher<Void, PasswordRepositoryError> {
+        set(password: password)
+            .flatMap { [weak self] _ -> AnyPublisher<Void, PasswordRepositoryError> in
+                guard let self = self else {
+                    return .failure(.unavailable)
+                }
+                return self.sync()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func sync() -> AnyPublisher<Void, PasswordRepositoryError> {
         Deferred {
             Future { [weak self] promise in
                 guard let self = self else {

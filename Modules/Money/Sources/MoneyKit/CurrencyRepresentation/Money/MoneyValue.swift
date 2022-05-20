@@ -126,6 +126,28 @@ public struct MoneyValue: Money, Hashable {
         }
     }
 
+    /// Creates a simple string with minimal formatting, representing the currency amount in major units, optionally including the currency symbol.
+    ///
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    public func toSimpleString(includeSymbol: Bool) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.groupingSeparator = ""
+        formatter.usesGroupingSeparator = false
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = currency.precision
+        formatter.roundingMode = .down
+
+        return [
+            formatter.string(from: NSDecimalNumber(decimal: displayMajorValue)) ?? "\(displayMajorValue)",
+            includeSymbol ? currency.displayCode : nil
+        ]
+        .compactMap { $0 }
+        .joined(separator: " ")
+    }
+
     /// Returns the value before a percentage increase/decrease (e.g. for a value of 15, and a `percentChange` of 0.5 i.e. 50%, this returns 10).
     ///
     /// - Parameter percentageChange: A percentage of change.

@@ -25,14 +25,14 @@ extension PaymentMethod {
             return nil
         }
         let zero: FiatValue = .zero(currency: currency)
-        let minValue = method.limits.min
-        let maxValue = method.limits.max
-        let maxDailyValue = method.limits.daily?.available ?? maxValue
-        let maxAnnualValue = method.limits.annual?.available ?? maxValue
+        let minValue = method.limits?.min ?? "0"
+        let maxValue = method.limits?.max ?? "500000"
+        let maxDailyValue = method.limits?.daily?.available ?? maxValue
+        let maxAnnualValue = method.limits?.annual?.available ?? maxValue
         let min = FiatValue.create(minor: minValue, currency: currency) ?? zero
         let max = FiatValue.create(minor: maxValue, currency: currency) ?? zero
-        let maxDaily = FiatValue.create(minor: maxDailyValue, currency: currency) ?? zero
-        let maxAnnual = FiatValue.create(minor: maxAnnualValue, currency: currency) ?? zero
+        let maxDaily = FiatValue.create(minor: maxDailyValue, currency: currency)
+        let maxAnnual = FiatValue.create(minor: maxAnnualValue, currency: currency)
         self.init(
             type: methodType,
             max: max,

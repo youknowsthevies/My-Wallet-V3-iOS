@@ -107,16 +107,22 @@ extension DashboardAsset.Value.Interaction {
                     time: time,
                     changePercentage: changePercentage,
                     priceChange: priceChange
-                )
+                ),
+                marketCap: nil
             )
         }
 
+        /// Current market capitalization.
+        public let marketCap: Double?
+
         public init(
             currentPrice: MoneyValue,
-            historicalPrice: HistoricalPrice?
+            historicalPrice: HistoricalPrice?,
+            marketCap: Double?
         ) {
             self.currentPrice = currentPrice
             self.historicalPrice = historicalPrice
+            self.marketCap = marketCap
         }
     }
 }

@@ -138,7 +138,8 @@ final class PriceService: PriceServiceAPI {
             return .just(
                 PriceQuoteAtTime(
                     timestamp: time.date,
-                    moneyValue: .one(currency: quote.currencyType)
+                    moneyValue: .one(currency: quote.currencyType),
+                    marketCap: nil
                 )
             )
         }

@@ -10,18 +10,22 @@ final class MockWalletEncoder: WalletEncodingAPI {
         .genericFailure
     )
 
+    var transformWrapperCalled: Bool = false
     func transform(wrapper: Wrapper) -> AnyPublisher<EncodedWalletPayload, WalletEncodingError> {
-        transformValue
+        transformWrapperCalled = true
+        return transformValue
     }
 
     var encodeValue: AnyPublisher<WalletCreationPayload, WalletEncodingError> = .failure(
         .genericFailure
     )
 
+    var encodePayloadCalled: Bool = false
     func encode(
         payload: EncodedWalletPayload,
         applyChecksum: @escaping (Data) -> String
     ) -> AnyPublisher<WalletCreationPayload, WalletEncodingError> {
-        encodeValue
+        encodePayloadCalled = true
+        return encodeValue
     }
 }
