@@ -110,6 +110,7 @@ struct SearchCryptoDomainView: View {
                     )
                 },
                 action: {
+                    viewStore.send(.set(\.$isSearchFieldSelected, false))
                     switch result.domainType {
                     case .free:
                         viewStore.send(.selectFreeDomain(result))
