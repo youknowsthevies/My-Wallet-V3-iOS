@@ -146,7 +146,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 

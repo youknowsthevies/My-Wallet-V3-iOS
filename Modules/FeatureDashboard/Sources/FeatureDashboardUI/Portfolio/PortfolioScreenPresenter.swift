@@ -162,10 +162,10 @@ public final class PortfolioScreenPresenter {
                     .asObservable()
                     .asSingle()
                     .flatMap { group -> Single<Bool> in
-                        group.balance.map(\.isPositive)
+                        group.balance.map(\.hasPositiveDisplayableBalance)
                     }
-                    .map { hasBalance -> CurrencyBalance in
-                        (currency, hasBalance)
+                    .map { hasPositiveDisplayableBalance -> CurrencyBalance in
+                        (currency, hasPositiveDisplayableBalance)
                     }
                     .asObservable()
                     .catchAndReturn((currency, false))

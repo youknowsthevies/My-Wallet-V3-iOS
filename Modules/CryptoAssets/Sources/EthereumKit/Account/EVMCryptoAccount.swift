@@ -201,7 +201,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
             guard asset.supports(product: .custodialWalletBalance) else {
                 return .just(false)
             }
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 

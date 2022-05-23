@@ -317,4 +317,10 @@ extension MoneyOperating {
             throw MoneyOperatingError.mismatchingCurrencies(x.currency, y.currency)
         }
     }
+
+    /// Returns true if displayable balance is greater than 0.0.
+    /// Account may still contain dust after `displayPrecision` decimal.
+    public var hasPositiveDisplayableBalance: Bool {
+        (try? self >= Self.create(minor: BigInt(10).power(precision - displayPrecision), currency: currency)) == true
+    }
 }

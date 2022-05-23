@@ -55,6 +55,12 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .eraseToAnyPublisher()
     }
 
+    private var hasPositiveDisplayableBalance: AnyPublisher<Bool, Never> {
+        balances
+            .map { $0.balance?.available.hasPositiveDisplayableBalance == true }
+            .eraseToAnyPublisher()
+    }
+
     public var pendingBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.pending)
@@ -279,9 +285,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     // MARK: - Private Functions
 
     private var canPerformSwap: AnyPublisher<Bool, Error> {
-        isFundedPublisher
-            .flatMap { [eligibilityService] isFunded -> AnyPublisher<Bool, Error> in
-                guard isFunded else {
+        hasPositiveDisplayableBalance
+            .flatMap { [eligibilityService] hasPositiveDisplayableBalance -> AnyPublisher<Bool, Error> in
+                guard hasPositiveDisplayableBalance else {
                     return .just(false)
                 }
                 return eligibilityService.isEligiblePublisher
@@ -293,11 +299,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     private var canPerformSell: AnyPublisher<Bool, Never> {
         isPairToFiatAvailable
-            .flatMap { [isFundedPublisher] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
+            .flatMap { [hasPositiveDisplayableBalance] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
                 guard isPairToFiatAvailable else {
                     return .just(false)
                 }
-                return isFundedPublisher
+                return hasPositiveDisplayableBalance
                     .replaceError(with: false)
                     .eraseToAnyPublisher()
             }

@@ -155,7 +155,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 
