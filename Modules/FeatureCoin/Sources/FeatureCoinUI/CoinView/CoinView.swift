@@ -254,20 +254,9 @@ public struct CoinView: View {
                         }
                     }
                     .padding()
-                    .padding([.bottom], UIDevice.current.hasNotch ? Spacing.padding3 : 0)
                 }
             }
         }
-    }
-}
-
-extension UIDevice {
-    fileprivate var hasNotch: Bool {
-        UIApplication.shared
-            .windows
-            .first(where: \.isKeyWindow)?
-            .safeAreaInsets
-            .top ?? 0 >= 44
     }
 }
 
