@@ -19,6 +19,8 @@ open class AnyEncoder: AnyEncoderProtocol, TopLevelEncoder {
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey: Any] = [:]
 
+    internal var `super`: AnyEncoder?
+
     public required init(codingPath: [CodingKey] = [], userInfo: [CodingUserInfoKey: Any] = [:]) {
         self.codingPath = codingPath
         self.userInfo = userInfo
@@ -168,7 +170,7 @@ extension AnyEncoder.UnkeyedContainer: UnkeyedEncodingContainer {
 extension AnyEncoder {
 
     func get() -> Any {
-        switch _value {
+        switch `super`?._value ?? _value {
         case let array as [Any]:
             return array[codingPath] as Any
         case let dictionary as [String: Any]:
@@ -179,17 +181,24 @@ extension AnyEncoder {
     }
 
     func set(_ newValue: Any?) {
-        switch root.container {
-        case .unkeyed:
-            var array = (_value as? [Any]) ?? []
-            array[codingPath] = newValue
-            _value = array
-        case .keyed:
-            var dictionary = (_value as? [String: Any]) ?? [:]
-            dictionary[codingPath] = newValue
-            _value = dictionary
-        case .singleValue:
-            _value = newValue
+        if let `super` = `super` {
+            let old = `super`.codingPath
+            `super`.codingPath = codingPath
+            defer { `super`.codingPath = old }
+            `super`.set(newValue)
+        } else {
+            switch root.container {
+            case .unkeyed:
+                var array = (_value as? [Any]) ?? []
+                array[codingPath] = newValue
+                _value = array
+            case .keyed:
+                var dictionary = (_value as? [String: Any]) ?? [:]
+                dictionary[codingPath] = newValue
+                _value = dictionary
+            case .singleValue:
+                _value = newValue
+            }
         }
     }
 
@@ -200,33 +209,61 @@ extension AnyEncoder {
     }
 }
 
-private func unsupported(_ function: String = #function) -> Never {
-    fatalError("\(function) isn't supported by AnyEncoder")
-}
-
 extension AnyEncoder.KeyedContainer {
+
     public mutating func nestedContainer<NestedKey>(
         keyedBy keyType: NestedKey.Type,
         forKey key: Key
-    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey { unsupported() }
-    public mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer { unsupported() }
-    public func superEncoder() -> Encoder { unsupported() }
-    public func superEncoder(forKey key: Key) -> Encoder { unsupported() }
+    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
+        encoder.codingPath.append(AnyCodingKey(key.stringValue))
+        defer { encoder.codingPath.removeLast() }
+        let nested = AnyEncoder(codingPath: codingPath, userInfo: userInfo)
+        nested.super = encoder
+        return KeyedEncodingContainer(AnyEncoder.KeyedContainer<NestedKey>(encoder: nested))
+    }
+
+    public mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
+        encoder.codingPath.append(AnyCodingKey(key.stringValue))
+        defer { encoder.codingPath.removeLast() }
+        let nested = AnyEncoder(codingPath: codingPath, userInfo: userInfo)
+        nested.super = encoder
+        return AnyEncoder.UnkeyedContainer(encoder: encoder)
+    }
+
+    public func superEncoder() -> Encoder { encoder.super ?? encoder }
+    public func superEncoder(forKey key: Key) -> Encoder { encoder.super ?? encoder }
 }
 
 extension AnyEncoder.UnkeyedContainer {
+
     public mutating func nestedContainer<NestedKey>(
         keyedBy keyType: NestedKey.Type
-    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey { unsupported() }
-    public mutating func nestedUnkeyedContainer() -> UnkeyedEncodingContainer { unsupported() }
-    public func superEncoder() -> Encoder { unsupported() }
+    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
+        defer { count += 1 }
+        encoder.codingPath.append(AnyCodingKey(count))
+        defer { encoder.codingPath.removeLast() }
+        let nested = AnyEncoder(codingPath: codingPath, userInfo: userInfo)
+        nested.super = encoder
+        return KeyedEncodingContainer(AnyEncoder.KeyedContainer<NestedKey>(encoder: nested))
+    }
+
+    public mutating func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
+        defer { count += 1 }
+        encoder.codingPath.append(AnyCodingKey(count))
+        defer { encoder.codingPath.removeLast() }
+        let nested = AnyEncoder(codingPath: codingPath, userInfo: userInfo)
+        nested.super = encoder
+        return AnyEncoder.UnkeyedContainer(encoder: nested)
+    }
+
+    public func superEncoder() -> Encoder { encoder.super ?? encoder }
 }
 
 private protocol OptionalEncodableProtocol: Encodable {
     func encodeUnwrapped(to encoder: AnyEncoder) -> Any
 }
 
-extension Optional: OptionalEncodableProtocol where Wrapped: Encodable & Equatable {
+extension Optional: OptionalEncodableProtocol where Wrapped: Encodable {
 
     func encodeUnwrapped(to encoder: AnyEncoder) -> Any {
         switch self {
