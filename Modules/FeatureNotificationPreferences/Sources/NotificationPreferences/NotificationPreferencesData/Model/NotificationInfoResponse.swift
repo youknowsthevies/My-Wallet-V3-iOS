@@ -22,11 +22,14 @@ struct NotificationMethodInfoResponse: Decodable {
 struct NotificationPreferenceResponse: Decodable {
     let type: PreferenceType
     let title: String
+    let subtitle: String
     let description: String
     let requiredMethods, optionalMethods, enabledMethods: [NotificationMethod]
 
     enum CodingKeys: String, CodingKey {
-        case type, title
+        case type
+        case title
+        case subtitle
         case description
         case requiredMethods, optionalMethods, enabledMethods
     }
