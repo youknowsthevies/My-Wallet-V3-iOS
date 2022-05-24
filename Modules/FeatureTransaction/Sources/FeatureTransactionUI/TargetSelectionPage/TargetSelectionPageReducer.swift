@@ -184,6 +184,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
              .receive,
              .buy,
              .sell,
+             .linkToDebitCard,
              .viewActivity:
             unimplemented()
         }

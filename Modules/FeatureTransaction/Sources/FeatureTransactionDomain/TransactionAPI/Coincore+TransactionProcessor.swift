@@ -177,7 +177,8 @@ extension CoincoreAPI {
              .sign,
              .viewActivity,
              .withdraw,
-             .interestWithdraw:
+             .interestWithdraw,
+             .linkToDebitCard:
             unimplemented()
         }
     }

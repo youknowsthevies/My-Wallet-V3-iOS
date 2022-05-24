@@ -21,10 +21,10 @@ final class RewardsRepository: RewardsRepositoryAPI {
 
     /// returns linked reward ids to the card
     func fetchRewards(for card: Card) -> AnyPublisher<[String], NabuNetworkError> {
-        client.fetchRewards(for: card.cardId)
+        client.fetchRewards(for: card.id)
     }
 
     func update(rewards: [Reward], for card: Card) -> AnyPublisher<[String], NabuNetworkError> {
-        client.update(rewards: rewards.map(\.id), for: card.cardId)
+        client.update(rewards: rewards.map(\.id), for: card.id)
     }
 }

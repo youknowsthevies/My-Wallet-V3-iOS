@@ -10,6 +10,7 @@ protocol NetworkCredentialProviderAPI {
     var explorerServer: String { get }
     var retailCoreURL: String { get }
     var walletServer: String { get }
+    var walletHelper: String { get }
     var certificatePinning: String { get }
     var everyPayURL: String { get }
     var swiftyBeaverAppId: String { get }
@@ -59,5 +60,9 @@ final class NetworkCredentialProvider: NetworkCredentialProviderAPI {
 
     var swiftyBeaverAppKey: String {
         InfoDictionaryHelper.value(for: .swiftyBeaverAppKey)
+    }
+
+    var walletHelper: String {
+        InfoDictionaryHelper.value(for: .walletHelper)
     }
 }

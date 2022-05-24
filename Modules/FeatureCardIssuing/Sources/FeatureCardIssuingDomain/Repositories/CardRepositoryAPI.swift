@@ -14,18 +14,19 @@ public protocol CardRepositoryAPI {
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 
-    /// external token to be used in card plugin to retrieve PCI DSS scope card details, PAN, CVV
-    func generateSensitiveDetailsToken(for card: Card) -> AnyPublisher<String, NabuNetworkError>
+    /// generate the URL for the webview to display the card details
+    func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError>
 
     /// one time token to be used in marqeta widget to reveal or update the card PIN
     func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError>
 
-    func fetchLinkedWallets(for card: Card) -> AnyPublisher<[Wallet], NabuNetworkError>
+    func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    /// array of linked wallets in priority order
-    func update(wallets: [Wallet], for card: Card) -> AnyPublisher<[String], NabuNetworkError>
+    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    func fetchSettings(for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError>
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError>
 
-    func update(settings: CardSettings, for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError>
+    func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
+
+    func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 }

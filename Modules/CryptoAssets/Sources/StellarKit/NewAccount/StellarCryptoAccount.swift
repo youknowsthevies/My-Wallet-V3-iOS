@@ -132,7 +132,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         case .receive,
              .send,
              .buy,
-             .viewActivity:
+             .viewActivity,
+             .linkToDebitCard:
             return .just(true)
         case .deposit,
              .sign,

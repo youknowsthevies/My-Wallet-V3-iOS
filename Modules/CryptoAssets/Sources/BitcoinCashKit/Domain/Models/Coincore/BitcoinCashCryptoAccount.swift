@@ -141,6 +141,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         case .receive,
              .send,
              .buy,
+             .linkToDebitCard,
              .viewActivity:
             return .just(true)
         case .deposit,

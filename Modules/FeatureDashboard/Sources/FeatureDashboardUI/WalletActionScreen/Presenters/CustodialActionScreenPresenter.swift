@@ -146,6 +146,7 @@ extension AssetAction {
         switch self {
         case .interestTransfer,
              .interestWithdraw,
+             .linkToDebitCard,
              .sign:
             return nil
         case .viewActivity:

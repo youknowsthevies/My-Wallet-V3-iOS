@@ -14,6 +14,7 @@ import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
@@ -278,6 +279,11 @@ extension DependencyContainer {
         factory { () -> ExternalActionsProviderAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
+        }
+
+        factory { () -> SupportRouterAPI in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveSupportRouterAPI()
         }
 
         // MARK: - WalletManager

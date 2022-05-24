@@ -14,6 +14,7 @@ public enum AssetAction: Equatable, CaseIterable {
     case swap
     case viewActivity
     case withdraw
+    case linkToDebitCard
 }
 
 extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
@@ -42,6 +43,8 @@ extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
             return "viewActivity"
         case .withdraw:
             return "withdraw"
+        case .linkToDebitCard:
+            return "linkToDebitCard"
         }
     }
 

@@ -25,8 +25,16 @@ struct OrderProcessingView: View {
                 switch viewStore.state.orderProcessingState {
                 case .success:
                     success
-                case .error:
-                    error
+                case .error(let error):
+                    ErrorView(
+                        title: error.displayTitle,
+                        description: error.displayDescription,
+                        retryTitle: error.retryTitle,
+                        retryAction: error.retryAction(with: viewStore),
+                        cancelAction: {
+                            viewStore.send(.close(.cancelled))
+                        }
+                    )
                 default:
                     processing
                 }
@@ -89,52 +97,6 @@ struct OrderProcessingView: View {
         }
         .padding(Spacing.padding3)
     }
-
-    @ViewBuilder var error: some View {
-        WithViewStore(store) { viewStore in
-            VStack(spacing: Spacing.padding2) {
-                ZStack(alignment: .topTrailing) {
-                    Icon
-                        .creditcard
-                        .accentColor(.WalletSemantic.primary)
-                        .frame(width: 60, height: 60)
-                    ZStack {
-                        Circle()
-                            .foregroundColor(.white)
-                            .frame(width: 28, height: 28)
-                        Circle()
-                            .foregroundColor(.WalletSemantic.error)
-                            .frame(width: 22, height: 22)
-                        Icon
-                            .error
-                            .frame(width: 12, height: 12)
-                            .accentColor(.white)
-                    }
-                    .padding(.top, -4)
-                    .padding(.trailing, -8)
-                }
-                .padding(.top, Spacing.padding6)
-                VStack(spacing: Spacing.padding1) {
-                    Text(localizedStrings.Processing.Error.title)
-                        .typography(.title3)
-                        .multilineTextAlignment(.center)
-                    Text(localizedStrings.Processing.Error.caption)
-                        .typography(.paragraph1)
-                        .foregroundColor(.WalletSemantic.body)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.horizontal, Spacing.padding3)
-                Spacer()
-                PrimaryButton(title: localizedStrings.Processing.Error.retry) {
-                    viewStore.send(.setStep(.creating))
-                }
-                MinimalButton(title: localizedStrings.Processing.Error.cancelGoBack) {
-                    viewStore.send(.close(.cancelled))
-                }
-            }
-        }
-        .padding(Spacing.padding3)
-    }
 }
 
 #if DEBUG
@@ -152,3 +114,74 @@ struct OrderProcessing_Previews: PreviewProvider {
     }
 }
 #endif
+
+extension Error {
+
+    fileprivate var displayTitle: String {
+        let title = LocalizationConstants
+            .CardIssuing
+            .Errors
+            .GenericProcessingError
+            .title
+
+        guard let error = self as? NabuNetworkError else {
+            return title
+        }
+
+        return error.displayTitle(fallback: title)
+    }
+
+    fileprivate var displayDescription: String {
+        let description = LocalizationConstants
+            .CardIssuing
+            .Errors
+            .GenericProcessingError
+            .description
+
+        guard let error = self as? NabuNetworkError else {
+            return description
+        }
+
+        return error.displayTitle(fallback: description)
+    }
+
+    fileprivate func retryAction(
+        with viewStore: ViewStore<CardOrderingState, CardOrderingAction>
+    ) -> (() -> Void)? {
+
+        guard let error = self as? NabuNetworkError,
+              case .nabuError(let nabuError) = error
+        else {
+            return {
+                viewStore.send(.setStep(.creating))
+            }
+        }
+
+        switch nabuError.code {
+        case .stateNotEligible:
+            return {
+                viewStore.send(.displayEligibleStateList)
+            }
+        case .countryNotEligible:
+            return {
+                viewStore.send(.displayEligibleCountryList)
+            }
+        default:
+            return {
+                viewStore.send(.setStep(.creating))
+            }
+        }
+    }
+
+    fileprivate var retryTitle: String {
+
+        guard let error = self as? NabuNetworkError else {
+            return LocalizationConstants
+                .CardIssuing
+                .Error
+                .retry
+        }
+
+        return error.retryTitle
+    }
+}

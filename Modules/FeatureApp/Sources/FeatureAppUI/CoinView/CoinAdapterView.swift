@@ -384,6 +384,8 @@ extension FeatureCoinDomain.Account.Action {
             self = .sell
         case .send:
             self = .send
+        case .linkToDebitCard:
+            return nil
         case .sign:
             return nil
         case .swap:

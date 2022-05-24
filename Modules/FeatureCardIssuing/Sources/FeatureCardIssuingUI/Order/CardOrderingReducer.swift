@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitecture
 import FeatureCardIssuingDomain
 import Localization
+import MoneyKit
 import NabuNetworkError
 import ToolKit
 
@@ -22,6 +23,8 @@ public enum CardOrderingAction: Equatable {
     case cardCreationResponse(Result<Card, NabuNetworkError>)
     case fetchAddress(Result<Card.Address, CardOrderingError>)
     case close(CardOrderingResult)
+    case displayEligibleCountryList
+    case displayEligibleStateList
 }
 
 public struct CardOrderingState: Equatable {
@@ -143,6 +146,10 @@ public let cardOrderingReducer = Reducer<
         return .fireAndForget {
             env.onComplete(result)
         }
+    case .displayEligibleStateList:
+        return .none
+    case .displayEligibleCountryList:
+        return .none
     }
 }
 
@@ -159,55 +166,110 @@ extension CardOrderingEnvironment {
     }
 }
 
-struct MockServices: CardServiceAPI, ProductsServiceAPI {
-    let error = NabuError(id: nil, code: .unknown, type: .unknown, description: nil)
+struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, TopUpRouterAPI, SupportRouterAPI {
+
+    let error = NabuError(id: nil, code: .stateNotEligible, type: .unknown, description: nil)
+    let card = Card(
+        id: "",
+        type: .virtual,
+        last4: "1234",
+        expiry: "12/99",
+        brand: .visa,
+        status: .active,
+        orderStatus: nil,
+        createdAt: "01/10"
+    )
+    let accountCurrencyPair = AccountCurrency(
+        accountCurrency: "BTC"
+    )
+    let accountBalancePair = AccountBalancePair(
+        accountId: "42",
+        balance: Money(
+            value: "50000",
+            symbol: "BTC"
+        )
+    )
+    let settings = CardSettings(
+        locked: true,
+        swipePaymentsEnabled: true,
+        contactlessPaymentsEnabled: true,
+        preAuthEnabled: true,
+        address: Card.Address(
+            line1: "48 rue de la Santé",
+            line2: nil,
+            city: "Paris",
+            postcode: "75001",
+            state: nil,
+            country: "FR"
+        )
+    )
 
     func orderCard(
         product: Product,
         at address: Card.Address,
         with ssn: String
     ) -> AnyPublisher<Card, NabuNetworkError> {
-        .failure(.nabuError(error))
+        .just(card)
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {
-        .failure(.nabuError(error))
+        .just([card])
     }
 
     func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
-        .failure(.nabuError(error))
+        .just(card)
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .failure(.nabuError(error))
+        .just(card)
     }
 
-    func generateSensitiveDetailsToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        .just("")
+    func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        .just(URL(string: "https://blockchain.com/")!)
     }
 
     func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
         .just("")
     }
 
-    func fetchLinkedWallets(for card: Card) -> AnyPublisher<[Wallet], NabuNetworkError> {
-        .failure(.nabuError(error))
+    func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        .just(accountCurrencyPair)
     }
 
-    func update(wallets: [Wallet], for card: Card) -> AnyPublisher<[String], NabuNetworkError> {
-        .failure(.nabuError(error))
-    }
-
-    func fetchSettings(for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        .failure(.nabuError(error))
-    }
-
-    func update(settings: CardSettings, for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        .failure(.nabuError(error))
+    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        .just(accountCurrencyPair)
     }
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
         .just([])
     }
+
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+        .just([accountBalancePair])
+    }
+
+    func selectAccount(for card: Card) -> AnyPublisher<AccountBalancePair, NabuNetworkError> {
+        .just(accountBalancePair)
+    }
+
+    func linkedAccount(for card: Card) -> AnyPublisher<AccountSnapshot?, Never> {
+        .just(nil)
+    }
+
+    func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        .just(card)
+    }
+
+    func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        .just(card)
+    }
+
+    func openBuyFlow(for currency: CryptoCurrency?) {}
+
+    func openBuyFlow(for currency: FiatCurrency?) {}
+
+    func openSwapFlow() {}
+
+    func handleSupport() {}
 }
 #endif

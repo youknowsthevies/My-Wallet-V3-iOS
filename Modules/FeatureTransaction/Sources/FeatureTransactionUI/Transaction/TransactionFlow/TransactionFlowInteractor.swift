@@ -509,6 +509,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
             case .receive,
                  .sign,
+                 .linkToDebitCard,
                  .viewActivity:
                 unimplemented("Action \(action) does not support 'selectTarget'")
             }
@@ -569,6 +570,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                  .sell,
                  .swap,
                  .send,
+                 .linkToDebitCard,
                  .receive,
                  .viewActivity:
                 router?.routeToSourceAccountPicker(

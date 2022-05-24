@@ -226,7 +226,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .receive:
+        case .receive,
+             .linkToDebitCard:
             return .just(true)
         case .interestTransfer:
             return isInterestTransferAvailable
