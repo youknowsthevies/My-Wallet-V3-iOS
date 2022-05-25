@@ -125,3 +125,67 @@ extension MoneyValuePair: CustomDebugStringConvertible {
         """
     }
 }
+
+import BigInt
+
+extension MoneyValuePair {
+
+    /// Returns a new `MoneyValuePair` instance intended to get the FX quote from an existing quote.
+    /// This means that given a FX quote like 3 BTC = 150,000 USD, this will return a new quote => 1 BTC  = 150,000 / 3 BTC.
+    public var exchangeRate: MoneyValuePair {
+        // `try`s are disabled here as this operation can never fail.
+        // If it failed, it would be a developer error and thus it's better to crash.
+        guard !base.isZero, !quote.isZero else {
+            return MoneyValuePair.zero(baseCurrency: base.currency, quoteCurrency: quote.currency)
+        }
+
+        let basePercisionMultiplier = BigInt(10).power(base.precision)
+        let convertedAmount = (quote.amount * basePercisionMultiplier) / base.amount
+
+        return MoneyValuePair(
+            base: .one(currency: base.currency),
+            quote: MoneyValue(amount: convertedAmount, currency: quote.currency)
+        )
+    }
+
+    /// Returns a new `MoneyValuePair` instance intended to get the inverse FX quote from an existing quote.
+    /// This means that given a FX quote like 1 BTC = 50,000 USD, this will return a new quote => 1 USD  = 1 / 50,000 BTC.
+    public var inverseExchangeRate: MoneyValuePair {
+        // `try`s are disabled here as this operation can never fail.
+        // If it failed, it would be a developer error and thus it's better to crash.
+        guard !base.isZero, !quote.isZero else {
+            return MoneyValuePair.zero(baseCurrency: quote.currency, quoteCurrency: base.currency)
+        }
+
+        let quotePercisionMultiplier = BigInt(10).power(quote.precision)
+        let convertedAmount = (base.amount * quotePercisionMultiplier) / quote.amount
+
+        return MoneyValuePair(
+            base: .one(currency: quote.currencyType),
+            quote: MoneyValue(amount: convertedAmount, currency: base.currency)
+        )
+    }
+}
+
+extension MoneyValuePair {
+
+    /// Returns the inversed money value pair.
+    ///
+    /// For a pair with base `2 BTC` and quote `50,000 USD`, this will return a pair with base `1 USD` and quote `2 / 50,000 BTC`.
+    public var inverseQuote: MoneyValuePair {
+        guard !base.isZero, !quote.isZero else {
+            return .zero(
+                baseCurrency: quote.currency,
+                quoteCurrency: base.currency
+            )
+        }
+
+        let newBase: MoneyValue = .one(currency: quote.currency)
+        // Convert base to quote currency first, and then perform conversion with inverse quote.
+        let newQuote: MoneyValue = base
+            .convert(using: newBase)
+            .convert(usingInverse: quote, currency: base.currency)
+
+        return MoneyValuePair(base: newBase, quote: newQuote)
+    }
+}
