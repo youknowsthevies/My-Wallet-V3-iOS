@@ -160,6 +160,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         )
         return environment.deeplinkAppHandler
             .handle(deeplink: .userActivity(activity))
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
@@ -172,6 +173,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         state.appSettings.urlHandled = environment.deeplinkAppHandler.canHandle(deeplink: .url(url))
         return environment.deeplinkAppHandler
             .handle(deeplink: .url(url))
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
@@ -188,6 +190,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
                 .publisher(for: blockchain.app.configuration.native.wallet.payload.is.enabled, as: Bool.self)
                 .prefix(1)
                 .replaceError(with: false)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map { isEnabled in
                     guard isEnabled else {
