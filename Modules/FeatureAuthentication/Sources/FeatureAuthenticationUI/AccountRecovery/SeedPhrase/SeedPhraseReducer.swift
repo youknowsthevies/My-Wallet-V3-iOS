@@ -86,7 +86,10 @@ public struct SeedPhraseState: Equatable {
     var isLoading: Bool
 
     var accountResettable: Bool {
-        nabuInfo != nil
+        guard let nabuInfo = nabuInfo else {
+            return false
+        }
+        return nabuInfo.recoverable
     }
 
     init(context: AccountRecoveryContext, emailAddress: String = "", nabuInfo: WalletInfo.Nabu? = nil) {
