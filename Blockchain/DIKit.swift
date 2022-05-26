@@ -12,6 +12,8 @@ import ERC20Kit
 import EthereumKit
 import FeatureAppDomain
 import FeatureAppUI
+import FeatureAttributionData
+import FeatureAttributionDomain
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureCardIssuingUI
@@ -776,6 +778,34 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
             return NotificationPreferencesRepository(client: client)
+        }
+
+        // MARK: - Websocket
+
+        single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
+
+        // MARK: Feature Attribution
+
+        single { () -> AttributionServiceAPI in
+            let errorRecorder = CrashlyticsRecorder()
+            let skAdNetworkService = SkAdNetworkService(errorRecorder: errorRecorder)
+            let authenticator: AuthenticatorAPI = DIKit.resolve()
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.websocket)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
+            let attributionClient = AttributionClient(
+                networkAdapter: adapter,
+                requestBuilder: builder
+            )
+            let attributionRepository = AttributionRepository(with: attributionClient)
+
+            return AttributionService(
+                authenticator: authenticator,
+                skAdNetworkService: skAdNetworkService,
+                errorRecorder: errorRecorder,
+                attributionRepository: attributionRepository,
+                featureFlagService: featureFlagService
+            ) as AttributionServiceAPI
         }
 
         // MARK: Pulse Network Debugging

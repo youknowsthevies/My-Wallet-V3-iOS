@@ -16,6 +16,7 @@ protocol NetworkCredentialProviderAPI {
     var swiftyBeaverAppId: String { get }
     var swiftyBeaverAppSecret: String { get }
     var swiftyBeaverAppKey: String { get }
+    var websocketConversionUrl: String { get }
 }
 
 /// This implementation of a `NetworkCredentialProviderAPI`will fetch the
@@ -60,6 +61,10 @@ final class NetworkCredentialProvider: NetworkCredentialProviderAPI {
 
     var swiftyBeaverAppKey: String {
         InfoDictionaryHelper.value(for: .swiftyBeaverAppKey)
+    }
+
+    var websocketConversionUrl: String {
+        InfoDictionaryHelper.value(for: .websocketConversionURL)
     }
 
     var walletHelper: String {

@@ -69,6 +69,7 @@ public protocol I_blockchain_app: I {}
 public extension I_blockchain_app {
 	var `configuration`: L_blockchain_app_configuration { .init("\(__).configuration") }
 	var `deep_link`: L_blockchain_app_deep__link { .init("\(__).deep_link") }
+	var `did`: L_blockchain_app_did { .init("\(__).did") }
 	var `enter`: L_blockchain_app_enter { .init("\(__).enter") }
 	var `is`: L_blockchain_app_is { .init("\(__).is") }
 	var `process`: L_blockchain_app_process { .init("\(__).process") }
@@ -547,6 +548,24 @@ public final class L_blockchain_app_deep__link_send_destination: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.destination", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_send_destination: I_blockchain_db_type_string {}
+public final class L_blockchain_app_did: L, I_blockchain_app_did {
+	public override class var localized: String { NSLocalizedString("blockchain.app.did", comment: "") }
+}
+public protocol I_blockchain_app_did: I {}
+public extension I_blockchain_app_did {
+	var `finish`: L_blockchain_app_did_finish { .init("\(__).finish") }
+}
+public final class L_blockchain_app_did_finish: L, I_blockchain_app_did_finish {
+	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish", comment: "") }
+}
+public protocol I_blockchain_app_did_finish: I {}
+public extension I_blockchain_app_did_finish {
+	var `launching`: L_blockchain_app_did_finish_launching { .init("\(__).launching") }
+}
+public final class L_blockchain_app_did_finish_launching: L, I_blockchain_app_did_finish_launching {
+	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish.launching", comment: "") }
+}
+public protocol I_blockchain_app_did_finish_launching: I_blockchain_db_type_boolean {}
 public final class L_blockchain_app_enter: L, I_blockchain_app_enter {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter", comment: "") }
 }

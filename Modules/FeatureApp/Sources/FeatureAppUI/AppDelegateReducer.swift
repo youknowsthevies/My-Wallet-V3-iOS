@@ -150,6 +150,10 @@ let appDelegateReducer = Reducer<
                 appId: context.embraceAppId
             ),
 
+            .fireAndForget {
+                environment.app.post(event: blockchain.app.did.finish.launching)
+            },
+
             environment.app.publisher(for: blockchain.app.configuration.SSL.pinning.is.enabled, as: Bool.self)
                 .prefix(1)
                 .replaceError(with: true)

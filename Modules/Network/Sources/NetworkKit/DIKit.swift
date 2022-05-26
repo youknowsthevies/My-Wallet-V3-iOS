@@ -11,6 +11,7 @@ public enum DIKitContext: String {
     case retail
     case everypay
     case cardIssuing
+    case websocket
 }
 
 extension DependencyContainer {

@@ -4,5 +4,5 @@ import Foundation
 
 public struct ServerResponse {
     public let payload: Data?
-    public let response: HTTPURLResponse
+    public let response: HTTPURLResponse?
 }

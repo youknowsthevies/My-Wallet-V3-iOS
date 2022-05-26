@@ -16,6 +16,7 @@ public enum InfoDictionaryHelper {
         case swiftyBeaverAppId = "SWIFTY_BEAVER_APP_ID"
         case swiftyBeaverAppSecret = "SWIFTY_BEAVER_APP_SECRET"
         case swiftyBeaverAppKey = "SWIFTY_BEAVER_APP_KEY"
+        case websocketConversionURL = "WEBSOCKET_CONVERSION_URL"
     }
 
     private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
