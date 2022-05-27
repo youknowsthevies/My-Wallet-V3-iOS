@@ -110,7 +110,7 @@ class KYCPageTypeTests: XCTestCase {
             )
         )
         XCTAssertEqual(
-            KYCPageType.verifyIdentity,
+            KYCPageType.accountUsageForm,
             KYCPageType.startingPage(
                 forUser: createNabuUser(
                     isMobileVerified: true,
@@ -172,11 +172,10 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.accountUsageForm,
+            KYCPageType.sddVerificationCheck,
             KYCPageType.address.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
-        XCTAssertEqual(
-            KYCPageType.sddVerificationCheck,
+        XCTAssertNil(
             KYCPageType.accountUsageForm.nextPage(
                 forTier: .tier1,
                 user: nil,
@@ -232,11 +231,16 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.accountUsageForm,
-            KYCPageType.address.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.sddVerificationCheck,
+            KYCPageType.address.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
-            KYCPageType.accountUsageForm,
+            KYCPageType.sddVerificationCheck,
             KYCPageType.address.nextPage(
                 forTier: .tier2,
                 user: createNabuUser(isMobileVerified: true),
@@ -245,7 +249,7 @@ class KYCPageTypeTests: XCTestCase {
             )
         )
         XCTAssertEqual(
-            KYCPageType.sddVerificationCheck,
+            KYCPageType.verifyIdentity,
             KYCPageType.accountUsageForm.nextPage(
                 forTier: .tier2,
                 user: nil,
@@ -263,7 +267,7 @@ class KYCPageTypeTests: XCTestCase {
             )
         )
         XCTAssertEqual(
-            KYCPageType.verifyIdentity,
+            KYCPageType.accountUsageForm,
             KYCPageType.confirmPhone.nextPage(
                 forTier: .tier2,
                 user: nil,
