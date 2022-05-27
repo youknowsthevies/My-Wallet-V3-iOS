@@ -23,7 +23,7 @@ extension LocalizationConstants.FeatureCryptoDomain {
                 comment: "Claim Introduction header title"
             )
             public static let description = NSLocalizedString(
-                "Claiming your crypto domain is easy. Follow the steps below to claim your free domain* through Unstoppable Domains.",
+                "Get your free .blockchain domain through Unstoppable Domains in three easy steps.",
                 comment: "Claim Introduction view header description"
             )
         }
@@ -31,40 +31,40 @@ extension LocalizationConstants.FeatureCryptoDomain {
         public enum ListView {
             public enum ChooseDomain {
                 public static let title = NSLocalizedString(
-                    "Choose Your Domain",
+                    "Search available domains",
                     comment: "Claim Introduction choose domain row title"
                 )
                 public static let description = NSLocalizedString(
-                    "Select a domain and mint it to get started.",
+                    "Choose from thousands of options.",
                     comment: "Claim Introduction choose domain row description"
                 )
             }
 
             public enum ClaimDomain {
                 public static let title = NSLocalizedString(
-                    "Claim Your Domain",
+                    "Claim your domain",
                     comment: "Claim Introduction chaim domain row title"
                 )
                 public static let description = NSLocalizedString(
-                    "Claim your free domain provided by Unstoppable Domains.",
+                    "Your domain is yours forever.",
                     comment: "Claim Introduction chaim domain row description"
                 )
             }
 
             public enum ReceiveCrypto {
                 public static let title = NSLocalizedString(
-                    "Receive Crypto",
+                    "Use your domain",
                     comment: "Claim Introduction receive crypto row title"
                 )
                 public static let description = NSLocalizedString(
-                    "Share your domain rather than your wallet address to receive crypto.",
+                    "Receive crypto directly to your domain.",
                     comment: "Claim Introduction receive crypto row description"
                 )
             }
         }
 
         public static let promptButton = NSLocalizedString(
-            "What’s a Crypto Domain?",
+            "What’s a Blockchain Domain?",
             comment: "What’s a Crypto Domain? prompt button text"
         )
         public static let instruction = NSLocalizedString(
@@ -82,56 +82,56 @@ extension LocalizationConstants.FeatureCryptoDomain {
     public enum ClaimBenefits {
         public enum Header {
             public static let title = NSLocalizedString(
-                "What’s a Crypto Domain?",
-                comment: "What's a crypto domain header title"
+                "Why use a blockchain domain?",
+                comment: "Why use a blockchain domain header title"
             )
             public static let description = NSLocalizedString(
-                "Crypto domains are like a universal username for the world of crypto.",
-                comment: "What's a crypto domain header description"
+                "A blockchain domain is an easy to use address for sending and receiving crypto.",
+                comment: "Why use a blockchain domain header description"
             )
         }
 
         public enum BenefitsList {
             public enum SimplifyTransaction {
                 public static let title = NSLocalizedString(
-                    "Simplify Crypto Transactions",
+                    "Simplify crypto transactions",
                     comment: "Simplify Transaction benefit title"
                 )
                 public static let description = NSLocalizedString(
-                    "Replace all your complicated wallet addresses your domain name.",
+                    "Replace long, complicated wallet addresses with a simple domain name.",
                     comment: "Simplify Transaction benefit description"
                 )
             }
 
             public enum MultiNetwork {
                 public static let title = NSLocalizedString(
-                    "Multiple Coins and Networks",
+                    "Multiple tokens and networks",
                     comment: "MultiNetwork benefit title"
                 )
                 public static let description = NSLocalizedString(
-                    "Receive 275+ coins across multiple blockchain networks with your domain.",
+                    "Receive 275+ assets across multiple blockchain networks with your domain.",
                     comment: "MultiNetwork benefit description"
                 )
             }
 
             public enum Ownership {
                 public static let title = NSLocalizedString(
-                    "Full Ownership",
+                    "Ownership for life",
                     comment: "Ownership benefit title"
                 )
                 public static let description = NSLocalizedString(
-                    "Unlike traditional domains, fully own and control your domain. Claim it once, own it for life!",
+                    "Unlike traditional domains, you never have to renew. Claim once, own forever!",
                     comment: "Ownership benefit description"
                 )
             }
 
             public enum MuchMore {
                 public static let title = NSLocalizedString(
-                    "And Much More",
+                    "And much more",
                     comment: "Much more benefit title"
                 )
                 public static let description = NSLocalizedString(
-                    "Use your domain to login to web3 apps, create and host websites, and showcase your NFT galleries.",
+                    "Use your domain to log in to web3 apps, create and host websites, and showcase your NFT galleries.",
                     comment: "Much more beneift description"
                 )
             }
@@ -152,11 +152,11 @@ extension LocalizationConstants.FeatureCryptoDomain {
         )
         public enum Description {
             public static let title = NSLocalizedString(
-                "What's a free domain?",
+                "Free domain requirements",
                 comment: "Search Domains list view description title"
             )
             public static let body = NSLocalizedString(
-                "Free domains must be a minimum of 7 characters long and not a special domain like nike.blockchain.",
+                "Free domains must be greater than seven characters and not marked as a premium domain.",
                 comment: "Search Domains list view description body"
             )
         }

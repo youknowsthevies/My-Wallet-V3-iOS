@@ -37,12 +37,27 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletUpgraderAPI in
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.upgrading.op.queue", qos: .userInitiated, target: targetQueue)
+            let version3Flow = Version3Workflow(
+                entropyService: DIKit.resolve(),
+                operationQueue: queue
+            )
+            let version4Flow = Version4Workflow()
+            return WalletUpgrader(
+                workflows: [version3Flow, version4Flow]
+            )
+        }
+
         factory { () -> WalletLogic in
             let walletCreator: WalletDecoderAPI = DIKit.resolve()
             let decoder = walletCreator.createWallet
+            let upgrader: WalletUpgraderAPI = DIKit.resolve()
             return WalletLogic(
                 holder: DIKit.resolve(),
                 decoder: decoder,
+                upgrader: upgrader,
                 metadata: DIKit.resolve(),
                 notificationCenter: .default
             )
@@ -98,6 +113,16 @@ extension DependencyContainer {
             let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
             return UserCredentialsFetcher(
                 metadataEntryService: metadataEntryService
+            )
+        }
+
+        factory { () -> AccountCredentialsFetcherAPI in
+            let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            let userCredentialsFetcher: UserCredentialsFetcherAPI = DIKit.resolve()
+            return AccountCredentialsFetcher(
+                metadataEntryService: metadataEntryService,
+                userCredentialsFetcher: userCredentialsFetcher,
+                featureFlagService: DIKit.resolve()
             )
         }
 

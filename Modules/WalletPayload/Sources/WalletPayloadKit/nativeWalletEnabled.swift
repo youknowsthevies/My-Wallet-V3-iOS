@@ -4,21 +4,28 @@ import Combine
 import DIKit
 import ToolKit
 
+public struct NativeWalletFlagEnabled {
+    public let publisher: AnyPublisher<Bool, Never>
+    public init<P: Publisher>(_ publisher: P) where P.Output == Bool, P.Failure == Never {
+        self.publisher = publisher.eraseToAnyPublisher()
+    }
+}
+
 /// Useful top-level method to check whether nativeWallet feature flag is enabled or not
 /// - Parameters:
 ///   - service: A `FeatureFlagsServiceAPI`
 /// - Returns: An `AnyPublisher<Bool, Never>` that determines whether the flag is enabled or not
 public func nativeWalletFlagEnabled(
-    service: FeatureFlagsServiceAPI = resolve()
+    featureFlag: NativeWalletFlagEnabled = resolve()
 ) -> AnyPublisher<Bool, Never> {
-    service.isEnabled(.local(.nativeWalletPayload))
+    featureFlag.publisher
 }
 
 /// Useful top-level method to check whether native wallet creation feature flag is enabled or not
 public func nativeWalletCreationFlagEnabled(
     service: FeatureFlagsServiceAPI = resolve()
 ) -> AnyPublisher<Bool, Never> {
-    service.isEnabled(.remote(.nativeWalletCreation))
+    service.isEnabled(.nativeWalletCreation)
 }
 
 /// Useful top-left method that output an Either type of values old and new.

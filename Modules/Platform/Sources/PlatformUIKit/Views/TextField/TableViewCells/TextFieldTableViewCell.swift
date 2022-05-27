@@ -4,6 +4,15 @@ public final class TextFieldTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
+    public var topInset: CGFloat {
+        get {
+            textFieldView.topInset
+        }
+        set {
+            textFieldView.topInset = newValue
+        }
+    }
+
     public var bottomInset: CGFloat {
         get {
             textFieldView.bottomInset

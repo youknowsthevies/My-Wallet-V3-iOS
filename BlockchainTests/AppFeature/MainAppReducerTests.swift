@@ -7,6 +7,7 @@ import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -55,6 +56,8 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletService: WalletService!
     var mockWalletPayloadService: MockWalletPayloadService!
     var mockForgetWalletService: ForgetWalletService!
+
+    var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
     var testStore: TestStore<
         CoreAppState,
@@ -111,6 +114,8 @@ final class MainAppReducerTests: XCTestCase {
         mockWalletPayloadService = MockWalletPayloadService()
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
+        mockPerformanceTracing = PerformanceTracing.mock
+
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
@@ -149,7 +154,8 @@ final class MainAppReducerTests: XCTestCase {
                 forgetWalletService: mockForgetWalletService,
                 secondPasswordPrompter: SecondPasswordPromptableMock(),
                 nativeWalletFlagEnabled: { .just(false) },
-                buildVersionProvider: { "" }
+                buildVersionProvider: { "" },
+                performanceTracing: mockPerformanceTracing
             )
         )
     }
@@ -650,7 +656,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_session_mismatch_deeplink_show_show_authorization() {
-        mockFeatureFlagsService.enable(.remote(.pollingForEmailLogin))
+        mockFeatureFlagsService.enable(.pollingForEmailLogin)
             .subscribe().store(in: &cancellables)
         mockDeviceVerificationService.expectedSessionMismatch = true
         let requestInfo = LoginRequestInfo(

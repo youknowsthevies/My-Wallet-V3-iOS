@@ -6,6 +6,7 @@ import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureCardPaymentDomain
+import FeatureNotificationPreferencesUI
 import FeatureSettingsDomain
 import Localization
 import MoneyKit
@@ -39,7 +40,6 @@ public protocol ExchangeCoordinating: AnyObject {
 }
 
 public protocol PaymentMethodsLinkerAPI {
-
     func routeToBankLinkingFlow(
         for currency: FiatCurrency,
         from viewController: UIViewController,
@@ -49,16 +49,12 @@ public protocol PaymentMethodsLinkerAPI {
 }
 
 public protocol KYCRouterAPI {
-
     func presentLimitsOverview(from presenter: UIViewController)
 }
 
 final class SettingsRouter: SettingsRouterAPI {
-
     private let app: AppProtocol = resolve()
-
     typealias AnalyticsEvent = AnalyticsEvents.Settings
-
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
     let navigationRouter: NavigationRouterAPI
@@ -66,7 +62,6 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Routers
 
     private lazy var updateMobileRouter = UpdateMobileRouter(navigationRouter: navigationRouter)
-
     private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
 
     // MARK: - Private
@@ -74,11 +69,9 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
-
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let authenticationCoordinator: AuthenticationCoordinating
-    private unowned let exchangeCoordinator: ExchangeCoordinating
     private unowned let appStoreOpener: AppStoreOpening
     private let passwordRepository: PasswordRepositoryAPI
     private let wallet: WalletRecoveryVerifing
@@ -87,13 +80,13 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let externalActionsProvider: ExternalActionsProviderAPI
-
     private let kycRouter: KYCRouterAPI
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
+    private let exchangeUrlProvider: () -> String
+    private let urlOpener: URLOpener
 
     private var topViewController: UIViewController {
         let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
@@ -108,7 +101,6 @@ final class SettingsRouter: SettingsRouterAPI {
         wallet: WalletRecoveryVerifing = resolve(),
         guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve(),
         authenticationCoordinator: AuthenticationCoordinating = resolve(),
-        exchangeCoordinator: ExchangeCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),
         navigationRouter: NavigationRouterAPI = resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI = resolve(),
@@ -122,12 +114,13 @@ final class SettingsRouter: SettingsRouterAPI {
         repository: DataRepositoryAPI = resolve(),
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        externalActionsProvider: ExternalActionsProviderAPI = resolve()
+        externalActionsProvider: ExternalActionsProviderAPI = resolve(),
+        urlOpener: URLOpener = resolve(),
+        exchangeUrlProvider: @escaping () -> String
     ) {
         self.wallet = wallet
         self.builder = builder
         self.authenticationCoordinator = authenticationCoordinator
-        self.exchangeCoordinator = exchangeCoordinator
         self.appStoreOpener = appStoreOpener
         self.navigationRouter = navigationRouter
         self.alertPresenter = alertPresenter
@@ -142,6 +135,8 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.externalActionsProvider = externalActionsProvider
+        self.exchangeUrlProvider = exchangeUrlProvider
+        self.urlOpener = urlOpener
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -168,7 +163,6 @@ final class SettingsRouter: SettingsRouterAPI {
 
     func makeViewController() -> SettingsViewController {
         let interactor = SettingsScreenInteractor(
-            pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
@@ -276,25 +270,15 @@ final class SettingsRouter: SettingsRouterAPI {
             kycRouter.presentLimitsOverview(from: topViewController)
 
         case .launchPIT:
-            guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
-            let startPITCoordinator = { [weak self] in
-                guard let self = self else { return }
-                guard let navController = self.navigationRouter
-                    .navigationControllerAPI as? UINavigationController else { return }
-                self.exchangeCoordinator.start(from: navController)
-            }
+            guard let exchangeUrl = URL(string: exchangeUrlProvider()) else { return }
             let launchPIT = AlertAction(
                 style: .confirm(LocalizationConstants.Exchange.Launch.launchExchange),
-                metadata: .block(startPITCoordinator)
-            )
-            let contactSupport = AlertAction(
-                style: .default(LocalizationConstants.Exchange.Launch.contactSupport),
-                metadata: .url(supportURL)
+                metadata: .url(exchangeUrl)
             )
             let model = AlertModel(
                 headline: LocalizationConstants.Exchange.title,
                 body: nil,
-                actions: [launchPIT, contactSupport],
+                actions: [launchPIT],
                 image: #imageLiteral(resourceName: "exchange-icon-small"),
                 dismissable: true,
                 style: .sheet
@@ -305,9 +289,8 @@ final class SettingsRouter: SettingsRouterAPI {
                 switch metadata {
                 case .block(let block):
                     block()
-                case .url(let support):
-                    let controller = SFSafariViewController(url: support)
-                    self.navigationRouter.present(viewController: controller)
+                case .url(let exchangeUrl):
+                    self.urlOpener.open(exchangeUrl)
                 case .dismiss,
                      .pop,
                      .payload:
@@ -334,6 +317,8 @@ final class SettingsRouter: SettingsRouterAPI {
             externalActionsProvider.handleSecureChannel()
         case .showCardIssuing:
             showCardIssuingFlow()
+        case .showNotificationsSettings:
+            showNotificationsSettingsScreen()
         case .none:
             break
         }
@@ -357,6 +342,21 @@ final class SettingsRouter: SettingsRouterAPI {
                 addCardCompletionRelay.accept(())
             }
         }
+    }
+
+    private func showNotificationsSettingsScreen() {
+        analyticsRecording.record(event: AnalyticsEvents.New.Settings.notificationClicked)
+        let presenter = topViewController
+        let notificationCenterView = FeatureNotificationPreferencesView(store: .init(
+            initialState: .init(viewState: .loading),
+            reducer: notificationPreferencesReducer,
+            environment: NotificationPreferencesEnvironment(
+                mainQueue: .main,
+                notificationPreferencesRepository: DIKit.resolve(),
+                analyticsRecorder: DIKit.resolve()
+            )
+        ))
+        presenter.present(notificationCenterView)
     }
 
     private func showBankLinkingFlow(currency: FiatCurrency) {

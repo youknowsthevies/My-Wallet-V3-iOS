@@ -1,56 +1,70 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import MoneyKit
-import RxSwift
-import RxToolKit
+import NabuNetworkError
 import ToolKit
 
 public protocol SwapActivityServiceAPI: AnyObject {
     func fetchActivity(
         cryptoCurrency: CryptoCurrency,
         directions: Set<OrderDirection>
-    ) -> Single<[SwapActivityItemEvent]>
+    ) -> AnyPublisher<[SwapActivityItemEvent], NabuNetworkError>
 }
 
 final class SwapActivityService: SwapActivityServiceAPI {
 
+    // MARK: Types
+
+    private struct Key: Hashable {}
+
+    // MARK: Private Properties
+
     private let client: SwapClientAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
-    private let cache: CachedValue<[SwapActivityItemEvent]>
+    private let cachedValue: CachedValueNew<
+        Key,
+        [SwapActivityItemEvent],
+        NabuNetworkError
+    >
+
+    // MARK: Init
 
     init(
-        client: SwapClientAPI = resolve(),
-        fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()
+        client: SwapClientAPI,
+        fiatCurrencyProvider: CompleteSettingsServiceAPI
     ) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
-        cache = CachedValue(
-            configuration: .periodic(
-                seconds: 30,
-                schedulerIdentifier: "SwapActivityService"
-            )
+
+        let cache: AnyCache<Key, [SwapActivityItemEvent]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
+        ).eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client] _ in
+                fiatCurrencyProvider.displayCurrency
+                    .setFailureType(to: NabuNetworkError.self)
+                    .flatMap { fiatCurrency in
+                        client.fetchActivity(
+                            from: Date(),
+                            fiatCurrency: fiatCurrency.code,
+                            cryptoCurrency: nil,
+                            limit: 50
+                        )
+                    }
+                    .eraseToAnyPublisher()
+            }
         )
-        cache.setFetch {
-            fiatCurrencyProvider.displayCurrency
-                .asSingle()
-                .flatMap { fiatCurrency -> Single<[SwapActivityItemEvent]> in
-                    client.fetchActivity(
-                        from: Date(),
-                        fiatCurrency: fiatCurrency.code,
-                        cryptoCurrency: nil,
-                        limit: 50
-                    )
-                    .asSingle()
-                }
-        }
     }
 
     func fetchActivity(
         cryptoCurrency: CryptoCurrency,
         directions: Set<OrderDirection>
-    ) -> Single<[SwapActivityItemEvent]> {
-        cache.valueSingle
+    ) -> AnyPublisher<[SwapActivityItemEvent], NabuNetworkError> {
+        cachedValue.get(key: Key())
             .map { events in
                 events
                     .filter { event in
@@ -58,5 +72,6 @@ final class SwapActivityService: SwapActivityServiceAPI {
                             && event.pair.inputCurrencyType == cryptoCurrency
                     }
             }
+            .eraseToAnyPublisher()
     }
 }

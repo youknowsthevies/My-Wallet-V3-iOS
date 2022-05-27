@@ -11,9 +11,7 @@ final class ConnectSectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .connect
 
     var state: Observable<State> {
-        let presenter: PITConnectionCellPresenter = .init(
-            pitConnectionProvider: exchangeConnectionStatusProvider
-        )
+        let presenter = PITConnectionCellPresenter()
         let state = State.loaded(next:
             .some(
                 .init(
@@ -26,9 +24,5 @@ final class ConnectSectionPresenter: SettingsSectionPresenting {
         return .just(state)
     }
 
-    private let exchangeConnectionStatusProvider: PITConnectionStatusProviding
-
-    init(exchangeConnectionStatusProvider: PITConnectionStatusProviding) {
-        self.exchangeConnectionStatusProvider = exchangeConnectionStatusProvider
-    }
+    init() {}
 }

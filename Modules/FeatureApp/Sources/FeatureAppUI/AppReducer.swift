@@ -45,6 +45,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.appDelegate,
             environment: {
                 AppDelegateEnvironment(
+                    app: $0.app,
                     appSettings: $0.blockchainSettings,
                     onboardingSettings: $0.onboardingSettings,
                     cacheSuite: $0.cacheSuite,
@@ -103,7 +104,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     forgetWalletService: $0.forgetWalletService,
                     secondPasswordPrompter: $0.secondPasswordPrompter,
                     nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
-                    buildVersionProvider: $0.buildVersionProvider
+                    buildVersionProvider: $0.buildVersionProvider,
+                    performanceTracing: $0.performanceTracing
                 )
             }
         ),
@@ -171,8 +173,9 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         return .none
     case .core(.start):
         return .merge(
-            environment.featureFlagsService
-                .isEnabled(.local(.nativeWalletPayload))
+            environment.app.publisher(for: blockchain.app.configuration.native.wallet.payload.is.enabled, as: Bool.self)
+                .prefix(1)
+                .replaceError(with: false)
                 .eraseToEffect()
                 .map { isEnabled in
                     guard isEnabled else {

@@ -48,6 +48,7 @@ final class ContentLabelViewPresenter {
     init(
         title: String,
         alignment: NSTextAlignment,
+        adjustsFontSizeToFitWidth: LabelContent.FontSizeAdjustment = .false,
         interactor: ContentLabelViewInteractorAPI,
         accessibilityPrefix: String
     ) {
@@ -61,6 +62,7 @@ final class ContentLabelViewPresenter {
                     font: .main(.medium, 12),
                     color: .secondary,
                     alignment: alignment,
+                    adjustsFontSizeToFitWidth: adjustsFontSizeToFitWidth,
                     accessibility: .id("\(accessibilityPrefix).\(Accessibility.Identifier.ContentLabelView.title)")
                 )
             }
@@ -72,6 +74,7 @@ final class ContentLabelViewPresenter {
                     font: .main(.semibold, 14),
                     color: .titleText,
                     alignment: alignment,
+                    adjustsFontSizeToFitWidth: adjustsFontSizeToFitWidth,
                     accessibility: .id("\(accessibilityPrefix).\(AccessibilityId.description)")
                 )
             }

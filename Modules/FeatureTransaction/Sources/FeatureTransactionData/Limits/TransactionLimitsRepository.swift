@@ -22,13 +22,11 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
 
     func fetchTradeLimits(
         sourceCurrency: CurrencyType,
-        destinationCurrency: CurrencyType,
         product: TransactionLimitsProduct
     ) -> AnyPublisher<TradeLimits, NabuNetworkError> {
         client
             .fetchTradeLimits(
                 currency: sourceCurrency,
-                networkFee: destinationCurrency,
                 product: product
             )
             .map(TradeLimits.init)

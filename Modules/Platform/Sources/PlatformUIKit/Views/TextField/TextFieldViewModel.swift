@@ -50,6 +50,9 @@ public class TextFieldViewModel {
         /// The title text
         let title: String
 
+        /// The title text
+        let subtitle: String
+
         /// The title color
         let titleColor: Color
 
@@ -59,7 +62,8 @@ public class TextFieldViewModel {
         /// The cursor color
         let cursorColor: Color
 
-        init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String) {
+        init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String, subtitle: String) {
+            self.subtitle = subtitle
             if shouldShowHint, !hint.isEmpty {
                 self.title = hint
                 borderColor = .destructive
@@ -129,15 +133,16 @@ public class TextFieldViewModel {
                 focus,
                 showHintIfNeededRelay.asDriver(),
                 hintRelay.asDriver(),
-                titleRelay.asDriver()
+                titleRelay.asDriver(),
+                subtitleRelay.asDriver()
             )
-            .map { (isOn: $0.0.isOn, shouldShowHint: $0.1, hint: $0.2, title: $0.3) }
-            .map {
+            .map { focus, shouldShowHint, hint, title, subtitle in
                 Mode(
-                    isFocused: $0.isOn,
-                    shouldShowHint: $0.shouldShowHint,
-                    hint: $0.hint,
-                    title: $0.title
+                    isFocused: focus.isOn,
+                    shouldShowHint: shouldShowHint,
+                    hint: hint,
+                    title: title,
+                    subtitle: subtitle
                 )
             }
             .distinctUntilChanged()
@@ -191,7 +196,9 @@ public class TextFieldViewModel {
 
     /// The content of the title field
     public let titleRelay: BehaviorRelay<String>
+    public let subtitleRelay: BehaviorRelay<String>
     let titleFont = UIFont.main(.medium, 14)
+    let subtitleFont = UIFont.main(.medium, 12)
     let textFont = UIFont.main(.medium, 16)
 
     let showHintIfNeededRelay = BehaviorRelay(value: false)
@@ -245,6 +252,7 @@ public class TextFieldViewModel {
         autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
         placeholderRelay = BehaviorRelay(value: placeholder)
         titleRelay = BehaviorRelay(value: type.title)
+        subtitleRelay = BehaviorRelay(value: "")
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)

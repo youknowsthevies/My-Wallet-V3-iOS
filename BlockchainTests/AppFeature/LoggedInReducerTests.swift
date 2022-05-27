@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureSettingsDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -33,6 +34,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockDeepLinkRouter: MockDeepLinkRouter!
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
+    var performanceTracingMock: PerformanceTracingServiceAPI!
 
     var testStore: TestStore<
         LoggedIn.State,
@@ -68,6 +70,7 @@ final class LoggedInReducerTests: XCTestCase {
         mockFeatureFlagsService = MockFeatureFlagsService()
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockNabuUserService = MockNabuUserService()
+        performanceTracingMock = PerformanceTracing.mock
 
         testStore = TestStore(
             initialState: LoggedIn.State(),
@@ -85,7 +88,8 @@ final class LoggedInReducerTests: XCTestCase {
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,
                 featureFlagsService: mockFeatureFlagsService,
-                fiatCurrencySettingsService: fiatCurrencySettingsServiceMock
+                fiatCurrencySettingsService: fiatCurrencySettingsServiceMock,
+                performanceTracing: performanceTracingMock
             )
         )
     }

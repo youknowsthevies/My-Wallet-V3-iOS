@@ -28,5 +28,6 @@ public enum SettingsScreenAction {
     case showContactSupport
     case showWebLogin
     case showCardIssuing
+    case showNotificationsSettings
     case none
 }

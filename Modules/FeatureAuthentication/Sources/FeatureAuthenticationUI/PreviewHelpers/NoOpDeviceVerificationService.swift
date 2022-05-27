@@ -38,18 +38,6 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
     }
 }
 
-final class NoOpInternalFeatureFlagService: InternalFeatureFlagServiceAPI {
-    func isEnabled(_ feature: InternalFeature) -> Bool {
-        true
-    }
-
-    func enable(_ feature: InternalFeature) {}
-
-    func enable(_ features: [InternalFeature]) {}
-
-    func disable(_ feature: InternalFeature) {}
-}
-
 final class NoOpAccountRecoveryService: AccountRecoveryServiceAPI {
     func recoverUser(
         guid: String,

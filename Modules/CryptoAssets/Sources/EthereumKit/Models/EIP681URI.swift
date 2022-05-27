@@ -45,13 +45,16 @@ public struct EIP681URI {
         guard Self.validate(address: address) else {
             return nil
         }
-        if let erc20ContractAddress = cryptoCurrency.erc20ContractAddress {
+        if let erc20ContractAddress = cryptoCurrency.assetModel.kind.erc20ContractAddress {
             self.address = erc20ContractAddress
             method = .transfer(
                 destination: address,
                 amount: nil
             )
         } else if cryptoCurrency == .ethereum {
+            self.address = address
+            method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
+        } else if cryptoCurrency == .polygon {
             self.address = address
             method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
         } else {
@@ -62,13 +65,15 @@ public struct EIP681URI {
 
     public init?(
         url: String,
+        network: EVMNetwork,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         guard let parser = EIP681URIParser(string: url) else {
             return nil
         }
         guard let cryptoCurrency = parser.cryptoCurrency(
-            enabledCurrenciesService: enabledCurrenciesService
+            enabledCurrenciesService: enabledCurrenciesService,
+            network: network
         ) else {
             return nil
         }
@@ -108,18 +113,19 @@ extension EIP681URIParser {
 
     /// From a EIP681URIParser, returns correct CryptoCurrency.
     func cryptoCurrency(
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        network: EVMNetwork
     ) -> CryptoCurrency? {
         switch method {
         case .send:
             // If this is a 'send', then we are sending Ethereum.
-            return .ethereum
+            return network.cryptoCurrency
         case .transfer:
             // If this is a 'transfer', then we need to find which token we are sending.
             // We do this by matching 'address' with one of the coins contract address.
             return enabledCurrenciesService.allEnabledCryptoCurrencies
                 .first { cryptoCurrency in
-                    cryptoCurrency.erc20ContractAddress?
+                    cryptoCurrency.assetModel.kind.erc20ContractAddress?
                         .caseInsensitiveCompare(address) == .orderedSame
                 }
         }
@@ -134,7 +140,7 @@ extension EIP681URIParser.Method {
                 amount: amount
                     .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
-                        CryptoValue(amount: amount, currency: .ethereum)
+                        CryptoValue(amount: amount, currency: cryptoCurrency)
                     },
                 gasLimit: gasLimit.flatMap { BigUInt($0) },
                 gasPrice: gasPrice.flatMap { BigUInt($0) }

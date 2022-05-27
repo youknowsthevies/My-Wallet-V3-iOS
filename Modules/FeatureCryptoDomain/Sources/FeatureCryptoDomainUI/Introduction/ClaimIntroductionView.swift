@@ -194,32 +194,31 @@ public struct ClaimIntroductionView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             PrimaryNavigationView {
-                VStack(alignment: .center, spacing: Spacing.padding3) {
-                    introductionHeader
-                        .padding([.top, .leading, .trailing], Spacing.padding3)
-                    introductionList
-                    Spacer()
-                    SmallMinimalButton(title: LocalizedString.promptButton) {
-                        viewStore.send(.enter(into: .benefits))
+                GeometryReader { geometry in
+                    ScrollView {
+                        VStack(alignment: .center, spacing: Spacing.padding3) {
+                            introductionHeader
+                                .padding([.top, .leading, .trailing], Spacing.padding3)
+                            introductionList
+                            Spacer()
+                            SmallMinimalButton(title: LocalizedString.promptButton) {
+                                viewStore.send(.enter(into: .benefits))
+                            }
+                            .accessibility(identifier: Accessibility.smallButton)
+                            Spacer()
+                            PrimaryButton(title: LocalizedString.goButton) {
+                                viewStore.send(.navigate(to: .searchDomain))
+                            }
+                            .padding([.leading, .trailing, .bottom], Spacing.padding3)
+                            .accessibility(identifier: Accessibility.ctaButton)
+                        }
+                        .navigationRoute(in: store)
+                        .primaryNavigation(
+                            title: LocalizedString.title
+                        )
                     }
-                    .accessibility(identifier: Accessibility.smallButton)
-                    Spacer()
-                    Text(LocalizedString.instruction)
-                        .typography(.caption1)
-                        .foregroundColor(.semantic.overlay)
-                        .multilineTextAlignment(.center)
-                        .padding([.leading, .trailing], Spacing.padding3)
-                        .accessibility(identifier: Accessibility.instructionText)
-                    PrimaryButton(title: LocalizedString.goButton) {
-                        viewStore.send(.navigate(to: .searchDomain))
-                    }
-                    .padding([.leading, .trailing], Spacing.padding3)
-                    .accessibility(identifier: Accessibility.ctaButton)
+                    .frame(height: geometry.size.height)
                 }
-                .navigationRoute(in: store)
-                .primaryNavigation(
-                    title: LocalizedString.title
-                )
             }
         }
     }

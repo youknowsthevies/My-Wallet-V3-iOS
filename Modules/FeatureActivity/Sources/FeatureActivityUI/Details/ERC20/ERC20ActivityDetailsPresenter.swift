@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -38,8 +39,8 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let router: ActivityRouterAPI
     private let interactor: ERC20ActivityDetailsInteractor
     private let alertViewPresenter: AlertViewPresenterAPI
-
     private let disposeBag = DisposeBag()
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: Private Properties (Model Relay)
 
@@ -143,16 +144,22 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     func viewDidLoad() {
         interactor
-            .details(identifier: event.identifier, createdAt: event.creationDate)
-            .subscribe(
-                onNext: { [weak self] model in
+            .details(event: event)
+            .handleEvents(
+                receiveOutput: { [weak self] model in
                     self?.itemRelay.accept(model)
                 },
-                onError: { [weak self] _ in
-                    self?.alertViewPresenter.error(in: nil, action: nil)
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure:
+                        self?.alertViewPresenter.error(in: nil, action: nil)
+                    }
                 }
             )
-            .disposed(by: disposeBag)
+            .subscribe()
+            .store(in: &cancellables)
     }
 
     func bindAll(event: TransactionalActivityItemEvent) {

@@ -49,8 +49,11 @@ struct UnlockTradingView: View {
                 )
 
                 ScrollView {
-                    makeUpgradePrompt(upgradePath: viewStore.selectedUpgradePath)
-                        .padding(.bottom, Spacing.padding2)
+                    makeUpgradePrompt(
+                        upgradePath: viewStore.selectedUpgradePath,
+                        currentTier: viewStore.currentUserTier
+                    )
+                    .padding(.bottom, Spacing.padding2)
                 }
             }
             .padding(.top, Spacing.padding2)
@@ -68,13 +71,16 @@ struct UnlockTradingView: View {
     }
 
     @ViewBuilder
-    private func makeUpgradePrompt(upgradePath: UnlockTradingState.UpgradePath) -> some View {
+    private func makeUpgradePrompt(
+        upgradePath: UnlockTradingState.UpgradePath,
+        currentTier: KYC.Tier
+    ) -> some View {
         switch upgradePath {
         case .basic:
             BenefitsView(
                 store: store,
                 targetTier: .tier1,
-                benefits: UnlockTradingBenefit.basicBenefits
+                benefits: UnlockTradingBenefit.basicBenefits(active: currentTier > .tier0)
             )
             .promptColorScheme(.basic)
             .transition(
@@ -87,7 +93,7 @@ struct UnlockTradingView: View {
             BenefitsView(
                 store: store,
                 targetTier: .tier2,
-                benefits: UnlockTradingBenefit.verifiedBenefits
+                benefits: UnlockTradingBenefit.verifiedBenefits(active: currentTier >= .tier2)
             )
             .promptColorScheme(.verified)
             .transition(

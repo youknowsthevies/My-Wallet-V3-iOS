@@ -4,5 +4,6 @@ import Foundation
 
 struct PushTxRequest: Encodable {
     let rawTx: String
+    let network: String
     let api_code: String
 }

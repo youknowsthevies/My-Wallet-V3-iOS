@@ -164,8 +164,8 @@ extension LocalizationConstants.Interest.Screen.Overview.Action {
         comment: "Not available in your region"
     )
     public static let tierTooLow = NSLocalizedString(
-        "You need to be Verified verified to start Earning Rewards",
-        comment: "You need to be Verified verified to start Earning Rewards"
+        "You need to have Full Access to start Earning Rewards",
+        comment: "You need to be Tier 2 to start Earning Rewards"
     )
     public static let unavailable = NSLocalizedString(
         "Currently unavailable, please check again later",

@@ -11,6 +11,7 @@ import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
 import Localization
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -136,6 +137,7 @@ struct CoreAppEnvironment {
     var secondPasswordPrompter: SecondPasswordPromptable
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
     var buildVersionProvider: () -> String
+    var performanceTracing: PerformanceTracingServiceAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -146,6 +148,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.onboarding,
             environment: { environment -> Onboarding.Environment in
                 Onboarding.Environment(
+                    app: environment.app,
                     appSettings: environment.blockchainSettings,
                     credentialsStore: environment.credentialsStore,
                     alertPresenter: environment.alertPresenter,
@@ -181,7 +184,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
                     featureFlagsService: environment.featureFlagsService,
-                    fiatCurrencySettingsService: environment.fiatCurrencySettingsService
+                    fiatCurrencySettingsService: environment.fiatCurrencySettingsService,
+                    performanceTracing: environment.performanceTracing
                 )
             }
         ),
@@ -544,7 +548,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .loginRequestReceived(let deeplink):
         return environment
             .featureFlagsService
-            .isEnabled(.remote(.pollingForEmailLogin))
+            .isEnabled(.pollingForEmailLogin)
             .flatMap { isEnabled -> Effect<CoreAppAction, Never> in
                 guard isEnabled else {
                     return .none
@@ -617,7 +621,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .mapError(ProceedToLoggedInError.coincore)
         let erc20Init = environment.erc20CryptoAssetService
             .initialize()
-            .mapError(ProceedToLoggedInError.erc20Service)
+            .replaceError(with: ())
             .eraseToAnyPublisher()
 
         return coincoreInit
@@ -682,6 +686,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .onboarding(.pin(.handleAuthentication(let password))):
+        environment.performanceTracing.begin(trace: .pinToDashboard)
         return Effect(
             value: .fetchWallet(password: password)
         )

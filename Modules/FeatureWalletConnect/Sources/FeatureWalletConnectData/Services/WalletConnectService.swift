@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import EthereumKit
 import FeatureWalletConnectDomain
 import Foundation
 import PlatformKit
@@ -68,11 +69,6 @@ final class WalletConnectService {
             sessionLinks.value[url]
         }
 
-        // PrintRequestHandler for debugging.
-        server.register(
-            handler: PrintRequestHandler()
-        )
-
         // personal_sign, eth_sign, eth_signTypedData
         server.register(
             handler: SignRequestHandler(
@@ -98,6 +94,11 @@ final class WalletConnectService {
                 responseEvent: responseEvent,
                 getSession: getSession
             )
+        )
+
+        // wallet_switchEthereumChain
+        server.register(
+            handler: SwitchRequestHandler(responseEvent: responseEvent)
         )
 
         sessionRepository
@@ -199,14 +200,26 @@ extension WalletConnectService: WalletConnectServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func acceptConnection(_ completion: @escaping (Session.WalletInfo) -> Void) {
+    func acceptConnection(
+        session: Session,
+        completion: @escaping (Session.WalletInfo) -> Void
+    ) {
+        guard let network = EVMNetwork(int: session.dAppInfo.chainId) else {
+            if BuildFlag.isInternal {
+                let chainID = session.dAppInfo.chainId
+                let meta = session.dAppInfo.peerMeta
+                fatalError("Unsupported ChainID: '\(chainID ?? 0)' ,'\(meta.name)', '\(meta.url.absoluteString)'")
+            }
+            return
+        }
+
         publicKeyProvider
-            .publicKey
+            .publicKey(network: network)
             .map { publicKey in
                 Session.WalletInfo(
                     approved: true,
                     accounts: [publicKey],
-                    chainId: 1,
+                    chainId: Int(network.chainID),
                     peerId: UUID().uuidString,
                     peerMeta: .blockchain
                 )
@@ -217,11 +230,14 @@ extension WalletConnectService: WalletConnectServiceAPI {
             .store(in: &cancellables)
     }
 
-    func denyConnection(_ completion: @escaping (Session.WalletInfo) -> Void) {
+    func denyConnection(
+        session: Session,
+        completion: @escaping (Session.WalletInfo) -> Void
+    ) {
         let walletInfo = Session.WalletInfo(
             approved: false,
             accounts: [],
-            chainId: 1,
+            chainId: session.dAppInfo.chainId ?? EVMNetwork.defaultChainID,
             peerId: UUID().uuidString,
             peerMeta: .blockchain
         )
@@ -229,7 +245,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
     }
 
     func connect(_ url: String) {
-        featureFlagService.isEnabled(.remote(.walletConnectEnabled))
+        featureFlagService.isEnabled(.walletConnectEnabled)
             .sink { [weak self] isEnabled in
                 guard isEnabled,
                       let wcUrl = WCURL(url)
@@ -254,5 +270,11 @@ extension Response {
             fatalError("Wallet Connect Response Failed: \(request.method)")
         }
         return response
+    }
+}
+
+extension EVMNetwork {
+    fileprivate static var defaultChainID: Int {
+        Int(EVMNetwork.ethereum.chainID)
     }
 }

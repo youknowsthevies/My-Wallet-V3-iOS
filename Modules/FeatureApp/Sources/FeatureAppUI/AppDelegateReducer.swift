@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -7,7 +8,7 @@ import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
-import ObservabilityDomain
+import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -70,6 +71,7 @@ extension AppDelegateAction {
 
 /// Holds the dependencies
 struct AppDelegateEnvironment {
+    var app: AppProtocol
     var appSettings: BlockchainSettings.App
     var onboardingSettings: OnboardingSettingsAPI
     var cacheSuite: CacheSuite
@@ -120,7 +122,13 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
-                .refreshERC20AssetsCache()
+                .refreshEthereumERC20AssetsCache()
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .fireAndForget(),
+
+            environment.supportedAssetsRemoteService
+                .refreshPolygonERC20AssetsCache()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
@@ -142,7 +150,9 @@ let appDelegateReducer = Reducer<
                 appId: context.embraceAppId
             ),
 
-            environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
+            environment.app.publisher(for: blockchain.app.configuration.SSL.pinning.is.enabled, as: Bool.self)
+                .prefix(1)
+                .replaceError(with: true)
                 .filter { $0 }
                 .map(.applyCertificatePinning)
                 .eraseToEffect(),

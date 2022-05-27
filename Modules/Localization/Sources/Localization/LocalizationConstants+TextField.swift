@@ -59,7 +59,7 @@ extension LocalizationConstants {
                 comment: "Placeholder for a one time code."
             )
             public static let addressOrDomain = NSLocalizedString(
-                "Address or domain",
+                "Enter address or domain",
                 comment: "Placeholder text for crypto address"
             )
         }
@@ -164,10 +164,14 @@ extension LocalizationConstants {
                 "Zip",
                 comment: "Title for zip text field"
             )
-            public static let sendToCryptoWallet = NSLocalizedString(
-                "Only send %@ to %@ Wallets",
-                comment: "Title for crypto address: 'Only send BTC to Bitcoin Wallets'"
-            )
+
+            public static func sendToCryptoWallet(displayCode: String, networkName: String) -> String {
+                let format = NSLocalizedString(
+                    "Only send %@ to wallets on the %@ network.",
+                    comment: "Title for crypto address: 'Only send BTC to wallets on the Bitcoin network'"
+                )
+                return String(format: format, displayCode, networkName)
+            }
         }
 
         public enum PasswordScore {

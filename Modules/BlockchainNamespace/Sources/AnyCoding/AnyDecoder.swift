@@ -28,6 +28,7 @@ open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
     }
 
     public func decode<T>(_: T.Type = T.self, from any: Any) throws -> T where T: Decodable {
+        if let any = any as? T { return any }
         let old = value
         value = any
         defer { value = old }
@@ -43,7 +44,7 @@ open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
             }
             return try T(from: self)
         } catch {
-            return try any as? T ?? ((T.self as? OptionalProtocol.Type)?.null as? T).or(throw: error)
+            return try ((T.self as? OptionalProtocol.Type)?.null as? T).or(throw: error)
         }
     }
 

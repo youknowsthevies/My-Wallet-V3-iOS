@@ -79,6 +79,8 @@ extension SettingsSectionType.CellType {
                 return .showAirdrops
             case .cardIssuing:
                 return .showCardIssuing
+            case .notifications:
+                return .showNotificationsSettings
             }
         case .switch:
             return .none

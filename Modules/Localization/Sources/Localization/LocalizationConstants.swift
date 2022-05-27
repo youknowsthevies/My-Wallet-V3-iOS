@@ -98,6 +98,7 @@ public enum LocalizationConstants {
         public static let cannotOpenURLArg = NSLocalizedString("Cannot open URL %@", comment: "")
         public static let unsafeDeviceWarningMessage = NSLocalizedString("Your device appears to be jailbroken. The security of your wallet may be compromised.", comment: "")
         public static let twoStep = NSLocalizedString("An error occurred while changing 2-Step verification.", comment: "")
+        public static let network = NSLocalizedString("Network Error", comment: "Network Error title")
         public static let noInternetConnection = NSLocalizedString("No internet connection.", comment: "")
         public static let noInternetConnectionPleaseCheckNetwork = NSLocalizedString("No internet connection available. Please check your network settings.", comment: "")
         public static let warning = NSLocalizedString("Warning", comment: "")
@@ -124,6 +125,10 @@ public enum LocalizationConstants {
         )
         public static let notEnoughXForFees = NSLocalizedString("Not enough %@ for fees", comment: "Message shown when the user has attempted to send more funds than the user can spend (input amount plus fees)")
         public static let balancesGeneric = NSLocalizedString("We are experiencing a service issue that may affect displayed balances. Don't worry, your funds are safe.", comment: "Message shown when an error occurs while fetching balance or transaction history")
+        public static let noSourcesAvailable = NSLocalizedString("%@ is not available in your region.", comment: "Error title shown when there are no accounts available in your region")
+        public static let noSourcesAvailableMessage = NSLocalizedString("At the moment we do not support %@ in your region, you may still use the wallet to manage your crypto.", comment: "Error message shown when there are no accounts available in your region")
+        public static let insufficientInterestWithdrawalBalance = NSLocalizedString("Unable to Withdraw", comment: "Error title shown when the customer is unable to withdraw their crypto from the interest account.")
+        public static let insufficientInterestWithdrawalBalanceMessage = NSLocalizedString("You do not have sufficient balance to withdraw from your rewards account, we have a 7 day holding period for interest accounts - if you believe this to be incorrect and a problem, please contact support.", comment: "Error message shown when the customer is unable to withdraw their crypto from the interest account.")
     }
 
     public enum ServerStatus {
@@ -143,6 +148,17 @@ public enum LocalizationConstants {
     }
 
     public enum Authentication {
+
+        public enum Support {
+            public static let title = NSLocalizedString("Having Trouble Logging In?", comment: "Having Trouble Logging In?")
+            public static let description = NSLocalizedString("We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.", comment: "We're here to help. Explore common log in issues below in FAQs or if you'd prefer to chat with a member of our support team, select live chat or our email form below.")
+            public static let chatNow = NSLocalizedString("Chat Now", comment: "Chat Now")
+            public static let contactUs = NSLocalizedString("Contact Us", comment: "Contact Us")
+            public static let viewFAQ = NSLocalizedString("View FAQs", comment: "View FAQs")
+            public static let version = NSLocalizedString("iOS Version", comment: "iOS Version")
+            public static let latestVersion = NSLocalizedString("Latest Version", comment: "Latest Version")
+            public static let newVersionAvailable = NSLocalizedString("New Version Available", comment: "New Version Available")
+        }
 
         public enum CountryAndStatePickers {
             public static let suggestedSelectionTitle = NSLocalizedString(
@@ -700,7 +716,7 @@ public enum LocalizationConstants {
 
     public enum Exchange {
         public static let title = NSLocalizedString("Exchange", comment: "Title for the Exchange")
-        public static let connect = NSLocalizedString("Connect", comment: "Connect")
+        public static let launch = NSLocalizedString("Launch", comment: "Launch - opens exchange website url")
         public static let connected = NSLocalizedString("Connected", comment: "Connected")
         public static let twoFactorNotEnabled = NSLocalizedString("Please enable 2FA on your Exchange account to complete deposit.", comment: "User must have 2FA enabled to deposit from send.")
         public enum Alerts {
@@ -745,7 +761,7 @@ public enum LocalizationConstants {
 
             public enum Features {
                 public static let exchangeWillBeAbleTo = NSLocalizedString("Our Exchange will be able to:", comment: "")
-                public static let shareStatus = NSLocalizedString("Share your Verified or Basic Level status for unlimited trading", comment: "")
+                public static let shareStatus = NSLocalizedString("Share your Full or Limited Access status for unlimited trading", comment: "")
                 public static let shareAddresses = NSLocalizedString("Sync addresses with your Wallet so you can securely sweep crypto between accounts", comment: "")
                 public static let lowFees = NSLocalizedString("Low Fees", comment: "")
                 public static let builtByBlockchain = NSLocalizedString("Built by Blockchain.com", comment: "")
@@ -1079,6 +1095,10 @@ public enum LocalizationConstants {
                 public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
             }
 
+            public enum Sign {
+                public static let title = NSLocalizedString("Sign", comment: "Sign")
+            }
+
             public enum Receive {
                 public static let title = NSLocalizedString("Receive", comment: "Receive")
                 public static let description = NSLocalizedString("Accept or Share Your %@ Address", comment: "Accept or Share Your %@ Address")
@@ -1250,7 +1270,7 @@ public enum LocalizationConstants {
                 comment: "Airdrop intro screen: learn more link"
             )
             public static let ctaButton = NSLocalizedString(
-                "Upgrade to Verified. Get $10",
+                "Upgrade to get Full Access. Get $10",
                 comment: "Airdrop intro screen: CTA button"
             )
             public enum InfoCell {

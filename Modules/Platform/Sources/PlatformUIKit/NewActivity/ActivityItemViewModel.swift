@@ -112,6 +112,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             font: descriptors.primaryFont,
             color: descriptors.primaryTextColor,
             alignment: .left,
+            adjustsFontSizeToFitWidth: .true(factor: 0.75),
             accessibility: .id(AccessibilityId.ActivityCell.titleLabel)
         )
     }
@@ -289,8 +290,9 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                     assertionFailure("Unexpected case for interest \(interest.state)")
                     return .local(name: Icon.question.name, bundle: .componentLibrary)
                 }
+            case .cleared:
+                return .local(name: "clock-icon", bundle: .platformUIKit)
             case .refunded,
-                 .cleared,
                  .unknown:
                 assertionFailure("Unexpected case for interest \(interest.state)")
                 return .local(name: Icon.question.name, bundle: .componentLibrary)

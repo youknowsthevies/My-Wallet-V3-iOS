@@ -240,6 +240,8 @@ packages:
     path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
+  FeatureNotificationPreferences:
+    path: Modules/FeatureNotificationPreferences
   FeatureTour:
     path: Modules/FeatureTour
   FeatureTransaction:
@@ -291,6 +293,8 @@ targets:
       Release Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
     dependencies:
       - sdk: libicucore.tbd
+      - framework: Carthage/Build/FirebasePerformance.xcframework
+        embed: false
       - framework: Carthage/Build/FirebaseABTesting.xcframework
         embed: false
       - framework: Carthage/Build/FirebaseAnalytics.xcframework
@@ -345,6 +349,7 @@ targets:
       - package: FeatureDebug
       - package: FeatureForm
       - package: FeatureInterest
+      - package: FeatureNotificationPreferences
       - package: FeatureKYC
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
@@ -392,6 +397,8 @@ targets:
       - package: CryptoAssets
         product: EthereumKit
       - package: CryptoAssets
+        product: EthereumDataKit
+      - package: CryptoAssets
         product: ERC20Kit
       - package: CryptoAssets
         product: ERC20DataKit
@@ -414,6 +421,7 @@ targets:
       - package: Money
         product: MoneyKit
       - package: Observability
+        product: ObservabilityKit
       - package: Platform
         product: PlatformKit
       - package: Platform

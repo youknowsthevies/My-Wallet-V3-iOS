@@ -41,10 +41,13 @@ final class PriceRepository: PriceRepositoryAPI {
                     .map(\.entries)
                     .map { entries in
                         entries.compactMapValues { item in
-                            PriceQuoteAtTime(
-                                response: item,
-                                currency: key.quote.currencyType
-                            )
+                            item
+                                .flatMap {
+                                    PriceQuoteAtTime(
+                                        response: $0,
+                                        currency: key.quote.currencyType
+                                    )
+                                }
                         }
                     }
                     .eraseToAnyPublisher()

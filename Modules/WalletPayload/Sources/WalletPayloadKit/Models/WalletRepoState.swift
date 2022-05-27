@@ -33,7 +33,8 @@ public struct WalletCredentials: Equatable, Codable {
     /// Returns the stored session token
     public var sessionToken: String
 
-    /// Returns the stored password
+    /// Returns the in-memory stored password
+    /// - NOTE: for security reasons this is not stored in the keychain
     public var password: String
 
     static let empty = WalletCredentials(
@@ -42,6 +43,39 @@ public struct WalletCredentials: Equatable, Codable {
         sessionToken: "",
         password: ""
     )
+
+    enum CodingKeys: String, CodingKey {
+        case guid
+        case sharedKey
+        case sessionToken
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        guid = try container.decode(String.self, forKey: .guid)
+        sharedKey = try container.decode(String.self, forKey: .sharedKey)
+        sessionToken = try container.decode(String.self, forKey: .sessionToken)
+        password = "" // we can't decode this since we don't encode it
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(guid, forKey: .guid)
+        try container.encode(sharedKey, forKey: .sharedKey)
+        try container.encode(sessionToken, forKey: .sessionToken)
+    }
+
+    public init(
+        guid: String,
+        sharedKey: String,
+        sessionToken: String,
+        password: String
+    ) {
+        self.guid = guid
+        self.sharedKey = sharedKey
+        self.sessionToken = sessionToken
+        self.password = password
+    }
 }
 
 /// Holds informational properties regarding the wallet

@@ -25,7 +25,7 @@ public enum EntryType: Int32 {
     /// Bitcoin
     case bitcoin = 8
 
-    /// Nabu User Credentials
+    /// Nabu User Credentials - **deprecated**
     case userCredentials = 10
 
     /// Stellar
@@ -33,4 +33,7 @@ public enum EntryType: Int32 {
 
     /// Wallet Credentials - Used for wallet recovery
     case walletCredentials = 12
+
+    /// Account Credentials for unified accounts
+    case accountCredentials = 14
 }

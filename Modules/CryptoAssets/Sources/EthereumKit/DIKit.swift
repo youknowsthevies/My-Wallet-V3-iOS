@@ -16,13 +16,9 @@ extension DependencyContainer {
 
         factory { APIClient() as TransactionPushClientAPI }
 
-        factory { APIClient() as TransactionClientAPI }
-
         factory { APIClient() as TransactionFeeClientAPI }
 
         // MARK: RPCClient
-
-        factory { RPCClient() as LatestBlockClientAPI }
 
         factory { RPCClient() as EstimateGasClientAPI }
 
@@ -39,7 +35,24 @@ extension DependencyContainer {
                 network: .ethereum,
                 repository: DIKit.resolve(),
                 addressFactory: EthereumExternalAssetAddressFactory(
-                    enabledCurrenciesService: DIKit.resolve()
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .ethereum
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
+        // MARK: CoinCore
+
+        factory(tag: CryptoCurrency.polygon) {
+            EVMAsset(
+                network: .polygon,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .polygon
                 ),
                 errorRecorder: DIKit.resolve(),
                 exchangeAccountProvider: DIKit.resolve(),
@@ -61,19 +74,18 @@ extension DependencyContainer {
 
         single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
 
-        single { LatestBlockRepository() as LatestBlockRepositoryAPI }
-
-        single { HistoricalTransactionsRepository() as HistoricalTransactionsRepositoryAPI }
-
-        single { PendingTransactionRepository() as PendingTransactionRepositoryAPI }
-
         factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
             AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())
         }
 
         factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
 
-        factory { EthereumTransactionSendingService() as EthereumTransactionSendingServiceAPI }
+        factory {
+            EthereumTransactionSendingService(
+                pushService: DIKit.resolve(),
+                transactionSigner: DIKit.resolve()
+            ) as EthereumTransactionSendingServiceAPI
+        }
 
         factory { EthereumTransactionSigningService() as EthereumTransactionSigningServiceAPI }
 
@@ -96,6 +108,12 @@ extension DependencyContainer {
         factory { WalletConnectEngineFactory() as WalletConnectEngineFactoryAPI }
 
         factory { GasEstimateService() as GasEstimateServiceAPI }
+
+        factory {
+            EthereumTransactionPushService(
+                client: DIKit.resolve()
+            ) as EthereumTransactionPushServiceAPI
+        }
     }
 }
 

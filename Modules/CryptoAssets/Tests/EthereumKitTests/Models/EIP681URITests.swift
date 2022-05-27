@@ -39,6 +39,7 @@ final class EIP681URITests: XCTestCase {
     func testDecodeSend() {
         let eip681URI = EIP681URI(
             url: TestCase.sendString,
+            network: .ethereum,
             enabledCurrenciesService: enabledCurrenciesService
         )
         XCTAssertNotNil(eip681URI)
@@ -57,6 +58,7 @@ final class EIP681URITests: XCTestCase {
     func testDecodeTransfer() {
         let eip681URI = EIP681URI(
             url: TestCase.transferString,
+            network: .ethereum,
             enabledCurrenciesService: enabledCurrenciesService
         )
         XCTAssertNotNil(eip681URI)

@@ -129,7 +129,7 @@ extension LocalizationConstants.Transaction.Notices {
     )
 
     public static let verifyToUnlockMoreTradingNoticeMessage = NSLocalizedString(
-        "You can only complete one transaction with a Basic level account.",
+        "You can only complete one transaction with a Limited Access level account.",
         comment: "Notice showing that the user only has 1 transaction left before having to verify their identity - message"
     )
 
@@ -223,7 +223,7 @@ extension LocalizationConstants.Transaction.Receive.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to the Trading Account in seconds by completing your profile and getting Basic access.",
+        "Get access to the Trading Account in seconds by completing your profile and getting Limited Access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -267,7 +267,7 @@ extension LocalizationConstants.Transaction.Swap.KYC {
         comment: ""
     )
     public static let subtitle = NSLocalizedString(
-        "Get access to swap in seconds by completing your profile and getting Basic access.",
+        "Get access to swap in seconds by completing your profile and getting Limited Access.",
         comment: ""
     )
     public static let card1Title = NSLocalizedString(
@@ -1012,6 +1012,10 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         "You can start this transaction once one of the pending orders finish.",
         comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
     )
+    public static let insufficientInterestWithdrawalBalance = NSLocalizedString(
+        "You do not have sufficient balance to withdraw from your rewards account, we have a 7 day holding period for interest accounts - if you believe this to be incorrect and a problem, please contact support.",
+        comment: "User has insufficient balance to withdraw their rewards, this may be down to the customer still being inside the 7 day holding period."
+    )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
         comment: ""
@@ -1345,11 +1349,11 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Error recovery message - input over the user's personal maximum limit"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_single = NSLocalizedString(
-        "You can buy up to **%@** per transaction. Upgrade to Verified & buy larger amounts with your bank or card.",
+        "You can buy up to **%@** per transaction. Get Full Access & buy larger amounts with your bank or card.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_gold = NSLocalizedString(
-        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Verified to buy more.",
+        "You can only buy **%@**. You have **%@ remaining**. Get Full Access to buy more.",
         comment: "Error recovery message - input over the user's personal maximum limit - buy"
     )
     public static let overMaximumPersonalLimitRecoveryMessage_buy_other = NSLocalizedString(
@@ -1515,16 +1519,6 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Looks like your payment failed due to not enough funds in your account. Either top up your account or contact your bank and try again."
     )
 
-    public static let cardBankDeclineTitle = NSLocalizedString(
-        "The Bank has declined this card",
-        comment: "The Bank has declined this card"
-    )
-
-    public static let cardBankDecline = NSLocalizedString(
-        "The card you tried to use has been declined by your bank, please try again or another payment method.",
-        comment: "The card you tried to use has been declined by your bank, please try again or another payment method."
-    )
-
     public static let cardCreateBankDeclinedTitle = NSLocalizedString(
         "Failed To Add Card",
         comment: "Failed To Add Card"
@@ -1553,6 +1547,16 @@ extension LocalizationConstants.Transaction.Error {
     public static let cardAcquirerDecline = NSLocalizedString(
         "Unfortunately your card issuer does not allow payments in the form of cryptocurrencies.",
         comment: "Unfortunately your card issuer does not allow payments in the form of cryptocurrencies."
+    )
+
+    public static let cardBankDeclineTitle = NSLocalizedString(
+        "The Bank has declined this card",
+        comment: "The Bank has declined this card"
+    )
+
+    public static let cardBankDecline = NSLocalizedString(
+        "Your bank declined this card. Please try again or choose another payment method.",
+        comment: "Your bank declined this card. Please try again or choose another payment method."
     )
 
     public static let cardDuplicateTitle = NSLocalizedString(

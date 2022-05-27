@@ -27,13 +27,15 @@ final class PITConnectionCellPresenter: BadgeCellPresenting {
 
     // MARK: - Setup
 
-    init(pitConnectionProvider: PITConnectionStatusProviding) {
+    init() {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.Badge.blockchainExchange,
             descriptors: .settings
         )
         badgeAssetPresenting = DefaultBadgeAssetPresenter(
-            interactor: PITConnectionBadgeInteractor(provider: pitConnectionProvider)
+            interactor: DefaultBadgeAssetInteractor(
+                initialState: .loaded(next: .launch)
+            )
         )
 
         badgeAssetPresenting.state

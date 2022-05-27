@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureAuthenticationUI
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -18,6 +19,8 @@ final class PinScreenViewController: BaseScreenViewController {
 
     @IBOutlet private var digitPadBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
+
+    private lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: false)
 
     private let presenter: PinScreenPresenter
     private let alertViewPresenter: AlertViewPresenter
@@ -214,7 +217,10 @@ final class PinScreenViewController: BaseScreenViewController {
     }
 
     override func navigationBarTrailingButtonPressed() {
-        presenter.trailingButtonPressed()
+        presentSupportViewFromViewController(
+            self,
+            transitioningDelegate: sheetPresenter
+        )
     }
 }
 

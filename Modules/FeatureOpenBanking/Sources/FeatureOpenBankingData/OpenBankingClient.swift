@@ -65,7 +65,7 @@ public class OpenBankingClient {
 
         let callbackPath: String
         switch app.state.result(for: blockchain.ux.payment.method.open.banking.callback.path)
-            .decode(as: String.self).result
+            .decode(String.self).result
         {
         case .success(let output):
             callbackPath = output

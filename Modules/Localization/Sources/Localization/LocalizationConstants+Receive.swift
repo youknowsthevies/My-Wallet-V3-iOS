@@ -52,6 +52,22 @@ extension LocalizationConstants.Receive.Text {
         comment: "Section header where memo is displayed."
     )
 
+    public static func alertTitle(displayCode: String, networkName: String) -> String {
+        let string = NSLocalizedString(
+            "%@ on %@ Network",
+            comment: "EVM Alert title: 'USDC on Ethereum Network'"
+        )
+        return String(format: string, displayCode, networkName)
+    }
+
+    public static func alertBody(displayCode: String, networkName: String) -> String {
+        let string = NSLocalizedString(
+            "Please send %@ on %@ Network to this address only. We cannot recover lost funds.",
+            comment: "EVM Alert body: 'Please send USDC on Ethereum Network to...'"
+        )
+        return String(format: string, displayCode, networkName)
+    }
+
     public static let memoNote = NSLocalizedString(
         "If you send funds without the XLM Memo Text, your funds will be lost and not credited to your account. Please send only XLM to this address.",
         comment: "Note about Stellar Memos"

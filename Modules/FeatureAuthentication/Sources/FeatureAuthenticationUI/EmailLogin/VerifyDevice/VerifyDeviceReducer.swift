@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -94,6 +95,7 @@ public struct VerifyDeviceState: Equatable, NavigationState {
 }
 
 struct VerifyDeviceEnvironment {
+    let app: AppProtocol
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
     let featureFlagsService: FeatureFlagsServiceAPI
@@ -107,6 +109,7 @@ struct VerifyDeviceEnvironment {
     let accountRecoveryService: AccountRecoveryServiceAPI
 
     init(
+        app: AppProtocol,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
@@ -121,6 +124,7 @@ struct VerifyDeviceEnvironment {
             try JSONEncoder().encode($0).base64EncodedString()
         }
     ) {
+        self.app = app
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
@@ -205,7 +209,7 @@ let verifyDeviceReducer = Reducer.combine(
         case .onAppear:
             return environment
                 .featureFlagsService
-                .isEnabled(.remote(.pollingForEmailLogin))
+                .isEnabled(.pollingForEmailLogin)
                 .flatMap { isEnabled -> Effect<VerifyDeviceAction, Never> in
                     guard isEnabled else {
                         return .none
@@ -328,17 +332,17 @@ let verifyDeviceReducer = Reducer.combine(
                 )
             }
             state.credentialsContext = .walletInfo(walletInfo)
-            return Publishers.Zip(
-                environment.featureFlagsService.isEnabled(.local(.unifiedSignIn)),
-                environment.featureFlagsService.isEnabled(.remote(.unifiedSignIn))
+            return environment.app.publisher(
+                for: blockchain.app.configuration.unified.sign_in.is.enabled,
+                as: Bool.self
             )
-            .map { isLocalEnabled, isRemoteEnabled in
-                isLocalEnabled && isRemoteEnabled
-            }
+            .prefix(1)
+            .replaceError(with: false)
             .flatMap { featureEnabled -> Effect<VerifyDeviceAction, Never> in
-                guard featureEnabled,
-                      walletInfo.shouldUpgradeAccount,
-                      let userType = walletInfo.userType
+                guard
+                    featureEnabled,
+                    walletInfo.shouldUpgradeAccount,
+                    let userType = walletInfo.userType
                 else {
                     return .merge(
                         .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),

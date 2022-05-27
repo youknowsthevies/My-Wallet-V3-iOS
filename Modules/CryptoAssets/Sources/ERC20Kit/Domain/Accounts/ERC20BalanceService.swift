@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import EthereumKit
 import MoneyKit
 import PlatformKit
@@ -40,14 +39,14 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
 
     // MARK: - Private Properties
 
-    private let tokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
+    private let tokenAccountsRepository: ERC20BalancesRepositoryAPI
 
     // MARK: - Setup
 
     /// Creates an ERC-20 balance service.
     ///
     /// - Parameter tokenAccountsRepository: An ERC-20 token accounts repository.
-    init(tokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve()) {
+    init(tokenAccountsRepository: ERC20BalancesRepositoryAPI) {
         self.tokenAccountsRepository = tokenAccountsRepository
     }
 
@@ -57,7 +56,7 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
         for address: EthereumAddress,
         cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<CryptoValue, ERC20TokenAccountsError> {
-        tokenAccountsRepository.tokens(for: address)
+        tokenAccountsRepository.tokens(for: address, network: cryptoCurrency.assetModel.evmNetwork!)
             .map { accounts in
                 accounts[cryptoCurrency]?.balance ?? .zero(currency: cryptoCurrency)
             }
@@ -68,7 +67,7 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
         for address: EthereumAddress,
         cryptoCurrency: CryptoCurrency
     ) -> StreamOf<CryptoValue, ERC20TokenAccountsError> {
-        tokenAccountsRepository.tokensStream(for: address)
+        tokenAccountsRepository.tokensStream(for: address, network: cryptoCurrency.assetModel.evmNetwork!)
             .map { result in
                 switch result {
                 case .failure(let error):

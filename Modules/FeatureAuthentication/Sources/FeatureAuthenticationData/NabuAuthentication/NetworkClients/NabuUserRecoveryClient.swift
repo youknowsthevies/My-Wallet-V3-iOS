@@ -8,7 +8,6 @@ import NetworkKit
 protocol NabuUserRecoveryClientAPI: AnyObject {
 
     func recoverUser(
-        offlineToken: NabuOfflineTokenResponse,
         jwt: String,
         userId: String,
         recoveryToken: String
@@ -41,7 +40,6 @@ final class NabuUserRecoveryClient: NabuUserRecoveryClientAPI {
     }
 
     func recoverUser(
-        offlineToken: NabuOfflineTokenResponse,
         jwt: String,
         userId: String,
         recoveryToken: String

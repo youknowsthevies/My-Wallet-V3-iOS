@@ -97,61 +97,9 @@ struct WalletConnectEventView: View {
 // MARK: SwiftUI Preview
 
 #if DEBUG
-let meta = Session.ClientMeta(
-    name: "Uniswap Interface",
-    description: "Swap or provide liquidity on the Uniswap Protocol",
-    icons: [URL(string: "https://app.uniswap.org/./images/512x512_App_Icon.png")!],
-    url: URL(string: "https://app.uniswap.org")!
-)
-
-let dAppInfo = Session.DAppInfo(peerId: "", peerMeta: meta)
-let walletInfo = Session.WalletInfo(
-    approved: true,
-    accounts: [],
-    chainId: 1,
-    peerId: "",
-    peerMeta: meta
-)
-
-let session = Session(
-    url: WCURL(topic: "", bridgeURL: URL(string: "blockchain.com")!, key: ""),
-    dAppInfo: dAppInfo,
-    walletInfo: walletInfo
-)
-
-class MockWalletConnectService: WalletConnectServiceAPI {
-    var sessionEvents: AnyPublisher<WalletConnectSessionEvent, Never> {
-        Future<WalletConnectSessionEvent, Never> { _ in }
-            .eraseToAnyPublisher()
-    }
-
-    var userEvents: AnyPublisher<WalletConnectUserEvent, Never> {
-        Future<WalletConnectUserEvent, Never> { _ in }
-            .eraseToAnyPublisher()
-    }
-
-    func connect(_ url: String) {}
-    func disconnect(_ session: Session) {}
-    func acceptConnection(_ completion: @escaping (Session.WalletInfo) -> Void) {}
-    func denyConnection(_ completion: @escaping (Session.WalletInfo) -> Void) {}
-}
-
-class MockWalletConnectRouter: WalletConnectRouterAPI {
-    func showConnectedDApps(_ completion: (() -> Void)?) {}
-    func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
-        .just(())
-    }
-
-    func openWebsite(for client: Session.ClientMeta) {}
-}
-
-class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
-    func record(event: AnalyticsEvent) {}
-}
 
 struct ConnectView_Previews: PreviewProvider {
     static var previews: some View {
-
         let environment = WalletConnectEventEnvironment(
             mainQueue: .main,
             service: MockWalletConnectService(),
@@ -167,4 +115,71 @@ struct ConnectView_Previews: PreviewProvider {
         return WalletConnectEventView(store: store)
     }
 }
+
+extension ConnectView_Previews {
+
+    static var meta: Session.ClientMeta {
+        Session.ClientMeta(
+            name: "Uniswap Interface",
+            description: "Swap or provide liquidity on the Uniswap Protocol",
+            icons: [URL(string: "https://app.uniswap.org/./images/512x512_App_Icon.png")!],
+            url: URL(string: "https://app.uniswap.org")!
+        )
+    }
+
+    static var walletInfo: Session.WalletInfo {
+        Session.WalletInfo(
+            approved: true,
+            accounts: [],
+            chainId: 1,
+            peerId: "",
+            peerMeta: meta
+        )
+    }
+
+    static var session: Session {
+        Session(
+            url: WCURL(topic: "", bridgeURL: URL(string: "blockchain.com")!, key: ""),
+            dAppInfo: Session.DAppInfo(peerId: "", peerMeta: meta),
+            walletInfo: walletInfo
+        )
+    }
+
+    final class MockWalletConnectService: WalletConnectServiceAPI {
+        var sessionEvents: AnyPublisher<WalletConnectSessionEvent, Never> {
+            Future<WalletConnectSessionEvent, Never> { _ in }
+                .eraseToAnyPublisher()
+        }
+
+        var userEvents: AnyPublisher<WalletConnectUserEvent, Never> {
+            Future<WalletConnectUserEvent, Never> { _ in }
+                .eraseToAnyPublisher()
+        }
+
+        func connect(_ url: String) {}
+        func disconnect(_ session: Session) {}
+        func acceptConnection(
+            session: Session,
+            completion: @escaping (Session.WalletInfo) -> Void
+        ) {}
+        func denyConnection(
+            session: Session,
+            completion: @escaping (Session.WalletInfo) -> Void
+        ) {}
+    }
+
+    final class MockWalletConnectRouter: WalletConnectRouterAPI {
+        func showConnectedDApps(_ completion: (() -> Void)?) {}
+        func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
+            .just(())
+        }
+
+        func openWebsite(for client: Session.ClientMeta) {}
+    }
+
+    final class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
+        func record(event: AnalyticsEvent) {}
+    }
+}
+
 #endif

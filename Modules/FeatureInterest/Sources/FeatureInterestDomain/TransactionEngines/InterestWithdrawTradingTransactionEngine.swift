@@ -3,6 +3,7 @@
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
+import NabuNetworkError
 import PlatformKit
 import RxSwift
 import RxToolKit
@@ -207,8 +208,15 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     ) -> Single<TransactionResult> {
         accountTransferRepository
             .createInterestAccountCustodialWithdraw(pendingTransaction.amount)
-            .mapError { _ in
-                TransactionValidationFailure(state: .unknownError)
+            .mapError { error -> TransactionValidationFailure in
+                if let nabu = extract(NabuError.self, from: error) {
+                    if nabu.code == .insufficientBalance, nabu.type == .conflict {
+                        return TransactionValidationFailure(state: .insufficientInterestWithdrawalBalance)
+                    }
+                    return TransactionValidationFailure(state: .nabuError(nabu))
+                } else {
+                    return TransactionValidationFailure(state: .unknownError)
+                }
             }
             .map { _ in
                 TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: nil)

@@ -64,8 +64,14 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // If label is same as address, we will replace it with the sanitized version (without prefix).
         let replaceLabel = label == address
         // Creates BIP21URI from url.
+
+        guard let network = asset.assetModel.evmNetwork else {
+            return .failure(.invalidAddress)
+        }
+
         guard let eip681URI = EIP681URI(
             url: address,
+            network: network,
             enabledCurrenciesService: enabledCurrenciesService
         ) else {
             return .failure(.invalidAddress)
@@ -148,6 +154,8 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
         switch eip681URI.cryptoCurrency {
         case .ethereum:
             // CryptoCurrency is Ethereum, allowed.
+            return true
+        case .polygon:
             return true
         case let item where item == cryptoCurrency:
             // CryptoCurrency is the same as this factory's, allowed.

@@ -139,7 +139,7 @@ extension LocalizationConstants {
             )
         }
 
-        // MARK: - Unlock Trading View (Prompt to upgrade to Verified tier)
+        // MARK: - Unlock Trading View (Prompt to upgrade to Tier 2)
 
         enum UnlockTrading {
             static let title = NSLocalizedString(
@@ -158,33 +158,38 @@ extension LocalizationConstants {
             )
 
             static let cta_verified = NSLocalizedString(
-                "Get Verified",
-                comment: "KYC Upgrade Prompt - Upgrade to Verified CTA Title"
+                "Get Full Access",
+                comment: "KYC Upgrade Prompt - Upgrade to Full Access CTA Title"
             )
 
             static let cta_basic = NSLocalizedString(
-                "Get Basic",
-                comment: "KYC Upgrade Prompt - Upgrade to Basic CTA Title"
+                "Get Limited Access",
+                comment: "KYC Upgrade Prompt - Upgrade to Limited Access CTA Title"
             )
 
             static let basicTierName = NSLocalizedString(
-                "Basic",
-                comment: "KYC Upgrade Prompt - Basic Tier Name"
+                "Limited Access",
+                comment: "KYC Upgrade Prompt - Tier 1 Name"
             )
 
             static let verifiedTierName = NSLocalizedString(
-                "Verified",
-                comment: "KYC Upgrade Prompt - Verified Tier Name"
+                "Full Access",
+                comment: "KYC Upgrade Prompt - Tier 2 Name"
             )
 
             static let benefit_basicTier_title = NSLocalizedString(
-                "Basic Level",
-                comment: "KYC Upgrade Prompt - Basic Tier Benefit Title"
+                "Limited Access Level",
+                comment: "KYC Upgrade Prompt - Limited Access Tier Benefit Title"
             )
 
-            static let benefit_basicTier_badgeTitle = NSLocalizedString(
-                "Limited Access",
-                comment: "KYC Upgrade Prompt - Basic Tier Benefit Badge Title"
+            static let benefit_tier_active_badgeTitle = NSLocalizedString(
+                "Active",
+                comment: "KYC Upgrade Prompt - Active Tier Benefit Badge Title"
+            )
+
+            static let benefit_tier_nonActive_badgeTitle = NSLocalizedString(
+                "Apply Now",
+                comment: "KYC Upgrade Prompt - Non-Active Tier Benefit Badge Title"
             )
 
             static let benefit_basic_sendAndReceive_title = NSLocalizedString(
@@ -199,52 +204,47 @@ extension LocalizationConstants {
 
             static let benefit_basic_swap_title = NSLocalizedString(
                 "Swap Crypto",
-                comment: "KYC Upgrade Prompt - Swap Benefit Basic Title"
+                comment: "KYC Upgrade Prompt - Swap Benefit Limited Access Title"
             )
 
             static let benefit_basic_swap_info = NSLocalizedString(
                 "1-Time Between Private Key Wallets",
-                comment: "KYC Upgrade Prompt - Swap Benefit Basic Badge Detail"
+                comment: "KYC Upgrade Prompt - Swap Benefit Limited Access Badge Detail"
             )
 
             static let benefit_verifiedTier_title = NSLocalizedString(
-                "Verified Level",
-                comment: "KYC Upgrade Prompt - Verified Tier Benefit Title"
-            )
-
-            static let benefit_verifiedTier_badgeTitle = NSLocalizedString(
-                "Full Access",
-                comment: "KYC Upgrade Prompt - Verified Tier Benefit Badge Title"
+                "Full Access Level",
+                comment: "KYC Upgrade Prompt - Full Access Tier Benefit Title"
             )
 
             static let benefit_verified_swap_title = NSLocalizedString(
                 "Swap Crypto",
-                comment: "KYC Upgrade Prompt - Swap Verified Benefit Title"
+                comment: "KYC Upgrade Prompt - Swap Full Access Benefit Title"
             )
 
             static let benefit_verified_swap_info = NSLocalizedString(
                 "Between All Wallets & Accounts",
-                comment: "KYC Upgrade Prompt - Swap Verified Benefit Info"
+                comment: "KYC Upgrade Prompt - Swap Full Access Benefit Info"
             )
 
             static let benefit_verified_buyAndSell_title = NSLocalizedString(
                 "Buying & Selling",
-                comment: "KYC Upgrade Prompt - Buy & Sell Verified Benefit Title"
+                comment: "KYC Upgrade Prompt - Buy & Sell Full Access Benefit Title"
             )
 
             static let benefit_verified_buyAndSell_info = NSLocalizedString(
                 "Card or Banking Methods",
-                comment: "KYC Upgrade Prompt - Buy & Sell Verified Benefit Info"
+                comment: "KYC Upgrade Prompt - Buy & Sell Full Access Benefit Info"
             )
 
             static let benefit_verified_rewards_title = NSLocalizedString(
                 "Earn Rewards",
-                comment: "KYC Upgrade Prompt - Rewards Verified Benefit Title"
+                comment: "KYC Upgrade Prompt - Rewards Full Access Benefit Title"
             )
 
             static let benefit_verified_rewards_info = NSLocalizedString(
                 "Earn Rewards On Your Crypto",
-                comment: "KYC Upgrade Prompt - Rewards Verified Benefit Info"
+                comment: "KYC Upgrade Prompt - Rewards Full Access Benefit Info"
             )
         }
 
@@ -252,17 +252,17 @@ extension LocalizationConstants {
 
             static let title = NSLocalizedString(
                 "We are updating our account verification requirements",
-                comment: "Title for alert shown to prompt Basic Tier users to upgrade"
+                comment: "Title for alert shown to prompt Limited Access Tier users to upgrade"
             )
 
             static let message = NSLocalizedString(
                 "To buy, sell, and swap, you will need to verify your identity.",
-                comment: "Message for alert shown to prompt Basic Tier users to upgrade"
+                comment: "Message for alert shown to prompt Limited Access Tier users to upgrade"
             )
 
             static let primaryCTA = NSLocalizedString(
                 "Verify Now",
-                comment: "Primary CTA for alert shown to prompt Basic Tier users to upgrade"
+                comment: "Primary CTA for alert shown to prompt Limited Access Tier users to upgrade"
             )
         }
 

@@ -33,18 +33,49 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         static let payload = "MyWalletPhone.setEncryptedWalletData(\"%@\")"
 
         /// Fetches the user offline token
-        static let offlineToken = "MyWalletPhone.KYC.lifetimeToken()"
+        static let legacyOfflineToken = "MyWalletPhone.KYC.lifetimeToken()"
 
         /// Fetches the user id
-        static let userId = "MyWalletPhone.KYC.userId()"
+        static let legacyUserId = "MyWalletPhone.KYC.userId()"
 
         /// Updates user credentials: userId, lifetimeToken
         static let updateUserCredentials = "MyWalletPhone.KYC.updateUserCredentials(\"%@\", \"%@\")"
+
+        // MARK: Account Credentials
+
+        static let updateAccountCredentials = "MyWalletPhone.accountCredentials.update(\"%@\", \"%@\", \"%@\", \"%@\")"
+
+        /// Updates nabu credentials: userId, lifetimeToken
+        static let updateNabuCredentials = "MyWalletPhone.accountCredentials.updateNabu(\"%@\", \"%@\")"
+
+        /// Updates exchange credentials: userId, lifetimeToken
+        static let updateExchangeCredentials = "MyWalletPhone.accountCredentials.updateExchange(\"%@\", \"%@\")"
+
+        /// Fetches the user offline token
+        static let nabuOfflineToken = "MyWalletPhone.accountCredentials.nabuLifetimeToken()"
+
+        /// Fetches the user id
+        static let nabuUserId = "MyWalletPhone.accountCredentials.nabuUserId()"
+
+        /// Fetches the exchange offline token
+        static let exchangeOfflineToken = "MyWalletPhone.accountCredentials.exchangeLifetimeToken()"
+
+        /// Fetches the exchange user id
+        static let exchangeUserId = "MyWalletPhone.accountCredentials.exchangeUserId()"
     }
 
     private enum JSCallback {
         static let updateUserCredentialsSuccess = "objc_updateUserCredentials_success"
         static let updateUserCredentialsFailure = "objc_updateUserCredentials_error"
+
+        static let updateAccountCredentialsSuccess = "objc_updateAccountCredentials_success"
+        static let updateAccountCredentialsFailure = "objc_updateAccountCredentials_error"
+
+        static let updateNabuCredentialsSuccess = "objc_updateNabuCredentials_success"
+        static let updateNabuCredentialsFailure = "objc_updateNabuCredentials_error"
+
+        static let updateExchangeCredentialsSuccess = "objc_updateExchangeCredentials_success"
+        static let updateExchangeCredentialsFailure = "objc_updateExchangeCredentials_error"
     }
 
     // MARK: - Properties
@@ -85,108 +116,25 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .eraseToAnyPublisher()
     }
 
-    /// Streans the nabu offline token
+    /// Streams the nabu offline token
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
-        let userId = userIdFromJS
-        let offlineToken = offlineTokenFromJS
-        return reactiveWallet.waitUntilInitializedFirst
+        reactiveWallet.waitUntilInitializedFirst
             .mapError()
-            .flatMap { [userId, offlineToken] _ -> AnyPublisher<(String?, String?), WalletError> in
-                Publishers.Zip(
-                    userId,
-                    offlineToken
-                )
-                .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-            .replaceError(with: MissingCredentialsError.offlineToken)
-            .flatMap { userId, offlineToken
-                -> AnyPublisher<(userId: String, offlineToken: String, created: Bool?), MissingCredentialsError> in
-                guard let userId = userId else {
-                    return .failure(.userId)
-                }
-                guard let offlineToken = offlineToken else {
+            .flatMap { [weak self] _ -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
+                guard let self = self else {
                     return .failure(.offlineToken)
                 }
-                return .just((userId: userId, offlineToken: offlineToken, created: nil))
+                return self.getUnifiedOrLegacyNabuCredentials()
             }
-            .map(NabuOfflineToken.init)
             .eraseToAnyPublisher()
-    }
-
-    private var offlineTokenFromJS: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = jsContextProvider
-        return Deferred {
-            Future { [jsContextProvider] promise in
-                guard WalletManager.shared.wallet.isInitialized() else {
-                    promise(.failure(.notInitialized))
-                    return
-                }
-                guard let jsValue = jsContextProvider
-                    .jsContext
-                    .evaluateScriptCheckIsOnMainQueue(JSSetter.offlineToken)
-                else {
-                    promise(.success(nil))
-                    return
-                }
-                guard !jsValue.isNull, !jsValue.isUndefined else {
-                    promise(.success(nil))
-                    return
-                }
-                guard let string = jsValue.toString() else {
-                    promise(.success(nil))
-                    return
-                }
-                guard !string.isEmpty else {
-                    promise(.success(nil))
-                    return
-                }
-                promise(.success(string))
-            }
-        }
-        .subscribe(on: combineJSScheduler)
-        .eraseToAnyPublisher()
-    }
-
-    private var userIdFromJS: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = jsContextProvider
-        return Deferred {
-            Future { [jsContextProvider] promise in
-                guard WalletManager.shared.wallet.isInitialized() else {
-                    promise(.failure(.notInitialized))
-                    return
-                }
-                guard let jsValue = jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.userId) else {
-                    promise(.success(nil))
-                    return
-                }
-                guard !jsValue.isNull, !jsValue.isUndefined else {
-                    promise(.success(nil))
-                    return
-                }
-                guard !jsValue.isNull, !jsValue.isUndefined else {
-                    promise(.success(nil))
-                    return
-                }
-                guard let string = jsValue.toString() else {
-                    promise(.success(nil))
-                    return
-                }
-                guard !string.isEmpty else {
-                    promise(.success(nil))
-                    return
-                }
-                promise(.success(string))
-            }
-        }
-        .subscribe(on: combineJSScheduler)
-        .eraseToAnyPublisher()
     }
 
     private let settings: AppSettingsAPI
     private let jsScheduler: SerialDispatchQueueScheduler
     private let combineJSScheduler: DispatchQueue
     private unowned let jsContextProvider: JSContextProviderAPI
+
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
@@ -195,13 +143,15 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         appSettings: AppSettingsAPI,
         reactiveWallet: ReactiveWalletAPI,
         jsScheduler: SerialDispatchQueueScheduler = MainScheduler.instance,
-        combineJSScheduler: DispatchQueue = DispatchQueue.main
+        combineJSScheduler: DispatchQueue = DispatchQueue.main,
+        featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.jsContextProvider = jsContextProvider
         settings = appSettings
         self.reactiveWallet = reactiveWallet
         self.jsScheduler = jsScheduler
         self.combineJSScheduler = combineJSScheduler
+        self.featureFlagService = featureFlagService
         super.init()
     }
 
@@ -268,29 +218,23 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
-        let jsContextProvider = jsContextProvider
-        return Deferred {
-            Future { [jsContextProvider] promise in
-                jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        promise(.failure(.offlineToken))
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
-                )
-                jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        promise(.success(()))
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
-                )
-                let userId = offlineToken.userId.escapedForJS()
-                let offlineToken = offlineToken.token.escapedForJS()
-                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
-                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
+        featureFlagService.isEnabled(.accountCredentialsMetadataMigration)
+            .flatMap { [weak self] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
+                guard let self = self else {
+                    return .failure(.offlineToken)
+                }
+                guard isEnabled else {
+                    return self.setLegacyUserCredentials(offlineToken: offlineToken)
+                }
+                // write to both old and new metadata.
+                let unifiedSave = self.setUnifiedCredentialsOrJustNabu(offlineToken: offlineToken)
+                let legacySave = self.setLegacyUserCredentials(offlineToken: offlineToken)
+                return unifiedSave
+                    .zip(legacySave)
+                    .mapToVoid()
+                    .eraseToAnyPublisher()
             }
-        }
-        .subscribe(on: combineJSScheduler)
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 
     func set(payload: String) -> AnyPublisher<Void, Never> {
@@ -331,6 +275,207 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     // MARK: - Accessors
+
+    /// Retrieves the nabu credentials from metadata via JS
+    /// First tries to retrieves from the new `ACCOUNT_CREDENTIALS`, if that fails we fallback to `RETAIL_CORE`
+    private func getUnifiedOrLegacyNabuCredentials() -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
+        featureFlagService.isEnabled(.accountCredentialsMetadataMigration)
+            .flatMap { [weak self] isEnabled -> AnyPublisher<(String?, String?, String?, String?), WalletError> in
+                guard let self = self else {
+                    return .failure(.unknown)
+                }
+                guard isEnabled else {
+                    let legacyUserId = self.getStringValueFromJS(script: JSSetter.legacyUserId)
+                    let legacyOfflineToken = self.getStringValueFromJS(script: JSSetter.legacyOfflineToken)
+                    return legacyUserId
+                        .zip(legacyOfflineToken) { ($0, $1, nil, nil) }
+                        .eraseToAnyPublisher()
+                }
+                // Try retrieving from unified credentials entry otherwise fallback to old entry
+                let nabuUserId = self.getStringValueFromJS(script: JSSetter.nabuUserId)
+                let nabuOfflineToken = self.getStringValueFromJS(script: JSSetter.nabuOfflineToken)
+
+                let exchangeUserId = self.getStringValueFromJS(script: JSSetter.exchangeUserId)
+                let exchangeOfflineToken = self.getStringValueFromJS(script: JSSetter.exchangeOfflineToken)
+
+                let legacyUserId = self.getStringValueFromJS(script: JSSetter.legacyUserId)
+                let legacyOfflineToken = self.getStringValueFromJS(script: JSSetter.legacyOfflineToken)
+
+                return nabuUserId
+                    .zip(nabuOfflineToken, exchangeUserId, exchangeOfflineToken)
+                    .flatMap { userId, offlineToken, exchangeUserId, exchangeOfflineToken
+                        -> AnyPublisher<(String?, String?, String?, String?), WalletError> in
+                        guard let userId = userId,
+                              let offlineToken = offlineToken
+                        else {
+                            return legacyUserId
+                                .zip(legacyOfflineToken) { legacyUserId, legacyOfflineToken in
+                                    (legacyUserId, legacyOfflineToken, nil, nil)
+                                }
+                                .eraseToAnyPublisher()
+                        }
+                        return .just((userId, offlineToken, exchangeUserId, exchangeOfflineToken))
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .mapError { _ in MissingCredentialsError.offlineToken }
+            .flatMap { nabuUserId, nabuOfflineToken, exchangeUserId, exchangeOfflineToken
+                -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
+                guard let userId = nabuUserId else {
+                    return .failure(.userId)
+                }
+                guard let offlineToken = nabuOfflineToken else {
+                    return .failure(.offlineToken)
+                }
+                let token = NabuOfflineToken(
+                    userId: userId,
+                    token: offlineToken,
+                    exchangeUserId: exchangeUserId,
+                    exchangeOfflineToken: exchangeOfflineToken
+                )
+                return .just(token)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func getStringValueFromJS(script: String) -> AnyPublisher<String?, WalletError> {
+        let jsContextProvider = jsContextProvider
+        return Deferred {
+            Future { [jsContextProvider] promise in
+                guard WalletManager.shared.wallet.isInitialized() else {
+                    promise(.failure(.notInitialized))
+                    return
+                }
+                guard let jsValue = jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script) else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !jsValue.isNull, !jsValue.isUndefined else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !jsValue.isNull, !jsValue.isUndefined else {
+                    promise(.success(nil))
+                    return
+                }
+                guard let string = jsValue.toString() else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !string.isEmpty else {
+                    promise(.success(nil))
+                    return
+                }
+                promise(.success(string))
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+
+    private func setLegacyUserCredentials(
+        offlineToken: NabuOfflineToken
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        let jsContextProvider = jsContextProvider
+        return Deferred {
+            Future { [jsContextProvider] promise in
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
+                )
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.success(()))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
+                )
+                let userId = offlineToken.userId.escapedForJS()
+                let offlineToken = offlineToken.token.escapedForJS()
+                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
+                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+
+    /// Sets the given offline token (userId, lifetimeToken) to new Metadata entry
+    private func setNabuCredentials(
+        offlineToken: NabuOfflineToken
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        let jsContextProvider = jsContextProvider
+        return Deferred {
+            Future { [jsContextProvider] promise in
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateNabuCredentialsFailure as NSString
+                )
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.success(()))
+                    },
+                    forJsFunctionName: JSCallback.updateNabuCredentialsSuccess as NSString
+                )
+                let nabuUserId = offlineToken.userId.escapedForJS()
+                let nabuOfflineToken = offlineToken.token.escapedForJS()
+                let script = String(
+                    format: JSSetter.updateNabuCredentials,
+                    nabuUserId,
+                    nabuOfflineToken
+                )
+                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+
+    /// Sets the unified credentials if exchangeUserId/OfflineToken are non-nil
+    /// otherwise just sets the nabu credentials
+    private func setUnifiedCredentialsOrJustNabu(
+        offlineToken: NabuOfflineToken
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        guard let exchangeUserId = offlineToken.exchangeUserId,
+              let exchangeToken = offlineToken.exchangeOfflineToken
+        else {
+            return setNabuCredentials(offlineToken: offlineToken)
+        }
+        let jsContextProvider = jsContextProvider
+        return Deferred {
+            Future { [jsContextProvider] promise in
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateAccountCredentialsFailure as NSString
+                )
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.success(()))
+                    },
+                    forJsFunctionName: JSCallback.updateAccountCredentialsSuccess as NSString
+                )
+                let nabuUserId = offlineToken.userId.escapedForJS()
+                let nabuOfflineToken = offlineToken.token.escapedForJS()
+                let exchangeUserId = exchangeUserId.escapedForJS()
+                let exchangeToken = exchangeToken.escapedForJS()
+                let script = String(
+                    format: JSSetter.updateAccountCredentials,
+                    nabuUserId,
+                    nabuOfflineToken,
+                    exchangeUserId,
+                    exchangeToken
+                )
+                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
 
     private func perform(_ operation: @escaping () -> Void) -> Completable {
         Completable

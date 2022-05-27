@@ -4,20 +4,22 @@ import PackageDescription
 
 let package = Package(
     name: "Observability",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
-            name: "Observability",
-            targets: ["ObservabilityDomain"]
-        ),
-        .library(
-            name: "ObservabilityDomain",
-            targets: ["ObservabilityDomain"]
+            name: "ObservabilityKit",
+            targets: ["ObservabilityKit"]
         )
+    ],
+    dependencies: [
+        .package(name: "Tool", path: "../Tool")
     ],
     targets: [
         .target(
-            name: "ObservabilityDomain"
+            name: "ObservabilityKit",
+            dependencies: [
+                .product(name: "ToolKit", package: "Tool")
+            ]
         )
     ]
 )

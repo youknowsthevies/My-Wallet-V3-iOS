@@ -40,9 +40,10 @@ extension AppFeatureConfigurator: FeatureFetching {
     ) -> AnyPublisher<Feature, FeatureFlagError> {
         app.remoteConfiguration
             .publisher(for: key.remoteEnabledKey)
+            .receive(on: DispatchQueue.main)
             .prefix(1)
             .tryMap { data -> Feature in
-                try data.decode(as: Feature.self)
+                try data.decode(Feature.self)
             }
             .mapError(FeatureFlagError.decodingError)
             .timeout(

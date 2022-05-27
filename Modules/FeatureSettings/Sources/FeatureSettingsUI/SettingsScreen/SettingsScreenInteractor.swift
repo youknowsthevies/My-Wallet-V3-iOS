@@ -30,7 +30,6 @@ public final class SettingsScreenInteractor {
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: EmailNotificationSettingsServiceAPI
 
-    let pitConnnectionProviding: PITConnectionStatusProviding
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
@@ -50,7 +49,6 @@ public final class SettingsScreenInteractor {
         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
         appSettings: BlockchainSettings.App = resolve(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-        pitConnectionAPI: PITConnectionStatusProviding,
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
         wallet: WalletRecoveryVerifing,
@@ -94,7 +92,6 @@ public final class SettingsScreenInteractor {
 
         biometryProviding = BiometryProvider(settings: settingsAuthenticating)
         self.settingsAuthenticating = settingsAuthenticating
-        pitConnnectionProviding = pitConnectionAPI
         recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
         self.credentialsStore = credentialsStore
         self.authenticationCoordinator = authenticationCoordinator
@@ -102,7 +99,6 @@ public final class SettingsScreenInteractor {
 
     func refresh() {
         recoveryPhraseStatusProviding.fetchTriggerRelay.accept(())
-        pitConnnectionProviding.fetchTriggerRelay.accept(())
         tiersProviding.fetchTriggerRelay.accept(())
         settingsService.fetch(force: true)
             .subscribe()

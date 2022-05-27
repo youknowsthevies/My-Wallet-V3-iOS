@@ -55,7 +55,7 @@ struct DomainCheckoutView: View {
                     .disabled(viewStore.selectedDomains.isEmpty || viewStore.termsSwitchIsOn == false)
                     .accessibility(identifier: Accessibility.ctaButton)
                 }
-                .padding([.leading, .trailing], Spacing.padding3)
+                .padding([.leading, .trailing, .bottom], Spacing.padding3)
             } else {
                 VStack(spacing: Spacing.padding3) {
                     Spacer()
@@ -76,7 +76,7 @@ struct DomainCheckoutView: View {
                     }
                     .accessibility(identifier: Accessibility.browseButton)
                 }
-                .padding([.leading, .trailing], Spacing.padding3)
+                .padding([.leading, .trailing, .bottom], Spacing.padding3)
             }
         }
     }

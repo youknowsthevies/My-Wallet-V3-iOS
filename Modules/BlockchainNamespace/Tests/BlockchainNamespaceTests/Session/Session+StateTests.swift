@@ -161,6 +161,10 @@ extension Mock {
             store[defaultName]
         }
 
+        override func dictionary(forKey defaultName: String) -> [String: Any]? {
+            store[defaultName] as? [String: Any]
+        }
+
         override func set(_ value: Any?, forKey defaultName: String) {
             store[defaultName] = value
         }

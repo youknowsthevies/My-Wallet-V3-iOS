@@ -83,7 +83,7 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
         query: QuoteQuery
     ) -> Single<Quote> {
         featureFlagsService
-            .isEnabled(.remote(.newQuoteForSimpleBuy))
+            .isEnabled(.newQuoteForSimpleBuy)
             .asSingle()
             .flatMap { [getOldQuote, getNewQuote] isEnabled in
                 guard isEnabled else {

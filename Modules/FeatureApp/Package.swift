@@ -94,7 +94,7 @@ let package = Package(
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "FeatureCardIssuingUI", package: "FeatureCardIssuing"),
                 .product(name: "FeatureCardIssuingDomain", package: "FeatureCardIssuing"),
-                .product(name: "ObservabilityDomain", package: "Observability")
+                .product(name: "ObservabilityKit", package: "Observability")
             ]
         ),
         .target(

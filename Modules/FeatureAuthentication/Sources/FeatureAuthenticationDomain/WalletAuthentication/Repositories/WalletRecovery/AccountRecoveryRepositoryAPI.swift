@@ -27,7 +27,6 @@ public protocol AccountRecoveryRepositoryAPI {
     ///   - userId: nabu user ID, from the email login deeplink
     ///   - recoveryToken: token for recovery, from the email login deeplink
     func recoverUser(
-        offlineToken: NabuOfflineToken,
         jwtToken: String,
         userId: String,
         recoveryToken: String

@@ -56,7 +56,7 @@ public struct BalanceSectionHeader<Trailing: View>: View {
             trailing()
                 .frame(maxHeight: 28)
         }
-        .padding(24)
+        .padding([.leading, .trailing], 24)
         .background(Color.semantic.background)
         .listRowInsets(EdgeInsets())
     }

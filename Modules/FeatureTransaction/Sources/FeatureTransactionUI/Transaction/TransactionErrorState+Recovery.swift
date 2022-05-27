@@ -93,6 +93,8 @@ extension TransactionErrorState {
                         for: networkError.code,
                         action: action
                     ) ?? networkError.serverDescription
+                } else if let error = error as? TransactionValidationFailure {
+                    text = error.title(action)
                 } else {
                     fallthrough
                 }
@@ -300,8 +302,7 @@ extension TransactionErrorState {
             } else if let networkError = error as? NabuNetworkError {
                 errorDescription = transactionErrorDescription(for: networkError, action: action)
             } else if let validationError = error as? TransactionValidationFailure {
-                errorDescription = validationError.state.mapToTransactionErrorState.recoveryWarningTitle(for: action)
-                    ?? Localization.unknownErrorDescription
+                errorDescription = validationError.message(action)
             } else {
                 errorDescription = Localization.unknownErrorDescription
             }
@@ -332,8 +333,6 @@ extension TransactionErrorState {
             return Localization.cardCreateFailedTitle
         case .cardPaymentFailed:
             return Localization.cardPaymentFailedTitle
-        case .cardCreateBankDeclined:
-            return Localization.cardCreateBankDeclinedTitle
         case .cardCreateAbandoned:
             return Localization.cardCreateAbandonedTitle
         case .cardCreateExpired:
@@ -749,4 +748,59 @@ extension TransactionErrorState {
 enum ErrorRecoveryCalloutIdentifier: String {
     case buy
     case upgradeKYCTier
+}
+
+extension TransactionValidationFailure {
+
+    func title(_ action: AssetAction) -> String? {
+        switch state {
+        case .noSourcesAvailable:
+            return LocalizationConstants.Errors.noSourcesAvailable.interpolating(action.localizedName)
+        case .insufficientInterestWithdrawalBalance:
+            return LocalizationConstants.Errors.insufficientInterestWithdrawalBalance
+        default:
+            return state.mapToTransactionErrorState.recoveryWarningTitle(for: action)
+        }
+    }
+
+    func message(_ action: AssetAction) -> String {
+        switch state {
+        case .noSourcesAvailable:
+            return LocalizationConstants.Errors.noSourcesAvailableMessage.interpolating(action.localizedName)
+        case .insufficientInterestWithdrawalBalance:
+            return LocalizationConstants.Errors.insufficientInterestWithdrawalBalanceMessage
+        default:
+            return state.mapToTransactionErrorState.recoveryWarningMessage(for: action)
+        }
+    }
+}
+
+extension AssetAction {
+
+    var localizedName: String {
+        switch self {
+        case .buy:
+            return LocalizationConstants.WalletAction.Default.Buy.title
+        case .deposit:
+            return LocalizationConstants.WalletAction.Default.Deposit.title
+        case .interestTransfer:
+            return LocalizationConstants.WalletAction.Default.Interest.title
+        case .interestWithdraw:
+            return LocalizationConstants.WalletAction.Default.Interest.title
+        case .receive:
+            return LocalizationConstants.WalletAction.Default.Receive.title
+        case .sell:
+            return LocalizationConstants.WalletAction.Default.Sell.title
+        case .send:
+            return LocalizationConstants.WalletAction.Default.Send.title
+        case .sign:
+            return LocalizationConstants.WalletAction.Default.Sign.title
+        case .swap:
+            return LocalizationConstants.WalletAction.Default.Swap.title
+        case .viewActivity:
+            return LocalizationConstants.WalletAction.Default.Activity.title
+        case .withdraw:
+            return LocalizationConstants.WalletAction.Default.Withdraw.title
+        }
+    }
 }

@@ -48,9 +48,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         isFundedPublisher.asSingle()
     }
 
-    public var isFundedPublisher: AnyPublisher<Bool, Never> {
+    public var isFundedPublisher: AnyPublisher<Bool, Error> {
         balances
             .map { $0 != .absent }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 
@@ -128,12 +129,15 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var activity: Single<[ActivityItemEvent]> {
-        Single
+        let swap = swapActivity
+            .fetchActivity(cryptoCurrency: asset, directions: [.internal])
+            .replaceError(with: [])
+            .asSingle()
+        return Single
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
                 ordersActivity.activity(cryptoCurrency: asset).asSingle().catchAndReturn([]),
-                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
-                    .catchAndReturn([])
+                swap
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
@@ -152,9 +156,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
         featureFlagsService
-            .isEnabled(
-                .remote(.interestWithdrawAndDeposit)
-            )
+            .isEnabled(.interestWithdrawAndDeposit)
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }
@@ -238,8 +240,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             return .just(false)
         case .send:
             return isFundedPublisher
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
         case .buy:
             return isPairToFiatAvailable
                 .setFailureType(to: Error.self)
@@ -250,8 +250,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .eraseToAnyPublisher()
         case .swap:
             return canPerformSwap
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
         case .interestTransfer:
             return canPerformInterestTransfer
                 .setFailureType(to: Error.self)
@@ -273,20 +271,27 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .eraseToAnyPublisher()
     }
 
+    public func invalidateAccountBalance() {
+        balanceService
+            .invalidateTradingAccountBalances()
+    }
+
     // MARK: - Private Functions
 
-    public var canPerformSwap: AnyPublisher<Bool, Never> {
+    private var canPerformSwap: AnyPublisher<Bool, Error> {
         isFundedPublisher
-            .flatMap { [eligibilityService] isFunded -> AnyPublisher<Bool, Never> in
+            .flatMap { [eligibilityService] isFunded -> AnyPublisher<Bool, Error> in
                 guard isFunded else {
                     return .just(false)
                 }
                 return eligibilityService.isEligiblePublisher
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
 
-    public var canPerformSell: AnyPublisher<Bool, Never> {
+    private var canPerformSell: AnyPublisher<Bool, Never> {
         isPairToFiatAvailable
             .flatMap { [isFundedPublisher] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
                 guard isPairToFiatAvailable else {
@@ -299,11 +304,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .eraseToAnyPublisher()
     }
 
-    public var canPerformInterestTransfer: AnyPublisher<Bool, Never> {
+    private var canPerformInterestTransfer: AnyPublisher<Bool, Never> {
         Publishers
             .Zip3(
                 disabledReason.map(\.isEligible),
-                isFundedPublisher.setFailureType(to: Error.self),
+                isFundedPublisher,
                 isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
             )
             .map { isEligible, isFunded, isInterestWithdrawAndDepositEnabled in
@@ -320,10 +325,5 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .recordErrors(on: errorRecorder)
             .replaceError(with: false)
             .eraseToAnyPublisher()
-    }
-
-    public func invalidateAccountBalance() {
-        balanceService
-            .invalidateTradingAccountBalances()
     }
 }

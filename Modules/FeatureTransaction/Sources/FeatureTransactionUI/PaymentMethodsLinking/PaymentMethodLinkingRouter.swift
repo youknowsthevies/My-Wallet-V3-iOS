@@ -158,7 +158,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
             routeToDirectBankLinkingFlow(from: viewController, completion: completion)
         case .GBP, .EUR:
             featureFlagsService
-                .isEnabled(.remote(.openBanking))
+                .isEnabled(.openBanking)
                 .if(
                     then: { [weak self] in
                         self?.routeToDirectBankLinkingFlow(from: viewController, completion: completion)

@@ -18,14 +18,19 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
 
     // MARK: - Public Properties
 
-    public let onTxCompleted: TxCompleted
-    public let onTransactionRejected: () -> AnyPublisher<Void, Never>
-    public let dAppAddress: String
-    public let dAppName: String
-    public let dAppLogoURL: String
-    public let currencyType: CurrencyType = .crypto(.ethereum)
     public let account: String
+    public let dAppAddress: String
+    public let dAppLogoURL: String
+    public let dAppName: String
     public let message: Message
+    public let network: EVMNetwork
+    public let onTransactionRejected: () -> AnyPublisher<Void, Never>
+    public let onTxCompleted: TxCompleted
+
+    public var currencyType: CurrencyType {
+        network.cryptoCurrency.currencyType
+    }
+
     public var label: String {
         dAppName
     }
@@ -51,20 +56,22 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     }
 
     public init(
-        dAppAddress: String,
-        dAppName: String,
-        dAppLogoURL: String,
         account: String,
+        dAppAddress: String,
+        dAppLogoURL: String,
+        dAppName: String,
         message: Message,
-        onTxCompleted: @escaping TxCompleted,
-        onTransactionRejected: @escaping () -> AnyPublisher<Void, Never>
+        network: EVMNetwork,
+        onTransactionRejected: @escaping () -> AnyPublisher<Void, Never>,
+        onTxCompleted: @escaping TxCompleted
     ) {
-        self.onTxCompleted = onTxCompleted
-        self.onTransactionRejected = onTransactionRejected
-        self.dAppAddress = dAppAddress
-        self.dAppName = dAppName
-        self.dAppLogoURL = dAppLogoURL
         self.account = account
+        self.dAppAddress = dAppAddress
+        self.dAppLogoURL = dAppLogoURL
+        self.dAppName = dAppName
         self.message = message
+        self.network = network
+        self.onTransactionRejected = onTransactionRejected
+        self.onTxCompleted = onTxCompleted
     }
 }

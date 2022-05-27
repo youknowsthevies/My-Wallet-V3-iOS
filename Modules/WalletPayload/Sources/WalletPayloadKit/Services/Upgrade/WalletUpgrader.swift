@@ -13,6 +13,11 @@ enum WalletPayloadVersion: Int, Comparable {
 }
 
 protocol WalletUpgraderAPI {
+    /// Checks if upgrade is needed on the given wrapper
+    /// - Parameter wrapper: A `Wrapper` to be evaluated for an upgrade
+    /// - Returns: `true` if needs upgrade, otherwise `false`
+    func upgradedNeeded(wrapper: Wrapper) -> Bool
+
     /// Runs the upgrades
     /// - Parameter wrapper: The current wallet `Wrapper` to be upgraded
     /// - Returns: `AnyPublisher<Wrapper, WalletUpgradeError>`
@@ -29,14 +34,18 @@ protocol WalletUpgraderAPI {
 /// `Version 4` attributes:
 ///     - HD Wallet with segwit support
 ///
-final class WalletUpgrader {
+final class WalletUpgrader: WalletUpgraderAPI {
 
     private let workflows: [WalletUpgradeWorkflow]
 
-    private let latestUpgradedWrapper = PassthroughSubject<Wrapper, WalletUpgradeError>()
-
     init(workflows: [WalletUpgradeWorkflow]) {
         self.workflows = workflows
+    }
+
+    func upgradedNeeded(
+        wrapper: Wrapper
+    ) -> Bool {
+        !requiredWorkflows(wrapper: wrapper).isEmpty
     }
 
     func performUpgrade(
@@ -67,11 +76,17 @@ final class WalletUpgrader {
     private func upgradeWorkflowsNeeded(
         for wrapper: Wrapper
     ) -> Publishers.Sequence<[UpgradeWorkflowMethod], Never> {
+        requiredWorkflows(wrapper: wrapper)
+            .map { $0.upgrade(wrapper:) }
+            .publisher
+    }
+
+    private func requiredWorkflows(
+        wrapper: Wrapper
+    ) -> [WalletUpgradeWorkflow] {
         workflows
             .filter { workflow in
                 workflow.shouldPerformUpgrade(wrapper: wrapper)
             }
-            .map { $0.upgrade(wrapper:) }
-            .publisher
     }
 }

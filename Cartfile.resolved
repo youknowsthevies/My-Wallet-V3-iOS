@@ -3,5 +3,6 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json" "8.14.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json" "8.14.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" "8.14.0"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebasePerformanceBinary.json" "8.14.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" "8.14.0"
 github "SiftScience/sift-ios" "v2.1.0"
