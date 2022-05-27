@@ -789,7 +789,6 @@ extension DependencyContainer {
         single { () -> AttributionServiceAPI in
             let errorRecorder = CrashlyticsRecorder()
             let skAdNetworkService = SkAdNetworkService(errorRecorder: errorRecorder)
-            let authenticator: AuthenticatorAPI = DIKit.resolve()
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.websocket)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
@@ -800,9 +799,7 @@ extension DependencyContainer {
             let attributionRepository = AttributionRepository(with: attributionClient)
 
             return AttributionService(
-                authenticator: authenticator,
                 skAdNetworkService: skAdNetworkService,
-                errorRecorder: errorRecorder,
                 attributionRepository: attributionRepository,
                 featureFlagService: featureFlagService
             ) as AttributionServiceAPI

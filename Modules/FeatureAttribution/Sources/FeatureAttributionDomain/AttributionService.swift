@@ -2,24 +2,20 @@
 
 import Combine
 import Foundation
-import NetworkKit
+import NetworkError
 import ToolKit
 
 public class AttributionService: AttributionServiceAPI {
     private var skAdNetworkService: SkAdNetworkServiceAPI
-    private var errorRecorder: ErrorRecording
     private var featureFlagService: FeatureFlagsServiceAPI
     private var attributionRepository: AttributionRepositoryAPI
 
     public init(
-        authenticator: AuthenticatorAPI,
         skAdNetworkService: SkAdNetworkServiceAPI,
-        errorRecorder: ErrorRecording,
         attributionRepository: AttributionRepositoryAPI,
         featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.skAdNetworkService = skAdNetworkService
-        self.errorRecorder = errorRecorder
         self.attributionRepository = attributionRepository
         self.featureFlagService = featureFlagService
     }
@@ -31,9 +27,11 @@ public class AttributionService: AttributionServiceAPI {
     public func startUpdatingConversionValues() -> AnyPublisher<Void, NetworkError> {
         featureFlagService
             .isEnabled(.skAdNetworkAttribution)
-            .filter { $0 }
-            .flatMap { [weak self] _ -> AnyPublisher<Void, NetworkError> in
+            .flatMap { [weak self] isEnabled -> AnyPublisher<Void, NetworkError> in
                 guard let self = self else { return .just(()) }
+                guard isEnabled else {
+                    return .just(())
+                }
                 return self.startObservingValues()
             }
             .eraseToAnyPublisher()
