@@ -53,7 +53,7 @@ final class AccountRecoveryService: AccountRecoveryServiceAPI {
         sharedKey: String,
         userId: String,
         recoveryToken: String
-    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
+    ) -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError> {
         jwtService
             .fetchToken(guid: guid, sharedKey: sharedKey)
             .mapError(AccountRecoveryServiceError.jwtService)
@@ -67,13 +67,15 @@ final class AccountRecoveryService: AccountRecoveryServiceAPI {
                     )
                     .eraseToAnyPublisher()
             }
-            .flatMap { [credentialsRepository] offlineToken
-                -> AnyPublisher<Void, AccountRecoveryServiceError> in
-                credentialsRepository
-                    .set(offlineToken: offlineToken)
-                    .mapError(AccountRecoveryServiceError.failedToSaveOfflineToken)
-                    .eraseToAnyPublisher()
-            }
+            .eraseToAnyPublisher()
+    }
+
+    func store(
+        offlineToken: NabuOfflineToken
+    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
+        credentialsRepository
+            .set(offlineToken: offlineToken)
+            .mapError(AccountRecoveryServiceError.failedToSaveOfflineToken)
             .eraseToAnyPublisher()
     }
 }

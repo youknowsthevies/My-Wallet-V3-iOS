@@ -3,6 +3,7 @@
 import AnalyticsKit
 import ComposableArchitecture
 import FeatureAuthenticationDomain
+import ToolKit
 
 public enum LostFundsWarningAction: Equatable {
     case onDisappear
@@ -20,13 +21,22 @@ struct LostFundsWarningState: Equatable {
 struct LostFundsWarningEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let passwordValidator: PasswordValidatorAPI
+    let externalAppOpener: ExternalAppOpener
+    let errorRecorder: ErrorRecording
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        analyticsRecorder: AnalyticsEventRecorderAPI
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        passwordValidator: PasswordValidatorAPI,
+        externalAppOpener: ExternalAppOpener,
+        errorRecorder: ErrorRecording
     ) {
         self.mainQueue = mainQueue
         self.analyticsRecorder = analyticsRecorder
+        self.passwordValidator = passwordValidator
+        self.externalAppOpener = externalAppOpener
+        self.errorRecorder = errorRecorder
     }
 }
 
@@ -38,7 +48,10 @@ let lostFundsWarningReducer = Reducer.combine(
             action: /LostFundsWarningAction.resetPassword,
             environment: {
                 ResetPasswordEnvironment(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    passwordValidator: $0.passwordValidator,
+                    externalAppOpener: $0.externalAppOpener,
+                    errorRecorder: $0.errorRecorder
                 )
             }
         ),

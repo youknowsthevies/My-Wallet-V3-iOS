@@ -37,3 +37,15 @@ public final class PasswordValidator: PasswordValidatorAPI {
         .eraseToAnyPublisher()
     }
 }
+
+/// Useful for SwiftUI Previews
+public final class NoOpPasswordValidator: PasswordValidatorAPI {
+
+    public init() {}
+
+    public func validate(
+        password: String
+    ) -> AnyPublisher<PasswordValidationScore, Never> {
+        .just(.normal)
+    }
+}
