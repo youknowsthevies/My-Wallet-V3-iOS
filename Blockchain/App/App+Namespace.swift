@@ -46,6 +46,7 @@ extension AppProtocol {
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
+        observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
 
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)

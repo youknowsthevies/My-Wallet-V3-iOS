@@ -63,11 +63,11 @@ extension Backport {
     }
 }
 
-extension Backport.AsyncImage where Content == Image {
+extension Backport.AsyncImage where Content == Image? {
 
     public init(url: URL?, scale: CGFloat = 1) {
         self.init(url: url, scale: scale) { phase in
-            phase.image ?? Image("")
+            phase.image
         }
     }
 }

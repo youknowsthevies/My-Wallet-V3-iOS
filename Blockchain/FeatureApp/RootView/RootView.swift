@@ -38,6 +38,8 @@ extension Tab {
 
 struct RootView: View {
 
+    var app: AppProtocol = Blockchain.app
+
     @Environment(\.openURL) var openURL
 
     let store: Store<RootViewState, RootViewAction>
@@ -94,6 +96,12 @@ struct RootView: View {
             .on(blockchain.ux.home.tab.select) { event in
                 try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
             }
+            .onChange(of: viewStore.tab) { tab in
+                app.post(event: tab.tag)
+            }
+            .onAppear {
+                app.post(event: viewStore.tab.tag)
+            }
             .onAppear {
                 viewStore.send(.onAppear)
             }
@@ -102,7 +110,7 @@ struct RootView: View {
             }
         }
         .navigationRoute(in: store)
-        .app(Blockchain.app)
+        .app(app)
     }
 
     func tabs(in viewStore: ViewStore<RootViewState, RootViewAction>) -> some View {
