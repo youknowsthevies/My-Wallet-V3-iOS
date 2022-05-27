@@ -44,11 +44,17 @@ final class AnyCodingTests: XCTestCase {
                 let nested: Nested?
 
                 struct Nested: Codable, Equatable {
+
+                    enum Container: Codable, Equatable {
+                        case contained(value: String)
+                    }
+
                     let bool: Bool
                     let int: Int
                     let string: String?
                     let date: Date?
                     let urls: [URL]
+                    let container: Container?
                 }
             }
         }
@@ -60,7 +66,10 @@ final class AnyCodingTests: XCTestCase {
             int: 1,
             string: "first",
             date: nil,
-            urls: [url, url]
+            urls: [url, url],
+            container: .contained(
+                value: "nested-container"
+            )
         )
 
         let value = Test(

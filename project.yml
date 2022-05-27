@@ -282,6 +282,9 @@ packages:
     path: Modules/WalletPayload
   BlockchainComponentLibrary:
     path: Modules/BlockchainComponentLibrary
+  FeatureAttribution:
+    path: Modules/FeatureAttribution
+
 targets:
   Blockchain:
     configFiles:
@@ -442,6 +445,8 @@ targets:
         product: WalletPayloadKit
       - package: WalletPayload
         product: WalletPayloadDataKit
+      - package: FeatureAttribution
+        product: FeatureAttribution
 
     platform: iOS
     postBuildScripts:

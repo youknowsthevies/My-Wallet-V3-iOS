@@ -67,6 +67,11 @@ extension Color {
             dark: .palette.blue400
         )
 
+        public static let primaryMuted = Color(
+            light: .palette.blue400,
+            dark: .palette.blue400
+        )
+
         public static let success = Color(
             light: .palette.green600,
             dark: .palette.green400

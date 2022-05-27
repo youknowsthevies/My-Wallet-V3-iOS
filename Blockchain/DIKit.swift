@@ -12,8 +12,11 @@ import ERC20Kit
 import EthereumKit
 import FeatureAppDomain
 import FeatureAppUI
+import FeatureAttributionData
+import FeatureAttributionDomain
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
@@ -278,6 +281,11 @@ extension DependencyContainer {
         factory { () -> ExternalActionsProviderAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
+        }
+
+        factory { () -> SupportRouterAPI in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveSupportRouterAPI()
         }
 
         // MARK: - WalletManager
@@ -770,6 +778,31 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
             return NotificationPreferencesRepository(client: client)
+        }
+
+        // MARK: - Websocket
+
+        single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
+
+        // MARK: Feature Attribution
+
+        single { () -> AttributionServiceAPI in
+            let errorRecorder = CrashlyticsRecorder()
+            let skAdNetworkService = SkAdNetworkService(errorRecorder: errorRecorder)
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.websocket)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
+            let attributionClient = AttributionClient(
+                networkAdapter: adapter,
+                requestBuilder: builder
+            )
+            let attributionRepository = AttributionRepository(with: attributionClient)
+
+            return AttributionService(
+                skAdNetworkService: skAdNetworkService,
+                attributionRepository: attributionRepository,
+                featureFlagService: featureFlagService
+            ) as AttributionServiceAPI
         }
 
         // MARK: Pulse Network Debugging

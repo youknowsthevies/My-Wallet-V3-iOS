@@ -101,6 +101,10 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enables Redesigned CoinView
     case redesignCoinView
+
+    // MARK: - SKAdNetworkAttribution
+
+    case skAdNetworkAttribution
 }
 
 extension AppFeature {
@@ -165,6 +169,8 @@ extension AppFeature {
             return "ios_ff_polygon"
         case .accountCredentialsMetadataMigration:
             return "ios_ff_account_credentials_metadata_migration"
+        case .skAdNetworkAttribution:
+            return "ios_ff_skAdNetwork_attribution"
         }
     }
 
@@ -229,6 +235,8 @@ extension AppFeature {
             return true
         case .accountCredentialsMetadataMigration:
             return false
+        case .skAdNetworkAttribution:
+            return true
         }
     }
 }

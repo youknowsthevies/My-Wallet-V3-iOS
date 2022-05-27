@@ -132,7 +132,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         case .receive,
              .send,
              .buy,
-             .viewActivity:
+             .viewActivity,
+             .linkToDebitCard:
             return .just(true)
         case .deposit,
              .sign,
@@ -146,7 +147,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 

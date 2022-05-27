@@ -226,7 +226,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .receive:
+        case .receive,
+             .linkToDebitCard:
             return .just(true)
         case .interestTransfer:
             return isInterestTransferAvailable
@@ -247,11 +248,11 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             return isFundedPublisher
         case .swap:
             return isPairToCryptoAvailable
-                .flatMap { [isFundedPublisher] isPairToCryptoAvailable -> AnyPublisher<Bool, Never> in
+                .flatMap { [hasPositiveDisplayableBalance] isPairToCryptoAvailable -> AnyPublisher<Bool, Never> in
                     guard isPairToCryptoAvailable else {
                         return .just(false)
                     }
-                    return isFundedPublisher
+                    return hasPositiveDisplayableBalance
                         .replaceError(with: false)
                         .eraseToAnyPublisher()
                 }
@@ -263,11 +264,11 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 .eraseToAnyPublisher()
         case .sell:
             return isPairToFiatAvailable
-                .flatMap { [isFundedPublisher] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
+                .flatMap { [hasPositiveDisplayableBalance] isPairToFiatAvailable -> AnyPublisher<Bool, Never> in
                     guard isPairToFiatAvailable else {
                         return .just(false)
                     }
-                    return isFundedPublisher
+                    return hasPositiveDisplayableBalance
                         .replaceError(with: false)
                         .eraseToAnyPublisher()
                 }

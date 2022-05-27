@@ -130,14 +130,14 @@ public struct MoneyValue: Money, Hashable {
     ///
     /// - Parameters:
     ///   - includeSymbol: Whether the symbol should be included.
-    public func toSimpleString(includeSymbol: Bool) -> String {
+    public func toSimpleString(includeSymbol: Bool, fullPrecision: Bool = true) -> String {
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.groupingSeparator = ""
         formatter.usesGroupingSeparator = false
         formatter.numberStyle = .decimal
         formatter.minimumFractionDigits = 1
-        formatter.maximumFractionDigits = currency.precision
+        formatter.maximumFractionDigits = fullPrecision ? currency.precision : currency.displayPrecision
         formatter.roundingMode = .down
 
         return [

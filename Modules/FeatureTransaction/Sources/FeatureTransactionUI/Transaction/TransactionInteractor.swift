@@ -221,6 +221,7 @@ final class TransactionInteractor {
                 .asSingle()
         case .sign,
              .receive,
+             .linkToDebitCard,
              .viewActivity:
             unimplemented()
         }

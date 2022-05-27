@@ -2,6 +2,7 @@ import AnalyticsKit
 @_exported import BlockchainNamespace
 import DIKit
 import FeatureAppUI
+import FeatureAttributionDomain
 import FeatureCoinUI
 import Firebase
 import FirebaseProtocol
@@ -35,14 +36,17 @@ extension AppProtocol {
 
     func bootstrap(
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
-        deepLink: DeepLinkCoordinator = resolve()
+        deepLink: DeepLinkCoordinator = resolve(),
+        attributionService: AttributionServiceAPI = resolve()
     ) {
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
+        observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
+        observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
 
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)

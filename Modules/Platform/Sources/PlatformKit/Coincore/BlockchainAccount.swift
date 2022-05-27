@@ -113,6 +113,12 @@ extension BlockchainAccount {
             .eraseToAnyPublisher()
     }
 
+    public var hasPositiveDisplayableBalance: AnyPublisher<Bool, Error> {
+        balancePublisher
+            .map(\.hasPositiveDisplayableBalance)
+            .eraseToAnyPublisher()
+    }
+
     public var actions: AnyPublisher<AvailableActions, Error> {
         AssetAction.allCases
             .map { action in

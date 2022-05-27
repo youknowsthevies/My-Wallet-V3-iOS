@@ -14,6 +14,7 @@ extension AssetAction {
              .swap,
              .withdraw,
              .viewActivity,
+             .linkToDebitCard,
              .interestWithdraw,
              .interestTransfer:
             return true

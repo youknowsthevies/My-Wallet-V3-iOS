@@ -180,6 +180,7 @@ EXPLORER_SERVER = blockchain.com
 RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
 RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
 WALLET_SERVER = blockchain.info
+WALLET_HELPER = wallet-helper.blockchain.info/wallet-helper
 ```
 
 ## Add Firebase Config Files

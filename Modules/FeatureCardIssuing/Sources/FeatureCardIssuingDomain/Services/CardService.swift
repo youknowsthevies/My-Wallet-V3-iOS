@@ -34,27 +34,31 @@ final class CardService: CardServiceAPI {
         repository.delete(card: card)
     }
 
-    func generateSensitiveDetailsToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        repository.generateSensitiveDetailsToken(for: card)
+    func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        repository.helperUrl(for: card)
     }
 
     func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
         repository.generatePinToken(for: card)
     }
 
-    func fetchLinkedWallets(for card: Card) -> AnyPublisher<[Wallet], NabuNetworkError> {
-        repository.fetchLinkedWallets(for: card)
+    func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        repository.fetchLinkedAccount(for: card)
     }
 
-    func update(wallets: [Wallet], for card: Card) -> AnyPublisher<[String], NabuNetworkError> {
-        repository.update(wallets: wallets, for: card)
+    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        repository.update(account: account, for: card)
     }
 
-    func fetchSettings(for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        repository.fetchSettings(for: card)
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+        repository.eligibleAccounts(for: card)
     }
 
-    func update(settings: CardSettings, for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        repository.update(settings: settings, for: card)
+    func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        repository.lock(card: card)
+    }
+
+    func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        repository.unlock(card: card)
     }
 }

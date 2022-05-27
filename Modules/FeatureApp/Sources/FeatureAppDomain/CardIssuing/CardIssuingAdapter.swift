@@ -41,7 +41,14 @@ final class CardIssuingAdapter: CardIssuingAdapterAPI {
 
     func hasCard() -> AnyPublisher<Bool, Never> {
         cardService.fetchCards()
-            .map { !$0.isEmpty }
+            .map { cards in
+                cards
+                    .filter { card in
+                        card.status == .active
+                            || card.status == .locked
+                    }
+                    .isNotEmpty
+            }
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }

@@ -124,10 +124,13 @@ public protocol NetworkAdapterAPI {
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType>
+
+    func performWebsocket<ResponseType: Decodable>(
+        request: NetworkRequest
+    ) -> AnyPublisher<ResponseType, NetworkError>
 }
 
 extension NetworkAdapterAPI {
-
     public func perform(request: NetworkRequest) -> AnyPublisher<Void, NetworkError> {
         perform(request: request)
             .map { (_: EmptyNetworkResponse) -> Void in

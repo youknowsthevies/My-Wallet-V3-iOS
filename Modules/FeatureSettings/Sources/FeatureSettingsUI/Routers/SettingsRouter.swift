@@ -27,7 +27,8 @@ public enum CardOrderingResult {
 }
 
 public protocol CardIssuingViewControllerAPI: AnyObject {
-    func makeViewController(onComplete: @escaping (CardOrderingResult) -> Void) -> UIViewController
+    func makeIntroViewController(onComplete: @escaping (CardOrderingResult) -> Void) -> UIViewController
+    func makeManagementViewController(onComplete: @escaping () -> Void) -> UIViewController
 }
 
 public protocol AuthenticationCoordinating: AnyObject {
@@ -52,6 +53,7 @@ public protocol KYCRouterAPI {
     func presentLimitsOverview(from presenter: UIViewController)
 }
 
+// swiftlint:disable type_body_length
 final class SettingsRouter: SettingsRouterAPI {
     private let app: AppProtocol = resolve()
     typealias AnalyticsEvent = AnalyticsEvents.Settings
@@ -82,6 +84,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let externalActionsProvider: ExternalActionsProviderAPI
     private let kycRouter: KYCRouterAPI
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
+    private let cardIssuingAdapter: CardIssuingAdapterAPI
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
@@ -115,6 +118,7 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve(),
+        cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
         urlOpener: URLOpener = resolve(),
         exchangeUrlProvider: @escaping () -> String
     ) {
@@ -135,6 +139,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.externalActionsProvider = externalActionsProvider
+        self.cardIssuingAdapter = cardIssuingAdapter
         self.exchangeUrlProvider = exchangeUrlProvider
         self.urlOpener = urlOpener
 
@@ -323,11 +328,42 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showCardIssuingFlow() {
+        cardIssuingAdapter
+            .hasCard()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasCard in
+                if hasCard {
+                    self?.showCardManagementFlow()
+                } else {
+                    self?.showCardOrderingFlow()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func showCardManagementFlow() {
         let cardIssuing: CardIssuingViewControllerAPI = resolve()
         let nav = navigationRouter.navigationControllerAPI
         nav?.pushViewController(
-            cardIssuing.makeViewController(onComplete: { _ in
+            cardIssuing.makeManagementViewController(onComplete: {
                 nav?.popToRootViewControllerAnimated(animated: true)
+            }),
+            animated: true
+        )
+    }
+
+    private func showCardOrderingFlow() {
+        let cardIssuing: CardIssuingViewControllerAPI = resolve()
+        let nav = navigationRouter.navigationControllerAPI
+        nav?.pushViewController(
+            cardIssuing.makeIntroViewController(onComplete: { [weak self] result in
+                nav?.popToRootViewControllerAnimated(animated: true)
+                switch result {
+                case .created:
+                    self?.showCardManagementFlow()
+                case .cancelled:
+                    break
+                }
             }),
             animated: true
         )

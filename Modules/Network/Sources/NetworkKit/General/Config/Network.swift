@@ -56,6 +56,13 @@ public enum Network {
             apiCode: BlockchainAPI.Parameters.apiCode,
             pathComponents: ["nabu-gateway", "card-issuing"]
         )
+
+        public static let websocketConfig = Config(
+            apiScheme: "wss",
+            apiHost: InfoDictionaryHelper.value(for: .websocketConversionURL),
+            apiCode: "",
+            pathComponents: []
+        )
     }
 }
 

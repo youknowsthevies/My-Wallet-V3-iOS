@@ -223,6 +223,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 case .viewActivity,
                      .send,
                      .sign,
+                     .linkToDebitCard,
                      .receive,
                      .swap:
                     fatalError("Unsupported action")

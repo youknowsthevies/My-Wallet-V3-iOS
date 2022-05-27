@@ -10,6 +10,9 @@ enum CommunicatorMockError: Error {
 }
 
 final class NetworkCommunicatorMock: NetworkCommunicatorAPI {
+    func dataTaskWebSocketPublisher(for request: NetworkRequest) -> AnyPublisher<ServerResponse, NetworkError> {
+        unimplemented()
+    }
 
     func dataTaskPublisher(for request: NetworkRequest) -> AnyPublisher<ServerResponse, NetworkError> {
         unimplemented()

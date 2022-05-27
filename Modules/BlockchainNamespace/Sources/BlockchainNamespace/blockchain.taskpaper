@@ -122,6 +122,10 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+		did:
+			finish:
+				launching:
+				+ blockchain.db.type.boolean
 		enter:
 			into:
 			+ blockchain.ux.type.story

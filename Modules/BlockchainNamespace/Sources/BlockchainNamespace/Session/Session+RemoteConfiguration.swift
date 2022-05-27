@@ -30,8 +30,7 @@ extension Session {
         ) {
             self.preferences = preferences
             fetch = { [unowned self] app, isStale in
-                Task {
-
+                Task(priority: .userInitiated) {
                     let cached = preferences.object(
                         forKey: blockchain.session.configuration(\.id)
                     ) as? [String: Any] ?? [:]
@@ -70,7 +69,6 @@ extension Session {
                             configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
                         }
                     }
-
                     _fetched.send(configuration)
                     _isSynchronized.send(true)
                     app.state.set(blockchain.app.configuration.remote.is.stale, to: false)

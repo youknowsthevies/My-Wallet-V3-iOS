@@ -172,4 +172,10 @@ public enum NabuErrorCode: Int, Codable, Equatable {
     case cardCreateDebitOnly = 10011 // Only debit cards are accepted for this operation
     case cardPaymentDebitOnly = 10012 // Only debit cards are accepted for this operation
     case cardCreateNoToken = 10013 // Card not accepted
+
+    /// Card Issuing
+    case cardIssuingKycFailed = 11000
+    case cardIssuingSsnInvalid = 11001
+    case countryNotEligible = 170
+    case stateNotEligible = 171
 }

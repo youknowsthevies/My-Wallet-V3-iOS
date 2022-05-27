@@ -6,6 +6,7 @@ import ComposableArchitecture
 import DIKit
 import ERC20Kit
 import FeatureAppDomain
+import FeatureAttributionDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureCardPaymentDomain

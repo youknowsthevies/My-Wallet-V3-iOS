@@ -635,6 +635,7 @@ extension AssetAction {
              .swap,
              .viewActivity,
              .interestWithdraw,
+             .linkToDebitCard,
              .interestTransfer:
             return false
         }

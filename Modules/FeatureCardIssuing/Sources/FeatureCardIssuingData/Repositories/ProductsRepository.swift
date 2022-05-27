@@ -4,16 +4,36 @@ import Combine
 import FeatureCardIssuingDomain
 import Foundation
 import NabuNetworkError
+import ToolKit
 
 final class ProductsRepository: ProductsRepositoryAPI {
 
+    private struct Key: Hashable {}
+
+    private let cachedValue: CachedValueNew<
+        Key,
+        [Product],
+        NabuNetworkError
+    >
     private let client: ProductsClientAPI
 
     init(client: ProductsClientAPI) {
         self.client = client
+
+        let cache: AnyCache<Key, [Product]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { _ in
+                client.fetchProducts()
+            }
+        )
     }
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
-        client.fetchProducts()
+        cachedValue.get(key: Key())
     }
 }
