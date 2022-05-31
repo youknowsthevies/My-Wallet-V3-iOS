@@ -322,6 +322,13 @@ extension Reducer where
                         )
                     )
                     return .none
+                case .didSendDeviceVerificationEmail(.success):
+                    environment.analyticsRecorder.record(
+                        event: .loginIdentifierEntered(
+                            identifierType: .email
+                        )
+                    )
+                    return .none
                 case .didSendDeviceVerificationEmail(.failure(let error)):
                     environment.analyticsRecorder.record(
                         event: .loginIdentifierFailed(
