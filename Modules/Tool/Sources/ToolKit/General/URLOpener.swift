@@ -38,3 +38,15 @@ public struct ToLogAppOpener: ExternalAppOpener {
         log("Settings.app")
     }
 }
+
+/// Useful for SwiftUI previews
+public final class NoOpExternalAppOpener: ExternalAppOpener {
+
+    public init() {}
+
+    public func openMailApp(completionHandler: @escaping (Bool) -> Void) {}
+
+    public func openSettingsApp(completionHandler: @escaping (Bool) -> Void) {}
+
+    public func open(_ url: URL, completionHandler: @escaping (Bool) -> Void) {}
+}

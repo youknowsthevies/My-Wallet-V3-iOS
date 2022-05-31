@@ -57,9 +57,9 @@ struct ResetPasswordEnvironment {
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
-        passwordValidator: PasswordValidatorAPI = resolve(),
-        externalAppOpener: ExternalAppOpener = resolve(),
-        errorRecorder: ErrorRecording = resolve()
+        passwordValidator: PasswordValidatorAPI,
+        externalAppOpener: ExternalAppOpener,
+        errorRecorder: ErrorRecording
     ) {
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator

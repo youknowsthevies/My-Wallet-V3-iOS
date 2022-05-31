@@ -44,13 +44,19 @@ final class NoOpAccountRecoveryService: AccountRecoveryServiceAPI {
         sharedKey: String,
         userId: String,
         recoveryToken: String
-    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
-        .just(())
+    ) -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError> {
+        .just(NabuOfflineToken(userId: "", token: ""))
     }
 
     func resetVerificationStatus(
         guid: String,
         sharedKey: String
+    ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
+        .failure(.failedToSaveOfflineToken(.offlineToken))
+    }
+
+    func store(
+        offlineToken: NabuOfflineToken
     ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
         .failure(.failedToSaveOfflineToken(.offlineToken))
     }

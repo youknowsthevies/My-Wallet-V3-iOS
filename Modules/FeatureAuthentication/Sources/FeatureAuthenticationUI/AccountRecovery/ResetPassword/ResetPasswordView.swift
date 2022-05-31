@@ -2,8 +2,10 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 struct ResetPasswordView: View {
@@ -216,7 +218,10 @@ struct ResetPasswordView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: resetPasswordReducer,
                 environment: .init(
-                    mainQueue: .main
+                    mainQueue: .main,
+                    passwordValidator: PasswordValidator(),
+                    externalAppOpener: NoOpExternalAppOpener(),
+                    errorRecorder: NoOpErrorRecoder()
                 )
             )
         )

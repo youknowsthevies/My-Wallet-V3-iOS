@@ -300,7 +300,8 @@ struct SeedPhraseView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
-                    accountRecoveryService: NoOpAccountRecoveryService()
+                    accountRecoveryService: NoOpAccountRecoveryService(),
+                    errorRecorder: NoOpErrorRecoder()
                 )
             )
         )

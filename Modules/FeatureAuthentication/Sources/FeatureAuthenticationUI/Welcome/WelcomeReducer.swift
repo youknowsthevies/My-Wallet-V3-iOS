@@ -177,7 +177,8 @@ public let welcomeReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    errorRecorder: $0.errorRecorder
                 )
             }
         ),

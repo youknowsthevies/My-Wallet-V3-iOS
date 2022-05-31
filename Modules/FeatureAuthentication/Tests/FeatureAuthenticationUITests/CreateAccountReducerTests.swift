@@ -32,7 +32,7 @@ final class CreateAccountReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
-                walletFetcherService: .mock
+                walletFetcherService: WalletFetcherServiceMock().mock()
             )
         )
     }
@@ -134,6 +134,19 @@ final class CreateAccountReducerTests: XCTestCase {
     }
 
     func test_tapping_next_creates_an_account_when_valid_form() throws {
+        testStore = TestStore(
+            initialState: CreateAccountState(context: .createWallet),
+            reducer: createAccountReducer,
+            environment: CreateAccountEnvironment(
+                mainQueue: mainScheduler.eraseToAnyScheduler(),
+                passwordValidator: PasswordValidator(),
+                externalAppOpener: MockExternalAppOpener(),
+                analyticsRecorder: MockAnalyticsRecorder(),
+                walletRecoveryService: .mock(),
+                walletCreationService: .failing(),
+                walletFetcherService: WalletFetcherServiceMock().mock()
+            )
+        )
         // GIVEN: The form is valid
         fillFormWithValidData()
         // WHEN: The user taps on the Next button in either part of the UI
