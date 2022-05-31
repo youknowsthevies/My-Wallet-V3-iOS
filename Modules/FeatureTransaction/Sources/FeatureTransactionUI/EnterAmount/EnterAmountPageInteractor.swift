@@ -151,7 +151,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     }
                     .asObservable()
             }
-            .subscribe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
@@ -352,7 +351,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             )
 
         let interactorState = transactionStateAndLimitsFeature
-            .subscribe(on: MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, tuple -> State in
                 let (updater, newLimitsUIEnabled) = tuple
                 guard let self = self else {
@@ -364,7 +362,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 )
                 // NOTE: temporary overrides to check for the feature flag's value
                 return newState
-                    .update(\.showContinueAction, value: !newLimitsUIEnabled || newState.showContinueAction)
                     .update(\.showErrorRecoveryAction, value: newLimitsUIEnabled && newState.showErrorRecoveryAction)
             }
             .asDriverCatchError()
@@ -456,7 +453,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         state
             .update(\.errorState, value: updater.errorState)
             .update(\.canContinue, value: updater.nextEnabled)
-            .update(\.showContinueAction, value: canShowContinueAction(for: updater))
             .update(\.showErrorRecoveryAction, value: canShowErrorAction(for: updater))
             .update(\.topAuxiliaryViewPresenter, value: topAuxiliaryView(for: updater))
             .update(\.bottomAuxiliaryViewPresenter, value: bottomAuxiliaryView(for: updater))
@@ -521,7 +517,6 @@ extension EnterAmountPageInteractor {
         var bottomAuxiliaryViewPresenter: AuxiliaryViewPresenting?
         var navigationModel: ScreenNavigationModel
         var canContinue: Bool
-        var showContinueAction: Bool
         var showErrorRecoveryAction: Bool
         var showWithdrawalLocks: Bool
         var errorState: TransactionErrorState
@@ -532,7 +527,6 @@ extension EnterAmountPageInteractor {
                 && lhs.navigationModel == rhs.navigationModel
                 && lhs.canContinue == rhs.canContinue
                 && lhs.errorState == rhs.errorState
-                && lhs.showContinueAction == rhs.showContinueAction
                 && lhs.showErrorRecoveryAction == rhs.showErrorRecoveryAction
                 && lhs.showWithdrawalLocks == rhs.showWithdrawalLocks
         }
@@ -544,7 +538,6 @@ extension EnterAmountPageInteractor {
             bottomAuxiliaryViewPresenter: nil,
             navigationModel: navigationModel,
             canContinue: false,
-            showContinueAction: false,
             showErrorRecoveryAction: false,
             showWithdrawalLocks: false,
             errorState: .none
