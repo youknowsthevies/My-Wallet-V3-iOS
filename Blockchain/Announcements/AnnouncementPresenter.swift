@@ -374,7 +374,7 @@ extension AnnouncementPresenter {
         )
     }
 
-    private func showAssetDetailsScreen(for currency: CryptoCurrency) {
+    private func showCoinView(for currency: CryptoCurrency) {
         app.post(event: blockchain.ux.asset[currency.code].select)
     }
 
@@ -391,7 +391,7 @@ extension AnnouncementPresenter {
                 guard let asset = data?.asset else {
                     return
                 }
-                self?.showAssetDetailsScreen(for: asset)
+                self?.showCoinView(for: asset)
             }
         )
     }

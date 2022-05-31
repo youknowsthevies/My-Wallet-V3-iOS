@@ -173,37 +173,22 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event in
-
         let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
-        let isRedesignEnabled = await app.publisher(for: blockchain.app.configuration.redesign.coinview, as: Bool.self)
-            .values.first?.value ?? false
-
-        if isRedesignEnabled {
-            var vc: UIViewController?
-            vc = UIHostingController(
-                rootView: CoinAdapterView(
-                    cryptoCurrency: cryptoCurrency,
-                    app: app,
-                    dismiss: {
-                        vc?.dismiss(animated: true)
-                    }
-                )
+        var vc: UIViewController?
+        vc = UIHostingController(
+            rootView: CoinAdapterView(
+                cryptoCurrency: cryptoCurrency,
+                app: app,
+                dismiss: {
+                    vc?.dismiss(animated: true)
+                }
             )
-            if let vc = vc {
-                topViewController.topMostViewController?.present(
-                    vc,
-                    animated: true
-                )
-            }
-        } else {
-
-            let builder = AssetDetailsBuilder(
-                accountsRouter: accountsRouter(),
-                currency: cryptoCurrency,
-                exchangeProviding: exchangeProvider
+        )
+        if let vc = vc {
+            topViewController.topMostViewController?.present(
+                vc,
+                animated: true
             )
-            let controller = builder.build()
-            topViewController.topMostViewController?.present(controller, animated: true)
         }
     }
 

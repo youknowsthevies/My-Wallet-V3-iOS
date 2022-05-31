@@ -66,10 +66,6 @@ blockchain:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
-			redesign:
-				coinview:
-				+ blockchain.db.type.boolean
-				+ blockchain.session.configuration.value
 			remote:
 				is:
 					stale:

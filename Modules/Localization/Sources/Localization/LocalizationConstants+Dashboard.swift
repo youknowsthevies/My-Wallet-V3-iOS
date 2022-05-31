@@ -25,21 +25,6 @@ extension LocalizationConstants.Dashboard.BalanceCell {
     public static let pending = NSLocalizedString("Pending", comment: "Pending")
 }
 
-extension LocalizationConstants.Dashboard.AssetDetails {
-    public static let current = NSLocalizedString("Current", comment: "Current")
-    public static let price = NSLocalizedString("Price", comment: "Price")
-    public static let send = NSLocalizedString("Send", comment: "Send")
-    public static let request = NSLocalizedString("Request", comment: "Request")
-    public static let day = NSLocalizedString("Day", comment: "Day")
-    public static let week = NSLocalizedString("Week", comment: "Week")
-    public static let month = NSLocalizedString("Month", comment: "Month")
-    public static let year = NSLocalizedString("Year", comment: "Year")
-    public static let all = NSLocalizedString("All", comment: "All")
-    public static let sendToWallet = NSLocalizedString("Send to My Wallet", comment: "Send to My Wallet")
-    public static let swap = NSLocalizedString("Swap", comment: "Swap")
-    public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
-}
-
 extension LocalizationConstants.Dashboard.Portfolio {
     public static let totalBalance = NSLocalizedString(
         "Total Balance",

@@ -97,11 +97,6 @@ public enum AppFeature: Int, CaseIterable {
 
     case cardIssuing
 
-    // MARK: - Redesign
-
-    /// Enables Redesigned CoinView
-    case redesignCoinView
-
     // MARK: - SKAdNetworkAttribution
 
     case skAdNetworkAttribution
@@ -161,8 +156,6 @@ extension AppFeature {
             return "ios_ff_send_to_domains_announcement"
         case .blockchainDomains:
             return "ios_ff_blockchain_domains"
-        case .redesignCoinView:
-            return "ios_ff_redesign_coinview"
         case .notificationPreferences:
             return "ios_ff_notification_preferences"
         case .polygonSupport:
@@ -226,8 +219,6 @@ extension AppFeature {
         case .sendToDomainsAnnouncement:
             return true
         case .blockchainDomains:
-            return true
-        case .redesignCoinView:
             return true
         case .notificationPreferences:
             return true

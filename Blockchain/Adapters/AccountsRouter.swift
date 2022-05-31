@@ -13,7 +13,6 @@ import ToolKit
 
 final class AccountsRouter: AccountsRouting {
 
-    private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
     private let disposeBag = DisposeBag()
 
@@ -21,7 +20,6 @@ final class AccountsRouter: AccountsRouting {
         routing: TabSwapping,
         backupRouter: FeatureDashboardUI.BackupRouterAPI = resolve()
     ) {
-        nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
         custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
     }
 
@@ -40,8 +38,6 @@ final class AccountsRouter: AccountsRouting {
         switch account {
         case is CryptoInterestAccount:
             routeToInterestAccount(for: account)
-        case is NonCustodialAccount:
-            nonCustodialActionRouterAPI.start(with: account)
         case is TradingAccount,
              is FiatAccount:
             custodyActionRouterAPI.start(with: account)
