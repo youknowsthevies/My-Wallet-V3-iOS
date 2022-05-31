@@ -106,6 +106,8 @@ extension AssetAction {
             productId = nil
         case .interestWithdraw:
             productId = nil
+        case .linkToDebitCard:
+            productId = nil
         case .sign:
             productId = nil
         case .viewActivity:
@@ -139,6 +141,8 @@ extension AssetAction {
         case .swap:
             canPerformAction = true
         case .viewActivity:
+            canPerformAction = true
+        case .linkToDebitCard:
             canPerformAction = true
         }
         return canPerformAction

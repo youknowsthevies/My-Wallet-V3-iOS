@@ -13,10 +13,13 @@ public final class CardClient: CardClientAPI {
 
     private enum Path: String {
         case cards
-        case sensitiveDetailsToken = "sensitive-details-token"
+        case sensitiveDetailsToken = "marqeta-card-widget-token"
         case pinToken = "pin-token"
-        case wallets
+        case account
         case settings
+        case eligibleAccounts = "eligible-accounts"
+        case lock
+        case unlock
     }
 
     // MARK: - Properties
@@ -83,13 +86,14 @@ public final class CardClient: CardClientAPI {
 
     /// external token to be used in card plugin to retrieve PCI DSS scope card details, PAN, CVV
     func generateSensitiveDetailsToken(with cardId: String) -> AnyPublisher<String, NabuNetworkError> {
-        let request = requestBuilder.get(
+        let request = requestBuilder.post(
             path: [Path.cards.rawValue, cardId, Path.sensitiveDetailsToken.rawValue],
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: String.self)
+            .perform(request: request, responseType: SensitiveDetailsTokenResponse.self)
+            .map(\.token)
             .eraseToAnyPublisher()
     }
 
@@ -105,50 +109,63 @@ public final class CardClient: CardClientAPI {
             .eraseToAnyPublisher()
     }
 
-    func fetchLinkedWallets(with cardId: String) -> AnyPublisher<[Wallet], NabuNetworkError> {
+    func fetchLinkedAccount(with cardId: String) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         let request = requestBuilder.get(
-            path: [Path.cards.rawValue, cardId, Path.wallets.rawValue],
+            path: [Path.cards.rawValue, cardId, Path.account.rawValue],
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: [Wallet].self)
+            .perform(request: request, responseType: AccountCurrency.self)
             .eraseToAnyPublisher()
     }
 
-    /// array of linked wallets in priority order
-    func updateWallets(with ids: [String], for cardId: String) -> AnyPublisher<[String], NabuNetworkError> {
+    /// array of linked accounts in priority order
+    func updateAccount(
+        with parameters: AccountCurrency,
+        for cardId: String
+    ) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         let request = requestBuilder.put(
-            path: [Path.cards.rawValue, cardId, Path.wallets.rawValue],
-            body: try? ids.encode(),
+            path: [Path.cards.rawValue, cardId, Path.account.rawValue],
+            body: try? parameters.encode(),
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: [String].self)
+            .perform(request: request, responseType: AccountCurrency.self)
             .eraseToAnyPublisher()
     }
 
-    func fetchSettings(for cardId: String) -> AnyPublisher<CardSettings, NabuNetworkError> {
+    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
         let request = requestBuilder.get(
-            path: [Path.cards.rawValue, cardId, Path.settings.rawValue],
+            path: [Path.cards.rawValue, cardId, Path.eligibleAccounts.rawValue],
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: CardSettings.self)
+            .perform(request: request, responseType: [AccountBalancePair].self)
             .eraseToAnyPublisher()
     }
 
-    func update(settings: CardSettings, for cardId: String) -> AnyPublisher<CardSettings, NabuNetworkError> {
+    func lock(cardId: String) -> AnyPublisher<Card, NabuNetworkError> {
         let request = requestBuilder.put(
-            path: [Path.cards.rawValue, cardId, Path.settings.rawValue],
-            body: try? settings.encode(),
+            path: [Path.cards.rawValue, cardId, Path.lock.rawValue],
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: CardSettings.self)
+            .perform(request: request, responseType: Card.self)
+            .eraseToAnyPublisher()
+    }
+
+    func unlock(cardId: String) -> AnyPublisher<Card, NabuNetworkError> {
+        let request = requestBuilder.put(
+            path: [Path.cards.rawValue, cardId, Path.unlock.rawValue],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: Card.self)
             .eraseToAnyPublisher()
     }
 }

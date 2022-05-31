@@ -15,15 +15,14 @@ public struct CoinViewState: Equatable {
     public let currency: CryptoCurrency
     public var accounts: [Account.Snapshot]
     public var error: CoinViewError?
-    public var information: AssetInformation?
+    public var assetInformation: AssetInformation?
     public var interestRate: Double?
     public var kycStatus: KYCStatus?
     public var isFavorite: Bool?
+    public var graph: GraphViewState
 
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
-
-    public var graph = GraphViewState()
 
     var actions: [ButtonAction] {
         if !currency.isTradable || accounts.isEmpty {
@@ -54,12 +53,20 @@ public struct CoinViewState: Equatable {
         currency: CryptoCurrency,
         kycStatus: KYCStatus? = nil,
         accounts: [Account.Snapshot] = [],
-        error: CoinViewError? = nil
+        assetInformation: AssetInformation? = nil,
+        interestRate: Double? = nil,
+        error: CoinViewError? = nil,
+        isFavorite: Bool? = nil,
+        graph: GraphViewState = GraphViewState()
     ) {
         self.currency = currency
         self.kycStatus = kycStatus
         self.accounts = accounts
+        self.assetInformation = assetInformation
+        self.interestRate = interestRate
         self.error = error
+        self.isFavorite = isFavorite
+        self.graph = graph
     }
 }
 

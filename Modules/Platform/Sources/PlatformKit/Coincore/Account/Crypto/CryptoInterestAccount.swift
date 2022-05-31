@@ -159,7 +159,8 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
              .send,
              .sign,
              .swap,
-             .withdraw:
+             .withdraw,
+             .linkToDebitCard:
             return .just(false)
         }
     }

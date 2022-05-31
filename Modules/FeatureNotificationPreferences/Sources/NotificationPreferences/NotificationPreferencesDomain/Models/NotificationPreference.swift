@@ -37,10 +37,21 @@ public struct NotificationMethodInfo: Hashable, Identifiable {
 }
 
 public struct NotificationPreference: Hashable, Identifiable {
+    public var id = UUID()
+    public let type: PreferenceType
+    public let title: String
+    public let subtitle: String
+    public let preferenceDescription: String
+    public let requiredMethods, optionalMethods, enabledMethods: [NotificationMethodInfo]
+    public var allAvailableMethods: [NotificationMethodInfo] {
+        requiredMethods + optionalMethods
+    }
+
     public init(
         id: UUID = UUID(),
         type: PreferenceType,
         title: String,
+        subtitle: String,
         preferenceDescription: String,
         requiredMethods: [NotificationMethodInfo],
         optionalMethods: [NotificationMethodInfo],
@@ -49,18 +60,11 @@ public struct NotificationPreference: Hashable, Identifiable {
         self.id = id
         self.type = type
         self.title = title
+        self.subtitle = subtitle
         self.preferenceDescription = preferenceDescription
         self.requiredMethods = requiredMethods
         self.optionalMethods = optionalMethods
         self.enabledMethods = enabledMethods
-    }
-
-    public var id = UUID()
-    public let type: PreferenceType
-    public let title, preferenceDescription: String
-    public let requiredMethods, optionalMethods, enabledMethods: [NotificationMethodInfo]
-    public var allAvailableMethods: [NotificationMethodInfo] {
-        requiredMethods + optionalMethods
     }
 }
 
@@ -91,4 +95,5 @@ public enum NotificationMethod: String, Decodable, Identifiable {
     case email = "EMAIL"
     case push = "PUSH"
     case inApp = "IN_APP"
+    case browser = "BROWSER"
 }

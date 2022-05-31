@@ -70,7 +70,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "MoneyKit", package: "Money")
             ]
         )
     ]

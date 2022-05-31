@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct StellarAssetAccount {
+public struct StellarAssetAccount: Equatable {
 
     public let address: StellarAssetAddress
     public let accountAddress: String

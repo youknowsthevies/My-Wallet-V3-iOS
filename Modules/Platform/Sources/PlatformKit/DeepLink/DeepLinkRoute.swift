@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public enum DeepLinkRoute: CaseIterable {
-    case xlmAirdop
     case kyc
     case kycVerifyEmail
     case kycDocumentResubmission
@@ -72,8 +71,6 @@ extension DeepLinkRoute {
 
     private var supportedPath: String {
         switch self {
-        case .xlmAirdop:
-            return "referral"
         case .kycVerifyEmail,
              .kycDocumentResubmission,
              .exchangeVerifyEmail:
@@ -91,8 +88,6 @@ extension DeepLinkRoute {
 
     private var requiredKeyParam: String? {
         switch self {
-        case .xlmAirdop:
-            return "campaign"
         case .kyc,
              .kycVerifyEmail,
              .kycDocumentResubmission,
@@ -107,8 +102,6 @@ extension DeepLinkRoute {
 
     private var requiredValueParam: String? {
         switch self {
-        case .xlmAirdop:
-            return "sunriver"
         case .kycVerifyEmail,
              .exchangeVerifyEmail:
             return "email_verified"
@@ -130,7 +123,6 @@ extension DeepLinkRoute {
             return "context"
         case .kyc,
              .kycDocumentResubmission,
-             .xlmAirdop,
              .exchangeLinking,
              .openBankingLink,
              .openBankingApprove:

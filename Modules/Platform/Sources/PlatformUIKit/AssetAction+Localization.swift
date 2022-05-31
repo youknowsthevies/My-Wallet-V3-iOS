@@ -13,6 +13,8 @@ extension AssetAction {
             return LocalizationIds.buy
         case .viewActivity:
             return LocalizationIds.viewActivity
+        case .linkToDebitCard:
+            return LocalizationIds.linkToDebitCard
         case .interestTransfer:
             return LocalizationIds.transfer
         case .deposit:

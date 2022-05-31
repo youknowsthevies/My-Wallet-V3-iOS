@@ -3,7 +3,6 @@
 import Combine
 import MoneyKit
 import RxSwift
-import RxToolKit
 import ToolKit
 
 public typealias AvailableActions = Set<AssetAction>
@@ -111,6 +110,12 @@ extension BlockchainAccount {
     /// Account balance is positive.
     public var isFundedPublisher: AnyPublisher<Bool, Error> {
         balancePublisher.map(\.isPositive)
+            .eraseToAnyPublisher()
+    }
+
+    public var hasPositiveDisplayableBalance: AnyPublisher<Bool, Error> {
+        balancePublisher
+            .map(\.hasPositiveDisplayableBalance)
             .eraseToAnyPublisher()
     }
 

@@ -8,7 +8,6 @@ import ToolKit
 import WalletPayloadKit
 
 public protocol NabuAuthenticationExecutorAPI {
-
     /// Runs authentication flow if needed and passes it to the `networkResponsePublisher`
     /// - Parameter networkResponsePublisher: the closure taking a token and returning a publisher for a request
     func authenticate(

@@ -21,14 +21,18 @@ protocol CardClientAPI {
     /// one time token to be used in marqeta widget to reveal or update the card PIN
     func generatePinToken(with cardId: String) -> AnyPublisher<String, NabuNetworkError>
 
-    func fetchLinkedWallets(with cardId: String) -> AnyPublisher<[Wallet], NabuNetworkError>
+    func fetchLinkedAccount(with cardId: String) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    /// array of linked wallets in priority order
-    func updateWallets(with ids: [String], for cardId: String) -> AnyPublisher<[String], NabuNetworkError>
+    func updateAccount(
+        with params: AccountCurrency,
+        for cardId: String
+    ) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    func fetchSettings(for cardId: String) -> AnyPublisher<CardSettings, NabuNetworkError>
+    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalancePair], NabuNetworkError>
 
-    func update(settings: CardSettings, for cardId: String) -> AnyPublisher<CardSettings, NabuNetworkError>
+    func lock(cardId: String) -> AnyPublisher<Card, NabuNetworkError>
+
+    func unlock(cardId: String) -> AnyPublisher<Card, NabuNetworkError>
 }
 
 struct OrderCardParameters: Encodable {

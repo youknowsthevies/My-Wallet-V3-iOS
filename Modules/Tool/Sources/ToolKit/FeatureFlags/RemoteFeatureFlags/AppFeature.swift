@@ -10,6 +10,9 @@ public enum AppFeature: Int, CaseIterable {
     /// The announcements
     case announcements
 
+    /// The announcements
+    case appUpgradeData
+
     /// The ticker for the new asset announcement.
     case newAssetAnnouncement
 
@@ -94,16 +97,17 @@ public enum AppFeature: Int, CaseIterable {
 
     case cardIssuing
 
-    // MARK: - Redesign
+    // MARK: - SKAdNetworkAttribution
 
-    /// Enables Redesigned CoinView
-    case redesignCoinView
+    case skAdNetworkAttribution
 }
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
     public var remoteEnabledKey: String {
         switch self {
+        case .appUpgradeData:
+            return "ios_app_maintenance"
         case .interestWithdrawAndDeposit:
             return "ios_interest_deposit_withdraw"
         case .announcements:
@@ -152,14 +156,14 @@ extension AppFeature {
             return "ios_ff_send_to_domains_announcement"
         case .blockchainDomains:
             return "ios_ff_blockchain_domains"
-        case .redesignCoinView:
-            return "ios_ff_redesign_coinview"
         case .notificationPreferences:
             return "ios_ff_notification_preferences"
         case .polygonSupport:
             return "ios_ff_polygon"
         case .accountCredentialsMetadataMigration:
             return "ios_ff_account_credentials_metadata_migration"
+        case .skAdNetworkAttribution:
+            return "ios_ff_skAdNetwork_attribution"
         }
     }
 
@@ -171,6 +175,8 @@ extension AppFeature {
         case .assetRenameAnnouncement:
             return false
         case .interestWithdrawAndDeposit:
+            return false
+        case .appUpgradeData:
             return false
         case .announcements:
             return false
@@ -214,14 +220,14 @@ extension AppFeature {
             return true
         case .blockchainDomains:
             return true
-        case .redesignCoinView:
-            return true
         case .notificationPreferences:
             return true
         case .polygonSupport:
             return true
         case .accountCredentialsMetadataMigration:
             return false
+        case .skAdNetworkAttribution:
+            return true
         }
     }
 }

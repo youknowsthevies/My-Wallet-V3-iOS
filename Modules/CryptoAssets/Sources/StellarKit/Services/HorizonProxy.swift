@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import DIKit
+import Combine
 import Foundation
 import MoneyKit
 import PlatformKit
@@ -10,7 +10,7 @@ import RxSwift
 import stellarsdk
 
 protocol HorizonProxyAPI {
-    func accountResponse(for accountID: String) -> Single<AccountResponse>
+    func accountResponse(for accountID: String) -> AnyPublisher<AccountResponse, StellarNetworkError>
     func minimumBalance(subentryCount: UInt) -> CryptoValue
     func sign(transaction: stellarsdk.Transaction, keyPair: stellarsdk.KeyPair) -> Completable
     func submitTransaction(transaction: stellarsdk.Transaction) -> Single<TransactionPostResponseEnum>
@@ -20,19 +20,16 @@ final class HorizonProxy: HorizonProxyAPI {
 
     // MARK: Private Properties
 
-    private let configurationService: StellarConfigurationAPI
+    private let configurationService: StellarConfigurationServiceAPI
     private let walletOptions: WalletOptionsAPI
     private let accountRepository: StellarWalletAccountRepositoryAPI
-    private var configuration: Single<StellarConfiguration> {
-        configurationService.configuration
-    }
 
     private let minReserve = BigInt(5000000)
 
     init(
-        configurationService: StellarConfigurationAPI = resolve(),
-        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
-        walletOptions: WalletOptionsAPI = resolve()
+        configurationService: StellarConfigurationServiceAPI,
+        accountRepository: StellarWalletAccountRepositoryAPI,
+        walletOptions: WalletOptionsAPI
     ) {
         self.configurationService = configurationService
         self.walletOptions = walletOptions
@@ -40,7 +37,10 @@ final class HorizonProxy: HorizonProxyAPI {
     }
 
     func sign(transaction: stellarsdk.Transaction, keyPair: stellarsdk.KeyPair) -> Completable {
-        configuration.map(\.network)
+        configurationService
+            .configuration
+            .map(\.network)
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, network) -> Completable in
                 self.sign(transaction: transaction, keyPair: keyPair, network: network)
             }
@@ -56,31 +56,22 @@ final class HorizonProxy: HorizonProxyAPI {
         CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .stellar)
     }
 
-    func accountResponse(for accountID: String) -> Single<AccountResponse> {
-        configuration
-            .map(\.sdk.accounts)
-            .flatMap { service -> Single<AccountResponse> in
-                Single<AccountResponse>.create { event -> Disposable in
-                    service.getAccountDetails(
-                        accountId: accountID,
-                        response: { response -> Void in
-                            switch response {
-                            case .success(details: let details):
-                                event(.success(details))
-                            case .failure(error: let error):
-                                event(.error(error.toStellarServiceError()))
-                            }
-                        }
-                    )
-                    return Disposables.create()
-                }
+    func accountResponse(for accountID: String) -> AnyPublisher<AccountResponse, StellarNetworkError> {
+        configurationService
+            .configuration
+            .flatMap { configuration -> AnyPublisher<AccountResponse, StellarNetworkError> in
+                configuration.sdk.accounts.getAccountDetails(accountId: accountID)
             }
+            .eraseToAnyPublisher()
     }
 
     func submitTransaction(transaction: stellarsdk.Transaction) -> Single<TransactionPostResponseEnum> {
-        configuration.flatMap(weak: self) { (self, configuration) -> Single<TransactionPostResponseEnum> in
-            self.submitTransaction(transaction: transaction, with: configuration)
-        }
+        configurationService
+            .configuration
+            .asSingle()
+            .flatMap(weak: self) { (self, configuration) -> Single<TransactionPostResponseEnum> in
+                self.submitTransaction(transaction: transaction, with: configuration)
+            }
     }
 
     private func submitTransaction(
@@ -98,5 +89,27 @@ final class HorizonProxy: HorizonProxyAPI {
             }
             return Disposables.create()
         }
+    }
+}
+
+extension stellarsdk.AccountService {
+
+    fileprivate func getAccountDetails(accountId: String) -> AnyPublisher<AccountResponse, StellarNetworkError> {
+        Deferred {
+            Future<AccountResponse, StellarNetworkError> { promise in
+                self.getAccountDetails(
+                    accountId: accountId,
+                    response: { response -> Void in
+                        switch response {
+                        case .success(let details):
+                            promise(.success(details))
+                        case .failure(let error):
+                            promise(.error(error.stellarNetworkError))
+                        }
+                    }
+                )
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

@@ -49,6 +49,18 @@ public final class NetworkAdapter: NetworkAdapterAPI {
             .decode(for: request, using: request.decoder)
             .eraseToAnyPublisher()
     }
+
+    public func performWebsocket<ResponseType: Decodable>(
+        request: NetworkRequest
+    ) -> AnyPublisher<ResponseType, NetworkError> {
+        communicator
+            .dataTaskWebSocketPublisher(for: request)
+            .decode(
+                for: request,
+                using: request.decoder
+            )
+            .eraseToAnyPublisher()
+    }
 }
 
 extension AnyPublisher where Output == ServerResponse,

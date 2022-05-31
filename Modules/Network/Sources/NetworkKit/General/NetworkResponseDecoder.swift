@@ -66,7 +66,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             response: response,
             for: request,
             emptyPayloadHandler: { serverResponse in
-                guard serverResponse.response.statusCode == 204 else {
+                guard serverResponse.response?.statusCode == 204 else {
                     return .failure(.payloadError(.emptyData))
                 }
                 return .success(nil)
@@ -83,7 +83,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             response: response,
             for: request,
             emptyPayloadHandler: { serverResponse in
-                guard serverResponse.response.statusCode == 204 else {
+                guard serverResponse.response?.statusCode == 204 else {
                     return .failure(.payloadError(.emptyData))
                 }
                 return .success(nil)
@@ -193,7 +193,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     private func debugErrorMessage<ResponseType: Decodable>(
         for decodingError: Error,
-        response: HTTPURLResponse,
+        response: HTTPURLResponse?,
         responseType: ResponseType.Type,
         request: NetworkRequest,
         rawPayload: String
@@ -202,7 +202,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         \n----------------------
         Payload decoding error.
           Error: '\(String(describing: ResponseType.self))': \(decodingError).
-            URL: \(response.url!.absoluteString),
+            URL: \(response?.url!.absoluteString),
         Request: \(request),
         Payload: \(rawPayload)
         ======================\n

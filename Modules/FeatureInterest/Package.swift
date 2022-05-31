@@ -10,7 +10,9 @@ let package = Package(
             name: "FeatureInterest",
             targets: ["FeatureInterestData", "FeatureInterestDomain", "FeatureInterestUI"]
         ),
-        .library(name: "FeatureInterestDomain", targets: ["FeatureInterestDomain"])
+        .library(name: "FeatureInterestData", targets: ["FeatureInterestData"]),
+        .library(name: "FeatureInterestDomain", targets: ["FeatureInterestDomain"]),
+        .library(name: "FeatureInterestUI", targets: ["FeatureInterestUI"])
     ],
     dependencies: [
         .package(

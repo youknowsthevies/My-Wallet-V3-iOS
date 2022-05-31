@@ -4,6 +4,7 @@ import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
+import EthereumKit
 import FeatureWalletConnectDomain
 import SwiftUI
 import UIComponentsKit
@@ -165,6 +166,13 @@ extension ConnectView_Previews {
         func denyConnection(
             session: Session,
             completion: @escaping (Session.WalletInfo) -> Void
+        ) {}
+
+        func respondToChainIDChangeRequest(
+            session: Session,
+            request: Request,
+            network: EVMNetwork,
+            approved: Bool
         ) {}
     }
 

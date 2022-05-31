@@ -216,6 +216,7 @@ let verifyDeviceReducer = Reducer.combine(
                     }
                     return Effect(value: .pollWalletInfo)
                 }
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
 
         case .onWillDisappear:
@@ -354,6 +355,7 @@ let verifyDeviceReducer = Reducer.combine(
                     .navigate(to: .upgradeAccount(exchangeOnly: userType == .exchange))
                 )
             }
+            .receive(on: environment.mainQueue)
             .eraseToEffect()
 
         case .fallbackToWalletIdentifier:

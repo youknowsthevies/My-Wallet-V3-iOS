@@ -4,23 +4,89 @@ import Combine
 import FeatureCardIssuingDomain
 import Foundation
 import NabuNetworkError
+import NetworkKit
+import ToolKit
 
 final class CardRepository: CardRepositoryAPI {
 
-    private let client: CardClientAPI
+    private static let marqetaPath = "/marqeta-card/#/"
 
-    init(
-        client: CardClientAPI
-    ) {
-        self.client = client
+    private struct AccountKey: Hashable {
+        let id: String
     }
 
-    func orderCard(product: Product, at address: Card.Address, with ssn: String) -> AnyPublisher<Card, NabuNetworkError> {
-        client.orderCard(with: .init(productCode: product.productCode, deliveryAddress: address, ssn: ssn))
+    private let client: CardClientAPI
+
+    private let baseCardHelperUrl: String
+
+    private let cachedCardValue: CachedValueNew<
+        String,
+        [Card],
+        NabuNetworkError
+    >
+
+    private let cachedAccountValue: CachedValueNew<
+        AccountKey,
+        AccountCurrency,
+        NabuNetworkError
+    >
+
+    private let accountCache: AnyCache<AccountKey, AccountCurrency>
+    private let cardCache: AnyCache<String, [Card]>
+
+    init(
+        client: CardClientAPI,
+        baseCardHelperUrl: String
+    ) {
+        self.client = client
+        self.baseCardHelperUrl = baseCardHelperUrl
+
+        let cardCache: AnyCache<String, [Card]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+
+        cachedCardValue = CachedValueNew(
+            cache: cardCache,
+            fetch: { _ in
+                client.fetchCards()
+            }
+        )
+
+        self.cardCache = cardCache
+
+        let accountCache: AnyCache<AccountKey, AccountCurrency> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+
+        cachedAccountValue = CachedValueNew(
+            cache: accountCache,
+            fetch: { accountKey in
+                client.fetchLinkedAccount(with: accountKey.id)
+            }
+        )
+
+        self.accountCache = accountCache
+    }
+
+    func orderCard(
+        product: Product,
+        at address: Card.Address,
+        with ssn: String
+    ) -> AnyPublisher<Card, NabuNetworkError> {
+        client
+            .orderCard(
+                with: .init(productCode: product.productCode, deliveryAddress: address, ssn: ssn)
+            )
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.cachedCardValue.invalidateCache()
+            })
+            .eraseToAnyPublisher()
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {
-        client.fetchCards()
+        cachedCardValue.get(key: #file)
     }
 
     func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
@@ -28,30 +94,81 @@ final class CardRepository: CardRepositoryAPI {
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        client.deleteCard(with: card.cardId)
+        client
+            .deleteCard(with: card.id)
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.cachedCardValue.invalidateCache()
+            }, receiveCompletion: { [weak self] _ in
+                self?.cachedCardValue.invalidateCache()
+            })
+            .eraseToAnyPublisher()
     }
 
-    func generateSensitiveDetailsToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        client.generateSensitiveDetailsToken(with: card.cardId)
+    func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        let baseCardHelperUrl = baseCardHelperUrl
+        return client
+            .generateSensitiveDetailsToken(with: card.id)
+            .map { token in
+                Self.buildCardHelperUrl(
+                    with: baseCardHelperUrl,
+                    token: token,
+                    for: card
+                )
+            }
+            .eraseToAnyPublisher()
     }
 
     func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        client.generatePinToken(with: card.cardId)
+        client.generatePinToken(with: card.id)
     }
 
-    func fetchLinkedWallets(for card: Card) -> AnyPublisher<[Wallet], NabuNetworkError> {
-        client.fetchLinkedWallets(with: card.cardId)
+    func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        cachedAccountValue.get(key: AccountKey(id: card.id))
     }
 
-    func update(wallets: [Wallet], for card: Card) -> AnyPublisher<[String], NabuNetworkError> {
-        client.updateWallets(with: wallets.map(\.walletId), for: card.cardId)
+    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+        client
+            .updateAccount(
+                with: AccountCurrency(accountCurrency: account.balance.symbol),
+                for: card.id
+            )
+            .flatMap { [accountCache] accountCurrency in
+                accountCache
+                    .set(accountCurrency, for: AccountKey(id: card.id))
+                    .replaceOutput(with: accountCurrency)
+            }
+            .eraseToAnyPublisher()
     }
 
-    func fetchSettings(for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        client.fetchSettings(for: card.cardId)
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+        client.eligibleAccounts(for: card.id)
     }
 
-    func update(settings: CardSettings, for card: Card) -> AnyPublisher<CardSettings, NabuNetworkError> {
-        client.update(settings: settings, for: card.cardId)
+    func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        client
+            .lock(cardId: card.id)
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.cachedCardValue.invalidateCache()
+            })
+            .eraseToAnyPublisher()
+    }
+
+    func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
+        client
+            .unlock(cardId: card.id)
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.cachedCardValue.invalidateCache()
+            })
+            .eraseToAnyPublisher()
+    }
+
+    private static func buildCardHelperUrl(
+        with base: String,
+        token: String,
+        for card: Card
+    ) -> URL {
+        URL(
+            string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)"
+        )!
     }
 }

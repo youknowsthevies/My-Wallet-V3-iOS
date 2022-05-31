@@ -16,10 +16,13 @@ final class WithdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI {
     }
 
     func withdrawalLocksCheck(
-        paymentMethod: String,
-        currencyCode: String
+        paymentMethod: String?,
+        currencyCode: String?
     ) -> AnyPublisher<WithdrawalLocksCheck, Never> {
-        client.fetchWithdrawalLocksCheck(paymentMethod: paymentMethod, currencyCode: currencyCode)
+        guard let paymentMethod = paymentMethod, let currencyCode = currencyCode else {
+            return .just(.init(lockDays: 0))
+        }
+        return client.fetchWithdrawalLocksCheck(paymentMethod: paymentMethod, currencyCode: currencyCode)
             .replaceError(with: .init(rule: nil))
             .map {
                 let lockTime = Double($0.rule?.lockTime ?? 0)

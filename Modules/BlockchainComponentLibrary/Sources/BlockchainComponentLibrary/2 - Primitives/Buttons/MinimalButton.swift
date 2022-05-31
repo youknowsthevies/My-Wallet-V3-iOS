@@ -18,6 +18,7 @@ public struct MinimalButton<LeadingView: View>: View {
 
     private let title: String
     private let isLoading: Bool
+    private let isOpaque: Bool
     private let foregroundColor: Color
     private let leadingView: LeadingView
     private let action: () -> Void
@@ -29,7 +30,7 @@ public struct MinimalButton<LeadingView: View>: View {
         .init(
             enabled: PillButtonStyle.ColorSet(
                 foreground: foregroundColor,
-                background: .semantic.background.opacity(0),
+                background: .semantic.background.opacity(isOpaque ? 1 : 0),
                 border: Color(
                     light: .semantic.medium,
                     dark: .palette.dark300
@@ -62,11 +63,13 @@ public struct MinimalButton<LeadingView: View>: View {
     public init(
         title: String,
         isLoading: Bool = false,
+        isOpaque: Bool = false,
         foregroundColor: Color = .semantic.primary,
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
         self.title = title
+        self.isOpaque = isOpaque
         self.isLoading = isLoading
         self.foregroundColor = foregroundColor
         self.leadingView = leadingView()
@@ -105,12 +108,14 @@ extension MinimalButton where LeadingView == EmptyView {
     public init(
         title: String,
         isLoading: Bool = false,
+        isOpaque: Bool = false,
         foregroundColor: Color = .semantic.primary,
         action: @escaping () -> Void
     ) {
         self.init(
             title: title,
             isLoading: isLoading,
+            isOpaque: isOpaque,
             foregroundColor: foregroundColor,
             leadingView: { EmptyView() },
             action: action

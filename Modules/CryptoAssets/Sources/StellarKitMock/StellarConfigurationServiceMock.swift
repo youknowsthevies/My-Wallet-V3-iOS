@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxSwift
-import StellarKit
+import Combine
+@testable import StellarKit
 
-class StellarConfigurationServiceMock: StellarConfigurationAPI {
-    var configuration: Single<StellarConfiguration> = .just(StellarConfiguration.Stellar.test)
+final class StellarConfigurationServiceMock: StellarConfigurationServiceAPI {
+    var configuration: AnyPublisher<StellarConfiguration, Never> = .just(
+        StellarConfiguration.Stellar.test
+    )
 }

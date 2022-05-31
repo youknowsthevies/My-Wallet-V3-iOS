@@ -96,9 +96,11 @@ public struct CoinAdapterView: View {
     }
 
     public var body: some View {
-        CoinView(store: store)
-            .app(app)
-            .context([blockchain.ux.asset.id: cryptoCurrency.code])
+        PrimaryNavigationView {
+            CoinView(store: store)
+                .app(app)
+                .context([blockchain.ux.asset.id: cryptoCurrency.code])
+        }
     }
 }
 
@@ -171,37 +173,22 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event in
-
         let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
-        let isRedesignEnabled = await app.publisher(for: blockchain.app.configuration.redesign.coinview, as: Bool.self)
-            .values.first?.value ?? false
-
-        if isRedesignEnabled {
-            let navigationController = UINavigationController()
-            navigationController.setViewControllers(
-                [
-                    UIHostingController(
-                        rootView: CoinAdapterView(
-                            cryptoCurrency: cryptoCurrency,
-                            app: app,
-                            dismiss: { [weak navigationController] in
-                                navigationController?.dismiss(animated: true)
-                            }
-                        )
-                    )
-                ],
-                animated: false
+        var vc: UIViewController?
+        vc = UIHostingController(
+            rootView: CoinAdapterView(
+                cryptoCurrency: cryptoCurrency,
+                app: app,
+                dismiss: {
+                    vc?.dismiss(animated: true)
+                }
             )
-            topViewController.topMostViewController?.present(navigationController, animated: true)
-        } else {
-
-            let builder = AssetDetailsBuilder(
-                accountsRouter: accountsRouter(),
-                currency: cryptoCurrency,
-                exchangeProviding: exchangeProvider
+        )
+        if let vc = vc {
+            topViewController.topMostViewController?.present(
+                vc,
+                animated: true
             )
-            let controller = builder.build()
-            topViewController.topMostViewController?.present(controller, animated: true)
         }
     }
 
@@ -352,9 +339,11 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            actionsPublisher: account.actions
-                .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
-                .eraseToAnyPublisher(),
+            actionsPublisher: {
+                account.actions
+                    .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
+                    .eraseToAnyPublisher()
+            },
             cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),
             fiatBalancePublisher: account.fiatBalance(fiatCurrency: fiatCurrency).ignoreFailure()
         )
@@ -380,6 +369,8 @@ extension FeatureCoinDomain.Account.Action {
             self = .sell
         case .send:
             self = .send
+        case .linkToDebitCard:
+            return nil
         case .sign:
             return nil
         case .swap:

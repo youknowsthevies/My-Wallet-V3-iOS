@@ -32,14 +32,8 @@ public final class ResetPasswordService: ResetPasswordServiceAPI {
     // MARK: - Methods
 
     public func setNewPassword(newPassword: String) -> AnyPublisher<Void, ResetPasswordServiceError> {
-        passwordRepository
-            .set(password: newPassword)
-            .flatMap { [passwordRepository] _ -> AnyPublisher<Void, ResetPasswordServiceError> in
-                passwordRepository
-                    .sync()
-                    .mapError(ResetPasswordServiceError.passwordRepositoryError)
-                    .eraseToAnyPublisher()
-            }
+        passwordRepository.changePassword(password: newPassword)
+            .mapError(ResetPasswordServiceError.passwordRepositoryError)
             .eraseToAnyPublisher()
     }
 }

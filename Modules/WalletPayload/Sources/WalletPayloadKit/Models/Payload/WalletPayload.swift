@@ -10,7 +10,7 @@ public struct WalletPayload: Equatable, Codable {
     public let shouldSyncPubKeys: Bool
     public let time: Date
     public var payloadWrapper: WalletPayloadWrapper?
-    public let payloadChecksum: String
+    public let payloadChecksum: String?
 
     public static let empty: WalletPayload = .init(
         guid: "",
@@ -28,7 +28,7 @@ public struct WalletPayload: Equatable, Codable {
         language: String,
         shouldSyncPubKeys: Bool,
         time: Date,
-        payloadChecksum: String,
+        payloadChecksum: String?,
         payload: WalletPayloadWrapper?
     ) {
         self.guid = guid

@@ -67,13 +67,8 @@ final class KYCWelcomeController: KYCBaseViewController {
     // MARK: - Private Methods
 
     private func initMainView() {
-        if router.user?.isSunriverAirdropRegistered == true {
-            labelMain.text = LocalizationConstants.KYC.welcomeMainTextSunRiverCampaign
-            imageViewMain.image = UIImage(named: "Icon-Verified-Large", in: .featureKYCUI, compatibleWith: nil)
-        } else {
-            labelMain.text = LocalizationConstants.KYC.welcomeMainText
-            imageViewMain.image = UIImage(named: "Welcome", in: .featureKYCUI, compatibleWith: nil)
-        }
+        labelMain.text = LocalizationConstants.KYC.welcomeMainText
+        imageViewMain.image = UIImage(named: "Welcome", in: .featureKYCUI, compatibleWith: nil)
     }
 
     private func initFooter() {

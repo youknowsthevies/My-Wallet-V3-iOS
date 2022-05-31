@@ -17,19 +17,36 @@ public protocol CardIssuingBuilderAPI: AnyObject {
         address: AnyPublisher<Card.Address, CardOrderingError>,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> AnyView
+
+    func makeManagementViewController(
+        onComplete: @escaping () -> Void
+    ) -> UIViewController
+
+    func makeManagementView(
+        onComplete: @escaping () -> Void
+    ) -> AnyView
 }
 
 final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
+    private let accountModelProvider: AccountProviderAPI
     private let cardService: CardServiceAPI
     private let productService: ProductsServiceAPI
+    private let supportRouter: SupportRouterAPI
+    private let topUpRouter: TopUpRouterAPI
 
     init(
+        accountModelProvider: AccountProviderAPI,
         cardService: CardServiceAPI,
-        productService: ProductsServiceAPI
+        productService: ProductsServiceAPI,
+        supportRouter: SupportRouterAPI,
+        topUpRouter: TopUpRouterAPI
     ) {
+        self.accountModelProvider = accountModelProvider
         self.cardService = cardService
         self.productService = productService
+        self.supportRouter = supportRouter
+        self.topUpRouter = topUpRouter
     }
 
     func makeIntroViewController(
@@ -65,5 +82,39 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         )
 
         return AnyView(CardIssuingIntroView(store: store))
+    }
+
+    func makeManagementViewController(
+        onComplete: @escaping () -> Void
+    ) -> UIViewController {
+
+        UIHostingController(
+            rootView: makeManagementView(
+                onComplete: onComplete
+            )
+        )
+    }
+
+    func makeManagementView(
+        onComplete: @escaping () -> Void
+    ) -> AnyView {
+
+        let env = CardManagementEnvironment(
+            accountModelProvider: accountModelProvider,
+            cardService: cardService,
+            mainQueue: .main,
+            productsService: productService,
+            supportRouter: supportRouter,
+            topUpRouter: topUpRouter,
+            close: onComplete
+        )
+
+        let store = Store<CardManagementState, CardManagementAction>(
+            initialState: .init(),
+            reducer: cardManagementReducer,
+            environment: env
+        )
+
+        return AnyView(CardManagementView(store: store))
     }
 }

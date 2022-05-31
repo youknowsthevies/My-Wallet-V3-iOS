@@ -22,6 +22,11 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.34.0"
         ),
+        .package(
+            name: "SnapshotTesting",
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
+            from: "1.9.0"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
@@ -30,7 +35,8 @@ let package = Package(
         .package(path: "../Money"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(
@@ -123,7 +129,11 @@ let package = Package(
         .testTarget(
             name: "FeatureCoinDomainTests",
             dependencies: [
-                .target(name: "FeatureCoinDomain")
+                .target(name: "FeatureCoinDomain"),
+                .product(
+                    name: "TestKit",
+                    package: "Test"
+                )
             ]
         ),
         .testTarget(
@@ -135,7 +145,11 @@ let package = Package(
         .testTarget(
             name: "FeatureCoinUITests",
             dependencies: [
-                .target(name: "FeatureCoinUI")
+                .target(name: "FeatureCoinUI"),
+                .product(name: "SnapshotTesting", package: "SnapshotTesting")
+            ],
+            exclude: [
+                "CoinView/__Snapshots__"
             ]
         )
     ]

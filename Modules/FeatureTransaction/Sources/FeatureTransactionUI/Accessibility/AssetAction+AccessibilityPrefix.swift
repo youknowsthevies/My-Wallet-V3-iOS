@@ -26,6 +26,8 @@ extension AssetAction {
             return "Send."
         case .swap:
             return "Swap."
+        case .linkToDebitCard:
+            return "CardIssuing."
         case .viewActivity:
             return "ViewActivity."
         case .withdraw:

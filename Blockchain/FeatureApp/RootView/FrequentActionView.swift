@@ -17,6 +17,8 @@ struct FrequentAction: Hashable, Identifiable, Codable {
 
 struct FrequentActionView: View {
 
+    @BlockchainApp var app
+
     var list: [FrequentAction]
     var buttons: [FrequentAction]
 
@@ -48,6 +50,7 @@ struct FrequentActionView: View {
                             .frame(width: 32.pt)
                     },
                     action: {
+                        app.post(event: item.tag)
                         action(item)
                     }
                 )
@@ -61,14 +64,20 @@ struct FrequentActionView: View {
                     PrimaryButton(
                         title: button.name.localized(),
                         leadingView: { button.icon },
-                        action: { action(button) }
+                        action: {
+                            app.post(event: button.tag)
+                            action(button)
+                        }
                     )
                     .identity(button.tag)
                 default:
                     SecondaryButton(
                         title: button.name.localized(),
                         leadingView: { button.icon },
-                        action: { action(button) }
+                        action: {
+                            app.post(event: button.tag)
+                            action(button)
+                        }
                     )
                     .identity(button.tag)
                 }
@@ -76,5 +85,8 @@ struct FrequentActionView: View {
         }
         .padding([.top, .bottom])
         .padding([.leading, .trailing], 24.pt)
+        .onAppear {
+            app.post(event: blockchain.ux.frequent.action)
+        }
     }
 }

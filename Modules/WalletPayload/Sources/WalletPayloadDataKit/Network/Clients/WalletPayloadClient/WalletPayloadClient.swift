@@ -20,7 +20,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         let language: String
         let shouldSyncPubkeys: Bool
         let time: Date
-        let payloadChecksum: String
+        let payloadChecksum: String?
 
         /// Payload should be nullified if 2FA s required.
         /// Then `authType` should have a none 0 value.
@@ -126,7 +126,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         let serverTime: TimeInterval
         let payload: String?
         let shouldSyncPubkeys: Bool
-        let payloadChecksum: String
+        let payloadChecksum: String?
     }
 
     // MARK: - Properties
@@ -263,7 +263,7 @@ extension WalletPayloadClient.Response: Decodable {
         shouldSyncPubkeys = try container.decodeIfPresent(Bool.self, forKey: .shouldSyncPubkeys) ?? false
         payload = try container.decodeIfPresent(String.self, forKey: .payload)
         serverTime = try container.decode(TimeInterval.self, forKey: .serverTime)
-        payloadChecksum = try container.decode(String.self, forKey: .payloadChecksum)
+        payloadChecksum = try container.decodeIfPresent(String.self, forKey: .payloadChecksum)
     }
 }
 

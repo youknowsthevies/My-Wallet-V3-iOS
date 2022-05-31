@@ -5,7 +5,7 @@ import Combine
 public protocol WithdrawalLocksCheckRepositoryAPI {
 
     func withdrawalLocksCheck(
-        paymentMethod: String,
-        currencyCode: String
+        paymentMethod: String?,
+        currencyCode: String?
     ) -> AnyPublisher<WithdrawalLocksCheck, Never>
 }

@@ -5,15 +5,7 @@ import Foundation
 import MoneyKit
 import NetworkError
 
-public protocol HistoricalPriceServiceAPI {
-
-    func fetch(
-        series: Series,
-        relativeTo: Date
-    ) -> AnyPublisher<GraphData, NetworkError>
-}
-
-public class HistoricalPriceService: HistoricalPriceServiceAPI {
+public class HistoricalPriceService {
 
     private let base: CryptoCurrency
     private let displayFiatCurrency: AnyPublisher<FiatCurrency, Never>
@@ -39,5 +31,26 @@ public class HistoricalPriceService: HistoricalPriceServiceAPI {
             )
         }
         .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Preview Helper
+
+extension HistoricalPriceService {
+
+    public static var preview: HistoricalPriceService {
+        .init(
+            base: .bitcoin,
+            displayFiatCurrency: .empty(),
+            historicalPriceRepository: PreviewHistoricalPriceRepository(.just(.preview))
+        )
+    }
+
+    public static var previewEmpty: HistoricalPriceService {
+        .init(
+            base: .bitcoin,
+            displayFiatCurrency: .empty(),
+            historicalPriceRepository: PreviewHistoricalPriceRepository()
+        )
     }
 }

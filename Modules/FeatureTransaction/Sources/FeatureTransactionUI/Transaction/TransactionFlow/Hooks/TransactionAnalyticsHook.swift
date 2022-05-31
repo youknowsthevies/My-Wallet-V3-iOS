@@ -286,7 +286,7 @@ final class TransactionAnalyticsHook {
         }
     }
 
-    func onTransactionSuccess(with state: TransactionState) {
+    func onTransactionSubmitted(with state: TransactionState) {
         switch state.action {
         case .swap:
             guard let target = state.destination as? CryptoAccount,

@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import MetadataKit
 import MoneyKit
 import PlatformKit
@@ -53,10 +52,10 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
     private let deriver = StellarKeyPairDeriver()
 
     init(
-        bridge: StellarWalletBridgeAPI = resolve(),
-        metadataEntryService: WalletMetadataEntryServiceAPI = resolve(),
-        mnemonicAccessAPI: MnemonicAccessAPI = resolve(),
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() }
+        bridge: StellarWalletBridgeAPI,
+        metadataEntryService: WalletMetadataEntryServiceAPI,
+        mnemonicAccessAPI: MnemonicAccessAPI,
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.bridge = bridge
         self.metadataEntryService = metadataEntryService

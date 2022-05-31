@@ -17,7 +17,7 @@ import XCTest
 
 final class VerifyDeviceReducerTests: XCTestCase {
 
-    private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    private var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var testStore: TestStore<
         VerifyDeviceState,
@@ -30,7 +30,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockMainQueue = DispatchQueue.test
+        mockMainQueue = DispatchQueue.immediate
         mockFeatureFlagsService = MockFeatureFlagsService()
         testStore = TestStore(
             initialState: .init(emailAddress: ""),
@@ -66,11 +66,14 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_on_appear_should_poll_wallet_info() {
-        mockFeatureFlagsService.enable(.pollingForEmailLogin)
-            .subscribe().store(in: &cancellables)
+        mockFeatureFlagsService
+            .enable(.pollingForEmailLogin)
+            .subscribe()
+            .store(in: &cancellables)
+
         testStore.send(.onAppear)
+
         testStore.receive(.pollWalletInfo)
-        mockMainQueue.advance()
         testStore.receive(.didPolledWalletInfo(.success(MockDeviceVerificationService.mockWalletInfo)))
         testStore.receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
             state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
@@ -89,7 +92,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
 
     func test_receive_valid_wallet_deeplink_should_update_wallet_info() {
         testStore.send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.validDeeplink))
-        mockMainQueue.advance()
         testStore.receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
             state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
         }
@@ -105,7 +107,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
         }
 
         testStore.send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.deeplinkWithValidGuid))
-        mockMainQueue.advance()
         testStore.receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfoWithGuidOnly)) { state in
             state.credentialsContext = .walletIdentifier(
                 guid: MockDeviceVerificationService.mockWalletInfoWithGuidOnly.wallet!.guid
@@ -123,7 +124,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
 
     func test_deeplink_parsing_failure_should_fallback_to_wallet_identifier() {
         testStore.send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.invalidDeeplink))
-        mockMainQueue.advance()
         testStore.receive(.fallbackToWalletIdentifier) { state in
             state.credentialsContext = .walletIdentifier(guid: "")
         }

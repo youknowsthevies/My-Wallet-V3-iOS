@@ -31,6 +31,11 @@ extension DependencyContainer {
 
         single { NabuAuthenticationErrorBroadcaster() }
 
+        factory { () -> WalletRepositoryAPI in
+            let walletRepositoryProvider: WalletRepositoryProvider = DIKit.resolve()
+            return walletRepositoryProvider.repository as WalletRepositoryAPI
+        }
+
         factory { () -> WalletRecoveryService in
             WalletRecoveryService.live(
                 walletManager: DIKit.resolve(),

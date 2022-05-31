@@ -182,7 +182,8 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .linkToDebitCard:
             return .just(true)
         case .deposit,
              .sign,
@@ -201,7 +202,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
             guard asset.supports(product: .custodialWalletBalance) else {
                 return .just(false)
             }
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 

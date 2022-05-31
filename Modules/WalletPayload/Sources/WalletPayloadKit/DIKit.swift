@@ -26,6 +26,20 @@ extension DependencyContainer {
             )
         }
 
+        single { () -> WalletSyncAPI in
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.sync.op.queue", qos: .userInitiated, target: targetQueue)
+            return WalletSync(
+                walletHolder: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
+                walletEncoder: DIKit.resolve(),
+                saveWalletRepository: DIKit.resolve(),
+                operationQueue: queue,
+                checksumProvider: checksumHex(data:)
+            )
+        }
+
         factory { () -> WalletFetcherAPI in
             let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
             let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated, target: targetQueue)
@@ -152,6 +166,13 @@ extension DependencyContainer {
                 localEntropyProvider: provideLocalEntropy(bytes:),
                 combineEntropyParsing: combineEntropies(local:remote:),
                 operationQueue: queue
+            )
+        }
+
+        factory { () -> ChangePasswordServiceAPI in
+            ChangePasswordService(
+                walletSync: DIKit.resolve(),
+                walletHolder: DIKit.resolve()
             )
         }
 

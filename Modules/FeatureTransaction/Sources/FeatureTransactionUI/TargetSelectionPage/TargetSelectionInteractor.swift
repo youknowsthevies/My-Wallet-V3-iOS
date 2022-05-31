@@ -62,6 +62,7 @@ final class TargetSelectionInteractor {
         case .sign,
              .receive,
              .buy,
+             .linkToDebitCard,
              .sell,
              .viewActivity:
             unimplemented()

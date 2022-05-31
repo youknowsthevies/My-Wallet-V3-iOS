@@ -64,9 +64,9 @@ extension AssetModel {
 extension CryptoCurrency {
 
     static func mockERC20(
-        symbol: String,
-        displaySymbol: String,
-        name: String,
+        symbol: String = "",
+        displaySymbol: String = "",
+        name: String = "",
         erc20Address: String = "ETH",
         precision: Int = 18,
         sortIndex: Int = 0
@@ -82,9 +82,9 @@ extension CryptoCurrency {
     }
 
     static func mockCoin(
-        symbol: String,
-        displaySymbol: String,
-        name: String,
+        symbol: String = "",
+        displaySymbol: String = "",
+        name: String = "",
         precision: Int = 18,
         sortIndex: Int = 0
     ) -> CryptoCurrency {

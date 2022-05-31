@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import FeatureAuthenticationDomain
 import FeatureCardPaymentDomain
 import MoneyKit
 import NetworkKit
@@ -51,11 +50,6 @@ extension DependencyContainer {
         // MARK: - Wallet
 
         factory { WalletNabuSynchronizerService() as WalletNabuSynchronizerServiceAPI }
-
-        factory { () -> WalletRepositoryAPI in
-            let walletRepositoryProvider: WalletRepositoryProvider = DIKit.resolve()
-            return walletRepositoryProvider.repository as WalletRepositoryAPI
-        }
 
         // MARK: - Secure Channel
 
@@ -118,6 +112,8 @@ extension DependencyContainer {
         single { TradingBalanceService() as TradingBalanceServiceAPI }
 
         factory { PriceService() as PriceServiceAPI }
+
+        factory { MarketCapService() as MarketCapServiceAPI }
 
         factory { () -> CurrencyConversionServiceAPI in
             CurrencyConversionService(priceService: DIKit.resolve())
@@ -214,11 +210,6 @@ extension DependencyContainer {
             return client as PaymentAccountClientAPI
         }
 
-        factory { () -> SuggestedAmountsClientAPI in
-            let client: SimpleBuyClientAPI = DIKit.resolve()
-            return client as SuggestedAmountsClientAPI
-        }
-
         factory { () -> QuoteClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client
@@ -301,8 +292,6 @@ extension DependencyContainer {
         factory { SupportedPairsService() as SupportedPairsServiceAPI }
 
         single { EligibilityService() as EligibilityServiceAPI }
-
-        factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
         single { LinkedBanksService() as LinkedBanksServiceAPI }
 

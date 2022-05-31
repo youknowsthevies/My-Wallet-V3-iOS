@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAppUpgradeDomain
+import FeatureAppUpgradeUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import ToolKit
+import UIKit
 import WalletPayloadKit
 
 enum AppCancellations {
@@ -68,44 +72,51 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         .pullback(
             state: \.coreState,
             action: /AppAction.core,
-            environment: {
+            environment: { env in
                 CoreAppEnvironment(
-                    app: $0.app,
-                    nabuUserService: $0.nabuUserService,
-                    loadingViewPresenter: $0.loadingViewPresenter,
-                    externalAppOpener: $0.externalAppOpener,
-                    deeplinkHandler: $0.deeplinkHandler,
-                    deeplinkRouter: $0.deeplinkRouter,
-                    walletManager: $0.walletManager,
-                    mobileAuthSyncService: $0.mobileAuthSyncService,
-                    pushNotificationsRepository: $0.pushNotificationsRepository,
-                    resetPasswordService: $0.resetPasswordService,
-                    accountRecoveryService: $0.accountRecoveryService,
-                    userService: $0.userService,
-                    deviceVerificationService: $0.deviceVerificationService,
-                    featureFlagsService: $0.featureFlagsService,
-                    fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
-                    blockchainSettings: $0.blockchainSettings,
-                    credentialsStore: $0.credentialsStore,
-                    alertPresenter: $0.alertViewPresenter,
-                    walletUpgradeService: $0.walletUpgradeService,
-                    exchangeRepository: $0.exchangeRepository,
-                    remoteNotificationServiceContainer: $0.remoteNotificationServiceContainer,
-                    coincore: $0.coincore,
-                    erc20CryptoAssetService: $0.erc20CryptoAssetService,
-                    sharedContainer: $0.sharedContainer,
-                    analyticsRecorder: $0.analyticsRecorder,
-                    siftService: $0.siftService,
-                    onboardingSettings: $0.onboardingSettings,
-                    mainQueue: $0.mainQueue,
-                    appStoreOpener: $0.appStoreOpener,
-                    walletPayloadService: $0.walletPayloadService,
-                    walletService: $0.walletService,
-                    forgetWalletService: $0.forgetWalletService,
-                    secondPasswordPrompter: $0.secondPasswordPrompter,
+                    app: env.app,
+                    nabuUserService: env.nabuUserService,
+                    loadingViewPresenter: env.loadingViewPresenter,
+                    externalAppOpener: env.externalAppOpener,
+                    deeplinkHandler: env.deeplinkHandler,
+                    deeplinkRouter: env.deeplinkRouter,
+                    walletManager: env.walletManager,
+                    mobileAuthSyncService: env.mobileAuthSyncService,
+                    pushNotificationsRepository: env.pushNotificationsRepository,
+                    resetPasswordService: env.resetPasswordService,
+                    accountRecoveryService: env.accountRecoveryService,
+                    userService: env.userService,
+                    deviceVerificationService: env.deviceVerificationService,
+                    featureFlagsService: env.featureFlagsService,
+                    fiatCurrencySettingsService: env.fiatCurrencySettingsService,
+                    blockchainSettings: env.blockchainSettings,
+                    credentialsStore: env.credentialsStore,
+                    alertPresenter: env.alertViewPresenter,
+                    walletUpgradeService: env.walletUpgradeService,
+                    exchangeRepository: env.exchangeRepository,
+                    remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
+                    coincore: env.coincore,
+                    erc20CryptoAssetService: env.erc20CryptoAssetService,
+                    sharedContainer: env.sharedContainer,
+                    analyticsRecorder: env.analyticsRecorder,
+                    siftService: env.siftService,
+                    onboardingSettings: env.onboardingSettings,
+                    mainQueue: env.mainQueue,
+                    appStoreOpener: env.appStoreOpener,
+                    walletPayloadService: env.walletPayloadService,
+                    walletService: env.walletService,
+                    forgetWalletService: env.forgetWalletService,
+                    secondPasswordPrompter: env.secondPasswordPrompter,
                     nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
-                    buildVersionProvider: $0.buildVersionProvider,
-                    performanceTracing: $0.performanceTracing
+                    buildVersionProvider: env.buildVersionProvider,
+                    performanceTracing: env.performanceTracing,
+                    appUpgradeState: {
+                        let service = AppUpgradeStateService(
+                            deviceInfo: env.deviceInfo,
+                            featureFetcher: env.featureFlagsService
+                        )
+                        return service.state
+                    }
                 )
             }
         ),
@@ -149,6 +160,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         )
         return environment.deeplinkAppHandler
             .handle(deeplink: .userActivity(activity))
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
@@ -161,6 +173,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         state.appSettings.urlHandled = environment.deeplinkAppHandler.canHandle(deeplink: .url(url))
         return environment.deeplinkAppHandler
             .handle(deeplink: .url(url))
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
@@ -173,9 +186,11 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         return .none
     case .core(.start):
         return .merge(
-            environment.app.publisher(for: blockchain.app.configuration.native.wallet.payload.is.enabled, as: Bool.self)
+            environment.app
+                .publisher(for: blockchain.app.configuration.native.wallet.payload.is.enabled, as: Bool.self)
                 .prefix(1)
                 .replaceError(with: false)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map { isEnabled in
                     guard isEnabled else {

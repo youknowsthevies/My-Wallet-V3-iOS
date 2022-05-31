@@ -141,6 +141,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         case .receive,
              .send,
              .buy,
+             .linkToDebitCard,
              .viewActivity:
             return .just(true)
         case .deposit,
@@ -155,7 +156,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
-            return isFundedPublisher
+            return hasPositiveDisplayableBalance
         }
     }
 

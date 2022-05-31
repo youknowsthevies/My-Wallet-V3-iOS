@@ -22,6 +22,8 @@ open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
 
     public var value: Any = NSNull()
 
+    internal var `super`: Decoder?
+
     public required init(codingPath: [CodingKey] = [], userInfo: [CodingUserInfoKey: Any] = [:]) {
         self.codingPath = codingPath
         self.userInfo = userInfo
@@ -176,7 +178,11 @@ extension AnyDecoder.KeyedContainer: KeyedDecodingContainerProtocol {
         let value = try value(for: key)
         decoder.codingPath.append(AnyCodingKey(key.stringValue))
         defer { decoder.codingPath.removeLast() }
-        return try decoder.decode(from: value)
+        return try decoder.decode(type, from: value)
+    }
+
+    public func decodeIfPresent<T>(_ type: T.Type, forKey key: Key) throws -> T? where T: Decodable {
+        try? decode(type, forKey: key)
     }
 }
 
@@ -248,28 +254,64 @@ extension AnyDecoder.UnkeyedContainer: UnkeyedDecodingContainer {
         defer { decoder.codingPath.removeLast() }
         return try decoder.decode(from: array[currentIndex])
     }
-}
 
-private func unsupported(_ function: String = #function) -> Never {
-    fatalError("\(function) isn't supported by AnyDecoder")
+    public mutating func decodeIfPresent<T>(_ type: T.Type) throws -> T? where T: Decodable {
+        try? decode(type)
+    }
 }
 
 extension AnyDecoder.KeyedContainer {
-    public func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer { unsupported() }
+
+    public func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
+        decoder.codingPath.append(AnyCodingKey(key.stringValue))
+        defer { decoder.codingPath.removeLast() }
+        let nested = AnyDecoder(codingPath: codingPath, userInfo: userInfo)
+        nested.value = dictionary[key.stringValue] as Any
+        nested.super = decoder
+        return try AnyDecoder.UnkeyedContainer(decoder: nested)
+    }
+
     public func nestedContainer<NestedKey>(
         keyedBy type: NestedKey.Type,
         forKey key: Key
-    ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey { unsupported() }
-    public func superDecoder() throws -> Decoder { unsupported() }
-    public func superDecoder(forKey key: Key) throws -> Decoder { unsupported() }
+    ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
+        decoder.codingPath.append(AnyCodingKey(key.stringValue))
+        defer { decoder.codingPath.removeLast() }
+        let nested = AnyDecoder(codingPath: codingPath, userInfo: userInfo)
+        nested.value = dictionary[key.stringValue] as Any
+        nested.super = decoder
+        return try KeyedDecodingContainer(AnyDecoder.KeyedContainer<NestedKey>(decoder: nested))
+    }
+
+    public func superDecoder() throws -> Decoder { decoder.super ?? decoder }
+    public func superDecoder(forKey key: Key) throws -> Decoder { decoder.super ?? decoder }
 }
 
 extension AnyDecoder.UnkeyedContainer {
-    public mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer { unsupported() }
+
+    public mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
+        defer { currentIndex += 1 }
+        decoder.codingPath.append(AnyCodingKey(currentIndex))
+        defer { decoder.codingPath.removeLast() }
+        let nested = AnyDecoder(codingPath: codingPath, userInfo: userInfo)
+        nested.value = array[currentIndex]
+        nested.super = decoder
+        return try AnyDecoder.UnkeyedContainer(decoder: nested)
+    }
+
     public mutating func nestedContainer<NestedKey>(
         keyedBy type: NestedKey.Type
-    ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey { unsupported() }
-    public mutating func superDecoder() throws -> Decoder { unsupported() }
+    ) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
+        defer { currentIndex += 1 }
+        decoder.codingPath.append(AnyCodingKey(currentIndex))
+        defer { decoder.codingPath.removeLast() }
+        let nested = AnyDecoder(codingPath: codingPath, userInfo: userInfo)
+        nested.value = array[currentIndex]
+        nested.super = decoder
+        return try KeyedDecodingContainer(AnyDecoder.KeyedContainer<NestedKey>(decoder: nested))
+    }
+
+    public mutating func superDecoder() throws -> Decoder { decoder.super ?? decoder }
 }
 
 extension Sequence where Element == CodingKey {
@@ -278,11 +320,11 @@ extension Sequence where Element == CodingKey {
     }
 }
 
-private protocol OptionalDecodableProtocol: OptionalProtocol, Decodable {
+private protocol OptionalDecodableProtocol {
     static func decodeUnwrapped<D: AnyDecoderProtocol>(from decoder: D) -> Self
 }
 
-extension Optional: OptionalDecodableProtocol where Wrapped: Decodable & Equatable {
+extension Optional: OptionalDecodableProtocol where Wrapped: Decodable {
     static func decodeUnwrapped<D: AnyDecoderProtocol>(from decoder: D) -> Optional {
         try? decoder.decode(Wrapped.self, from: decoder.value)
     }

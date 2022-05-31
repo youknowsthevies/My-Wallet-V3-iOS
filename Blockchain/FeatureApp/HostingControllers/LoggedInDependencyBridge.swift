@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureAppUI
+import FeatureCardIssuingUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureSettingsUI
@@ -43,7 +44,8 @@ protocol LoggedInBridge: DrawerRouting,
     InterestAccountListHostingControllerDelegate,
     AuthenticationCoordinating,
     QRCodeScannerRouting,
-    ExternalActionsProviderAPI {}
+    ExternalActionsProviderAPI,
+    SupportRouterAPI {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
@@ -76,6 +78,8 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveQRCodeScannerRouting() -> QRCodeScannerRouting
     /// Provides logout
     func resolveExternalActionsProvider() -> ExternalActionsProviderAPI
+    /// Provides support flow for CardIssuing
+    func resolveSupportRouterAPI() -> SupportRouterAPI
 }
 
 final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
@@ -136,6 +140,10 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
         resolve() as ExternalActionsProviderAPI
     }
 
+    func resolveSupportRouterAPI() -> SupportRouterAPI {
+        resolve() as SupportRouterAPI
+    }
+
     /// Resolves the underlying bridge with a type
     /// - precondition: The bridge should conform to the type
     /// - Returns: The underlying bridge as a specific protocol type
@@ -189,7 +197,6 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToSwap() { wrapped.switchTabToSwap() }
     func logout() { wrapped.logout() }
     func handleAccountsAndAddresses() { wrapped.handleAccountsAndAddresses() }
-    func handleAirdrops() { wrapped.handleAirdrops() }
     func handleSupport() { wrapped.handleSupport() }
     func handleSecureChannel() { wrapped.handleSecureChannel() }
 }
@@ -228,7 +235,6 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToSwap() {}
     func logout() {}
     func handleAccountsAndAddresses() {}
-    func handleAirdrops() {}
     func handleSupport() {}
     func handleSecureChannel() {}
 }

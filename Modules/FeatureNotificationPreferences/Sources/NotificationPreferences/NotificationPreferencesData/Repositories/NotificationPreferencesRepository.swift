@@ -62,6 +62,7 @@ extension NotificationPreferenceResponse {
             id: UUID(),
             type: type,
             title: title,
+            subtitle: subtitle,
             preferenceDescription: description,
             requiredMethods: requiredMethods,
             optionalMethods: optionalMethods,

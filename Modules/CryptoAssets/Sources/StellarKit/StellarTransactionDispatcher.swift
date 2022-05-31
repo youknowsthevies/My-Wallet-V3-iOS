@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import DIKit
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -9,7 +8,18 @@ import RxSwift
 import stellarsdk
 import ToolKit
 
-final class StellarTransactionDispatcher {
+protocol StellarTransactionDispatcherAPI {
+
+    func dryRunTransaction(sendDetails: SendDetails) -> Completable
+
+    func isExchangeAddresses(address: String) -> Single<Bool>
+
+    func isAddressValid(address: String) -> Bool
+
+    func sendFunds(sendDetails: SendDetails, secondPassword: String) -> Single<SendConfirmationDetails>
+}
+
+final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
 
     // MARK: Types
 
@@ -30,9 +40,9 @@ final class StellarTransactionDispatcher {
     }
 
     init(
-        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
-        walletOptions: WalletOptionsAPI = resolve(),
-        horizonProxy: HorizonProxyAPI = resolve()
+        accountRepository: StellarWalletAccountRepositoryAPI,
+        walletOptions: WalletOptionsAPI,
+        horizonProxy: HorizonProxyAPI
     ) {
         self.walletOptions = walletOptions
         self.accountRepository = accountRepository
@@ -112,6 +122,7 @@ final class StellarTransactionDispatcher {
 
     private func checkSourceAccount(sendDetails: SendDetails) -> Completable {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
+            .asSingle()
             .map(weak: self) { (self, response) -> AccountResponse in
                 let total = try sendDetails.value + sendDetails.fee
                 let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
@@ -140,7 +151,7 @@ final class StellarTransactionDispatcher {
             .asCompletable()
             .catch { error -> Completable in
                 switch error {
-                case StellarAccountError.noDefaultAccount:
+                case StellarNetworkError.notFound:
                     if try sendDetails.value < minBalance {
                         return .error(SendFailureReason.belowMinimumSendNewAccount(minBalance.moneyValue))
                     }
@@ -170,6 +181,7 @@ final class StellarTransactionDispatcher {
 
     private func transaction(sendDetails: SendDetails) -> Single<StellarTransaction> {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
+            .asSingle()
             .flatMap(weak: self) { (self, sourceAccount) -> Single<StellarTransaction> in
                 guard sendDetails.value.currencyType == .stellar else {
                     return .error(PlatformKitError.illegalArgument)
@@ -214,6 +226,7 @@ final class StellarTransactionDispatcher {
     /// Returns the appropriate operation depending if the destination account already exists or not.
     private func operation(sendDetails: SendDetails) -> Single<stellarsdk.Operation> {
         horizonProxy.accountResponse(for: sendDetails.toAddress)
+            .asSingle()
             .map { response -> stellarsdk.Operation in
                 try stellarsdk.PaymentOperation(
                     sourceAccountId: sendDetails.fromAddress,
@@ -225,7 +238,7 @@ final class StellarTransactionDispatcher {
             .catch { error -> Single<stellarsdk.Operation> in
                 // Build operation
                 switch error {
-                case StellarAccountError.noDefaultAccount:
+                case StellarNetworkError.notFound:
                     let destination = try KeyPair(accountId: sendDetails.toAddress)
                     let createAccountOperation = stellarsdk.CreateAccountOperation(
                         sourceAccountId: sendDetails.fromAddress,
@@ -254,9 +267,9 @@ extension stellarsdk.TransactionPostResponseEnum {
                 transactionHash: details.transactionHash
             )
         case .destinationRequiresMemo:
-            throw StellarNetworkError.unknown
+            throw StellarNetworkError.destinationRequiresMemo
         case .failure(let error):
-            throw error.toStellarServiceError()
+            throw error.stellarNetworkError
         }
     }
 }

@@ -39,6 +39,7 @@ struct DisplayBundle {
             return .sell(sourceAccount: sourceAccount)
         case .sign,
              .receive,
+             .linkToDebitCard,
              .viewActivity:
             unimplemented()
         }

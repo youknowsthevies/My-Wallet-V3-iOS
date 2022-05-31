@@ -126,14 +126,17 @@ let loggedInReducer = Reducer<
                 },
             environment.exchangeRepository
                 .syncDepositAddressesIfLinked()
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationTokenSender
                 .sendTokenIfNeeded()
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationAuthorizer
                 .requestAuthorizationIfNeeded()
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {
@@ -143,6 +146,7 @@ let loggedInReducer = Reducer<
                 )
             },
             environment.nabuUserService.fetchUser()
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map(LoggedIn.Action.login),
             handleStartup(context: context)

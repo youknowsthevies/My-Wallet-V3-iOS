@@ -70,7 +70,7 @@ extension FeatureNotificationPreferencesView {
                     ForEach(preferences) { notificationPreference in
                         PrimaryRow(
                             title: notificationPreference.title,
-                            subtitle: notificationPreference.preferenceDescription,
+                            subtitle: notificationPreference.subtitle,
                             trailing: { Icon.chevronRight
                                 .frame(width: 24, height: 24)
                                 .accentColor(.semantic.muted)

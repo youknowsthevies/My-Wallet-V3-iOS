@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -12,8 +11,8 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
     private let operationsService: StellarHistoricalTransactionServiceAPI
 
     init(
-        repository: StellarWalletAccountRepositoryAPI = resolve(),
-        operationsService: StellarHistoricalTransactionServiceAPI = resolve()
+        repository: StellarWalletAccountRepositoryAPI,
+        operationsService: StellarHistoricalTransactionServiceAPI
     ) {
         self.repository = repository
         self.operationsService = operationsService
@@ -27,7 +26,7 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
             .asObservable()
             .flatMap(weak: self) { (self, account) -> Observable<StellarActivityItemEventDetails> in
                 guard let accountID = account?.publicKey else {
-                    return .error(StellarAccountError.noDefaultAccount)
+                    return .error(StellarNetworkError.notFound)
                 }
                 return self.details(operationID: identifier, accountID: accountID)
             }

@@ -25,7 +25,8 @@ class EmailSwitchViewInteractor: SwitchViewInteracting {
     init(service: EmailNotificationSettingsServiceAPI) {
         self.service = service
 
-        service.valueObservable
+        service
+            .valueObservable
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
             .catchAndReturn(.loading)

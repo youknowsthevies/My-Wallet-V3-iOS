@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
+import FeatureAppUpgradeUI
 import FeatureAuthenticationUI
 import PlatformUIKit
 import SwiftUI
@@ -110,6 +111,17 @@ final class OnboardingHostingController: UIViewController {
                 }
                 self.transitionFromCurrentController(to: walletUpgradeController)
                 self.currentController = walletUpgradeController
+            })
+            .store(in: &cancellables)
+
+        store
+            .scope(state: \.appUpgradeState, action: Onboarding.Action.appUpgrade)
+            .ifLet(then: { [weak self] store in
+                guard let self = self else { return }
+                let hostingController = UIHostingController(rootView: AppUpgradeView(store: store))
+                self.transitionFromCurrentController(to: hostingController)
+                hostingController.view.constraint(edgesTo: self.view)
+                self.currentController = hostingController
             })
             .store(in: &cancellables)
     }

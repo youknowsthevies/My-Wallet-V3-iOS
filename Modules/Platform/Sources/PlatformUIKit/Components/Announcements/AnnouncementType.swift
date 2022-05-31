@@ -19,7 +19,6 @@ public enum AnnouncementType: String, Codable {
     case newSwap = "swap_v2"
     case cloudBackup = "cloud_backup"
     case bitpay
-    case kycAirdrop = "kyc_airdrop"
     case fiatFundsKYC = "fiat_funds_kyc"
     case fiatFundsNoKYC = "fiat_funds_no_kyc"
     case interestFunds = "interest_funds"
@@ -47,8 +46,6 @@ public enum AnnouncementType: String, Codable {
             return .buyBitcoin
         case .transferBitcoin:
             return .transferBitcoin
-        case .kycAirdrop:
-            return .kycAirdrop
         case .exchangeLinking:
             return .exchange
         case .twoFA:

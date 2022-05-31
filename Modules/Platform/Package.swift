@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Platform",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(name: "PlatformKit", targets: ["PlatformKit"]),
         .library(name: "PlatformDataKit", targets: ["PlatformDataKit"]),
@@ -93,7 +93,8 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
-                .product(name: "FeatureAuthentication", package: "FeatureAuthentication"),
+                .product(name: "FeatureAuthenticationData", package: "FeatureAuthentication"),
+                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
@@ -166,7 +167,6 @@ let package = Package(
                 .target(name: "PlatformKit"),
                 .target(name: "PlatformKitMock"),
                 .product(name: "MoneyKitMock", package: "Money"),
-                .product(name: "FeatureAuthenticationMock", package: "FeatureAuthentication"),
                 .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "ToolKitMock", package: "Tool"),

@@ -150,11 +150,16 @@ let appDelegateReducer = Reducer<
                 appId: context.embraceAppId
             ),
 
+            .fireAndForget {
+                environment.app.post(event: blockchain.app.did.finish.launching)
+            },
+
             environment.app.publisher(for: blockchain.app.configuration.SSL.pinning.is.enabled, as: Bool.self)
                 .prefix(1)
                 .replaceError(with: true)
                 .filter { $0 }
                 .map(.applyCertificatePinning)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect(),
 
             enableSift(using: environment.siftService)
@@ -169,12 +174,14 @@ let appDelegateReducer = Reducer<
             .cancel(id: BackgroundTaskId()),
             environment.backgroundAppHandler
                 .appEnteredForeground(application)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget()
         )
     case .didEnterBackground(let application):
         return environment.backgroundAppHandler
             .appEnteredBackground(application)
+            .receive(on: environment.mainQueue)
             .eraseToEffect()
             .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
             .map { _ in .handleDelayedEnterBackground }

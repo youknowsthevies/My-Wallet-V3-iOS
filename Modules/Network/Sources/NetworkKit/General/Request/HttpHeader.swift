@@ -14,7 +14,6 @@ public enum HttpHeaderField {
     public static let walletEmail = "X-WALLET-EMAIL"
     public static let deviceId = "X-DEVICE-ID"
     public static let requestId = "X-Request-ID"
-    public static let airdropCampaign = "X-CAMPAIGN"
     public static let blockchainOrigin = "blockchain-origin"
     public static let authorization = "Authorization"
     public static let bitpayPartner = "BP_PARTNER"

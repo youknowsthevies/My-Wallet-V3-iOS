@@ -119,12 +119,14 @@ public struct CoinView: View {
                 .padding([.leading, .trailing, .top], Spacing.padding2)
             } else if viewStore.currency.isTradable {
                 totalBalance()
-                AccountListView(
-                    accounts: viewStore.accounts,
-                    currency: viewStore.currency,
-                    interestRate: viewStore.interestRate,
-                    kycStatus: viewStore.kycStatus
-                )
+                if let status = viewStore.kycStatus {
+                    AccountListView(
+                        accounts: viewStore.accounts,
+                        currency: viewStore.currency,
+                        interestRate: viewStore.interestRate,
+                        kycStatus: status
+                    )
+                }
             } else {
                 totalBalance()
                 AlertCard(
@@ -137,7 +139,7 @@ public struct CoinView: View {
                         viewStore.currency.displayCode
                     )
                 )
-                .padding([.leading, .trailing, .top], Spacing.padding2)
+                .padding([.leading, .trailing], Spacing.padding2)
             }
         }
     }
@@ -145,7 +147,7 @@ public struct CoinView: View {
     @State private var isExpanded: Bool = false
 
     @ViewBuilder func about(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
-        if viewStore.information?.description.nilIfEmpty == nil, viewStore.information?.website.nilIfEmpty == nil {
+        if viewStore.assetInformation?.description.nilIfEmpty == nil, viewStore.assetInformation?.website == nil {
             EmptyView()
         } else {
             HStack {
@@ -156,7 +158,7 @@ public struct CoinView: View {
                     )
                     .foregroundColor(.semantic.title)
                     .typography(.body2)
-                    if let about = viewStore.information?.description {
+                    if let about = viewStore.assetInformation?.description {
                         Text(rich: about)
                             .lineLimit(isExpanded ? nil : 6)
                             .typography(.paragraph1)
@@ -176,7 +178,7 @@ public struct CoinView: View {
                             )
                         }
                     }
-                    if let url = viewStore.information?.website {
+                    if let url = viewStore.assetInformation?.website {
                         Spacer()
                         SmallMinimalButton(title: Localization.Link.Title.visitWebsite) {
                             app.post(
@@ -193,7 +195,7 @@ public struct CoinView: View {
 
     @ViewBuilder func navigationLeadingView() -> some View {
         WithViewStore(store) { viewStore in
-            if let url = viewStore.information?.currencyInfo.type.logoPngUrl {
+            if let url = viewStore.currency.assetModel.logoPngUrl {
                 Backport.AsyncImage(
                     url: url,
                     content: { image in
@@ -227,144 +229,200 @@ public struct CoinView: View {
         VStack {
             let actions = viewStore.actions
             if actions.isNotEmpty {
-                PrimaryDivider()
-            }
-            HStack {
-                ForEach(actions.indexed(), id: \.element.event) { index, action in
-                    if index == actions.index(before: actions.endIndex) {
-                        PrimaryButton(
-                            title: action.title,
-                            leadingView: { action.icon },
-                            action: {
-                                app.post(event: action.event[].ref(to: context))
+                VStack(spacing: 0) {
+                    PrimaryDivider()
+
+                    HStack {
+                        ForEach(actions.indexed(), id: \.element.event) { index, action in
+                            if index == actions.index(before: actions.endIndex) {
+                                PrimaryButton(
+                                    title: action.title,
+                                    leadingView: { action.icon },
+                                    action: {
+                                        app.post(event: action.event[].ref(to: context))
+                                    }
+                                )
+                            } else {
+                                SecondaryButton(
+                                    title: action.title,
+                                    leadingView: { action.icon },
+                                    action: {
+                                        app.post(event: action.event[].ref(to: context))
+                                    }
+                                )
                             }
-                        )
-                    } else {
-                        SecondaryButton(
-                            title: action.title,
-                            leadingView: { action.icon },
-                            action: {
-                                app.post(event: action.event[].ref(to: context))
-                            }
-                        )
+                        }
                     }
+                    .padding()
                 }
             }
-            .padding([.leading, .trailing])
-            .padding(.bottom, 8.pt)
         }
     }
 }
 
 // swiftlint:disable type_name
 struct CoinView_PreviewProvider: PreviewProvider {
+
     static var previews: some View {
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .bitcoin,
-                    kycStatus: .gold,
-                    accounts: [
-                        .preview.privateKey,
-                        .preview.trading,
-                        .preview.rewards
-                    ]
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .bitcoin,
+                        kycStatus: .gold,
+                        accounts: [
+                            .preview.privateKey,
+                            .preview.trading,
+                            .preview.rewards
+                        ],
+                        isFavorite: true,
+                        graph: .init(
+                            interval: .day,
+                            result: .success(.preview)
+                        )
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .preview
+                )
             )
-        )
-        .app(App.preview)
+            .app(App.preview)
+        }
         .previewDevice("iPhone SE (2nd generation)")
-        .previewDisplayName("Gold iPhone SE (2nd generation)")
+        .previewDisplayName("Gold - iPhone SE (2nd generation)")
 
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .bitcoin,
-                    kycStatus: .gold,
-                    accounts: [
-                        .preview.privateKey,
-                        .preview.trading,
-                        .preview.rewards
-                    ]
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .bitcoin,
+                        kycStatus: .gold,
+                        accounts: [
+                            .preview.privateKey,
+                            .preview.trading,
+                            .preview.rewards
+                        ],
+                        isFavorite: true,
+                        graph: .init(
+                            interval: .day,
+                            result: .success(.preview)
+                        )
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .preview
+                )
             )
-        )
-        .app(App.preview)
-        .previewDisplayName("Gold")
+            .app(App.preview)
+        }
+        .previewDevice("iPhone 13 Pro Max")
+        .previewDisplayName("Gold - iPhone 13 Pro Max")
 
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .bitcoin,
-                    kycStatus: .silver,
-                    accounts: [
-                        .preview.privateKey,
-                        .preview.trading,
-                        .preview.rewards
-                    ]
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .ethereum,
+                        kycStatus: .silver,
+                        accounts: [
+                            .preview.privateKey,
+                            .preview.trading,
+                            .preview.rewards
+                        ],
+                        isFavorite: false,
+                        graph: .init(
+                            interval: .day,
+                            result: .success(.preview)
+                        )
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .preview
+                )
             )
-        )
-        .app(App.preview)
+            .app(App.preview)
+        }
         .previewDisplayName("Silver")
 
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .notTradable,
-                    kycStatus: .unverified,
-                    accounts: [
-                        .stub(
-                            cryptoCurrency: .bitcoin,
-                            fiatCurrency: .USD,
-                            crypto: .zero(currency: .bitcoin),
-                            fiat: .zero(currency: .USD)
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .nonTradeable,
+                        kycStatus: .unverified,
+                        accounts: [
+                            .preview.rewards
+                        ],
+                        isFavorite: false,
+                        graph: .init(
+                            interval: .day,
+                            result: .success(.preview)
                         )
-                    ]
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .preview
+                )
             )
-        )
-        .app(App.preview)
+            .app(App.preview)
+        }
         .previewDisplayName("Not Tradable")
 
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .bitcoin,
-                    kycStatus: .unverified,
-                    accounts: [
-                        .preview.privateKey,
-                        .preview.trading
-                    ]
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .bitcoin,
+                        kycStatus: .unverified,
+                        accounts: [
+                            .preview.privateKey
+                        ],
+                        isFavorite: false,
+                        graph: .init(
+                            interval: .day,
+                            result: .success(.preview)
+                        )
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .preview
+                )
             )
-        )
-        .app(App.preview)
+            .app(App.preview)
+        }
         .previewDisplayName("Unverified")
 
-        CoinView(
-            store: .init(
-                initialState: .init(
-                    currency: .bitcoin,
-                    kycStatus: .unverified,
-                    accounts: [],
-                    error: .failedToLoad
-                ),
-                reducer: coinViewReducer,
-                environment: .preview
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .stellar,
+                        isFavorite: nil,
+                        graph: .init(isFetching: true)
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .previewEmpty
+                )
             )
-        )
-        .app(App.preview)
+            .app(App.preview)
+        }
+        .previewDisplayName("Loading")
+
+        PrimaryNavigationView {
+            CoinView(
+                store: .init(
+                    initialState: .init(
+                        currency: .bitcoin,
+                        kycStatus: .unverified,
+                        error: .failedToLoad,
+                        isFavorite: false,
+                        graph: .init(
+                            interval: .day,
+                            result: .failure(.serverError(.badResponse))
+                        )
+                    ),
+                    reducer: coinViewReducer,
+                    environment: .previewEmpty
+                )
+            )
+            .app(App.preview)
+        }
         .previewDisplayName("Error")
     }
 }

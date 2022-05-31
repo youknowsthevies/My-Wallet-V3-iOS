@@ -98,7 +98,8 @@ final class FiatCustodialAccount: FiatAccount {
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .viewActivity:
+        case .viewActivity,
+             .linkToDebitCard:
             return .just(true)
         case .buy,
              .send,

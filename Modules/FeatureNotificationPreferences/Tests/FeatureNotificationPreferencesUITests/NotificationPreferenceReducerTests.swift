@@ -80,7 +80,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
                     notificationPreference: MockGenerator.marketingNotificationPreference),
                 viewState: .loading
             ),
-            reducer: mainReducer,
+            reducer: featureNotificationPreferencesMainReducer,
             environment: NotificationPreferencesEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 notificationPreferencesRepository: notificationRepoMock,

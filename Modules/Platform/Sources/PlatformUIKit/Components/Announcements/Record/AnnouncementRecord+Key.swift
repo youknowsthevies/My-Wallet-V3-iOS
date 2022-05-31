@@ -15,7 +15,6 @@ extension AnnouncementRecord {
         case walletIntro
         case verifyEmail
         case resubmitDocumentsAfterRecovery
-        case blockstackAirdropRegisteredMini
         case simpleBuyKYCIncomplete
         case claimFreeCryptoDomain
 
@@ -25,13 +24,11 @@ extension AnnouncementRecord {
         case twoFA
         case buyBitcoin
         case transferBitcoin
-        case kycAirdrop
         case newSwap
         case taxCenter
 
         // MARK: - One Time
 
-        case blockstackAirdropReceived
         case identityVerification
         case exchange
         case bitpay
@@ -57,8 +54,6 @@ extension AnnouncementRecord {
                 key = "cache-email-verification"
             case .resubmitDocumentsAfterRecovery:
                 key = "cache-resubmit-documents-after-recovery"
-            case .blockstackAirdropRegisteredMini:
-                key = "cache-stx-registered-airdrop-mini"
             case .simpleBuyKYCIncomplete:
                 key = "simple-buy-kyc-incomplete"
             case .claimFreeCryptoDomain:
@@ -74,8 +69,6 @@ extension AnnouncementRecord {
                 key = "cache-buy-btc"
             case .transferBitcoin:
                 key = "cache-transfer-btc"
-            case .kycAirdrop:
-                key = "cache-kyc-airdrop"
             case .newSwap:
                 key = "cache-new-swap"
             case .taxCenter:
@@ -83,8 +76,6 @@ extension AnnouncementRecord {
 
             // MARK: - One Time
 
-            case .blockstackAirdropReceived:
-                key = "cache-kyc-stx-airdrop-received"
             case .identityVerification:
                 key = "cache-identity-verification"
             case .exchange:

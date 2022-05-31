@@ -82,14 +82,6 @@ public final class DeepLinkCoordinator: Session.Observer {
         .sink(to: DeepLinkCoordinator.showTransactionSend(_:), on: self)
 
     private lazy var asset = app.on(blockchain.app.deep_link.asset)
-        .flatMap { [unowned self] event -> AnyPublisher<(Session.Event, Bool), Never> in
-            app.publisher(for: blockchain.app.configuration.redesign.coinview, as: Bool.self)
-                .compactMap(\.value)
-                .prefix(1)
-                .map { (event, $0) }
-                .eraseToAnyPublisher()
-        }
-        .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.showAsset, on: self)
 
     private lazy var qr = app.on(blockchain.app.deep_link.qr)
@@ -120,39 +112,12 @@ public final class DeepLinkCoordinator: Session.Observer {
             .present(qrCodeScannerView)
     }
 
-    func showAsset(_ event: Session.Event, isRedesignEnabled: Bool) {
-
+    func showAsset(_ event: Session.Event) {
         let cryptoCurrency = (
             try? event.context.decode(blockchain.app.deep_link.asset.code) as CryptoCurrency
         ) ?? .bitcoin
 
-        if isRedesignEnabled {
-            let navigationController = UINavigationController()
-            navigationController.setViewControllers(
-                [
-                    UIHostingController(
-                        rootView: CoinAdapterView(
-                            cryptoCurrency: cryptoCurrency,
-                            app: app,
-                            dismiss: { [weak navigationController] in
-                                navigationController?.dismiss(animated: true)
-                            }
-                        )
-                    )
-                ],
-                animated: false
-            )
-            topMostViewControllerProvider.topMostViewController?.present(navigationController, animated: true)
-        } else {
-
-            let builder = AssetDetailsBuilder(
-                accountsRouter: accountsRouter(),
-                currency: cryptoCurrency,
-                exchangeProviding: exchangeProvider
-            )
-            let controller = builder.build()
-            topMostViewControllerProvider.topMostViewController?.present(controller, animated: true)
-        }
+        app.post(event: blockchain.ux.asset[cryptoCurrency.code].select)
     }
 
     func showTransactionBuy(_ event: Session.Event) {

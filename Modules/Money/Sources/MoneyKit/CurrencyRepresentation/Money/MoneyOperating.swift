@@ -2,6 +2,7 @@
 
 import BigInt
 import Foundation
+import ToolKit
 
 /// A money operating error.
 public enum MoneyOperatingError: Error {
@@ -240,6 +241,12 @@ extension MoneyOperating {
     ///   - exchangeRate: An exchange rate, representing one major unit of currency `B` in currency `A`.
     ///   - currencyType: The destination currency `B`.
     public func convert<T: MoneyOperating>(usingInverse exchangeRate: Self, currency: T.MoneyCurrency) -> T {
+        if BuildFlag.isInternal, currencyType != exchangeRate.currencyType {
+            fatalError("Self \(currencyType) currency type has to be equal exchangeRate currency type \(exchangeRate.currencyType)")
+        }
+        if currencyType == currency.currencyType {
+            return T(amount: amount, currency: currency)
+        }
         guard !isZero, !exchangeRate.isZero else {
             return .zero(currency: currency)
         }
@@ -316,5 +323,11 @@ extension MoneyOperating {
         guard x.currencyType == y.currencyType else {
             throw MoneyOperatingError.mismatchingCurrencies(x.currency, y.currency)
         }
+    }
+
+    /// Returns true if displayable balance is greater than 0.0.
+    /// Account may still contain dust after `displayPrecision` decimal.
+    public var hasPositiveDisplayableBalance: Bool {
+        (try? self >= Self.create(minor: BigInt(10).power(precision - displayPrecision), currency: currency)) == true
     }
 }
