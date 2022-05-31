@@ -34,9 +34,7 @@ struct SearchCryptoDomainView: View {
                 viewStore.send(.onAppear)
             }
             .primaryNavigation(title: LocalizedString.title)
-            .bottomSheet(
-                isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)
-            ) {
+            .bottomSheet(isPresented: viewStore.binding(\.$isPremiumDomainBottomSheetShown)) {
                 createPremiumDomainBottomSheet()
             }
             .navigationRoute(in: store)
@@ -90,9 +88,13 @@ struct SearchCryptoDomainView: View {
                         }
                         PrimaryDivider()
                     }
-                    .animation(.easeInOut)
                 }
             }
+            .simultaneousGesture(
+                DragGesture().onChanged { _ in
+                    viewStore.send(.set(\.$isSearchFieldSelected, false))
+                }
+            )
             .accessibilityIdentifier(Accessibility.domainList)
         }
     }

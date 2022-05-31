@@ -498,48 +498,52 @@ extension AnnouncementPresenter {
     ) -> Announcement {
         ClaimFreeCryptoDomainAnnouncement(
             claimFreeDomainEligible: claimFreeDomainEligible,
-            action: { [coincore, nabuUserService, navigationRouter] in
-                let vc = ClaimIntroductionHostingController(
-                    mainQueue: .main,
-                    analyticsRecorder: DIKit.resolve(),
-                    externalAppOpener: DIKit.resolve(),
-                    searchDomainRepository: DIKit.resolve(),
-                    orderDomainRepository: DIKit.resolve(),
-                    userInfoProvider: {
-                        Deferred {
-                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
-                        }
-                        .eraseError()
-                        .flatMap { cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
-                            guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
-                                return .empty()
-                            }
-                            let recordPublisher = providers.map(\.resolutionRecord).zip()
-                            let nabuUserPublisher = nabuUserService.user.eraseError()
-                            return recordPublisher
-                                .zip(nabuUserPublisher)
-                                .eraseToAnyPublisher()
-                        }
-                        .map { records, nabuUser -> OrderDomainUserInfo in
-                            OrderDomainUserInfo(
-                                nabuUserId: nabuUser.identifier,
-                                nabuUserName: nabuUser
-                                    .personalDetails
-                                    .firstName?
-                                    .replacingOccurrences(of: " ", with: "") ?? "",
-                                resolutionRecords: records
-                            )
-                        }
-                        .eraseToAnyPublisher()
-                    }
-                )
-                let nav = UINavigationController(rootViewController: vc)
-                navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+            action: { [weak self] in
+                self?.presentClaimIntroductionHostingController()
             },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             }
         )
+    }
+
+    private func presentClaimIntroductionHostingController() {
+        let vc = ClaimIntroductionHostingController(
+            mainQueue: .main,
+            analyticsRecorder: DIKit.resolve(),
+            externalAppOpener: DIKit.resolve(),
+            searchDomainRepository: DIKit.resolve(),
+            orderDomainRepository: DIKit.resolve(),
+            userInfoProvider: { [coincore, nabuUserService] in
+                Deferred { [coincore] in
+                    Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
+                }
+                .eraseError()
+                .flatMap { [nabuUserService] cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
+                    guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
+                        return .empty()
+                    }
+                    let recordPublisher = providers.map(\.resolutionRecord).zip()
+                    let nabuUserPublisher = nabuUserService.user.eraseError()
+                    return recordPublisher
+                        .zip(nabuUserPublisher)
+                        .eraseToAnyPublisher()
+                }
+                .map { records, nabuUser -> OrderDomainUserInfo in
+                    OrderDomainUserInfo(
+                        nabuUserId: nabuUser.identifier,
+                        nabuUserName: nabuUser
+                            .personalDetails
+                            .firstName?
+                            .replacingOccurrences(of: " ", with: "") ?? "",
+                        resolutionRecords: records
+                    )
+                }
+                .eraseToAnyPublisher()
+            }
+        )
+        let nav = UINavigationController(rootViewController: vc)
+        navigationRouter.present(viewController: nav, using: .modalOverTopMost)
     }
 
     /// Interest Account Announcement for users who have not KYC'd
