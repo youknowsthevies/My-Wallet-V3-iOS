@@ -1,5 +1,4 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-// swiftformat:disable redundantSelf
 
 import Combine
 import DIKit
@@ -21,15 +20,21 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
-        accountCache.valueSingle
-            .map(\.balance)
-            .moneyValue
+        balancePublisher
+            .asSingle()
+    }
+
+    var balancePublisher: AnyPublisher<MoneyValue, Error> {
+        accountDetails
+            .map(\.balance.moneyValue)
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var actionableBalance: Single<MoneyValue> {
-        accountCache.valueSingle
-            .map(\.actionableBalance)
-            .moneyValue
+        accountDetails
+            .map(\.actionableBalance.moneyValue)
+            .asSingle()
     }
 
     var pendingBalance: Single<MoneyValue> {
@@ -45,6 +50,10 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+    }
+
+    private var accountDetails: AnyPublisher<StellarAccountDetails, StellarNetworkError> {
+        accountDetailsService.details(accountID: publicKey)
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
@@ -88,9 +97,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let publicKey: String
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
-    private let accountDetailsService: StellarAccountDetailsServiceAPI
+    private let accountDetailsService: StellarAccountDetailsRepositoryAPI
     private let priceService: PriceServiceAPI
-    private let accountCache: CachedValue<StellarAccountDetails>
     private let operationsService: StellarHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
 
@@ -101,7 +109,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         bridge: StellarWalletBridgeAPI = resolve(),
         operationsService: StellarHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
+        accountDetailsService: StellarAccountDetailsRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
@@ -116,15 +124,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.operationsService = operationsService
         self.priceService = priceService
         self.featureFlagsService = featureFlagsService
-        accountCache = CachedValue(
-            configuration: .periodic(
-                seconds: 20,
-                schedulerIdentifier: "StellarCryptoAccount"
-            )
-        )
-        accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
-            self.accountDetailsService.accountDetails(for: publicKey)
-        }
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
@@ -167,7 +166,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func invalidateAccountBalance() {
-        accountCache
-            .invalidate()
+        accountDetailsService.invalidateCache()
     }
 }

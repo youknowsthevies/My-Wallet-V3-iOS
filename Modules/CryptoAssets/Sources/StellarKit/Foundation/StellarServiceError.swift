@@ -3,107 +3,26 @@
 import PlatformKit
 import stellarsdk
 
-/// We track error types that occur in Swap. This protocol makes getting the error type
-/// simpler regardless of the type of `StellarServiceError`.
-public protocol StellarServiceError: Error {
-    var message: String { get }
-}
-
-/// `StellarAccountError` is a `TransactionValidationError` as all cases should cause
-/// a transaction to be invalid.
-public enum StellarAccountError: StellarServiceError {
-    case noDefaultAccount
-    case noXLMAccount
+public enum StellarAccountError: Error {
     case unableToSaveNewAccount
 }
 
-extension StellarAccountError {
-    public var message: String {
-        switch self {
-        case .noXLMAccount:
-            return "noXLMAccount"
-        case .noDefaultAccount:
-            return "noDefaultAccount"
-        case .unableToSaveNewAccount:
-            return "unableToSaveNewAccount"
-        }
-    }
-}
-
-/// `StellarNetworkError` is not a `TransactionValidationError` as these errors would
-/// not involve transaction validation. A transaction would not be able to be validated
-/// should any of these errors occur.
-public enum StellarNetworkError: StellarServiceError, Equatable {
-    case rateLimitExceeded
-    case internalError
-    case parsingError
-    case unauthorized
-    case forbidden
-    case badRequest(message: String)
-    case unknown
-}
-
-extension StellarNetworkError {
-    public var message: String {
-        switch self {
-        case .rateLimitExceeded:
-            return "rateLimitExceeded"
-        case .internalError:
-            return "internalError"
-        case .parsingError:
-            return "parsingError"
-        case .unauthorized:
-            return "unauthorized"
-        case .forbidden:
-            return "forbidden"
-        case .badRequest(let message):
-            return message
-        case .unknown:
-            return "unknown"
-        }
-    }
-}
-
-extension StellarNetworkError {
-    public static func == (lhs: StellarNetworkError, rhs: StellarNetworkError) -> Bool {
-        switch (lhs, rhs) {
-        case (.rateLimitExceeded, .rateLimitExceeded),
-             (.internalError, .internalError),
-             (.parsingError, .parsingError),
-             (.unauthorized, .unauthorized),
-             (.forbidden, .forbidden),
-             (.unknown, .unknown):
-            return true
-        case (.badRequest(let lhs), .badRequest(let rhs)):
-            return lhs == rhs
-        default:
-            return false
-        }
-    }
+public enum StellarNetworkError: Error {
+    case notFound
+    case parsingFailed
+    case destinationRequiresMemo
+    case horizonRequestError(Error)
 }
 
 extension HorizonRequestError {
-    public func toStellarServiceError() -> StellarServiceError {
+    public var stellarNetworkError: StellarNetworkError {
         switch self {
         case .notFound:
-            return StellarAccountError.noDefaultAccount
-        case .rateLimitExceeded:
-            return StellarNetworkError.rateLimitExceeded
-        case .internalServerError:
-            return StellarNetworkError.internalError
+            return .notFound
         case .parsingResponseFailed:
-            return StellarNetworkError.parsingError
-        case .forbidden:
-            return StellarNetworkError.forbidden
-        case .badRequest(message: let message, horizonErrorResponse: let response):
-            var value = message
-            if let response = response {
-                value += (" " + response.extras.resultCodes.transaction)
-                value += (" " + response.extras.resultCodes.operations.joined(separator: " "))
-            }
-            return StellarNetworkError.badRequest(message: value)
+            return .parsingFailed
         default:
-            return StellarNetworkError.unknown
+            return .horizonRequestError(self)
         }
     }
 }

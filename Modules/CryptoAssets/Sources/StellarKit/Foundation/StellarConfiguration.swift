@@ -9,44 +9,64 @@ private enum HorizonServer {
 
     fileprivate enum Stellar {
         fileprivate static let production = "https://horizon.stellar.org"
-        fileprivate static let test = "https://horizon-testnet.stellar.org"
+        fileprivate static let testnet = "https://horizon-testnet.stellar.org"
     }
 }
 
-public struct StellarConfiguration {
-    public let sdk: StellarSDK
-    public let network: Network
+struct StellarConfiguration: Equatable {
 
-    public init(sdk: StellarSDK, network: Network) {
+    let sdk: StellarSDK
+    let network: Network
+
+    init(sdk: StellarSDK, network: Network) {
         self.sdk = sdk
         self.network = network
     }
 
-    public init(horizonURL: String) {
+    init(horizonURL: String) {
         self.init(
             sdk: StellarSDK(withHorizonUrl: horizonURL),
             network: Network.public
         )
     }
+
+    static func == (lhs: StellarConfiguration, rhs: StellarConfiguration) -> Bool {
+        lhs.sdk.horizonURL == rhs.sdk.horizonURL
+            && lhs.network == rhs.network
+    }
 }
 
 extension StellarConfiguration {
-    public enum Blockchain {
-        public static let production = StellarConfiguration(
+    enum Blockchain {
+        static let production = StellarConfiguration(
             sdk: StellarSDK(withHorizonUrl: HorizonServer.Blockchain.production),
             network: Network.public
         )
     }
 
-    public enum Stellar {
-        public static let production = StellarConfiguration(
+    enum Stellar {
+        static let production = StellarConfiguration(
             sdk: StellarSDK(withHorizonUrl: HorizonServer.Stellar.production),
             network: Network.public
         )
 
-        public static let test = StellarConfiguration(
-            sdk: StellarSDK(withHorizonUrl: HorizonServer.Stellar.test),
+        static let test = StellarConfiguration(
+            sdk: StellarSDK(withHorizonUrl: HorizonServer.Stellar.testnet),
             network: Network.testnet
         )
+    }
+}
+
+extension stellarsdk.Network: Equatable {
+    public static func == (lhs: Network, rhs: Network) -> Bool {
+        switch (lhs, rhs) {
+        case (.public, .public),
+             (.testnet, .testnet):
+            return true
+        case (.custom(let lhs), .custom(let rhs)) where lhs == rhs:
+            return true
+        default:
+            return false
+        }
     }
 }

@@ -1,23 +1,27 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
 import RxSwift
 
 protocol StellarWalletOptionsBridgeAPI: AnyObject {
-    var stellarConfigurationDomain: Single<String?> { get }
+    var stellarConfigurationDomain: AnyPublisher<String?, Never> { get }
 }
 
-class StellarWalletOptionsService: StellarWalletOptionsBridgeAPI {
+final class StellarWalletOptionsService: StellarWalletOptionsBridgeAPI {
+
     private let walletOptionsService: WalletOptionsAPI
 
-    init(walletOptions: WalletOptionsAPI = resolve()) {
+    init(walletOptions: WalletOptionsAPI) {
         walletOptionsService = walletOptions
     }
 
-    var stellarConfigurationDomain: Single<String?> {
+    var stellarConfigurationDomain: AnyPublisher<String?, Never> {
         walletOptionsService
             .walletOptions
             .map(\.domains?.stellarHorizon)
+            .asPublisher()
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
     }
 }

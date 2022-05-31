@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -31,7 +30,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     var requireSecondPassword: Bool
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    var transactionDispatcher: StellarTransactionDispatcher
+    var transactionDispatcher: StellarTransactionDispatcherAPI
     var feeService: AnyCryptoFeeService<StellarTransactionFee>
 
     // MARK: - Private properties
@@ -79,10 +78,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         requireSecondPassword: Bool,
-        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
-        transactionDispatcher: StellarTransactionDispatcher = resolve()
+        walletCurrencyService: FiatCurrencyServiceAPI,
+        currencyConversionService: CurrencyConversionServiceAPI,
+        feeService: AnyCryptoFeeService<StellarTransactionFee>,
+        transactionDispatcher: StellarTransactionDispatcherAPI
     ) {
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
