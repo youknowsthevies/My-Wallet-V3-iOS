@@ -16,7 +16,7 @@ extension CheckboxViewModel {
             .text(string: " & "),
             .url(
                 string: LocalizationIds.ToS.termsOfService,
-                url: "https://www.blockchain.com/legal/borrow-terms"
+                url: "https://www.blockchain.com/legal"
             )
         ]
     )
