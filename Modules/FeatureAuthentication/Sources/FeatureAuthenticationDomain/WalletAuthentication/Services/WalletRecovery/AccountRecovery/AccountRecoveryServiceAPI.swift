@@ -31,5 +31,12 @@ public protocol AccountRecoveryServiceAPI {
         sharedKey: String,
         userId: String,
         recoveryToken: String
+    ) -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError>
+
+    /// Stores a `NabuOfflineToken` to wallet metadata
+    /// - Parameter offlineToken: A `NabuOfflineToken` object
+    /// - Returns: `AnyPublisher<Void, AccountRecoveryServiceError>`
+    func store(
+        offlineToken: NabuOfflineToken
     ) -> AnyPublisher<Void, AccountRecoveryServiceError>
 }

@@ -7,6 +7,7 @@ import DIKit
 import FeatureAuthenticationDomain
 import Localization
 import ToolKit
+import WalletPayloadKit
 
 // MARK: - Type
 
@@ -14,6 +15,7 @@ public enum WalletRecoveryIds {
     public struct RecoveryId: Hashable {}
     public struct ImportId: Hashable {}
     public struct AccountRecoveryAfterResetId: Hashable {}
+    public struct WalletFetchAfterRecoveryId: Hashable {}
 }
 
 public enum SeedPhraseAction: Equatable {
@@ -53,6 +55,7 @@ public enum SeedPhraseAction: Equatable {
     case restored(Result<EmptyValue, WalletRecoveryError>)
     case imported(Result<EmptyValue, WalletRecoveryError>)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
+    case accountRecovered(AccountResetContext)
     case triggerAuthenticate // needed for legacy wallet flow
     case open(urlContent: URLContent)
     case none
@@ -62,6 +65,11 @@ public enum AccountRecoveryContext: Equatable {
     case troubleLoggingIn
     case restoreWallet
     case none
+}
+
+public struct AccountResetContext: Equatable {
+    let walletContext: WalletCreatedContext
+    let offlineToken: NabuOfflineToken
 }
 
 // MARK: - Properties
@@ -86,7 +94,10 @@ public struct SeedPhraseState: Equatable {
     var isLoading: Bool
 
     var accountResettable: Bool {
-        nabuInfo != nil
+        guard let nabuInfo = nabuInfo else {
+            return false
+        }
+        return nabuInfo.recoverable
     }
 
     init(context: AccountRecoveryContext, emailAddress: String = "", nabuInfo: WalletInfo.Nabu? = nil) {
@@ -115,6 +126,7 @@ struct SeedPhraseEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let errorRecorder: ErrorRecording
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -125,7 +137,8 @@ struct SeedPhraseEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
-        accountRecoveryService: AccountRecoveryServiceAPI
+        accountRecoveryService: AccountRecoveryServiceAPI,
+        errorRecorder: ErrorRecording
     ) {
         self.mainQueue = mainQueue
         self.validator = validator
@@ -136,6 +149,7 @@ struct SeedPhraseEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.errorRecorder = errorRecorder
     }
 }
 
@@ -187,7 +201,10 @@ let seedPhraseReducer = Reducer.combine(
             environment: {
                 LostFundsWarningEnvironment(
                     mainQueue: $0.mainQueue,
-                    analyticsRecorder: $0.analyticsRecorder
+                    analyticsRecorder: $0.analyticsRecorder,
+                    passwordValidator: $0.passwordValidator,
+                    externalAppOpener: $0.externalAppOpener,
+                    errorRecorder: $0.errorRecorder
                 )
             }
         ),
@@ -198,7 +215,10 @@ let seedPhraseReducer = Reducer.combine(
             action: /SeedPhraseAction.resetPassword,
             environment: {
                 ResetPasswordEnvironment(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    passwordValidator: $0.passwordValidator,
+                    externalAppOpener: $0.externalAppOpener,
+                    errorRecorder: $0.errorRecorder
                 )
             }
         ),
@@ -323,13 +343,6 @@ let seedPhraseReducer = Reducer.combine(
             }
             return .merge(
                 .cancel(id: CreateAccountIds.CreationId()),
-                // The effects of fetching a wallet still happen on the CoreCoordinator,
-                // this should not be fireAndForget once we have wallet loading natively
-                environment.walletFetcherService
-                    .fetchWallet(context.guid, context.sharedKey, context.password)
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .fireAndForget(),
                 environment.accountRecoveryService
                     .recoverUser(
                         guid: context.guid,
@@ -341,7 +354,7 @@ let seedPhraseReducer = Reducer.combine(
                     .catchToEffect()
                     .cancellable(id: WalletRecoveryIds.AccountRecoveryAfterResetId(), cancelInFlight: false)
                     .map { result -> SeedPhraseAction in
-                        guard case .success = result else {
+                        guard case .success(let offlineToken) = result else {
                             environment.analyticsRecorder.record(
                                 event: AnalyticsEvents.New.AccountRecoveryFlow.accountRecoveryFailed
                             )
@@ -356,8 +369,36 @@ let seedPhraseReducer = Reducer.combine(
                             event: AnalyticsEvents.New.AccountRecoveryFlow
                                 .accountPasswordReset(hasRecoveryPhrase: false)
                         )
-                        return .none
+                        return .accountRecovered(
+                            AccountResetContext(
+                                walletContext: context,
+                                offlineToken: offlineToken
+                            )
+                        )
                     }
+            )
+
+        case .accountRecovered(let info):
+            // NOTE: The effects of fetching a wallet still happen on the CoreCoordinator
+            // Unfortunately Resetting an account and wallet fetching are related
+            // In order to save the token wallet metadata we need
+            // to have a fully loaded wallet so the following happens:
+            // 1) Fetch the wallet
+            // 2) Store the offlineToken to the wallet metadata
+            // There's no error handling as any error will be overruled by the CoreCoordinator
+            return .merge(
+                .cancel(id: WalletRecoveryIds.AccountRecoveryAfterResetId()),
+                environment.walletFetcherService
+                    .fetchWalletAfterAccountRecovery(
+                        info.walletContext.guid,
+                        info.walletContext.sharedKey,
+                        info.walletContext.password,
+                        info.offlineToken
+                    )
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: WalletRecoveryIds.WalletFetchAfterRecoveryId())
+                    .map { _ in .none }
             )
 
         case .lostFundsWarning:

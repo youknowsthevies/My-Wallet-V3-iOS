@@ -3,8 +3,10 @@
 import AnalyticsKit
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 struct LostFundsWarningView: View {
@@ -100,7 +102,10 @@ struct LostFundsWarningView_Previews: PreviewProvider {
                 reducer: lostFundsWarningReducer,
                 environment: .init(
                     mainQueue: .main,
-                    analyticsRecorder: NoOpAnalyticsRecorder()
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
+                    passwordValidator: NoOpPasswordValidator(),
+                    externalAppOpener: NoOpExternalAppOpener(),
+                    errorRecorder: NoOpErrorRecoder()
                 )
             )
         )

@@ -28,6 +28,7 @@ final class SeedPhraseReducerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockMainQueue = DispatchQueue.test
+        let walletFetcherServiceMock = WalletFetcherServiceMock()
         testStore = TestStore(
             initialState: .init(context: .restoreWallet),
             reducer: seedPhraseReducer,
@@ -39,8 +40,9 @@ final class SeedPhraseReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
-                walletFetcherService: .mock,
-                accountRecoveryService: MockAccountRecoveryService()
+                walletFetcherService: walletFetcherServiceMock.mock(),
+                accountRecoveryService: MockAccountRecoveryService(),
+                errorRecorder: MockErrorRecorder()
             )
         )
     }
@@ -110,5 +112,63 @@ final class SeedPhraseReducerTests: XCTestCase {
         testStore.receive(.didChangeSeedPhraseScore(.invalid([invalidRange]))) { state in
             state.seedPhraseScore = .invalid([invalidRange])
         }
+    }
+
+    func test_account_resetting() {
+        let walletFetcherServiceMock = WalletFetcherServiceMock()
+        // given a valid `Nabu` model
+        let nabuInfo = WalletInfo.Nabu(
+            userId: "userId",
+            recoveryToken: "recoveryToken",
+            recoverable: true
+        )
+        testStore = TestStore(
+            initialState: .init(context: .troubleLoggingIn, emailAddress: "email@email.com", nabuInfo: nabuInfo),
+            reducer: seedPhraseReducer,
+            environment: SeedPhraseEnvironment(
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                validator: SeedPhraseValidator(words: Set(WordList.default.words)),
+                passwordValidator: PasswordValidator(),
+                externalAppOpener: MockExternalAppOpener(),
+                analyticsRecorder: MockAnalyticsRecorder(),
+                walletRecoveryService: .mock(),
+                walletCreationService: .mock(),
+                walletFetcherService: walletFetcherServiceMock.mock(),
+                accountRecoveryService: MockAccountRecoveryService(),
+                errorRecorder: MockErrorRecorder()
+            )
+        )
+
+        testStore.send(.setLostFundsWarningScreenVisible(true)) { state in
+            state.lostFundsWarningState = .init()
+            state.isLostFundsWarningScreenVisible = true
+        }
+
+        testStore.send(.lostFundsWarning(.setResetPasswordScreenVisible(true))) { state in
+            state.lostFundsWarningState?.resetPasswordState = .init()
+            state.lostFundsWarningState?.isResetPasswordScreenVisible = true
+            state.isLostFundsWarningScreenVisible = true
+        }
+
+        testStore.send(.lostFundsWarning(.resetPassword(.reset(password: "password")))) { state in
+            state.lostFundsWarningState?.resetPasswordState?.isLoading = true
+        }
+        mockMainQueue.advance()
+        let walletCreatedContext = WalletCreatedContext(
+            guid: "guid",
+            sharedKey: "sharedKey",
+            password: "password"
+        )
+        testStore.receive(.triggerAuthenticate)
+        testStore.receive(.accountCreation(.success(walletCreatedContext)))
+        mockMainQueue.advance()
+        let accountRecoverContext = AccountResetContext(
+            walletContext: walletCreatedContext,
+            offlineToken: NabuOfflineToken(userId: "", token: "")
+        )
+        testStore.receive(.accountRecovered(accountRecoverContext))
+        mockMainQueue.advance()
+        XCTAssertTrue(walletFetcherServiceMock.fetchWalletAfterAccountRecoveryCalled)
+        testStore.receive(.none)
     }
 }

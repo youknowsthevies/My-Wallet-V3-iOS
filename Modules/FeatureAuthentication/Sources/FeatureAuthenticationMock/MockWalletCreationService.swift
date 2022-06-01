@@ -10,7 +10,27 @@ extension WalletCreationService {
     public static func mock() -> Self {
         WalletCreationService(
             createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
-                .failure(WalletCreationServiceError.creationFailure(.genericFailure))
+                .just(
+                    WalletCreatedContext(
+                        guid: "guid",
+                        sharedKey: "sharedKey",
+                        password: "password"
+                    )
+                )
+            },
+            importWallet: { _, _, _, _ -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in
+                .failure(.creationFailure(.genericFailure))
+            },
+            setResidentialInfo: { _, _ -> AnyPublisher<Void, Never> in
+                .just(())
+            }
+        )
+    }
+
+    public static func failing() -> Self {
+        WalletCreationService(
+            createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+                .failure(.creationFailure(.genericFailure))
             },
             importWallet: { _, _, _, _ -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in
                 .failure(.creationFailure(.genericFailure))

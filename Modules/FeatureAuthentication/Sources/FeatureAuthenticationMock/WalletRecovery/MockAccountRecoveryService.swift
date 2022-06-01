@@ -17,6 +17,12 @@ final class MockAccountRecoveryService: AccountRecoveryServiceAPI {
         sharedKey: String,
         userId: String,
         recoveryToken: String
+    ) -> AnyPublisher<NabuOfflineToken, AccountRecoveryServiceError> {
+        .just(NabuOfflineToken(userId: "", token: ""))
+    }
+
+    func store(
+        offlineToken: NabuOfflineToken
     ) -> AnyPublisher<Void, AccountRecoveryServiceError> {
         .just(())
     }
