@@ -1,14 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Foundation
-import NetworkError
 
 extension NetworkError {
 
-    static let notFoundError: NetworkError = .rawServerError(
-        .init(
-            response: HTTPURLResponse.notFoundResponse()!,
-            payload: nil
+    static let notFoundError: NetworkError = .init(
+        request: nil,
+        type: .rawServerError(
+            .init(
+                response: HTTPURLResponse.notFoundResponse()!,
+                payload: nil
+            )
         )
     )
 }

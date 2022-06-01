@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 public final class DeviceVerificationService: DeviceVerificationServiceAPI {

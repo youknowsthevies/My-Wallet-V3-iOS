@@ -3,8 +3,8 @@
 import BlockchainComponentLibrary
 
 import DIKit
+import Errors
 import Localization
-import NabuNetworkError
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -58,7 +58,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .emit(onNext: { [weak self] error in
                 guard let self = self else { return }
                 switch error {
-                case .nabuError(let nabu) as NabuNetworkError:
+                case let nabu as NabuNetworkError:
                     switch nabu.code {
                     case .cardInsufficientFunds:
                         self.presentError(

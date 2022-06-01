@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkError
+import Errors
 @testable import NetworkKit
 import TestKit
 import ToolKit
@@ -48,7 +48,7 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(NetworkError.payloadError(.emptyData))
+            return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
         }
         return .just(fixture)
     }
@@ -59,7 +59,7 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(ErrorResponseType.from(NetworkError.payloadError(.emptyData)))
+            return .failure(ErrorResponseType.from(NetworkError(request: nil, type: .payloadError(.emptyData))))
         }
         return .just(fixture)
     }

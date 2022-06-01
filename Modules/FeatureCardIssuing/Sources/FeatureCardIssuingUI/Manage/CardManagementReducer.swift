@@ -2,10 +2,10 @@
 
 import Combine
 import ComposableArchitecture
+import Errors
 import FeatureCardIssuingDomain
 import Localization
 import MoneyKit
-import NabuNetworkError
 import ToolKit
 
 public enum CardManagementAction: Equatable {

@@ -5,6 +5,7 @@ import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 import Localization
 import PlatformKit
 import SwiftUI
@@ -25,7 +26,7 @@ struct TradingLimitsState: Equatable {
 enum TradingLimitsAction: Equatable {
     case close
     case fetchLimits
-    case didFetchLimits(Result<KYCLimitsOverview, KYCTierServiceError>)
+    case didFetchLimits(Result<KYCLimitsOverview, Nabu.Error>)
     case listAction(LimitedFeaturesListAction)
     case unlockTrading(UnlockTradingAction)
 }
@@ -36,7 +37,7 @@ struct TradingLimitsEnvironment {
     let openURL: (URL) -> Void
     /// the passed-in tier is the tier the user whishes to upgrade to
     let presentKYCFlow: (KYC.Tier) -> Void
-    let fetchLimitsOverview: () -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>
+    let fetchLimitsOverview: () -> AnyPublisher<KYCLimitsOverview, Nabu.Error>
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
@@ -44,7 +45,7 @@ struct TradingLimitsEnvironment {
         close: @escaping () -> Void,
         openURL: @escaping (URL) -> Void,
         presentKYCFlow: @escaping (KYC.Tier) -> Void,
-        fetchLimitsOverview: @escaping () -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>,
+        fetchLimitsOverview: @escaping () -> AnyPublisher<KYCLimitsOverview, Nabu.Error>,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main
     ) {

@@ -3,6 +3,7 @@
 import BigInt
 import Combine
 import DIKit
+import Errors
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -285,7 +286,7 @@ final class TransactionInteractor {
         userTiersService.fetchTiers()
             .zip(
                 userTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
-                    .setFailureType(to: KYCTierServiceError.self)
+                    .setFailureType(to: Nabu.Error.self)
             )
             .map { userTiers, isSDDVerified -> TransactionState.KYCStatus? in
                 TransactionState.KYCStatus(tiers: userTiers, isSDDVerified: isSDDVerified)

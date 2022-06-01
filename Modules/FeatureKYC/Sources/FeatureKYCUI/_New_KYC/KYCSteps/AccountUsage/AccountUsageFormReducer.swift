@@ -2,9 +2,9 @@
 
 import Combine
 import ComposableArchitecture
+import Errors
 import FeatureFormDomain
 import Localization
-import NabuNetworkError
 
 extension AccountUsage {
 

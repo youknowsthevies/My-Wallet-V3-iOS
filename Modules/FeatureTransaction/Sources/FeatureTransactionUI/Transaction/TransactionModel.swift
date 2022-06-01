@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureOpenBankingDomain
 import FeatureTransactionDomain
 import Localization
@@ -420,14 +421,12 @@ final class TransactionModel {
                 .asObservable()
                 .subscribe(onNext: { [weak self] order in
                     switch order.state {
-                    case .cancelled, .expired:
-                        self?.process(
-                            action: .fatalTransactionError(
-                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                    case .failed, .expired, .cancelled:
+                        if let error = order.ux {
+                            self?.process(
+                                action: .fatalTransactionError(UX.Error(nabu: error))
                             )
-                        )
-                    case .failed:
-                        if let error = order.error {
+                        } else if let error = order.error {
                             self?.process(
                                 action: .fatalTransactionError(OpenBanking.Error.code(error))
                             )

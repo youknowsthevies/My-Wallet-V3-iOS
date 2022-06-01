@@ -2,9 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureAuthenticationDomain
-import NabuNetworkError
-import NetworkError
 
 final class NabuRepository: NabuRepositoryAPI {
 

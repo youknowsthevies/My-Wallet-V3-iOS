@@ -3,10 +3,10 @@
 import AnalyticsKit
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 import FeatureNotificationPreferencesDetailsUI
 import FeatureNotificationPreferencesDomain
 import Foundation
-import NetworkError
 import SwiftUI
 
 // MARK: - State

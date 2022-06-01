@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureFormDomain
-import NabuNetworkError
 import NetworkKit
 
 public struct SimplifiedDueDiligenceResponse: Codable {

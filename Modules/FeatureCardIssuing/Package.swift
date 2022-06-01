@@ -34,7 +34,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../Money"),
         .package(path: "../BlockchainComponentLibrary")
@@ -43,8 +43,7 @@ let package = Package(
         .target(
             name: "FeatureCardIssuingDomain",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "MoneyKit", package: "Money")
@@ -56,7 +55,7 @@ let package = Package(
                 .target(name: "FeatureCardIssuingDomain"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "MoneyKit", package: "Money")
             ]
@@ -65,13 +64,13 @@ let package = Package(
             name: "FeatureCardIssuingUI",
             dependencies: [
                 .target(name: "FeatureCardIssuingDomain"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
-                .product(name: "Localization", package: "Localization"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
-                .product(name: "MoneyKit", package: "Money")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Errors", package: "Errors"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "MoneyKit", package: "Money"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         )
     ]

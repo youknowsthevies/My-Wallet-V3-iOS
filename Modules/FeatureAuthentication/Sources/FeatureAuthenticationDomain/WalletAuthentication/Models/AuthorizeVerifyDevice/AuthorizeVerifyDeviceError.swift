@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Foundation
-import NetworkError
 
 public enum AuthorizeVerifyDeviceError: Error, Equatable {
 
@@ -18,7 +18,7 @@ public enum AuthorizeVerifyDeviceError: Error, Equatable {
     case network(NetworkError)
 
     public init?(error: NetworkError) {
-        guard case .rawServerError(let serverError) = error else {
+        guard case .rawServerError(let serverError) = error.type else {
             return nil
         }
         switch serverError.response.statusCode {

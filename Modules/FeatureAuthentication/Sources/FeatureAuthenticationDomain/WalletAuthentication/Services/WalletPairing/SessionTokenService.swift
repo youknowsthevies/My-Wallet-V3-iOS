@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkError
+import Errors
 
 public enum SessionTokenServiceError: Error, Equatable {
     case networkError(NetworkError)

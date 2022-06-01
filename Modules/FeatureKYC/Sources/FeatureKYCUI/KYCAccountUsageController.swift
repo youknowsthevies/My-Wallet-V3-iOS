@@ -3,10 +3,10 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import FeatureFormDomain
 import FeatureKYCDomain
 import Localization
-import NabuNetworkError
 import UIComponentsKit
 import UIKit
 

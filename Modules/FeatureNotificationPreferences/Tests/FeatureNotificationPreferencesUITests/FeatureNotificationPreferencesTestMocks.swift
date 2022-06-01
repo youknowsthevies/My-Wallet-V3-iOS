@@ -1,11 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureNotificationPreferencesData
 import FeatureNotificationPreferencesDomain
 import FeatureNotificationPreferencesMocks
-import NabuNetworkError
-import NetworkError
 
 class NotificationPreferencesRepositoryMock: NotificationPreferencesRepositoryAPI {
     // MARK: - Mock Properties

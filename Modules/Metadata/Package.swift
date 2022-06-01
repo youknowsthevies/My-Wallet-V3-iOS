@@ -43,7 +43,7 @@ let package = Package(
         ),
         .package(path: "../Analytics"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Test"),
         .package(path: "../Tool")
     ],
@@ -56,7 +56,7 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
-                .product(name: "NetworkError", package: "NetworkErrors")
+                .product(name: "Errors", package: "Errors")
             ]
         ),
         .testTarget(
@@ -68,7 +68,7 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "NetworkError", package: "NetworkErrors")
+                .product(name: "Errors", package: "Errors")
             ],
             resources: [
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry.json"),

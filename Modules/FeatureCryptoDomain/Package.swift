@@ -39,7 +39,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Test"),
         .package(path: "../Tool")
     ],
@@ -48,8 +48,7 @@ let package = Package(
             name: "FeatureCryptoDomainDomain",
             dependencies: [
                 .product(name: "Localization", package: "Localization"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -58,8 +57,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureCryptoDomainDomain"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors")
+                .product(name: "Errors", package: "Errors")
             ]
         ),
         .target(

@@ -87,6 +87,8 @@ public let approveReducer = Reducer<ApproveState, ApproveAction, OpenBankingEnvi
 
 public struct ApproveView: View {
 
+    @BlockchainApp var app
+
     let store: Store<ApproveState, ApproveAction>
 
     public init(store: Store<ApproveState, ApproveAction>) {
@@ -117,7 +119,7 @@ public struct ApproveView: View {
                 }
             }
             .navigationTitle(viewStore.bank.account.attributes.entity)
-            .navigationRoute(in: store)
+            .navigationRoute(in: store, environmentObject: app)
             .whiteNavigationBarStyle()
             .background(Color.semantic.background)
             .trailingNavigationButton(.close) {

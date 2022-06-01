@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import MetadataDataKit
 @testable import MetadataKit
-import NetworkError
 import XCTest
 
 final class GenerateNodesTests: XCTestCase {

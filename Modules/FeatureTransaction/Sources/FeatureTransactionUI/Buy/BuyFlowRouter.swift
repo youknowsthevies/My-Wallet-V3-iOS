@@ -36,6 +36,7 @@ final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
         )
         attachChild(router)
         let viewController = router.viewControllable.uiviewController
+        viewController.isModalInPresentation = true
         presenter.present(viewController, animated: true)
     }
 }

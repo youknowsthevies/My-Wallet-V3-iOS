@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureOpenBankingDomain
 import MoneyKit
 import PlatformKit
@@ -274,7 +275,7 @@ extension BuyTransactionEngine {
 
     enum MakeTransactionError: Error {
         case priceError(PriceServiceError)
-        case kycError(KYCTierServiceError)
+        case nabuError(Nabu.Error)
         case limitsError(TransactionLimitsServiceError)
     }
 

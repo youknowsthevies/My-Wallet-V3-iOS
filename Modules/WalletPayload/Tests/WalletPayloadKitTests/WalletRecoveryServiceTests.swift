@@ -45,7 +45,7 @@ class WalletRecoveryServiceTests: XCTestCase {
             notificationCenter: .default
         )
 
-        let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.payloadError(.emptyData))))
+        let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
         let walletPayloadRepository = WalletPayloadRepository(apiClient: mockWalletPayloadClient)
         let queue = DispatchQueue(label: "temp.recovery.queue")
         let walletRecoveryService = WalletRecoveryService(

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 
 public enum TransactionValidationState: Equatable {

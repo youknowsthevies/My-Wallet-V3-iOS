@@ -31,7 +31,7 @@ let package = Package(
         ),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../CryptoAssets"),
@@ -42,12 +42,8 @@ let package = Package(
             name: "FeatureNFTDomain",
             dependencies: [
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
-                ),
-                .product(
-                    name: "NabuNetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(
                     name: "ToolKit",
@@ -64,8 +60,8 @@ let package = Package(
                     package: "Network"
                 ),
                 .product(
-                    name: "NabuNetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 )
             ]
         ),

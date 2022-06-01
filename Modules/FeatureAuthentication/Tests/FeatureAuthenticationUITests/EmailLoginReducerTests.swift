@@ -96,7 +96,7 @@ final class EmailLoginReducerTests: XCTestCase {
     func test_send_device_verification_email_failure() {
         testStore.assert(
             // should still go to verify device screen if it is a network error
-            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.payloadError(.badData(rawPayload: "")))))),
+            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.unknown)))),
             .receive(.navigate(to: .verifyDevice)) { state in
                 state.verifyDeviceState = .init(emailAddress: "")
                 state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)

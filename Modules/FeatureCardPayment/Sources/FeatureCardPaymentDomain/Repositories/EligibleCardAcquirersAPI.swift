@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NabuNetworkError
 
 public protocol EligibleCardAcquirersAPI: AnyObject {
     /// Get the list of enabled card acquirers (Stripe, Checkout.com, ...) and their account codes to tokenise new payment cards.

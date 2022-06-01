@@ -2,9 +2,9 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import Errors
 import FeatureCardIssuingDomain
 import Localization
-import NabuNetworkError
 import SwiftUI
 
 struct CloseCardView: View {

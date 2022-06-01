@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import Errors
 import FeatureAccountPickerUI
 import FeatureCardIssuingDomain
 import FeatureCardIssuingUI
@@ -11,7 +12,6 @@ import FeatureTransactionUI
 import Foundation
 import Localization
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import PlatformUIKit
 import RxSwift

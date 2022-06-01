@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import EthereumKit
-import NetworkError
 import ToolKit
 
 final class PendingTransactionRepository: PendingTransactionRepositoryAPI {

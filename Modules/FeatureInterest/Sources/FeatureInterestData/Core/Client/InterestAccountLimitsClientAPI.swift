@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import MoneyKit
-import NabuNetworkError
 
 protocol InterestAccountLimitsClientAPI: AnyObject {
     func fetchInterestAccountLimitsResponseForFiatCurrency(_ fiatCurrency: FiatCurrency)

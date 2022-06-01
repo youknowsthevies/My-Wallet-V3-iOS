@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import NetworkError
+import Errors
 
 public enum NabuAuthenticationError: Error, Equatable {
 
@@ -11,7 +11,7 @@ public enum NabuAuthenticationError: Error, Equatable {
     case alreadyRegistered(statusCode: Int, walletIdHint: String)
 
     public init?(error: NetworkError) {
-        guard case .rawServerError(let serverError) = error else {
+        guard case .rawServerError(let serverError) = error.type else {
             return nil
         }
         switch serverError.response.statusCode {

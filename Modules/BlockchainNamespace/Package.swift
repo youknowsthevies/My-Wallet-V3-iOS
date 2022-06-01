@@ -10,6 +10,10 @@ let package = Package(
             name: "BlockchainNamespace",
             targets: ["BlockchainNamespace"]
         ),
+        .library(
+            name: "AnyCoding",
+            targets: ["AnyCoding"]
+        ),
         .executable(
             name: "gen",
             targets: ["gen"]

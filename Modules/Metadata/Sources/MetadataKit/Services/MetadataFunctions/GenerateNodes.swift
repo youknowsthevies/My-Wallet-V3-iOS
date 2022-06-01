@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
 import MetadataHDWalletKit
-import NetworkError
 import ToolKit
 
 public enum GenerateNodesError: Error {

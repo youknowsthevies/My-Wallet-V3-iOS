@@ -3,8 +3,8 @@
 import BigInt
 import Combine
 import DIKit
+import Errors
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -255,10 +255,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
     /// - Returns: An `Single<PendingTransaction>` with updated `validationState`
     func handlePendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
         `catch` { error -> Single<PendingTransaction> in
-            guard let networkError = error as? NabuNetworkError else {
-                throw error
-            }
-            guard case .nabuError(let nabuError) = networkError else {
+            guard let nabuError = error as? NabuNetworkError else {
                 throw error
             }
             guard nabuError.code == .pendingOrdersLimitReached else {

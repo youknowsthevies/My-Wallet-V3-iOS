@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureCardIssuingDomain
 import Foundation
-import NabuNetworkError
 import NetworkKit
 import ToolKit
 

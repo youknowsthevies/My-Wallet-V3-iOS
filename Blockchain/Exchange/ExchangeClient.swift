@@ -3,8 +3,8 @@
 import BitcoinCashKit
 import Combine
 import DIKit
+import Errors
 import FeatureSettingsDomain
-import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import ToolKit

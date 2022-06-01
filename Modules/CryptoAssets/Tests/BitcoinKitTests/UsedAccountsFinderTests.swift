@@ -5,7 +5,7 @@
 @testable import BitcoinKitMock
 
 import Combine
-import NetworkError
+import Errors
 import TestKit
 import WalletPayloadKit
 import XCTest
@@ -242,7 +242,7 @@ class UsedAccountsFinderTests: XCTestCase {
         let finder = UsedAccountsFinder(client: mockClient)
 
         // with no transactions
-        mockClient.multiAddressResult = .failure(.serverError(.badResponse))
+        mockClient.multiAddressResult = .failure(.unknown)
 
         let retriever: XpubRetriever = { _, index in
             "a_\(index)"

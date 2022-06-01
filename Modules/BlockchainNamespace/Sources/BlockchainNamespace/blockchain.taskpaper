@@ -185,6 +185,50 @@ blockchain:
 				none:
 			url:
 			+ blockchain.db.leaf
+	nabu:
+		error:
+			payment:
+				card:
+					authorization:
+						declined:
+						expired:
+					blocked:
+						suspected:
+							fraud:
+					declined:
+						by:
+							bank:
+								should:
+									not:
+										retry:
+									retry:
+										immediately:
+										later:
+					failed:
+						should:
+							not:
+								retry:
+							retry:
+								immediately:
+								later:
+					has:
+						expired:
+						insufficient:
+							funds:
+					information:
+						cvv:
+							does:
+								not:
+									match:
+						does:
+							not:
+								match:
+						number:
+							does:
+								not:
+									match:
+					system:
+						failure:
 	namespace:
 		language:
 			error:
@@ -475,6 +519,13 @@ blockchain:
 			+ blockchain.ux.type.story
 			sell:
 			+ blockchain.ux.type.story
+		error:
+		+ blockchain.ux.type.story
+			then:
+				launch:
+					url:
+					+ blockchain.db.type.url
+					+ blockchain.ux.type.analytics.action
 		frequent:
 			action:
 			+ blockchain.ux.type.story

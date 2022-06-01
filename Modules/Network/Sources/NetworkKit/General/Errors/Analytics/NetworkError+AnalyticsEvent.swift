@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Errors
 import Foundation
-import NetworkError
 
 extension NetworkError {
 
@@ -10,7 +10,7 @@ extension NetworkError {
         for request: NetworkRequest,
         decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
     ) -> AnalyticsEvent? {
-        switch self {
+        switch type {
         case .urlError(let urlError):
             return NetworkErrorEvent(request: request, error: urlError)
         case .rawServerError, .serverError, .payloadError, .authentication:

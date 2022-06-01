@@ -55,6 +55,7 @@ public protocol I_blockchain: I {}
 public extension I_blockchain {
 	var `app`: L_blockchain_app { .init("\(__).app") }
 	var `db`: L_blockchain_db { .init("\(__).db") }
+	var `nabu`: L_blockchain_nabu { .init("\(__).nabu") }
 	var `namespace`: L_blockchain_namespace { .init("\(__).namespace") }
 	var `session`: L_blockchain_session { .init("\(__).session") }
 	var `type`: L_blockchain_type { .init("\(__).type") }
@@ -764,6 +765,283 @@ public final class L_blockchain_db_type_url: L, I_blockchain_db_type_url {
 	public override class var localized: String { NSLocalizedString("blockchain.db.type.url", comment: "") }
 }
 public protocol I_blockchain_db_type_url: I_blockchain_db_leaf {}
+public final class L_blockchain_nabu: L, I_blockchain_nabu {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu", comment: "") }
+}
+public protocol I_blockchain_nabu: I {}
+public extension I_blockchain_nabu {
+	var `error`: L_blockchain_nabu_error { .init("\(__).error") }
+}
+public final class L_blockchain_nabu_error: L, I_blockchain_nabu_error {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error", comment: "") }
+}
+public protocol I_blockchain_nabu_error: I {}
+public extension I_blockchain_nabu_error {
+	var `payment`: L_blockchain_nabu_error_payment { .init("\(__).payment") }
+}
+public final class L_blockchain_nabu_error_payment: L, I_blockchain_nabu_error_payment {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment: I {}
+public extension I_blockchain_nabu_error_payment {
+	var `card`: L_blockchain_nabu_error_payment_card { .init("\(__).card") }
+}
+public final class L_blockchain_nabu_error_payment_card: L, I_blockchain_nabu_error_payment_card {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card: I {}
+public extension I_blockchain_nabu_error_payment_card {
+	var `authorization`: L_blockchain_nabu_error_payment_card_authorization { .init("\(__).authorization") }
+	var `blocked`: L_blockchain_nabu_error_payment_card_blocked { .init("\(__).blocked") }
+	var `declined`: L_blockchain_nabu_error_payment_card_declined { .init("\(__).declined") }
+	var `failed`: L_blockchain_nabu_error_payment_card_failed { .init("\(__).failed") }
+	var `has`: L_blockchain_nabu_error_payment_card_has { .init("\(__).has") }
+	var `information`: L_blockchain_nabu_error_payment_card_information { .init("\(__).information") }
+	var `system`: L_blockchain_nabu_error_payment_card_system { .init("\(__).system") }
+}
+public final class L_blockchain_nabu_error_payment_card_authorization: L, I_blockchain_nabu_error_payment_card_authorization {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.authorization", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_authorization: I {}
+public extension I_blockchain_nabu_error_payment_card_authorization {
+	var `declined`: L_blockchain_nabu_error_payment_card_authorization_declined { .init("\(__).declined") }
+	var `expired`: L_blockchain_nabu_error_payment_card_authorization_expired { .init("\(__).expired") }
+}
+public final class L_blockchain_nabu_error_payment_card_authorization_declined: L, I_blockchain_nabu_error_payment_card_authorization_declined {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.authorization.declined", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_authorization_declined: I {}
+public final class L_blockchain_nabu_error_payment_card_authorization_expired: L, I_blockchain_nabu_error_payment_card_authorization_expired {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.authorization.expired", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_authorization_expired: I {}
+public final class L_blockchain_nabu_error_payment_card_blocked: L, I_blockchain_nabu_error_payment_card_blocked {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.blocked", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_blocked: I {}
+public extension I_blockchain_nabu_error_payment_card_blocked {
+	var `suspected`: L_blockchain_nabu_error_payment_card_blocked_suspected { .init("\(__).suspected") }
+}
+public final class L_blockchain_nabu_error_payment_card_blocked_suspected: L, I_blockchain_nabu_error_payment_card_blocked_suspected {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.blocked.suspected", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_blocked_suspected: I {}
+public extension I_blockchain_nabu_error_payment_card_blocked_suspected {
+	var `fraud`: L_blockchain_nabu_error_payment_card_blocked_suspected_fraud { .init("\(__).fraud") }
+}
+public final class L_blockchain_nabu_error_payment_card_blocked_suspected_fraud: L, I_blockchain_nabu_error_payment_card_blocked_suspected_fraud {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.blocked.suspected.fraud", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_blocked_suspected_fraud: I {}
+public final class L_blockchain_nabu_error_payment_card_declined: L, I_blockchain_nabu_error_payment_card_declined {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined: I {}
+public extension I_blockchain_nabu_error_payment_card_declined {
+	var `by`: L_blockchain_nabu_error_payment_card_declined_by { .init("\(__).by") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by: L, I_blockchain_nabu_error_payment_card_declined_by {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by: I {}
+public extension I_blockchain_nabu_error_payment_card_declined_by {
+	var `bank`: L_blockchain_nabu_error_payment_card_declined_by_bank { .init("\(__).bank") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank: L, I_blockchain_nabu_error_payment_card_declined_by_bank {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank: I {}
+public extension I_blockchain_nabu_error_payment_card_declined_by_bank {
+	var `should`: L_blockchain_nabu_error_payment_card_declined_by_bank_should { .init("\(__).should") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should: I {}
+public extension I_blockchain_nabu_error_payment_card_declined_by_bank_should {
+	var `not`: L_blockchain_nabu_error_payment_card_declined_by_bank_should_not { .init("\(__).not") }
+	var `retry`: L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry { .init("\(__).retry") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should_not: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should_not {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should.not", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should_not: I {}
+public extension I_blockchain_nabu_error_payment_card_declined_by_bank_should_not {
+	var `retry`: L_blockchain_nabu_error_payment_card_declined_by_bank_should_not_retry { .init("\(__).retry") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should_not_retry: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should_not_retry {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should.not.retry", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should_not_retry: I {}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should.retry", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry: I {}
+public extension I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry {
+	var `immediately`: L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_immediately { .init("\(__).immediately") }
+	var `later`: L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_later { .init("\(__).later") }
+}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_immediately: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_immediately {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should.retry.immediately", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_immediately: I {}
+public final class L_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_later: L, I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_later {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.declined.by.bank.should.retry.later", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_declined_by_bank_should_retry_later: I {}
+public final class L_blockchain_nabu_error_payment_card_failed: L, I_blockchain_nabu_error_payment_card_failed {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed: I {}
+public extension I_blockchain_nabu_error_payment_card_failed {
+	var `should`: L_blockchain_nabu_error_payment_card_failed_should { .init("\(__).should") }
+}
+public final class L_blockchain_nabu_error_payment_card_failed_should: L, I_blockchain_nabu_error_payment_card_failed_should {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should: I {}
+public extension I_blockchain_nabu_error_payment_card_failed_should {
+	var `not`: L_blockchain_nabu_error_payment_card_failed_should_not { .init("\(__).not") }
+	var `retry`: L_blockchain_nabu_error_payment_card_failed_should_retry { .init("\(__).retry") }
+}
+public final class L_blockchain_nabu_error_payment_card_failed_should_not: L, I_blockchain_nabu_error_payment_card_failed_should_not {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should.not", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should_not: I {}
+public extension I_blockchain_nabu_error_payment_card_failed_should_not {
+	var `retry`: L_blockchain_nabu_error_payment_card_failed_should_not_retry { .init("\(__).retry") }
+}
+public final class L_blockchain_nabu_error_payment_card_failed_should_not_retry: L, I_blockchain_nabu_error_payment_card_failed_should_not_retry {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should.not.retry", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should_not_retry: I {}
+public final class L_blockchain_nabu_error_payment_card_failed_should_retry: L, I_blockchain_nabu_error_payment_card_failed_should_retry {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should.retry", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should_retry: I {}
+public extension I_blockchain_nabu_error_payment_card_failed_should_retry {
+	var `immediately`: L_blockchain_nabu_error_payment_card_failed_should_retry_immediately { .init("\(__).immediately") }
+	var `later`: L_blockchain_nabu_error_payment_card_failed_should_retry_later { .init("\(__).later") }
+}
+public final class L_blockchain_nabu_error_payment_card_failed_should_retry_immediately: L, I_blockchain_nabu_error_payment_card_failed_should_retry_immediately {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should.retry.immediately", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should_retry_immediately: I {}
+public final class L_blockchain_nabu_error_payment_card_failed_should_retry_later: L, I_blockchain_nabu_error_payment_card_failed_should_retry_later {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.failed.should.retry.later", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_failed_should_retry_later: I {}
+public final class L_blockchain_nabu_error_payment_card_has: L, I_blockchain_nabu_error_payment_card_has {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.has", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_has: I {}
+public extension I_blockchain_nabu_error_payment_card_has {
+	var `expired`: L_blockchain_nabu_error_payment_card_has_expired { .init("\(__).expired") }
+	var `insufficient`: L_blockchain_nabu_error_payment_card_has_insufficient { .init("\(__).insufficient") }
+}
+public final class L_blockchain_nabu_error_payment_card_has_expired: L, I_blockchain_nabu_error_payment_card_has_expired {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.has.expired", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_has_expired: I {}
+public final class L_blockchain_nabu_error_payment_card_has_insufficient: L, I_blockchain_nabu_error_payment_card_has_insufficient {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.has.insufficient", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_has_insufficient: I {}
+public extension I_blockchain_nabu_error_payment_card_has_insufficient {
+	var `funds`: L_blockchain_nabu_error_payment_card_has_insufficient_funds { .init("\(__).funds") }
+}
+public final class L_blockchain_nabu_error_payment_card_has_insufficient_funds: L, I_blockchain_nabu_error_payment_card_has_insufficient_funds {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.has.insufficient.funds", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_has_insufficient_funds: I {}
+public final class L_blockchain_nabu_error_payment_card_information: L, I_blockchain_nabu_error_payment_card_information {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information: I {}
+public extension I_blockchain_nabu_error_payment_card_information {
+	var `cvv`: L_blockchain_nabu_error_payment_card_information_cvv { .init("\(__).cvv") }
+	var `does`: L_blockchain_nabu_error_payment_card_information_does { .init("\(__).does") }
+	var `number`: L_blockchain_nabu_error_payment_card_information_number { .init("\(__).number") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_cvv: L, I_blockchain_nabu_error_payment_card_information_cvv {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.cvv", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_cvv: I {}
+public extension I_blockchain_nabu_error_payment_card_information_cvv {
+	var `does`: L_blockchain_nabu_error_payment_card_information_cvv_does { .init("\(__).does") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_cvv_does: L, I_blockchain_nabu_error_payment_card_information_cvv_does {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.cvv.does", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_cvv_does: I {}
+public extension I_blockchain_nabu_error_payment_card_information_cvv_does {
+	var `not`: L_blockchain_nabu_error_payment_card_information_cvv_does_not { .init("\(__).not") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_cvv_does_not: L, I_blockchain_nabu_error_payment_card_information_cvv_does_not {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.cvv.does.not", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_cvv_does_not: I {}
+public extension I_blockchain_nabu_error_payment_card_information_cvv_does_not {
+	var `match`: L_blockchain_nabu_error_payment_card_information_cvv_does_not_match { .init("\(__).match") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_cvv_does_not_match: L, I_blockchain_nabu_error_payment_card_information_cvv_does_not_match {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.cvv.does.not.match", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_cvv_does_not_match: I {}
+public final class L_blockchain_nabu_error_payment_card_information_does: L, I_blockchain_nabu_error_payment_card_information_does {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.does", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_does: I {}
+public extension I_blockchain_nabu_error_payment_card_information_does {
+	var `not`: L_blockchain_nabu_error_payment_card_information_does_not { .init("\(__).not") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_does_not: L, I_blockchain_nabu_error_payment_card_information_does_not {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.does.not", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_does_not: I {}
+public extension I_blockchain_nabu_error_payment_card_information_does_not {
+	var `match`: L_blockchain_nabu_error_payment_card_information_does_not_match { .init("\(__).match") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_does_not_match: L, I_blockchain_nabu_error_payment_card_information_does_not_match {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.does.not.match", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_does_not_match: I {}
+public final class L_blockchain_nabu_error_payment_card_information_number: L, I_blockchain_nabu_error_payment_card_information_number {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.number", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_number: I {}
+public extension I_blockchain_nabu_error_payment_card_information_number {
+	var `does`: L_blockchain_nabu_error_payment_card_information_number_does { .init("\(__).does") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_number_does: L, I_blockchain_nabu_error_payment_card_information_number_does {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.number.does", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_number_does: I {}
+public extension I_blockchain_nabu_error_payment_card_information_number_does {
+	var `not`: L_blockchain_nabu_error_payment_card_information_number_does_not { .init("\(__).not") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_number_does_not: L, I_blockchain_nabu_error_payment_card_information_number_does_not {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.number.does.not", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_number_does_not: I {}
+public extension I_blockchain_nabu_error_payment_card_information_number_does_not {
+	var `match`: L_blockchain_nabu_error_payment_card_information_number_does_not_match { .init("\(__).match") }
+}
+public final class L_blockchain_nabu_error_payment_card_information_number_does_not_match: L, I_blockchain_nabu_error_payment_card_information_number_does_not_match {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.information.number.does.not.match", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_information_number_does_not_match: I {}
+public final class L_blockchain_nabu_error_payment_card_system: L, I_blockchain_nabu_error_payment_card_system {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.system", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_system: I {}
+public extension I_blockchain_nabu_error_payment_card_system {
+	var `failure`: L_blockchain_nabu_error_payment_card_system_failure { .init("\(__).failure") }
+}
+public final class L_blockchain_nabu_error_payment_card_system_failure: L, I_blockchain_nabu_error_payment_card_system_failure {
+	public override class var localized: String { NSLocalizedString("blockchain.nabu.error.payment.card.system.failure", comment: "") }
+}
+public protocol I_blockchain_nabu_error_payment_card_system_failure: I {}
 public final class L_blockchain_namespace: L, I_blockchain_namespace {
 	public override class var localized: String { NSLocalizedString("blockchain.namespace", comment: "") }
 }
@@ -1516,6 +1794,7 @@ public protocol I_blockchain_ux: I {}
 public extension I_blockchain_ux {
 	var `asset`: L_blockchain_ux_asset { .init("\(__).asset") }
 	var `buy_and_sell`: L_blockchain_ux_buy__and__sell { .init("\(__).buy_and_sell") }
+	var `error`: L_blockchain_ux_error { .init("\(__).error") }
 	var `frequent`: L_blockchain_ux_frequent { .init("\(__).frequent") }
 	var `home`: L_blockchain_ux_home { .init("\(__).home") }
 	var `maintenance`: L_blockchain_ux_maintenance { .init("\(__).maintenance") }
@@ -1824,6 +2103,31 @@ public final class L_blockchain_ux_buy__and__sell_sell: L, I_blockchain_ux_buy__
 	public override class var localized: String { NSLocalizedString("blockchain.ux.buy_and_sell.sell", comment: "") }
 }
 public protocol I_blockchain_ux_buy__and__sell_sell: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_error: L, I_blockchain_ux_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error", comment: "") }
+}
+public protocol I_blockchain_ux_error: I_blockchain_ux_type_story {}
+public extension I_blockchain_ux_error {
+	var `then`: L_blockchain_ux_error_then { .init("\(__).then") }
+}
+public final class L_blockchain_ux_error_then: L, I_blockchain_ux_error_then {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then", comment: "") }
+}
+public protocol I_blockchain_ux_error_then: I {}
+public extension I_blockchain_ux_error_then {
+	var `launch`: L_blockchain_ux_error_then_launch { .init("\(__).launch") }
+}
+public final class L_blockchain_ux_error_then_launch: L, I_blockchain_ux_error_then_launch {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then.launch", comment: "") }
+}
+public protocol I_blockchain_ux_error_then_launch: I {}
+public extension I_blockchain_ux_error_then_launch {
+	var `url`: L_blockchain_ux_error_then_launch_url { .init("\(__).url") }
+}
+public final class L_blockchain_ux_error_then_launch_url: L, I_blockchain_ux_error_then_launch_url {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then.launch.url", comment: "") }
+}
+public protocol I_blockchain_ux_error_then_launch_url: I_blockchain_db_type_url, I_blockchain_ux_type_analytics_action {}
 public final class L_blockchain_ux_frequent: L, I_blockchain_ux_frequent {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent", comment: "") }
 }

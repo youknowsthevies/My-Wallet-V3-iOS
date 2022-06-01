@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkError
+import Errors
 import WalletPayloadKit
 
 public enum MobileAuthSyncServiceError: Error {

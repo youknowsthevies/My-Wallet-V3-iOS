@@ -42,11 +42,6 @@ protocol TransactionFlowRouting: Routing {
     /// The back button was tapped.
     func didTapBack()
 
-    /// Show the failure screen. Sometimes an error is thrown when selecting an
-    /// account or entering in transaction details. If this error occurs, we should
-    /// show a failure screen.
-    func showFailure(error: Error)
-
     /// Presents a modal with information  about the transaction error state and, if needed, a call to action for the user to resolve that error state.
     func showErrorRecoverySuggestion(
         action: AssetAction,
@@ -95,6 +90,9 @@ protocol TransactionFlowRouting: Routing {
 
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Route to the in error screen. This pushes onto the navigation stack.
+    func routeToError(state: TransactionState, model: TransactionModel)
 
     /// Route to the transaction security checks screen (e.g. 3DS checks for card payments)
     func routeToSecurityChecks(transactionModel: TransactionModel)
@@ -357,7 +355,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func showGenericFailure(error: Error) {
-        router?.showFailure(error: error)
+        transactionModel.process(action: .fatalTransactionError(error))
     }
 
     // MARK: - Private Functions
@@ -540,6 +538,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 transactionModel: transactionModel,
                 action: action
             )
+
+        case .error:
+            router?.routeToError(state: newState, model: transactionModel)
 
         case .selectSource:
             let canAddMoreSources = newState.userKYCStatus?.tiers.isTier2Approved ?? false

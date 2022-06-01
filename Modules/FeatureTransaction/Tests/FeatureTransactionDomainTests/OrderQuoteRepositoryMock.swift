@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import FeatureTransactionDomain
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 
 final class OrderQuoteRepositoryMock: FeatureTransactionDomain.OrderQuoteRepositoryAPI {

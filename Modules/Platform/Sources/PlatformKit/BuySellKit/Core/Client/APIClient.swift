@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
-import NabuNetworkError
 import NetworkKit
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &

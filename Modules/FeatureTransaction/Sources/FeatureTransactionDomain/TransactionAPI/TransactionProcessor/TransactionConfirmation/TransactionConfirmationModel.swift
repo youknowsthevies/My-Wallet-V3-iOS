@@ -312,7 +312,7 @@ extension TransactionConfirmation.Model {
             case .pendingOrdersLimitReached:
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
             case .nabuError(let error):
-                return (LocalizedString.Error.title, error.description)
+                return (LocalizedString.Error.title, error.description ?? LocalizedString.Error.generic)
             case .insufficientInterestWithdrawalBalance:
                 return (LocalizedString.Error.title, LocalizedString.Error.insufficientInterestWithdrawalBalance)
             case .noSourcesAvailable,

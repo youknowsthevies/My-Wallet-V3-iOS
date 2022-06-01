@@ -48,7 +48,7 @@ let package = Package(
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
@@ -60,7 +60,7 @@ let package = Package(
             dependencies: [
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
@@ -72,8 +72,7 @@ let package = Package(
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),

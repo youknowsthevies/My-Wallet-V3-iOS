@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureCoinDomain
 import Foundation
 import MoneyKit
-import NetworkError
 
 public struct HistoricalPriceRepository: HistoricalPriceRepositoryAPI {
 

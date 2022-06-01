@@ -1,12 +1,14 @@
 import AnalyticsKit
 @_exported import BlockchainNamespace
 import DIKit
+import ErrorsUI
 import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
 import Firebase
 import FirebaseProtocol
 import ToolKit
+import UIKit
 
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
@@ -46,6 +48,7 @@ extension AppProtocol {
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
+        observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
 
         Task {

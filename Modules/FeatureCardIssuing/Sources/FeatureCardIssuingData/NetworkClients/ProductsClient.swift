@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardIssuingDomain
 import Foundation
-import NabuNetworkError
 import NetworkKit
 
 public final class ProductsClient: ProductsClientAPI {

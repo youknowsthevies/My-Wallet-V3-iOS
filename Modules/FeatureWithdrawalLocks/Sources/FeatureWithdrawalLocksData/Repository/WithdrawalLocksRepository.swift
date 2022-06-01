@@ -3,9 +3,9 @@
 import BigInt
 import Combine
 import DIKit
+import Errors
 import FeatureWithdrawalLocksDomain
 import Foundation
-import NabuNetworkError
 
 final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
 

@@ -2,11 +2,13 @@
 
 import AnalyticsKit
 import DIKit
+import ErrorsUI
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import SwiftUI
 
 final class PendingTransactionViewController: BaseScreenViewController, PendingTransactionPagePresentable {
 
@@ -121,17 +123,6 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
         state
             .compactMap(\.secondaryButtonViewModel)
             .drive(secondaryButton.rx.viewModel)
-            .disposed(by: disposeBag)
-
-        state.asObservable()
-            .distinctUntilChanged(at: \.error)
-            .subscribe(
-                onNext: { [analyticsRecorder] state in
-                    if let error = state.error, let event = error.analytics(for: state.action) {
-                        analyticsRecorder.record(event: event)
-                    }
-                }
-            )
             .disposed(by: disposeBag)
 
         let closeTapped = closeTriggered

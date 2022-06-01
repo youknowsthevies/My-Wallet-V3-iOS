@@ -1,4 +1,4 @@
-# NetworkErrors
+# Errors
 
 Provides both low level `NetworkError` as well as the higher level `NabuNetworkError` (for all Nabu Gateway APIs).
 

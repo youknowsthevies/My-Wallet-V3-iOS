@@ -3,8 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 #if DEBUG
@@ -94,7 +94,13 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         let key = makeKey(request.urlRequest)
         if let code = errors[makeKey(request.urlRequest)] {
-            return Fail(error: .urlError(URLError(code))).eraseToAnyPublisher()
+            return Fail(
+                error: NetworkError(
+                    request: request.urlRequest,
+                    type: .urlError(URLError(code))
+                )
+            )
+            .eraseToAnyPublisher()
         }
         requests.append(request)
         guard
@@ -102,7 +108,10 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
             let value = data[key]
         else {
             return Fail(
-                error: .urlError(URLError(.unsupportedURL))
+                error: NetworkError(
+                    request: request.urlRequest,
+                    type: .urlError(URLError(.unsupportedURL))
+                )
             ).eraseToAnyPublisher()
         }
         let response = HTTPURLResponse(
@@ -177,7 +186,9 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
                 }
             }
         })
-        .mapError(NetworkError.urlError)
+        .mapError { error in
+            NetworkError(request: request.urlRequest, type: .urlError(error))
+        }
         .flatMap { [responseHandler] elements -> AnyPublisher<ServerResponse, NetworkError> in
             responseHandler.handle(elements: elements, for: request)
         }
@@ -212,7 +223,9 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
                 }
             }
         })
-        .mapError(NetworkError.urlError)
+        .mapError { error in
+            NetworkError(request: request.urlRequest, type: .urlError(error))
+        }
         .flatMap { [responseHandler] elements -> AnyPublisher<ServerResponse, NetworkError> in
             responseHandler.handle(message: elements, for: request)
         }

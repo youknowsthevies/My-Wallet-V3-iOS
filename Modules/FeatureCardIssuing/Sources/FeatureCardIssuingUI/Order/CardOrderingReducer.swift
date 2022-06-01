@@ -2,10 +2,10 @@
 
 import Combine
 import ComposableArchitecture
+import Errors
 import FeatureCardIssuingDomain
 import Localization
 import MoneyKit
-import NabuNetworkError
 import ToolKit
 
 public enum CardOrderingError: Error, Equatable {
@@ -168,7 +168,7 @@ extension CardOrderingEnvironment {
 
 struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, TopUpRouterAPI, SupportRouterAPI {
 
-    let error = NabuError(id: nil, code: .stateNotEligible, type: .unknown, description: nil)
+    let error = NabuError(id: "mock", code: .stateNotEligible, type: .unknown, description: "")
     let card = Card(
         id: "",
         type: .virtual,

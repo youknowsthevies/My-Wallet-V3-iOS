@@ -112,6 +112,8 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
 
 public struct InstitutionList: View {
 
+    @BlockchainApp var app
+
     private let store: Store<InstitutionListState, InstitutionListAction>
 
     @State private var loading: CGFloat = 44
@@ -155,7 +157,7 @@ public struct InstitutionList: View {
                         .onAppear { viewStore.send(.fetch) }
                 }
             }
-            .navigationRoute(in: store)
+            .navigationRoute(in: store, environmentObject: app)
             .navigationTitle(Localization.InstitutionList.title)
             .whiteNavigationBarStyle()
             .trailingNavigationButton(.close) {

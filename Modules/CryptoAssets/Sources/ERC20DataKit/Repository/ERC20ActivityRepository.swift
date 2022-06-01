@@ -2,9 +2,9 @@
 
 import Combine
 import ERC20Kit
+import Errors
 import EthereumKit
 import MoneyKit
-import NetworkError
 import PlatformKit
 import ToolKit
 

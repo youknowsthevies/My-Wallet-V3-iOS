@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkError
+import Errors
 import ToolKit
 
 /// The `Combine` network adapter API, all new uses of networking should consume this API

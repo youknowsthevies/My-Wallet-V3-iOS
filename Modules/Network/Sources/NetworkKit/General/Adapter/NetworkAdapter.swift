@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 public final class NetworkAdapter: NetworkAdapterAPI {
@@ -109,14 +109,10 @@ extension AnyPublisher where Output == ServerResponse,
         using decoder: NetworkResponseDecoderAPI
     ) -> AnyPublisher<ServerResponse, ErrorResponseType> {
         mapError { communicatorError -> ErrorResponseType in
-            switch communicatorError {
-            case .rawServerError(let rawServerError):
-                return decoder.decode(
-                    error: rawServerError, for: request
-                )
-            default:
-                return ErrorResponseType.from(communicatorError)
-            }
+            decoder.decode(
+                error: communicatorError,
+                for: request
+            )
         }
         .eraseToAnyPublisher()
     }

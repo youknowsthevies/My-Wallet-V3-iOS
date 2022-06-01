@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkError
+import Errors
 
 public protocol SessionTokenClientAPI: AnyObject {
     /// A Single that streams the session token

@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureAuthenticationDomain
-import NetworkError
 
 final class AccountRecoveryRepository: AccountRecoveryRepositoryAPI {
 

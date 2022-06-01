@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NabuNetworkError
 import ToolKit
 
 final class CardListService: CardListServiceAPI {

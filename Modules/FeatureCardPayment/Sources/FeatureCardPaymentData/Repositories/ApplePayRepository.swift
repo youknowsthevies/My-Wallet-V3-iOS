@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import Foundation
-import NabuNetworkError
 import ToolKit
 
 final class ApplePayRepository: ApplePayRepositoryAPI {

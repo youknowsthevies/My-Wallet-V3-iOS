@@ -262,8 +262,8 @@ packages:
     path: Modules/Metadata
   Network:
     path: Modules/Network
-  NetworkErrors:
-    path: Modules/NetworkErrors
+  Errors:
+    path: Modules/Errors
   Money:
     path: Modules/Money
   Platform:
@@ -421,8 +421,8 @@ targets:
         product: MetadataDataKit
       - package: Network
         product: NetworkKit
-      - package: NetworkErrors
-        product: NetworkErrors
+      - package: Errors
+        product: Errors
       - package: Money
         product: MoneyKit
       - package: Observability
@@ -564,8 +564,6 @@ targets:
       path: Modules/Test/Sources/TestKit
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: Modules/NetworkErrors/Sources/NabuNetworkErrorMock
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true

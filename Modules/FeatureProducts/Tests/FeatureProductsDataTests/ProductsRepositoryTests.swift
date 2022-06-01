@@ -1,6 +1,6 @@
+import Errors
 @testable import FeatureProductsData
 import FeatureProductsDomain
-import NabuNetworkError
 import TestKit
 import ToolKit
 import XCTest
@@ -23,7 +23,7 @@ final class ProductsRepositoryTests: XCTestCase {
     }
 
     func test_returnsError() throws {
-        let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
+        let error = NabuNetworkError.unknown
         try stubClientProductsDataResponse(with: error)
         let publisher = repository.fetchProducts()
         XCTAssertPublisherError(publisher, error)
@@ -89,7 +89,7 @@ final class ProductsRepositoryTests: XCTestCase {
 
     func test_stream_doesNotFailOnFailure() throws {
         // GIVEN: The stream returns an error
-        let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
+        let error = NabuNetworkError.unknown
         try stubClientProductsDataResponse(with: error)
         // WHEN: A stream is requested
         let publisher = repository.streamProducts()

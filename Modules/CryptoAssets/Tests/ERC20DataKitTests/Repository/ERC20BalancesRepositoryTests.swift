@@ -163,7 +163,7 @@ final class ERC20BalancesRepositoryTests: XCTestCase {
         client.behaviour = .fail
         let address = ethereumAddress
 
-        let expectedError: ERC20TokenAccountsError = .network(.payloadError(.emptyData))
+        let expectedError: ERC20TokenAccountsError = .network(.unknown)
 
         // WHEN: getting the tokens for that address
         let publisher = subject.tokens(for: address, network: .ethereum, forceFetch: true)
@@ -265,7 +265,7 @@ final class ERC20BalancesRepositoryTests: XCTestCase {
         let address = ethereumAddress
 
         let expectedValues: [Result<ERC20TokenAccounts, ERC20TokenAccountsError>] = [
-            .failure(.network(.payloadError(.emptyData)))
+            .failure(.network(.unknown))
         ]
 
         // WHEN: streaming the tokens for that address

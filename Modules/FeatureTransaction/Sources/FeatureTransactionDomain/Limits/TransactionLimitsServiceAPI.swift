@@ -2,8 +2,8 @@
 
 import BigInt
 import Combine
+import Errors
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import ToolKit
 
@@ -258,7 +258,7 @@ extension Publisher where Output == TransactionLimits, Failure == TransactionLim
     fileprivate func catchInactiveUserError(limitsCurrency: CurrencyType) -> AnyPublisher<Output, Failure> {
         self.catch { error -> AnyPublisher<Output, Failure> in
             switch error {
-            case .network(.nabuError(let error)) where error.code == .userNotActive:
+            case .network(let error) where error.code == .userNotActive:
                 return .just(.zero(for: limitsCurrency))
             default:
                 return .failure(error)

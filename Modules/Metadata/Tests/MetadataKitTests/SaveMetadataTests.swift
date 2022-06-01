@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import MetadataDataKit
 @testable import MetadataKit
-import NetworkError
 import TestKit
 import ToolKit
 import XCTest

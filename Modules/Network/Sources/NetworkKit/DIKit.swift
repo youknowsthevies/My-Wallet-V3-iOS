@@ -2,8 +2,8 @@
 
 import AnalyticsKit
 import DIKit
+@_exported import Errors
 import Foundation
-@_exported import NetworkError
 
 public enum DIKitContext: String {
     case explorer

@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
-import NabuNetworkError
 import ToolKit
 
 public enum CardActivationServiceError: Swift.Error, TimeoutFailure {

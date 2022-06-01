@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NabuNetworkError
+import Errors
 import RxSwift
 import ToolKit
 
@@ -39,11 +39,9 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
             // parse the error to determine if it is because 2FA is
             // not enabled.
             .catch { error -> AnyPublisher<Bool, NabuNetworkError> in
-                switch error {
-                case .nabuError(let nabuError) where nabuError.code == .bad2fa:
+                if error.code == .bad2fa {
                     return .just(false)
-                case .communicatorError,
-                     .nabuError:
+                } else {
                     return .failure(error)
                 }
             }

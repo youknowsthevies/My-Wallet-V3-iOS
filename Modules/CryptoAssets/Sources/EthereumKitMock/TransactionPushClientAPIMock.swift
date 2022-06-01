@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import EthereumKit
-import NetworkError
 import PlatformKit
 
 final class TransactionPushClientAPIMock: TransactionPushClientAPI {

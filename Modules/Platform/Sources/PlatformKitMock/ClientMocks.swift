@@ -107,6 +107,7 @@ extension APIClient {
             paymentMethodId: nil,
             side: order.action == .buy ? .buy : .sell,
             attributes: nil,
+            ux: nil,
             processingErrorType: nil
         )
     }
@@ -129,6 +130,7 @@ extension APIClient {
                 paymentMethodId: nil,
                 side: .buy,
                 attributes: nil,
+                ux: nil,
                 processingErrorType: nil
             )
         ]

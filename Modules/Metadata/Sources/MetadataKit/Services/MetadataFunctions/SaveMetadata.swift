@@ -2,9 +2,9 @@
 
 import Combine
 import CombineSchedulers
+import Errors
 import Foundation
 import MetadataHDWalletKit
-import NetworkError
 import ToolKit
 
 public enum SaveMetadataError: Error {

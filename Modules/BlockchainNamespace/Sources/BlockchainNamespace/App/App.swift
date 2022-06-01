@@ -12,6 +12,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     var state: Session.State { get }
     var observers: Session.Observers { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
+    var deepLinks: App.DeepLink { get }
 
     #if canImport(SwiftUI)
     var environmentObject: App.EnvironmentObject { get }
@@ -31,7 +32,7 @@ public class App: AppProtocol {
     public lazy var environmentObject = App.EnvironmentObject(self)
     #endif
 
-    internal lazy var deepLinks = DeepLink(self)
+    public lazy var deepLinks = DeepLink(self)
 
     public convenience init<Remote: RemoteConfiguration_p>(
         language: Language = Language.root.language,
@@ -123,7 +124,7 @@ extension AppProtocol {
         line: Int = #line
     ) {
         state.set(event.key, to: value)
-        post(event: event, context: [event: value])
+        post(event: event, context: [event: value], file: file, line: line)
     }
 
     public func post(

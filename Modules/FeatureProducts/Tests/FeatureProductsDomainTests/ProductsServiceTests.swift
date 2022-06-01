@@ -1,5 +1,5 @@
+import Errors
 @testable import FeatureProductsDomain
-import NabuNetworkError
 import TestKit
 import ToolKit
 import ToolKitMock
@@ -36,7 +36,7 @@ final class ProductsServiceTests: XCTestCase {
 
     func test_fetch_returns_repositoryError() throws {
         XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.productsChecksEnabled))
-        let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
+        let error = NabuNetworkError.unknown
         try stubRepository(with: error)
         let publisher = service.fetchProducts()
         XCTAssertPublisherError(publisher, .network(error))
@@ -50,7 +50,7 @@ final class ProductsServiceTests: XCTestCase {
 
     func test_stream_returns_repositoryError() throws {
         XCTAssertPublisherCompletion(mockFeatureFlagService.enable(.productsChecksEnabled))
-        let error = NabuNetworkError.communicatorError(.serverError(.badResponse))
+        let error = NabuNetworkError.unknown
         try stubRepository(with: error)
         XCTAssertPublisherError(service.fetchProducts(), .network(error))
     }

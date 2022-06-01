@@ -127,7 +127,9 @@ public final class OpenBanking {
             .flatMap { [banking] output -> AnyPublisher<Action, Never> in
                 banking.poll(account: output, until: \.hasAuthorizationURL)
                     .flatMap { account -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> in
-                        if let error = account.error {
+                        if account.error.isNotNil, let error = account.ux {
+                            return Fail(error: .ux(error)).eraseToAnyPublisher()
+                        } else if let error = account.error {
                             return Fail(error: error).eraseToAnyPublisher()
                         } else {
                             return Just(account).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
@@ -146,7 +148,9 @@ public final class OpenBanking {
             .flatMap { [banking] payment in
                 banking.poll(payment: payment)
                     .flatMap { payment -> AnyPublisher<OpenBanking.Payment.Details, OpenBanking.Error> in
-                        if let error = payment.error {
+                        if payment.error.isNotNil, let error = payment.ux {
+                            return Fail(error: .ux(error)).eraseToAnyPublisher()
+                        } else if let error = payment.error {
                             return Fail(error: error).eraseToAnyPublisher()
                         } else {
                             return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
@@ -172,7 +176,9 @@ public final class OpenBanking {
                 until: isFinal
             )
             .flatMap { order -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> in
-                if let error = order.paymentError {
+                if order.paymentError.isNotNil, let error = order.ux {
+                    return .failure(.ux(error))
+                } else if let error = order.paymentError {
                     return .failure(error)
                 } else {
                     return Just(order).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()

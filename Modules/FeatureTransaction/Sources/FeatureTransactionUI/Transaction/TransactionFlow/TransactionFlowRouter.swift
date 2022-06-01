@@ -4,12 +4,12 @@ import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
 import DIKit
+import Errors
+import ErrorsUI
 import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
-import NabuNetworkError
-import NetworkError
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -47,6 +47,7 @@ typealias TransactionFlowAnalyticsEvent = AnalyticsEvents.New.TransactionFlow
 // swiftlint:disable type_body_length
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
+    private var app: AppProtocol
     private var paymentMethodLinker: PaymentMethodLinkingSelectorAPI
     private var bankWireLinker: BankWireLinkerAPI
     private var cardLinker: CardLinkerAPI
@@ -70,6 +71,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     init(
+        app: AppProtocol = resolve(),
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
         paymentMethodLinker: PaymentMethodLinkingSelectorAPI = resolve(),
@@ -83,6 +85,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         cacheSuite: CacheSuite = resolve()
     ) {
+        self.app = app
         self.paymentMethodLinker = paymentMethodLinker
         self.bankWireLinker = bankWireLinker
         self.cardLinker = cardLinker
@@ -117,16 +120,40 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.push(viewController: viewControllable)
     }
 
+    func routeToError(state: TransactionState, model: TransactionModel) {
+        let error = state.errorState.ux(action: state.action)
+        let errorViewController = UIHostingController(
+            rootView: ErrorView(
+                ux: error,
+                fallback: {
+                    if let destination = state.destination {
+                        destination.currencyType.logoResource.view
+                    } else if let source = state.source {
+                        source.currencyType.logoResource.view
+                    } else {
+                        Icon.error.foregroundColor(.semantic.warning)
+                    }
+                },
+                dismiss: { [weak self] in
+                    guard let self = self else { return }
+                    self.closeFlow()
+                }
+            )
+            .app(app)
+        )
+        if state.stepsBackStack.isNotEmpty {
+            viewController.push(viewController: errorViewController)
+        } else {
+            viewController.replaceRoot(
+                viewController: errorViewController,
+                animated: false
+            )
+        }
+    }
+
     func closeFlow() {
         viewController.dismiss()
         interactor.listener?.dismissTransactionFlow()
-    }
-
-    func showFailure(error: Error) {
-        Logger.shared.error(error)
-        alertViewPresenter.error(in: viewController.uiviewController) { [weak self] in
-            self?.closeFlow()
-        }
     }
 
     func showErrorRecoverySuggestion(
@@ -141,10 +168,6 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 fatalError("Developer error: calling `showErrorRecoverySuggestion` with an `errorState` of `none`.")
             }
             return
-        }
-
-        if let analytics = errorState.analytics(for: action) {
-            analyticsRecorder.record(event: analytics)
         }
 
         presentErrorRecoveryCallout(
@@ -508,24 +531,24 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             .first()
             .receive(on: DispatchQueue.main)
             .sink(
-                receiveCompletion: { [showFailure] result in
+                receiveCompletion: { result in
                     switch result {
                     case .failure(let error):
-                        showFailure(error)
+                        transactionModel.process(action: .fatalTransactionError(error))
                     case .finished:
                         break
                     }
                 },
-                receiveValue: { [securityRouter, showFailure] transactionState in
+                receiveValue: { [weak self] transactionState in
+                    guard let self = self else { return }
                     guard
                         let order = transactionState.order as? OrderDetails,
                         let authorizationData = order.authorizationData
                     else {
                         let error = FatalTransactionError.message("Order should contain authorization data.")
-                        showFailure(error)
-                        return
+                        return transactionModel.process(action: .fatalTransactionError(error))
                     }
-                    securityRouter?.presentPaymentSecurity(
+                    self.securityRouter?.presentPaymentSecurity(
                         from: presenter,
                         authorizationData: authorizationData
                     )

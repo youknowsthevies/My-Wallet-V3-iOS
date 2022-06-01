@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkError
+import Errors
 
 public enum SearchDomainRepositoryError: Equatable, Error {
     case networkError(NetworkError)

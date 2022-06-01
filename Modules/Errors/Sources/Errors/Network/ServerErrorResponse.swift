@@ -3,6 +3,7 @@
 import Foundation
 
 public struct ServerErrorResponse: Error {
+
     public let response: HTTPURLResponse
     public let payload: Data?
 

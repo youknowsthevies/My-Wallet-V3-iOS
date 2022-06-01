@@ -34,7 +34,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../Money"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../Test")
     ],
@@ -47,8 +47,8 @@ let package = Package(
                     package: "Money"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(
                     name: "Localization",
@@ -75,8 +75,8 @@ let package = Package(
                     package: "Network"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(
                     name: "MoneyKit",
@@ -117,8 +117,8 @@ let package = Package(
                     package: "Money"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(
                     name: "ComposableArchitectureExtensions",

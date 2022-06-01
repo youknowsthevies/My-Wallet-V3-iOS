@@ -1,9 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureFormDomain
-import NabuNetworkError
-import NabuNetworkErrorMock
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -12,12 +11,12 @@ final class KYCClientMock: KYCClientAPI {
 
     struct StubbedResults {
         // swiftlint:disable line_length
-        var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = .failure(NabuNetworkError.mockError)
-        var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
-        var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
-        var fetchLimitsOverview: AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> = .failure(NabuNetworkError.mockError)
-        var fetchAccountUsageForm: AnyPublisher<[FormQuestion], NabuNetworkError> = .failure(NabuNetworkError.mockError)
-        var submitAccountUsageForm: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.mockError)
+        var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var fetchLimitsOverview: AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var fetchAccountUsageForm: AnyPublisher<[FormQuestion], NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var submitAccountUsageForm: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.unknown)
         // swiftlint:enable line_length
     }
 
@@ -51,7 +50,7 @@ final class KYCClientMock: KYCClientAPI {
         expectedListOfStates.publisher.eraseToAnyPublisher()
     }
 
-    var expectedSetInitialAddress: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.mockError)
+    var expectedSetInitialAddress: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.unknown)
 
     func setInitialResidentialInfo(
         country: String,

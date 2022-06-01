@@ -3,19 +3,9 @@
 import AnalyticsKit
 import Combine
 import DIKit
-import NabuNetworkError
-import NetworkError
+import Errors
 import RxSwift
 import ToolKit
-
-public enum KYCTierServiceError: Error, Equatable {
-    case networkError(NetworkError)
-    case other(Error)
-
-    public static func == (lhs: KYCTierServiceError, rhs: KYCTierServiceError) -> Bool {
-        String(describing: lhs) == String(describing: rhs)
-    }
-}
 
 public protocol KYCVerificationServiceAPI: AnyObject {
 
@@ -29,15 +19,15 @@ public protocol KYCVerificationServiceAPI: AnyObject {
 public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
 
     /// Returns the current cached value for the KYC Tiers. Fetches them if they are not already cached.
-    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
+    var tiers: AnyPublisher<KYC.UserTiers, Nabu.Error> { get }
 
     /// Returns a stream of KYC Tiers.
     ///
     /// Tiers are taken from cache or fetched if the cache is empty. When the cache is invalidated, tiers are re-fetched from source.
-    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
+    var tiersStream: AnyPublisher<KYC.UserTiers, Nabu.Error> { get }
 
     /// Fetches the tiers from remote
-    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError>
+    func fetchTiers() -> AnyPublisher<KYC.UserTiers, Nabu.Error>
 
     /// Fetches the Simplified Due Diligence Eligibility Status returning the whole response
     func simplifiedDueDiligenceEligibility(
@@ -64,7 +54,7 @@ public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
     ) -> AnyPublisher<Bool, Never>
 
     /// Fetches the KYC overview (features and limits) for the logged-in user
-    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>
+    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, Nabu.Error>
 }
 
 extension KYCTiersServiceAPI {
@@ -82,7 +72,7 @@ extension KYCTiersServiceAPI {
         fetchTiers()
             .zip(
                 checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
-                    .setFailureType(to: KYCTierServiceError.self)
+                    .setFailureType(to: Nabu.Error.self)
             )
             .map { userTiers, isSDDVerified -> Bool in
                 // users can make purchases if they are at least Tier 2 approved or Tier 3 (Tier 1 and SDD Verified)
@@ -101,16 +91,16 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     // MARK: - Exposed Properties
 
-    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    var tiers: AnyPublisher<KYC.UserTiers, Nabu.Error> {
         tiersStream
             .first()
             .eraseToAnyPublisher()
     }
 
-    var tiersStream: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    var tiersStream: AnyPublisher<KYC.UserTiers, Nabu.Error> {
         cachedTiers
             .stream(key: Key())
-            .setFailureType(to: KYCTierServiceError.self)
+            .setFailureType(to: Nabu.Error.self)
             .compactMap { result -> KYC.UserTiers? in
                 guard case .success(let tiers) = result else {
                     return nil
@@ -128,7 +118,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     private let cachedTiers: CachedValueNew<
         Key,
         KYC.UserTiers,
-        KYCTierServiceError
+        Nabu.Error
     >
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
@@ -150,14 +140,12 @@ final class KYCTiersService: KYCTiersServiceAPI {
         cachedTiers = CachedValueNew(
             cache: cache,
             fetch: { _ in
-                client
-                    .tiers()
-                    .mapErrorToKYCServiceError()
+                client.tiers()
             }
         )
     }
 
-    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    func fetchTiers() -> AnyPublisher<KYC.UserTiers, Nabu.Error> {
         cachedTiers.get(key: Key(), forceFetch: true)
     }
 
@@ -185,10 +173,10 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     return .just(false)
                 }
                 return fetchTiers()
-                    .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
+                    .flatMap { userTiers -> AnyPublisher<Bool, Nabu.Error> in
                         simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
                             .map(\.eligible)
-                            .setFailureType(to: KYCTierServiceError.self)
+                            .setFailureType(to: Nabu.Error.self)
                             .eraseToAnyPublisher()
                     }
                     .replaceError(with: false)
@@ -247,9 +235,9 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     return .just(false)
                 }
                 return fetchTiers()
-                    .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
+                    .flatMap { userTiers -> AnyPublisher<Bool, Nabu.Error> in
                         sddVerificationCheck(userTiers.latestApprovedTier, pollUntilComplete)
-                            .setFailureType(to: KYCTierServiceError.self)
+                            .setFailureType(to: Nabu.Error.self)
                             .eraseToAnyPublisher()
                     }
                     .replaceError(with: false)
@@ -258,12 +246,10 @@ final class KYCTiersService: KYCTiersServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError> {
+    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, Nabu.Error> {
         fetchTiers()
             .zip(
-                client
-                    .fetchLimitsOverview()
-                    .mapErrorToKYCServiceError()
+                client.fetchLimitsOverview()
             )
             .map { tiers, rawOverview -> KYCLimitsOverview in
                 KYCLimitsOverview(tiers: tiers, features: rawOverview.limits)
@@ -287,20 +273,5 @@ enum SDDAnalytics: AnalyticsEvent {
 
     var params: [String: Any]? {
         nil
-    }
-}
-
-extension Publisher where Failure == NabuNetworkError {
-
-    func mapErrorToKYCServiceError() -> AnyPublisher<Output, KYCTierServiceError> {
-        mapError { nabuError -> KYCTierServiceError in
-            switch nabuError {
-            case .communicatorError(let networkError):
-                return .networkError(networkError)
-            case .nabuError:
-                return .other(nabuError)
-            }
-        }
-        .eraseToAnyPublisher()
     }
 }

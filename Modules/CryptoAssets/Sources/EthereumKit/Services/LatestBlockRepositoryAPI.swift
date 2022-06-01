@@ -2,7 +2,7 @@
 
 import BigInt
 import Combine
-import NetworkError
+import Errors
 
 public protocol LatestBlockRepositoryAPI {
     func latestBlock(

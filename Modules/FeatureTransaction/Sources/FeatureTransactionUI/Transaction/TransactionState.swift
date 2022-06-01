@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -410,6 +410,7 @@ enum TransactionFlowStep: Equatable {
     case validateSource
     case confirmDetail
     case inProgress
+    case error
     case securityConfirmation
     case errorRecoveryInfo
     case closed
@@ -432,6 +433,7 @@ extension TransactionFlowStep {
              .enterPassword,
              .initial,
              .kycChecks,
+             .error,
              .validateSource,
              .linkPaymentMethod,
              .linkACard,
@@ -460,6 +462,7 @@ extension TransactionFlowStep {
              .enterPassword,
              .errorRecoveryInfo,
              .inProgress,
+             .error,
              .initial,
              .selectSource,
              .selectTarget,
