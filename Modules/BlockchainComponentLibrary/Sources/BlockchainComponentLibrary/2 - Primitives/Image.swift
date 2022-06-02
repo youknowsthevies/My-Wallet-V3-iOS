@@ -11,15 +11,6 @@ extension View {
 }
 
 extension Backport {
-
-    @available(iOS, deprecated: 15.0, renamed: "SwiftUI.AsyncImagePhase")
-    @available(macOS, deprecated: 12.0, renamed: "SwiftUI.AsyncImagePhase")
-    public enum AsyncImagePhase {
-        case empty
-        case success(Image)
-        case failure(Error)
-    }
-
     public struct ContentView<Content> where Content: View {
         let content: Content
     }
@@ -31,7 +22,7 @@ extension Backport {
         private let url: URL?
         private let scale: CGFloat
         private let transaction: Transaction
-        private let content: (AsyncImagePhase) -> Content
+        private let content: (AsyncPhase<Image>) -> Content
 
         @StateObject private var loader: ImageLoader
 
@@ -39,7 +30,7 @@ extension Backport {
             url: URL?,
             scale: CGFloat = 1,
             transaction: Transaction = Transaction(),
-            @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
+            @ViewBuilder content: @escaping (AsyncPhase<Image>) -> Content
         ) {
             self.url = url
             self.scale = scale
@@ -74,11 +65,25 @@ extension Backport.AsyncImage where Content == Image? {
 
 extension Backport.AsyncImage {
 
+    public init<P>(
+        url: URL?,
+        scale: CGFloat = 1,
+        @ViewBuilder placeholder: @escaping () -> P
+    ) where Content == _ConditionalContent<Image, P>, P: View {
+        self.init(url: url, scale: scale) { phase in
+            if let image = phase.image {
+                image
+            } else {
+                placeholder()
+            }
+        }
+    }
+
     public init<I, P>(
         url: URL?,
         scale: CGFloat = 1,
-        content: @escaping (Image) -> I,
-        placeholder: @escaping () -> P
+        @ViewBuilder content: @escaping (Image) -> I,
+        @ViewBuilder placeholder: @escaping () -> P
     ) where Content == _ConditionalContent<I, P>, I: View, P: View {
         self.init(url: url, scale: scale) { phase in
             if let image = phase.image {
@@ -90,7 +95,7 @@ extension Backport.AsyncImage {
     }
 }
 
-extension Backport.AsyncImagePhase {
+extension AsyncPhase where Success == Image {
 
     public var image: Image? {
         switch self {
@@ -115,7 +120,7 @@ extension Backport {
 
     private class ImageLoader: ObservableObject {
 
-        @Published private(set) var phase: Backport.AsyncImagePhase = .empty
+        @Published private(set) var phase: AsyncPhase<Image> = .empty
 
         private let scale: CGFloat
         private var cancellable: AnyCancellable?
@@ -223,38 +228,36 @@ struct BackportAsyncImage_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        VStack {
-            Backport.AsyncImage(url: url, scale: 2.0)
-                .frame(width: 100, height: 100)
-
-            Backport.AsyncImage(
-                url: url,
-                content: {
-                    $0.resizable()
-                        .clipShape(Circle())
-                },
-                placeholder: {
-                    Color.black
-                }
-            )
+        Backport.AsyncImage(url: url, scale: 2.0)
             .frame(width: 100, height: 100)
 
-            Backport.AsyncImage(
-                url: url,
-                transaction: Transaction(animation: .linear),
-                content: { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } else if phase.error != nil {
-                        Color.red
-                    } else {
-                        Color.blue
-                    }
+        Backport.AsyncImage(
+            url: url,
+            content: {
+                $0.resizable()
+                    .clipShape(Circle())
+            },
+            placeholder: {
+                Color.black
+            }
+        )
+        .frame(width: 100, height: 100)
+
+        Backport.AsyncImage(
+            url: url,
+            transaction: Transaction(animation: .linear),
+            content: { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else if phase.error != nil {
+                    Color.red
+                } else {
+                    Color.blue
                 }
-            )
-            .frame(width: 100, height: 100)
-        }
+            }
+        )
+        .frame(width: 100, height: 100)
     }
 }

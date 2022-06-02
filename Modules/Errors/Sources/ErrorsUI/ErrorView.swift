@@ -60,9 +60,8 @@ public struct ErrorView<Fallback: View>: View {
     private var icon: some View {
         Group {
             if let icon = ux.icon {
-                Backport.AsyncImage(
+                AsyncMedia(
                     url: icon.url,
-                    content: { image in image.resizable() },
                     placeholder: {
                         Image(systemName: "squareshape.squareshape.dashed")
                             .resizable()
@@ -85,9 +84,9 @@ public struct ErrorView<Fallback: View>: View {
                         .foregroundColor(.semantic.background)
                         .scaleEffect(1.3)
                     if let status = ux.icon?.status?.url {
-                        Backport.AsyncImage(
+                        AsyncMedia(
                             url: status,
-                            content: { image in image.resizable().scaleEffect(0.9) },
+                            content: { image in image.scaleEffect(0.9) },
                             placeholder: {
                                 ProgressView().progressViewStyle(.circular)
                             }

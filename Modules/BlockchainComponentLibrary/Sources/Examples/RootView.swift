@@ -19,6 +19,7 @@ public struct RootView: View {
             NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar"),
             NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons"),
             NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers"),
+            NavigationLinkProvider(view: SVGExamples(), title: "✍️ SVG"),
             NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔌 PrimarySwitch"),
             NavigationLinkProvider(view: TagViewExamples(), title: "🏷 Tag"),
             NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox"),

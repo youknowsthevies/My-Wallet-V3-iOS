@@ -105,7 +105,7 @@ extension CGRect {
         #if canImport(UIKit)
         UIScreen.main.bounds
         #elseif canImport(AppKit)
-        NSScreen.main?.frame ?? .zero
+        NSApplication.shared.windows.first?.frame ?? .zero
         #endif
     }
 }
