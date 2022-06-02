@@ -30,7 +30,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     let currencyConversionService: CurrencyConversionServiceAPI
     let requireSecondPassword: Bool = false
     let isNoteSupported: Bool
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
@@ -85,7 +85,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         transactionTarget: TransactionTarget,
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        let memoModel = TransactionConfirmation.Model.Memo(
+        let memoModel = TransactionConfirmations.Memo(
             textMemo: target.memo,
             required: false
         )
@@ -104,7 +104,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        let memoModel = TransactionConfirmation.Model.Memo(
+        let memoModel = TransactionConfirmations.Memo(
             textMemo: target.memo,
             required: false
         )
@@ -186,20 +186,20 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         fiatAmountAndFees(from: pendingTransaction)
             .map { [sourceTradingAccount, target, isNoteSupported] fiatAmountAndFees -> [TransactionConfirmation] in
                 var confirmations: [TransactionConfirmation] = [
-                    .source(.init(value: sourceTradingAccount!.label)),
-                    .destination(.init(value: target.label)),
-                    .networkFee(.init(
+                    TransactionConfirmations.Source(value: sourceTradingAccount!.label),
+                    TransactionConfirmations.Destination(value: target.label),
+                    TransactionConfirmations.NetworkFee(
                         primaryCurrencyFee: fiatAmountAndFees.fees.moneyValue,
                         feeType: .withdrawalFee
-                    )),
-                    .total(.init(total: fiatAmountAndFees.amount.moneyValue))
+                    ),
+                    TransactionConfirmations.Total(total: fiatAmountAndFees.amount.moneyValue)
                 ]
                 if isNoteSupported {
-                    confirmations.append(.destination(.init(value: "")))
+                    confirmations.append(TransactionConfirmations.Destination(value: ""))
                 }
                 if sourceTradingAccount!.isMemoSupported {
                     confirmations.append(
-                        .memo(.init(textMemo: target.memo, required: false))
+                        TransactionConfirmations.Memo(textMemo: target.memo, required: false)
                     )
                 }
                 return confirmations
@@ -216,11 +216,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         defaultDoOptionUpdateRequest(pendingTransaction: pendingTransaction, newConfirmation: newConfirmation)
             .map { pendingTransaction -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
-                switch newConfirmation {
-                case .memo(let memo):
+                if let memo = newConfirmation as? TransactionConfirmations.Memo {
                     pendingTransaction.setMemo(memo: memo)
-                default:
-                    break
                 }
                 return pendingTransaction
             }
@@ -298,11 +295,11 @@ extension CryptoTradingAccount {
 
 extension PendingTransaction {
 
-    fileprivate var memo: TransactionConfirmation.Model.Memo? {
-        engineState[.xlmMemo] as? TransactionConfirmation.Model.Memo
+    fileprivate var memo: TransactionConfirmations.Memo? {
+        engineState[.xlmMemo] as? TransactionConfirmations.Memo
     }
 
-    fileprivate mutating func setMemo(memo: TransactionConfirmation.Model.Memo) {
+    fileprivate mutating func setMemo(memo: TransactionConfirmations.Memo) {
         engineState[.xlmMemo] = memo
     }
 }

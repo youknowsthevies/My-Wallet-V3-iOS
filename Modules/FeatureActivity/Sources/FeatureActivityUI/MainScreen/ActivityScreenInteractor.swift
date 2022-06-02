@@ -68,6 +68,14 @@ final class ActivityScreenInteractor {
     init(serviceContainer: ActivityServiceContaining) {
         self.serviceContainer = serviceContainer
 
+        NotificationCenter.default
+            .publisher(for: .transaction)
+            .mapToVoid()
+            .asObservable()
+            .delay(.seconds(2), scheduler: MainScheduler.instance)
+            .bind(to: refreshRelay)
+            .disposed(by: disposeBag)
+
         Observable
             .combineLatest(selectedData, refreshRelay.asObservable())
             .map(\.0)

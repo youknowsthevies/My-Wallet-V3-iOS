@@ -15,7 +15,6 @@ protocol SwapTransactionEngine: TransactionEngine {
     var quotesEngine: QuotesEngine { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
-    var quote: Observable<PricedQuote> { get }
 }
 
 extension PendingTransaction {
@@ -57,7 +56,8 @@ extension SwapTransactionEngine {
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
-        quote
+        quotesEngine.quotePublisher
+            .asObservable()
             .map(weak: self) { (self, pricedQuote) -> MoneyValue in
                 MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
             }
@@ -67,7 +67,9 @@ extension SwapTransactionEngine {
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
+        var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
+        pendingTransaction.engineState[.quoteSubscription] = nil
         quotesEngine.stop()
     }
 
@@ -116,8 +118,7 @@ extension SwapTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let quote = quote
-            .take(1)
+        let quote = quotesEngine.quotePublisher
             .asSingle()
         let amountInSourceCurrency = currencyConversionService
             .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
@@ -129,19 +130,25 @@ extension SwapTransactionEngine {
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let swapDestinationValue: MoneyValue = convertedAmount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
-                    .swapSourceValue(.init(cryptoValue: convertedAmount.cryptoValue!)),
-                    .swapDestinationValue(.init(cryptoValue: swapDestinationValue.cryptoValue!)),
-                    .swapExchangeRate(.init(baseValue: .one(currency: sourceAsset), resultValue: resultValue)),
-                    .source(.init(value: sourceAccount!.label)),
-                    .destination(.init(value: target.label)),
-                    .networkFee(.init(
+                    TransactionConfirmations.QuoteExpirationTimer(
+                        expirationDate: pricedQuote.expirationDate
+                    ),
+                    TransactionConfirmations.SwapSourceValue(cryptoValue: convertedAmount.cryptoValue!),
+                    TransactionConfirmations.SwapDestinationValue(cryptoValue: swapDestinationValue.cryptoValue!),
+                    TransactionConfirmations.SwapExchangeRate(
+                        baseValue: .one(currency: sourceAsset),
+                        resultValue: resultValue
+                    ),
+                    TransactionConfirmations.Source(value: sourceAccount!.label),
+                    TransactionConfirmations.Destination(value: target.label),
+                    TransactionConfirmations.NetworkFee(
                         primaryCurrencyFee: pricedQuote.networkFee,
                         feeType: .withdrawalFee
-                    )),
-                    .networkFee(.init(
+                    ),
+                    TransactionConfirmations.NetworkFee(
                         primaryCurrencyFee: pendingTransaction.feeAmount,
                         feeType: .depositFee
-                    ))
+                    )
                 ]
 
                 let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
@@ -164,15 +171,16 @@ extension SwapTransactionEngine {
             return .just(oldValue)
         }
         var pendingTransaction = oldValue
-        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching()
+        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching(pendingTransaction)
         return .just(pendingTransaction)
     }
 
-    private func startQuotesFetching() -> Disposable {
-        quote
-            .flatMap { [weak self] _ -> Completable in
-                guard let self = self else { return .empty() }
-                return self.askForRefreshConfirmation(true)
+    private func startQuotesFetching(_ pendingTransaction: PendingTransaction) -> Disposable {
+        quotesEngine
+            .quotePublisher
+            .asObservable()
+            .flatMap { [weak self] _ -> Observable<Void> in
+                self?.askForRefreshConfirmation(true) ?? .empty()
             }
             .subscribe()
     }
@@ -206,8 +214,7 @@ extension SwapTransactionEngine {
         )
         .flatMap { [weak self] destinationAddress, refundAddress, convertedAmount -> Single<SwapOrder> in
             guard let self = self else { return .never() }
-            return self.quote
-                .take(1)
+            return self.quotesEngine.quotePublisher
                 .asSingle()
                 .flatMap { [weak self] quote -> Single<SwapOrder> in
                     guard let self = self else { return .never() }
@@ -224,7 +231,7 @@ extension SwapTransactionEngine {
                         .asSingle()
                 }
         }
-        .do(onDispose: { [weak self] in
+        .do(onSuccess: { [weak self] _ in
             self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
         })
     }

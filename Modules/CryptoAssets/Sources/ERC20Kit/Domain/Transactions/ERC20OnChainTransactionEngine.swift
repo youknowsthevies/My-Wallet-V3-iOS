@@ -139,24 +139,22 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 (
                     amountInFiat: MoneyValue,
                     feesInFiat: MoneyValue,
-                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                    feeSelectionOption: TransactionConfirmations.FeeSelection
                 ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
             .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
                 [
-                    .sendDestinationValue(.init(value: pendingTransaction.amount)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.transactionTarget.label)),
-                    .feeSelection(payload.feeSelectionOption),
-                    .feedTotal(
-                        .init(
-                            amount: pendingTransaction.amount,
-                            amountInFiat: payload.amountInFiat,
-                            fee: pendingTransaction.feeAmount,
-                            feeInFiat: payload.feesInFiat
-                        )
+                    TransactionConfirmations.SendDestinationValue(value: pendingTransaction.amount),
+                    TransactionConfirmations.Source(value: self.sourceAccount.label),
+                    TransactionConfirmations.Destination(value: self.transactionTarget.label),
+                    payload.feeSelectionOption,
+                    TransactionConfirmations.FeedTotal(
+                        amount: pendingTransaction.amount,
+                        amountInFiat: payload.amountInFiat,
+                        fee: pendingTransaction.feeAmount,
+                        feeInFiat: payload.feesInFiat
                     )
                 ]
             }
@@ -192,14 +190,15 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         newConfirmation: TransactionConfirmation
     ) -> Single<PendingTransaction> {
-        switch newConfirmation {
-        case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
+        if let feeSelection = newConfirmation as? TransactionConfirmations.FeeSelection,
+           feeSelection.selectedLevel != pendingTransaction.feeLevel
+        {
             return updateFeeSelection(
                 pendingTransaction: pendingTransaction,
-                newFeeLevel: value.selectedLevel,
+                newFeeLevel: feeSelection.selectedLevel,
                 customFeeAmount: nil
             )
-        default:
+        } else {
             return defaultDoOptionUpdateRequest(
                 pendingTransaction: pendingTransaction,
                 newConfirmation: newConfirmation
@@ -345,10 +344,10 @@ extension ERC20OnChainTransactionEngine {
 
     private func makeFeeSelectionOption(
         pendingTransaction: PendingTransaction
-    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    ) -> Single<TransactionConfirmations.FeeSelection> {
         getFeeState(pendingTransaction: pendingTransaction)
-            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
-                TransactionConfirmation.Model.FeeSelection(
+            .map { feeState -> TransactionConfirmations.FeeSelection in
+                TransactionConfirmations.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,
                     fee: pendingTransaction.feeAmount

@@ -283,32 +283,32 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         feesInFiat: MoneyValue,
         feeState: FeeState
     ) -> PendingTransaction {
-        let feeSelection = TransactionConfirmation.Model.FeeSelection(
+        let feeSelection = TransactionConfirmations.FeeSelection(
             feeState: feeState,
             selectedLevel: pendingTransaction.feeLevel,
             fee: pendingTransaction.feeAmount
         )
-        let notice = TransactionConfirmation.Model.Notice(
+        let notice = TransactionConfirmations.Notice(
             value: String(
                 format: LocalizationConstants.Transaction.Sign.dappRequestWarning,
                 walletConnectTarget.dAppName
             )
         )
-        let imageNotice = TransactionConfirmation.Model.ImageNotice(
+        let imageNotice = TransactionConfirmations.ImageNotice(
             imageURL: walletConnectTarget.dAppLogoURL,
             title: walletConnectTarget.dAppName,
             subtitle: walletConnectTarget.dAppAddress
         )
-        let sendDestinationValue = TransactionConfirmation.Model.SendDestinationValue(
+        let sendDestinationValue = TransactionConfirmations.SendDestinationValue(
             value: pendingTransaction.amount
         )
-        let source = TransactionConfirmation.Model.Source(
+        let source = TransactionConfirmations.Source(
             value: sourceAccount.label
         )
-        let destination = TransactionConfirmation.Model.Destination(
+        let destination = TransactionConfirmations.Destination(
             value: transactionTarget.label
         )
-        let feedTotal = TransactionConfirmation.Model.FeedTotal(
+        let feedTotal = TransactionConfirmations.FeedTotal(
             amount: pendingTransaction.amount,
             amountInFiat: amountInFiat,
             fee: pendingTransaction.feeAmount,
@@ -316,13 +316,13 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         )
         return pendingTransaction.update(
             confirmations: [
-                .imageNotice(imageNotice),
-                .notice(notice),
-                .sendDestinationValue(sendDestinationValue),
-                .source(source),
-                .destination(destination),
-                .feeSelection(feeSelection),
-                .feedTotal(feedTotal)
+                imageNotice,
+                notice,
+                sendDestinationValue,
+                source,
+                destination,
+                feeSelection,
+                feedTotal
             ]
         )
     }

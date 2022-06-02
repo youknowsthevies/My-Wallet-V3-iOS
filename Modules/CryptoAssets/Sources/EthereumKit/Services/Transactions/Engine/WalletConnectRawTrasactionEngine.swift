@@ -81,31 +81,31 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let notice = TransactionConfirmation.Model.Notice(
+        let notice = TransactionConfirmations.Notice(
             value: String(
                 format: LocalizationConstants.Transaction.Sign.dappRequestWarning,
                 walletConnectTarget.dAppName
             )
         )
-        let imageNotice = TransactionConfirmation.Model.ImageNotice(
+        let imageNotice = TransactionConfirmations.ImageNotice(
             imageURL: walletConnectTarget.dAppLogoURL,
             title: walletConnectTarget.dAppName,
             subtitle: walletConnectTarget.dAppAddress
         )
-        let network = TransactionConfirmation.Model.Network(
+        let network = TransactionConfirmations.Network(
             network: AssetModel.ethereum.name
         )
-        let message = TransactionConfirmation.Model.RawTransaction(
+        let message = TransactionConfirmations.RawTransaction(
             dAppName: walletConnectTarget.dAppName,
             rawTransaction: walletConnectTarget.rawTransaction.toHexString()
         )
         return .just(
             pendingTransaction.update(
                 confirmations: [
-                    .imageNotice(imageNotice),
-                    .notice(notice),
-                    .network(network),
-                    .rawTransaction(message)
+                    imageNotice,
+                    notice,
+                    network,
+                    message
                 ]
             )
         )

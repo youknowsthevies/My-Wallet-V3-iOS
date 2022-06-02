@@ -47,6 +47,10 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
         contentReducer.cells
     }
 
+    func header(for section: Int) -> HeaderBuilder? {
+        contentReducer.header
+    }
+
     // MARK: - Private Properties
 
     private let disposeBag = DisposeBag()

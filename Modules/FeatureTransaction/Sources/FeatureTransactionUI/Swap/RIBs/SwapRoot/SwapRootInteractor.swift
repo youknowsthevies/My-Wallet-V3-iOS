@@ -11,7 +11,7 @@ import ToolKit
 
 protocol SwapRootListener: ViewListener {}
 
-final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, SwapLandingListener, TransactionFlowListener {
+final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, TransactionFlowListener {
 
     typealias AnalyticsEvent = AnalyticsEvents.Swap
 
@@ -34,7 +34,7 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
     }
 
     func userReadyForSwap() {
-        router?.routeToSwapLanding()
+        routeToSwap(with: nil)
     }
 
     func userMustCompleteKYC(model: KYCTiersPageModel) {

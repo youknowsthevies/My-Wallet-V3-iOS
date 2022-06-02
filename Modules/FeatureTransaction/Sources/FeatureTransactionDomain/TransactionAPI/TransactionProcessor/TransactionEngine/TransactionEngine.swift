@@ -70,7 +70,7 @@ public protocol TransactionOrder {
 
 public protocol TransactionEngine: AnyObject {
 
-    typealias AskForRefreshConfirmation = (_ revalidate: Bool) -> Completable
+    typealias AskForRefreshConfirmation = (_ revalidate: Bool) -> Observable<Void>
 
     /// Used for fetching the wallet's default currency
     var walletCurrencyService: FiatCurrencyServiceAPI { get }
@@ -393,7 +393,7 @@ extension TransactionEngine {
     public func start(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        askForRefreshConfirmation: @escaping (_ revalidate: Bool) -> Completable
+        askForRefreshConfirmation: @escaping AskForRefreshConfirmation
     ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget

@@ -68,14 +68,17 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             }
         case .swap(let event):
             let pair = event.pair
-            switch pair.outputCurrencyType {
-            case .crypto:
-                text = "\(LocalizationStrings.swap) "
-                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
-            case .fiat:
-                text = "\(LocalizationStrings.sell) "
-                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+            switch (event.status, pair.outputCurrencyType) {
+            case (.inProgress, .crypto):
+                text = LocalizationStrings.pendingSwap
+            case (.inProgress, .fiat):
+                text = LocalizationStrings.pendingSell
+            case (_, .crypto):
+                text = LocalizationStrings.swap
+            case (_, .fiat):
+                text = LocalizationStrings.sell
             }
+            text += " \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
 
         case .transactional(let event):
             switch (event.status, event.type) {

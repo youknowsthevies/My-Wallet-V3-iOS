@@ -69,11 +69,10 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     private func inProgress(state: TransactionState) -> PendingTransactionPageState {
         let fiat = state.amount
         let crypto = state.pendingTransaction?.confirmations.compactMap { confirmation -> MoneyValue? in
-            if case .buyCryptoValue(let value) = confirmation {
-                return MoneyValue(cryptoValue: value.baseValue)
-            } else {
+            guard let buyCryptoValue = confirmation as? TransactionConfirmations.BuyCryptoValue else {
                 return nil
             }
+            return MoneyValue(cryptoValue: buyCryptoValue.baseValue)
         }.first
         let title = String(
             format: LocalizationIds.InProgress.title,

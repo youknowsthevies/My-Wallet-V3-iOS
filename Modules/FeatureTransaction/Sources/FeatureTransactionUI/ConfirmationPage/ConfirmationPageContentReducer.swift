@@ -28,7 +28,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     // MARK: - Types
 
-    typealias ConfirmationModel = TransactionConfirmation.Model
+    typealias ConfirmationModel = TransactionConfirmations
 
     // MARK: - Private Types
 
@@ -42,6 +42,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
+
+    var header: HeaderBuilder?
 
     /// Buttons that should be displayed on the confirmation screen.
     /// Wallet connect transactions will require a `Cancel` button so
@@ -62,7 +64,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
     let hyperlinkTapped = PublishRelay<TitledLink>()
-    let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
+    let memoUpdated = PublishRelay<(String, TransactionConfirmations.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
     private let withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI
@@ -97,6 +99,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
         buttons = createButtons(state: state)
         cells = createCells(state: state)
+        header = createHeader(state: state)
     }
 
     private func createButtons(state: TransactionState) -> [ButtonViewModel] {
@@ -139,8 +142,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
         }
 
-        let interactors: [DefaultLineItemCellPresenter] = pendingTransaction
-            .confirmations
+        let confirmations = pendingTransaction.confirmations
+
+        let interactors: [DefaultLineItemCellPresenter] = confirmations
             .filter { confirmation -> Bool in
                 !confirmation.isCustom
             }
@@ -158,8 +162,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 )
             }
 
-        var bitpayItemIfNeeded: [DetailsScreen.CellType] = pendingTransaction
-            .confirmations
+        var bitpayItemIfNeeded: [DetailsScreen.CellType] = confirmations
             .filter(\.isBitPay)
             .compactMap(\.formatted)
             .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
@@ -186,7 +189,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 result.append(.separator)
             }
 
-        let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+        let errorModels: [DetailsScreen.CellType] = confirmations
             .filter(\.isErrorNotice)
             .compactMap(\.formatted)
             .map(\.subtitle)
@@ -205,15 +208,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .label(presenter)
             }
 
-        let imageNoticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+        let imageNoticeModels: [DetailsScreen.CellType] = confirmations
             .filter(\.isImageNotice)
-            .compactMap { confirmation -> TransactionConfirmation.Model.ImageNotice? in
-                switch confirmation {
-                case .imageNotice(let model):
-                    return model
-                default:
-                    return nil
-                }
+            .compactMap { confirmation -> TransactionConfirmations.ImageNotice? in
+                confirmation as? TransactionConfirmations.ImageNotice
             }
             .map { model -> NoticeViewModel in
                 let imageResource = URL(string: model.imageURL)
@@ -237,7 +235,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .notice(model)
             }
 
-        let noticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+        let noticeModels: [DetailsScreen.CellType] = confirmations
             .filter(\.isNotice)
             .compactMap(\.formatted)
             .map(\.subtitle)
@@ -256,36 +254,24 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .label(presenter)
             }
 
-        let memo: TransactionConfirmation.Model.Memo? = pendingTransaction
-            .confirmations
+        let memo: TransactionConfirmations.Memo? = confirmations
             .filter(\.isMemo)
-            .compactMap { confirmation -> TransactionConfirmation.Model.Memo? in
-                guard case .memo(let memo) = confirmation else {
-                    return nil
-                }
-                return memo
+            .compactMap { confirmation -> TransactionConfirmations.Memo? in
+                confirmation as? TransactionConfirmations.Memo
             }
             .first
 
-        let terms: ConfirmationModel.AnyBoolOption<Bool>? = pendingTransaction
-            .confirmations
+        let terms: ConfirmationModel.AnyBoolOption<Bool>? = confirmations
             .filter(\.isTermsOfService)
             .compactMap { confirmation -> ConfirmationModel.AnyBoolOption<Bool>? in
-                guard case .termsOfService(let value) = confirmation else {
-                    return nil
-                }
-                return value
+                confirmation as? ConfirmationModel.AnyBoolOption<Bool>
             }
             .first
 
-        let transferAgreement: ConfirmationModel.AnyBoolOption<Bool>? = pendingTransaction
-            .confirmations
+        let transferAgreement: ConfirmationModel.AnyBoolOption<Bool>? = confirmations
             .filter(\.isTransferAgreement)
             .compactMap { confirmation -> ConfirmationModel.AnyBoolOption<Bool>? in
-                guard case .transferAgreement(let value) = confirmation else {
-                    return nil
-                }
-                return value
+                confirmation as? ConfirmationModel.AnyBoolOption<Bool>
             }
             .first
 
@@ -392,6 +378,15 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         return topCells + [.separator] + midCells + bottomCells
     }
 
+    func createHeader(state: TransactionState) -> HeaderBuilder? {
+        guard let quoteExpirationTimer = state.pendingTransaction?.confirmations
+            .first(where: { $0.isQuoteExpirationTimer }) as? TransactionConfirmations.QuoteExpirationTimer
+        else {
+            return nil
+        }
+        return ConfrimationQuoteRefreshHeaderBuilder(quoteExpirationTimer.expirationDate)
+    }
+
     static func screenTitle(state: TransactionState) -> String {
         switch state.action {
         case .sign:
@@ -453,53 +448,31 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isErrorNotice || isNotice || isMemo || isBitPay || isCheckbox
+        isQuoteExpirationTimer || isErrorNotice || isNotice || isMemo || isBitPay || isCheckbox
     }
 
     var isCheckbox: Bool {
-        switch self {
-        case .termsOfService,
-             .transferAgreement:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.AnyBoolOption<Bool>
     }
 
     var isImageNotice: Bool {
-        switch self {
-        case .imageNotice:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.ImageNotice
+    }
+
+    var isQuoteExpirationTimer: Bool {
+        self is TransactionConfirmations.QuoteExpirationTimer
     }
 
     var isBitPay: Bool {
-        switch self {
-        case .bitpayCountdown:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.BitPayCountdown
     }
 
     var isNotice: Bool {
-        switch self {
-        case .notice:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.Notice
     }
 
     var isErrorNotice: Bool {
-        switch self {
-        case .errorNotice:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.ErrorNotice
     }
 
     var isRequiredAgreement: Bool {
@@ -507,29 +480,14 @@ extension TransactionConfirmation {
     }
 
     var isTermsOfService: Bool {
-        switch self {
-        case .termsOfService:
-            return true
-        default:
-            return false
-        }
+        (self as? TransactionConfirmations.AnyBoolOption<Bool>)?.type == .agreementInterestTandC
     }
 
     var isTransferAgreement: Bool {
-        switch self {
-        case .transferAgreement:
-            return true
-        default:
-            return false
-        }
+        (self as? TransactionConfirmations.AnyBoolOption<Bool>)?.type == .agreementInterestTransfer
     }
 
     var isMemo: Bool {
-        switch self {
-        case .memo:
-            return true
-        default:
-            return false
-        }
+        self is TransactionConfirmations.Memo
     }
 }

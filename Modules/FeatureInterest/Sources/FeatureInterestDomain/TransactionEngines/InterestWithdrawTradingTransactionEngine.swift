@@ -147,15 +147,13 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
                 pendingTransaction
                     .update(
                         confirmations: [
-                            .source(.init(value: source)),
-                            .destination(.init(value: destination)),
-                            .feedTotal(
-                                .init(
-                                    amount: pendingTransaction.amount,
-                                    amountInFiat: fiatAmount.moneyValue,
-                                    fee: pendingTransaction.feeAmount,
-                                    feeInFiat: fiatFees.moneyValue
-                                )
+                            TransactionConfirmations.Source(value: source),
+                            TransactionConfirmations.Destination(value: destination),
+                            TransactionConfirmations.FeedTotal(
+                                amount: pendingTransaction.amount,
+                                amountInFiat: fiatAmount.moneyValue,
+                                fee: pendingTransaction.feeAmount,
+                                feeInFiat: fiatFees.moneyValue
                             )
                         ]
                     )

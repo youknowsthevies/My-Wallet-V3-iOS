@@ -3,6 +3,7 @@
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIKit
 
 open class BaseTableViewController: BaseScreenViewController {
 
@@ -17,6 +18,7 @@ open class BaseTableViewController: BaseScreenViewController {
     private let outerStackView = UIStackView()
     private let bottomContainerView = UIView()
     private let buttonStackView = UIStackView()
+    private var contentBottomZeroHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Public UI Constraints
 
@@ -41,7 +43,8 @@ open class BaseTableViewController: BaseScreenViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(outerStackView)
         outerStackView.addArrangedSubview(tableView)
-        outerStackView.addArrangedSubview(bottomContainerView)
+
+        view.addSubview(bottomContainerView)
         bottomContainerView.addSubview(separatorView)
         bottomContainerView.addSubview(buttonStackView)
 
@@ -53,12 +56,19 @@ open class BaseTableViewController: BaseScreenViewController {
         tableView.estimatedSectionHeaderHeight = 0
         tableView.sectionFooterHeight = 28
         tableView.estimatedSectionFooterHeight = 0
+        tableView.contentInset.bottom = 28
 
         // Setup Scrollview
         scrollView.keyboardDismissMode = .interactive
         scrollView.layout(edges: .leading, .trailing, .top, to: view, usesSafeAreaLayoutGuide: true)
-        contentBottomConstraint = scrollView
-            .layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
+        scrollView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor).isActive = true
+
+        bottomContainerView.layout(edges: .leading, .trailing, .bottom, to: view)
+        bottomContainerView.backgroundColor = .clear
+        contentBottomZeroHeightConstraint = bottomContainerView.heightAnchor.constraint(equalToConstant: 0)
+        contentBottomZeroHeightConstraint?.isActive = true
+        contentBottomConstraint = bottomContainerView
+            .layoutToSuperview(.bottom)
 
         // Setup OuterStackView
         outerStackView.axis = .vertical
@@ -83,23 +93,26 @@ open class BaseTableViewController: BaseScreenViewController {
         buttonStackView.spacing = 8
         buttonStackView.layoutToSuperview(.leading, offset: 24)
         buttonStackView.layoutToSuperview(.trailing, offset: -24)
-        buttonStackView.layoutToSuperview(.bottom, offset: -16)
+        buttonStackView.layoutToSuperview(.bottom, offset: -32)
     }
 
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
-    public func addButton(with viewModel: ButtonViewModel) {
-        let buttonView = ButtonView()
-        buttonView.viewModel = viewModel
-        buttonStackView.addArrangedSubview(buttonView)
-        buttonView.layout(dimension: .height, to: 48)
+    public func addFooterView(_ view: UIView) {
+        buttonStackView.addArrangedSubview(view)
+        contentBottomZeroHeightConstraint?.isActive = buttonStackView.subviews.isEmpty
     }
 
     override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.availableHeight = scrollView.frame.height
         tableView.unavailableHeight = bottomContainerView.frame.height
+
+        if !buttonStackView.subviews.isEmpty, scrollView.contentSize.height > scrollView.frame.height {
+            view.bringSubviewToFront(bottomContainerView)
+            bottomContainerView.backgroundColor = .white
+            bottomContainerView.layer.shadowColor = UIColor.gray.cgColor
+            bottomContainerView.layer.shadowOffset = CGSize(width: 0.0, height: -5.0)
+            bottomContainerView.layer.shadowOpacity = 0.6
+            bottomContainerView.layer.shadowRadius = 6
+        }
     }
 }

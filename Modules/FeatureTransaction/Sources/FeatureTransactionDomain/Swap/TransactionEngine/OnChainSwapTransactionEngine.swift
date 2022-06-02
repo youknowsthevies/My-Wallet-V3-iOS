@@ -25,19 +25,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let hotWalletAddressService: HotWalletAddressServiceAPI
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-
-    lazy var quote: Observable<PricedQuote> = quotesEngine
-        .startPollingRate(
-            direction: orderDirection,
-            pair: .init(
-                sourceCurrencyType: sourceAsset,
-                destinationCurrencyType: target.currencyType
-            )
-        )
-        .asObservable()
 
     init(
         quotesEngine: QuotesEngine,
@@ -100,8 +90,14 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        quote
-            .take(1)
+        quotesEngine.startPollingRate(
+            direction: orderDirection,
+            pair: .init(
+                sourceCurrencyType: sourceAsset,
+                destinationCurrencyType: target.currencyType
+            )
+        )
+        return quotesEngine.quotePublisher
             .asSingle()
             .flatMap { [weak self] pricedQuote -> Single<PendingTransaction> in
                 guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }

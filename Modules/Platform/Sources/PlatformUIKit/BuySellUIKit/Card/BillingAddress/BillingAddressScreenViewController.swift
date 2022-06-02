@@ -46,7 +46,12 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
-        addButton(with: presenter.buttonViewModel)
+
+        let buttonView = ButtonView()
+        buttonView.viewModel = presenter.buttonViewModel
+        buttonView.layout(dimension: .height, to: 48)
+        addFooterView(buttonView)
+
         keyboardInteractionController = KeyboardInteractionController(
             in: scrollView,
             disablesToolBar: false

@@ -48,9 +48,11 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let added = NSLocalizedString("Added", comment: "Added")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
         public static let buying = NSLocalizedString("Buying", comment: "Buying")
+        public static let pendingSwap = NSLocalizedString("Swapping", comment: "Pending Swap Title")
         public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
         public static let receive = NSLocalizedString("Received", comment: "Received")
         public static let receiving = NSLocalizedString("Receiving", comment: "Receiving")
+        public static let pendingSell = NSLocalizedString("Selling", comment: "Pending Sell Title")
         public static let sell = NSLocalizedString("Sold", comment: "Sold")
     }
 }

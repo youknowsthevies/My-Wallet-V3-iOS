@@ -167,9 +167,9 @@ public class BalanceDataFetcher: BalanceDataFetcherAPI {
 
     public func fetchBalanceData() -> AnyPublisher<UserState.BalanceData, UserStateError> {
         var randomNumberGenerator = SystemRandomNumberGenerator()
-        return coincore.hasFundedAccounts(for: .fiat)
+        return coincore.hasPositiveDisplayableBalanceAccounts(for: .fiat)
             .zip(
-                coincore.hasFundedAccounts(for: .crypto)
+                coincore.hasPositiveDisplayableBalanceAccounts(for: .crypto)
             )
             // retry a few times on errors
             .retry(5, delay: .exponential(using: &randomNumberGenerator), scheduler: DispatchQueue.main)

@@ -20,7 +20,6 @@ public protocol SwapRootRouting: ViewableRouting {
     func routeToSwapBootstrap()
 
     /// Landing shows trending pairs
-    func routeToSwapLanding()
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
     func routeToKYC()
     func routeToSwap(with pair: SwapTrendingPair?)
@@ -45,17 +44,6 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         bootstrap = router
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable)
-    }
-
-    func routeToSwapLanding() {
-        if let child = bootstrap {
-            detachChild(child)
-            bootstrap = nil
-        }
-        let router = SwapLandingBuilder().build(withListener: interactor)
-        let viewControllable = router.viewControllable
-        attachChild(router)
-        viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool) {

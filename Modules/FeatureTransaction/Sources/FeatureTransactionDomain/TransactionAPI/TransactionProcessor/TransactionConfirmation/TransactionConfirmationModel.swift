@@ -4,17 +4,16 @@ import Localization
 import MoneyKit
 import PlatformKit
 
-extension TransactionConfirmation {
-    public enum Model {}
-}
+public enum TransactionConfirmations {}
 
-extension TransactionConfirmation.Model {
+extension TransactionConfirmations {
     private typealias LocalizedString = LocalizationConstants.Transaction.Confirmation
 
-    public struct ExchangePriceOption: TransactionConfirmationModelable {
+    public struct ExchangePriceOption: TransactionConfirmation {
+        public let id = UUID()
         public let money: MoneyValue
         public let currency: CryptoCurrency
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (
@@ -24,12 +23,13 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct FeedTotal: TransactionConfirmationModelable {
+    public struct FeedTotal: TransactionConfirmation {
+        public let id = UUID()
         public let amount: MoneyValue
         public let amountInFiat: MoneyValue
         public let fee: MoneyValue
         public let feeInFiat: MoneyValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.total, amountString)
@@ -70,10 +70,11 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Total: TransactionConfirmationModelable {
+    public struct Total: TransactionConfirmation {
+        public let id = UUID()
         public let total: MoneyValue
         public let exchange: MoneyValue?
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public init(total: MoneyValue, exchange: MoneyValue? = nil) {
             self.total = total
@@ -89,11 +90,11 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct TotalCost: TransactionConfirmationModelable {
-
+    public struct TotalCost: TransactionConfirmation {
+        public let id = UUID()
         public let primaryCurrencyFee: MoneyValue
         public let secondaryCurrencyFee: MoneyValue?
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             let subtitle: String
@@ -109,11 +110,11 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Purchase: TransactionConfirmationModelable {
-
+    public struct Purchase: TransactionConfirmation {
+        public let id = UUID()
         public let purchase: MoneyValue
         public let exchange: MoneyValue?
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public init(purchase: MoneyValue, exchange: MoneyValue? = nil) {
             self.purchase = purchase
@@ -129,9 +130,9 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct ImageNotice: TransactionConfirmationModelable {
-
-        public let type: TransactionConfirmation.Kind = .readOnly
+    public struct ImageNotice: TransactionConfirmation {
+        public let id = UUID()
+        public let type: TransactionConfirmationKind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
             nil
         }
@@ -147,9 +148,9 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Network: TransactionConfirmationModelable {
-
-        public let type: TransactionConfirmation.Kind = .readOnly
+    public struct Network: TransactionConfirmation {
+        public let id = UUID()
+        public let type: TransactionConfirmationKind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
             (title: LocalizedString.network, subtitle: network)
         }
@@ -161,9 +162,9 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Message: TransactionConfirmationModelable {
-
-        public let type: TransactionConfirmation.Kind = .readOnly
+    public struct Message: TransactionConfirmation {
+        public let id = UUID()
+        public let type: TransactionConfirmationKind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
             (title: title, subtitle: message)
         }
@@ -180,9 +181,9 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct RawTransaction: TransactionConfirmationModelable {
-
-        public let type: TransactionConfirmation.Kind = .readOnly
+    public struct RawTransaction: TransactionConfirmation {
+        public let id = UUID()
+        public let type: TransactionConfirmationKind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
             (title: title, subtitle: rawTransaction)
         }
@@ -199,9 +200,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Destination: TransactionConfirmationModelable {
+    public struct Destination: TransactionConfirmation {
+        public let id = UUID()
         public let value: String
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.to, value)
@@ -212,9 +214,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Source: TransactionConfirmationModelable {
+    public struct Source: TransactionConfirmation {
+        public let id = UUID()
         public let value: String
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.from, value)
@@ -225,11 +228,12 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct FeeSelection: TransactionConfirmationModelable {
+    public struct FeeSelection: TransactionConfirmation {
+        public let id = UUID()
         public let feeState: FeeState
         public let selectedLevel: FeeLevel
         public let fee: MoneyValue?
-        public let type: TransactionConfirmation.Kind = .feeSelection
+        public let type: TransactionConfirmationKind = .feeSelection
 
         public var formatted: (title: String, subtitle: String)? {
             let subtitle = fee?.displayString ?? ""
@@ -244,9 +248,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct BitPayCountdown: TransactionConfirmationModelable {
+    public struct BitPayCountdown: TransactionConfirmation {
+        public let id = UUID()
         public let secondsRemaining: TimeInterval
-        public let type: TransactionConfirmation.Kind = .invoiceCountdown
+        public let type: TransactionConfirmationKind = .invoiceCountdown
 
         private let countdownFormatter: DateComponentsFormatter
 
@@ -260,9 +265,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct ErrorNotice: TransactionConfirmationModelable {
+    public struct ErrorNotice: TransactionConfirmation {
+        public let id = UUID()
         public let validationState: TransactionValidationState
-        public let type: TransactionConfirmation.Kind = .errorNotice
+        public let type: TransactionConfirmationKind = .errorNotice
         public let moneyValue: MoneyValue?
 
         public init(validationState: TransactionValidationState, moneyValue: MoneyValue?) {
@@ -323,9 +329,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Notice: TransactionConfirmationModelable {
+    public struct Notice: TransactionConfirmation {
+        public let id = UUID()
         public let value: String
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             ("", value)
@@ -336,9 +343,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Description: TransactionConfirmationModelable {
+    public struct Description: TransactionConfirmation {
+        public let id = UUID()
         public let value: String
-        public let type: TransactionConfirmation.Kind = .description
+        public let type: TransactionConfirmationKind = .description
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.description, value)
@@ -349,7 +357,8 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct Memo: TransactionConfirmationModelable {
+    public struct Memo: TransactionConfirmation, Equatable {
+        public let id = UUID()
         public enum Value: Equatable {
             case text(String)
             case identifier(Int)
@@ -377,7 +386,7 @@ extension TransactionConfirmation.Model {
 
         public let value: Value?
         public let required: Bool
-        public let type: TransactionConfirmation.Kind = .memo
+        public let type: TransactionConfirmationKind = .memo
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.memo, value?.string ?? "")
@@ -389,83 +398,92 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct SwapSourceValue: TransactionConfirmationModelable {
+    public struct SwapSourceValue: TransactionConfirmation {
+        public let id = UUID()
         public let cryptoValue: CryptoValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.Swap.swap, cryptoValue.displayString)
         }
     }
 
-    public struct SwapDestinationValue: TransactionConfirmationModelable {
+    public struct SwapDestinationValue: TransactionConfirmation {
+        public let id = UUID()
         public let cryptoValue: CryptoValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.receive, cryptoValue.displayString)
         }
     }
 
-    public struct SellSourceValue: TransactionConfirmationModelable {
+    public struct SellSourceValue: TransactionConfirmation {
+        public let id = UUID()
         public let cryptoValue: CryptoValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.sell, cryptoValue.displayString)
         }
     }
 
-    public struct SellDestinationValue: TransactionConfirmationModelable {
+    public struct SellDestinationValue: TransactionConfirmation {
+        public let id = UUID()
         public let fiatValue: FiatValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.receive, fiatValue.displayString)
         }
     }
 
-    public struct SellExchangeRateValue: TransactionConfirmationModelable {
+    public struct SellExchangeRateValue: TransactionConfirmation {
+        public let id = UUID()
         public let baseValue: MoneyValue
         public let resultValue: MoneyValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.exchangeRate, "\(baseValue.displayString) = \(resultValue.displayString)")
         }
     }
 
-    public struct BuyCryptoValue: TransactionConfirmationModelable {
+    public struct BuyCryptoValue: TransactionConfirmation {
+        public let id = UUID()
         public let baseValue: CryptoValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.buy, baseValue.displayString)
         }
     }
 
-    public struct BuyExchangeRateValue: TransactionConfirmationModelable {
+    public struct BuyExchangeRateValue: TransactionConfirmation {
+        public let id = UUID()
         public let baseValue: MoneyValue
         public let code: String
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (String(format: LocalizedString.price, code), baseValue.displayString)
         }
     }
 
-    public struct BuyPaymentMethodValue: TransactionConfirmationModelable {
+    public struct BuyPaymentMethodValue: TransactionConfirmation {
+        public let id = UUID()
         public let name: String
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.paymentMethod, name)
         }
     }
 
-    public struct SendDestinationValue: TransactionConfirmationModelable {
+    public struct SendDestinationValue: TransactionConfirmation {
+        public let id = UUID()
         public let value: MoneyValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.Send.send, value.displayString)
@@ -476,23 +494,24 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct SwapExchangeRate: TransactionConfirmationModelable {
+    public struct SwapExchangeRate: TransactionConfirmation {
+        public let id = UUID()
         public let baseValue: MoneyValue
         public let resultValue: MoneyValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.exchangeRate, "\(baseValue.displayString) = \(resultValue.displayString)")
         }
     }
 
-    public struct FundsArrivalDate: TransactionConfirmationModelable {
-
+    public struct FundsArrivalDate: TransactionConfirmation {
+        public let id = UUID()
         /// Defaults to five days. Applies to both `deposit` and `withdraw`.
         public static let `default`: FundsArrivalDate = .init()
 
         public let date: Date
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public init(date: Date = Calendar.current.date(byAdding: .day, value: 5, to: Date()) ?? Date()) {
             self.date = date
@@ -503,9 +522,10 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct FiatTransactionFee: TransactionConfirmationModelable {
+    public struct FiatTransactionFee: TransactionConfirmation {
+        public let id = UUID()
         public let fee: MoneyValue
-        public let type: TransactionConfirmation.Kind = .readOnly
+        public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
             (
@@ -515,7 +535,8 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct NetworkFee: TransactionConfirmationModelable {
+    public struct NetworkFee: TransactionConfirmation {
+        public let id = UUID()
         public enum FeeType {
             case depositFee
             case withdrawalFee
@@ -524,7 +545,7 @@ extension TransactionConfirmation.Model {
         public let primaryCurrencyFee: MoneyValue
         public let secondaryCurrencyFee: MoneyValue?
         public let feeType: FeeType
-        public let type: TransactionConfirmation.Kind = .networkFee
+        public let type: TransactionConfirmationKind = .networkFee
 
         public init(primaryCurrencyFee: MoneyValue, secondaryCurrencyFee: MoneyValue? = nil, feeType: FeeType) {
             self.primaryCurrencyFee = primaryCurrencyFee
@@ -546,19 +567,34 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct AnyBoolOption<T: Equatable>: TransactionConfirmationModelable {
+    public struct AnyBoolOption<T: Equatable>: TransactionConfirmation {
+        public let id = UUID()
         public let data: T?
         public let value: Bool
-        public let type: TransactionConfirmation.Kind
+        public let type: TransactionConfirmationKind
 
         public var formatted: (title: String, subtitle: String)? {
             ("\(value) Data", "\(data.debugDescription)")
         }
 
-        public init(value: Bool, type: TransactionConfirmation.Kind, data: T? = nil) {
+        public init(value: Bool, type: TransactionConfirmationKind, data: T? = nil) {
             self.value = value
             self.data = data
             self.type = type
+        }
+    }
+
+    public struct QuoteExpirationTimer: TransactionConfirmation {
+        public let id = UUID()
+        public let expirationDate: Date
+        public let type: TransactionConfirmationKind = .quoteCountdown
+
+        init(expirationDate: Date) {
+            self.expirationDate = expirationDate
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            nil
         }
     }
 }

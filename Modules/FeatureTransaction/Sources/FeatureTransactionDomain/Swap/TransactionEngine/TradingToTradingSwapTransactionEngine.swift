@@ -17,7 +17,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let quotesEngine: QuotesEngine
     let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
@@ -43,20 +43,18 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         precondition((target as! CryptoTradingAccount).asset != sourceAsset)
     }
 
-    lazy var quote: Observable<PricedQuote> = quotesEngine
-        .startPollingRate(
-            direction: orderDirection,
-            pair: .init(
-                sourceCurrencyType: sourceAsset,
-                destinationCurrencyType: target.currencyType
-            )
-        )
-        .asObservable()
-
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAccount.currencyType,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+        return Single
             .zip(
-                quote.take(1).asSingle(),
+                quotesEngine.quotePublisher.asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
                 sourceAccount.actionableBalance
             )

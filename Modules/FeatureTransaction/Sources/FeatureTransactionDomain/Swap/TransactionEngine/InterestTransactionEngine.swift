@@ -25,19 +25,15 @@ extension InterestTransactionEngine {
     ) -> PendingTransaction {
         pendingTransaction
             .insert(
-                confirmation: .termsOfService(
-                    .init(
-                        value: termsChecked,
-                        type: .agreementInterestTandC
-                    )
+                confirmation: TransactionConfirmations.AnyBoolOption<Bool>(
+                    value: termsChecked,
+                    type: .agreementInterestTandC
                 )
             )
             .insert(
-                confirmation: .transferAgreement(
-                    .init(
-                        value: agreementChecked,
-                        type: .agreementInterestTransfer
-                    )
+                confirmation: TransactionConfirmations.AnyBoolOption<Bool>(
+                    value: agreementChecked,
+                    type: .agreementInterestTransfer
                 )
             )
     }

@@ -242,7 +242,7 @@ extension MoneyOperating {
     ///   - currencyType: The destination currency `B`.
     public func convert<T: MoneyOperating>(usingInverse exchangeRate: Self, currency: T.MoneyCurrency) -> T {
         if BuildFlag.isInternal, currencyType != exchangeRate.currencyType {
-            fatalError("Self \(currencyType) currency type has to be equal exchangeRate currency type \(exchangeRate.currencyType)")
+            // fatalError("Self \(currencyType) currency type has to be equal exchangeRate currency type \(exchangeRate.currencyType)")
         }
         if currencyType == currency.currencyType {
             return T(amount: amount, currency: currency)

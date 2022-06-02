@@ -199,7 +199,7 @@ extension RootViewController: LoggedInBridge {
         let onboardingRouter = onboardingRouter
         userStateService
             .userState
-            .first()
+            .prefix(1)
             .receive(on: DispatchQueue.main)
             .flatMap { result -> AnyPublisher<TransactionFlowResult, Never> in
                 // if we successfully got a user state object and that shows the user has a crypto balance <= 0, show the empty state
