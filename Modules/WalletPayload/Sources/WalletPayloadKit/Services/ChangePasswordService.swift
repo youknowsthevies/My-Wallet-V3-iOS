@@ -33,6 +33,7 @@ final class ChangePasswordService: ChangePasswordServiceAPI {
 
     func change(password: String) -> AnyPublisher<Void, ChangePasswordError> {
         walletHolder.walletStatePublisher
+            .first()
             .flatMap { walletState -> AnyPublisher<Wrapper, ChangePasswordError> in
                 guard let wrapper = walletState?.wrapper else {
                     return .failure(.syncFailed)

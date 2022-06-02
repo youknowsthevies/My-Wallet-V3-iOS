@@ -99,6 +99,7 @@ final class ChangePasswordScreenInteractor {
         update(state: .updating)
             .andThen(passwordRepository.changePassword(password: input.newPassword).asCompletable())
             .subscribe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onCompleted: { [weak self] in
                     self?.stateRelay.accept(.complete)
