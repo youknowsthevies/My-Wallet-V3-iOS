@@ -87,6 +87,8 @@ final class TagBlockchainSchemaTests: XCTestCase {
 
     func test_is() throws {
         XCTAssertTrue(blockchain.user.email.address[].is(blockchain.db.type.string))
+        XCTAssertTrue(blockchain.user.id[].is(blockchain.db.type.string))
+        XCTAssertTrue(blockchain.user.id[].is(blockchain.db.collection.id))
     }
 
     func test_isNot() throws {
