@@ -49,8 +49,8 @@ final class Version3Workflow: WalletUpgradeWorkflow {
             getHDWallet(from: mnemonic)
                 .flatMap { hdWallet -> Result<(account: Account, seedHex: String), WalletCreateError> in
                     let seedHex = hdWallet.entropy.toHexString()
-                    let masterSeedHex = hdWallet.seed.toHexString()
-                    let account = provideAccount(masterSeedHex)
+                    let masterNode = hdWallet.seed.toHexString()
+                    let account = provideAccount(masterNode)
                     return .success((account, seedHex))
                 }
                 .map { account, seedHex in
@@ -91,11 +91,11 @@ final class Version3Workflow: WalletUpgradeWorkflow {
 
     // As part of v3 upgrade we create a legacy derivation and assign it to a new Account
     // again, we don't adhere to the version 3 json format.
-    private func provideAccount(masterSeedHex: String) -> Account {
+    private func provideAccount(masterNode: String) -> Account {
         let legacyDerivation = generateDerivation(
             type: .legacy,
             index: 0,
-            masterSeedHex: masterSeedHex
+            masterNode: masterNode
         )
         return createAccount(
             label: LocalizationConstants.Account.myWallet,

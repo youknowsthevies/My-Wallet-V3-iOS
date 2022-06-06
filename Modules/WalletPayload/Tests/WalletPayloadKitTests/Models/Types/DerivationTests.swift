@@ -18,7 +18,7 @@ class DerivationTests: XCTestCase {
 
         let key = deriveAccountKey(
             at: 0,
-            seedHex: masterSeedHex,
+            masterNode: masterSeedHex,
             type: .legacy
         )
 
@@ -40,7 +40,7 @@ class DerivationTests: XCTestCase {
 
         let key = deriveAccountKey(
             at: 0,
-            seedHex: masterSeedHex,
+            masterNode: masterSeedHex,
             type: .segwit
         )
 

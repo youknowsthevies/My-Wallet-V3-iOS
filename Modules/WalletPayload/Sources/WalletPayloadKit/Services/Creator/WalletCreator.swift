@@ -134,9 +134,9 @@ final class WalletCreator: WalletCreatorAPI {
             .subscribe(on: operationQueue)
             .receive(on: operationQueue)
             .map(\.seed.toHexString)
-            .map { masterSeedHex -> (MetadataKit.PrivateKey, MetadataKit.PrivateKey) in
-                let legacy = deriveMasterAccountKey(seedHex: masterSeedHex, type: .legacy)
-                let bech32 = deriveMasterAccountKey(seedHex: masterSeedHex, type: .segwit)
+            .map { masterNode -> (MetadataKit.PrivateKey, MetadataKit.PrivateKey) in
+                let legacy = deriveMasterAccountKey(masterNode: masterNode, type: .legacy)
+                let bech32 = deriveMasterAccountKey(masterNode: masterNode, type: .segwit)
                 return (legacy, bech32)
             }
             .flatMap { [usedAccountsFinder] legacy, bech32 -> AnyPublisher<Int, WalletCreateError> in
