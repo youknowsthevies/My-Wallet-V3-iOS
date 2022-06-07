@@ -44,12 +44,8 @@ extension Dictionary where Key == String, Value == Any {
 
     public mutating func set<C: Collection>(_ value: Value?, at path: C) where C.Element == CodingKey {
         guard let (head, remaining) = path.headAndTail else { return }
-        switch (head.stringValue, remaining) {
-        case nil:
-            return
-        case (let key, let remaining):
-            self[key] = _set(value, at: remaining, on: self[key] as Any)
-        }
+        let key = head.stringValue
+        self[key] = _set(value, at: remaining, on: self[key] as Any)
     }
 }
 
@@ -83,12 +79,7 @@ extension Array where Element == Any {
         guard let (head, remaining) = path.headAndTail else { return }
         guard let idx = head.intValue.map(bidirectionalIndex) else { return }
         padded(to: idx, with: Any?.none as Any)
-        switch (idx, remaining) {
-        case nil:
-            return
-        case (let idx, let remaining):
-            self[idx] = _set(value, at: remaining, on: self[idx])
-        }
+        self[idx] = _set(value, at: remaining, on: self[idx])
     }
 
     func bidirectionalIndex(_ idx: Int) -> Int {

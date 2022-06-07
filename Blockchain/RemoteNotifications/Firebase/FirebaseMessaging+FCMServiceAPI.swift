@@ -8,7 +8,7 @@ protocol FirebaseCloudMessagingServiceAPI: RemoteNotificationTokenFetching {
 
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo
-    func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?)
+    func subscribe(toTopic topic: String, completion: ((Error?) -> Void)?)
 }
 
 extension Messaging: FirebaseCloudMessagingServiceAPI {
