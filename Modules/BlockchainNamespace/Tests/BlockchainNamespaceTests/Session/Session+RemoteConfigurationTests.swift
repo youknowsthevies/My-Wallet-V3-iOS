@@ -40,6 +40,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             .wait()
 
         XCTAssertEqual(announcements, ["1", "2", "3"])
+
+        try XCTAssertEqual(app.remoteConfiguration.get(blockchain.app.configuration.announcements), ["1", "2", "3"])
     }
 
     func test_fetch_with_underscore() async throws {
@@ -82,7 +84,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertEqual(announcements, ["1", "2", "3"])
 
-        app.remoteConfiguration.override(blockchain.app.configuration.announcements[].reference, with: ["4", "5", "6"])
+        app.remoteConfiguration.override(blockchain.app.configuration.announcements, with: ["4", "5", "6"])
 
         announcements = try await app.publisher(for: blockchain.app.configuration.announcements, as: [String].self)
             .wait()
@@ -129,7 +131,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             ["blockchain.app.configuration.apple.pay.is.enabled"].set
         )
 
-        app.remoteConfiguration.override(blockchain.app.configuration.apple.pay.is.enabled[].reference, with: false)
+        app.remoteConfiguration.override(blockchain.app.configuration.apple.pay.is.enabled, with: false)
 
         isEnabled = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
             .wait()
@@ -144,7 +146,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
         XCTAssertFalse(isEnabled)
 
-        app.remoteConfiguration.clear(blockchain.app.configuration.apple.pay.is.enabled[].reference)
+        app.remoteConfiguration.clear(blockchain.app.configuration.apple.pay.is.enabled)
 
         isEnabled = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
             .wait()
@@ -164,7 +166,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             XCTAssertFalse(isEnabled)
         }
 
-        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: true)
+        app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled, with: true)
 
         do {
             let isEnabled = try await app.publisher(

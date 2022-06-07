@@ -97,6 +97,14 @@ extension Session.State {
         try data.get(event.key)
     }
 
+    public func get<T: Decodable>(
+        _ event: Tag.Event,
+        as type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try decoder.decode(T.self, from: get(event) as Any)
+    }
+
     public func result(for event: Tag.Event) -> FetchResult {
         let key = event.key
         do {
