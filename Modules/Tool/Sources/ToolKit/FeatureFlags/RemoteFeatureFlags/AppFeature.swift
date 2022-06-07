@@ -69,9 +69,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Notification Preferences
     case notificationPreferences
 
-    /// Enables the new pricing model
-    case newQuoteForSimpleBuy
-
     /// Enables the use of the hot wallet address for custodial transactions.
     case hotWalletCustodial
 
@@ -133,8 +130,6 @@ extension AppFeature {
             return "ios_open_banking"
         case .newCardAcquirers:
             return "ios_ff_new_card_acquirers"
-        case .newQuoteForSimpleBuy:
-            return "ios_ff_new_pricing"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
         case .newOnboardingTour:
@@ -194,8 +189,6 @@ extension AppFeature {
         case .newCardAcquirers:
             return true
         case .openBanking:
-            return true
-        case .newQuoteForSimpleBuy:
             return true
         case .walletConnectEnabled:
             return true

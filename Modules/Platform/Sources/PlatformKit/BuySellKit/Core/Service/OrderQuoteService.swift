@@ -65,52 +65,18 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     // MARK: - Properties
 
     private let client: QuoteClientAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
     init(
-        client: QuoteClientAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        client: QuoteClientAPI = resolve()
     ) {
         self.client = client
-        self.featureFlagsService = featureFlagsService
     }
 
     // MARK: - API
 
     func getQuote(
-        query: QuoteQuery
-    ) -> Single<Quote> {
-        featureFlagsService
-            .isEnabled(.newQuoteForSimpleBuy)
-            .asSingle()
-            .flatMap { [getOldQuote, getNewQuote] isEnabled in
-                guard isEnabled else {
-                    return getOldQuote(query)
-                }
-                return getNewQuote(query)
-            }
-    }
-
-    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
-    private func getOldQuote(
-        query: QuoteQuery
-    ) -> Single<Quote> {
-        client
-            .getOldQuote(for: .buy, to: query.destinationCurrency, amount: query.amount)
-            .asSingle()
-            .map {
-                try Quote(
-                    sourceCurrency: query.sourceCurrency,
-                    destinationCurrency: query.destinationCurrency,
-                    value: query.amount,
-                    response: $0
-                )
-            }
-    }
-
-    private func getNewQuote(
         query: QuoteQuery
     ) -> Single<Quote> {
         client
