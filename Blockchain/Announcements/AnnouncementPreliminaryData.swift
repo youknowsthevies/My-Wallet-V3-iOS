@@ -49,10 +49,6 @@ struct AnnouncementPreliminaryData {
     /// The authentication type (2FA / standard)
     let authenticatorType: WalletAuthenticatorType
 
-    var hasLinkedExchangeAccount: Bool {
-        user.hasLinkedExchangeAccount
-    }
-
     var isKycSupported: Bool {
         country?.isKycSupported ?? false
     }

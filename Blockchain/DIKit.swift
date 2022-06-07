@@ -56,8 +56,6 @@ import WalletPayloadKit
 
 // MARK: - Settings Dependencies
 
-extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
-
 extension UIApplication: PlatformKit.AppStoreOpening {}
 
 extension Wallet: WalletRecoveryVerifing {}
@@ -171,13 +169,6 @@ extension DependencyContainer {
         }
 
         // MARK: ExchangeCoordinator
-
-        factory { ExchangeCoordinator.shared }
-
-        factory { () -> ExchangeCoordinating in
-            let coordinator: ExchangeCoordinator = DIKit.resolve()
-            return coordinator as ExchangeCoordinating
-        }
 
         // MARK: - AuthenticationCoordinator
 

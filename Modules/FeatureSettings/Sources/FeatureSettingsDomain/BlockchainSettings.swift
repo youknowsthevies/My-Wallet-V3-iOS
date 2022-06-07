@@ -266,26 +266,6 @@ public final class BlockchainSettings: NSObject {
             }
         }
 
-        /// Users that are linking their Exchange account to their blockchain wallet will deep-link
-        /// from the Exchange into the mobile app.
-        public var exchangeLinkIdentifier: String? {
-            get {
-                defaults.string(forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
-            }
-        }
-
-        public var didTapOnExchangeDeepLink: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
-            }
-        }
-
         public var custodySendInterstitialViewed: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
@@ -345,8 +325,6 @@ public final class BlockchainSettings: NSObject {
             clearPin()
             sendToDomainAnnouncementViewed = false
             custodySendInterstitialViewed = false
-            didTapOnExchangeDeepLink = false
-            exchangeLinkIdentifier = nil
 
             let kycSettings: KYCSettingsAPI = resolve()
             kycSettings.reset()

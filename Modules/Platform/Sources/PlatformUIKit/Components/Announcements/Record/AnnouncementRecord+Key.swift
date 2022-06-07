@@ -30,7 +30,6 @@ extension AnnouncementRecord {
         // MARK: - One Time
 
         case identityVerification
-        case exchange
         case bitpay
         case resubmitDocuments
         case fiatFundsKYC
@@ -78,8 +77,6 @@ extension AnnouncementRecord {
 
             case .identityVerification:
                 key = "cache-identity-verification"
-            case .exchange:
-                key = "cache-pit"
             case .bitpay:
                 key = "cache-bitpay"
             case .resubmitDocuments:

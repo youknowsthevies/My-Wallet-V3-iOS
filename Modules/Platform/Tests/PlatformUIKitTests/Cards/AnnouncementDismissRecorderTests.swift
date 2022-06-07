@@ -69,7 +69,7 @@ final class AnnouncementTests: XCTestCase {
         let cache = MemoryCacheSuite()
         let oneTimeAnnouncements = [
             MockOneTimeAnnouncement(type: .cloudBackup, cacheSuite: cache, dismiss: {}),
-            MockOneTimeAnnouncement(type: .exchangeLinking, cacheSuite: cache, dismiss: {})
+            MockOneTimeAnnouncement(type: .resubmitDocuments, cacheSuite: cache, dismiss: {})
         ]
         oneTimeAnnouncements[1].markRemoved()
         XCTAssertFalse(oneTimeAnnouncements[0].isDismissed)

@@ -306,10 +306,6 @@ extension RootViewController: LoggedInBridge {
         )
     }
 
-    func handleExchange() {
-        ExchangeCoordinator.shared.start(from: self)
-    }
-
     func handleSupport() {
         let isSupported = app.publisher(for: blockchain.app.configuration.customer.support.is.enabled, as: Bool.self)
             .prefix(1)

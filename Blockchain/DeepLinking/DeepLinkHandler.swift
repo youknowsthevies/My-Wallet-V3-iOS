@@ -46,9 +46,6 @@ final class DeepLinkHandler: DeepLinkHandling {
             handleKyc()
         case .kycDocumentResubmission:
             handleKycDocumentResubmission(payload.params)
-        case .exchangeVerifyEmail,
-             .exchangeLinking:
-            handleExchangeLinking(payload.params)
         case .openBankingLink, .openBankingApprove:
             handleOpenBanking(payload.params)
         }
@@ -57,11 +54,6 @@ final class DeepLinkHandler: DeepLinkHandling {
     private func handleKycDocumentResubmission(_ params: [String: String]) {
         kycSettings.didTapOnDocumentResubmissionDeepLink = true
         kycSettings.documentResubmissionLinkReason = params[DeepLinkConstant.documentResubmissionReason]
-    }
-
-    private func handleExchangeLinking(_ params: [String: String]) {
-        appSettings.didTapOnExchangeDeepLink = true
-        appSettings.exchangeLinkIdentifier = params[DeepLinkConstant.linkId]
     }
 
     private func handleKyc() {

@@ -26,23 +26,4 @@ final class AnnouncementTests: XCTestCase {
         XCTAssertFalse(announcement.shouldShow)
         XCTAssertTrue(announcement.isDismissed)
     }
-
-    // MARK: PIT
-
-    func testExchangeLinkingAnnouncementShows() {
-        let cache = MemoryCacheSuite()
-        let announcement = ExchangeLinkingAnnouncement(
-            shouldShowExchangeAnnouncement: true,
-            cacheSuite: cache,
-            dismiss: {},
-            action: {}
-        )
-        XCTAssertTrue(announcement.shouldShow)
-        XCTAssertFalse(announcement.isDismissed)
-
-        announcement.markRemoved()
-
-        XCTAssertFalse(announcement.shouldShow)
-        XCTAssertTrue(announcement.isDismissed)
-    }
 }

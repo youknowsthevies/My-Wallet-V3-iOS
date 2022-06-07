@@ -45,7 +45,6 @@ final class AnnouncementPresenter {
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
-    private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
     private let reactiveWallet: ReactiveWalletAPI
@@ -84,7 +83,6 @@ final class AnnouncementPresenter {
         walletOperating: WalletOperationsRouting = DIKit.resolve(),
         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
-        exchangeCoordinator: ExchangeCoordinator = .shared,
         kycRouter: KYCRouterAPI = DIKit.resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
         kycSettings: KYCSettingsAPI = DIKit.resolve(),
@@ -100,7 +98,6 @@ final class AnnouncementPresenter {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
-        self.exchangeCoordinator = exchangeCoordinator
         self.kycRouter = kycRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
@@ -212,8 +209,6 @@ final class AnnouncementPresenter {
                 )
             case .verifyIdentity:
                 announcement = verifyIdentity(using: preliminaryData.user)
-            case .exchangeLinking:
-                announcement = exchangeLinking(user: preliminaryData.user)
             case .bitpay:
                 announcement = bitpay
             case .resubmitDocuments:
@@ -357,19 +352,6 @@ extension AnnouncementPresenter {
         BitpayAnnouncement(
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
-            }
-        )
-    }
-
-    /// Computes Wallet-Exchange linking announcement
-    private func exchangeLinking(user: NabuUser) -> Announcement {
-        ExchangeLinkingAnnouncement(
-            shouldShowExchangeAnnouncement: !user.hasLinkedExchangeAccount,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak exchangeCoordinator] in
-                exchangeCoordinator?.start()
             }
         )
     }

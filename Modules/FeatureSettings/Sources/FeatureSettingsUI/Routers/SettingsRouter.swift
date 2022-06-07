@@ -36,10 +36,6 @@ public protocol AuthenticationCoordinating: AnyObject {
     func changePin()
 }
 
-public protocol ExchangeCoordinating: AnyObject {
-    func start(from viewController: UIViewController)
-}
-
 public protocol PaymentMethodsLinkerAPI {
     func routeToBankLinkingFlow(
         for currency: FiatCurrency,

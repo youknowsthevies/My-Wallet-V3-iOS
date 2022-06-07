@@ -4,8 +4,6 @@ public enum DeepLinkRoute: CaseIterable {
     case kyc
     case kycVerifyEmail
     case kycDocumentResubmission
-    case exchangeVerifyEmail
-    case exchangeLinking
     case openBankingLink
     case openBankingApprove
 }
@@ -48,22 +46,20 @@ extension DeepLinkRoute {
         supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
     ) -> DeepLinkRoute? {
         supportedRoutes.first { route -> Bool in
-            if path.hasSuffix(route.supportedPath) {
-                if let key = route.requiredKeyParam,
-                   let value = route.requiredValueParam,
-                   let routeParameters = parameters
-                {
-
-                    if let optionalKey = route.optionalKeyParameter,
-                       let value = routeParameters[optionalKey],
-                       let context = FlowContext(rawValue: value)
-                    {
-                        return route == .exchangeVerifyEmail && context == .exchangeSignup
-                    } else {
-                        return routeParameters[key] == value
-                    }
-                }
+            guard path.hasSuffix(route.supportedPath) else {
+                return false
+            }
+            guard let key = route.requiredKeyParam,
+                  let value = route.requiredValueParam,
+                  let routeParameters = parameters
+            else {
                 return true
+            }
+            guard let optionalKey = route.optionalKeyParameter,
+                  let value = routeParameters[optionalKey],
+                  let context = FlowContext(rawValue: value)
+            else {
+                return routeParameters[key] == value
             }
             return false
         }
@@ -72,13 +68,10 @@ extension DeepLinkRoute {
     private var supportedPath: String {
         switch self {
         case .kycVerifyEmail,
-             .kycDocumentResubmission,
-             .exchangeVerifyEmail:
+             .kycDocumentResubmission:
             return "login"
         case .kyc:
             return "kyc"
-        case .exchangeLinking:
-            return "link-account"
         case .openBankingLink:
             return "ob-bank-link"
         case .openBankingApprove:
@@ -90,11 +83,8 @@ extension DeepLinkRoute {
         switch self {
         case .kyc,
              .kycVerifyEmail,
-             .kycDocumentResubmission,
-             .exchangeVerifyEmail:
+             .kycDocumentResubmission:
             return "deep_link_path"
-        case .exchangeLinking:
-            return nil
         case .openBankingLink, .openBankingApprove:
             return nil
         }
@@ -102,15 +92,12 @@ extension DeepLinkRoute {
 
     private var requiredValueParam: String? {
         switch self {
-        case .kycVerifyEmail,
-             .exchangeVerifyEmail:
+        case .kycVerifyEmail:
             return "email_verified"
         case .kycDocumentResubmission:
             return "verification"
         case .kyc:
             return "kyc"
-        case .exchangeLinking:
-            return nil
         case .openBankingLink, .openBankingApprove:
             return nil
         }
@@ -118,12 +105,10 @@ extension DeepLinkRoute {
 
     private var optionalKeyParameter: String? {
         switch self {
-        case .exchangeVerifyEmail,
-             .kycVerifyEmail:
+        case .kycVerifyEmail:
             return "context"
         case .kyc,
              .kycDocumentResubmission,
-             .exchangeLinking,
              .openBankingLink,
              .openBankingApprove:
             return nil

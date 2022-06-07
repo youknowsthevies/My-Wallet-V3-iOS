@@ -11,7 +11,6 @@ final class DeepLinkRouter: DeepLinkRouting {
     init(routers: [DeepLinkRouting] = [
         KYCDeepLinkRouter(),
         KYCResubmitIdentityRouter(),
-        ExchangeDeepLinkRouter(),
         BitPayLinkRouter()
     ]) {
         self.routers = routers
