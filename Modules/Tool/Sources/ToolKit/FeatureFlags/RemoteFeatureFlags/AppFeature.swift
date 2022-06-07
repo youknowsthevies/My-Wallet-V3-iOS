@@ -69,9 +69,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Notification Preferences
     case notificationPreferences
 
-    /// Enables the new Limits UI in Transaction Flow
-    case newLimitsUIEnabled
-
     /// Enables the new pricing model
     case newQuoteForSimpleBuy
 
@@ -136,8 +133,6 @@ extension AppFeature {
             return "ios_open_banking"
         case .newCardAcquirers:
             return "ios_ff_new_card_acquirers"
-        case .newLimitsUIEnabled:
-            return "ios_use_new_limits_ui"
         case .newQuoteForSimpleBuy:
             return "ios_ff_new_pricing"
         case .walletConnectEnabled:
@@ -199,8 +194,6 @@ extension AppFeature {
         case .newCardAcquirers:
             return true
         case .openBanking:
-            return true
-        case .newLimitsUIEnabled:
             return true
         case .newQuoteForSimpleBuy:
             return true

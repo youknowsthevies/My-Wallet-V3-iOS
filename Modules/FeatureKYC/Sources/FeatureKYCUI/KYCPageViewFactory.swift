@@ -53,7 +53,6 @@ class KYCPageViewFactory {
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycProfile)
             return KYCPersonalDetailsController.make(with: coordinator)
         case .accountUsageForm:
-//            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycProfile)
             return KYCAccountUsageController.make(with: coordinator)
         case .address:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAddress)
@@ -77,11 +76,14 @@ class KYCPageViewFactory {
         case .accountStatus:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAccountStatus)
             let controller = KYCInformationController.make(with: coordinator)
-            if let payload = payload, case .accountStatus(status: let status, isReceivingAirdrop: let airdrop) = payload {
+            switch payload {
+            case .accountStatus(status: let status, isReceivingAirdrop: let airdrop):
                 let model = KYCInformationViewModel.create(for: status)
                 let config = KYCInformationViewConfig.create(for: status, isReceivingAirdrop: airdrop)
                 controller.viewConfig = config
                 controller.viewModel = model
+            default:
+                break
             }
             return controller
         case .applicationComplete:

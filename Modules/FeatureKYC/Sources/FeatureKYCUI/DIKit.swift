@@ -12,8 +12,6 @@ extension DependencyContainer {
 
         single { KYCRouter() as KYCRouterAPI }
 
-        factory { KYCTiersPageModelFactory() as KYCTiersPageModelFactoryAPI }
-
         factory { () -> FeatureKYCUI.Routing in
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return FeatureKYCUI.Router(
@@ -21,7 +19,6 @@ extension DependencyContainer {
                 loadingViewPresenter: DIKit.resolve(),
                 legacyRouter: DIKit.resolve(),
                 kycService: DIKit.resolve(),
-                featureFlagsService: DIKit.resolve(),
                 emailVerificationService: DIKit.resolve(),
                 openMailApp: externalAppOpener.openMailApp,
                 openURL: externalAppOpener.open
