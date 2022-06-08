@@ -30,13 +30,6 @@ public let coinViewReducer = Reducer<
 
                 Effect(value: .refresh),
 
-                environment.interestRatesRepository
-                    .fetchRate(code: state.currency.code)
-                    .result()
-                    .receive(on: environment.mainQueue)
-                    .eraseToEffect()
-                    .map(CoinViewAction.fetchedInterestRate),
-
                 environment.assetInformationService
                     .fetch()
                     .receive(on: environment.mainQueue)
@@ -81,6 +74,14 @@ public let coinViewReducer = Reducer<
                 .catchToEffect()
                 .map(CoinViewAction.update)
 
+        case .fetchInterestRate:
+            return environment.interestRatesRepository
+                .fetchRate(code: state.currency.code)
+                .result()
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .map(CoinViewAction.fetchedInterestRate)
+
         case .fetchedInterestRate(let result):
             state.interestRate = try? result.get()
             return .none
@@ -111,17 +112,22 @@ public let coinViewReducer = Reducer<
 
         case .update(let update):
             switch update {
-            case .success(let value):
-                state.kycStatus = value.0
-                state.accounts = value.1
+            case .success(let result):
+                let (kycStatus, accounts) = result
+                state.kycStatus = kycStatus
+                state.accounts = accounts
                 if let account = state.account {
                     state.account = state.accounts.first(where: { snapshot in snapshot.id == account.id })
+                }
+                if accounts.contains(where: { $0.accountType == .interest }) {
+                    return Effect(value: .fetchInterestRate)
+                } else {
+                    return .none
                 }
             case .failure:
                 state.error = .failedToLoad
                 return .none
             }
-            return .none
 
         case .reset:
             return .fireAndForget {
