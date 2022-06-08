@@ -19,25 +19,19 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         StellarOnChainTransactionEngineFactory()
     }
 
-    var balance: Single<MoneyValue> {
-        balancePublisher
-            .asSingle()
-    }
-
-    var balancePublisher: AnyPublisher<MoneyValue, Error> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         accountDetails
             .map(\.balance.moneyValue)
             .eraseError()
-            .eraseToAnyPublisher()
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         accountDetails
             .map(\.actionableBalance.moneyValue)
-            .asSingle()
+            .eraseError()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
@@ -141,8 +135,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             return .just(false)
         case .interestTransfer:
             return isInterestTransferAvailable
-                .flatMap { [isFundedPublisher] isEnabled in
-                    isEnabled ? isFundedPublisher : .just(false)
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
@@ -158,7 +152,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balancePublisher)
+            .zip(balance)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

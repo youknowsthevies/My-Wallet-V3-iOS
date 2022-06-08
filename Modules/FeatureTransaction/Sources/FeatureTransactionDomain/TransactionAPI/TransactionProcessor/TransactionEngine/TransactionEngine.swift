@@ -485,7 +485,7 @@ extension TransactionEngine {
 
         return fetchExchangeRates(for: pendingTransaction)
             .eraseError()
-            .zip(sourceAccount.balancePublisher)
+            .zip(sourceAccount.balance)
             .asSingle()
             .map { [weak self] exchangeRates, sourceBalance -> Void in
                 guard let self = self else {

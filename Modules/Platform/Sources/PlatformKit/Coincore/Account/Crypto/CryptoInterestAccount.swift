@@ -47,20 +47,24 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         .just(false)
     }
 
-    public var isFunded: Single<Bool> {
-        balances.map { $0 != .absent }
+    public var isFunded: AnyPublisher<Bool, Error> {
+        balances
+            .map { $0 != .absent }
+            .eraseError()
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.pending)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .eraseError()
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.available)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .eraseError()
     }
 
     public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
@@ -71,7 +75,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .eraseToAnyPublisher()
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         // `withdrawable` is the accounts total balance
         // minus the locked funds amount. Only these funds are
         // available for withdraws (which is all you can do with
@@ -79,7 +83,8 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         balances
             .map(\.balance)
             .map(\.?.withdrawable)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .eraseError()
     }
 
     public var activity: Single<[ActivityItemEvent]> {
@@ -112,7 +117,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let interestActivityEventRepository: InterestActivityItemEventRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
-    private var balances: Single<CustodialAccountBalanceState> {
+    private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: asset)
     }
 
@@ -172,7 +177,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balancePublisher)
+            .zip(balance)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
@@ -181,7 +186,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     private func canPerformInterestWithdraw() -> AnyPublisher<Bool, Never> {
         isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
-            .zip(actionableBalance.map(\.isPositive).asPublisher())
+            .zip(actionableBalance.map(\.isPositive))
             .map { enabled, positiveBalance in
                 enabled && positiveBalance
             }

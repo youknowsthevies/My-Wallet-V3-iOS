@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -22,23 +23,24 @@ public final class AccountBalanceViewInteractor: AssetBalanceViewInteracting {
             )
             .map(\.0)
             .flatMapLatest(weak: self) { (self, fiatCurrency) in
-                self.stateSingle(fiatCurrency: fiatCurrency).asObservable()
+                self.statePublisher(fiatCurrency: fiatCurrency).asObservable()
             }
     }
 
-    private func stateSingle(fiatCurrency: FiatCurrency) -> Single<InteractionState> {
-        Single.zip(
-            account.balancePair(fiatCurrency: fiatCurrency).asSingle(),
-            account.pendingBalance
-        )
-        .map { balancePair, pendingBalance in
-            AssetBalanceViewModel.Value.Interaction(
-                primaryValue: balancePair.quote,
-                secondaryValue: balancePair.base,
-                pendingValue: pendingBalance
-            )
-        }
-        .map(InteractionState.loaded)
+    private func statePublisher(
+        fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<InteractionState, Error> {
+        account.balancePair(fiatCurrency: fiatCurrency)
+            .zip(account.pendingBalance)
+            .map { balancePair, pendingBalance in
+                AssetBalanceViewModel.Value.Interaction(
+                    primaryValue: balancePair.quote,
+                    secondaryValue: balancePair.base,
+                    pendingValue: pendingBalance
+                )
+            }
+            .map(InteractionState.loaded)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Accessors

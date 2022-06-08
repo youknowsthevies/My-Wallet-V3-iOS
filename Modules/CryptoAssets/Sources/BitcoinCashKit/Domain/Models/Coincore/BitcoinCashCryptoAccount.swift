@@ -21,18 +21,18 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         BitcoinOnChainTransactionEngineFactory<BitcoinCashToken>()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: .bitcoinCash))
     }
 
-    var balance: Single<MoneyValue> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         balanceService
             .balance(for: xPub)
-            .asSingle()
-            .moneyValue
+            .map(\.moneyValue)
+            .eraseToAnyPublisher()
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
@@ -151,8 +151,8 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             return .just(false)
         case .interestTransfer:
             return isInterestTransferAvailable
-                .flatMap { [isFundedPublisher] isEnabled in
-                    isEnabled ? isFundedPublisher : .just(false)
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
@@ -164,7 +164,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balancePublisher)
+            .zip(balance)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

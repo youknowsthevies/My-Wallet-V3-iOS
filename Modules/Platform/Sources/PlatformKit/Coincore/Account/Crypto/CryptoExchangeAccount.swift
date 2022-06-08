@@ -48,11 +48,11 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(false)
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
@@ -67,12 +67,12 @@ public final class CryptoExchangeAccount: ExchangeAccount {
             .map { $0 as ReceiveAddress }
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         /// Exchange API does not return a balance.
         .just(.zero(currency: asset))
     }
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         .just(true)
     }
 

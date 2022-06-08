@@ -23,15 +23,11 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         )
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
-    var balance: Single<MoneyValue> {
-        balancePublisher.asSingle()
-    }
-
-    var balancePublisher: AnyPublisher<MoneyValue, Error> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         ethereumBalanceRepository
             .balance(
                 network: network,
@@ -42,7 +38,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
@@ -194,8 +190,8 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
             return .just(asset.supports(product: .custodialWalletBalance))
         case .interestTransfer:
             return isInterestTransferAvailable
-                .flatMap { [isFundedPublisher] isEnabled in
-                    isEnabled ? isFundedPublisher : .just(false)
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
@@ -210,7 +206,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balancePublisher)
+            .zip(balance)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

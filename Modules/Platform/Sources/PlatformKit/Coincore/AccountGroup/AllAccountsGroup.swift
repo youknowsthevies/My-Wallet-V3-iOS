@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Localization
 import MoneyKit
 import RxSwift
@@ -16,15 +17,17 @@ public final class AllAccountsGroup: AccountGroup {
 
     public var accountType: AccountType = .group
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         guard !accounts.isEmpty else {
             return .just(false)
         }
-        return Single
-            .zip(accounts.map(\.isFunded))
+        return accounts
+            .map(\.isFunded)
+            .zip()
             .map { values -> Bool in
-                !values.contains(false)
+                values.contains(true)
             }
+            .eraseToAnyPublisher()
     }
 
     public var requireSecondPassword: Single<Bool> {
@@ -39,37 +42,43 @@ public final class AllAccountsGroup: AccountGroup {
             }
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         guard !accounts.isEmpty else {
-            return .error(AccountGroupError.noAccounts)
+            return .failure(AccountGroupError.noAccounts)
         }
-        return Single
-            .zip(accounts.map(\.pendingBalance))
-            .map { [currencyType] values -> MoneyValue in
+        return accounts
+            .map(\.pendingBalance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
                 try values.reduce(.zero(currency: currencyType), +)
             }
+            .eraseToAnyPublisher()
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         guard !accounts.isEmpty else {
-            return .error(AccountGroupError.noAccounts)
+            return .failure(AccountGroupError.noAccounts)
         }
-        return Single
-            .zip(accounts.map(\.balance))
-            .map { [currencyType] values -> MoneyValue in
+        return accounts
+            .map(\.balance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
                 try values.reduce(.zero(currency: currencyType), +)
             }
+            .eraseToAnyPublisher()
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         guard !accounts.isEmpty else {
-            return .error(AccountGroupError.noAccounts)
+            return .failure(AccountGroupError.noAccounts)
         }
-        return Single
-            .zip(accounts.map(\.actionableBalance))
-            .map { [currencyType] values -> MoneyValue in
+        return accounts
+            .map(\.actionableBalance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
                 try values.reduce(.zero(currency: currencyType), +)
             }
+            .eraseToAnyPublisher()
     }
 
     public var receiveAddress: Single<ReceiveAddress> {

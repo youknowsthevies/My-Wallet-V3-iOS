@@ -49,6 +49,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount as! EVMCryptoAccount
     }
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     // MARK: - Init
 
     init(
@@ -106,7 +110,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             walletCurrencyService
                 .displayCurrency
                 .asSingle(),
-            availableBalance
+            actionableBalance
         )
         .map { [network, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
@@ -199,7 +203,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             preconditionFailure("Not an \(network.rawValue) value.")
         }
         return Single.zip(
-            sourceAccount.actionableBalance,
+            actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
         .map { actionableBalance, fee -> PendingTransaction in
@@ -236,7 +240,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func doValidateAll(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        sourceAccount.actionableBalance
+        actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateSufficientFunds(
                     pendingTransaction: pendingTransaction,

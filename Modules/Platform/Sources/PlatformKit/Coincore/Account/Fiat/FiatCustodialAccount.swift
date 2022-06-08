@@ -43,31 +43,22 @@ final class FiatCustodialAccount: FiatAccount {
         unimplemented()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.pending)
             .replaceNil(with: .zero(currency: currencyType))
-            .asSingle()
+            .eraseError()
     }
 
-    var balance: Single<MoneyValue> {
-        balancePublisher
-            .asSingle()
-    }
-
-    var balancePublisher: AnyPublisher<MoneyValue, Error> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.available)
             .replaceNil(with: .zero(currency: currencyType))
-            .mapError()
+            .eraseError()
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
-    }
-
-    var isFunded: Single<Bool> {
-        balance.map(\.isPositive)
     }
 
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
@@ -121,11 +112,11 @@ final class FiatCustodialAccount: FiatAccount {
                 .map(\.isPositive)
             let canTransactWithBanks = paymentMethodService
                 .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
-            return Single.zip(canTransactWithBanks, hasActionableBalance)
+                .asPublisher()
+            return canTransactWithBanks.zip(hasActionableBalance)
                 .map { canTransact, hasBalance in
                     canTransact && hasBalance
                 }
-                .asPublisher()
                 .eraseToAnyPublisher()
         }
     }
@@ -134,7 +125,7 @@ final class FiatCustodialAccount: FiatAccount {
         priceService
             .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balancePublisher)
+            .zip(balance)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

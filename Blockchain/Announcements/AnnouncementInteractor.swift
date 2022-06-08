@@ -38,7 +38,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 }
                 return coincore[cryptoCurrency]
                     .accountGroup(filter: .all)
-                    .flatMap(\.balancePublisher)
+                    .flatMap(\.balance)
                     .map { balance in
                         AnnouncementPreliminaryData.AssetRename(
                             asset: cryptoCurrency,
@@ -85,14 +85,18 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let countries = infoService.countries
 
         let hasAnyWalletBalance = coincore.allAccounts
-            .asSingle()
             .map(\.accounts)
-            .flatMap { accounts -> Single<[Bool]> in
-                Single.zip(accounts.map { $0.isFunded.catchAndReturn(false) })
+            .eraseError()
+            .flatMap { accounts -> AnyPublisher<Bool, Error> in
+                accounts
+                    .map { $0.isFunded.replaceError(with: false) }
+                    .zip()
+                    .map { values in
+                        values.contains(true)
+                    }
+                    .eraseError()
             }
-            .map { values in
-                values.contains(true)
-            }
+            .asSingle()
 
         let authenticatorType = repository.authenticatorType.asSingle()
         let newAsset: Single<CryptoCurrency?> = featureFetcher

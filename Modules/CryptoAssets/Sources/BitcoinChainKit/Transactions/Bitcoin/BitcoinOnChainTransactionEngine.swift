@@ -59,6 +59,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         sourceAccount as! BitcoinChainCryptoAccount
     }
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount
+            .actionableBalance
+            .asSingle()
+    }
+
     private var receiveAddress: Single<BitcoinChainReceiveAddress<Token>> {
         switch transactionTarget {
         case let target as BitPayInvoiceTarget:
@@ -157,7 +163,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
                 walletCurrencyService
                     .displayCurrency
                     .asSingle(),
-                availableBalance,
+                actionableBalance,
                 app.publisher(for: blockchain.app.configuration.native.bitcoin.transaction.is.enabled, as: Bool.self)
                     .prefix(1)
                     .replaceError(with: false)
@@ -330,7 +336,7 @@ extension BitcoinOnChainTransactionEngine {
     }
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
-        sourceAccount.balance.map { [sourceAccount, transactionTarget] sourceBalance -> Void in
+        actionableBalance.map { [sourceAccount, transactionTarget] sourceBalance -> Void in
             guard (try? pendingTransaction.amount > pendingTransaction.feeAmount) == true else {
                 throw TransactionValidationFailure(
                     state: .belowFees(pendingTransaction.feeAmount, sourceBalance)

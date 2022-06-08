@@ -53,6 +53,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount as! ERC20CryptoAccount
     }
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     // MARK: - Init
 
     init(
@@ -103,7 +107,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             walletCurrencyService
                 .displayCurrency
                 .asSingle(),
-            availableBalance
+            actionableBalance
         )
         .map { [cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
@@ -172,7 +176,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
         return Single.zip(
-            sourceAccount.actionableBalance,
+            actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
         .map { values -> PendingTransaction in
@@ -309,8 +313,7 @@ extension ERC20OnChainTransactionEngine {
         guard sourceAccount != nil else {
             fatalError("sourceAccount should never be nil when this is called")
         }
-        return sourceAccount
-            .actionableBalance
+        return actionableBalance
             .map { [sourceAccount, transactionTarget] actionableBalance -> Void in
                 guard try pendingTransaction.amount <= actionableBalance else {
                     throw TransactionValidationFailure(

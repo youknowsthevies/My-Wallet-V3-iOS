@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Errors
 import FeatureTransactionDomain
@@ -33,6 +34,7 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     private var availableBalance: Single<MoneyValue> {
         sourceAccount
             .balance
+            .asSingle()
     }
 
     private var minimumLimit: Single<MoneyValue> {

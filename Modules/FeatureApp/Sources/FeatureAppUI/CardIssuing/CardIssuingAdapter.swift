@@ -293,7 +293,7 @@ extension AccountSnapshot {
         _ account: SingleAccount,
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<FeatureCardIssuingDomain.AccountSnapshot, Never> {
-        account.balancePublisher.ignoreFailure()
+        account.balance.ignoreFailure()
             .combineLatest(
                 account.fiatBalance(fiatCurrency: fiatCurrency)
                     .ignoreFailure()

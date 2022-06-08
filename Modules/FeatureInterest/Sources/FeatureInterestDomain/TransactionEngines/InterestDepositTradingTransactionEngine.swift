@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -58,6 +59,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
     private var availableBalance: Single<MoneyValue> {
         sourceAccount
             .balance
+            .asSingle()
     }
 
     private var interestAccountLimits: Single<InterestAccountLimits> {

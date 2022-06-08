@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -19,20 +20,17 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
     /// Creates a `AvailableBalanceContentInteractor` that will stream the
     /// balance (in the given `CurrencyType`) of the first account of the given `CurrencyType`.
     public init(currencyType: CurrencyType, coincore: CoincoreAPI) {
-
-        let balance = coincore.allAccounts
-            .asObservable()
-            .asSingle()
+        contentCalculationState = coincore.allAccounts
             .compactMap { group in
                 group.accounts.first { $0.currencyType == currencyType }
             }
-            .asObservable()
-            .flatMap { account -> Single<MoneyValue> in
+            .eraseError()
+            .flatMap { account -> AnyPublisher<MoneyValue, Error> in
                 account.balance
             }
-
-        contentCalculationState = balance
-            .map { .value($0.displayString) }
+            .map(\.displayString)
+            .map(ValueCalculationState<String>.value)
+            .asObservable()
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -40,8 +38,9 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
     /// balance of the given `BlockchainAccount` in its own `CurrencyType`.
     init(account: BlockchainAccount) {
         contentCalculationState = account.balance
+            .map(\.displayString)
+            .map(ValueCalculationState<String>.value)
             .asObservable()
-            .map { .value($0.displayString) }
             .share(replay: 1, scope: .whileConnected)
     }
 }

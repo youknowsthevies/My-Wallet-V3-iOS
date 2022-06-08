@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Localization
 import PlatformKit
 import RxCocoa
@@ -99,6 +100,7 @@ final class WalletViewViewModel {
                     accessibility: .id("\(descriptor.accessibilityPrefix).wallet.balance")
                 )
             }
+            .asSingle()
             .asDriver(onErrorJustReturn: .empty)
     }
 }

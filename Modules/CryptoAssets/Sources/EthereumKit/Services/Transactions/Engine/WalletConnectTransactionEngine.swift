@@ -119,7 +119,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             }
             .flatMap(weak: self) { (self, pendingTransaction) in
                 Single.zip(
-                    self.sourceAccount.actionableBalance,
+                    self.sourceAccount.actionableBalance.asSingle(),
                     self.calculateFee(with: pendingTransaction.feeLevel)
                 )
                 .map { actionableBalance, fees -> PendingTransaction in
@@ -404,7 +404,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private func validateSufficientFunds(
         pendingTransaction: PendingTransaction
     ) -> Completable {
-        sourceAccount.actionableBalance
+        sourceAccount.actionableBalance.asSingle()
             .map { [sourceAccount, transactionTarget] actionableBalance in
                 guard pendingTransaction.gasLimit != nil,
                       pendingTransaction.gasPrice != nil

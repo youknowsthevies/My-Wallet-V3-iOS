@@ -21,6 +21,10 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     init(
         quotesEngine: QuotesEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
@@ -56,7 +60,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             .zip(
                 quotesEngine.quotePublisher.asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
-                sourceAccount.actionableBalance
+                actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
@@ -95,7 +99,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.zip(
             validateUpdateAmount(amount),
-            sourceAccount.actionableBalance
+            actionableBalance
         )
         .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
             pendingTransaction.update(amount: normalized, available: balance)

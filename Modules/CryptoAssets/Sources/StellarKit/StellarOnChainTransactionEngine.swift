@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -70,6 +71,12 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     private var absoluteFee: Single<CryptoValue> {
         feeService.fees.map(\.regular).asSingle()
+    }
+
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount
+            .actionableBalance
+            .asSingle()
     }
 
     // MARK: - Init
@@ -158,7 +165,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             receiveAddress,
             userFiatCurrency,
             isMemoRequired,
-            availableBalance
+            actionableBalance
         )
         .map { receiveAddress, fiatCurrency, isMemoRequired, availableBalance -> PendingTransaction in
             var memo: String?
@@ -190,7 +197,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         precondition(amount.currency == .crypto(.stellar))
-        let actionableBalance = sourceAccount.actionableBalance.map(\.cryptoValue)
+        let actionableBalance = actionableBalance.map(\.cryptoValue)
         return Single
             .zip(actionableBalance, absoluteFee)
             .map { actionableBalance, fees -> PendingTransaction in
@@ -245,7 +252,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 extension StellarOnChainTransactionEngine {
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
-        Single.zip(sourceAccount.actionableBalance, absoluteFee)
+        Single.zip(actionableBalance, absoluteFee)
             .map { [sourceAccount, transactionTarget] balance, fee -> Void in
                 if try (try fee.moneyValue + pendingTransaction.amount) > balance {
                     throw TransactionValidationFailure(

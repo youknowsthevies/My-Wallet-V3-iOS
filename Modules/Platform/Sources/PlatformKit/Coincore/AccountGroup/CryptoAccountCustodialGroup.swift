@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Localization
 import MoneyKit
 import RxSwift
@@ -19,15 +20,15 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         account?.requireSecondPassword ?? .just(false)
     }
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         account?.isFunded ?? .just(false)
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         account?.pendingBalance ?? .just(.zero(currency: asset))
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         account?.actionableBalance ?? .just(.zero(currency: asset))
     }
 
@@ -35,7 +36,7 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         account?.receiveAddress ?? .error(ReceiveAddressError.notSupported)
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         account?.balance ?? .just(.zero(currency: asset))
     }
 

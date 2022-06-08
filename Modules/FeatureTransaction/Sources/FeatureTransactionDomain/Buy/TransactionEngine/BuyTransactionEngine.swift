@@ -352,7 +352,6 @@ extension BuyTransactionEngine {
     private func convertSourceBalance(to currency: CurrencyType) -> AnyPublisher<MoneyValue, MakeTransactionError> {
         sourceAccount
             .balance
-            .asPublisher()
             .replaceError(with: .zero(currency: currency))
             .flatMap { [currencyConversionService] balance in
                 currencyConversionService.convert(balance, to: currency)

@@ -157,7 +157,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             Single
                 .zip(
                     feeCache.valueSingle,
-                    sourceTradingAccount.withdrawableBalance
+                    sourceTradingAccount.withdrawableBalance.asSingle()
                 )
                 .map { fees, withdrawableBalance -> PendingTransaction in
                     let fee = fees[fee: amount.currency]

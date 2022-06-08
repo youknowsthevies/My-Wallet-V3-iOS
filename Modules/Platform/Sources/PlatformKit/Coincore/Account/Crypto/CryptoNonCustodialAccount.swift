@@ -39,7 +39,7 @@ extension CryptoNonCustodialAccount {
 
     public var canPerformInterestTransfer: AnyPublisher<Bool, Never> {
         disabledReason.map(\.isEligible)
-            .zip(isFundedPublisher)
+            .zip(isFunded)
             .map { isEligible, isFunded in
                 isEligible && isFunded
             }

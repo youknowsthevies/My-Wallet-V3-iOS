@@ -20,6 +20,10 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     init(
         quotesEngine: QuotesEngine,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -68,7 +72,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             .zip(
                 quotesEngine.quotePublisher.asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
-                sourceAccount.actionableBalance
+                actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
@@ -109,7 +113,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.zip(
             validateUpdateAmount(amount),
-            sourceAccount.actionableBalance
+            actionableBalance
         )
         .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
             pendingTransaction.update(amount: normalized, available: balance)

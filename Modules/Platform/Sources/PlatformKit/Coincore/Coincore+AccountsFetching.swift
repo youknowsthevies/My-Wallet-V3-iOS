@@ -301,17 +301,12 @@ extension CoincoreAPI {
 extension Sequence where Element == SingleAccount {
 
     public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Error> {
-        map { account -> AnyPublisher<Bool, Error> in
-            account
-                .isFunded
-                .asPublisher()
-                .eraseToAnyPublisher()
-        }
-        .zip()
-        .map { results -> Bool in
-            results.contains(true)
-        }
-        .eraseToAnyPublisher()
+        map(\.isFunded)
+            .zip()
+            .map { results -> Bool in
+                results.contains(true)
+            }
+            .eraseToAnyPublisher()
     }
 
     public func hasPositiveDisplayableBalanceAccounts() -> AnyPublisher<Bool, Error> {

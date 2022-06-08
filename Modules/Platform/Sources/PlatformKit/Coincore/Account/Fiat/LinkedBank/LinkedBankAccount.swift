@@ -13,7 +13,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let accountType: AccountType = .external
     public let isDefault: Bool = false
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: fiatCurrency))
     }
 
@@ -35,15 +35,15 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         )
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: fiatCurrency))
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: fiatCurrency))
     }
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         .just(false)
     }
 

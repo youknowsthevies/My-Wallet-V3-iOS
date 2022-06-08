@@ -57,7 +57,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
-            sourceAccount.actionableBalance,
+            sourceAccount.actionableBalance.asSingle(),
             withdrawalService.withdrawFeeAndLimit(
                 for: target.fiatCurrency,
                 paymentMethodType: target.paymentType
