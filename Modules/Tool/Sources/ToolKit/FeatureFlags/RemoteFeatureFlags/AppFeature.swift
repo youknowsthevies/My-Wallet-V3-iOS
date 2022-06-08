@@ -94,6 +94,14 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - SKAdNetworkAttribution
 
     case skAdNetworkAttribution
+
+    // MARK: - Dynamic Self Custody - Stacks
+
+    /// Stacks enabled to all users.
+    case stxForAllUsers
+
+    /// Stacks enabled to users that received the STX Airdrop.
+    case stxForAirdropUsers
 }
 
 extension AppFeature {
@@ -154,6 +162,10 @@ extension AppFeature {
             return "ios_ff_account_credentials_metadata_migration"
         case .skAdNetworkAttribution:
             return "ios_ff_skAdNetwork_attribution"
+        case .stxForAllUsers:
+            return "ios_ff_stx_all_users"
+        case .stxForAirdropUsers:
+            return "ios_ff_stx_airdrop_users"
         }
     }
 
@@ -213,6 +225,10 @@ extension AppFeature {
         case .accountCredentialsMetadataMigration:
             return false
         case .skAdNetworkAttribution:
+            return true
+        case .stxForAllUsers:
+            return true
+        case .stxForAirdropUsers:
             return true
         }
     }

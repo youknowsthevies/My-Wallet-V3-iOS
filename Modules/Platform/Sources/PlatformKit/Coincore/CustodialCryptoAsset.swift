@@ -14,7 +14,9 @@ final class CustodialCryptoAsset: CryptoAsset {
 
     let asset: CryptoCurrency
 
-    var canTransactToCustodial: AnyPublisher<Bool, Never> { .just(true) }
+    var canTransactToCustodial: AnyPublisher<Bool, Never> {
+        cryptoAssetRepository.canTransactToCustodial
+    }
 
     // MARK: - Private properties
 
@@ -33,6 +35,8 @@ final class CustodialCryptoAsset: CryptoAsset {
     private let errorRecorder: ErrorRecording
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let addressFactory: ExternalAssetAddressFactory
+    private let featureFetcher: FeatureFetching
+    private let nabuUserService: NabuUserServiceAPI
 
     // MARK: - Setup
 
@@ -40,12 +44,16 @@ final class CustodialCryptoAsset: CryptoAsset {
         asset: CryptoCurrency,
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve()
+        errorRecorder: ErrorRecording = resolve(),
+        featureFetcher: FeatureFetching = resolve(),
+        nabuUserService: NabuUserServiceAPI = resolve()
     ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
         self.exchangeAccountProvider = exchangeAccountProvider
         self.errorRecorder = errorRecorder
+        self.featureFetcher = featureFetcher
+        self.nabuUserService = nabuUserService
         addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
     }
 
@@ -83,9 +91,7 @@ final class CustodialCryptoAsset: CryptoAsset {
             .map { address -> ReceiveAddress? in
                 address
             }
-            .catch { _ -> AnyPublisher<ReceiveAddress?, Never> in
-                .just(nil)
-            }
+            .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
 
@@ -121,16 +127,50 @@ final class CustodialCryptoAsset: CryptoAsset {
         cryptoAssetRepository.custodialGroup
     }
 
-    private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
-        .just(
-            CryptoAccountNonCustodialGroup(
-                asset: asset,
-                accounts: []
-            )
-        )
-    }
-
     private var interestGroup: AnyPublisher<AccountGroup, Never> {
         cryptoAssetRepository.interestGroup
+    }
+
+    private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
+        dynamicSelfCustodySupported
+            .map { [asset] isEnabled in
+                guard isEnabled else {
+                    return CryptoAccountNonCustodialGroup(
+                        asset: asset,
+                        accounts: []
+                    )
+                }
+                return CryptoAccountNonCustodialGroup(
+                    asset: asset,
+                    accounts: []
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private var dynamicSelfCustodySupported: AnyPublisher<Bool, Never> {
+        // Initially only possible for Stacks.
+        guard asset.code == "STX" else {
+            return .just(false)
+        }
+        return Publishers.Zip3(
+            featureFetcher.isEnabled(.stxForAllUsers),
+            featureFetcher.isEnabled(.stxForAirdropUsers),
+            stxAirdropRegistered
+        )
+        .map { stxForAllUsers, stxForAirdropUsers, stxAirdropRegistered in
+            // Enabled if 'All' feature flag is one
+            stxForAllUsers
+                // Or if 'Airdrop' feature flag is on and user is registered.
+                || (stxForAirdropUsers && stxAirdropRegistered)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private var stxAirdropRegistered: AnyPublisher<Bool, Never> {
+        nabuUserService.user
+            .map(\.isBlockstackAirdropRegistered)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 }

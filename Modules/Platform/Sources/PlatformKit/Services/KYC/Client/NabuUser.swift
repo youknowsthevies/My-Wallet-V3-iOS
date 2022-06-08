@@ -44,7 +44,7 @@ public struct NabuUser: Decodable, Equatable {
     public let status: KYC.AccountStatus
     public let state: UserState
     public let tiers: KYC.UserState?
-    public let tags: Tags?
+    let tags: Tags?
     public let needsDocumentResubmission: DocumentResubmission?
     public let userName: String?
     public let depositAddresses: [DepositAddress]
@@ -77,7 +77,7 @@ public struct NabuUser: Decodable, Equatable {
 
     // MARK: - Init
 
-    public init(
+    init(
         identifier: String,
         personalDetails: PersonalDetails,
         address: UserAddress?,
@@ -192,24 +192,24 @@ public struct Mobile: Decodable, Equatable {
     }
 }
 
-public struct Tags: Decodable, Equatable {
+struct Tags: Decodable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case blockstack = "BLOCKSTACK"
     }
 
-    public let blockstack: Blockstack?
+    let blockstack: Blockstack?
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
     }
 
-    public init(blockstack: Blockstack?) {
+    init(blockstack: Blockstack?) {
         self.blockstack = blockstack
     }
 
-    public struct Blockstack: Decodable, Equatable {
+    struct Blockstack: Decodable, Equatable {
         let campaignAddress: String
 
         private enum CodingKeys: String, CodingKey {

@@ -15,7 +15,6 @@
 #import "crypto_scrypt.h"
 #import "KeychainItemWrapper+Credentials.h"
 #import "ModuleXMLHttpRequest.h"
-#import "NSArray+EncodedJSONString.h"
 #import "NSData+Hex.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "NSString+JSONParser_NSString.h"

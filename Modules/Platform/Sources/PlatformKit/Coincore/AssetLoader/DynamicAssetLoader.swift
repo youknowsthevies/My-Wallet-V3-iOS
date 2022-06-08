@@ -63,14 +63,10 @@ final class DynamicAssetLoader: AssetLoader {
                 // Crypto Assets for any currency with Custodial support.
                 let custodialAssets: [CryptoAsset] = custodialCryptoCurrencies
                     .compactMap { [erc20AssetFactory] cryptoCurrency -> CryptoAsset? in
-                        switch cryptoCurrency.assetModel.kind {
-                        case .coin, .celoToken:
-                            return CustodialCryptoAsset(asset: cryptoCurrency)
-                        case .erc20:
-                            return erc20AssetFactory.erc20Asset(erc20AssetModel: cryptoCurrency.assetModel)
-                        case .fiat:
-                            impossible()
-                        }
+                        createCryptoAsset(
+                            cryptoCurrency: cryptoCurrency,
+                            erc20AssetFactory: erc20AssetFactory
+                        )
                     }
 
                 storage.mutate { storage in
@@ -93,19 +89,28 @@ final class DynamicAssetLoader: AssetLoader {
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         storage.mutateAndReturn { [erc20AssetFactory] storage in
             guard let cryptoAsset = storage[cryptoCurrency] else {
-                let cryptoAsset: CryptoAsset
-                switch cryptoCurrency.assetModel.kind {
-                case .coin, .celoToken:
-                    cryptoAsset = CustodialCryptoAsset(asset: cryptoCurrency)
-                case .erc20:
-                    cryptoAsset = erc20AssetFactory.erc20Asset(erc20AssetModel: cryptoCurrency.assetModel)
-                case .fiat:
-                    impossible()
-                }
+                let cryptoAsset: CryptoAsset = createCryptoAsset(
+                    cryptoCurrency: cryptoCurrency,
+                    erc20AssetFactory: erc20AssetFactory
+                )
                 storage[cryptoCurrency] = cryptoAsset
                 return cryptoAsset
             }
             return cryptoAsset
         }
+    }
+}
+
+private func createCryptoAsset(
+    cryptoCurrency: CryptoCurrency,
+    erc20AssetFactory: ERC20AssetFactoryAPI
+) -> CryptoAsset {
+    switch cryptoCurrency.assetModel.kind {
+    case .coin, .celoToken:
+        return CustodialCryptoAsset(asset: cryptoCurrency)
+    case .erc20:
+        return erc20AssetFactory.erc20Asset(erc20AssetModel: cryptoCurrency.assetModel)
+    case .fiat:
+        impossible()
     }
 }

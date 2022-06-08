@@ -4,7 +4,6 @@
 #import "AccountsAndAddressesDetailViewController.h"
 #import "BCEditAccountView.h"
 #import "BCEditAddressView.h"
-#import "UIViewController+AutoDismiss.h"
 #import "Blockchain-Swift.h"
 
 const int numberOfSectionsAccountUnarchived = 2;
