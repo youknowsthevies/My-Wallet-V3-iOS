@@ -81,13 +81,6 @@ extension DependencyContainer {
 
         factory { NavigationRouter() as NavigationRouterAPI }
 
-        single { OnboardingSettings() }
-
-        factory { () -> OnboardingSettingsAPI in
-            let settings: OnboardingSettings = DIKit.resolve()
-            return settings as OnboardingSettingsAPI
-        }
-
         factory { DeepLinkHandler() as DeepLinkHandling }
 
         factory { DeepLinkRouter() as DeepLinkRouting }

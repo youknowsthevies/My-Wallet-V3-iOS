@@ -131,7 +131,6 @@ struct CoreAppEnvironment {
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
     var walletPayloadService: WalletPayloadServiceAPI
@@ -739,7 +738,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.siftService.removeUserId()
         environment.sharedContainer.reset()
         environment.blockchainSettings.reset()
-        environment.onboardingSettings.reset()
 
         // update state
         state.loggedIn = nil

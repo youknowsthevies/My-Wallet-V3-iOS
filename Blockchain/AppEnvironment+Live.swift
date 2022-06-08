@@ -16,7 +16,6 @@ extension AppEnvironment {
             app: resolve(),
             nabuUserService: resolve(),
             loadingViewPresenter: resolve(),
-            onboardingSettings: resolve(),
             blurEffectHandler: resolve(),
             cacheSuite: resolve(),
             remoteNotificationServiceContainer: resolve(),

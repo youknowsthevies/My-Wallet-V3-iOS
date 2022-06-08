@@ -28,7 +28,6 @@ final class LoggedInReducerTests: XCTestCase {
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockNabuUserService: MockNabuUserService!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
-    var onboardingSettings: MockOnboardingSettings!
     var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
     var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     var mockDeepLinkRouter: MockDeepLinkRouter!
@@ -63,7 +62,6 @@ final class LoggedInReducerTests: XCTestCase {
             authorizer: mockRemoteNotificationAuthorizer
         )
         mockAnalyticsRecorder = MockAnalyticsRecorder()
-        onboardingSettings = MockOnboardingSettings()
         mockAppDeeplinkHandler = MockAppDeeplinkHandler()
         mockMainQueue = DispatchQueue.immediate
         mockDeepLinkRouter = MockDeepLinkRouter()
@@ -101,7 +99,6 @@ final class LoggedInReducerTests: XCTestCase {
         mockRemoteNotificationAuthorizer = nil
         mockRemoteNotificationServiceContainer = nil
         mockAnalyticsRecorder = nil
-        onboardingSettings = nil
         mockAppDeeplinkHandler = nil
         mockMainQueue = nil
         mockDeepLinkRouter = nil

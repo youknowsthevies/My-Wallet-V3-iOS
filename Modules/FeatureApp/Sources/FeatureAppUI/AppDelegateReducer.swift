@@ -73,7 +73,6 @@ extension AppDelegateAction {
 struct AppDelegateEnvironment {
     var app: AppProtocol
     var appSettings: BlockchainSettings.App
-    var onboardingSettings: OnboardingSettingsAPI
     var cacheSuite: CacheSuite
     var remoteNotificationBackgroundReceiver: RemoteNotificationBackgroundReceiving
     var remoteNotificationAuthorizer: RemoteNotificationRegistering

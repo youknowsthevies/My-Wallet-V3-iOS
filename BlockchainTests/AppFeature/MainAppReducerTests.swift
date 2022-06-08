@@ -44,7 +44,6 @@ final class MainAppReducerTests: XCTestCase {
     var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var mockSiftService: MockSiftService!
-    var onboardingSettings: MockOnboardingSettings!
     var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     var mockDeepLinkHandler: MockDeepLinkHandler!
     var mockDeepLinkRouter: MockDeepLinkRouter!
@@ -97,7 +96,6 @@ final class MainAppReducerTests: XCTestCase {
         mockCoincore = MockCoincore()
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         mockSiftService = MockSiftService()
-        onboardingSettings = MockOnboardingSettings()
         mockMainQueue = DispatchQueue.test
         mockDeepLinkHandler = MockDeepLinkHandler()
         mockDeepLinkRouter = MockDeepLinkRouter()
@@ -146,7 +144,6 @@ final class MainAppReducerTests: XCTestCase {
                 sharedContainer: SharedContainerUserDefaults(),
                 analyticsRecorder: mockAnalyticsRecorder,
                 siftService: mockSiftService,
-                onboardingSettings: onboardingSettings,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 appStoreOpener: mockAppStoreOpener,
                 walletPayloadService: mockWalletPayloadService,
@@ -178,7 +175,6 @@ final class MainAppReducerTests: XCTestCase {
         mockCoincore = nil
         mockAnalyticsRecorder = nil
         mockSiftService = nil
-        onboardingSettings = nil
         mockMainQueue = nil
         mockDeepLinkHandler = nil
         mockDeepLinkRouter = nil
@@ -467,7 +463,6 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
-        XCTAssertTrue(onboardingSettings.resetCalled)
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
@@ -508,7 +503,6 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
-        XCTAssertTrue(onboardingSettings.resetCalled)
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }

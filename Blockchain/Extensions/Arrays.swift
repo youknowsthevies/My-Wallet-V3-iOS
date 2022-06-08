@@ -4,13 +4,6 @@ import Foundation
 import PlatformKit
 import ToolKit
 
-extension Array where Element: Equatable {
-
-    func randomItem() -> Iterator.Element? {
-        isEmpty ? nil : self[Int(arc4random_uniform(UInt32(endIndex)))]
-    }
-}
-
 extension Array where Element: Any {
 
     /// Cast the `Any` objects in this Array to instances of `Type`
