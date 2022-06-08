@@ -169,7 +169,7 @@ extension AssetModel {
 
     public static let polygon = AssetModel(
         code: "MATIC.MATIC",
-        displayCode: "MATIC (Polygon)",
+        displayCode: "MATIC",
         kind: .coin(minimumOnChainConfirmations: 128),
         name: "Polygon",
         precision: 18,
