@@ -4,6 +4,7 @@
 @testable import MetadataKitMock
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import TestKit
@@ -31,11 +32,13 @@ class WalletFetcherTests: XCTestCase {
         let metadataService = MetadataServiceMock()
         let notificationCenterSpy = NotificationCenterSpy()
         let upgrader = WalletUpgrader(workflows: [])
+        let walletSyncMock = WalletSyncMock()
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder.createWallet,
             upgrader: upgrader,
             metadata: metadataService,
+            walletSync: walletSyncMock,
             notificationCenter: notificationCenterSpy
         )
         let walletFetcher = WalletFetcher(

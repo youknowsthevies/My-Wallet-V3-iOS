@@ -73,6 +73,7 @@ extension DependencyContainer {
                 decoder: decoder,
                 upgrader: upgrader,
                 metadata: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
                 notificationCenter: .default
             )
         }

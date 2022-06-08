@@ -53,6 +53,7 @@ final class WalletLogic: WalletLogicAPI {
     private let decoder: WalletDecoding
     private let upgrader: WalletUpgraderAPI
     private let metadata: MetadataServiceAPI
+    private let walletSync: WalletSyncAPI
     private let notificationCenter: NotificationCenter
 
     #warning("TODO: This should be removed, pass opaque context from initialize methods instead")
@@ -63,12 +64,14 @@ final class WalletLogic: WalletLogicAPI {
         decoder: @escaping WalletDecoding,
         upgrader: WalletUpgraderAPI,
         metadata: MetadataServiceAPI,
+        walletSync: WalletSyncAPI,
         notificationCenter: NotificationCenter
     ) {
         self.holder = holder
         self.decoder = decoder
         self.upgrader = upgrader
         self.metadata = metadata
+        self.walletSync = walletSync
         self.notificationCenter = notificationCenter
     }
 
@@ -106,9 +109,11 @@ final class WalletLogic: WalletLogicAPI {
         decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError> {
         decoder(payload, decryptedWallet)
-            .flatMap { [upgrader] wrapper -> AnyPublisher<Wrapper, WalletError> in
-                runUpgradeIfNeeded(
+            .flatMap { [upgrader, walletSync] wrapper -> AnyPublisher<Wrapper, WalletError> in
+                runUpgradeAndSyncIfNeeded(
                     upgrader: upgrader,
+                    walletSync: walletSync,
+                    password: password,
                     wrapper: wrapper
                 )
             }
@@ -143,13 +148,21 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [decoder, upgrader] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+            .flatMap { [decoder, upgrader, walletSync] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
                 decoder(payload, decryptedWallet)
                     .map { ($0, metadataState) }
                     .flatMap { wrapper, metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
-                        runUpgradeIfNeeded(upgrader: upgrader, wrapper: wrapper)
-                            .map { ($0, metadataState) }
-                            .eraseToAnyPublisher()
+                        runUpgradeAndSyncIfNeeded(
+                            upgrader: upgrader,
+                            walletSync: walletSync,
+                            password: password,
+                            wrapper: wrapper
+                        )
+                        .map { upgradedWrapper in
+                            // for clarity, we pass the upgraded wrapper.
+                            (upgradedWrapper, metadataState)
+                        }
+                        .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
             }
@@ -259,13 +272,15 @@ final class WalletLogic: WalletLogicAPI {
     }
 }
 
-/// Runs upgrades on the given `Wrapper` if needed
+/// Runs upgrades on the given `Wrapper` and syncs with server, if needed
 /// - Parameters:
 ///   - upgrader: A `WalletUpgraderAPI` object responsible for the upgrades
 ///   - wrapper: A `Wrapper` to be upgraded
-/// - Returns: `AnyPublisher<Wrapper, WalletError>`
-private func runUpgradeIfNeeded(
+/// - Returns: The upgraded wrapper, `AnyPublisher<Wrapper, WalletError>`
+private func runUpgradeAndSyncIfNeeded(
     upgrader: WalletUpgraderAPI,
+    walletSync: WalletSyncAPI,
+    password: String,
     wrapper: Wrapper
 ) -> AnyPublisher<Wrapper, WalletError> {
     guard upgrader.upgradedNeeded(wrapper: wrapper) else {
@@ -273,6 +288,12 @@ private func runUpgradeIfNeeded(
     }
     return upgrader.performUpgrade(wrapper: wrapper)
         .mapError(WalletError.upgrade)
+        .flatMap { wrapper -> AnyPublisher<Wrapper, WalletError> in
+            walletSync.sync(wrapper: wrapper, password: password)
+                .map { _ in wrapper }
+                .mapError(WalletError.sync)
+                .eraseToAnyPublisher()
+        }
         .eraseToAnyPublisher()
 }
 

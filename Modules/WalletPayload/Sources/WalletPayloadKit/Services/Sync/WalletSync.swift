@@ -17,7 +17,7 @@ protocol WalletSyncAPI {
     ) -> AnyPublisher<EmptyValue, WalletSyncError>
 }
 
-enum WalletSyncError: LocalizedError {
+public enum WalletSyncError: LocalizedError, Equatable {
     case unknown
     case notInitialized
     case failureSyncingWallet
