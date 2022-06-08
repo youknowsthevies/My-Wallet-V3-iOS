@@ -191,6 +191,8 @@ extension UIColor {
     public static let lightShimmering = grey000
     public static let darkShimmering = grey200
 
+    public static let nftBadge = purple600
+
     // MARK: Indications
 
     public static let securePinGrey = greyFade400

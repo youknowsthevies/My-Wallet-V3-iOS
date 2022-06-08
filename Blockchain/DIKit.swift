@@ -731,11 +731,29 @@ extension DependencyContainer {
             return AsssetProviderService(
                 repository: AssetProviderRepository(
                     client: FeatureNFTData.APIClient(
-                        networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
-                        requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                        retailNetworkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                        defaultNetworkAdapter: DIKit.resolve(),
+                        retailRequestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                        defaultRequestBuilder: DIKit.resolve()
                     )
                 ),
                 ethereumWalletAddressPublisher: publisher
+            )
+        }
+
+        factory { () -> FeatureNFTDomain.ViewWaitlistRegistrationRepositoryAPI in
+            let emailService: EmailSettingsServiceAPI = DIKit.resolve()
+            let publisher = emailService
+                .emailPublisher
+                .eraseError()
+            return ViewWaitlistRegistrationRepository(
+                client: FeatureNFTData.APIClient(
+                    retailNetworkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    defaultNetworkAdapter: DIKit.resolve(),
+                    retailRequestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                    defaultRequestBuilder: DIKit.resolve()
+                ),
+                emailAddressPublisher: publisher
             )
         }
 

@@ -11,6 +11,10 @@ public protocol FeatureNFTClientAPI {
     func fetchAssetsFromEthereumAddress(
         _ address: String
     ) -> AnyPublisher<[AssetResponse], NabuNetworkError>
+
+    func registerEmailForNFTViewWaitlist(
+        _ email: String
+    ) -> AnyPublisher<Void, NabuNetworkError>
 }
 
 public final class APIClient: FeatureNFTClientAPI {
@@ -21,6 +25,11 @@ public final class APIClient: FeatureNFTClientAPI {
             "nft",
             "assets"
         ]
+        static let waitlist = [
+            "explorer-gateway",
+            "features",
+            "subscribe"
+        ]
     }
 
     private enum Parameter {
@@ -29,17 +38,23 @@ public final class APIClient: FeatureNFTClientAPI {
 
     // MARK: - Private Properties
 
-    private let requestBuilder: RequestBuilder
-    private let networkAdapter: NetworkAdapterAPI
+    private let retailRequestBuilder: RequestBuilder
+    private let retailNetworkAdapter: NetworkAdapterAPI
+    private let defaultRequestBuilder: RequestBuilder
+    private let defaultNetworkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
 
     public init(
-        networkAdapter: NetworkAdapterAPI,
-        requestBuilder: RequestBuilder
+        retailNetworkAdapter: NetworkAdapterAPI,
+        defaultNetworkAdapter: NetworkAdapterAPI,
+        retailRequestBuilder: RequestBuilder,
+        defaultRequestBuilder: RequestBuilder
     ) {
-        self.networkAdapter = networkAdapter
-        self.requestBuilder = requestBuilder
+        self.retailNetworkAdapter = retailNetworkAdapter
+        self.retailRequestBuilder = retailRequestBuilder
+        self.defaultNetworkAdapter = defaultNetworkAdapter
+        self.defaultRequestBuilder = defaultRequestBuilder
     }
 
     // MARK: - FeatureNFTClientAPI
@@ -53,11 +68,22 @@ public final class APIClient: FeatureNFTClientAPI {
                 value: address
             )
         ]
-        let request = requestBuilder.post(
+        let request = retailRequestBuilder.post(
             path: Path.assets,
             parameters: parameters,
             contentType: .json
         )!
-        return networkAdapter.perform(request: request)
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    public func registerEmailForNFTViewWaitlist(
+        _ email: String
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let payload = ViewWaitlistRequest(email: email)
+        let request = defaultRequestBuilder.post(
+            path: Path.waitlist,
+            body: try? JSONEncoder().encode(payload)
+        )!
+        return defaultNetworkAdapter.perform(request: request)
     }
 }

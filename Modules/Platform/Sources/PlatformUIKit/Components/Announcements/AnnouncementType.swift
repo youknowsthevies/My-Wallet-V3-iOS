@@ -18,6 +18,7 @@ public enum AnnouncementType: String, Codable {
     case newSwap = "swap_v2"
     case cloudBackup = "cloud_backup"
     case bitpay
+    case viewNFTWaitlist = "view_nft_waitlist"
     case fiatFundsKYC = "fiat_funds_kyc"
     case fiatFundsNoKYC = "fiat_funds_no_kyc"
     case interestFunds = "interest_funds"
@@ -65,6 +66,8 @@ public enum AnnouncementType: String, Codable {
             return .interestFunds
         case .ukEntitySwitch:
             return .ukEntitySwitch
+        case .viewNFTWaitlist:
+            return .viewNFTWaitlist
         case .claimFreeCryptoDomain:
             return .claimFreeCryptoDomain
         case .walletConnect:
