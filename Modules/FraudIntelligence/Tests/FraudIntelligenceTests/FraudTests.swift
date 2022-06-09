@@ -75,7 +75,7 @@ final class FraudIntelligenceTests: XCTestCase {
 
         let flows: Tag.Context = [
             blockchain.session.event.will.sign.in: "login",
-            blockchain.ux.transaction.event.did.start: "order"
+            blockchain.ux.transaction.did.start: "order"
         ]
 
         let flow = { [state = app.state] in
@@ -90,7 +90,7 @@ final class FraudIntelligenceTests: XCTestCase {
         XCTAssertEqual(try flow(), "login")
         XCTAssertEqual(Test.MobileIntelligence.options.flow, "login")
 
-        app.post(event: blockchain.ux.transaction.event.did.start)
+        app.post(event: blockchain.ux.transaction.did.start)
         XCTAssertEqual(try flow(), "order")
         XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
     }
@@ -99,7 +99,7 @@ final class FraudIntelligenceTests: XCTestCase {
 
         let triggers: [Tag.Event] = [
             blockchain.session.event.did.sign.in,
-            blockchain.ux.transaction.event.did.finish
+            blockchain.ux.transaction.did.finish
         ]
 
         app.remoteConfiguration.override(blockchain.app.fraud.sardine.trigger, with: triggers)
@@ -117,7 +117,7 @@ final class FraudIntelligenceTests: XCTestCase {
         XCTAssertEqual(count, 1)
         XCTAssertEqual(Test.MobileIntelligence.count, 1)
 
-        app.post(event: blockchain.ux.transaction.event.did.finish)
+        app.post(event: blockchain.ux.transaction.did.finish)
         XCTAssertEqual(count, 2)
         XCTAssertEqual(Test.MobileIntelligence.count, 2)
     }

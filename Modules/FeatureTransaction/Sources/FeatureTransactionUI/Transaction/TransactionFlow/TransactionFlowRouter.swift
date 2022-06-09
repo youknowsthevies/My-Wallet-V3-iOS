@@ -34,12 +34,16 @@ protocol TransactionFlowInteractable: Interactable,
 }
 
 public protocol TransactionFlowViewControllable: ViewControllable {
+
+    var viewControllers: [UIViewController] { get }
+
     func present(viewController: ViewControllable?, animated: Bool)
     func replaceRoot(viewController: ViewControllable?, animated: Bool)
     func push(viewController: ViewControllable?)
     func dismiss()
     func pop()
     func popToRoot()
+    func setViewControllers(_ viewControllers: [UIViewController], animated: Bool)
 }
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
@@ -159,6 +163,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             )
             .app(app)
         )
+
+        attachChild(Router<Interactor>(interactor: Interactor()))
+
         if state.stepsBackStack.isNotEmpty {
             viewController.push(viewController: errorViewController)
         } else {
@@ -273,6 +280,19 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         guard let child = children.last else { return }
         pop()
         detachChild(child)
+    }
+
+    func pop<T: UIViewController>(to type: T.Type) {
+        var viewable = children
+        for child in Array(viewable.reversed()) {
+            guard let child = child as? ViewableRouting else { continue }
+            viewable = viewable.dropLast()
+            if child.viewControllable.uiviewController is T { break }
+            detachChild(child as Routing)
+        }
+        children = viewable as [Routing]
+        let viewControllers = viewable.filter(ViewableRouting.self).map(\.viewControllable.uiviewController)
+        viewController.setViewControllers(viewControllers, animated: true)
     }
 
     func routeToSourceAccountPicker(
@@ -496,6 +516,11 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         transactionModel: TransactionModel,
         action: AssetAction
     ) {
+
+        if viewController.viewControllers.contains(EnterAmountViewController.self) {
+            return pop(to: EnterAmountViewController.self)
+        }
+
         guard let source = source as? SingleAccount else { return }
         let builder = EnterAmountPageBuilder(transactionModel: transactionModel)
         let router = builder.build(

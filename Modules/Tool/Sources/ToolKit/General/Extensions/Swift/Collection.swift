@@ -2,8 +2,12 @@
 
 extension Collection {
 
-    public func filter<T>(_ type: T.Type) -> [T] {
+    @inlinable public func filter<T>(_ type: T.Type) -> [T] {
         compactMap { $0 as? T }
+    }
+
+    @inlinable public func contains<T>(_ type: T.Type) -> Bool {
+        contains(where: { $0 is T })
     }
 }
 
@@ -20,7 +24,7 @@ extension BinaryInteger {
 
 extension Collection where Element: Equatable {
 
-    public func sorted(like other: [Element]) -> [Element] {
+    @inlinable public func sorted(like other: [Element]) -> [Element] {
         sorted { a, b -> Bool in
             guard let first = other.firstIndex(of: a) else { return false }
             guard let second = other.firstIndex(of: b) else { return true }

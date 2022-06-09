@@ -61,6 +61,7 @@ enum TransactionAction: MviAction {
     case resetFlow
     case showSourceSelection
     case showTargetSelection
+    case showEnterAmount
     case showCheckout
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
@@ -279,6 +280,16 @@ extension TransactionAction {
                 .update(keyPath: \.step, value: .selectTarget)
                 .update(keyPath: \.isGoingBack, value: oldState.action != .buy)
                 .withUpdatedBackstack(oldState: oldState)
+
+        case .showEnterAmount:
+            return oldState
+                .update(keyPath: \.step, value: .enterAmount)
+                .update(keyPath: \.isGoingBack, value: false)
+                .update(keyPath: \.errorState, value: .none)
+                .update(
+                    keyPath: \.stepsBackStack,
+                    value: oldState.stepsBackStack.split(separator: .enterAmount).first.map(Array.init).or([])
+                )
 
         case .performKYCChecks:
             return oldState.stateForMovingForward(to: .kycChecks)

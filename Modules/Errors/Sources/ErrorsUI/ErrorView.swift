@@ -132,41 +132,43 @@ public struct ErrorView<Fallback: View>: View {
 
     @ViewBuilder
     private var metadata: some View {
-        HStack {
-            LazyVGrid(columns: columns, alignment: .leading) {
-                ForEach(Array(ux.metadata), id: \.key) { key, value in
-                    Text(rich: key)
-                    Text(rich: value)
+        if !ux.metadata.isEmpty {
+            HStack {
+                LazyVGrid(columns: columns, alignment: .leading) {
+                    ForEach(Array(ux.metadata), id: \.key) { key, value in
+                        Text(rich: key)
+                        Text(rich: value)
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                Icon.copy.frame(width: 16.pt, height: 16.pt)
+                    .accentColor(.semantic.light)
             }
-            .frame(maxWidth: .infinity)
-            Icon.copy.frame(width: 16.pt, height: 16.pt)
-                .accentColor(.semantic.light)
-        }
-        .typography(.micro)
-        .foregroundColor(.semantic.body)
-        .padding(8.pt)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.semantic.light, lineWidth: 1)
-                .background(Color.semantic.background)
-        )
-        .contextMenu {
-            Button(
-                action: {
-                    let string = String(ux.metadata.map { "\($0): \($1)" }.joined(by: "\n"))
-                    #if canImport(UIKit)
-                    UIPasteboard.general.string = string
-                    #else
-                    NSPasteboard.general.setString(string, forType: .string)
-                    #endif
-                },
-                label: {
-                    Label(L18n.copy, systemImage: "doc.on.doc.fill")
-                }
+            .typography(.micro)
+            .foregroundColor(.semantic.body)
+            .padding(8.pt)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.semantic.light, lineWidth: 1)
+                    .background(Color.semantic.background)
             )
+            .contextMenu {
+                Button(
+                    action: {
+                        let string = String(ux.metadata.map { "\($0): \($1)" }.joined(by: "\n"))
+                        #if canImport(UIKit)
+                        UIPasteboard.general.string = string
+                        #else
+                        NSPasteboard.general.setString(string, forType: .string)
+                        #endif
+                    },
+                    label: {
+                        Label(L18n.copy, systemImage: "doc.on.doc.fill")
+                    }
+                )
+            }
+            .padding(.bottom)
         }
-        .padding(.bottom)
     }
 
     @ViewBuilder

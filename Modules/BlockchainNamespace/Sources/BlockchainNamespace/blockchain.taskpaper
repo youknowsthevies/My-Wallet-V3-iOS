@@ -558,6 +558,11 @@ blockchain:
 			+ blockchain.ux.type.story
 			sell:
 			+ blockchain.ux.type.story
+		customer:
+			support:
+			+ blockchain.ux.type.story
+				show:
+				+ blockchain.ux.type.analytics.action
 		error:
 		+ blockchain.ux.type.story
 			then:
@@ -634,41 +639,43 @@ blockchain:
 			QR:
 			+ blockchain.ux.type.story
 		transaction:
-			crypto:
-				currency:
-				+ blockchain.db.collection
-					buy:
-					+ blockchain.ux.transaction.type
-					+ blockchain.ux.type.story
-						with:
-							fiat:
-							+ blockchain.session.state.value
-							+ blockchain.type.money
-					receive:
-					+ blockchain.ux.transaction.type
-					+ blockchain.ux.type.story
-					sell:
-					+ blockchain.ux.transaction.type
-					+ blockchain.ux.type.story
-					swap:
-					+ blockchain.db.collection
-					+ blockchain.ux.transaction.type
-					+ blockchain.ux.type.story
-			event:
-				did:
-					error:
-					+ blockchain.ux.type.analytics.error
-					finish:
-					+ blockchain.ux.type.analytics.event
-					start:
-					+ blockchain.ux.type.analytics.event
-			fiat:
-				currency:
-				+ blockchain.db.collection
-					deposit:
-					+ blockchain.ux.type.story
-					withdraw:
-					+ blockchain.ux.type.story
+			action:
+				add:
+					account:
+					bank:
+					card:
+				change:
+					payment:
+						method:
+				go:
+					back:
+						to:
+							enter:
+								amount:
+				reset:
+				show:
+					wire:
+						transfer:
+							instructions:
+			checkout:
+			did:
+				error:
+				finish:
+				start:
+			enter:
+				address:
+				amount:
+			in:
+				progress:
+			link:
+				a:
+					bank:
+					card:
+				payment:
+					method:
+			select:
+				source:
+				target:
 		type:
 			action:
 			+ blockchain.ui.type.action

@@ -152,13 +152,14 @@ extension AppProtocol {
     }
 }
 
-public final class BlockchainEventSubscription {
+public final class BlockchainEventSubscription: Hashable {
 
     enum Action {
         case sync((Session.Event) throws -> Void)
         case async((Session.Event) async throws -> Void)
     }
 
+    let id: UInt
     let app: AppProtocol
     let events: [Tag.Event]
     let action: Action
@@ -174,6 +175,7 @@ public final class BlockchainEventSubscription {
         line: Int,
         action: @escaping (Session.Event) throws -> Void
     ) {
+        id = Self.id
         self.app = app
         self.events = events
         self.file = file
@@ -188,6 +190,7 @@ public final class BlockchainEventSubscription {
         line: Int,
         action: @escaping (Session.Event) async throws -> Void
     ) {
+        id = Self.id
         self.app = app
         self.events = events
         self.file = file
@@ -225,5 +228,30 @@ public final class BlockchainEventSubscription {
     public func stop() {
         subscription?.cancel()
         subscription = nil
+    }
+}
+
+extension BlockchainEventSubscription {
+
+    public func subscribe() -> AnyCancellable {
+        start()
+        return AnyCancellable { [self] in stop() }
+    }
+
+    private static var count: UInt = 0
+    private static let lock = NSLock()
+    private static var id: UInt {
+        lock.lock()
+        defer { lock.unlock() }
+        count += 1
+        return count
+    }
+
+    public static func == (lhs: BlockchainEventSubscription, rhs: BlockchainEventSubscription) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }

@@ -251,6 +251,8 @@ final class TransactionModel {
             return nil
         case .showTargetSelection:
             return nil
+        case .showEnterAmount:
+            return nil
         }
     }
 
