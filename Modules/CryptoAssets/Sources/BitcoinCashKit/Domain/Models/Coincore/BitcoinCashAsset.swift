@@ -176,7 +176,7 @@ extension BitcoinCashAsset: DomainResolutionRecordProviderAPI {
         resolutionRecordAccount
             .eraseError()
             .flatMap { account in
-                account.firstReceiveAddress.asPublisher().eraseError()
+                account.firstReceiveAddress.eraseError()
             }
             .map { [asset] receiveAddress in
                 ResolutionRecord(symbol: asset.code, walletAddress: receiveAddress.address)

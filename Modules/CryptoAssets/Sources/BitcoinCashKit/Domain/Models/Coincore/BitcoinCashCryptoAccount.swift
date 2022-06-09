@@ -48,7 +48,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             }
     }
 
-    var firstReceiveAddress: Single<ReceiveAddress> {
+    var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
         bridge
             .firstReceiveAddress(forXPub: xPub.address)
             .map { [label, onTxCompleted] address -> ReceiveAddress in
@@ -58,6 +58,8 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
                     onTxCompleted: onTxCompleted
                 )
             }
+            .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     var activity: Single<[ActivityItemEvent]> {

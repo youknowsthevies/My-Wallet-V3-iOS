@@ -41,6 +41,9 @@ public protocol BlockchainAccount: Account {
 
     var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> { get }
 
+    /// The first `ReceiveAddress` for the given first account (only for BTC and BCH)
+    var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> { get }
+
     /// Some wallets are double encrypted and have a second password.
     var requireSecondPassword: Single<Bool> { get }
 
@@ -89,6 +92,10 @@ extension BlockchainAccount {
     public var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
         receiveAddress.asPublisher()
             .eraseToAnyPublisher()
+    }
+
+    public var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        receiveAddressPublisher
     }
 
     /// Account balance is positive.
