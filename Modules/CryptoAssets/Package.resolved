@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
         "state": {
           "branch": null,
-          "revision": "c2f7a48391555fcac70b55dd728051ba50b059dd",
-          "version": "2.0.2"
+          "revision": "51ecd492dd03eb0ace271fc20a10135959c62721",
+          "version": "2.2.1"
         }
       },
       {
