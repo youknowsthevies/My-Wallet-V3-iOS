@@ -39,7 +39,7 @@ let package = Package(
         .package(
             name: "stellarsdk",
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
-            .exact("2.0.2")
+            .exact("2.2.1")
         ),
         .package(
             name: "WalletCore",

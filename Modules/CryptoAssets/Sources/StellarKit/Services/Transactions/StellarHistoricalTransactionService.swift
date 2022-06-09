@@ -153,7 +153,9 @@ extension OperationResponse {
              .beginSponsoringFutureReserves,
              .clawback,
              .clawbackClaimableBalance,
-             .setTrustLineFlags:
+             .setTrustLineFlags,
+             .liquidityPoolDeposit,
+             .liquidityPoolWithdraw:
             return nil
         }
     }
