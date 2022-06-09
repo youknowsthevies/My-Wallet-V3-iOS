@@ -17,8 +17,9 @@ open class BaseTableViewController: BaseScreenViewController {
     private let separatorView = UIView()
     private let outerStackView = UIStackView()
     private let bottomContainerView = UIView()
-    private let buttonStackView = UIStackView()
+    private let bottomStackView = UIStackView()
     private var contentBottomZeroHeightConstraint: NSLayoutConstraint?
+    private let disposeBag = DisposeBag()
 
     // MARK: - Public UI Constraints
 
@@ -46,7 +47,7 @@ open class BaseTableViewController: BaseScreenViewController {
 
         view.addSubview(bottomContainerView)
         bottomContainerView.addSubview(separatorView)
-        bottomContainerView.addSubview(buttonStackView)
+        bottomContainerView.addSubview(bottomStackView)
 
         // Setup Table View
         tableView.isScrollEnabled = false
@@ -85,34 +86,26 @@ open class BaseTableViewController: BaseScreenViewController {
         // Setup SeparatorView
         separatorView.layout(dimension: .height, to: 1)
         separatorView.layout(edges: .leading, .trailing, .top, to: bottomContainerView)
-        separatorView.layout(edge: .bottom, to: .top, of: buttonStackView, offset: -16.0, priority: .defaultHigh)
+        separatorView.layout(edge: .bottom, to: .top, of: bottomStackView, offset: -16.0, priority: .defaultHigh)
+        separatorView.backgroundColor = .mediumBorder
 
         // Setup ButtonStackView
-        buttonStackView.axis = .vertical
-        buttonStackView.distribution = .fill
-        buttonStackView.spacing = 8
-        buttonStackView.layoutToSuperview(.leading, offset: 24)
-        buttonStackView.layoutToSuperview(.trailing, offset: -24)
-        buttonStackView.layoutToSuperview(.bottom, offset: -32)
+        bottomStackView.axis = .vertical
+        bottomStackView.distribution = .fill
+        bottomStackView.spacing = 8
+        bottomStackView.layoutToSuperview(.leading, offset: 24)
+        bottomStackView.layoutToSuperview(.trailing, offset: -24)
+        bottomStackView.layoutToSuperview(.bottom, offset: -32)
     }
 
-    public func addFooterView(_ view: UIView) {
-        buttonStackView.addArrangedSubview(view)
-        contentBottomZeroHeightConstraint?.isActive = buttonStackView.subviews.isEmpty
+    public func addStickyBottomView(_ view: UIView) {
+        bottomStackView.addArrangedSubview(view)
+        contentBottomZeroHeightConstraint?.isActive = bottomStackView.subviews.isEmpty
     }
 
     override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.availableHeight = scrollView.frame.height
         tableView.unavailableHeight = bottomContainerView.frame.height
-
-        if !buttonStackView.subviews.isEmpty, scrollView.contentSize.height > scrollView.frame.height {
-            view.bringSubviewToFront(bottomContainerView)
-            bottomContainerView.backgroundColor = .white
-            bottomContainerView.layer.shadowColor = UIColor.gray.cgColor
-            bottomContainerView.layer.shadowOffset = CGSize(width: 0.0, height: -5.0)
-            bottomContainerView.layer.shadowOpacity = 0.6
-            bottomContainerView.layer.shadowRadius = 6
-        }
     }
 }

@@ -50,7 +50,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         let buttonView = ButtonView()
         buttonView.viewModel = presenter.buttonViewModel
         buttonView.layout(dimension: .height, to: 48)
-        addFooterView(buttonView)
+        addStickyBottomView(buttonView)
 
         keyboardInteractionController = KeyboardInteractionController(
             in: scrollView,

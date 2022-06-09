@@ -43,6 +43,10 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
         contentReducer.buttons
     }
 
+    var disclaimers: [DisclaimerViewModel] {
+        contentReducer.disclaimers
+    }
+
     var cells: [DetailsScreen.CellType] {
         contentReducer.cells
     }

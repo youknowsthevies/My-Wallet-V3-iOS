@@ -14,6 +14,7 @@ public protocol HeaderBuilder {
 public protocol DetailsScreenPresenterAPI: AnyObject {
 
     var buttons: [ButtonViewModel] { get }
+    var disclaimers: [DisclaimerViewModel] { get }
     var cells: [DetailsScreen.CellType] { get }
 
     var extendSafeAreaUnderNavigationBar: Bool { get }
@@ -35,6 +36,7 @@ extension DetailsScreenPresenterAPI {
     public var extendSafeAreaUnderNavigationBar: Bool { false }
 
     public var buttons: [ButtonViewModel] { [] }
+    public var disclaimers: [DisclaimerViewModel] { [] }
 
     public var titleView: Driver<Screen.Style.TitleView> {
         titleViewRelay.asDriver()

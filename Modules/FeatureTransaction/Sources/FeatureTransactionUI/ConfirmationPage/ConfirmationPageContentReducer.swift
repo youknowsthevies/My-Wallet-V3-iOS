@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -19,6 +20,7 @@ protocol ConfirmationPageContentReducing {
     /// The `Cells` on the `ConfirmationPage`
     var cells: [DetailsScreen.CellType] { get }
     var buttons: [ButtonViewModel] { get }
+    var disclaimers: [DisclaimerViewModel] { get }
     var continueButtonViewModel: ButtonViewModel { get }
     var cancelButtonViewModel: ButtonViewModel { get }
 }
@@ -52,6 +54,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     /// should be visible.
     var buttons: [ButtonViewModel] = []
 
+    var disclaimers: [DisclaimerViewModel] = []
+
     let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
 
     /// A `CheckboxViewModel` that prompts the user to confirm
@@ -67,6 +71,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let memoUpdated = PublishRelay<(String, TransactionConfirmations.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
     private let withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI
 
     // MARK: - Private Properties
@@ -98,6 +103,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         )
 
         buttons = createButtons(state: state)
+        disclaimers = createDisclaimers(state: state)
         cells = createCells(state: state)
         header = createHeader(state: state)
     }
@@ -108,6 +114,43 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             buttons.insert(cancelButtonViewModel, at: 0)
         }
         return buttons
+    }
+
+    private func createDisclaimers(state: TransactionState) -> [DisclaimerViewModel] {
+        var disclaimers = [DisclaimerViewModel]()
+        if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
+            disclaimers.append(
+                DisclaimerViewModel(
+                    text: TransactionFlowDescriptor
+                        .confirmDisclaimerText(
+                            action: state.action,
+                            currencyCode: state.asset.code,
+                            accountLabel: state.destination?.label ?? ""
+                        )
+                )
+            )
+
+            if state.action == .buy {
+                let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
+                let disclaimerViewModel = DisclaimerViewModel(text: nil)
+                withdrawalLocksCheckRepository.withdrawalLocksCheck(
+                    paymentMethod: paymentMethod?.type.requestType.rawValue,
+                    currencyCode: state.source?.currencyType.code
+                )
+                .map {
+                    TransactionFlowDescriptor.confirmDisclaimerForBuy(
+                        paymentMethod: paymentMethod,
+                        lockDays: $0.lockDays
+                    ).attributed
+                }
+                .sink(receiveValue: { text in
+                    disclaimerViewModel.textSubject.send(text)
+                })
+                .store(in: &cancellables)
+                disclaimers.append(disclaimerViewModel)
+            }
+        }
+        return disclaimers
     }
 
     // swiftlint:disable:next function_body_length
@@ -322,59 +365,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
         }
 
-        var disclaimer: [DetailsScreen.CellType] = []
-        if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
-            let disclaimerText = TransactionFlowDescriptor
-                .confirmDisclaimerText(
-                    action: state.action,
-                    currencyCode: state.asset.code,
-                    accountLabel: state.destination?.label ?? ""
-                )
-            let labelContentInteractor = DefaultLabelContentInteractor()
-            let labelContentPresenter = DefaultLabelContentPresenter(
-                interactor: labelContentInteractor,
-                descriptors: .init(
-                    fontWeight: .medium,
-                    contentColor: .descriptionText,
-                    fontSize: 12,
-                    lineBreakMode: .byWordWrapping,
-                    accessibility: .id("disclaimer")
-                )
-            )
-            if state.action == .buy {
-                let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
-                withdrawalLocksCheckRepository.withdrawalLocksCheck(
-                    paymentMethod: paymentMethod?.type.requestType.rawValue,
-                    currencyCode: state.source?.currencyType.code
-                )
-                .asObservable()
-                .map {
-                    DefaultLabelContentInteractor.InteractionState.loaded(
-                        next: .init(
-                            text: [
-                                disclaimerText,
-                                TransactionFlowDescriptor.confirmDisclaimerForBuy(
-                                    paymentMethod: paymentMethod,
-                                    lockDays: $0.lockDays
-                                )
-                            ].joined(separator: " ")
-                        )
-                    )
-                }
-                .startWith(.loading)
-                .bind(to: labelContentInteractor.stateRelay)
-                .disposed(by: disposeBag)
-            } else {
-                labelContentInteractor.stateRelay.accept(
-                    .loaded(next: .init(text: disclaimerText))
-                )
-            }
-            disclaimer.append(.label(labelContentPresenter))
-        }
-
         let topCells: [DetailsScreen.CellType] = imageNoticeModels + noticeModels
         let midCells: [DetailsScreen.CellType] = bitpayItemIfNeeded + confirmationLineItems + memoModels
-        let bottomCells: [DetailsScreen.CellType] = errorModels + disclaimer + checkboxModels
+        let bottomCells: [DetailsScreen.CellType] = errorModels + checkboxModels
         return topCells + [.separator] + midCells + bottomCells
     }
 

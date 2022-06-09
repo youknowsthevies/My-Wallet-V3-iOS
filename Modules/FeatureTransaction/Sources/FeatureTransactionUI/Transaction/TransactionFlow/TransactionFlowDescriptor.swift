@@ -238,12 +238,12 @@ enum TransactionFlowDescriptor {
         case .swap,
              .withdraw,
              .interestWithdraw,
-             .buy:
+             .buy,
+             .sell:
             return true
         case .sign,
              .deposit,
              .receive,
-             .sell,
              .linkToDebitCard,
              .send,
              .viewActivity,
@@ -256,44 +256,68 @@ enum TransactionFlowDescriptor {
         action: AssetAction,
         currencyCode: String = "",
         accountLabel: String = ""
-    ) -> String {
+    ) -> NSAttributedString {
         switch action {
         case .swap:
-            return LocalizedString.Swap.confirmationDisclaimer
+            return addRefundPolicyLink(LocalizedString.Swap.confirmationDisclaimer)
+        case .sell:
+            return addRefundPolicyLink(LocalizedString.Sell.confirmationDisclaimer)
         case .withdraw:
-            return LocalizedString.Withdraw.confirmationDisclaimer
+            return LocalizedString.Withdraw.confirmationDisclaimer.attributed
         case .buy:
-            return LocalizedString.Buy.confirmationDisclaimer
+            return LocalizedString.Buy.confirmationDisclaimer.attributed
         case .interestWithdraw:
             return String(
                 format: LocalizedString.InterestWithdraw.confirmationDisclaimer,
                 currencyCode,
                 accountLabel
-            )
+            ).attributed
         case .sign,
              .deposit,
              .receive,
-             .sell,
              .send,
              .viewActivity,
              .linkToDebitCard,
              .interestTransfer:
-            return ""
+            return "".attributed
         }
     }
 
+    private static func addRefundPolicyLink(_ string: String) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(
+            string: String(
+                format: string,
+                LocalizedString.refundPolicy
+            )
+        )
+        // swiftlint:disable:next line_length
+        let refundPolicyLink = "https://support.blockchain.com/hc/en-us/articles/4417063009172-Will-I-be-refunded-if-my-Swap-or-Sell-from-a-Private-Key-Wallet-fails-"
+        let refundPolicyRange = (attributedString.string as NSString).range(of: LocalizedString.refundPolicy)
+        attributedString.addAttribute(.link, value: refundPolicyLink, range: refundPolicyRange)
+        return attributedString
+    }
+
     static func confirmDisclaimerForBuy(paymentMethod: PaymentMethod?, lockDays: Int) -> String {
-        let paymentMethodName = paymentMethod?.label ?? ""
-        let lockDaysString = ["\(lockDays)", lockDays > 1 ? LocalizedString.Buy.days : LocalizedString.Buy.day].joined(separator: " ")
         switch lockDays {
         case 0:
             return LocalizedString.Buy.noLockInfo
         default:
+            let paymentMethodName = paymentMethod?.label ?? ""
+            let lockDaysString = [
+                "\(lockDays)",
+                lockDays > 1 ? LocalizedString.Buy.days : LocalizedString.Buy.day
+            ].joined(separator: " ")
             return String(
                 format: LocalizedString.Buy.lockInfo,
                 paymentMethodName,
                 lockDaysString
             )
         }
+    }
+}
+
+extension String {
+    var attributed: NSAttributedString {
+        NSAttributedString(string: self)
     }
 }

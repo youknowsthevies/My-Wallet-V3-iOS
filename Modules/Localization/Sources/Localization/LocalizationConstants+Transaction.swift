@@ -540,6 +540,11 @@ extension LocalizationConstants.Transaction.Sell {
         "Select a wallet to sell to.",
         comment: "Title of screen to select the Crypto Currency to Buy"
     )
+
+    public static let confirmationDisclaimer = NSLocalizedString(
+        "Final amount may change due to market activity. By approving this Sell you agree to Blockchain.com’s %@.",
+        comment: "Confirmation screen disclaimer."
+    )
 }
 
 extension LocalizationConstants.Transaction.Swap {
@@ -553,7 +558,7 @@ extension LocalizationConstants.Transaction.Swap {
         comment: "Swap Max"
     )
     public static let confirmationDisclaimer = NSLocalizedString(
-        "The amounts you send and receive may change slightly due to market activity. Once an order starts, we are unable to stop it.",
+        "Final amount may change due to market activity. By approving this Swap you agree to Blockchain.com’s %@.",
         comment: "Confirmation screen disclaimer."
     )
     public static let sourceAccountPicketSubtitle = NSLocalizedString(
@@ -1768,6 +1773,11 @@ extension LocalizationConstants.Transaction.Error {
 
 extension LocalizationConstants.Transaction {
     public static let ok = NSLocalizedString("OK", comment: "OK")
+
+    public static let refundPolicy = NSLocalizedString(
+        "Refund Policy",
+        comment: "Name of the refund policy."
+    )
 }
 
 extension LocalizationConstants.Transaction.TradingCurrency {
