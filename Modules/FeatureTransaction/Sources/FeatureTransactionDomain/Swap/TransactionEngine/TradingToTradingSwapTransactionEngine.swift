@@ -14,7 +14,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: AskForRefreshConfirmation!
@@ -26,7 +26,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     }
 
     init(
-        quotesEngine: QuotesEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),

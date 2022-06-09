@@ -24,6 +24,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.native.bitcoin.transaction.is.enabled: false,
             blockchain.app.configuration.apple.pay.is.enabled: false,
             blockchain.app.configuration.card.issuing.is.enabled: false,
+            blockchain.app.configuration.redesign.checkout.is.enabled: false,
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha
         ]
     )

@@ -12,7 +12,7 @@ import ToolKit
 protocol SwapTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: QuotesEngine { get }
+    var quotesEngine: QuotesEngineAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
 }

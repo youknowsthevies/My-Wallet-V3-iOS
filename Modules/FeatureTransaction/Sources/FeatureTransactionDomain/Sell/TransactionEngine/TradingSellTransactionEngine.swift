@@ -12,7 +12,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     let canTransactFiat: Bool = true
     var requireSecondPassword: Bool = false
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -25,7 +25,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     init(
-        quotesEngine: QuotesEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),

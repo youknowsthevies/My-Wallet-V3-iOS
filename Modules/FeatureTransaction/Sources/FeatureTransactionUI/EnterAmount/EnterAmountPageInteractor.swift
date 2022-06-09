@@ -148,6 +148,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     }
                     .asObservable()
             }
+            .subscribe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
@@ -340,6 +341,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         let interactorState = transactionState
+            .subscribe(on: MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, updater -> State in
                 guard let self = self else {
                     return currentState

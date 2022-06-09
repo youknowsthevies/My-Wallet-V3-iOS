@@ -9,7 +9,7 @@ import RxSwift
 protocol SellTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: QuotesEngine { get }
+    var quotesEngine: QuotesEngineAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
@@ -170,6 +170,10 @@ extension SellTransactionEngine {
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         doBuildConfirmations(pendingTransaction: pendingTransaction)
+    }
+
+    func stop(pendingTransaction: PendingTransaction) {
+        disposeQuotesFetching(pendingTransaction: pendingTransaction)
     }
 
     // MARK: - Exchange Rates

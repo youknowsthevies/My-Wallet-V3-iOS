@@ -16,7 +16,18 @@ struct PricedQuote {
     let expirationDate: Date
 }
 
-final class QuotesEngine {
+protocol QuotesEngineAPI {
+    var quotePublisher: AnyPublisher<PricedQuote, Never> { get }
+
+    func stop()
+    func update(amount: BigInt)
+    func startPollingRate(
+        direction: OrderDirection,
+        pair: OrderPair
+    )
+}
+
+final class QuotesEngine: QuotesEngineAPI {
 
     // MARK: - Constants
 
@@ -59,7 +70,9 @@ final class QuotesEngine {
     }
 
     func stop() {
+        print("🛑 Quotes Engine Stopped Polling")
         stopSubject.send(())
+        quoteSubject.send(nil)
         cancellables.removeAll()
     }
 
@@ -71,6 +84,7 @@ final class QuotesEngine {
         direction: OrderDirection,
         pair: OrderPair
     ) {
+        print("🟢 Quotes Engine Started Polling")
         let quotePublisher = repository
             .fetchQuote(
                 direction: direction,

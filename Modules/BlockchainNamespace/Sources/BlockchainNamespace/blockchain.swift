@@ -91,6 +91,7 @@ public extension I_blockchain_app_configuration {
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
+	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
 	var `SSL`: L_blockchain_app_configuration_SSL { .init("\(__).SSL") }
@@ -322,6 +323,31 @@ public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_redesign: L, I_blockchain_app_configuration_redesign {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign: I {}
+public extension I_blockchain_app_configuration_redesign {
+	var `checkout`: L_blockchain_app_configuration_redesign_checkout { .init("\(__).checkout") }
+}
+public final class L_blockchain_app_configuration_redesign_checkout: L, I_blockchain_app_configuration_redesign_checkout {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.checkout", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign_checkout: I {}
+public extension I_blockchain_app_configuration_redesign_checkout {
+	var `is`: L_blockchain_app_configuration_redesign_checkout_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_redesign_checkout_is: L, I_blockchain_app_configuration_redesign_checkout_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.checkout.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign_checkout_is: I {}
+public extension I_blockchain_app_configuration_redesign_checkout_is {
+	var `enabled`: L_blockchain_app_configuration_redesign_checkout_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_redesign_checkout_is_enabled: L, I_blockchain_app_configuration_redesign_checkout_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.checkout.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_redesign_checkout_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_remote: L, I_blockchain_app_configuration_remote {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote", comment: "") }
 }

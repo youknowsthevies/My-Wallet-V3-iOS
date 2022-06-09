@@ -3,6 +3,7 @@
 import AnalyticsKit
 import BlockchainComponentLibrary
 import Combine
+import ComposableArchitecture
 import DIKit
 import Errors
 import ErrorsUI
@@ -101,11 +102,28 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func routeToConfirmation(transactionModel: TransactionModel) {
-        let builder = ConfirmationPageBuilder(transactionModel: transactionModel)
-        let router = builder.build(listener: interactor)
-        let viewControllable = router.viewControllable
-        attachChild(router)
-        viewController.push(viewController: viewControllable)
+        let ref = blockchain.app.configuration.redesign.checkout.is.enabled
+        let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
+
+        if isEnabled ?? false {
+            viewController.push(
+                viewController: UIHostingController<ConfirmationView>(
+                    rootView: ConfirmationView(
+                        store: Store<ConfirmationState, ConfirmationAction>(
+                            initialState: ConfirmationState(),
+                            reducer: confirmationReducer,
+                            environment: ConfirmationEnvironment()
+                        )
+                    )
+                )
+            )
+        } else {
+            let builder = ConfirmationPageBuilder(transactionModel: transactionModel)
+            let router = builder.build(listener: interactor)
+            let viewControllable = router.viewControllable
+            attachChild(router)
+            viewController.push(viewController: viewControllable)
+        }
     }
 
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction) {

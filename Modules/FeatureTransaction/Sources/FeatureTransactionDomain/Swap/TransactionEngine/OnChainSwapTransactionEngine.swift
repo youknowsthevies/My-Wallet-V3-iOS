@@ -21,7 +21,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let hotWalletAddressService: HotWalletAddressServiceAPI
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -30,9 +30,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     var transactionTarget: TransactionTarget!
 
     init(
-        quotesEngine: QuotesEngine,
         requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
