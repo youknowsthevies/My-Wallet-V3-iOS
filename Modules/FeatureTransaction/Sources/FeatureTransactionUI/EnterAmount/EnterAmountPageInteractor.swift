@@ -242,7 +242,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 availableSources,
                 availableTargets
             )
-            .map { [action] availableSources, availableTargets -> [Account] in
+            .compactMap { [action] availableSources, availableTargets -> [Account]? in
                 guard action == .buy || action == .deposit else {
                     return availableTargets
                 }

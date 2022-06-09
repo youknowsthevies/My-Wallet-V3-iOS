@@ -27,8 +27,8 @@ struct TransactionState: StateType {
 
     let action: AssetAction
 
-    var availableSources: [BlockchainAccount] = []
-    var availableTargets: [TransactionTarget] = []
+    var availableSources: [BlockchainAccount]?
+    var availableTargets: [TransactionTarget]?
 
     var source: BlockchainAccount?
     var destination: TransactionTarget?
@@ -176,8 +176,8 @@ extension TransactionState: Equatable {
             && lhs.source?.identifier == rhs.source?.identifier
             && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
-            && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
-            && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.availableSources?.map(\.identifier) == rhs.availableSources?.map(\.identifier)
+            && lhs.availableTargets?.map(\.label) == rhs.availableTargets?.map(\.label)
             && lhs.userKYCStatus == rhs.userKYCStatus
     }
 }

@@ -70,7 +70,6 @@ final class QuotesEngine: QuotesEngineAPI {
     }
 
     func stop() {
-        print("🛑 Quotes Engine Stopped Polling")
         stopSubject.send(())
         quoteSubject.send(nil)
         cancellables.removeAll()
@@ -84,7 +83,7 @@ final class QuotesEngine: QuotesEngineAPI {
         direction: OrderDirection,
         pair: OrderPair
     ) {
-        print("🟢 Quotes Engine Started Polling")
+        stop()
         let quotePublisher = repository
             .fetchQuote(
                 direction: direction,
