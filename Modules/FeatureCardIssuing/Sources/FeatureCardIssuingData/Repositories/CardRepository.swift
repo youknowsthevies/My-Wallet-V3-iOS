@@ -126,7 +126,7 @@ final class CardRepository: CardRepositoryAPI {
         cachedAccountValue.get(key: AccountKey(id: card.id))
     }
 
-    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+    func update(account: AccountBalance, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         client
             .updateAccount(
                 with: AccountCurrency(accountCurrency: account.balance.symbol),
@@ -140,7 +140,7 @@ final class CardRepository: CardRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalance], NabuNetworkError> {
         client.eligibleAccounts(for: card.id)
     }
 

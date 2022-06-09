@@ -10,6 +10,7 @@ import ToolKit
 
 public enum CardOrderingError: Error, Equatable {
     case noAddress
+    case noProduct
 }
 
 public enum CardOrderingResult: Equatable {
@@ -17,14 +18,18 @@ public enum CardOrderingResult: Equatable {
     case cancelled
 }
 
-public enum CardOrderingAction: Equatable {
+public enum CardOrderingAction: Equatable, BindableAction {
 
     case setStep(CardOrderingState.Step)
     case cardCreationResponse(Result<Card, NabuNetworkError>)
+    case fetchProducts
+    case productsResponse(Result<[Product], NabuNetworkError>)
     case fetchAddress(Result<Card.Address, CardOrderingError>)
     case close(CardOrderingResult)
     case displayEligibleCountryList
     case displayEligibleStateList
+    case selectProduct(Int)
+    case binding(BindingAction<CardOrderingState>)
 }
 
 public struct CardOrderingState: Equatable {
@@ -60,9 +65,17 @@ public struct CardOrderingState: Equatable {
 
     var step: Step
 
-    var isOrderProcessingVisible = false
-    var isProductSelectionVisible = false
-    var isProductDetailsVisible = false
+    @BindableState var isOrderProcessingVisible = false
+    @BindableState var isProductSelectionVisible = false
+    @BindableState var isProductDetailsVisible = false
+
+    @BindableState var isLegalViewVisible = false
+    @BindableState var termsAccepted = false
+    @BindableState var selectedProductIndex: Int = 0
+
+    var products: [Product] = []
+    var selectedProduct: Product?
+    var error: NabuNetworkError?
 
     var orderProcessingState: OrderProcessingState = .none
 
@@ -92,6 +105,10 @@ public struct CardOrderingEnvironment {
         self.address = address
         self.onComplete = onComplete
     }
+}
+
+private enum Constants {
+    static let tempAuthorizedSsn = "111111110"
 }
 
 public let cardOrderingReducer = Reducer<
@@ -129,18 +146,30 @@ public let cardOrderingReducer = Reducer<
         state.orderProcessingState = .error(error)
         return .none
     case .fetchAddress(.success(let address)):
-        return env
-            .productsService
-            .fetchProducts()
-            .map {
-                $0.first(where: { product in product.type == .virtual })
-            }
-            .filter { $0 != nil }
-            .flatMap { env.cardService.orderCard(product: $0!, at: address, with: "111111110") }
+        guard let product = state.selectedProduct else {
+            state.orderProcessingState = .error(CardOrderingError.noProduct)
+            return .none
+        }
+        return env.cardService
+            .orderCard(product: product, at: address, with: Constants.tempAuthorizedSsn)
             .receive(on: env.mainQueue)
             .catchToEffect(CardOrderingAction.cardCreationResponse)
     case .fetchAddress(.failure(let error)):
         state.orderProcessingState = .error(error)
+        return .none
+    case .fetchProducts:
+        return env
+            .productsService
+            .fetchProducts()
+            .receive(on: env.mainQueue)
+            .catchToEffect(CardOrderingAction.productsResponse)
+    case .productsResponse(.success(let products)):
+        state.products = products
+        state.selectedProductIndex = 0
+        state.selectedProduct = products[safe: 0]
+        return .none
+    case .productsResponse(.failure(let error)):
+        state.error = error
         return .none
     case .close(let result):
         return .fireAndForget {
@@ -150,8 +179,15 @@ public let cardOrderingReducer = Reducer<
         return .none
     case .displayEligibleCountryList:
         return .none
+    case .selectProduct(let index):
+        state.selectedProductIndex = index
+        state.selectedProduct = state.products[safe: index]
+        return .none
+    case .binding:
+        return .none
     }
 }
+.binding()
 
 #if DEBUG
 extension CardOrderingEnvironment {
@@ -182,8 +218,7 @@ struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, Top
     let accountCurrencyPair = AccountCurrency(
         accountCurrency: "BTC"
     )
-    let accountBalancePair = AccountBalancePair(
-        accountId: "42",
+    let accountBalancePair = AccountBalance(
         balance: Money(
             value: "50000",
             symbol: "BTC"
@@ -236,19 +271,22 @@ struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, Top
         .just(accountCurrencyPair)
     }
 
-    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+    func update(account: AccountBalance, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         .just(accountCurrencyPair)
     }
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
-        .just([])
+        .just([
+            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual),
+            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical)
+        ])
     }
 
-    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalance], NabuNetworkError> {
         .just([accountBalancePair])
     }
 
-    func selectAccount(for card: Card) -> AnyPublisher<AccountBalancePair, NabuNetworkError> {
+    func selectAccount(for card: Card) -> AnyPublisher<AccountBalance, NabuNetworkError> {
         .just(accountBalancePair)
     }
 

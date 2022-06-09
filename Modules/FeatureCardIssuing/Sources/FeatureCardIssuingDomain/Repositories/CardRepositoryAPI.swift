@@ -22,9 +22,9 @@ public protocol CardRepositoryAPI {
 
     func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
+    func update(account: AccountBalance, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError>
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalance], NabuNetworkError>
 
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 

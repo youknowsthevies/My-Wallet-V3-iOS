@@ -136,14 +136,14 @@ public final class CardClient: CardClientAPI {
             .eraseToAnyPublisher()
     }
 
-    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalance], NabuNetworkError> {
         let request = requestBuilder.get(
             path: [Path.cards.rawValue, cardId, Path.eligibleAccounts.rawValue],
             authenticated: true
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: [AccountBalancePair].self)
+            .perform(request: request, responseType: [AccountBalance].self)
             .eraseToAnyPublisher()
     }
 

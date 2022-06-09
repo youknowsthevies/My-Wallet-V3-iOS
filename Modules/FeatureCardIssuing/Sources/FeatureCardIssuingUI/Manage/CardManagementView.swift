@@ -37,25 +37,55 @@ struct CardManagementView: View {
     }
 
     @ViewBuilder var content: some View {
-        WithViewStore(store.scope(state: \.management)) { viewStore in
+        WithViewStore(store) { viewStore in
             ScrollView {
-                LazyVStack(spacing: 0) {
-                    header
-                    PrimaryDivider()
-                    AccountRow(account: viewStore.linkedAccount) {
-                        viewStore.send(.showSelectLinkedAccountFlow)
+                LazyVStack {
+                    HStack {
+                        Text(localizedStrings.title)
+                            .typography(.body2)
+                        Spacer()
+                        SmallMinimalButton(
+                            title: localizedStrings.Button.manage,
+                            action: {
+                                viewStore.send(.showManagementDetails)
+                            }
+                        )
                     }
-                    PrimaryDivider()
+                    .padding(Spacing.padding2)
+                    card
+                    VStack {
+                        AccountRow(account: viewStore.state.linkedAccount) {
+                            viewStore.send(.showSelectLinkedAccountFlow)
+                        }
+                        PrimaryDivider()
+                        HStack {
+                            PrimaryButton(
+                                title: localizedStrings.Button.addFunds,
+                                action: {
+                                    viewStore.send(.binding(.set(\.$isTopUpPresented, true)))
+                                }
+                            )
+                            MinimalButton(
+                                title: localizedStrings.Button.changeSource,
+                                action: {
+                                    viewStore.send(.showSelectLinkedAccountFlow)
+                                }
+                            )
+                        }
+                        .padding(Spacing.padding2)
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Spacing.padding1)
+                            .stroke(Color.semantic.light, lineWidth: 1)
+                    )
+                    .padding(Spacing.padding2)
                 }
                 .listStyle(PlainListStyle())
                 .background(Color.semantic.background.ignoresSafeArea())
             }
             .onAppear { viewStore.send(.onAppear) }
             .onDisappear { viewStore.send(.onDisappear) }
-            .sheet(isPresented: viewStore.binding(
-                get: \.isDetailScreenVisible,
-                send: CardManagementAction.setDetailsScreenVisible
-            )) {
+            .sheet(isPresented: viewStore.binding(\.$isDetailScreenVisible)) {
                 CardManagementDetailsView(store: store)
             }
             .navigationTitle(
@@ -65,40 +95,9 @@ struct CardManagementView: View {
                     .title
             )
             .bottomSheet(
-                isPresented: viewStore.binding(
-                    get: \.isTopUpPresented,
-                    send: CardManagementAction.setTopUpFlowPresented
-                ),
+                isPresented: viewStore.binding(\.$isTopUpPresented),
                 content: { topUpSheet }
             )
-        }
-    }
-
-    @ViewBuilder var header: some View {
-        WithViewStore(store.stateless) { viewStore in
-            VStack(spacing: Spacing.padding2) {
-                card
-                MinimalDoubleButton(
-                    leadingTitle: localizedStrings.Button.manage,
-                    leadingLeadingView: {
-                        Icon.settings
-                            .frame(width: 16, height: 16)
-                    },
-                    leadingAction: {
-                        viewStore.send(.showManagementDetails)
-                    },
-                    trailingTitle: localizedStrings.Button.topUp,
-                    trailingLeadingView: {
-                        Icon.plus
-                            .frame(width: 16, height: 16)
-                    },
-                    trailingAction: {
-                        viewStore.send(.setTopUpFlowPresented(true))
-                    }
-                )
-                .frame(width: 278)
-            }
-            .padding(Spacing.padding2)
         }
     }
 

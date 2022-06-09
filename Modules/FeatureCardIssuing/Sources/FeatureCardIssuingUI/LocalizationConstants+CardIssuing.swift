@@ -13,9 +13,31 @@ extension LocalizationConstants {
                     comment: "Card Issuing: Type Virtual title"
                 )
 
+                static let longTitle = NSLocalizedString(
+                    "Virtual Card",
+                    comment: "Card Issuing: Type Virtual long title"
+                )
+
                 static let description = NSLocalizedString(
-                    "Our digital only card, use instantly for online payments.",
+                    "A digital card you can use instantly for online payments.",
                     comment: "Card Issuing: Type Virtual description"
+                )
+            }
+
+            enum Physical {
+                static let title = NSLocalizedString(
+                    "Physical",
+                    comment: "Card Issuing: Type Physical title"
+                )
+
+                static let longTitle = NSLocalizedString(
+                    "Physical Card",
+                    comment: "Card Issuing: Type Physical long title"
+                )
+
+                static let description = NSLocalizedString(
+                    "A physical card you can use anywhere.",
+                    comment: "Card Issuing: Type Physical description"
                 )
             }
         }
@@ -61,7 +83,7 @@ extension LocalizationConstants {
 
         enum Navigation {
             static let title = NSLocalizedString(
-                "Blockchain Card",
+                "Blockchain.com Card",
                 comment: "Card Issuing: Navigation title"
             )
         }

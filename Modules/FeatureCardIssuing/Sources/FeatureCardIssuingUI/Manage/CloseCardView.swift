@@ -19,7 +19,7 @@ struct CloseCardView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if viewStore.management.isDeleting {
+            if viewStore.isDeleting {
                 ProgressView(value: 0.25)
                     .progressViewStyle(.indeterminate)
                     .frame(width: 52, height: 52)
@@ -65,7 +65,7 @@ struct CloseCardView: View {
                     MinimalButton(
                         title: LocalizationConstants.cancel,
                         action: {
-                            viewStore.send(.hideDeleteConfirmation)
+                            viewStore.send(.binding(.set(\.$isDeleteCardPresented, false)))
                         }
                     )
                 }

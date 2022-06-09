@@ -49,19 +49,10 @@ struct CardManagementDetailsView: View {
                                 accessibilityLabel: localizedStrings
                                     .Lock
                                     .title,
-                                isOn: Binding(
-                                    get: {
-                                        viewStore.state.isLocked
-                                    },
-                                    set: { locked in
-                                        viewStore.send(.setLocked(locked))
-                                    }
-                                )
+                                isOn: viewStore.binding(\.$isLocked)
                             )
                         },
-                        action: {
-                            viewStore.send(.setLocked(true))
-                        }
+                        action: {}
                     )
                     PrimaryDivider()
                     PrimaryRow(
@@ -73,21 +64,15 @@ struct CardManagementDetailsView: View {
                         }
                     )
                     DestructiveMinimalButton(title: localizedStrings.delete) {
-                        viewStore.send(.showDeleteConfirmation)
+                        viewStore.send(.binding(.set(\.$isDeleteCardPresented, true)))
                     }
                     .padding(Spacing.padding3)
                 }
                 .listStyle(PlainListStyle())
                 .background(Color.semantic.background.ignoresSafeArea())
             }
-            .onDisappear {
-                viewStore.send(.closeDetails)
-            }
             .bottomSheet(
-                isPresented: viewStore.binding(
-                    get: \.management.isDeleteCardPresented,
-                    send: CardManagementAction.hideDeleteConfirmation
-                ),
+                isPresented: viewStore.binding(\.$isDeleteCardPresented),
                 content: {
                     CloseCardView(store: store)
                 }
@@ -109,39 +94,34 @@ struct CardManagementDetailsView: View {
                             viewStore.send(.closeDetails)
                         })
                 }
-                card
-            }
-            .padding([.top, .trailing, .leading], Spacing.padding3)
-        }
-    }
-
-    @ViewBuilder var card: some View {
-        WithViewStore(store) { viewStore in
-            HStack {
-                Image("empty-card", bundle: .cardIssuing)
-                    .resizable()
-                    .frame(width: 63, height: 40)
+                HStack {
+                    VStack(alignment: .leading, spacing: Spacing.padding1) {
+                        HStack {
+                            Text(localizedStrings.virtualCard)
+                                .typography(.paragraph2)
+                                .foregroundColor(.semantic.title)
+                            Spacer()
+                            Text("***\(viewStore.state.card?.last4 ?? "")")
+                                .typography(.paragraph1)
+                                .foregroundColor(.semantic.muted)
+                        }
+                        Text(viewStore.state.card?.status.localizedString ?? "-")
+                            .typography(.caption2)
+                            .foregroundColor(.semantic.primaryMuted)
+                    }
                     .padding(.leading, 16)
                     .padding(.vertical, 18)
-                VStack(alignment: .leading, spacing: Spacing.padding1) {
-                    HStack {
-                        Text(localizedStrings.virtualCard)
-                            .typography(.paragraph2)
-                            .foregroundColor(.semantic.title)
-                        Spacer()
-                        Text("***\(viewStore.state.card?.last4 ?? "")")
-                            .typography(.paragraph1)
-                            .foregroundColor(.semantic.muted)
-                    }
-                    Text(viewStore.state.card?.status.localizedString ?? "")
-                        .typography(.caption2)
-                        .foregroundColor(.semantic.primaryMuted)
+                    .padding(.trailing, 16)
                 }
-                .padding(.trailing, 16)
+                .frame(maxWidth: .infinity)
+                .background(Color.semantic.light)
+                .cornerRadius(Spacing.padding1)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Spacing.padding1)
+                        .stroke(Color.semantic.muted, lineWidth: 1)
+                )
             }
-            .frame(maxWidth: .infinity)
-            .background(Color.semantic.light)
-            .cornerRadius(8)
+            .padding([.top, .trailing, .leading], Spacing.padding3)
         }
     }
 

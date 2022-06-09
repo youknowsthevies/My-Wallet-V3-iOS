@@ -8,13 +8,11 @@ import Localization
 import MoneyKit
 import ToolKit
 
-public enum CardManagementAction: Equatable {
+public enum CardManagementAction: Equatable, BindableAction {
     case addToAppleWallet
     case cardHelperDidLoad
     case close
     case closeDetails
-    case showDeleteConfirmation
-    case hideDeleteConfirmation
     case delete
     case deleteCardResponse(Result<Card, NabuNetworkError>)
     case getCardResponse(Result<Card?, NabuNetworkError>)
@@ -24,55 +22,34 @@ public enum CardManagementAction: Equatable {
     case getCardHelperUrlResponse(Result<URL, NabuNetworkError>)
     case onAppear
     case onDisappear
-    case selectLinkedAccountResponse(Result<AccountBalancePair, NabuNetworkError>)
-    case setDetailsScreenVisible(Bool)
+    case selectLinkedAccountResponse(Result<AccountBalance, NabuNetworkError>)
     case setLinkedAccountResponse(Result<AccountCurrency, NabuNetworkError>)
-    case setLocked(Bool)
     case unlockCardResponse(Result<Card, NabuNetworkError>)
     case lockCardResponse(Result<Card, NabuNetworkError>)
     case showManagementDetails
     case showSelectLinkedAccountFlow
     case showSupportFlow
     case showTransaction(CardTransaction)
-    case setTopUpFlowPresented(Bool)
     case openBuyFlow
     case openSwapFlow
+    case binding(BindingAction<CardManagementState>)
 }
 
 public struct CardManagementState: Equatable {
 
-    public struct ManagementState: Equatable {
-
-        var isDetailScreenVisible = false
-        var linkedAccount: AccountSnapshot?
-        var isTopUpPresented = false
-        var isDeleteCardPresented = false
-        var isDeleting = false
-
-        public init(
-            isDetailScreenVisible: Bool = false,
-            linkedAccount: AccountSnapshot? = nil,
-            isTopUpPresented: Bool = false,
-            isDeleteCardPresented: Bool = false,
-            isDeleting: Bool = false
-        ) {
-            self.isDetailScreenVisible = isDetailScreenVisible
-            self.linkedAccount = linkedAccount
-            self.isTopUpPresented = isTopUpPresented
-            self.isDeleteCardPresented = isDeleteCardPresented
-            self.isDeleting = isDeleting
-        }
-    }
+    @BindableState var isLocked = false
+    @BindableState var isDetailScreenVisible = false
+    @BindableState var isTopUpPresented = false
+    @BindableState var isDeleteCardPresented = false
+    @BindableState var isDeleting = false
 
     var card: Card?
-    var isLocked = false
     var cardHelperUrl: URL?
     var cardHelperIsReady = false
     var error: NabuNetworkError?
     var transactions: [CardTransaction] = []
     var displayedTransaction: CardTransaction?
-
-    var management = ManagementState()
+    var linkedAccount: AccountSnapshot?
 
     public init(
         card: Card? = nil,
@@ -80,8 +57,7 @@ public struct CardManagementState: Equatable {
         cardHelperUrl: URL? = nil,
         cardHelperIsReady: Bool = false,
         error: NabuNetworkError? = nil,
-        transactions: [CardTransaction] = [],
-        management: CardManagementState.ManagementState = ManagementState()
+        transactions: [CardTransaction] = []
     ) {
         self.card = card
         self.isLocked = isLocked
@@ -89,12 +65,11 @@ public struct CardManagementState: Equatable {
         self.cardHelperIsReady = cardHelperIsReady
         self.error = error
         self.transactions = transactions
-        self.management = management
     }
 }
 
 public protocol AccountProviderAPI {
-    func selectAccount(for card: Card) -> AnyPublisher<AccountBalancePair, NabuNetworkError>
+    func selectAccount(for card: Card) -> AnyPublisher<AccountBalance, NabuNetworkError>
     func linkedAccount(for card: Card) -> AnyPublisher<AccountSnapshot?, Never>
 }
 
@@ -150,7 +125,7 @@ public let cardManagementReducer = Reducer<
             env.close()
         }
     case .closeDetails:
-        state.management.isDetailScreenVisible = false
+        state.isDetailScreenVisible = false
         return .none
     case .onAppear:
         return env.cardService
@@ -161,11 +136,12 @@ public let cardManagementReducer = Reducer<
                         || card.status == .locked
                 })
             }
+            .receive(on: env.mainQueue)
             .catchToEffect(CardManagementAction.getCardResponse)
     case .onDisappear:
         return .none
     case .showManagementDetails:
-        state.management.isDetailScreenVisible = true
+        state.isDetailScreenVisible = true
         return .none
     case .showSelectLinkedAccountFlow:
         guard let card = state.card else {
@@ -196,41 +172,22 @@ public let cardManagementReducer = Reducer<
         guard let card = state.card else {
             return Effect(value: .close)
         }
-        state.management.isDeleting = true
+        state.isDeleting = true
         return env.cardService
             .delete(card: card)
             .receive(on: env.mainQueue)
             .catchToEffect(CardManagementAction.deleteCardResponse)
     case .deleteCardResponse(.success):
-        state.management.isDetailScreenVisible = false
+        state.isDetailScreenVisible = false
         return Effect(value: .close)
     case .deleteCardResponse(.failure(let error)):
-        state.management.isDetailScreenVisible = false
-        state.management.isDeleting = false
+        state.isDetailScreenVisible = false
+        state.isDeleting = false
         state.error = error
         return .none
     case .showSupportFlow:
         return .fireAndForget {
             env.supportRouter.handleSupport()
-        }
-    case .setLocked(let locked):
-        guard let card = state.card,
-              locked != state.isLocked
-        else {
-            return .none
-        }
-
-        state.isLocked = locked
-
-        switch locked {
-        case true:
-            return env.cardService
-                .lock(card: card)
-                .catchToEffect(CardManagementAction.lockCardResponse)
-        case false:
-            return env.cardService
-                .unlock(card: card)
-                .catchToEffect(CardManagementAction.unlockCardResponse)
         }
     case .addToAppleWallet:
         return .none
@@ -257,7 +214,7 @@ public let cardManagementReducer = Reducer<
             .receive(on: env.mainQueue)
             .catchToEffect(CardManagementAction.getLinkedAccountResponse)
     case .getLinkedAccountResponse(.success(let account)):
-        state.management.linkedAccount = account
+        state.linkedAccount = account
         return .none
     case .getCardHelperUrl:
         guard let card = state.card else { return .none }
@@ -274,9 +231,6 @@ public let cardManagementReducer = Reducer<
     case .cardHelperDidLoad:
         state.cardHelperIsReady = true
         return .none
-    case .setDetailsScreenVisible(let visible):
-        state.management.isDetailScreenVisible = visible
-        return .none
     case .lockCardResponse(.success(let card)),
          .unlockCardResponse(.success(let card)):
         state.card = card
@@ -285,11 +239,8 @@ public let cardManagementReducer = Reducer<
     case .unlockCardResponse(.failure), .lockCardResponse(.failure):
         state.isLocked = state.card?.isLocked ?? false
         return .none
-    case .setTopUpFlowPresented(let presented):
-        state.management.isTopUpPresented = presented
-        return .none
     case .openBuyFlow:
-        let linkedAccount = state.management.linkedAccount
+        let linkedAccount = state.linkedAccount
         return .fireAndForget {
             guard let crypto = linkedAccount?.cryptoCurrency else {
                 env.topUpRouter.openBuyFlow(for: linkedAccount?.fiatCurrency)
@@ -302,17 +253,28 @@ public let cardManagementReducer = Reducer<
         return .fireAndForget {
             env.topUpRouter.openSwapFlow()
         }
-    case .showDeleteConfirmation:
-        state.management.isDeleteCardPresented = true
-        return .none
-    case .hideDeleteConfirmation:
-        state.management.isDeleteCardPresented = false
-        return .none
     case .showTransaction(let transaction):
         state.displayedTransaction = transaction
         return .none
+    case .binding(\.$isLocked):
+        guard let card = state.card else { return .none }
+        switch state.isLocked {
+        case true:
+            return env.cardService
+                .lock(card: card)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.lockCardResponse)
+        case false:
+            return env.cardService
+                .unlock(card: card)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.unlockCardResponse)
+        }
+    case .binding:
+        return .none
     }
 }
+.binding()
 
 #if DEBUG
 extension CardManagementEnvironment {
@@ -337,8 +299,7 @@ extension CardManagementState {
             cardHelperUrl: nil,
             cardHelperIsReady: false,
             error: nil,
-            transactions: [.success, .pending, .failed],
-            management: .init()
+            transactions: [.success, .pending, .failed]
         )
     }
 }
