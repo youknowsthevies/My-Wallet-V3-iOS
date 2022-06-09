@@ -25,7 +25,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/embrace-io/embrace-spm",
-            from: "5.7.7"
+            from: "5.8.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
