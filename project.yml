@@ -252,6 +252,8 @@ packages:
     path: Modules/FeatureWithdrawalLocks
   FeatureWalletConnect:
     path: Modules/FeatureWalletConnect
+  FraudIntelligence:
+    path: Modules/FraudIntelligence
   HDWallet:
     path: Modules/HDWallet
   Keychain:
@@ -449,6 +451,8 @@ targets:
         product: WalletPayloadDataKit
       - package: FeatureAttribution
         product: FeatureAttribution
+      - package: FraudIntelligence
+        product: FraudIntelligence
 
     platform: iOS
     postBuildScripts:

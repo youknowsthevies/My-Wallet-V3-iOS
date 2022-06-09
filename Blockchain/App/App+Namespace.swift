@@ -7,6 +7,7 @@ import FeatureAttributionDomain
 import FeatureCoinUI
 import Firebase
 import FirebaseProtocol
+import FraudIntelligence
 import ToolKit
 import UIKit
 
@@ -30,11 +31,6 @@ let app: AppProtocol = App(
     )
 )
 
-extension FirebaseRemoteConfig.RemoteConfig: RemoteConfiguration_p {}
-extension FirebaseRemoteConfig.RemoteConfigValue: RemoteConfigurationValue_p {}
-extension FirebaseRemoteConfig.RemoteConfigFetchStatus: RemoteConfigurationFetchStatus_p {}
-extension FirebaseRemoteConfig.RemoteConfigSource: RemoteConfigurationSource_p {}
-
 extension AppProtocol {
 
     func bootstrap(
@@ -51,7 +47,6 @@ extension AppProtocol {
         #endif
         observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
-
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)
             state.transaction { state in
@@ -60,6 +55,30 @@ extension AppProtocol {
         }
     }
 }
+
+extension FirebaseRemoteConfig.RemoteConfig: RemoteConfiguration_p {}
+extension FirebaseRemoteConfig.RemoteConfigValue: RemoteConfigurationValue_p {}
+extension FirebaseRemoteConfig.RemoteConfigFetchStatus: RemoteConfigurationFetchStatus_p {}
+extension FirebaseRemoteConfig.RemoteConfigSource: RemoteConfigurationSource_p {}
+
+#if canImport(MobileIntelligence)
+import class MobileIntelligence.MobileIntelligence
+import struct MobileIntelligence.Options
+import struct MobileIntelligence.Response
+import struct MobileIntelligence.UpdateOptions
+
+extension MobileIntelligence: MobileIntelligence_p {
+
+    public static func start(_ options: Options) {
+        MobileIntelligence(withOptions: options)
+    }
+}
+
+extension Options: MobileIntelligenceOptions_p {}
+extension Response: MobileIntelligenceResponse_p {}
+extension UpdateOptions: MobileIntelligenceUpdateOptions_p {}
+
+#endif
 
 extension Tag.Event {
 

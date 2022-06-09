@@ -92,6 +92,7 @@ final class TagBlockchainSchemaTests: XCTestCase {
     }
 
     func test_isNot() throws {
+        XCTAssertTrue(blockchain.session.state.preference.value[].isNot(blockchain.session.state.shared.value))
         XCTAssertTrue(blockchain.user.email.address[].isNot(blockchain.db.type.boolean))
     }
 

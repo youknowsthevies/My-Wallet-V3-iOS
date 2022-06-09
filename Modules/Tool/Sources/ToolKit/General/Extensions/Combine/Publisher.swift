@@ -6,16 +6,6 @@ import Foundation
 
 extension Publisher where Failure == Never {
 
-    public func sink<Root, T, U>(
-        to handler: @escaping (Root) -> (T, U) -> Void,
-        on root: Root
-    ) -> AnyCancellable where Root: AnyObject, Output == (T, U) {
-        sink { [weak root] value in
-            guard let root = root else { return }
-            handler(root)(value.0, value.1)
-        }
-    }
-
     public func sink<Root>(
         to handler: @escaping (Root) -> (Output) -> Void,
         on root: Root
@@ -33,6 +23,27 @@ extension Publisher where Failure == Never {
         sink { [weak root] _ in
             guard let root = root else { return }
             handler(root)()
+        }
+    }
+
+    public func sink<Root, T, U>(
+        to handler: @escaping (Root) -> (T, U) -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject, Output == (T, U) {
+        sink { [weak root] value in
+            guard let root = root else { return }
+            handler(root)(value.0, value.1)
+        }
+    }
+
+    // swiftlint:disable large_tuple
+    public func sink<Root, T, U, V>(
+        to handler: @escaping (Root) -> (T, U, V) -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject, Output == (T, U, V) {
+        sink { [weak root] value in
+            guard let root = root else { return }
+            handler(root)(value.0, value.1, value.2)
         }
     }
 }
