@@ -143,7 +143,7 @@ extension Nabu.Error {
         public var title: String
         public var message: String
         public var icon: Errors.UX.Icon?
-        public var action: [Errors.UX.Action]?
+        public var actions: [Errors.UX.Action]?
     }
 }
 

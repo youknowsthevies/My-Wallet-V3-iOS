@@ -76,7 +76,7 @@ extension TransactionErrorState {
                 title: ob.info.title,
                 message: ob.info.subtitle,
                 icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
-                action: .default
+                actions: .default
             )
         } else {
             let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))

@@ -15,7 +15,7 @@ public enum UX {
         public var expected: Bool = true
         public var icon: UX.Icon?
         public var metadata: Metadata
-        public var action: [Action]
+        public var actions: [Action]
 
         public init(
             source: Swift.Error? = nil,
@@ -23,14 +23,14 @@ public enum UX {
             message: String,
             icon: UX.Icon? = nil,
             metadata: Metadata = [:],
-            action: [UX.Action] = .default
+            actions: [UX.Action] = .default
         ) {
             self.source = source
             self.title = title
             self.message = message
             self.icon = icon
             self.metadata = metadata
-            self.action = action
+            self.actions = actions
         }
 
         public init(
@@ -39,14 +39,14 @@ public enum UX {
             message: String?,
             icon: UX.Icon? = nil,
             metadata: Metadata = [:],
-            action: [UX.Action] = .default
+            actions: [UX.Action] = .default
         ) {
             self.source = source
             self.title = title ?? L18n.oops.title
             self.message = message ?? L18n.oops.message
             self.icon = icon
             self.metadata = metadata
-            self.action = action
+            self.actions = actions
             expected = title != nil
         }
     }
@@ -59,7 +59,7 @@ extension UX.Error: Equatable {
             && lhs.message == rhs.message
             && lhs.icon == rhs.icon
             && lhs.metadata == rhs.metadata
-            && lhs.action == rhs.action
+            && lhs.actions == rhs.actions
             && String(describing: lhs.source) == String(describing: rhs.source)
     }
 }
@@ -71,7 +71,7 @@ extension UX.Error: Hashable {
         hasher.combine(message)
         hasher.combine(icon)
         hasher.combine(metadata)
-        hasher.combine(action)
+        hasher.combine(actions)
     }
 }
 
@@ -89,12 +89,12 @@ extension UX.Error {
             title = ux.title
             message = ux.message
             icon = ux.icon
-            action = ux.action ?? []
+            actions = ux.actions ?? []
         } else {
             title = L18n.networkError.title
             message = nabu.description ?? L18n.oops.message
             icon = nil
-            action = .default
+            actions = .default
             expected = false
         }
 
@@ -115,7 +115,7 @@ extension UX.Error {
         title = ux.title
         message = ux.message
         icon = ux.icon
-        action = ux.action ?? .default
+        actions = ux.actions ?? .default
         metadata = [:]
     }
 }
@@ -133,7 +133,7 @@ extension UX.Error {
                 message: L18n.oops.message,
                 icon: nil,
                 metadata: [:],
-                action: .default
+                actions: .default
             )
             expected = false
         }

@@ -16,7 +16,7 @@ final class ErrorViewSnapshotTests: XCTestCase {
         metadata: [
             "ID": "error-id"
         ],
-        action: .default
+        actions: .default
     )
 
     override static func setUp() {

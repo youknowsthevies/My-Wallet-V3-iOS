@@ -19,7 +19,7 @@ final class NabuErrorTests: XCTestCase {
                     "description": "Icon, warning symbol"
                 ]
             ],
-            "action": [
+            "actions": [
                 [
                     "title": "Contact Support",
                     "url": "https://blockchain.com/support"
@@ -36,7 +36,7 @@ final class NabuErrorTests: XCTestCase {
         "ux": [
             "title": "Oops! Something went wrong!",
             "message": "We're on it",
-            "action": [
+            "actions": [
                 [
                     "title": "Oops! OK"
                 ]
@@ -67,8 +67,8 @@ final class NabuErrorTests: XCTestCase {
         XCTAssertEqual(ux.message, "We are having problems fetching a quote for USDC-USD, don't worry - we're on it")
         XCTAssertEqual(ux.icon?.url, "https://blockchain.com/asset/warning.svg")
         XCTAssertEqual(ux.icon?.accessibility?.description, "Icon, warning symbol")
-        XCTAssertEqual(ux.action.count, 1)
-        if let action = ux.action.first {
+        XCTAssertEqual(ux.actions.count, 1)
+        if let action = ux.actions.first {
             XCTAssertEqual(action.title, "Contact Support")
             XCTAssertEqual(action.url, "https://blockchain.com/support")
         }
@@ -92,8 +92,8 @@ final class NabuErrorTests: XCTestCase {
         XCTAssertEqual(ux.title, "Oops! Something went wrong!")
         XCTAssertEqual(ux.message, "We're on it")
         XCTAssertNil(ux.icon)
-        XCTAssertEqual(ux.action.count, 1)
-        if let action = ux.action.first {
+        XCTAssertEqual(ux.actions.count, 1)
+        if let action = ux.actions.first {
             XCTAssertEqual(action.title, "Oops! OK")
             XCTAssertNil(action.url)
         }

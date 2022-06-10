@@ -117,7 +117,7 @@ public struct ErrorView<Fallback: View>: View {
             .typography(.body1)
             .foregroundColor(.semantic.body)
             .padding(.bottom, Spacing.padding2.pt)
-        if let action = ux.action.dropFirst(2).first {
+        if let action = ux.actions.dropFirst(2).first {
             SmallMinimalButton(
                 title: action.title,
                 action: { post(action) }
@@ -173,8 +173,8 @@ public struct ErrorView<Fallback: View>: View {
 
     @ViewBuilder
     private var actions: some View {
-        ForEach(ux.action.prefix(2).indexed(), id: \.element) { index, action in
-            if index == ux.action.startIndex {
+        ForEach(ux.actions.prefix(2).indexed(), id: \.element) { index, action in
+            if index == ux.actions.startIndex {
                 PrimaryButton(
                     title: action.title,
                     action: { post(action) }
@@ -232,7 +232,7 @@ struct ErrorView_Preview: PreviewProvider {
                         "ID": "bab80077-f1fb-424f-b52b-dbb935d0f7bf",
                         "Request": "825ea2c0-9f5f-4e2a-be8f-0e3572f0bec2"
                     ],
-                    action: [
+                    actions: [
                         .init(
                             title: "Primary",
                             url: "http://blockchain.com/app/asset/BTC/buy/change_payment_method"
