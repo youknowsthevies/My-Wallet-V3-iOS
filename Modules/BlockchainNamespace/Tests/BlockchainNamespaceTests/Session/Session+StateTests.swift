@@ -118,8 +118,9 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            XCTAssertThrowsError(try state.get(blockchain.session.state.preference.value))
-            try XCTAssertAnyEqual(object[userId].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
+            XCTAssertNoThrow(try state.get(blockchain.session.state.preference.value))
+            try XCTAssertAnyEqual(object["ø"].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
+            try XCTAssertAnyEqual(object[userId].unwrap(), ["blockchain.session.state.preference.value": true])
         }
 
         state.set(blockchain.user.id, to: userId)
@@ -132,7 +133,7 @@ final class SessionStateTests: XCTestCase {
             )
             try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[userId, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
+                object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }
@@ -145,7 +146,7 @@ final class SessionStateTests: XCTestCase {
             )
             try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[userId, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
+                object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }
@@ -175,7 +176,7 @@ final class SessionStateTests: XCTestCase {
             .sink { string = $0 }
             .tearDown(after: self)
 
-        XCTAssertEqual(string, "signed_out")
+        XCTAssertNil(string)
 
         state.set(blockchain.user.id, to: userId)
 
