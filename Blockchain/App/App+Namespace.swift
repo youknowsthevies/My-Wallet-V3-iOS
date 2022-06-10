@@ -48,9 +48,9 @@ extension AppProtocol {
         observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         Task {
-            let result = try await Installations.installations().authTokenForcingRefresh(true)
+            let result = try await Installations.installations().installationID()
             state.transaction { state in
-                state.set(blockchain.user.token.firebase.installation, to: result.authToken)
+                state.set(blockchain.user.token.firebase.installation, to: result)
             }
         }
     }

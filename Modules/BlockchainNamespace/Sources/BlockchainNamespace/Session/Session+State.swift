@@ -33,8 +33,9 @@ extension Session.State {
 
         var preferences: Preferences
 
+        private let genericScope = "ø"
         private var scope: String {
-            store[blockchain.user.id.key] as? String ?? "ø"
+            store[blockchain.user.id.key] as? String ?? genericScope
         }
 
         init(preferences: Preferences) {
@@ -140,7 +141,7 @@ extension Session.State.Data {
 
         switch key.tag {
         case blockchain.session.state.preference.value:
-            guard let value = preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string] else {
+            guard let value = preference(key, in: scope) ?? preference(key, in: genericScope) else {
                 throw FetchResult.Error.keyDoesNotExist(key)
             }
             set(key, to: value)
@@ -156,7 +157,21 @@ extension Session.State.Data {
             if isNotInTransaction {
                 update([key: value])
             }
+            if key.tag == blockchain.user.id[], let id = value as? String {
+                beginTransaction()
+                let user = key
+                for key in subjects.keys where key.tag.is(blockchain.session.state.preference.value) {
+                    guard key != user else { continue }
+                    guard let value = preference(key, in: id) else { continue }
+                    set(key, to: value)
+                }
+                endTransaction()
+            }
         }
+    }
+
+    private func preference(_ key: Tag.Reference, in scope: String) -> Any? {
+        preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string]
     }
 
     func clear(_ key: Tag.Reference) {
