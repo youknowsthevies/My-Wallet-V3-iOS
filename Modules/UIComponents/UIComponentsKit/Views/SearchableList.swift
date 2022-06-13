@@ -64,6 +64,7 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
                 List(search.data) { item in
                     content(item).listRowInsets(EdgeInsets())
                 }
+                .listStyle(PlainListStyle())
             }
         }
     }

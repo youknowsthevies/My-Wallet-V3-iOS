@@ -94,7 +94,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 environment.openBanking.reset()
             },
             environment.openBanking.start(state.data)
-                .compactMap { state in
+                .compactMap { state -> BankAction in
                     switch state {
                     case .waitingForConsent:
                         return .waitingForConsent

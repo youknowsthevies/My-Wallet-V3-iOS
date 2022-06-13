@@ -125,7 +125,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                         .confirmDisclaimerText(
                             action: state.action,
                             currencyCode: state.asset.code,
-                            accountLabel: state.destination?.label ?? ""
+                            accountLabel: state.destination?.label ?? "",
+                            isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
                         )
                 )
             )

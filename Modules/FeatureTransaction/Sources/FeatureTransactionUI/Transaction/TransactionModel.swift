@@ -614,7 +614,7 @@ final class TransactionModel {
 }
 
 extension PaymentMethodAccount {
-    fileprivate var isYapily: Bool {
+    var isYapily: Bool {
         switch paymentMethodType {
         case .linkedBank(let linkedBank):
             return linkedBank.isYapily

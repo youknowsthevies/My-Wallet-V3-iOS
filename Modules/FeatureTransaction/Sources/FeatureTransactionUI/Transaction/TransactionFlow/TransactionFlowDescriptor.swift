@@ -255,7 +255,8 @@ enum TransactionFlowDescriptor {
     static func confirmDisclaimerText(
         action: AssetAction,
         currencyCode: String = "",
-        accountLabel: String = ""
+        accountLabel: String = "",
+        isSafeConnect: Bool? = nil
     ) -> NSAttributedString {
         switch action {
         case .swap:
@@ -265,7 +266,18 @@ enum TransactionFlowDescriptor {
         case .withdraw:
             return LocalizedString.Withdraw.confirmationDisclaimer.attributed
         case .buy:
-            return LocalizedString.Buy.confirmationDisclaimer.attributed
+            if isSafeConnect == true {
+                return addSafeConnectTermsAndPolicyLink(
+                    String(
+                        format: LocalizedString.Buy.safeConnectConfirmationDisclaimer,
+                        currencyCode,
+                        LocalizedString.termsOfService,
+                        LocalizedString.privacyPolicy
+                    )
+                )
+            } else {
+                return LocalizedString.Buy.confirmationDisclaimer.attributed
+            }
         case .interestWithdraw:
             return String(
                 format: LocalizedString.InterestWithdraw.confirmationDisclaimer,
@@ -294,6 +306,20 @@ enum TransactionFlowDescriptor {
         let refundPolicyLink = "https://support.blockchain.com/hc/en-us/articles/4417063009172-Will-I-be-refunded-if-my-Swap-or-Sell-from-a-Private-Key-Wallet-fails-"
         let refundPolicyRange = (attributedString.string as NSString).range(of: LocalizedString.refundPolicy)
         attributedString.addAttribute(.link, value: refundPolicyLink, range: refundPolicyRange)
+        return attributedString
+    }
+
+    private static func addSafeConnectTermsAndPolicyLink(_ string: String) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: string)
+
+        let termsLink = "https://drive.google.com/file/d/11mNukqbBA_EbEBJd7bn9Idj1iiG8QWIL/view"
+        let termsRange = (attributedString.string as NSString).range(of: LocalizedString.termsOfService)
+        attributedString.addAttribute(.link, value: termsLink, range: termsRange)
+
+        let privacyPolicyLink = "https://www.yapily.com/legal/privacy-policy/"
+        let privacyPolicyRange = (attributedString.string as NSString).range(of: LocalizedString.privacyPolicy)
+        attributedString.addAttribute(.link, value: privacyPolicyLink, range: privacyPolicyRange)
+
         return attributedString
     }
 

@@ -56,6 +56,11 @@ public final class OpenBanking {
         app.publisher(for: blockchain.ux.payment.method.open.banking.authorisation.url, as: URL.self)
             .map(\.result)
             .ignoreResultFailure()
+            .handleEvents(
+                receiveOutput: { [weak app] _ in
+                    app?.state.clear(blockchain.ux.payment.method.open.banking.authorisation.url)
+                }
+            )
             .eraseToAnyPublisher()
     }
 

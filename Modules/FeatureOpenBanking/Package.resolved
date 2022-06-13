@@ -32,7 +32,7 @@
         "package": "Lexicon",
         "repositoryURL": "https://github.com/screensailor/Lexicon",
         "state": {
-          "branch": "trunk",
+          "branch": null,
           "revision": "160c4c417f8490658a8396d0283fb0d6fb98c327",
           "version": null
         }
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
-          "version": "0.7.0"
+          "revision": "ce9c0d897db8a840c39de64caaa9b60119cf4be8",
+          "version": "0.8.1"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
-          "version": "0.32.0"
+          "revision": "c307541328a636b9e8e25ac868d89be54a8f8dbf",
+          "version": "0.35.0"
         }
       },
       {

@@ -33,17 +33,6 @@ final class InstitutionListTests: OpenBankingTestCase {
         XCTAssertNil(state.route)
     }
 
-    func test_route() throws {
-
-        store.send(.navigate(to: .approve)) { state in
-            state.route = .init(route: .approve, action: .navigateTo)
-        }
-
-        store.send(.enter(into: .approve)) { state in
-            state.route = .init(route: .approve, action: .enterInto(.default))
-        }
-    }
-
     func test_fetch() throws {
         store.send(.fetch)
         scheduler.run()
@@ -68,16 +57,13 @@ final class InstitutionListTests: OpenBankingTestCase {
         }
         store.send(.select(createAccount, institution)) { [self] state in
             state.selection = .init(
-                bank: .init(data: .init(
+                data: .init(
                     account: createAccount,
                     action: .link(
                         institution: institution
                     )
-                ))
+                )
             )
-        }
-        store.receive(.navigate(to: .approve)) { state in
-            state.route = .init(route: .approve, action: .navigateTo)
         }
     }
 
@@ -85,12 +71,16 @@ final class InstitutionListTests: OpenBankingTestCase {
         approve()
     }
 
-    func test_approve_bank_cancel() throws {
+    func test_bank_cancel() throws {
         approve()
 
         scheduler.advance()
 
-        store.send(.approve(.bank(.cancel))) { state in
+        store.receive(.route(.navigate(to: .bank))) { state in
+            state.route = .navigate(to: .bank)
+        }
+
+        store.send(.bank(.cancel)) { state in
             state.route = nil
             state.result = nil
         }

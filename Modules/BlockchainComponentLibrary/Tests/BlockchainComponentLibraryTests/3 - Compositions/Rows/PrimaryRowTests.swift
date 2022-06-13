@@ -5,6 +5,11 @@ import XCTest
 
 final class PrimaryRowTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: 0) {
             PrimaryRow_Previews.previews
@@ -16,8 +21,7 @@ final class PrimaryRowTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -28,6 +32,6 @@ final class PrimaryRowTests: XCTestCase {
         .environment(\.layoutDirection, .rightToLeft)
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }
