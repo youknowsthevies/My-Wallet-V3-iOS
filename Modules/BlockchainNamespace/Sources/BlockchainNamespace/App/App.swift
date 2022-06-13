@@ -215,9 +215,8 @@ private let s = (
 
 extension AppProtocol {
 
-    public func publisher<T>(for event: Tag.Event, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: event.key)
-            .decode(T.self)
+    public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: event.key).decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
@@ -231,6 +230,28 @@ extension AppProtocol {
             return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
                 .eraseToAnyPublisher()
         }
+    }
+
+    public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
+        try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
+            .stream()
+            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key))
+            .get()
+    }
+
+    public func stream(
+        _ event: Tag.Event,
+        bufferingPolicy: AsyncStream<FetchResult>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<FetchResult> {
+        publisher(for: event).stream(bufferingPolicy: bufferingPolicy)
+    }
+
+    public func stream<T: Decodable>(
+        _ event: Tag.Event,
+        as _: T.Type = T.self,
+        bufferingPolicy: AsyncStream<FetchResult.Value<T>>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<FetchResult.Value<T>> {
+        publisher(for: event, as: T.self).stream(bufferingPolicy: bufferingPolicy)
     }
 }
 

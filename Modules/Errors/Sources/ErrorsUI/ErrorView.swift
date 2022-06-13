@@ -5,7 +5,7 @@ import SwiftUI
 
 public struct ErrorView<Fallback: View>: View {
 
-    typealias L18n = LocalizationConstants.UX.Error
+    typealias L10n = LocalizationConstants.UX.Error
 
     @BlockchainApp var app
 
@@ -69,7 +69,7 @@ public struct ErrorView<Fallback: View>: View {
                             .foregroundColor(.semantic.light)
                     }
                 )
-                .accessibilityLabel(icon.accessibility?.description ?? L18n.icon.accessibility)
+                .accessibilityLabel(icon.accessibility?.description ?? L10n.icon.accessibility)
             } else {
                 fallback()
             }
@@ -163,7 +163,7 @@ public struct ErrorView<Fallback: View>: View {
                         #endif
                     },
                     label: {
-                        Label(L18n.copy, systemImage: "doc.on.doc.fill")
+                        Label(L10n.copy, systemImage: "doc.on.doc.fill")
                     }
                 )
             }

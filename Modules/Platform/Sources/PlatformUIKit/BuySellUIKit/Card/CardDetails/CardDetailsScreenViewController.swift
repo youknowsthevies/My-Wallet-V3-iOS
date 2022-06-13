@@ -1,9 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
+import BlockchainNamespace
 import DIKit
 import Localization
 import RxSwift
+import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 final class CardDetailsScreenViewController: BaseTableViewController {
 
@@ -12,6 +16,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     private let keyboardObserver = KeyboardObserver()
     private let presenter: CardDetailsScreenPresenter
     private let alertPresenter: AlertViewPresenterAPI
+    private let app: AppProtocol
 
     private var keyboardInteractionController: KeyboardInteractionController!
     private let disposeBag = DisposeBag()
@@ -20,10 +25,12 @@ final class CardDetailsScreenViewController: BaseTableViewController {
 
     init(
         presenter: CardDetailsScreenPresenter,
-        alertPresenter: AlertViewPresenterAPI = resolve()
+        alertPresenter: AlertViewPresenterAPI = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.presenter = presenter
         self.alertPresenter = alertPresenter
+        self.app = app
         super.init()
     }
 
@@ -109,6 +116,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.register(TextFieldTableViewCell.self)
         tableView.register(DoubleTextFieldTableViewCell.self)
         tableView.register(NoticeTableViewCell.self)
+        tableView.register(HostingTableViewCell<CreditCardLearnMoreView>.self)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
         tableView.delegate = self
@@ -180,6 +188,15 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         return cell
     }
 
+    private func creditCardLearnMoreCell(for type: CardDetailsScreenPresenter.CellType) -> UITableViewCell {
+        let cell = tableView.dequeue(
+            HostingTableViewCell<CreditCardLearnMoreView>.self,
+            for: IndexPath(row: type.row, section: 0)
+        )
+        cell.host(CreditCardLearnMoreView(app: app), parent: self)
+        return cell
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter.rowCount
     }
@@ -200,6 +217,8 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
                 leadingType: leadingType,
                 trailingType: trailingType
             )
+        case .creditCardLearnMore:
+            return creditCardLearnMoreCell(for: cellType)
         case .privacyNotice:
             return privacyNoticeCell(for: cellType)
         }

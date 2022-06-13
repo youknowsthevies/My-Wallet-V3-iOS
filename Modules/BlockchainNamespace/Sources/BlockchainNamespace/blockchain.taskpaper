@@ -678,6 +678,13 @@ blockchain:
 				a:
 					bank:
 					card:
+						credit:
+							card:
+								learn:
+									more:
+										url:
+										+ blockchain.db.type.url
+										+ blockchain.session.configuration.value
 				payment:
 					method:
 			select:

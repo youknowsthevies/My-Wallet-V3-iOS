@@ -7,12 +7,13 @@ import SwiftUI
 /// # Figma
 ///
 /// [AlertCard](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=212%3A6021)
-public struct AlertCard: View {
+public struct AlertCard<Footer: View>: View {
 
     private let title: String
     private let message: String
-    private let variant: Variant
+    private let variant: AlertCardVariant
     private let isBordered: Bool
+    private let footer: Footer
     private let onCloseTapped: (() -> Void)?
 
     /// Create an AlertCard view
@@ -26,14 +27,16 @@ public struct AlertCard: View {
     public init(
         title: String,
         message: String,
-        variant: Variant = .default,
+        variant: AlertCardVariant = .default,
         isBordered: Bool = false,
+        @ViewBuilder footer: () -> Footer,
         onCloseTapped: (() -> Void)? = nil
     ) {
         self.title = title
         self.message = message
         self.variant = variant
         self.isBordered = isBordered
+        self.footer = footer()
         self.onCloseTapped = onCloseTapped
     }
 
@@ -64,6 +67,7 @@ public struct AlertCard: View {
             Text(message)
                 .typography(.caption1)
                 .foregroundColor(.semantic.title)
+            footer
         }
         .padding(Spacing.padding2)
         .background(
@@ -75,16 +79,36 @@ public struct AlertCard: View {
                 .stroke(variant.borderColor, lineWidth: isBordered ? 1 : 0)
         )
     }
+}
 
-    /// Style variant for AlertCard
-    public struct Variant {
-        fileprivate let titleColor: Color
-        fileprivate let borderColor: Color
+/// Style variant for AlertCard
+public struct AlertCardVariant {
+    fileprivate let titleColor: Color
+    fileprivate let borderColor: Color
+}
+
+extension AlertCard where Footer == EmptyView {
+
+    public init(
+        title: String,
+        message: String,
+        variant: AlertCardVariant = .default,
+        isBordered: Bool = false,
+        onCloseTapped: (() -> Void)? = nil
+    ) {
+        self.init(
+            title: title,
+            message: message,
+            variant: variant,
+            isBordered: isBordered,
+            footer: EmptyView.init,
+            onCloseTapped: onCloseTapped
+        )
     }
 }
 
-extension AlertCard.Variant {
-    public static let `default` = AlertCard.Variant(
+extension AlertCardVariant {
+    public static let `default` = AlertCardVariant(
         titleColor: .semantic.title,
         borderColor: Color(
             light: .palette.grey300,
@@ -93,19 +117,19 @@ extension AlertCard.Variant {
     )
 
     // success
-    public static let success = AlertCard.Variant(
+    public static let success = AlertCardVariant(
         titleColor: .semantic.success,
         borderColor: .semantic.success
     )
 
     // warning
-    public static let warning = AlertCard.Variant(
+    public static let warning = AlertCardVariant(
         titleColor: .semantic.warning,
         borderColor: .semantic.warning
     )
 
     // error
-    public static let error = AlertCard.Variant(
+    public static let error = AlertCardVariant(
         titleColor: .semantic.error,
         borderColor: .semantic.error
     )
@@ -130,7 +154,7 @@ struct AlertCard_Previews: PreviewProvider {
         .padding()
     }
 
-    @ViewBuilder private static func preview(title: String, variant: AlertCard.Variant) -> some View {
+    @ViewBuilder private static func preview(title: String, variant: AlertCardVariant) -> some View {
         VStack {
             AlertCard(
                 title: title,

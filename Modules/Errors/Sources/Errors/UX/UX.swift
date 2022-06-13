@@ -42,8 +42,8 @@ public enum UX {
             actions: [UX.Action] = .default
         ) {
             self.source = source
-            self.title = title ?? L18n.oops.title
-            self.message = message ?? L18n.oops.message
+            self.title = title ?? L10n.oops.title
+            self.message = message ?? L10n.oops.message
             self.icon = icon
             self.metadata = metadata
             self.actions = actions
@@ -75,7 +75,7 @@ extension UX.Error: Hashable {
     }
 }
 
-typealias L18n = LocalizationConstants.UX.Error
+typealias L10n = LocalizationConstants.UX.Error
 
 extension UX.Error {
 
@@ -91,8 +91,8 @@ extension UX.Error {
             icon = ux.icon
             actions = ux.actions ?? []
         } else {
-            title = L18n.networkError.title
-            message = nabu.description ?? L18n.oops.message
+            title = L10n.networkError.title
+            message = nabu.description ?? L10n.oops.message
             icon = nil
             actions = .default
             expected = false
@@ -100,10 +100,10 @@ extension UX.Error {
 
         if let request = nabu.request {
             if let id = request.allHTTPHeaderFields?["X-Request-ID"] {
-                metadata[L18n.request] = id
+                metadata[L10n.request] = id
             }
             if let id = request.allHTTPHeaderFields?["X-Session-ID"] {
-                metadata[L18n.session] = id
+                metadata[L10n.session] = id
             }
         }
 
@@ -129,8 +129,8 @@ extension UX.Error {
         default:
             self.init(
                 source: error,
-                title: L18n.oops.title,
-                message: L18n.oops.message,
+                title: L10n.oops.title,
+                message: L10n.oops.message,
                 icon: nil,
                 metadata: [:],
                 actions: .default
@@ -143,6 +143,6 @@ extension UX.Error {
 extension Array where Element == UX.Action {
 
     public static var `default`: Self = [
-        UX.Action(title: L18n.ok)
+        UX.Action(title: L10n.ok)
     ]
 }

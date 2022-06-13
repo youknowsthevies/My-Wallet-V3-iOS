@@ -79,6 +79,7 @@ let package = Package(
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureForm"),
         .package(path: "../FeatureCardPayment")
@@ -137,6 +138,7 @@ let package = Package(
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ],

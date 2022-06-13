@@ -23,7 +23,7 @@ struct AlertCardExamples: View {
         }
     }
 
-    @ViewBuilder private func example(title: String, variant: AlertCard.Variant) -> some View {
+    @ViewBuilder private func example(title: String, variant: AlertCardVariant) -> some View {
         VStack {
             AlertCard(
                 title: title,

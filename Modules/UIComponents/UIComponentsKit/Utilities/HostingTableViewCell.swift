@@ -21,7 +21,7 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
     public func host(
         _ rootView: Content,
         parent: UIViewController,
-        height: CGFloat?,
+        height: CGFloat? = nil,
         insets: UIEdgeInsets = .zero,
         showSeparator: Bool = true,
         backgroundColor: UIColor = .lightBorder
