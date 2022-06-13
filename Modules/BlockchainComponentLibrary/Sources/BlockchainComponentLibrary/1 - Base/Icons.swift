@@ -217,6 +217,8 @@ extension Icon {
     public static let `print` = Icon(name: "Print")
     public static let `private` = Icon(name: "Private")
     public static let `qrCode` = Icon(name: "QR Code")
+    public static let `giftbox` = Icon(name: "Giftbox")
+    public static let `giftboxHighlighted` = Icon(name: "Giftbox Highlighted")
     public static let `questionCircle` = Icon(name: "Question Circle")
     public static let `question` = Icon(name: "Question")
     public static let `receive` = Icon(name: "Receive")

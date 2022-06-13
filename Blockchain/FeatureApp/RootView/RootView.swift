@@ -43,9 +43,11 @@ struct RootView: View {
     @Environment(\.openURL) var openURL
 
     let store: Store<RootViewState, RootViewAction>
+    @ObservedObject private var viewStore: ViewStore<RootViewState, RootViewAction>
 
     init(store: Store<RootViewState, RootViewAction>) {
         self.store = store
+        viewStore = ViewStore(store)
         setupApperance()
     }
 
@@ -56,58 +58,56 @@ struct RootView: View {
     }
 
     var body: some View {
-        WithViewStore(store) { viewStore in
-            Group {
-                TabView(selection: viewStore.binding(\.$tab)) {
-                    tabs(in: viewStore)
-                }
-                .overlay(
-                    FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
-                        .if(viewStore.hideFAB, then: { view in view.hidden() })
-                        .identity(blockchain.ux.frequent.action)
-                        .background(
-                            Circle()
-                                .fill(Color.semantic.background)
-                                .padding(8)
-                        )
-                        .pulse(enabled: viewStore.fab.animate, inset: 8)
-                        .padding([.leading, .trailing], 24.pt)
-                        .offset(y: 6.pt)
-                        .contentShape(Rectangle())
-                        .background(Color.white.invisible()),
-                    alignment: .bottom
-                )
-                .ignoresSafeArea(.keyboard, edges: .bottom)
+        Group {
+            TabView(selection: viewStore.binding(\.$tab)) {
+                tabs(in: viewStore)
             }
-            .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
-                IfLetStore(store.scope(state: \.fab.data)) { store in
-                    WithViewStore(store) { viewStore in
-                        FrequentActionView(
-                            list: viewStore.list,
-                            buttons: viewStore.buttons
-                        ) { action in
-                            withAnimation {
-                                viewStore.send(.frequentAction(action))
-                            }
+            .overlay(
+                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
+                    .if(viewStore.hideFAB, then: { view in view.hidden() })
+                    .identity(blockchain.ux.frequent.action)
+                    .background(
+                        Circle()
+                            .fill(Color.semantic.background)
+                            .padding(Spacing.padding1)
+                    )
+                    .pulse(enabled: viewStore.fab.animate, inset: 8)
+                    .padding([.leading, .trailing], 24.pt)
+                    .offset(y: 6.pt)
+                    .contentShape(Rectangle())
+                    .background(Color.white.invisible()),
+                alignment: .bottom
+            )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+        }
+        .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
+            IfLetStore(store.scope(state: \.fab.data)) { store in
+                WithViewStore(store) { viewStore in
+                    FrequentActionView(
+                        list: viewStore.list,
+                        buttons: viewStore.buttons
+                    ) { action in
+                        withAnimation {
+                            viewStore.send(.frequentAction(action))
                         }
                     }
                 }
             }
-            .on(blockchain.ux.home.tab.select) { event in
-                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
-            }
-            .onChange(of: viewStore.tab) { tab in
-                app.post(event: tab.tag)
-            }
-            .onAppear {
-                app.post(event: viewStore.tab.tag)
-            }
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
-            .onDisappear {
-                viewStore.send(.onDisappear)
-            }
+        }
+        .on(blockchain.ux.home.tab.select) { event in
+            try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
+        }
+        .onChange(of: viewStore.tab) { tab in
+            app.post(event: tab.tag)
+        }
+        .onAppear {
+            app.post(event: viewStore.tab.tag)
+        }
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
+        .onDisappear {
+            viewStore.send(.onDisappear)
         }
         .navigationRoute(in: store)
         .app(app)
@@ -184,7 +184,7 @@ struct RootView: View {
                 .primaryNavigation(
                     leading: account,
                     title: tab.name.localized(),
-                    trailing: QR
+                    trailing: trailingViews
                 )
         }
         .tabItem {
@@ -199,6 +199,27 @@ struct RootView: View {
         }
         .tag(tab.ref)
         .identity(tab.ref)
+    }
+
+    @ViewBuilder func trailingViews() -> some View {
+        Group {
+            referrals()
+                .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
+            QR()
+        }
+    }
+
+    @ViewBuilder func referrals() -> some View {
+        let onReferralTapAction = {
+            viewStore.send(.onReferralTap)
+        }
+
+        IconButton(icon: Icon.giftboxHighlighted.renderingMode(.original), action: onReferralTapAction)
+            .if(
+                !viewStore.referralState.isHighlighted,
+                then: { view in view.update(icon: Icon.giftbox) }
+            )
+            .identity(blockchain.ux.referral.entry)
     }
 
     @ViewBuilder func QR() -> some View {

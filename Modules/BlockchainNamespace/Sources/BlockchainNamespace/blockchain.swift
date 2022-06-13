@@ -1717,6 +1717,7 @@ public extension I_blockchain_user {
 	var `email`: L_blockchain_user_email { .init("\(__).email") }
 	var `is`: L_blockchain_user_is { .init("\(__).is") }
 	var `name`: L_blockchain_user_name { .init("\(__).name") }
+	var `referral`: L_blockchain_user_referral { .init("\(__).referral") }
 	var `token`: L_blockchain_user_token { .init("\(__).token") }
 	var `wallet`: L_blockchain_user_wallet { .init("\(__).wallet") }
 }
@@ -1888,6 +1889,17 @@ public final class L_blockchain_user_name_last: L, I_blockchain_user_name_last {
 	public override class var localized: String { NSLocalizedString("blockchain.user.name.last", comment: "") }
 }
 public protocol I_blockchain_user_name_last: I_blockchain_db_type_string {}
+public final class L_blockchain_user_referral: L, I_blockchain_user_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.user.referral", comment: "") }
+}
+public protocol I_blockchain_user_referral: I {}
+public extension I_blockchain_user_referral {
+	var `campaign`: L_blockchain_user_referral_campaign { .init("\(__).campaign") }
+}
+public final class L_blockchain_user_referral_campaign: L, I_blockchain_user_referral_campaign {
+	public override class var localized: String { NSLocalizedString("blockchain.user.referral.campaign", comment: "") }
+}
+public protocol I_blockchain_user_referral_campaign: I_blockchain_session_state_value {}
 public final class L_blockchain_user_token: L, I_blockchain_user_token {
 	public override class var localized: String { NSLocalizedString("blockchain.user.token", comment: "") }
 }
@@ -1913,6 +1925,7 @@ public protocol I_blockchain_user_wallet: I_blockchain_db_collection {}
 public extension I_blockchain_user_wallet {
 	var `created`: L_blockchain_user_wallet_created { .init("\(__).created") }
 	var `is`: L_blockchain_user_wallet_is { .init("\(__).is") }
+	var `was`: L_blockchain_user_wallet_was { .init("\(__).was") }
 }
 public final class L_blockchain_user_wallet_created: L, I_blockchain_user_wallet_created {
 	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.created", comment: "") }
@@ -1929,6 +1942,17 @@ public final class L_blockchain_user_wallet_is_funded: L, I_blockchain_user_wall
 	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.is.funded", comment: "") }
 }
 public protocol I_blockchain_user_wallet_is_funded: I {}
+public final class L_blockchain_user_wallet_was: L, I_blockchain_user_wallet_was {
+	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.was", comment: "") }
+}
+public protocol I_blockchain_user_wallet_was: I {}
+public extension I_blockchain_user_wallet_was {
+	var `created`: L_blockchain_user_wallet_was_created { .init("\(__).created") }
+}
+public final class L_blockchain_user_wallet_was_created: L, I_blockchain_user_wallet_was_created {
+	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.was.created", comment: "") }
+}
+public protocol I_blockchain_user_wallet_was_created: I_blockchain_db_type_boolean {}
 public final class L_blockchain_ux: L, I_blockchain_ux {
 	public override class var localized: String { NSLocalizedString("blockchain.ux", comment: "") }
 }
@@ -1943,6 +1967,7 @@ public extension I_blockchain_ux {
 	var `maintenance`: L_blockchain_ux_maintenance { .init("\(__).maintenance") }
 	var `payment`: L_blockchain_ux_payment { .init("\(__).payment") }
 	var `prices`: L_blockchain_ux_prices { .init("\(__).prices") }
+	var `referral`: L_blockchain_ux_referral { .init("\(__).referral") }
 	var `scan`: L_blockchain_ux_scan { .init("\(__).scan") }
 	var `transaction`: L_blockchain_ux_transaction { .init("\(__).transaction") }
 	var `type`: L_blockchain_ux_type { .init("\(__).type") }
@@ -2482,6 +2507,29 @@ public final class L_blockchain_ux_prices: L, I_blockchain_ux_prices {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.prices", comment: "") }
 }
 public protocol I_blockchain_ux_prices: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_referral: L, I_blockchain_ux_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.referral", comment: "") }
+}
+public protocol I_blockchain_ux_referral: I {}
+public extension I_blockchain_ux_referral {
+	var `entry`: L_blockchain_ux_referral_entry { .init("\(__).entry") }
+	var `giftbox`: L_blockchain_ux_referral_giftbox { .init("\(__).giftbox") }
+}
+public final class L_blockchain_ux_referral_entry: L, I_blockchain_ux_referral_entry {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.referral.entry", comment: "") }
+}
+public protocol I_blockchain_ux_referral_entry: I_blockchain_ux_type_story_entry {}
+public final class L_blockchain_ux_referral_giftbox: L, I_blockchain_ux_referral_giftbox {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.referral.giftbox", comment: "") }
+}
+public protocol I_blockchain_ux_referral_giftbox: I {}
+public extension I_blockchain_ux_referral_giftbox {
+	var `seen`: L_blockchain_ux_referral_giftbox_seen { .init("\(__).seen") }
+}
+public final class L_blockchain_ux_referral_giftbox_seen: L, I_blockchain_ux_referral_giftbox_seen {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.referral.giftbox.seen", comment: "") }
+}
+public protocol I_blockchain_ux_referral_giftbox_seen: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_ux_scan: L, I_blockchain_ux_scan {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.scan", comment: "") }
 }

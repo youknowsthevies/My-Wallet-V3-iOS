@@ -29,6 +29,10 @@ public struct IconButton: View {
         self.action = action
     }
 
+    public func update(icon: Icon) -> IconButton {
+        IconButton(icon: icon, action: action)
+    }
+
     public var body: some View {
         Button(action: action) {
             icon

@@ -458,6 +458,9 @@ blockchain:
 			+ blockchain.db.type.string
 			last:
 			+ blockchain.db.type.string
+		referral:
+			campaign:
+			+ blockchain.session.state.value
 		token:
 			firebase:
 				installation:
@@ -469,6 +472,9 @@ blockchain:
 			+ blockchain.db.type.boolean
 			is:
 				funded:
+			was:
+				created:
+				+ blockchain.db.type.boolean
 	ux:
 		asset:
 		+ blockchain.db.collection
@@ -642,6 +648,13 @@ blockchain:
 							+ blockchain.session.state.value
 		prices:
 		+ blockchain.ux.type.story
+		referral:
+			entry:
+			+ blockchain.ux.type.story.entry
+			giftbox:
+				seen:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.preference.value
 		scan:
 			QR:
 			+ blockchain.ux.type.story

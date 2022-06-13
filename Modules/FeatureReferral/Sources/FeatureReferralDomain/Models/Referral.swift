@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct Referral: Equatable {
+public struct Referral: Equatable, Hashable, Decodable {
     public var code: String
     public var rewardTitle: String
     public var rewardSubtitle: String
@@ -16,7 +16,7 @@ public struct Referral: Equatable {
     }
 }
 
-public struct Step: Identifiable, Equatable, Hashable {
+public struct Step: Identifiable, Equatable, Hashable, Decodable {
     public var id = UUID()
     public let text: String
 

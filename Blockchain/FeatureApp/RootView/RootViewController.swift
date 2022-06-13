@@ -35,6 +35,10 @@ final class RootViewController: UIHostingController<RootView> {
             initialState: RootViewState(
                 fab: .init(
                     animate: !defaults.hasInteractedWithFrequentActionButton
+                ),
+                referralState: .init(
+                    isHighlighted: false,
+                    referral: nil
                 )
             ),
             reducer: rootViewReducer,

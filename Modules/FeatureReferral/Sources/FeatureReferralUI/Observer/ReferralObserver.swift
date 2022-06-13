@@ -31,6 +31,7 @@ public final class ReferralAppObserver: Session.Observer {
 
     var observers: [BlockchainEventSubscription] {
         [
+            signIn,
             walletCreated
         ]
     }
@@ -71,23 +72,28 @@ public final class ReferralAppObserver: Session.Observer {
             .store(in: &self.cancellables)
     }
 
-    private func fetchReferralCampaign() {
-        referralService
-            .fetchReferralCampaign()
-            .sink(receiveValue: { [weak self] referral in
-                guard let self = self,
-                      let referral = referral else { return }
-                self.presentReferralPopup(with: referral)
-            })
-            .store(in: &cancellables)
+    lazy var signIn = app.on(blockchain.session.event.did.sign.in) { [weak self] _ in
+        guard let self = self else { return }
+        self.fetchReferralCampaign()
     }
 
-    private func presentReferralPopup(with referral: Referral) {
-        let popupView = ReferralPopup(store: .init(
-            initialState: .init(referralInfo: referral),
-            reducer: ReferFriendModule.reducer,
-            environment: ReferFriendEnvironment(mainQueue: .main)
-        ))
-        topViewController.topMostViewController?.present(UIHostingController(rootView: popupView), animated: true)
+    private func fetchReferralCampaign() {
+        Publishers
+            .CombineLatest(
+                featureFlagPublisher,
+                referralService
+                    .fetchReferralCampaign()
+            )
+            .sink(receiveValue: { [weak self] isEnabled, referralCampaign in
+                guard let self = self,
+                      isEnabled,
+                      let referralCampaign = referralCampaign
+                else {
+                    self?.app.state.clear(blockchain.user.referral.campaign)
+                    return
+                }
+                self.app.post(value: referralCampaign, of: blockchain.user.referral.campaign)
+            })
+            .store(in: &cancellables)
     }
 }

@@ -237,8 +237,6 @@ extension AppFeature {
             return true
         case .stxForAirdropUsers:
             return true
-        case .referral:
-            return true
         }
     }
 }
