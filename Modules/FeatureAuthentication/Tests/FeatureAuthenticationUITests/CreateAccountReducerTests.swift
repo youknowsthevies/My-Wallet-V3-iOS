@@ -22,6 +22,7 @@ final class CreateAccountReducerTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        let mockFeatureFlagService = MockFeatureFlagsService()
         testStore = TestStore(
             initialState: CreateAccountState(context: .createWallet),
             reducer: createAccountReducer,
@@ -32,7 +33,8 @@ final class CreateAccountReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
-                walletFetcherService: WalletFetcherServiceMock().mock()
+                walletFetcherService: WalletFetcherServiceMock().mock(),
+                featureFlagsService: mockFeatureFlagService
             )
         )
     }
@@ -144,7 +146,8 @@ final class CreateAccountReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .failing(),
-                walletFetcherService: WalletFetcherServiceMock().mock()
+                walletFetcherService: WalletFetcherServiceMock().mock(),
+                featureFlagsService: MockFeatureFlagsService()
             )
         )
         // GIVEN: The form is valid

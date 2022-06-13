@@ -7,6 +7,8 @@ import DIKit
 import FeatureAuthenticationDomain
 import FeatureCardPaymentDomain
 import FeatureNotificationPreferencesUI
+import FeatureReferralDomain
+import FeatureReferralUI
 import FeatureSettingsDomain
 import Localization
 import MoneyKit
@@ -318,6 +320,8 @@ final class SettingsRouter: SettingsRouterAPI {
             showCardIssuingFlow()
         case .showNotificationsSettings:
             showNotificationsSettingsScreen()
+        case .showReferralScreen(let referral):
+            showReferralScreen(with: referral)
         case .none:
             break
         }
@@ -387,6 +391,16 @@ final class SettingsRouter: SettingsRouterAPI {
             )
         ))
         presenter.present(notificationCenterView)
+    }
+
+    private func showReferralScreen(with referral: Referral) {
+        let presenter = topViewController
+        let referralView = ReferFriendView(store: .init(
+            initialState: .init(referralInfo: referral),
+            reducer: ReferFriendModule.reducer,
+            environment: .init(mainQueue: .main)
+        ))
+        presenter.present(referralView)
     }
 
     private func showBankLinkingFlow(currency: FiatCurrency) {

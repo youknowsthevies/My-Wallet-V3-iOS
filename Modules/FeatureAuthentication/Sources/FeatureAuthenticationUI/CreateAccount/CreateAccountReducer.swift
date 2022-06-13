@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
@@ -30,7 +31,6 @@ public enum CreateAccountContext: Equatable {
 }
 
 public enum CreateAccountRoute: NavigationRoute {
-
     private typealias LocalizedStrings = LocalizationConstants.Authentication.CountryAndStatePickers
 
     case countryPicker
@@ -72,6 +72,7 @@ public struct CreateAccountState: Equatable, NavigationState {
         case noCountrySelected
         case noCountryStateSelected
         case termsNotAccepted
+        case invalidReferralCode
     }
 
     public enum InputValidationState: Equatable {
@@ -92,6 +93,7 @@ public struct CreateAccountState: Equatable, NavigationState {
     public enum Field: Equatable {
         case email
         case password
+        case referralCode
     }
 
     enum AddressSegmentPicker: Hashable {
@@ -105,6 +107,7 @@ public struct CreateAccountState: Equatable, NavigationState {
     // User Input
     @BindableState public var emailAddress: String
     @BindableState public var password: String
+    @BindableState public var referralCode: String
     @BindableState public var country: SearchableItem<String>?
     @BindableState public var countryState: SearchableItem<String>?
     @BindableState public var termsAccepted: Bool = false
@@ -118,12 +121,14 @@ public struct CreateAccountState: Equatable, NavigationState {
     public var validatingInput: Bool = false
     public var passwordStrength: PasswordValidationScore
     public var inputValidationState: InputValidationState
+    public var referralCodeValidationState: InputValidationState
     public var failureAlert: AlertState<CreateAccountAction>?
 
     public var isCreatingWallet = false
+    public var referralFieldEnabled = false
 
     var isCreateButtonDisabled: Bool {
-        validatingInput || inputValidationState.isInvalid || isCreatingWallet
+        validatingInput || inputValidationState.isInvalid || isCreatingWallet || referralCodeValidationState.isInvalid
     }
 
     var shouldDisplayCountryStateField: Bool {
@@ -138,8 +143,10 @@ public struct CreateAccountState: Equatable, NavigationState {
         self.context = context
         emailAddress = ""
         password = ""
+        referralCode = ""
         passwordStrength = .none
         inputValidationState = .unknown
+        referralCodeValidationState = .unknown
     }
 }
 
@@ -150,6 +157,7 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
         case dismiss
     }
 
+    case onAppear
     case alert(AlertAction)
     case binding(BindingAction<CreateAccountState>)
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
@@ -157,9 +165,12 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case createAccount
     case importAccount(_ mnemonic: String)
     case createButtonTapped
+    case referralFieldIsEnabled(Bool)
     case didValidateAfterFormSubmission
     case didUpdatePasswordStrenght(PasswordValidationScore)
     case didUpdateInputValidation(CreateAccountState.InputValidationState)
+    case didUpdateReferralValidation(CreateAccountState.InputValidationState)
+    case validateReferralCode
     case openExternalLink(URL)
     case onWillDisappear
     case route(RouteIntent<CreateAccountRoute>?)
@@ -180,6 +191,33 @@ struct CreateAccountEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
+    let checkReferralClient: CheckReferralClientAPI?
+    let featureFlagsService: FeatureFlagsServiceAPI
+    let app: AppProtocol?
+
+    init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        passwordValidator: PasswordValidatorAPI,
+        externalAppOpener: ExternalAppOpener,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        walletRecoveryService: WalletRecoveryService,
+        walletCreationService: WalletCreationService,
+        walletFetcherService: WalletFetcherService,
+        featureFlagsService: FeatureFlagsServiceAPI,
+        checkReferralClient: CheckReferralClientAPI? = nil,
+        app: AppProtocol? = nil
+    ) {
+        self.mainQueue = mainQueue
+        self.passwordValidator = passwordValidator
+        self.externalAppOpener = externalAppOpener
+        self.analyticsRecorder = analyticsRecorder
+        self.walletRecoveryService = walletRecoveryService
+        self.walletCreationService = walletCreationService
+        self.walletFetcherService = walletFetcherService
+        self.checkReferralClient = checkReferralClient
+        self.featureFlagsService = featureFlagsService
+        self.app = app
+    }
 }
 
 typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
@@ -202,6 +240,9 @@ let createAccountReducer = Reducer<
 
     case .binding(\.$termsAccepted):
         return Effect(value: .didUpdateInputValidation(.unknown))
+
+    case .binding(\.$referralCode):
+        return Effect(value: .validateReferralCode)
 
     case .binding(\.$country):
         return .merge(
@@ -257,6 +298,13 @@ let createAccountReducer = Reducer<
         }
         return Effect(value: .importAccount(mnemonic))
 
+    case .validateReferralCode:
+        return environment
+            .validateReferralInput(code: state.referralCode)
+            .map(CreateAccountAction.didUpdateReferralValidation)
+            .receive(on: environment.mainQueue)
+            .eraseToEffect()
+
     case .importAccount(let mnemonic):
         state.isCreatingWallet = true
         let accountName = CreateAccountLocalization.defaultAccountName
@@ -298,12 +346,17 @@ let createAccountReducer = Reducer<
         guard state.countryState != nil || !state.shouldDisplayCountryStateField else {
             return Effect(value: .didUpdateInputValidation(.invalid(.noCountryStateSelected)))
         }
+
         return .concatenate(
             Effect(value: .triggerAuthenticate),
+            environment
+                .saveReferral(with: state.referralCode)
+                .fireAndForget(),
             .merge(
                 .cancel(id: CreateAccountIds.CreationId()),
                 .cancel(id: CreateAccountIds.ImportId()),
-                environment.walletCreationService
+                environment
+                    .walletCreationService
                     .setResidentialInfo(selectedCountry.id, state.countryState?.id)
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
@@ -323,19 +376,38 @@ let createAccountReducer = Reducer<
     case .createButtonTapped:
         state.validatingInput = true
         state.selectedInputField = nil
+
         return Effect.concatenate(
             environment
                 .validateInputs(state: state)
                 .map(CreateAccountAction.didUpdateInputValidation)
                 .receive(on: environment.mainQueue)
                 .eraseToEffect(),
+
+            environment
+                .featureFlagsService.isEnabled(.referral)
+                .flatMap { [state] isEnabled -> Effect<CreateAccountAction, Never> in
+                    guard isEnabled == true else {
+                        return .none
+                    }
+                    return environment
+                        .checkReferralCode(state.referralCode)
+                        .map(CreateAccountAction.didUpdateReferralValidation)
+                        .receive(on: environment.mainQueue)
+                        .eraseToEffect()
+                }
+                .eraseToEffect(),
+
             Effect(value: .didValidateAfterFormSubmission)
         )
 
     case .didValidateAfterFormSubmission:
-        guard !state.inputValidationState.isInvalid else {
+        guard !state.inputValidationState.isInvalid,
+              !state.referralCodeValidationState.isInvalid
+        else {
             return .none
         }
+
         return Effect(value: .createOrImportWallet(state.context))
 
     case .didUpdatePasswordStrenght(let score):
@@ -345,6 +417,10 @@ let createAccountReducer = Reducer<
     case .didUpdateInputValidation(let validationState):
         state.validatingInput = false
         state.inputValidationState = validationState
+        return .none
+
+    case .didUpdateReferralValidation(let validationState):
+        state.referralCodeValidationState = validationState
         return .none
 
     case .openExternalLink(let url):
@@ -394,6 +470,18 @@ let createAccountReducer = Reducer<
 
     case .binding:
         return .none
+
+    case .referralFieldIsEnabled(let enabled):
+        state.referralFieldEnabled = enabled
+        return .none
+
+    case .onAppear:
+        return environment
+            .featureFlagsService
+            .isEnabled(.referral)
+            .map(CreateAccountAction.referralFieldIsEnabled)
+            .receive(on: environment.mainQueue)
+            .eraseToEffect()
     }
 }
 .binding()
@@ -428,6 +516,39 @@ extension CreateAccountEnvironment {
                 return .valid
             }
             .eraseToAnyPublisher()
+    }
+
+    fileprivate func validateReferralInput(
+        code: String
+    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
+        guard code.range(
+            of: TextRegex.noSpecialCharacters.rawValue,
+            options: .regularExpression
+        ) != nil else { return .just(.invalid(.invalidReferralCode)) }
+
+        return .just(.unknown)
+    }
+
+    fileprivate func checkReferralCode(_
+        code: String
+    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
+        guard code.isNotEmpty, let client = checkReferralClient else { return .just(.unknown) }
+        return client
+            .checkReferral(with: code)
+            .map { _ in
+                CreateAccountState.InputValidationState.valid
+            }
+            .catch { _ -> AnyPublisher<CreateAccountState.InputValidationState, Never> in
+                .just(.invalid(.invalidReferralCode))
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func saveReferral(with code: String) -> Effect<Void, Never> {
+        if code.isNotEmpty {
+            app?.post(value: code, of: blockchain.user.creation.referral.code)
+        }
+        return .none
     }
 }
 

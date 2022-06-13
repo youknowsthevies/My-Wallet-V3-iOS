@@ -435,6 +435,11 @@ blockchain:
 				+ blockchain.db.type.string
 			state:
 			+ blockchain.db.type.string
+		creation:
+			referral:
+				code:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 		email:
 			address:
 			+ blockchain.db.type.string
@@ -460,6 +465,8 @@ blockchain:
 				+ blockchain.session.state.value
 		wallet:
 		+ blockchain.db.collection
+			created:
+			+ blockchain.db.type.boolean
 			is:
 				funded:
 	ux:

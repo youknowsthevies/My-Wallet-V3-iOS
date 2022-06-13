@@ -60,5 +60,12 @@ extension DependencyContainer {
                 cardService: DIKit.resolve()
             ) as CardIssuingAdapterAPI
         }
+
+        factory {
+            ReferralsAdapter(
+                featureFlagsService: DIKit.resolve(),
+                referralService: DIKit.resolve()
+            ) as ReferralAdapterAPI
+        }
     }
 }

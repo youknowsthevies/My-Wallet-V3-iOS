@@ -149,7 +149,9 @@ let loggedInReducer = Reducer<
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map(LoggedIn.Action.login),
-            handleStartup(context: context)
+            handleStartup(
+                context: context
+            )
         )
     case .login(let result):
         guard let user = try? result.get() else { return .none }
@@ -173,6 +175,7 @@ let loggedInReducer = Reducer<
         state.displaySendCryptoScreen = false
         return .none
     case .handleNewWalletCreation:
+        environment.app.post(event: blockchain.user.wallet.created)
         return Effect(value: .showPostSignUpOnboardingFlow)
     case .handleExistingWalletSignIn:
         return Effect(value: .showPostSignInOnboardingFlow)
@@ -247,7 +250,9 @@ let loggedInReducer = Reducer<
 /// Handle the context of a logged in state, eg wallet creation, deeplink, etc
 /// - Parameter context: A `LoggedIn.Context` to be taken into account after logging in
 /// - Returns: An `Effect<LoggedIn.Action, Never>` based on the context
-private func handleStartup(context: LoggedIn.Context) -> Effect<LoggedIn.Action, Never> {
+private func handleStartup(
+    context: LoggedIn.Context
+) -> Effect<LoggedIn.Action, Never> {
     switch context {
     case .wallet(let walletContext) where walletContext.isNew:
         return Effect(value: .handleNewWalletCreation)

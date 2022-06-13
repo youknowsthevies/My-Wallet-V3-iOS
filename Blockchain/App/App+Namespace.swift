@@ -5,6 +5,8 @@ import ErrorsUI
 import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
+import FeatureReferralDomain
+import FeatureReferralUI
 import Firebase
 import FirebaseProtocol
 import FraudIntelligence
@@ -36,10 +38,17 @@ extension AppProtocol {
     func bootstrap(
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
         deepLink: DeepLinkCoordinator = resolve(),
-        attributionService: AttributionServiceAPI = resolve()
+        referralService: ReferralServiceAPI = resolve(),
+        attributionService: AttributionServiceAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
+        observers.insert(ReferralAppObserver(
+            app: self,
+            referralService: referralService,
+            featureFlagService: featureFlagService
+        ))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD

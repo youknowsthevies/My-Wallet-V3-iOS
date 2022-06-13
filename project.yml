@@ -286,6 +286,8 @@ packages:
     path: Modules/BlockchainComponentLibrary
   FeatureAttribution:
     path: Modules/FeatureAttribution
+  FeatureReferral:
+    path: Modules/FeatureReferral
 
 targets:
   Blockchain:
@@ -451,8 +453,12 @@ targets:
         product: WalletPayloadDataKit
       - package: FeatureAttribution
         product: FeatureAttribution
+      - package: FeatureReferral
+        product: FeatureReferral
       - package: FraudIntelligence
         product: FraudIntelligence
+      - package: FeatureReferral
+        product: FeatureReferral
 
     platform: iOS
     postBuildScripts:

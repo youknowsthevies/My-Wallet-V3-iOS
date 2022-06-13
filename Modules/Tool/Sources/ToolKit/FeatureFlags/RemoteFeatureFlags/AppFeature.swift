@@ -91,6 +91,9 @@ public enum AppFeature: Int, CaseIterable {
 
     case cardIssuing
 
+    /// Enables Referral button in Settings
+    case referral
+
     // MARK: - SKAdNetworkAttribution
 
     case skAdNetworkAttribution
@@ -162,6 +165,8 @@ extension AppFeature {
             return "ios_ff_account_credentials_metadata_migration"
         case .skAdNetworkAttribution:
             return "ios_ff_skAdNetwork_attribution"
+        case .referral:
+            return "ios_ff_referral"
         case .stxForAllUsers:
             return "ios_ff_stx_all_users"
         case .stxForAirdropUsers:
@@ -226,9 +231,13 @@ extension AppFeature {
             return false
         case .skAdNetworkAttribution:
             return true
+        case .referral:
+            return true
         case .stxForAllUsers:
             return true
         case .stxForAirdropUsers:
+            return true
+        case .referral:
             return true
         }
     }

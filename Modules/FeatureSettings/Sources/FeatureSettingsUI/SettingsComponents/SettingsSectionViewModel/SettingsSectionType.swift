@@ -5,6 +5,7 @@ import PlatformUIKit
 import RxDataSources
 
 enum SettingsSectionType: Int, Equatable {
+    case referral = 0
     case profile = 1
     case preferences = 2
     case connect = 3
@@ -29,6 +30,8 @@ enum SettingsSectionType: Int, Equatable {
                 return type.rawValue
             case .switch(let type, _):
                 return type.rawValue
+            case .refferal(let type, _):
+                return type.rawValue
             }
         }
 
@@ -46,6 +49,8 @@ enum SettingsSectionType: Int, Equatable {
                 return left == right
             case (.banks(let left), .banks(let right)):
                 return left == right
+            case (.refferal(let left, _), .refferal(let right, _)):
+                return left == right
             default:
                 return false
             }
@@ -57,6 +62,7 @@ enum SettingsSectionType: Int, Equatable {
         case cards(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedCardCellPresenter>)
         case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, BeneficiaryLinkedBankViewModel>)
         case common(CommonCellType)
+        case refferal(ReferralCellType, ReferralTableViewCellViewModel)
 
         enum BadgeCellType: String {
             case limits
@@ -78,6 +84,10 @@ enum SettingsSectionType: Int, Equatable {
 
         enum ClipboardCellType: String {
             case walletID
+        }
+
+        enum ReferralCellType: String {
+            case referral
         }
 
         /// Any payment method can get under this category
@@ -137,6 +147,7 @@ enum SettingsSectionType: Int, Equatable {
 
 extension SettingsSectionType {
     static let `default`: [SettingsSectionType] = [
+        .referral,
         .profile,
         .preferences,
         .security,

@@ -54,6 +54,9 @@ struct CreateAccountView: View {
             .foregroundColor(viewStore.isCreateButtonDisabled ? .semantic.muted : .semantic.primary)
             .accessibility(identifier: AccessibilityIdentifier.nextButton)
         }
+        .onAppear(perform: {
+            viewStore.send(.onAppear)
+        })
         .onWillDisappear {
             viewStore.send(.onWillDisappear)
         }
@@ -88,6 +91,9 @@ private struct CreateAccountForm: View {
             emailField
             passwordField
             countryAndStatePickers
+            if viewStore.state.referralFieldEnabled {
+                referralCodeField
+            }
             termsAgreementView
         }
     }
@@ -196,6 +202,40 @@ private struct CreateAccountForm: View {
         }
     }
 
+    private var referralCodeField: some View {
+        var subText: String?
+        var subTextStlye: InputSubTextStyle = InputSubTextStyle.default
+        let shouldShowError = viewStore.referralCodeValidationState == .invalid(.invalidReferralCode)
+        if viewStore.referralCodeValidationState == .invalid(.invalidReferralCode) {
+            subText = LocalizedString.TextFieldError.invalidReferralCode
+            subTextStlye = .error
+        } else if viewStore.referralCodeValidationState == .valid {
+            subText = LocalizedString.TextFieldError.referralCodeApplied
+            subTextStlye = .success
+        }
+        return Input(
+            text: viewStore.binding(\.$referralCode),
+            isFirstResponder: viewStore
+                .binding(\.$selectedInputField)
+                .equals(.referralCode),
+            label: LocalizedString.TextFieldTitle.referral,
+            subText: subText,
+            subTextStyle: subTextStlye,
+            placeholder: LocalizedString.TextFieldPlaceholder.referralCode,
+            characterLimit: 8,
+            state: shouldShowError ? .error : .default,
+            configuration: {
+                $0.autocorrectionType = .no
+                $0.autocapitalizationType = .allCharacters
+                $0.keyboardType = .default
+            },
+            onReturnTapped: {
+                viewStore.send(.set(\.$selectedInputField, nil))
+            }
+        )
+        .accessibility(identifier: AccessibilityIdentifier.referralGroup)
+    }
+
     private var termsAgreementView: some View {
         HStack(alignment: .top, spacing: Spacing.baseline) {
             let showCheckboxError = viewStore.inputValidationState == .invalid(.termsNotAccepted)
@@ -258,7 +298,6 @@ private struct CreateAccountForm: View {
 }
 
 extension PasswordValidationScore {
-
     fileprivate var displayString: String? {
         switch self {
         case .none:
@@ -304,7 +343,8 @@ struct CreateAccountView_Previews: PreviewProvider {
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
-                    walletFetcherService: .noop
+                    walletFetcherService: .noop,
+                    featureFlagsService: NoOpFeatureFlagsService()
                 )
             )
         )

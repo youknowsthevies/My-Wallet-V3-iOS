@@ -12,16 +12,19 @@ struct FocusableTextField: UIViewRepresentable {
 
     private var configuration = { (_: UITextField) in }
     private var onReturnTapped = {}
+    private var characterLimit: Int?
 
     init(
         text: Binding<String>,
         isFirstResponder: Binding<Bool>,
+        characterLimit: Int? = nil,
         configuration: @escaping (UITextField) -> Void = { _ in },
         onReturnTapped: @escaping () -> Void = {}
     ) {
         self.configuration = configuration
         _text = text
         _isFirstResponder = isFirstResponder
+        self.characterLimit = characterLimit
         self.onReturnTapped = onReturnTapped
     }
 
@@ -48,18 +51,47 @@ struct FocusableTextField: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator($text, isFirstResponder: $isFirstResponder, onReturnTapped: onReturnTapped)
+        Coordinator(
+            $text,
+            isFirstResponder: $isFirstResponder,
+            characterLimit: characterLimit,
+            onReturnTapped: onReturnTapped
+        )
     }
 
     class Coordinator: NSObject, UITextFieldDelegate {
         var text: Binding<String>
         var isFirstResponder: Binding<Bool>
         var onReturnTapped: () -> Void
+        var characterLimit: Int?
 
-        init(_ text: Binding<String>, isFirstResponder: Binding<Bool>, onReturnTapped: @escaping () -> Void) {
+        init(
+            _ text: Binding<String>,
+            isFirstResponder: Binding<Bool>,
+            characterLimit: Int? = nil,
+            onReturnTapped: @escaping () -> Void
+        ) {
             self.text = text
             self.isFirstResponder = isFirstResponder
             self.onReturnTapped = onReturnTapped
+            self.characterLimit = characterLimit
+        }
+
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            guard let characterLimit = characterLimit else {
+                return true
+            }
+
+            let currentText = textField.text ?? ""
+
+            // attempt to read the range they are trying to change, or exit if we can't
+            guard let stringRange = Range(range, in: currentText) else { return false }
+
+            // add their new text to the existing text
+            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+
+            // make sure the result is under 16 characters
+            return updatedText.count <= characterLimit
         }
 
         @objc func textViewDidChange(_ textField: UITextField) {

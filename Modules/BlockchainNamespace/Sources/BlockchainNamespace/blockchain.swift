@@ -1713,6 +1713,7 @@ public protocol I_blockchain_user: I_blockchain_db_collection {}
 public extension I_blockchain_user {
 	var `account`: L_blockchain_user_account { .init("\(__).account") }
 	var `address`: L_blockchain_user_address { .init("\(__).address") }
+	var `creation`: L_blockchain_user_creation { .init("\(__).creation") }
 	var `email`: L_blockchain_user_email { .init("\(__).email") }
 	var `is`: L_blockchain_user_is { .init("\(__).is") }
 	var `name`: L_blockchain_user_name { .init("\(__).name") }
@@ -1802,6 +1803,24 @@ public final class L_blockchain_user_address_state: L, I_blockchain_user_address
 	public override class var localized: String { NSLocalizedString("blockchain.user.address.state", comment: "") }
 }
 public protocol I_blockchain_user_address_state: I_blockchain_db_type_string {}
+public final class L_blockchain_user_creation: L, I_blockchain_user_creation {
+	public override class var localized: String { NSLocalizedString("blockchain.user.creation", comment: "") }
+}
+public protocol I_blockchain_user_creation: I {}
+public extension I_blockchain_user_creation {
+	var `referral`: L_blockchain_user_creation_referral { .init("\(__).referral") }
+}
+public final class L_blockchain_user_creation_referral: L, I_blockchain_user_creation_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.user.creation.referral", comment: "") }
+}
+public protocol I_blockchain_user_creation_referral: I {}
+public extension I_blockchain_user_creation_referral {
+	var `code`: L_blockchain_user_creation_referral_code { .init("\(__).code") }
+}
+public final class L_blockchain_user_creation_referral_code: L, I_blockchain_user_creation_referral_code {
+	public override class var localized: String { NSLocalizedString("blockchain.user.creation.referral.code", comment: "") }
+}
+public protocol I_blockchain_user_creation_referral_code: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_email: L, I_blockchain_user_email {
 	public override class var localized: String { NSLocalizedString("blockchain.user.email", comment: "") }
 }
@@ -1892,8 +1911,13 @@ public final class L_blockchain_user_wallet: L, I_blockchain_user_wallet {
 }
 public protocol I_blockchain_user_wallet: I_blockchain_db_collection {}
 public extension I_blockchain_user_wallet {
+	var `created`: L_blockchain_user_wallet_created { .init("\(__).created") }
 	var `is`: L_blockchain_user_wallet_is { .init("\(__).is") }
 }
+public final class L_blockchain_user_wallet_created: L, I_blockchain_user_wallet_created {
+	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.created", comment: "") }
+}
+public protocol I_blockchain_user_wallet_created: I_blockchain_db_type_boolean {}
 public final class L_blockchain_user_wallet_is: L, I_blockchain_user_wallet_is {
 	public override class var localized: String { NSLocalizedString("blockchain.user.wallet.is", comment: "") }
 }

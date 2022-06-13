@@ -19,6 +19,8 @@ extension SettingsSectionType {
             return LocalizationConstants.Settings.Section.linkedBanks
         case .help:
             return LocalizationConstants.Settings.Section.help
+        case .referral:
+            return ""
         }
     }
 }

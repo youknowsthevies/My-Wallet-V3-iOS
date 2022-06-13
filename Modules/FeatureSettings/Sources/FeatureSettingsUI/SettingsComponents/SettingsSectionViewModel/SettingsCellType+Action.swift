@@ -82,6 +82,9 @@ extension SettingsSectionType.CellType {
             }
         case .switch:
             return .none
+
+        case .refferal(_, let viewModel):
+            return .showReferralScreen(viewModel.referral)
         }
     }
 }

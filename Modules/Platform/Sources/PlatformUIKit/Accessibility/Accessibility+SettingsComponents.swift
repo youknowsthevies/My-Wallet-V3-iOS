@@ -59,6 +59,10 @@ extension Accessibility.Identifier {
             public enum CardIssuing {
                 public static let title = "\(SettingsCell.prefix)CardIssuing"
             }
+
+            public enum Referral {
+                public static let title = "\(SettingsCell.prefix)Referral"
+            }
         }
 
         public enum LinkedCardCell {
@@ -67,6 +71,11 @@ extension Accessibility.Identifier {
             public static let expiration = "\(prefix)expiration"
             public static let badgeView = "\(prefix)badgeView"
             public static let cardPrefix = "\(prefix)cardPrefix"
+        }
+
+        public enum ReferralCell {
+            private static let prefix = "\(Settings.prefix)ReferralCell."
+            public static let view = "\(prefix)view"
         }
 
         public enum AddPaymentMethodCell {

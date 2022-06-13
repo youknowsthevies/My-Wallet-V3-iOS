@@ -41,6 +41,7 @@ public struct Input<Trailing: View>: View {
     private let subText: String?
     private let subTextStyle: InputSubTextStyle
     private let placeholder: String?
+    private let characterLimit: Int?
     private let prefix: String?
     private let state: InputState
     private let configuration: Configuration
@@ -69,6 +70,7 @@ public struct Input<Trailing: View>: View {
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
         placeholder: String? = nil,
+        characterLimit: Int? = nil,
         prefix: String? = nil,
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
@@ -81,6 +83,7 @@ public struct Input<Trailing: View>: View {
         self.subText = subText
         self.subTextStyle = subTextStyle
         self.placeholder = placeholder
+        self.characterLimit = characterLimit
         self.prefix = prefix
         self.state = state
         self.configuration = configuration
@@ -105,6 +108,7 @@ public struct Input<Trailing: View>: View {
                 FocusableTextField(
                     text: $text,
                     isFirstResponder: $isFirstResponder,
+                    characterLimit: characterLimit,
                     configuration: { textField in
                         textField.font = Typography.bodyMono.uiFont
                         textField.textColor = UIColor(textColor)
@@ -177,6 +181,7 @@ extension Input where Trailing == EmptyView {
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
         placeholder: String? = nil,
+        characterLimit: Int? = nil,
         prefix: String? = nil,
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
@@ -189,6 +194,7 @@ extension Input where Trailing == EmptyView {
             subText: subText,
             subTextStyle: subTextStyle,
             placeholder: placeholder,
+            characterLimit: characterLimit,
             prefix: prefix,
             state: state,
             configuration: configuration,

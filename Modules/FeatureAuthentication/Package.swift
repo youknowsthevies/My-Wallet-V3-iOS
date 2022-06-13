@@ -44,6 +44,7 @@ let package = Package(
             from: "0.34.0"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
@@ -80,6 +81,7 @@ let package = Package(
             name: "FeatureAuthenticationUI",
             dependencies: [
                 .target(name: "FeatureAuthenticationDomain"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "AnalyticsKit", package: "Analytics"),

@@ -35,6 +35,8 @@ import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
 import FeatureProductsData
 import FeatureProductsDomain
+import FeatureReferralData
+import FeatureReferralDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -553,6 +555,12 @@ extension DependencyContainer {
             ) as AutoWalletPairingServiceAPI
         }
 
+        factory { () -> CheckReferralClientAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return CheckReferralClient(networkAdapter: adapter, requestBuilder: builder)
+        }
+
         factory { () -> GuidServiceAPI in
             GuidService(
                 sessionTokenRepository: DIKit.resolve(),
@@ -779,6 +787,25 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
             return NotificationPreferencesRepository(client: client)
+        }
+
+        // MARK: Feature Referrals
+
+        factory { () -> ReferralRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = ReferralClientClient(networkAdapter: adapter, requestBuilder: builder)
+            return ReferralRepository(client: client)
+        }
+
+        factory { () -> ReferralServiceAPI in
+            let currencyService: FiatCurrencyServiceAPI = DIKit.resolve()
+            let repository: ReferralRepositoryAPI = DIKit.resolve()
+
+            return ReferralService(
+                repository: repository,
+                currencyService: currencyService
+            )
         }
 
         // MARK: - Websocket

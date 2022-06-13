@@ -476,6 +476,11 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Country of Residence",
                 comment: "Create Account screen: country text field"
             )
+
+            public static let referral = NSLocalizedString(
+                "Have a referral code?",
+                comment: "Create Account screen: referral text field"
+            )
         }
 
         public enum TextFieldPlaceholder {
@@ -490,6 +495,10 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let state = NSLocalizedString(
                 "State of Residence",
                 comment: "Create Account screen: State placeholder"
+            )
+            public static let referralCode = NSLocalizedString(
+                "4787GTEGDBND",
+                comment: "Create Account screen: referral code text field placeholder"
             )
         }
 
@@ -516,6 +525,15 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let confirmPasswordNotMatch = NSLocalizedString(
                 "Passwords don't match",
                 comment: "Create Account screen: passwords do not match error"
+            )
+            public static let invalidReferralCode = NSLocalizedString(
+                "Please enter a valid referral code",
+                comment: "Create Account screen: invalid referral code error"
+            )
+
+            public static let referralCodeApplied = NSLocalizedString(
+                "Referral code applied",
+                comment: "Create Account screen: referral code applied"
             )
         }
 

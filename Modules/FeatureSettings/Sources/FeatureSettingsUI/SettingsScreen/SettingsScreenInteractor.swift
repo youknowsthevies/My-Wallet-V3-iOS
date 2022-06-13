@@ -19,6 +19,7 @@ public final class SettingsScreenInteractor {
     let bankSectionInteractor: BanksSettingsSectionInteractor
     let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
     let cardIssuingAdapter: CardIssuingAdapterAPI
+    let referralAdapter: ReferralAdapterAPI
 
     // MARK: - Services
 
@@ -54,7 +55,8 @@ public final class SettingsScreenInteractor {
         wallet: WalletRecoveryVerifing,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
         authenticationCoordinator: AuthenticationCoordinating,
-        cardIssuingAdapter: CardIssuingAdapterAPI = resolve()
+        cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
+        referralAdapter: ReferralAdapterAPI = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
@@ -62,6 +64,7 @@ public final class SettingsScreenInteractor {
         emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.cardIssuingAdapter = cardIssuingAdapter
+        self.referralAdapter = referralAdapter
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
