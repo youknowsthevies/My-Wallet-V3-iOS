@@ -76,15 +76,15 @@ public final class PaymentMethodAccount: FiatAccount {
         .error(ReceiveAddressError.notSupported)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balance)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     public func invalidateAccountBalance() {

@@ -13,13 +13,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(path: "../Tool"),
-        .package(path: "../Network")
+        .package(path: "../Money"),
+        .package(path: "../Network"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
             name: "DelegatedSelfCustodyKit",
             dependencies: [
+                .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -27,8 +29,9 @@ let package = Package(
             name: "DelegatedSelfCustodyDataKit",
             dependencies: [
                 .target(name: "DelegatedSelfCustodyKit"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "NetworkKit", package: "Network")
+                .product(name: "MoneyKit", package: "Money"),
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .testTarget(

@@ -197,7 +197,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         \n----------------------
         Payload decoding error.
           Error: '\(String(describing: ResponseType.self))': \(decodingError).
-            URL: \(response?.url!.absoluteString),
+            URL: \(response?.url?.absoluteString ?? ""),
         Request: \(request),
         Payload: \(rawPayload)
         ======================\n

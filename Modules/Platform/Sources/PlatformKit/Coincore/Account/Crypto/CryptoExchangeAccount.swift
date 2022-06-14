@@ -86,7 +86,10 @@ public final class CryptoExchangeAccount: ExchangeAccount {
     public let label: String
     public let state: ExchangeAccountState
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
         /// Exchange API does not return a balance.
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }

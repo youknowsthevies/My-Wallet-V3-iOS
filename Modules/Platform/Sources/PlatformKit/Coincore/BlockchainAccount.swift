@@ -147,6 +147,21 @@ extension BlockchainAccount {
             .map(\.quote)
             .eraseToAnyPublisher()
     }
+
+    public func balancePair(
+        priceService: PriceServiceAPI,
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: currencyType, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance)
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension Publisher where Output == [SingleAccount] {

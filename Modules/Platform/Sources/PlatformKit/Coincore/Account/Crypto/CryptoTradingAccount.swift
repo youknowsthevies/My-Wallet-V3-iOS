@@ -168,7 +168,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFlagService: FeatureFlagsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
@@ -186,7 +185,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         ordersActivity: OrdersActivityServiceAPI = resolve(),
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
@@ -209,11 +208,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.featureFlagService = featureFlagService
+        self.featureFlagsService = featureFlagsService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
-        featureFlagsService = featureFlagService
     }
 
     private var isPairToFiatAvailable: AnyPublisher<Bool, Never> {
@@ -262,14 +260,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         fiatCurrency: FiatCurrency,
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: asset, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balance)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     public func invalidateAccountBalance() {

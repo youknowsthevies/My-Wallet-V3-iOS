@@ -192,6 +192,8 @@ packages:
     path: Modules/Analytics
   BlockchainNamespace:
     path: Modules/BlockchainNamespace
+  DelegatedSelfCustody:
+    path: Modules/DelegatedSelfCustody
   RxAnalytics:
     path: Modules/RxAnalytics
   CommonCrypto:
@@ -395,6 +397,8 @@ targets:
       - package: Analytics
         product: AnalyticsKit
       - package: BlockchainNamespace
+      - package: DelegatedSelfCustody
+        product: DelegatedSelfCustodyKit
       - package: RxAnalytics
         product: RxAnalyticsKit
       - package: CommonCrypto

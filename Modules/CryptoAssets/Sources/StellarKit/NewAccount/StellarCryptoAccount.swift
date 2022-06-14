@@ -148,15 +148,15 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: asset, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balance)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+    func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     func invalidateAccountBalance() {
