@@ -114,7 +114,6 @@ public let notificationPreferencesReducer = Reducer
                 return .none
 
             case .onReloadTap:
-                state.viewState = .loading
                 return environment
                     .notificationPreferencesRepository
                     .fetchPreferences()

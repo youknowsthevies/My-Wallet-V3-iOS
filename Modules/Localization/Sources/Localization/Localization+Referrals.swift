@@ -28,8 +28,8 @@ extension LocalizationConstants.Referrals.ReferralScreen {
     )
 
     public static let referalCodeLabel = NSLocalizedString(
-        "What my invited friends need to do?",
-        comment: "What my invited friends need to do?"
+        "Your referral code",
+        comment: "Your referral code"
     )
 
     public static let copyLabel = NSLocalizedString(

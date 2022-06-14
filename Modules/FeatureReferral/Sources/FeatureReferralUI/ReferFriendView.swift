@@ -54,7 +54,7 @@ extension ReferFriendView {
             bundle: .module
         )
         .resizable()
-        .frame(width: 223, height: 217)
+        .frame(width: 80, height: 80)
     }
 
     var closeButton: some View {
@@ -92,6 +92,9 @@ extension ReferFriendView {
     private var referalCodeSection: some View {
         VStack(spacing: 6, content: {
             Text(LocalizationConstants.Referrals.ReferralScreen.referalCodeLabel)
+                .typography(.paragraph1)
+                .foregroundColor(.WalletSemantic.body)
+
             HStack {
                 Text(viewStore.referralInfo.code)
                     .typography(.title2)

@@ -9,8 +9,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="Montserrat-Medium.ttf">
-            <string>Montserrat-Medium</string>
+        <array key="Inter-SemiBold.ttf">
+            <string>Inter-SemiBold</string>
         </array>
         <array key="Montserrat-Regular.ttf">
             <string>Montserrat-Regular</string>
@@ -30,21 +30,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="343" height="88"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Referral Program" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPr-9e-Cqe">
-                                <rect key="frame" x="16" y="22" width="178.5" height="15"/>
+                                <rect key="frame" x="16" y="22" width="178" height="15"/>
                                 <fontDescription key="fontDescription" name="Montserrat-Regular" family="Montserrat" pointSize="12"/>
                                 <color key="textColor" name="White"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmC-97-aMa">
-                                <rect key="frame" x="16" y="40" width="178.5" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="fmC-97-aMa">
+                                <rect key="frame" x="16" y="40" width="178" height="20"/>
                                 <string key="text">Invite friends, Get $30!
 </string>
-                                <fontDescription key="fontDescription" name="Montserrat-Medium" family="Montserrat" pointSize="16"/>
+                                <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="16"/>
                                 <color key="textColor" name="white"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="referral-image" translatesAutoresizingMaskIntoConstraints="NO" id="nwu-wN-sMd">
-                                <rect key="frame" x="204.5" y="0.0" width="138.5" height="88"/>
+                                <rect key="frame" x="204" y="0.0" width="139" height="88"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" name="Blue600"/>
