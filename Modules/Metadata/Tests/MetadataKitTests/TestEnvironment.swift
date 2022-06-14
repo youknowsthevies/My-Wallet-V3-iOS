@@ -56,15 +56,7 @@ struct TestEnvironment {
                     xpriv: metadataNodeXPriv
                 )
                 .get()
-
-            // swiftlint:disable:next force_try
-            let sharedMetadataNode = try! MetadataKit.PrivateKey
-                .bitcoinKeyFromXPriv(
-                    xpriv: sharedMetadataNodeXPriv
-                )
-                .get()
             return RemoteMetadataNodes(
-                sharedMetadataNode: sharedMetadataNode,
                 metadataNode: metadataNode
             )
         }()
