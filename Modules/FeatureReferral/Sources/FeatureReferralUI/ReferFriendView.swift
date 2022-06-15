@@ -18,21 +18,26 @@ public struct ReferFriendView: View {
     }
 
     public var body: some View {
-        WithViewStore(store) { _ in
-            VStack {
-                ScrollView {
-                    ZStack {
-                        imageSection
-                        closeButton
-                    }
-                    inviteFriendsSection
-                    referalCodeSection
-                    Spacer()
-                    stepsSection
-                }
-                shareButton
+        PrimaryNavigationView {
+            contentView
+        }
+    }
+
+    private var contentView: some View {
+        VStack {
+            ScrollView {
+                imageSection
+                inviteFriendsSection
+                referalCodeSection
+                Spacer()
+                stepsSection
             }
-            .padding(.top, 60)
+            shareButton
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .whiteNavigationBarStyle()
+        .trailingNavigationButton(.close) {
+            presentationMode.wrappedValue.dismiss()
         }
         .onAppear(perform: {
             viewStore.send(.onAppear)
@@ -57,45 +62,33 @@ extension ReferFriendView {
         .frame(width: 80, height: 80)
     }
 
-    var closeButton: some View {
-        VStack {
-            HStack {
-                Spacer()
-                Button {
-                    presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Image("cancel_icon", bundle: Bundle.UIComponents)
-                        .renderingMode(.template)
-                        .foregroundColor(.WalletSemantic.primary)
-                }
-            }
-            .padding(.top, 5)
-            .padding(.trailing, Spacing.padding3)
-            Spacer()
-        }
-    }
-
     private var inviteFriendsSection: some View {
         VStack(alignment: .center, spacing: 12, content: {
             Text(viewStore
                 .referralInfo
                 .rewardTitle)
                 .typography(.title2)
+                .foregroundColor(Color.textTitle)
             Text(viewStore
                 .referralInfo
                 .rewardSubtitle)
                 .typography(.paragraph1)
+                .foregroundColor(Color.textTitle)
+                .frame(width: 220)
+                .lineLimit(3)
+                .multilineTextAlignment(.center)
         })
-        .padding(.top, 52)
+        .padding(.horizontal, Spacing.padding4)
+        .padding(.top, Spacing.padding3)
     }
 
     private var referalCodeSection: some View {
         VStack(spacing: 6, content: {
             Text(LocalizationConstants.Referrals.ReferralScreen.referalCodeLabel)
                 .typography(.paragraph1)
-                .foregroundColor(.WalletSemantic.body)
+                .foregroundColor(Color.textMuted)
 
-            HStack {
+            VStack(alignment: .center, spacing: 10, content: {
                 Text(viewStore.referralInfo.code)
                     .typography(.title2)
                     .fontWeight(.medium)
@@ -106,34 +99,34 @@ extension ReferFriendView {
                         viewStore.send(.onCopyTapped)
                     }
                     .foregroundColor(Color.WalletSemantic.primary)
-            }
-            .frame(height: 150)
+            })
+            .frame(height: 120)
             .frame(maxWidth: .infinity)
             .background(Color("color_code_background", bundle: .module))
         })
         .padding(.horizontal, Spacing.padding3)
-        .padding(.top, 42)
+        .padding(.top, Spacing.padding5)
     }
 
     private var stepsSection: some View {
-        WithViewStore(store) { viewStore in
-            VStack {
-                Text(LocalizationConstants.Referrals.ReferralScreen.stepsTitleLabel)
-                    .typography(.paragraph1)
-                    .foregroundColor(.WalletSemantic.body)
-            }
+        VStack(spacing: Spacing.padding4) {
+            Text(LocalizationConstants.Referrals.ReferralScreen.stepsTitleLabel)
+                .typography(.paragraph1)
+                .foregroundColor(Color.textMuted)
             VStack(alignment: .leading, spacing: Spacing.padding2, content: {
                 if let steps = viewStore.state.referralInfo.steps {
                     ForEach(steps.indices, id: \.self) { index in
                         HStack {
                             numberView(with: index + 1)
                             Text(steps[index].text)
+                                .typography(.caption1)
+                                .foregroundColor(Color.textTitle)
                         }
                     }
                 }
             })
-            .padding(.bottom, 12)
         }
+        .padding(.top, Spacing.padding5)
     }
 
     private var shareButton: some View {
