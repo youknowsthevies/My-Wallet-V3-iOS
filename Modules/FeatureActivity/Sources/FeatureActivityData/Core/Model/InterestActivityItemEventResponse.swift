@@ -18,6 +18,7 @@ struct InterestActivityItemEventResponse: Decodable {
         case manualReview = "MANUAL_REVIEW"
         case cleared = "CLEARED"
         case refunded = "REFUNDED"
+        case fraudReview = "FRAUD_REVIEW"
         case unknown = "UNKNOWN"
     }
 

@@ -91,7 +91,8 @@ extension InterestActivityItemEvent {
         case .complete,
              .created:
             return .complete
-        case .pending:
+        case .pending,
+             .fraudReview:
             return .pending
         case .manualReview:
             return .manualReview

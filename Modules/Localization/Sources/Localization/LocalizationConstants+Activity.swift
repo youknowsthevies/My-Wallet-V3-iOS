@@ -45,6 +45,8 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let sending = NSLocalizedString("Sending", comment: "Sending")
         public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
+        public static let depositing = NSLocalizedString("Depositing", comment: "Depositing")
+        public static let withdrawing = NSLocalizedString("Withdrawing", comment: "Withdrawing")
         public static let added = NSLocalizedString("Added", comment: "Added")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
         public static let buying = NSLocalizedString("Buying", comment: "Buying")

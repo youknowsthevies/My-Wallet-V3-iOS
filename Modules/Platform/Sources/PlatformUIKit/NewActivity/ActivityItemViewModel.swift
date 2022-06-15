@@ -56,27 +56,29 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 ].joined(separator: " ")
             }
         case .interest(let event):
-            switch event.type {
-            case .withdraw:
+            switch (event.type, event.state) {
+            case (.withdraw, .complete):
                 text = LocalizationStrings.withdraw + " \(event.cryptoCurrency.code)"
-            case .interestEarned:
+            case (.withdraw, .pending):
+                text = LocalizationStrings.withdrawing + " \(event.cryptoCurrency.code)"
+            case (.interestEarned, _):
                 text = event.cryptoCurrency.code + " \(LocalizationStrings.rewardsEarned)"
-            case .transfer:
+            case (.transfer, _):
                 text = LocalizationStrings.added + " \(event.cryptoCurrency.code)"
-            case .unknown:
+            default:
                 unimplemented()
             }
         case .swap(let event):
             let pair = event.pair
             switch (event.status, pair.outputCurrencyType) {
-            case (.inProgress, .crypto):
-                text = LocalizationStrings.pendingSwap
-            case (.inProgress, .fiat):
-                text = LocalizationStrings.pendingSell
-            case (_, .crypto):
+            case (.complete, .crypto):
                 text = LocalizationStrings.swap
-            case (_, .fiat):
+            case (.complete, .fiat):
                 text = LocalizationStrings.sell
+            case (_, .crypto):
+                text = LocalizationStrings.pendingSwap
+            case (_, .fiat):
+                text = LocalizationStrings.pendingSell
             }
             text += " \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
 
@@ -92,11 +94,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 text = LocalizationStrings.send + " \(event.currency.displayCode)"
             }
         case .fiat(let event):
-            switch event.type {
-            case .deposit:
+            switch (event.type, event.state) {
+            case (.deposit, .completed):
                 text = LocalizationStrings.deposit + " \(event.amount.displayCode)"
-            case .withdrawal:
+            case (.withdrawal, .completed):
                 text = LocalizationStrings.withdraw + " \(event.amount.displayCode)"
+            case (.deposit, _):
+                text = LocalizationStrings.depositing + " \(event.amount.displayCode)"
+            case (.withdrawal, _):
+                text = LocalizationStrings.withdrawing + " \(event.amount.displayCode)"
             }
         case .crypto(let event):
             switch (event.state, event.type) {
