@@ -22,6 +22,7 @@ public final class TransactionProcessor {
             engine.fetchExchangeRates(for: pendingTransaction)
                 .asObservable()
         }
+        .subscribe(on: scheduler)
 
     // Initialise the transaction as required.
     // This will start propagating the pendingTx to the client code.
@@ -35,6 +36,7 @@ public final class TransactionProcessor {
             .flatMap(weak: self) { (self, _) -> Observable<PendingTransaction> in
                 self.pendingTxSubject
             }
+            .subscribe(on: scheduler)
     }
 
     // MARK: - Private properties
@@ -43,6 +45,7 @@ public final class TransactionProcessor {
     private let notificationCenter: NotificationCenter
     private let pendingTxSubject: BehaviorSubject<PendingTransaction>
     private let sendEmailNotificationService: SendEmailNotificationServiceAPI
+    private let scheduler = MainScheduler.asyncInstance
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
 
@@ -111,6 +114,7 @@ public final class TransactionProcessor {
                 .asObservable()
                 .ignoreElements()
                 .asCompletable()
+                .subscribe(on: scheduler)
         } catch {
             return .just(event: .error(error))
         }
@@ -155,11 +159,13 @@ public final class TransactionProcessor {
                 self?.updatePendingTx(pendingTransaction)
             })
             .asCompletable()
+            .subscribe(on: scheduler)
     }
 
     public func createOrder() -> Single<TransactionOrder?> {
         do {
             return engine.createOrder(pendingTransaction: try pendingTransaction())
+                .subscribe(on: scheduler)
         } catch {
             return .error(error)
         }
@@ -167,6 +173,7 @@ public final class TransactionProcessor {
 
     public func cancelOrder(with identifier: String) -> Single<Void> {
         engine.cancelOrder(with: identifier)
+            .subscribe(on: scheduler)
     }
 
     public func execute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
@@ -211,6 +218,7 @@ public final class TransactionProcessor {
                     )
                 }
             )
+            .subscribe(on: scheduler)
     }
 
     public func validateAll() -> Completable {
@@ -232,6 +240,7 @@ public final class TransactionProcessor {
                 self?.updatePendingTx(pendingTransaction)
             })
             .asCompletable()
+            .subscribe(on: scheduler)
     }
 
     /// Check that the fee level is supported,
@@ -252,6 +261,7 @@ public final class TransactionProcessor {
                 self?.updatePendingTx(pendingTransaction)
             })
             .asCompletable()
+            .subscribe(on: scheduler)
     }
 
     // MARK: - Private methods
@@ -296,6 +306,7 @@ public final class TransactionProcessor {
             })
             .mapToVoid()
             .asObservable()
+            .subscribe(on: scheduler)
     }
 
     private func pendingTransaction() throws -> PendingTransaction {
