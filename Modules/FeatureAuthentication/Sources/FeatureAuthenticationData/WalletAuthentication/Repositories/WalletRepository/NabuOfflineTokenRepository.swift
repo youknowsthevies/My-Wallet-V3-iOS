@@ -27,7 +27,7 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.offlineToken
                 }
-                return credentialsFetcher.fetchAccountCredentials(forceFetch: true)
+                return credentialsFetcher.fetchAccountCredentials(forceFetch: false)
                     .mapError { _ in MissingCredentialsError.offlineToken }
                     .map { credentials in
                         NabuOfflineToken(
