@@ -24,7 +24,7 @@ public struct UserCredentials: Equatable {
 
 public protocol UserCredentialsFetcherAPI {
     /// Fetches the `UserCredentials` from Wallet metadata
-    func fetchUserCredentials() -> AnyPublisher<UserCredentials, WalletAssetFetchError>
+    func fetchUserCredentials(forceFetch: Bool) -> AnyPublisher<UserCredentials, WalletAssetFetchError>
 
     /// Stores the passed UserCredentials to metadata
     /// - Parameter credentials: A `UserCredentials` value
@@ -32,20 +32,46 @@ public protocol UserCredentialsFetcherAPI {
 }
 
 final class UserCredentialsFetcher: UserCredentialsFetcherAPI {
+    private struct Key: Hashable {}
 
     private let metadataEntryService: WalletMetadataEntryServiceAPI
 
+    private let cachedValue: CachedValueNew<Key, UserCredentials, WalletAssetFetchError>
+
     init(metadataEntryService: WalletMetadataEntryServiceAPI) {
         self.metadataEntryService = metadataEntryService
+        let cache = InMemoryCache<Key, UserCredentials>(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        )
+        .eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [metadataEntryService] _ in
+                doFetchUserCredentialsEntry(
+                    service: metadataEntryService
+                )
+            }
+        )
     }
 
-    func fetchUserCredentials() -> AnyPublisher<UserCredentials, WalletAssetFetchError> {
-        metadataEntryService.fetchEntry(type: UserCredentialsEntryPayload.self)
-            .map(UserCredentials.from(entry:))
-            .eraseToAnyPublisher()
+    func fetchUserCredentials(forceFetch: Bool) -> AnyPublisher<UserCredentials, WalletAssetFetchError> {
+        cachedValue.get(
+            key: Key(),
+            forceFetch: forceFetch
+        )
     }
 
     func store(credentials: UserCredentials) -> AnyPublisher<EmptyValue, WalletAssetFetchError> {
         unimplemented()
     }
+}
+
+private func doFetchUserCredentialsEntry(
+    service: WalletMetadataEntryServiceAPI
+) -> AnyPublisher<UserCredentials, WalletAssetFetchError> {
+    service.fetchEntry(type: UserCredentialsEntryPayload.self)
+        .map(UserCredentials.from(entry:))
+        .eraseToAnyPublisher()
 }

@@ -23,13 +23,16 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
 
     private let walletHolder: WalletHolderAPI
     private let metadataService: MetadataServiceAPI
+    private let queue: DispatchQueue
 
     init(
         walletHolder: WalletHolderAPI,
-        metadataService: MetadataServiceAPI
+        metadataService: MetadataServiceAPI,
+        queue: DispatchQueue
     ) {
         self.walletHolder = walletHolder
         self.metadataService = metadataService
+        self.queue = queue
     }
 
     func fetchEntry<Entry: MetadataNodeEntry>(
@@ -42,6 +45,7 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
                 }
                 return .just(metadata)
             }
+            .receive(on: queue)
             .flatMap { [metadataService] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
                 metadataService.fetchEntry(with: metadataState)
                     .mapError(WalletAssetFetchError.fetchFailed)
