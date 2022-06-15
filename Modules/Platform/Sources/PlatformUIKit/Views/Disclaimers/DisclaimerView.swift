@@ -29,9 +29,12 @@ public final class DisclaimerView: UIView {
                 .map { text -> NSAttributedString? in
                     guard let text = text else { return nil }
                     let disclaimerText = NSMutableAttributedString(attributedString: text)
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.alignment = .center
                     disclaimerText.addAttributes(
                         [
                             .font: UIFont.main(.medium, 12),
+                            .paragraphStyle: paragraphStyle,
                             .foregroundColor: UIColor.descriptionText
                         ],
                         range: NSRange(location: 0, length: disclaimerText.length)

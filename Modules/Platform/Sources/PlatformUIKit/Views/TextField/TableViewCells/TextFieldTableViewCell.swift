@@ -40,7 +40,8 @@ public final class TextFieldTableViewCell: UITableViewCell {
         selectionStyle = .none
         contentView.addSubview(textFieldView)
         textFieldView.layoutToSuperview(axis: .horizontal, offset: 24)
-        textFieldView.layoutToSuperview(axis: .vertical)
+        textFieldView.layoutToSuperview(.top)
+        textFieldView.layoutToSuperview(.bottom, offset: -16)
         textFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
 

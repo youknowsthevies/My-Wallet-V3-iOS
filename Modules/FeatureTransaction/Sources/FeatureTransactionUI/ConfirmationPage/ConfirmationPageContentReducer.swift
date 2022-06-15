@@ -119,18 +119,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     private func createDisclaimers(state: TransactionState) -> [DisclaimerViewModel] {
         var disclaimers = [DisclaimerViewModel]()
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
-            disclaimers.append(
-                DisclaimerViewModel(
-                    text: TransactionFlowDescriptor
-                        .confirmDisclaimerText(
-                            action: state.action,
-                            currencyCode: state.asset.code,
-                            accountLabel: state.destination?.label ?? "",
-                            isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
-                        )
-                )
-            )
-
             if state.action == .buy {
                 let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
                 let disclaimerViewModel = DisclaimerViewModel(text: nil)
@@ -149,6 +137,18 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 })
                 .store(in: &cancellables)
                 disclaimers.append(disclaimerViewModel)
+            } else {
+                disclaimers.append(
+                    DisclaimerViewModel(
+                        text: TransactionFlowDescriptor
+                            .confirmDisclaimerText(
+                                action: state.action,
+                                currencyCode: state.asset.code,
+                                accountLabel: state.destination?.label ?? "",
+                                isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
+                            )
+                    )
+                )
             }
         }
         return disclaimers
