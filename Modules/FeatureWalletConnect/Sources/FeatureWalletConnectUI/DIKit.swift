@@ -7,6 +7,6 @@ extension DependencyContainer {
     // MARK: - FeatureWalletConnectUI Module
 
     public static var featureWalletConnectUI = module {
-        factory { WalletConnectRouter() as WalletConnectRouterAPI }
+        single { WalletConnectRouter() as WalletConnectRouterAPI }
     }
 }
