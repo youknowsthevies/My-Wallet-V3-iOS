@@ -13,6 +13,10 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(
+            url: "https://github.com/jackpooleybc/DIKit.git",
+            branch: "safe-property-wrappers"
+        ),
         .package(path: "../Money"),
         .package(path: "../Network"),
         .package(path: "../Tool")
@@ -21,6 +25,7 @@ let package = Package(
         .target(
             name: "DelegatedSelfCustodyKit",
             dependencies: [
+                .product(name: "DIKit", package: "DIKit"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool")
             ]
@@ -29,6 +34,7 @@ let package = Package(
             name: "DelegatedSelfCustodyDataKit",
             dependencies: [
                 .target(name: "DelegatedSelfCustodyKit"),
+                .product(name: "DIKit", package: "DIKit"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool")

@@ -3,20 +3,6 @@
 import Combine
 import MoneyKit
 
-public struct DelegatedCustodyBalances {
-    public struct Balance {
-        let index: Int
-        let name: String
-        let balance: MoneyValue
-    }
-
-    public let balances: [Balance]
-
-    public func balance(index: Int, currency: CryptoCurrency) -> Balance? {
-        balances.first(where: { $0.index == index && $0.balance.currency == currency })
-    }
-}
-
 public protocol DelegatedCustodyBalanceRepositoryAPI {
     var balances: AnyPublisher<DelegatedCustodyBalances, Error> { get }
 }

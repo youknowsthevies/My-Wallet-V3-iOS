@@ -121,3 +121,51 @@ func deriveMasterAccountKey(
         .derive(at: .hardened(UInt32(type.purpose)))
         .derive(at: .hardened(0))
 }
+
+/// Derives a `PrivateKey` from the master node at the given derivation path.
+/// - Parameters:
+///   - masterNode: A `String` to be used as a master node (BIP39 seed)
+///   - derivationPath: A `String` to extract its _purpose_
+/// - Returns: A `PrivateKey`, or nil if the derivation path is invalid.
+func derivePrivateKey(
+    masterNode: String,
+    derivationPath: String
+) -> PrivateKey? {
+    guard let hdKeyPath = HDKeyPath(derivationPath) else {
+        return nil
+    }
+    return PrivateKey
+        .bitcoinKeyFrom(seedHex: masterNode)
+        .derive(at: hdKeyPath)
+}
+
+/// Derives a `PrivateKey` from the master node at the given derivation path.
+/// - Parameters:
+///   - masterNode: A `String` to be used as a master node (BIP39 seed)
+///   - derivationPath: A `String` to extract its _purpose_
+/// - Returns: A `Data` object, or nil if the derivation path is invalid.
+func derivePrivateKeyData(
+    masterNode: String,
+    derivationPath: String
+) -> Data? {
+    derivePrivateKey(
+        masterNode: masterNode,
+        derivationPath: derivationPath
+    )?.raw
+}
+
+/// Derives a `PublicKey` from the master node at the given derivation path.
+/// - Parameters:
+///   - masterNode: A `String` to be used as a master node (BIP39 seed)
+///   - derivationPath: A `String` to extract its _purpose_
+/// - Returns: A `Data` object, or nil if the derivation path is invalid.
+func derivePublicKeyData(
+    masterNode: String,
+    derivationPath: String
+) -> Data? {
+    let privateKey = derivePrivateKey(
+        masterNode: masterNode,
+        derivationPath: derivationPath
+    )
+    return privateKey?.compressedPublicKey
+}
