@@ -7,6 +7,7 @@ import ToolKit
 
 public enum WalletAssetFetchError: Error {
     case notInitialized
+    case unavailable
     case fetchFailed(MetadataFetchError)
 }
 
