@@ -2,10 +2,10 @@ import Combine
 
 extension Publisher {
 
-    public typealias BufferingPolicy = AsyncStream<Output>.Continuation.BufferingPolicy
-
-    public func stream(bufferingPolicy: BufferingPolicy = .bufferingNewest(1)) -> AsyncThrowingStream<Output, Error> {
-        AsyncThrowingStream { continuation in
+    public func stream(
+        bufferingPolicy: AsyncThrowingStream<Output, Error>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncThrowingStream<Output, Error> {
+        AsyncThrowingStream(bufferingPolicy: bufferingPolicy) { continuation in
             var cancellable: AnyCancellable?
             let onTermination = { cancellable?.cancel() }
 
@@ -31,8 +31,10 @@ extension Publisher {
 
 extension Publisher where Failure == Never {
 
-    public func stream(bufferingPolicy: BufferingPolicy = .bufferingNewest(1)) -> AsyncStream<Output> {
-        AsyncStream { continuation in
+    public func stream(
+        bufferingPolicy: AsyncStream<Output>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<Output> {
+        AsyncStream(bufferingPolicy: bufferingPolicy) { continuation in
             var cancellable: AnyCancellable?
             let onTermination = { cancellable?.cancel() }
 
