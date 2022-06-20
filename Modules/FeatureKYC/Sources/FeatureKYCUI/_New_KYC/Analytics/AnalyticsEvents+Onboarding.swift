@@ -20,7 +20,6 @@ extension AnalyticsEvents.New {
         }
 
         public enum UpgradeVerificationOrigin: String, StringRawRepresentable {
-            case airdrop = "AIRDROP"
             case dashboardPromo = "DASHBOARD_PROMO"
             case fiatFunds = "FIAT_FUNDS"
             case onboarding = "ONBOARDING"
@@ -49,8 +48,6 @@ extension AnalyticsEvents.New {
                     self = .onboarding
                 case .receive:
                     self = .unknown
-                case .airdrop:
-                    self = .airdrop
                 case .cash:
                     self = .fiatFunds
                 case .coin:

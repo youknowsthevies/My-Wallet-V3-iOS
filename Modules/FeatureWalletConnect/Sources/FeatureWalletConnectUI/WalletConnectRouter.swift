@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
+import EthereumKit
 import FeatureWalletConnectDomain
 import Foundation
 import PlatformUIKit
@@ -40,6 +41,8 @@ class WalletConnectRouter: WalletConnectRouterAPI {
                     break
                 case .shouldStart(let session, let action):
                     self?.shouldStart(session: session, action: action)
+                case .shouldChangeChainID(let session, let request, let network):
+                    self?.shouldChangeChainID(session: session, request: request, network: network)
                 }
             })
             .store(in: &cancellables)
@@ -71,6 +74,33 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             }
         )
         let state = WalletConnectEventState(session: session, state: .fail)
+        let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
+        let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+
+        presenter?.present(controller, animated: true, completion: nil)
+    }
+
+    private func shouldChangeChainID(session: Session, request: Request, network: EVMNetwork) {
+        let presenter = navigation.topMostViewControllerProvider.topMostViewController
+        let env = WalletConnectEventEnvironment(
+            mainQueue: .main,
+            service: resolve(),
+            router: resolve(),
+            analyticsEventRecorder: analyticsEventRecorder,
+            onComplete: { [service] approved in
+                presenter?.dismiss(animated: true) {
+                    service.respondToChainIDChangeRequest(
+                        session: session,
+                        request: request,
+                        network: network,
+                        approved: approved
+                    )
+                }
+            }
+        )
+        let state = WalletConnectEventState(session: session, state: .chainID(name: network.name))
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
         controller.transitioningDelegate = sheetPresenter
@@ -149,7 +179,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
     func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
         Deferred {
             Future { [weak self] promise in
-                guard let walletConnectSession = session.session,
+                guard let walletConnectSession = session.session(address: ""),
                       let self = self
                 else {
                     return

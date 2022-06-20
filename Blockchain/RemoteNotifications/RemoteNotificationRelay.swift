@@ -99,6 +99,7 @@ extension RemoteNotificationRelay: UNUserNotificationCenterDelegate {
     ) {
         let userInfo = response.notification.request.content.userInfo
         Logger.shared.debug("Notification didReceive: \(userInfo)")
+
         if secureChannelNotificationRelay.isSecureChannelNotification(userInfo) {
             secureChannelNotificationRelay.didReceiveSecureChannelNotification(userInfo)
         } else {

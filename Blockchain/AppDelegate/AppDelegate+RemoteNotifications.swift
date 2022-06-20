@@ -26,7 +26,12 @@ extension AppDelegate {
             )
         }
 
-        NotificationCenter.default.post(name: UIApplication.pushNotificationReceivedNotification, object: userInfo)
+        let pushNotification = Notification(
+            name: UIApplication.pushNotificationReceivedNotification,
+            userInfo: userInfo
+        )
+        NotificationCenter.default.post(pushNotification)
+
         viewStore.send(
             .appDelegate(
                 .didReceiveRemoteNotification(

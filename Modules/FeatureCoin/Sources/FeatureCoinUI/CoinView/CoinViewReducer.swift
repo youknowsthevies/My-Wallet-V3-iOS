@@ -27,17 +27,22 @@ public let coinViewReducer = Reducer<
         case .onAppear:
             return .merge(
                 Effect(value: .observation(.start)),
+
                 Effect(value: .refresh),
+
                 environment.interestRatesRepository
                     .fetchRate(code: state.currency.code)
                     .result()
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .map(CoinViewAction.fetchedInterestRate),
+
                 environment.assetInformationService
                     .fetch()
+                    .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map(CoinViewAction.fetchedAssetInformation),
+
                 environment.app.publisher(
                     for: blockchain.ux.asset[state.currency.code].watchlist.is.on,
                     as: Bool.self
@@ -46,15 +51,21 @@ public let coinViewReducer = Reducer<
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map(CoinViewAction.isOnWatchlist),
-                .fireAndForget { [state] in
-                    environment.app.post(event: blockchain.ux.asset[state.currency.code])
-                },
-                NotificationCenter.default.publisher(for: .transaction)
+
+                NotificationCenter.default
+                    .publisher(for: .transaction)
+                    .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .map { _ in .refresh },
+
                 environment.app.on(blockchain.ux.asset[state.currency.code].refresh)
+                    .receive(on: environment.mainQueue)
                     .eraseToEffect()
-                    .map { _ in .refresh }
+                    .map { _ in .refresh },
+
+                .fireAndForget { [state] in
+                    environment.app.post(event: blockchain.ux.asset[state.currency.code])
+                }
             )
 
         case .onDisappear:
@@ -75,7 +86,7 @@ public let coinViewReducer = Reducer<
             return .none
 
         case .fetchedAssetInformation(let result):
-            state.information = try? result.get()
+            state.assetInformation = try? result.get()
             return .none
 
         case .isOnWatchlist(let isFavorite):

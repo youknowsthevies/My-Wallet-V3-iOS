@@ -54,3 +54,28 @@ public class WatchlistService {
             .store(in: &cancellables)
     }
 }
+
+// MARK: - Preview Helper
+
+extension WatchlistService {
+
+    public static var preview: WatchlistService {
+        .init(
+            base: .bitcoin,
+            watchlistRepository: PreviewWatchlistRepository(
+                .just(()),
+                .just(()),
+                .just(["BTC"])
+            ),
+            app: App.preview
+        )
+    }
+
+    public static var previewEmpty: WatchlistService {
+        .init(
+            base: .bitcoin,
+            watchlistRepository: PreviewWatchlistRepository(),
+            app: App.preview
+        )
+    }
+}

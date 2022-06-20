@@ -16,8 +16,8 @@ import MetadataKit
 ///    - Using the pin we have already fetched the `Wrapper`, after we decrypt using the password we store it
 ///    and then initialize the `MetadataState`
 ///
-public enum WalletState {
-    public enum PartiallyLoaded {
+public enum WalletState: Equatable {
+    public enum PartiallyLoaded: Equatable {
         case justMetadata(MetadataState)
         case justWrapper(Wrapper)
     }

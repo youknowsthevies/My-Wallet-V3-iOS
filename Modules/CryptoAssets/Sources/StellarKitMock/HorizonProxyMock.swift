@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -7,13 +8,16 @@ import RxSwift
 import stellarsdk
 
 final class HorizonProxyMock: HorizonProxyAPI {
+
     /// Add an entry for each account you want to mock:
     /// e.g. "<id>":  AccountResponse.JSON.valid(accountID: "1", balance: "10000")
     var underlyingAccountResponseJSONMap: [String: String] = [:]
 
-    func accountResponse(for accountID: String) -> Single<AccountResponse> {
+    func accountResponse(
+        for accountID: String
+    ) -> AnyPublisher<AccountResponse, StellarNetworkError> {
         guard let json = underlyingAccountResponseJSONMap[accountID] else {
-            return .error(StellarAccountError.noDefaultAccount)
+            return .failure(.notFound)
         }
         let decoder = JSONDecoder()
         do {

@@ -29,7 +29,7 @@ public final class KYCPager: KYCPagerAPI {
                 kycCountry = country
             case .sddVerification(let isVerified):
                 let shouldCompleteKYC = isVerified && tier < .tier2
-                return shouldCompleteKYC ? .empty() : .just(.verifyIdentity)
+                return shouldCompleteKYC ? .empty() : .just(.accountUsageForm)
             case .stateSelected:
                 // no-op: handled in coordinator
                 break
@@ -110,7 +110,9 @@ extension KYCPageType {
             return .country
         }
 
-        guard user.address?.countryCode.lowercased() != "us" || user.address?.state != nil else {
+        let countryCode = user.address?.countryCode.lowercased()
+        let state = user.address?.state
+        if countryCode == "us", state == nil {
             return .states
         }
 
@@ -122,29 +124,19 @@ extension KYCPageType {
             return .address
         }
 
-        if let mobile = user.mobile, mobile.verified {
-            if tiersResponse.canCompleteTier2 {
-                if requiredTier < .tier2 {
-                    if isSDDVerified {
-                        // if they are SDD verified we should move on to buy but since this method doesn't allow returning nil, go to the SDD check first
-                        // from there you should get redirected to buy
-                        return .sddVerificationCheck
-                    } else if isSDDEligible {
-                        // if they are SDD eligible, perform the SDD check and decide
-                        return .sddVerificationCheck
-                    }
-                }
-
-                // If the user can complete tier2 than they
-                // either need to resubmit their documents
-                // or submit their documents for the first time.
-                return user.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
-            } else {
-                return .accountStatus
-            }
+        guard let mobile = user.mobile, mobile.verified else {
+            return .enterPhone
         }
 
-        return .enterPhone
+        guard tiersResponse.canCompleteTier2 else {
+            return .accountStatus
+        }
+
+        guard requiredTier < .tier2 else {
+            return .accountUsageForm
+        }
+
+        return .sddVerificationCheck
     }
 
     public static func moreInfoPage(forTier tier: KYC.Tier) -> KYCPageType? {
@@ -213,8 +205,6 @@ extension KYCPageType {
         case .profile:
             return .address
         case .address:
-            return .accountUsageForm
-        case .accountUsageForm:
             return .sddVerificationCheck
         case .sddVerificationCheck:
             // This check could be also in `case .address` but I'm putting this here to ensure that
@@ -228,6 +218,7 @@ extension KYCPageType {
         case .tier1ForcedTier2,
              .enterPhone,
              .confirmPhone,
+             .accountUsageForm,
              .verifyIdentity,
              .resubmitIdentity,
              .applicationComplete,
@@ -242,16 +233,17 @@ extension KYCPageType {
         case .tier1ForcedTier2:
             // Skip the enter phone step if the user already has verified their phone number
             if let user = user, let mobile = user.mobile, mobile.verified {
-                if tiersResponse.canCompleteTier2 {
-                    return user.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
+                guard tiersResponse.canCompleteTier2 else {
+                    return .accountStatus
                 }
-                // The user can't complete tier2, so they should see their account status.
-                return .accountStatus
+                return .accountUsageForm
             }
             return .enterPhone
         case .enterPhone:
             return .confirmPhone
         case .confirmPhone:
+            return .accountUsageForm
+        case .accountUsageForm:
             return user?.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
         case .verifyIdentity,
              .resubmitIdentity:
@@ -267,7 +259,6 @@ extension KYCPageType {
              .country,
              .states,
              .address,
-             .accountUsageForm,
              .sddVerificationCheck,
              .profile:
             return nextPageTier1(user: user, country: country, requiredTier: .tier2, tiersResponse: tiersResponse)

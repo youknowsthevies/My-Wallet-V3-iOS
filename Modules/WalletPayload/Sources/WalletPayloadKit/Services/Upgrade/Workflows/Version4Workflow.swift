@@ -29,14 +29,11 @@ final class Version4Workflow: WalletUpgradeWorkflow {
                 }
                 // run through the accounts of default HD Wallet
                 let upgradedAccounts = hdWallet.accounts.map { account -> Account in
-                    // Create the new `Bech32` (aka segwit) derivation
-                    let segwitDerivation = generateDerivation(
-                        type: .segwit,
-                        index: account.index,
-                        masterSeedHex: seedHex
+                    // for sanity let's recreate all derivations from seed hex for this account
+                    let derivations = generateDerivations(
+                        masterSeedHex: seedHex,
+                        index: account.index
                     )
-                    var derivations = account.derivations
-                    derivations.append(segwitDerivation)
                     return Account(
                         index: account.index,
                         label: account.label,

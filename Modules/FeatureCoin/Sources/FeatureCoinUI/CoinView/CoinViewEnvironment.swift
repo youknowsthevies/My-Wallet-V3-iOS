@@ -14,11 +14,12 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
     public let kycStatusProvider: () -> AnyPublisher<KYCStatus, Never>
     public let accountsProvider: () -> AnyPublisher<[Account], Error>
     public let assetInformationService: AssetInformationService
-    public let historicalPriceService: HistoricalPriceServiceAPI
+    public let historicalPriceService: HistoricalPriceService
     public let interestRatesRepository: RatesRepositoryAPI
     public let explainerService: ExplainerService
-    let watchlistService: WatchlistService
     public let dismiss: () -> Void
+
+    private let watchlistService: WatchlistService
 
     public init(
         app: AppProtocol,
@@ -26,7 +27,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         kycStatusProvider: @escaping () -> AnyPublisher<KYCStatus, Never>,
         accountsProvider: @escaping () -> AnyPublisher<[Account], Error>,
         assetInformationService: AssetInformationService,
-        historicalPriceService: HistoricalPriceServiceAPI,
+        historicalPriceService: HistoricalPriceService,
         interestRatesRepository: RatesRepositoryAPI,
         explainerService: ExplainerService,
         watchlistService: WatchlistService,
@@ -51,14 +52,22 @@ extension CoinViewEnvironment {
         kycStatusProvider: { .empty() },
         accountsProvider: { .empty() },
         assetInformationService: .preview,
-        historicalPriceService: PreviewHelper.HistoricalPriceService(),
-        interestRatesRepository: PreviewHelper.InterestRatesRepository(),
-        explainerService: .init(app: App.preview),
-        watchlistService: WatchlistService(
-            base: .bitcoin,
-            watchlistRepository: PreviewHelper.WatchlistRepository(),
-            app: App.preview
-        ),
+        historicalPriceService: .preview,
+        interestRatesRepository: PreviewRatesRepository(.just(5 / 3)),
+        explainerService: .preview,
+        watchlistService: .preview,
+        dismiss: {}
+    )
+
+    static var previewEmpty: Self = .init(
+        app: App.preview,
+        kycStatusProvider: { .empty() },
+        accountsProvider: { .empty() },
+        assetInformationService: .previewEmpty,
+        historicalPriceService: .previewEmpty,
+        interestRatesRepository: PreviewRatesRepository(),
+        explainerService: .preview,
+        watchlistService: .previewEmpty,
         dismiss: {}
     )
 }

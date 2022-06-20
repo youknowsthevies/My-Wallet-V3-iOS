@@ -1,60 +1,48 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
-import PlatformKit
-import RxRelay
-import RxSwift
+import Combine
+import ToolKit
 
-public protocol StellarConfigurationAPI {
-    var configuration: Single<StellarConfiguration> { get }
+protocol StellarConfigurationServiceAPI {
+    var configuration: AnyPublisher<StellarConfiguration, Never> { get }
 }
 
-final class StellarConfigurationService: StellarConfigurationAPI {
+final class StellarConfigurationService: StellarConfigurationServiceAPI {
 
-    // MARK: Private Static Properties
+    // MARK: Private Types
 
-    private static let refreshInterval: TimeInterval = 60.0 * 60.0 // 1h
+    private typealias KeyType = String
 
-    var configuration: Single<StellarConfiguration> {
-        Single.deferred { [unowned self] in
-            guard let cachedValue = self.cachedConfiguration.value, !self.shouldRefresh else {
-                return self.fetchConfiguration
-            }
-            return Single.just(cachedValue)
-        }
+    // MARK: Properties
+
+    var configuration: AnyPublisher<StellarConfiguration, Never> {
+        cachedValue.get(key: KeyType())
     }
 
     // MARK: Private Properties
 
-    private var cachedConfiguration = BehaviorRelay<StellarConfiguration?>(value: nil)
+    private let walletOptions: StellarWalletOptionsBridgeAPI
+    private let cachedValue: CachedValueNew<KeyType, StellarConfiguration, Never>
 
-    private var fetchConfiguration: Single<StellarConfiguration> {
-        bridgeAPI.stellarConfigurationDomain
-            .map { domain -> StellarConfiguration in
-                guard let stellarHorizon = domain else {
-                    return StellarConfiguration.Blockchain.production
-                }
-                return StellarConfiguration(horizonURL: stellarHorizon)
+    // MARK: Init
+
+    init(walletOptions: StellarWalletOptionsBridgeAPI) {
+        self.walletOptions = walletOptions
+        let cache: AnyCache<KeyType, StellarConfiguration> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { _ -> AnyPublisher<StellarConfiguration, Never> in
+                walletOptions.stellarConfigurationDomain
+                    .map { horizonURL -> StellarConfiguration? in
+                        horizonURL.flatMap(StellarConfiguration.init(horizonURL:))
+                    }
+                    .replaceNil(with: .Blockchain.production)
+                    .replaceError(with: .Blockchain.production)
+                    .eraseToAnyPublisher()
             }
-            .do(onSuccess: { [weak self] _ in
-                self?.lastRefresh = Date()
-            })
-            .catchAndReturn(StellarConfiguration.Blockchain.production)
-            .do(onSuccess: { [weak self] configuration in
-                self?.cachedConfiguration.accept(configuration)
-            })
-    }
-
-    private var shouldRefresh: Bool {
-        let lastRefreshInterval = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
-        return lastRefresh.compare(lastRefreshInterval) == .orderedAscending
-    }
-
-    private var lastRefresh = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
-
-    private let bridgeAPI: StellarWalletOptionsBridgeAPI
-
-    init(bridge: StellarWalletOptionsBridgeAPI = resolve()) {
-        bridgeAPI = bridge
+        )
     }
 }

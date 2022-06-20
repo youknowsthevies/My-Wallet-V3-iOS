@@ -22,6 +22,3 @@ sh ./scripts/recaptcha.sh
 
 echo "Generating project"
 sh ./scripts/generate_projects.sh
-
-echo "Opening project"
-open Blockchain.xcodeproj

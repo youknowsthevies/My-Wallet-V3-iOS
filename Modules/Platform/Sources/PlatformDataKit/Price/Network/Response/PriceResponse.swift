@@ -15,6 +15,8 @@ extension PriceResponse {
     struct Item: Decodable, Equatable {
         let price: Decimal?
         let timestamp: Date
+        let volume24h: Double?
+        let marketCap: Double?
     }
 }
 

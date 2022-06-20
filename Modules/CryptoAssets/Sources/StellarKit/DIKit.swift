@@ -4,6 +4,7 @@ import DIKit
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -11,32 +12,71 @@ extension DependencyContainer {
 
     public static var stellarKit = module {
 
-        factory { HorizonProxy() as HorizonProxyAPI }
+        factory { () -> HorizonProxyAPI in
+            HorizonProxy(
+                configurationService: DIKit.resolve(),
+                accountRepository: DIKit.resolve(),
+                walletOptions: DIKit.resolve()
+            )
+        }
 
-        factory { StellarAccountDetailsService() as StellarAccountDetailsServiceAPI }
+        factory { () -> StellarAccountDetailsRepositoryAPI in
+            StellarAccountDetailsRepository(horizonProxy: DIKit.resolve())
+        }
 
-        single { () -> StellarConfigurationAPI in
-            StellarConfigurationService()
+        single { () -> StellarConfigurationServiceAPI in
+            StellarConfigurationService(walletOptions: DIKit.resolve())
         }
 
         factory { () -> StellarWalletOptionsBridgeAPI in
-            StellarWalletOptionsService()
+            StellarWalletOptionsService(walletOptions: DIKit.resolve())
         }
 
-        single { StellarWalletAccountRepository() as StellarWalletAccountRepositoryAPI }
+        single { () -> StellarWalletAccountRepositoryAPI in
+            StellarWalletAccountRepository(
+                bridge: DIKit.resolve(),
+                metadataEntryService: DIKit.resolve(),
+                mnemonicAccessAPI: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
 
-        factory(tag: CryptoCurrency.stellar) { StellarAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.stellar) { () -> CryptoAsset in
+            StellarAsset(
+                accountRepository: DIKit.resolve(),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve(),
+                addressFactory: DIKit.resolve()
+            )
+        }
 
         factory { () -> AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> in
-            AnyActivityItemEventDetailsFetcher(api: StellarActivityItemEventDetailsFetcher())
+            let api = StellarActivityItemEventDetailsFetcher(
+                repository: DIKit.resolve(),
+                operationsService: DIKit.resolve()
+            )
+            return AnyActivityItemEventDetailsFetcher(
+                api: api
+            )
         }
 
         single { AnyCryptoFeeService(service: CryptoFeeService<StellarTransactionFee>()) }
 
-        factory { StellarTransactionDispatcher() }
+        factory { () -> StellarTransactionDispatcherAPI in
+            StellarTransactionDispatcher(
+                accountRepository: DIKit.resolve(),
+                walletOptions: DIKit.resolve(),
+                horizonProxy: DIKit.resolve()
+            )
+        }
 
-        factory { LedgersServiceProvider() as LedgersServiceProviderAPI }
+        factory { StellarCryptoReceiveAddressFactory() }
 
-        factory { StellarHistoricalTransactionService() as StellarHistoricalTransactionServiceAPI }
+        factory { () -> StellarHistoricalTransactionServiceAPI in
+            StellarHistoricalTransactionService(
+                configurationService: DIKit.resolve()
+            )
+        }
     }
 }

@@ -210,13 +210,6 @@ final class AnnouncementPresenter {
                     isKycSupported: preliminaryData.isKycSupported,
                     reappearanceTimeInterval: metadata.interval
                 )
-            case .kycAirdrop:
-                announcement = kycAirdrop(
-                    user: preliminaryData.user,
-                    tiers: preliminaryData.tiers,
-                    isKycSupported: preliminaryData.isKycSupported,
-                    reappearanceTimeInterval: metadata.interval
-                )
             case .verifyIdentity:
                 announcement = verifyIdentity(using: preliminaryData.user)
             case .exchangeLinking:
@@ -324,32 +317,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    // Computes kyc airdrop announcement
-    private func kycAirdrop(
-        user: NabuUser,
-        tiers: KYC.UserTiers,
-        isKycSupported: Bool,
-        reappearanceTimeInterval: TimeInterval
-    ) -> Announcement {
-        KycAirdropAnnouncement(
-            canCompleteTier2: tiers.canCompleteTier2,
-            isKycSupported: isKycSupported,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                guard let self = self else { return }
-                let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(
-                    tier: tier,
-                    parentFlow: .airdrop,
-                    from: self.tabSwapping
-                )
-            }
-        )
-    }
-
     // Computes transfer in bitcoin announcement
     private func transferBitcoin(isKycSupported: Bool, reappearanceTimeInterval: TimeInterval) -> Announcement {
         TransferInCryptoAnnouncement(
@@ -369,7 +336,6 @@ extension AnnouncementPresenter {
     /// Computes identity verification card announcement
     private func verifyIdentity(using user: NabuUser) -> Announcement {
         VerifyIdentityAnnouncement(
-            isSunriverAirdropRegistered: user.isSunriverAirdropRegistered,
             isCompletingKyc: kycSettings.isCompletingKyc,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
@@ -408,7 +374,7 @@ extension AnnouncementPresenter {
         )
     }
 
-    private func showAssetDetailsScreen(for currency: CryptoCurrency) {
+    private func showCoinView(for currency: CryptoCurrency) {
         app.post(event: blockchain.ux.asset[currency.code].select)
     }
 
@@ -425,7 +391,7 @@ extension AnnouncementPresenter {
                 guard let asset = data?.asset else {
                     return
                 }
-                self?.showAssetDetailsScreen(for: asset)
+                self?.showCoinView(for: asset)
             }
         )
     }
@@ -532,48 +498,52 @@ extension AnnouncementPresenter {
     ) -> Announcement {
         ClaimFreeCryptoDomainAnnouncement(
             claimFreeDomainEligible: claimFreeDomainEligible,
-            action: { [coincore, nabuUserService, navigationRouter] in
-                let vc = ClaimIntroductionHostingController(
-                    mainQueue: .main,
-                    analyticsRecorder: DIKit.resolve(),
-                    externalAppOpener: DIKit.resolve(),
-                    searchDomainRepository: DIKit.resolve(),
-                    orderDomainRepository: DIKit.resolve(),
-                    userInfoProvider: {
-                        Deferred {
-                            Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
-                        }
-                        .eraseError()
-                        .flatMap { cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
-                            guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
-                                return .empty()
-                            }
-                            let recordPublisher = providers.map(\.resolutionRecord).zip()
-                            let nabuUserPublisher = nabuUserService.user.eraseError()
-                            return recordPublisher
-                                .zip(nabuUserPublisher)
-                                .eraseToAnyPublisher()
-                        }
-                        .map { records, nabuUser -> OrderDomainUserInfo in
-                            OrderDomainUserInfo(
-                                nabuUserId: nabuUser.identifier,
-                                nabuUserName: nabuUser
-                                    .personalDetails
-                                    .firstName?
-                                    .replacingOccurrences(of: " ", with: "") ?? "",
-                                resolutionRecords: records
-                            )
-                        }
-                        .eraseToAnyPublisher()
-                    }
-                )
-                let nav = UINavigationController(rootViewController: vc)
-                navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+            action: { [weak self] in
+                self?.presentClaimIntroductionHostingController()
             },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             }
         )
+    }
+
+    private func presentClaimIntroductionHostingController() {
+        let vc = ClaimIntroductionHostingController(
+            mainQueue: .main,
+            analyticsRecorder: DIKit.resolve(),
+            externalAppOpener: DIKit.resolve(),
+            searchDomainRepository: DIKit.resolve(),
+            orderDomainRepository: DIKit.resolve(),
+            userInfoProvider: { [coincore, nabuUserService] in
+                Deferred { [coincore] in
+                    Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
+                }
+                .eraseError()
+                .flatMap { [nabuUserService] cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
+                    guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
+                        return .empty()
+                    }
+                    let recordPublisher = providers.map(\.resolutionRecord).zip()
+                    let nabuUserPublisher = nabuUserService.user.eraseError()
+                    return recordPublisher
+                        .zip(nabuUserPublisher)
+                        .eraseToAnyPublisher()
+                }
+                .map { records, nabuUser -> OrderDomainUserInfo in
+                    OrderDomainUserInfo(
+                        nabuUserId: nabuUser.identifier,
+                        nabuUserName: nabuUser
+                            .personalDetails
+                            .firstName?
+                            .replacingOccurrences(of: " ", with: "") ?? "",
+                        resolutionRecords: records
+                    )
+                }
+                .eraseToAnyPublisher()
+            }
+        )
+        let nav = UINavigationController(rootViewController: vc)
+        navigationRouter.present(viewController: nav, using: .modalOverTopMost)
     }
 
     /// Interest Account Announcement for users who have not KYC'd

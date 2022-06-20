@@ -30,6 +30,12 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
         decode()
     }
 
+    func performWebsocket<ResponseType>(
+        request: NetworkRequest
+    ) -> AnyPublisher<ResponseType, NetworkError> where ResponseType: Decodable {
+        decode()
+    }
+
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, NetworkError> {

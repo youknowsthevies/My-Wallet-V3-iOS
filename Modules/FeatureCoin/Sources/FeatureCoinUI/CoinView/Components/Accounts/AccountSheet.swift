@@ -115,7 +115,9 @@ extension Account.Snapshot {
 extension CryptoCurrency {
 
     var color: Color {
-        assetModel.spotColor.map(Color.init(hex:)) ?? Color(hex: ERC20Code.spotColor(code: code))
+        assetModel.spotColor.map(Color.init(hex:))
+            ?? (CustodialCoinCode(rawValue: code)?.spotColor).map(Color.init(hex:))
+            ?? Color(hex: ERC20Code.spotColor(code: code))
     }
 }
 

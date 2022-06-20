@@ -13,8 +13,6 @@ extension DependencyContainer {
 
         // MARK: - Internal Feature Flag
 
-        factory { FeatureFlagsService() as FeatureFlagsServiceAPI }
-
         factory { FileIO() as FileIOAPI }
     }
 }

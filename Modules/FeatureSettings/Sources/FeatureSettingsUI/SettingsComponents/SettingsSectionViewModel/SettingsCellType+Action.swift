@@ -75,8 +75,6 @@ extension SettingsSectionType.CellType {
                 return .showAccountsAndAddresses
             case .contactSupport:
                 return .showContactSupport
-            case .airdrops:
-                return .showAirdrops
             case .cardIssuing:
                 return .showCardIssuing
             case .notifications:

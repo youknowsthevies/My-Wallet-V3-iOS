@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>WEBSOCKET_CONVERSION_URL</key>
+	<string>$(WEBSOCKET_CONVERSION_URL)</string>
 	<key>intercomAPIKey</key>
 	<string>$(INTERCOM_API_KEY)</string>
 	<key>intercomAppId</key>
@@ -10,28 +12,10 @@
 	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
-	<key>CHECKOUT_ENV</key>
-	<string>$(CHECKOUT_ENV)</string>
-	<key>EVERYPAY_API_URL</key>
-	<string>$(EVERYPAY_API_URL)</string>
-	<key>EXCHANGE_URL</key>
-	<string>$(EXCHANGE_URL)</string>
-	<key>EXPLORER_SERVER</key>
-	<string>$(EXPLORER_SERVER)</string>
-	<key>PIN_CERTIFICATE</key>
-	<string>$(PIN_CERTIFICATE)</string>
-	<key>RETAIL_CORE_SOCKET_URL</key>
-	<string>$(RETAIL_CORE_SOCKET_URL)</string>
-	<key>RETAIL_CORE_URL</key>
-	<string>$(RETAIL_CORE_URL)</string>
-	<key>SWIFTY_BEAVER_APP_ID</key>
-	<string>$(SWIFTY_BEAVER_APP_ID)</string>
-	<key>SWIFTY_BEAVER_APP_KEY</key>
-	<string>$(SWIFTY_BEAVER_APP_KEY)</string>
-	<key>SWIFTY_BEAVER_APP_SECRET</key>
-	<string>$(SWIFTY_BEAVER_APP_SECRET)</string>
-	<key>WALLET_SERVER</key>
-	<string>$(WALLET_SERVER)</string>
+	<key>BLOCKCHAIN_URL</key>
+	<string>$(BLOCKCHAIN_URL)</string>
+	<key>BLOCKCHAIN_WALLET_PAGE_LINK</key>
+	<string>$(BLOCKCHAIN_WALLET_PAGE_LINK)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -49,7 +33,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>202205.1.1</string>
+	<string>202206.1.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -64,25 +48,55 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
+	<key>CHECKOUT_ENV</key>
+	<string>$(CHECKOUT_ENV)</string>
 	<key>COMMIT_HASH</key>
 	<string>${COMMIT_HASH}</string>
+	<key>EVERYPAY_API_URL</key>
+	<string>$(EVERYPAY_API_URL)</string>
+	<key>EXCHANGE_URL</key>
+	<string>$(EXCHANGE_URL)</string>
+	<key>EXPLORER_SERVER</key>
+	<string>$(EXPLORER_SERVER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>GOOGLE_RECAPTCHA_SITE_KEY</key>
+	<string>$(GOOGLE_RECAPTCHA_SITE_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LOGIN_URL</key>
+	<string>$(LOGIN_URL)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_pulse._tcp</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>This is required for the app to scan QR codes.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you to securely access your wallet.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Network usage required for debugging</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Blockchain needs access to your location to show you nearby businesses that accept Bitcoin.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Required for video capture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Your permission is needed in order to upload documents from your photo library.</string>
+	<key>PIN_CERTIFICATE</key>
+	<string>$(PIN_CERTIFICATE)</string>
+	<key>RETAIL_CORE_SOCKET_URL</key>
+	<string>$(RETAIL_CORE_SOCKET_URL)</string>
+	<key>RETAIL_CORE_URL</key>
+	<string>$(RETAIL_CORE_URL)</string>
+	<key>SWIFTY_BEAVER_APP_ID</key>
+	<string>$(SWIFTY_BEAVER_APP_ID)</string>
+	<key>SWIFTY_BEAVER_APP_KEY</key>
+	<string>$(SWIFTY_BEAVER_APP_KEY)</string>
+	<key>SWIFTY_BEAVER_APP_SECRET</key>
+	<string>$(SWIFTY_BEAVER_APP_SECRET)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Bold.ttf</string>
@@ -99,8 +113,6 @@
 	<string>LaunchScreen</string>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleDefault</string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -109,27 +121,23 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>WALLET_HELPER</key>
+	<string>$(WALLET_HELPER)</string>
+	<key>WALLET_SERVER</key>
+	<string>$(WALLET_SERVER)</string>
+	<key>intercomAPIKey</key>
+	<string>$(INTERCOM_API_KEY)</string>
+	<key>intercomAppId</key>
+	<string>$(INTERCOM_APP_ID)</string>
 	<key>siftAccountId</key>
 	<string>$(SIFT_ACCOUNT_ID)</string>
 	<key>siftKey</key>
 	<string>$(SIFT_BEACON_KEY)</string>
 	<key>useNewAppDelegate</key>
 	<string>$(USE_NEW_APPDELEGATE)</string>
-	<key>LOGIN_URL</key>
-	<string>$(LOGIN_URL)</string>
-	<key>BLOCKCHAIN_URL</key>
-	<string>$(BLOCKCHAIN_URL)</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Network usage required for debugging</string>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_pulse._tcp</string>
-	</array>
-	<key>GOOGLE_RECAPTCHA_SITE_KEY</key>
-	<string>$(GOOGLE_RECAPTCHA_SITE_KEY)</string>
-	<key>BLOCKCHAIN_WALLET_PAGE_LINK</key>
-	<string>$(BLOCKCHAIN_WALLET_PAGE_LINK)</string>
 </dict>
 </plist>

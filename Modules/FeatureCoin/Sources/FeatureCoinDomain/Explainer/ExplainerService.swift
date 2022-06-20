@@ -34,7 +34,12 @@ public struct ExplainerService {
     }
 
     public func isAccepted(_ account: Account.Snapshot) -> Bool {
-        (defaults.object(forKey: key)[dotPath: account.accountType.rawValue] as? Bool)
-            .or(false)
+        (defaults.object(forKey: key)[dotPath: account.accountType.rawValue] as? Bool) ?? false
+    }
+}
+
+extension ExplainerService {
+    public static var preview: ExplainerService {
+        .init(app: App.preview)
     }
 }

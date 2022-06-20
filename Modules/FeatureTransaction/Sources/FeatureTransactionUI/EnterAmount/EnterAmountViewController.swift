@@ -205,7 +205,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        continueButtonView.viewModel.isEnabledRelay.accept(true)
+        continueButtonView.viewModel.isEnabledRelay.accept(false)
     }
 
     func connect(
@@ -264,22 +264,9 @@ final class EnterAmountViewController: BaseScreenViewController,
             .disposed(by: disposeBag)
 
         stateDriver
-            .map(\.showContinueAction)
-            .map { !$0 } // flip the flag because we're modifying the hidden state
-            .drive(continueButtonView.viewModel.isHiddenRelay)
-            .disposed(by: disposeBag)
-
-        stateDriver
             .map(\.showErrorRecoveryAction)
             .drive(onNext: { [weak errorRecoveryViewController] showError in
                 errorRecoveryViewController?.view.isHidden = !showError
-            })
-            .disposed(by: disposeBag)
-
-        stateDriver
-            .map { $0.showContinueAction || $0.showErrorRecoveryAction }
-            .drive(onNext: { [ctaContainerView] canShowAnyCTA in
-                ctaContainerView.isHidden = !canShowAnyCTA
             })
             .disposed(by: disposeBag)
 

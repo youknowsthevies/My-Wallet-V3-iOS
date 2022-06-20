@@ -18,6 +18,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
     let quotesEngine: QuotesEngine
+    let hotWalletAddressService: HotWalletAddressServiceAPI
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
 
@@ -45,7 +46,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
+        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve(),
+        hotWalletAddressService: HotWalletAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword
@@ -57,6 +59,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         self.currencyConversionService = currencyConversionService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
+        self.hotWalletAddressService = hotWalletAddressService
     }
 
     func assertInputsValid() {
@@ -64,7 +67,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         precondition(transactionTarget is FiatAccount)
     }
 
-    private func startOnChainEngine(pricedQuote: PricedQuote) -> Completable {
+    private func startOnChainEngine(pricedQuote: PricedQuote) -> Single<Void> {
         let value = receiveAddressFactory.makeExternalAssetAddress(
             asset: sourceAsset,
             address: pricedQuote.sampleDepositAddress,
@@ -73,14 +76,17 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         )
         switch value {
         case .failure(let error):
-            return .just(event: .error(error))
+            return .error(error)
         case .success(let receiveAddress):
-            onChainEngine.start(
-                sourceAccount: sourceAccount,
-                transactionTarget: receiveAddress,
-                askForRefreshConfirmation: { _ in .empty() }
-            )
-            return .just(event: .completed)
+            return createTransactionTarget(depositAddress: receiveAddress.address)
+                .flatMap { [onChainEngine, sourceAccount] transactionTarget in
+                    onChainEngine.start(
+                        sourceAccount: sourceAccount!,
+                        transactionTarget: transactionTarget,
+                        askForRefreshConfirmation: { _ in .empty() }
+                    )
+                    return .just(())
+                }
         }
     }
 
@@ -95,22 +101,23 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         quote
             .take(1)
             .asSingle()
-            .flatMap(weak: self) { (self, pricedQuote) -> Single<PendingTransaction> in
-                self.startOnChainEngine(pricedQuote: pricedQuote)
-                    .andThen(
-                        Single.zip(
+            .flatMap { [weak self] pricedQuote -> Single<PendingTransaction> in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                return self.startOnChainEngine(pricedQuote: pricedQuote)
+                    .flatMap { [weak self] _ -> Single<(FiatCurrency, PendingTransaction)> in
+                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        return Single.zip(
                             self.walletCurrencyService.displayCurrency.asSingle(),
                             self.onChainEngine.initializeTransaction()
                         )
-                    )
-                    .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
-                        let (fiatCurrency, pendingTransaction) = payload
-
+                    }
+                    .flatMap { [weak self] fiatCurrency, pendingTransaction -> Single<PendingTransaction> in
+                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                         let fallback = PendingTransaction(
-                            amount: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
-                            available: FiatValue.zero(currency: self.targetAsset).moneyValue,
-                            feeAmount: FiatValue.zero(currency: self.targetAsset).moneyValue,
-                            feeForFullAvailable: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
+                            amount: .zero(currency: self.sourceAsset),
+                            available: .zero(currency: self.targetAsset),
+                            feeAmount: .zero(currency: self.targetAsset),
+                            feeForFullAvailable: .zero(currency: self.sourceAsset),
                             feeSelection: .empty(asset: self.sourceAsset),
                             selectedFiatCurrency: fiatCurrency
                         )
@@ -118,9 +125,11 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             pendingTransaction: pendingTransaction,
                             pricedQuote: pricedQuote
                         )
-                        .map(weak: self) { (self, pendingTx) -> PendingTransaction in
-                            pendingTx
-                                .update(selectedFeeLevel: self.defaultFeeLevel(pendingTransaction: pendingTx))
+                        .map { [weak self] pendingTx -> PendingTransaction in
+                            guard let self = self else { throw ToolKitError.nullReference(Self.self) }
+                            return pendingTx.update(
+                                selectedFeeLevel: self.defaultFeeLevel(pendingTransaction: pendingTx)
+                            )
                         }
                         .handlePendingOrdersError(initialValue: fallback)
                     }
@@ -129,7 +138,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, sellOrder) -> Single<TransactionResult> in
+            .flatMap { [weak self] sellOrder -> Single<TransactionResult> in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                 guard let depositAddress = sellOrder.depositAddress else {
                     throw PlatformKitError.illegalStateException(message: "Missing deposit address")
                 }
@@ -141,22 +151,26 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                         onTxCompleted: { _ in .empty() }
                     )
                     .single
-                    .flatMap(weak: self) { (self, transactionTarget) -> Single<PendingTransaction> in
-                        self.onChainEngine
+                    .flatMap { [weak self] transactionTarget -> Single<PendingTransaction> in
+                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        return self.onChainEngine
                             .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
                     }
-                    .flatMap(weak: self) { (self, pendingTransaction) -> Single<TransactionResult> in
-                        self.onChainEngine
+                    .flatMap { [weak self] pendingTransaction -> Single<TransactionResult> in
+                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        return self.onChainEngine
                             .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
-                            .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
-                                self.orderUpdateRepository
+                            .catch { [weak self] error -> Single<TransactionResult> in
+                                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                                return self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: false)
                                     .asCompletable()
                                     .catch { _ in .empty() }
                                     .andThen(.error(error))
                             }
-                            .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
-                                self.orderUpdateRepository
+                            .flatMap { [weak self] result -> Single<TransactionResult> in
+                                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                                return self.orderUpdateRepository
                                     .updateOrder(identifier: sellOrder.identifier, success: true)
                                     .asCompletable()
                                     .catch { _ in .empty() }
@@ -164,6 +178,65 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                             }
                     }
             }
+    }
+
+    /**
+     Creates TransactionTarget for executing the on chain transaction.
+
+     - Returns: Single that emits a TransactionTarget. If there is no hot wallet address for 'swap' associated with the current currency,
+     then the emitted value will be the order deposit address. Else, if there is a hot wallet address, it will emit a HotWalletTransactionTarget.
+
+     When sending a transaction to one of Blockchain's custodial products, we check if a hot wallet address for that product
+     is available. If that is not available, reference address is null and the transaction happens as it normally would. If it is available,
+     we will send the fund directly to the hot wallet address, and pass along the original address (real address) as the
+     reference address, that will be added to the transaction data field or as a the third parameter of the overloaded transfer method.
+     You can check how this works and the reasons for its implementation here:
+     https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
+     */
+    private func createTransactionTarget(
+        depositAddress: String
+    ) -> Single<TransactionTarget> {
+        let depositAddress = receiveAddressFactory.makeExternalAssetAddress(
+            asset: sourceAsset,
+            address: depositAddress,
+            label: depositAddress,
+            onTxCompleted: { _ in .empty() }
+        )
+        return Single
+            .zip(
+                depositAddress.single,
+                hotWalletReceiveAddress
+            )
+            .map { depositAddress, hotWalletAddress -> TransactionTarget in
+                guard let hotWalletAddress = hotWalletAddress else {
+                    return depositAddress
+                }
+                return HotWalletTransactionTarget(
+                    realAddress: depositAddress,
+                    hotWalletAddress: hotWalletAddress
+                )
+            }
+    }
+
+    /// Returns the Hot Wallet receive address for the current cryptocurrency.
+    private var hotWalletReceiveAddress: Single<CryptoReceiveAddress?> {
+        hotWalletAddressService
+            .hotWalletAddress(for: sourceAsset, product: .trading)
+            .asSingle()
+            .flatMap { [sourceAsset, receiveAddressFactory] hotWalletAddress -> Single<CryptoReceiveAddress?> in
+                guard let hotWalletAddress = hotWalletAddress else {
+                    return .just(nil)
+                }
+                return receiveAddressFactory.makeExternalAssetAddress(
+                    asset: sourceAsset,
+                    address: hotWalletAddress,
+                    label: hotWalletAddress,
+                    onTxCompleted: { _ in .empty() }
+                )
+                .single
+                .optional()
+            }
+            .catchAndReturn(nil)
     }
 
     func doUpdateFeeLevel(
@@ -180,14 +253,17 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateUpdateAmount(amount)
-            .flatMap(weak: self) { (self, amount) -> Single<PendingTransaction> in
-                self.onChainEngine
+            .flatMap { [weak self] amount -> Single<PendingTransaction> in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                return self.onChainEngine
                     .update(amount: amount, pendingTransaction: pendingTransaction)
-                    .do(onSuccess: { pendingTransaction in
+                    .do(onSuccess: { [weak self] pendingTransaction in
+                        guard let self = self else { throw ToolKitError.nullReference(Self.self) }
                         self.quotesEngine.update(amount: pendingTransaction.amount.amount)
                     })
-                    .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
-                        self.clearConfirmations(pendingTransaction: pendingTransaction)
+                    .map { [weak self] pendingTransaction -> PendingTransaction in
+                        guard let self = self else { throw ToolKitError.nullReference(Self.self) }
+                        return self.clearConfirmations(pendingTransaction: pendingTransaction)
                     }
             }
     }
@@ -195,7 +271,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
+            .flatMap { [weak self] pendingTransaction -> Single<PendingTransaction> in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                 switch pendingTransaction.validationState {
                 case .canExecute:
                     return self.defaultValidateAmount(pendingTransaction: pendingTransaction)
@@ -209,7 +286,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine
             .doValidateAll(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
+            .flatMap { [weak self] pendingTransaction -> Single<PendingTransaction> in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                 switch pendingTransaction.validationState {
                 case .canExecute:
                     return self.defaultDoValidateAll(pendingTransaction: pendingTransaction)
@@ -268,8 +346,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
                 return (updatedTransaction, pricedQuote)
             }
-            .flatMap(weak: self) { (self, tuple) in
-                let (pendingTransaction, pricedQuote) = tuple
+            .flatMap { [weak self] pendingTransaction, pricedQuote in
+                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                 return self.updateLimits(pendingTransaction: pendingTransaction, pricedQuote: pricedQuote)
             }
     }

@@ -77,7 +77,7 @@ extension AssetModel {
     }
 
     private var logoPngResource: ImageResource? {
-        logoPngUrl.flatMap(URL.init).map(ImageResource.remote(url:))
+        logoPngUrl.map(ImageResource.remote(url:))
     }
 
     private var spotUIColor: UIColor? {

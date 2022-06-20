@@ -36,6 +36,8 @@ extension AnalyticsEvents.New {
                     self = .swap
                 case .viewActivity:
                     return nil
+                case .linkToDebitCard:
+                    return nil
                 case .withdraw:
                     return nil
                 }

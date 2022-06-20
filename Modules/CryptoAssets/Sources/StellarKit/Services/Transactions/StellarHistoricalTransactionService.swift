@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
 import RxSwift
 import stellarsdk
@@ -15,21 +15,18 @@ final class StellarHistoricalTransactionService: StellarHistoricalTransactionSer
     // MARK: - Private Properties
 
     private var operationsService: Single<stellarsdk.OperationsService> {
-        sdk.map(\.operations)
-    }
-
-    private var sdk: Single<stellarsdk.StellarSDK> {
         configurationService
             .configuration
-            .map(\.sdk)
+            .map(\.sdk.operations)
+            .asSingle()
     }
 
     // MARK: - Private Properties
 
-    private let configurationService: StellarConfigurationAPI
+    private let configurationService: StellarConfigurationServiceAPI
     private let disposeBag = DisposeBag()
 
-    init(configurationService: StellarConfigurationAPI = resolve()) {
+    init(configurationService: StellarConfigurationServiceAPI) {
         self.configurationService = configurationService
     }
 
@@ -61,7 +58,7 @@ final class StellarHistoricalTransactionService: StellarHistoricalTransactionSer
             .map { response -> StellarHistoricalTransaction? in
                 response.buildOperation(accountID: accountID)
             }
-            .onNil(error: StellarNetworkError.parsingError)
+            .onNil(error: StellarNetworkError.parsingFailed)
     }
 }
 
@@ -99,7 +96,7 @@ extension stellarsdk.OperationsService {
                         case .success(details: let payload):
                             observer(.success(payload))
                         case .failure(error: let horizonError):
-                            observer(.error(horizonError.toStellarServiceError()))
+                            observer(.error(horizonError.stellarNetworkError))
                         }
                     }
                 )
@@ -156,7 +153,9 @@ extension OperationResponse {
              .beginSponsoringFutureReserves,
              .clawback,
              .clawbackClaimableBalance,
-             .setTrustLineFlags:
+             .setTrustLineFlags,
+             .liquidityPoolDeposit,
+             .liquidityPoolWithdraw:
             return nil
         }
     }

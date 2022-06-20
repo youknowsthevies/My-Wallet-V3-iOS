@@ -11,8 +11,11 @@ extension DependencyContainer {
 
         factory {
             CardIssuingBuilder(
+                accountModelProvider: DIKit.resolve(),
                 cardService: DIKit.resolve(),
-                productService: DIKit.resolve()
+                productService: DIKit.resolve(),
+                supportRouter: DIKit.resolve(),
+                topUpRouter: DIKit.resolve()
             ) as CardIssuingBuilderAPI
         }
     }

@@ -12,6 +12,7 @@ public enum WalletCreateError: LocalizedError, Equatable {
     case expectedEncodedPayload
     case encryptionFailure
     case uuidFailure
+    case verificationFailure(EncryptAndVerifyError)
     case mnemonicFailure(MnemonicProviderError)
     case encodingError(WalletEncodingError)
     case networkError(NetworkError)
@@ -211,6 +212,8 @@ final class WalletCreator: WalletCreatorAPI {
                     password: password,
                     wrapper: wrapper
                 )
+                .mapError(WalletCreateError.verificationFailure)
+                .eraseToAnyPublisher()
             }
             .flatMap { [walletEncoder, checksumProvider] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
                 walletEncoder.encode(payload: payload, applyChecksum: checksumProvider)
@@ -232,62 +235,6 @@ final class WalletCreator: WalletCreatorAPI {
             }
             .eraseToAnyPublisher()
     }
-}
-
-/// Encrypts and verify the given wrapper with the provided password
-/// We first encrypt the wrapper and we immediately decrypt it
-/// we then compare the pre-encrypted value with the decrypted one.
-func encryptAndVerifyWrapper(
-    walletEncoder: WalletEncodingAPI,
-    encryptor: PayloadCryptoAPI,
-    password: String,
-    wrapper: Wrapper
-) -> AnyPublisher<EncodedWalletPayload, WalletCreateError> {
-    walletEncoder.transform(wrapper: wrapper)
-        .mapError(WalletCreateError.encodingError)
-        .flatMap { encodedPayload -> AnyPublisher<EncodedWalletPayload, WalletCreateError> in
-            guard case .encoded(let payload) = encodedPayload.payloadContext else {
-                return .failure(.expectedEncodedPayload)
-            }
-            guard let payloadValue = String(data: payload, encoding: .utf8) else {
-                return .failure(.genericFailure)
-            }
-            return encryptor.encrypt(
-                data: payloadValue,
-                with: password,
-                pbkdf2Iterations: wrapper.pbkdf2Iterations
-            )
-            .publisher
-            .mapError { _ in WalletCreateError.encryptionFailure }
-            .eraseToAnyPublisher()
-            .flatMap { encryptedPayload -> AnyPublisher<String, WalletCreateError> in
-                encryptor.decrypt(
-                    data: encryptedPayload,
-                    with: password,
-                    pbkdf2Iterations: wrapper.pbkdf2Iterations
-                )
-                .publisher
-                .mapError { _ in WalletCreateError.encryptionFailure }
-                .crashOnError()
-                .flatMap { decryptedPayload -> AnyPublisher<String, WalletCreateError> in
-                    guard decryptedPayload == payloadValue else {
-                        fatalError(
-                            "wallet creation error: mismatch between encrypted and decrypted payload"
-                        )
-                    }
-                    return .just(encryptedPayload)
-                }
-                .eraseToAnyPublisher()
-            }
-            .map { encryptedPayload in
-                EncodedWalletPayload(
-                    payloadContext: .encrypted(Data(encryptedPayload.utf8)),
-                    wrapper: wrapper
-                )
-            }
-            .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
 }
 
 /// Provides UUIDs to be used as guid and sharedKey in wallet creation

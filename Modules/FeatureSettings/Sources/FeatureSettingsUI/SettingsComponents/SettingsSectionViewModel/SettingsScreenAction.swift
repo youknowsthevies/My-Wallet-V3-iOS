@@ -24,7 +24,6 @@ public enum SettingsScreenAction {
     case showAddCardScreen
     case showAddBankScreen(FiatCurrency)
     case showAccountsAndAddresses
-    case showAirdrops
     case showContactSupport
     case showWebLogin
     case showCardIssuing

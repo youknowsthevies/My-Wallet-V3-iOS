@@ -63,7 +63,8 @@ extension AppEnvironment {
             buildVersionProvider: Bundle.versionAndBuildNumber,
             externalAppOpener: resolve(),
             observabilityService: resolve(),
-            performanceTracing: resolve()
+            performanceTracing: resolve(),
+            deviceInfo: resolve()
         )
     }
 }

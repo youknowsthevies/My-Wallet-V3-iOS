@@ -2,6 +2,7 @@
 
 import DIKit
 import Embrace
+import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureOpenBankingUI
@@ -82,6 +83,13 @@ extension DependencyContainer {
             ) as FeatureSettingsUI.CardIssuingViewControllerAPI
         }
 
+        factory {
+            CardIssuingTopUpRouter(
+                coincore: DIKit.resolve(),
+                transactionsRouter: DIKit.resolve()
+            ) as TopUpRouterAPI
+        }
+
         single { () -> AssetInformationRepositoryAPI in
             AssetInformationRepository(
                 AssetInformationClient(
@@ -95,6 +103,15 @@ extension DependencyContainer {
             ObservabilityService(
                 client: Embrace.sharedInstance()
             )
+        }
+
+        factory {
+            CardIssuingAccountPickerAdapter(
+                cardService: DIKit.resolve(),
+                coinCore: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                nabuUserService: DIKit.resolve()
+            ) as AccountProviderAPI
         }
     }
 }

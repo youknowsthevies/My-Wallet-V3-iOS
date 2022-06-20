@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureCoinDomain
 import Foundation
 import NetworkError
 import NetworkKit
@@ -10,7 +9,7 @@ public protocol AssetInformationClientAPI {
 
     func fetchInfo(
         _ currencyCode: String
-    ) -> AnyPublisher<AssetInformation, NetworkError>
+    ) -> AnyPublisher<AssetInfo, NetworkError>
 }
 
 public final class AssetInformationClient: AssetInformationClientAPI {
@@ -28,7 +27,7 @@ public final class AssetInformationClient: AssetInformationClientAPI {
 
     public func fetchInfo(
         _ currencyCode: String
-    ) -> AnyPublisher<AssetInformation, NetworkError> {
+    ) -> AnyPublisher<AssetInfo, NetworkError> {
         networkAdapter.perform(request: requestBuilder.get(path: "/assets/info/\(currencyCode)")!)
     }
 }

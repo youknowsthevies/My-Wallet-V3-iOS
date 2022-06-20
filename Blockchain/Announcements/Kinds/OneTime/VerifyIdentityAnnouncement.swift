@@ -57,9 +57,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
         guard isCompletingKyc else {
             return false
         }
-        guard !isSunriverAirdropRegistered else {
-            return false
-        }
         return !isDismissed
     }
 
@@ -71,7 +68,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
 
     let action: CardAnnouncementAction
 
-    private let isSunriverAirdropRegistered: Bool
     private let isCompletingKyc: Bool
 
     private let disposeBag = DisposeBag()
@@ -79,7 +75,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
     // MARK: - Setup
 
     init(
-        isSunriverAirdropRegistered: Bool,
         isCompletingKyc: Bool,
         cacheSuite: CacheSuite = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -91,7 +86,6 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action
-        self.isSunriverAirdropRegistered = isSunriverAirdropRegistered
         self.isCompletingKyc = isCompletingKyc
     }
 }
@@ -104,7 +98,6 @@ struct VerifyIdentityAnnouncementContainer: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIViewType {
         let presenter = VerifyIdentityAnnouncement(
-            isSunriverAirdropRegistered: false,
             isCompletingKyc: false,
             dismiss: {},
             action: {}

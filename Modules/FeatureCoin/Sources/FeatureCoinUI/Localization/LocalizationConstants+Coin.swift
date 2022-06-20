@@ -18,12 +18,12 @@ extension LocalizationConstants {
                 )
 
                 static let notTradable = NSLocalizedString(
-                    "%@ (%@) is not tradable.",
+                    "%@ (%@) is not tradable",
                     comment: "Coin View: Not tradable crypto label title"
                 )
 
                 static let notTradableMessage = NSLocalizedString(
-                    "%@ (%@) is currently unavailable to trade",
+                    "%@ (%@) is currently unavailable to trade.",
                     comment: "Coin View: Not tradable crypto label message"
                 )
 

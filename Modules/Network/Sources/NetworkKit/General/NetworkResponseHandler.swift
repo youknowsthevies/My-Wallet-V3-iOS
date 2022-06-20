@@ -15,6 +15,11 @@ public protocol NetworkResponseHandlerAPI {
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError>
+
+    func handle(
+        message: URLSessionWebSocketTask.Message,
+        for request: NetworkRequest
+    ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
 public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
@@ -25,7 +30,42 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        handler(elements: elements, for: request).publisher.eraseToAnyPublisher()
+        handler(elements: elements, for: request)
+            .publisher
+            .eraseToAnyPublisher()
+    }
+
+    public func handle(
+        message: URLSessionWebSocketTask.Message,
+        for request: NetworkRequest
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
+        handler(message: message)
+            .publisher
+            .eraseToAnyPublisher()
+    }
+
+    private func handler(
+        message: URLSessionWebSocketTask.Message
+    ) -> Result<ServerResponse, NetworkError> {
+        switch message {
+
+        case .data(let data):
+            let response = ServerResponse(
+                payload: data,
+                response: nil
+            )
+            return .success(response)
+
+        case .string(let string):
+            let response = ServerResponse(
+                payload: Data(string.utf8),
+                response: nil
+            )
+            return .success(response)
+
+        default:
+            return .failure(.payloadError(.emptyData))
+        }
     }
 
     // MARK: - Private methods
@@ -41,6 +81,7 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
                 }
                 let payload = elements.data
                 switch response.statusCode {
+
                 case 204:
                     request.peek("🌎 📲", \.endpoint, if: \.isDebugging.response)
                     return .success(ServerResponse(payload: nil, response: response))

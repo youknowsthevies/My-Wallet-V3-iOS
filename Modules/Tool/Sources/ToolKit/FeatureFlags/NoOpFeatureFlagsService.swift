@@ -6,10 +6,10 @@ public class NoOpFeatureFlagsService: FeatureFlagsServiceAPI {
 
     public init() {}
 
-    public func object<Feature>(
-        for feature: AppFeature,
-        type: Feature.Type
-    ) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable, Feature: Encodable {
+    public func fetch<Feature>(
+        for key: AppFeature,
+        as type: Feature.Type
+    ) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable {
         .empty()
     }
 }

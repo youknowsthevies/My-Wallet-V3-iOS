@@ -20,7 +20,7 @@ public struct AssetModel: Hashable {
     /// The list of supported asset products.
     public let products: [AssetModelProduct]
     /// The URL to the asset logo.
-    public let logoPngUrl: String?
+    public let logoPngUrl: URL?
     /// The asset spot color.
     public let spotColor: String?
 
@@ -42,7 +42,7 @@ public struct AssetModel: Hashable {
         name = assetResponse.name
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
-        logoPngUrl = assetResponse.type.logoPngUrl
+        logoPngUrl = URL(string: assetResponse.type.logoPngUrl ?? "")
         spotColor = assetResponse.type.spotColor
 
         guard let assetModelType = assetResponse.type.assetModelType else {
@@ -59,7 +59,7 @@ public struct AssetModel: Hashable {
         name: String,
         precision: Int,
         products: [AssetModelProduct],
-        logoPngUrl: String?,
+        logoPngUrl: URL?,
         spotColor: String?,
         sortIndex: Int
     ) {
@@ -112,6 +112,8 @@ extension AssetModel {
         CryptoCurrency(assetModel: self)
     }
 
+    // swiftlint:disable line_length
+
     public static let bitcoin = AssetModel(
         code: "BTC",
         displayCode: "BTC",
@@ -119,7 +121,7 @@ extension AssetModel {
         name: "Bitcoin",
         precision: 8,
         products: AssetModelProduct.allCases,
-        logoPngUrl: nil,
+        logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/bitcoin/info/logo.png"),
         spotColor: "FF9B22",
         sortIndex: 1
     )
@@ -131,7 +133,7 @@ extension AssetModel {
         name: "Bitcoin Cash",
         precision: 8,
         products: AssetModelProduct.allCases,
-        logoPngUrl: nil,
+        logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/bitcoincash/info/logo.png"),
         spotColor: "8DC351",
         sortIndex: 3
     )
@@ -143,7 +145,7 @@ extension AssetModel {
         name: "Ethereum",
         precision: 18,
         products: AssetModelProduct.allCases,
-        logoPngUrl: nil,
+        logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/ethereum/info/logo.png"),
         spotColor: "473BCB",
         sortIndex: 2
     )
@@ -155,7 +157,7 @@ extension AssetModel {
         name: "Stellar",
         precision: 7,
         products: AssetModelProduct.allCases,
-        logoPngUrl: nil,
+        logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/stellar/info/logo.png"),
         spotColor: "000000",
         sortIndex: 4
     )

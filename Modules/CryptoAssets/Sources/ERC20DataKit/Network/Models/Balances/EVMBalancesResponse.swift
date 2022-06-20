@@ -3,8 +3,7 @@
 struct EVMBalancesResponse: Decodable {
     struct Balance: Decodable {
         let identifier: String
-        let currency: String
-        let balance: String
+        let amount: String
     }
 
     struct Item: Decodable {

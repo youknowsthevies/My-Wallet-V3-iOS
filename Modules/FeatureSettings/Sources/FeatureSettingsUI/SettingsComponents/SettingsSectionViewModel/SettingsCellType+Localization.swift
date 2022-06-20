@@ -32,8 +32,6 @@ extension SettingsSectionType.CellType.CommonCellType {
             return LocalizationConstants.Settings.addresses
         case .contactSupport:
             return LocalizationConstants.Settings.contactSupport
-        case .airdrops:
-            return LocalizationConstants.Settings.airdrops
         case .cardIssuing:
             return LocalizationConstants.Settings.Badge.cardIssuing
         case .notifications:
@@ -49,8 +47,6 @@ extension SettingsSectionType.CellType.CommonCellType {
             return Icon.computer.uiImage
         case .contactSupport:
             return Icon.chat.uiImage
-        case .airdrops:
-            return Icon.airdrop.uiImage
         case .logout:
             return Icon.logout.uiImage
         default:

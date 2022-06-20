@@ -30,7 +30,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var onboardingSettings: MockOnboardingSettings!
     var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
-    var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     var mockDeepLinkRouter: MockDeepLinkRouter!
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
@@ -65,7 +65,7 @@ final class LoggedInReducerTests: XCTestCase {
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         onboardingSettings = MockOnboardingSettings()
         mockAppDeeplinkHandler = MockAppDeeplinkHandler()
-        mockMainQueue = DispatchQueue.test
+        mockMainQueue = DispatchQueue.immediate
         mockDeepLinkRouter = MockDeepLinkRouter()
         mockFeatureFlagsService = MockFeatureFlagsService()
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
@@ -124,15 +124,12 @@ final class LoggedInReducerTests: XCTestCase {
         let expectation = expectation(forNotification: .login, object: nil)
 
         performSignIn()
-        mockMainQueue.advance()
-
         wait(for: [expectation], timeout: 2)
         performSignOut()
     }
 
     func test_calling_start_calls_required_services() {
         performSignIn()
-        mockMainQueue.advance()
 
         XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedCalled)
 
@@ -147,7 +144,6 @@ final class LoggedInReducerTests: XCTestCase {
         // given
         let context = LoggedIn.Context.wallet(.new)
         testStore.send(.start(context))
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.handleNewWalletCreation)
@@ -163,7 +159,6 @@ final class LoggedInReducerTests: XCTestCase {
         // given
         let context = LoggedIn.Context.none
         testStore.send(.start(context))
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.handleExistingWalletSignIn)
@@ -179,7 +174,6 @@ final class LoggedInReducerTests: XCTestCase {
         let uriContent = URIContent(url: URL(string: "https://")!, context: .sendCrypto)
         let context = LoggedIn.Context.deeplink(uriContent)
         testStore.send(.start(context))
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.deeplink(uriContent)) { state in
@@ -197,7 +191,6 @@ final class LoggedInReducerTests: XCTestCase {
         let uriContent = URIContent(url: URL(string: "https://")!, context: .executeDeeplinkRouting)
         let context = LoggedIn.Context.deeplink(uriContent)
         testStore.send(.start(context))
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.deeplink(uriContent))
@@ -277,7 +270,6 @@ final class LoggedInReducerTests: XCTestCase {
 
         // when
         mockWallet.delegate.walletDidGetAccountInfoAndExchangeRates?(mockWallet)
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.wallet(.accountInfoAndExchangeRates)) { state in
@@ -296,7 +288,6 @@ final class LoggedInReducerTests: XCTestCase {
 
         // when
         mockWallet.delegate?.didBackupWallet?()
-        mockMainQueue.advance()
 
         // then
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
@@ -311,7 +302,6 @@ final class LoggedInReducerTests: XCTestCase {
 
         // when
         mockWallet.delegate?.didFailBackupWallet?()
-        mockMainQueue.advance()
 
         // then
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
@@ -327,7 +317,6 @@ final class LoggedInReducerTests: XCTestCase {
         // when
         let errorMessage = "an error message"
         mockWallet.delegate?.didFailGetHistory?(errorMessage)
-        mockMainQueue.advance()
 
         // then
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
@@ -348,7 +337,6 @@ final class LoggedInReducerTests: XCTestCase {
         // when
         let emptyErrorMessage = ""
         mockWallet.delegate?.didFailGetHistory?(emptyErrorMessage)
-        mockMainQueue.advance()
 
         // then
         testStore.receive(.wallet(.handleFailToLoadHistory(emptyErrorMessage))) { state in

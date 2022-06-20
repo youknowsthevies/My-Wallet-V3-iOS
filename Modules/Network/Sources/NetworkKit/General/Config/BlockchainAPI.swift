@@ -101,6 +101,10 @@ public final class BlockchainAPI {
         "\(walletUrl)/pin-store"
     }
 
+    public var walletHelper: String {
+        "https://\(credentialProvider.walletHelper)"
+    }
+
     // MARK: - Properties
 
     var shouldPinCertificate: Bool {

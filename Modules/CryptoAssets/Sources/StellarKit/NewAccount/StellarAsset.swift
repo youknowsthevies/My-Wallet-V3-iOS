@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureCryptoDomainDomain
 import MoneyKit
 import PlatformKit
@@ -61,11 +60,11 @@ final class StellarAsset: CryptoAsset {
     // MARK: - Setup
 
     init(
-        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve(),
-        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        addressFactory: StellarCryptoReceiveAddressFactory = .init()
+        accountRepository: StellarWalletAccountRepositoryAPI,
+        errorRecorder: ErrorRecording,
+        exchangeAccountProvider: ExchangeAccountsProviderAPI,
+        kycTiersService: KYCTiersServiceAPI,
+        addressFactory: StellarCryptoReceiveAddressFactory
     ) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.accountRepository = accountRepository

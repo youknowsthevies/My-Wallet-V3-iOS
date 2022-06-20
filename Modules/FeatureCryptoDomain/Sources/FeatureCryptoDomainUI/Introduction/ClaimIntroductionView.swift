@@ -71,18 +71,17 @@ let claimIntroductionReducer = Reducer.combine(
                 )
             }
         ),
-    Reducer<ClaimIntroductionState, ClaimIntroductionAction, ClaimIntroductionEnvironment> {
-        state, action, _ in
+    Reducer<ClaimIntroductionState, ClaimIntroductionAction, ClaimIntroductionEnvironment> { state, action, _ in
         switch action {
-        case .route(let route):
-            if let routeValue = route?.route {
-                switch routeValue {
-                case .searchDomain:
-                    state.searchState = .init()
-                case .benefits:
-                    break
-                }
+        case .route(.some(let route)):
+            switch route.route {
+            case .searchDomain:
+                state.searchState = .init()
+                return .none
+            case .benefits:
+                return .none
             }
+        case .route(nil):
             return .none
         case .searchAction(.checkoutAction(.dismissFlow)),
              .closeButtonTapped:
@@ -249,7 +248,6 @@ public struct ClaimIntroductionView: View {
                 },
                 trailing: { EmptyView() }
             ).padding([.top, .bottom], 10)
-            PrimaryDivider()
             PrimaryRow(
                 title: LocalizedString.ListView.ClaimDomain.title,
                 subtitle: LocalizedString.ListView.ClaimDomain.description,
@@ -260,7 +258,6 @@ public struct ClaimIntroductionView: View {
                 },
                 trailing: { EmptyView() }
             ).padding([.top, .bottom], 10)
-            PrimaryDivider()
             PrimaryRow(
                 title: LocalizedString.ListView.ReceiveCrypto.title,
                 subtitle: LocalizedString.ListView.ReceiveCrypto.description,

@@ -127,8 +127,7 @@ public final class SystemEventAnalytics {
 
         notificationCenter.publisher(for: UIApplication.didFinishLaunchingNotification)
             .compactMap { [pushNotificationParameters] notification in
-                pushNotificationParameters(notification)
-                    .map(SystemEvent.pushNotificationTapped)
+                SystemEvent.pushNotificationTapped(pushNotificationParameters(notification))
             }
             .sink(receiveValue: recorder.record(event:))
             .store(in: &bag)
@@ -152,29 +151,25 @@ public final class SystemEventAnalytics {
 
         notificationCenter.publisher(for: UIApplication.pushNotificationReceivedNotification)
             .compactMap { [pushNotificationParameters] notification in
-                pushNotificationParameters(notification)
-                    .map(SystemEvent.pushNotificationReceived)
+                SystemEvent.pushNotificationReceived(pushNotificationParameters(notification))
             }
             .sink(receiveValue: recorder.record(event:))
             .store(in: &bag)
     }
 
-    func pushNotificationParameters(notification: Notification) -> ApplicationPushNotificationParamaters? {
-        let key = UIApplication.LaunchOptionsKey.remoteNotification
+    func pushNotificationParameters(notification: Notification) -> ApplicationPushNotificationParamaters {
         if
-            let payload = notification.userInfo?[key] as? [String: Any],
-            let aps = payload["aps"] as? [String: Any]
+            let payload = notification.userInfo as? [String: Any]
         {
             return .init(
-                campaign: .init(
-                    content: aps["body"] as? String,
-                    medium: aps["medium"] as? String,
-                    name: aps["title"] as? String,
-                    source: aps["source"] as? String
-                )
+                campaign_content: payload["body"] as? String,
+                campaign_medium: payload["medium"] as? String,
+                campaign_name: payload["title"] as? String,
+                campaign_source: payload["source"] as? String,
+                campaign_template: payload["template"] as? String
             )
         } else {
-            return nil
+            return .init()
         }
     }
 
@@ -190,15 +185,25 @@ public struct ApplicationSystemEventParamaters: AnalyticsEventParameters, Encoda
 }
 
 public struct ApplicationPushNotificationParamaters: AnalyticsEventParameters, Encodable {
+    public var campaign_content: String?
+    public var campaign_medium: String?
+    public var campaign_name: String?
+    public var campaign_source: String?
+    public var campaign_template: String?
 
-    public struct Campaign: Encodable {
-        public var content: String?
-        public var medium: String? = "Push Notification"
-        public var name: String?
-        public var source: String?
+    public init(
+        campaign_content: String? = nil,
+        campaign_medium: String? = "Push Notification",
+        campaign_name: String? = nil,
+        campaign_source: String? = nil,
+        campaign_template: String? = nil
+    ) {
+        self.campaign_content = campaign_content
+        self.campaign_medium = campaign_medium
+        self.campaign_name = campaign_name
+        self.campaign_source = campaign_source
+        self.campaign_template = campaign_template
     }
-
-    public var campaign: Campaign?
 }
 
 extension ApplicationSystemEventParamaters {

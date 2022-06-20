@@ -143,6 +143,27 @@ extension SellTransactionEngine {
 
     // MARK: - Exchange Rates
 
+    public func onChainFeeToSourceRate(
+        pendingTransaction: PendingTransaction,
+        tradingCurrency: FiatCurrency
+    ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        // The price endpoint doesn't support crypto -> crypto rates, so we need to be careful here.
+        currencyConversionService.conversionRate(
+            from: pendingTransaction.feeAmount.currency,
+            to: target.currencyType
+        )
+        .zip(
+            sourceToFiatTradingCurrencyRate(
+                pendingTransaction: pendingTransaction,
+                tradingCurrency: target.fiatCurrency
+            )
+        )
+        .map { [sourceAsset] feeToFiatRate, sourceToFiatRate in
+            feeToFiatRate.convert(usingInverse: sourceToFiatRate, currency: sourceAsset.currencyType)
+        }
+        .eraseToAnyPublisher()
+    }
+
     func amountToSourceRate(
         pendingTransaction: PendingTransaction,
         tradingCurrency: FiatCurrency

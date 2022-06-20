@@ -12,8 +12,11 @@ import ERC20Kit
 import EthereumKit
 import FeatureAppDomain
 import FeatureAppUI
+import FeatureAttributionData
+import FeatureAttributionDomain
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
@@ -37,6 +40,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureWalletConnectData
+import FirebaseDynamicLinks
 import FirebaseMessaging
 import FirebaseRemoteConfig
 import MoneyKit
@@ -85,12 +89,6 @@ extension DependencyContainer {
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI
         }
-
-        factory { AirdropRouter() as AirdropRouterAPI }
-
-        factory { AirdropCenterClient() as AirdropCenterClientAPI }
-
-        factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
         factory { DeepLinkHandler() as DeepLinkHandling }
 
@@ -168,7 +166,7 @@ extension DependencyContainer {
             return AppDeeplinkHandler(
                 deeplinkHandler: deeplinkHandler,
                 blockchainHandler: blockchainHandler,
-                firebaseHandler: FirebaseDeeplinkHandler()
+                firebaseHandler: FirebaseDeeplinkHandler(dynamicLinks: DynamicLinks.dynamicLinks())
             )
         }
 
@@ -283,6 +281,11 @@ extension DependencyContainer {
         factory { () -> ExternalActionsProviderAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
+        }
+
+        factory { () -> SupportRouterAPI in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveSupportRouterAPI()
         }
 
         // MARK: - WalletManager
@@ -775,6 +778,31 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = NotificationPreferencesClient(networkAdapter: adapter, requestBuilder: builder)
             return NotificationPreferencesRepository(client: client)
+        }
+
+        // MARK: - Websocket
+
+        single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
+
+        // MARK: Feature Attribution
+
+        single { () -> AttributionServiceAPI in
+            let errorRecorder = CrashlyticsRecorder()
+            let skAdNetworkService = SkAdNetworkService(errorRecorder: errorRecorder)
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.websocket)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
+            let attributionClient = AttributionClient(
+                networkAdapter: adapter,
+                requestBuilder: builder
+            )
+            let attributionRepository = AttributionRepository(with: attributionClient)
+
+            return AttributionService(
+                skAdNetworkService: skAdNetworkService,
+                attributionRepository: attributionRepository,
+                featureFlagService: featureFlagService
+            ) as AttributionServiceAPI
         }
 
         // MARK: Pulse Network Debugging

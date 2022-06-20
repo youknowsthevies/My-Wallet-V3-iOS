@@ -1,10 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardIssuingDomain
 import Foundation
 import Localization
 
 extension LocalizationConstants {
-    enum CardIssuing {
+    public enum CardIssuing {
         enum CardType {
             enum Virtual {
                 static let title = NSLocalizedString(
@@ -19,6 +20,45 @@ extension LocalizationConstants {
             }
         }
 
+        enum CardStatus {
+            static let initiated = NSLocalizedString(
+                "Initiated",
+                comment: "Card Issuing: Card Status Initiated"
+            )
+            static let created = NSLocalizedString(
+                "Created",
+                comment: "Card Issuing: Card Status Created"
+            )
+            static let active = NSLocalizedString(
+                "Ready to use",
+                comment: "Card Issuing: Card Status Active"
+            )
+            static let terminated = NSLocalizedString(
+                "Terminated",
+                comment: "Card Issuing: Card Status Terminated"
+            )
+            static let suspended = NSLocalizedString(
+                "Locked",
+                comment: "Card Issuing: Card Status Suspended"
+            )
+            static let unsupported = NSLocalizedString(
+                "Unsupported",
+                comment: "Card Issuing: Card Status Unsupported"
+            )
+            static let unactivated = NSLocalizedString(
+                "Unactivated",
+                comment: "Card Issuing: Card Status Unactivated"
+            )
+            static let limited = NSLocalizedString(
+                "Limited",
+                comment: "Card Issuing: Card Status Limited"
+            )
+            static let locked = NSLocalizedString(
+                "Locked",
+                comment: "Card Issuing: Card State Locked"
+            )
+        }
+
         enum Navigation {
             static let title = NSLocalizedString(
                 "Blockchain Card",
@@ -26,212 +66,156 @@ extension LocalizationConstants {
             )
         }
 
-        enum Order {
-            enum Intro {
-                static let title = NSLocalizedString(
-                    "Your Gateway To The Blockchain Debit Card",
-                    comment: "Card Issuing: Order screen title"
-                )
+        enum Error {
+            static let retry = NSLocalizedString(
+                "Retry",
+                comment: "Card Issuing: Card Creation Error Retry Button"
+            )
 
-                static let caption = NSLocalizedString(
-                    "A card that lets you spend and earn in crypto right from your Blockchain account.",
-                    comment: "Card Issuing: Order screen caption"
-                )
+            static let cancelGoBack = NSLocalizedString(
+                "Cancel & Go Back",
+                comment: "Card Issuing: Card Creation Error Cancel & Go Back Button"
+            )
+        }
+    }
+}
 
-                enum Button {
-                    enum Title {
-                        static let order = NSLocalizedString(
-                            "Order My Card",
-                            comment: "Card Issuing: Order button"
-                        )
+extension Card.Status {
 
-                        static let link = NSLocalizedString(
-                            "Already Have A Card? Link It Here",
-                            comment: "Card Issuing: Link a card button"
-                        )
-                    }
-                }
-            }
+    var localizedString: String {
+        let constants = LocalizationConstants.CardIssuing.CardStatus.self
+        switch self {
+        case .initiated:
+            return constants.initiated
+        case .created:
+            return constants.created
+        case .active:
+            return constants.active
+        case .terminated:
+            return constants.terminated
+        case .suspended:
+            return constants.suspended
+        case .unsupported:
+            return constants.unsupported
+        case .unactivated:
+            return constants.unactivated
+        case .limited:
+            return constants.limited
+        case .locked:
+            return constants.locked
+        }
+    }
+}
 
-            enum Selection {
-                enum Navigation {
-                    static let title = NSLocalizedString(
-                        "Select Your Card",
-                        comment: "Card Issuing: Select your card navigation title"
-                    )
-                }
+extension LocalizationConstants.CardIssuing {
 
-                enum Button {
-                    enum Title {
-                        static let details = NSLocalizedString(
-                            "See Card Details",
-                            comment: "Card Issuing: See card details button"
-                        )
+    enum Errors {
 
-                        static let create = NSLocalizedString(
-                            "Create Card",
-                            comment: "Card Issuing: Create card button"
-                        )
-                    }
-                }
-            }
+        enum TierTooLow {
 
-            enum Details {
-                enum Navigation {
-                    static let title = NSLocalizedString(
-                        "Card Details",
-                        comment: "Card Issuing: Card Details title"
-                    )
-                }
+            static let title = NSLocalizedString(
+                "Account not yet verified",
+                comment: "Card Issuing Error: Title Tier Too Low"
+            )
 
-                enum Benefits {
-                    static let title = NSLocalizedString(
-                        "Card Benefits",
-                        comment: "Card Issuing: Card Benefits Details Section"
-                    )
+            static let description = NSLocalizedString(
+                "Your customer details are pending verification or invalid. Please try again later.",
+                comment: "Card Issuing Error: Description Tier Too Low"
+            )
+        }
 
-                    static let rewards = NSLocalizedString(
-                        "Cashback Rewards",
-                        comment: "Card Issuing: Cashback Rewards"
-                    )
-                }
+        enum KycFailed {
 
-                enum Fees {
-                    static let title = NSLocalizedString(
-                        "Fees",
-                        comment: "Card Issuing: Fees Details Section"
-                    )
+            static let title = NSLocalizedString(
+                "Unable to validate customer details",
+                comment: "Card Issuing Error: Title KYC Failed"
+            )
 
-                    static let annual = NSLocalizedString(
-                        "Annual Fee",
-                        comment: "Card Issuing: Annual Fee"
-                    )
+            static let description = NSLocalizedString(
+                """
+                The card issuer was unable to validate your customer details. \
+                Please confirm that your details are correct and try again.
+                """,
+                comment: "Card Issuing Error: Description KYC Failed"
+            )
+        }
 
-                    static let delivery = NSLocalizedString(
-                        "Delivery Fee",
-                        comment: "Card Issuing: Delivery Fee"
-                    )
+        enum CountryNotEligible {
 
-                    static let noCharge = NSLocalizedString(
-                        "No Charge",
-                        comment: "Card Issuing: No Charge"
-                    )
-                }
+            static let title = NSLocalizedString(
+                "Service not available in your country",
+                comment: "Card Issuing Error: Title Country Not Eligible"
+            )
 
-                enum Card {
-                    static let title = NSLocalizedString(
-                        "Card",
-                        comment: "Card Issuing: Card Details Section"
-                    )
+            static let description = NSLocalizedString(
+                "Blockchain.com services are not yet available in your country.",
+                comment: "Card Issuing Error: Description Country Not Eligible"
+            )
 
-                    static let contactless = NSLocalizedString(
-                        "Contactless Payment",
-                        comment: "Card Issuing: Contactless Payment"
-                    )
+            static let seeList = NSLocalizedString(
+                "See eligible countries",
+                comment: "Card Issuing Error: See eligible countries"
+            )
+        }
 
-                    static let consumerFinancialProtectionBureau = NSLocalizedString(
-                        "Consumer Financial Protection Bureau",
-                        comment: "Card Issuing: Consumer Financial Protection Bureau"
-                    )
+        enum StateNotEligible {
 
-                    static let shortFormDisclosure = NSLocalizedString(
-                        "Short Form Disclosure",
-                        comment: "Card Issuing: Short Form Disclosure"
-                    )
+            static let title = NSLocalizedString(
+                "Service not available in your state",
+                comment: "Card Issuing Error: Title State Not Eligible"
+            )
 
-                    static let blockchainTermsAndConditions = NSLocalizedString(
-                        "Blockchain.com Terms & Conditions",
-                        comment: "Card Issuing: Blockchain.com Terms & Conditions"
-                    )
+            static let description = NSLocalizedString(
+                "Blockchain.com services are not yet available in your state.",
+                comment: "Card Issuing Error: Description State Not Eligible"
+            )
 
-                    static let termsAndConditions = NSLocalizedString(
-                        "Terms & Conditions",
-                        comment: "Card Issuing: Terms & Conditions"
-                    )
-                }
-            }
+            static let seeList = NSLocalizedString(
+                "See eligible states",
+                comment: "Card Issuing Error: See eligible states"
+            )
+        }
 
-            enum Processing {
-                enum Success {
-                    static let title = NSLocalizedString(
-                        "Card Successfully Created!",
-                        comment: "Card Issuing: Card Successfully Created!"
-                    )
+        enum InvalidSsn {
 
-                    static let caption = NSLocalizedString(
-                        "Welcome to the club, to view your card dashboard please press Continue below.",
-                        comment: "Card Issuing: Order success caption"
-                    )
-                }
+            static let title = NSLocalizedString(
+                "Invalid social security number",
+                comment: "Card Issuing Error: Title Invalid SSN"
+            )
 
-                enum Error {
-                    static let title = NSLocalizedString(
-                        "Failed To Create Your Card",
-                        comment: "Card Issuing: Card Creation Failed"
-                    )
+            static let description = NSLocalizedString(
+                "The social security number you provided is not valid. Please provide a valid one to continue.",
+                comment: "Card Issuing Error: Description Invalid SSN"
+            )
+        }
 
-                    static let caption = NSLocalizedString(
-                        """
-                        Sometimes this can happen when the systems are bogged down. \
-                        You can try again by clicking `Retry` below or come back again in a bit.
-                        """,
-                        comment: "Card Issuing: Card Creation Error message"
-                    )
+        enum NotFound {
 
-                    static let retry = NSLocalizedString(
-                        "Retry",
-                        comment: "Card Issuing: Card Creation Error Retry Button"
-                    )
+            static let title = NSLocalizedString(
+                "Card not found",
+                comment: "Card Issuing Error: Title Not Found"
+            )
 
-                    static let cancelGoBack = NSLocalizedString(
-                        "Cancel & Go Back",
-                        comment: "Card Issuing: Card Creation Error Cancel & Go Back Button"
-                    )
-                }
+            static let description = NSLocalizedString(
+                "We could not find the selected card. Please try again later or contact support.",
+                comment: "Card Issuing Error: Description Not Found"
+            )
+        }
 
-                enum Processing {
-                    static let title = NSLocalizedString(
-                        "Processing...",
-                        comment: "Card Issuing: Card Creation Processing"
-                    )
-                }
-            }
+        enum GenericProcessingError {
 
-            enum Manage {
-                enum Button {
-                    static let manage = NSLocalizedString(
-                        "Manage",
-                        comment: "Card Issuing: Manage"
-                    )
+            static let title = NSLocalizedString(
+                "Failed To Create Your Card",
+                comment: "Card Issuing: Card Creation Failed"
+            )
 
-                    static let topUp = NSLocalizedString(
-                        "Top Up",
-                        comment: "Card Issuing: Top Up"
-                    )
-
-                    enum ChoosePaymentMethod {
-                        static let title = NSLocalizedString(
-                            "Choose Payment Method",
-                            comment: "Card Issuing: Choose payment method"
-                        )
-                        static let caption = NSLocalizedString(
-                            "Fund your card purchases",
-                            comment: "Card Issuing: Choose payment method caption"
-                        )
-                    }
-                }
-
-                enum RecentTransactions {
-                    static let title = NSLocalizedString(
-                        "Recent Transactions",
-                        comment: "Card Issuing: Recent Transactions"
-                    )
-                    static let placeholder = NSLocalizedString(
-                        "Your most recent purchases will show up here",
-                        comment: "Card Issuing: placeholder when no transaction"
-                    )
-                }
-            }
+            static let description = NSLocalizedString(
+                """
+                Sometimes this can happen when the systems are bogged down. \
+                You can try again by clicking `Retry` below or come back again in a bit.
+                """,
+                comment: "Card Issuing: Card Creation Error message"
+            )
         }
     }
 }

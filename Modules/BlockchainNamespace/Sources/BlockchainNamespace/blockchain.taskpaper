@@ -9,6 +9,10 @@ blockchain:
 						+ blockchain.session.configuration.value
 			announcements:
 			+ blockchain.session.configuration.value
+			app:
+				maintenance:
+				+ blockchain.db.type.any
+				+ blockchain.session.configuration.value
 			apple:
 				pay:
 					is:
@@ -57,10 +61,11 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
-			redesign:
-				coinview:
-				+ blockchain.db.type.boolean
-				+ blockchain.session.configuration.value
+			polygon:
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			remote:
 				is:
 					stale:
@@ -113,6 +118,10 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+		did:
+			finish:
+				launching:
+				+ blockchain.db.type.boolean
 		enter:
 			into:
 			+ blockchain.ux.type.story

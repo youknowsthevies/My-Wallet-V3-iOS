@@ -79,58 +79,6 @@ extension AnalyticsEvents {
         }
     }
 
-    // MARK: - SideMenu
-
-    enum SideMenu: AnalyticsEvent {
-        case sideNavAccountsAndAddresses
-        case sideNavBackup
-        case sideNavSimpleBuy
-        case sideNavLogout
-        case sideNavSettings
-        case sideNavSupport
-        case sideNavWebLogin
-        case sideNavSecureChannel
-        case sideNavAirdropCenter
-        case sideNavExchange
-        case sideNavInterest
-
-        var name: String {
-            switch self {
-            case .sideNavInterest:
-                return "side_nav_interest"
-            // Menu - accounts and addresses clicked
-            case .sideNavAccountsAndAddresses:
-                return "side_nav_accounts_and_addresses"
-            // Menu - backup clicked
-            case .sideNavBackup:
-                return "side_nav_backup"
-            // Menu - simple-buy clicked
-            case .sideNavSimpleBuy:
-                return "side_nav_simple_buy"
-            // Menu - logout clicked
-            case .sideNavLogout:
-                return "side_nav_logout"
-            // Menu - settings clicked
-            case .sideNavSettings:
-                return "side_nav_settings"
-            // Menu - support clicked
-            case .sideNavSupport:
-                return "side_nav_support"
-            // Menu - web login clicked
-            case .sideNavWebLogin:
-                return "side_nav_web_login"
-            // Menu - airdrop center clicked
-            case .sideNavAirdropCenter:
-                return "side_nav_airdrop_center"
-            // Menu - exchange clicked
-            case .sideNavExchange:
-                return "side_nav_exchange"
-            case .sideNavSecureChannel:
-                return "side_nav_secure_channel"
-            }
-        }
-    }
-
     // MARK: - Wallet Intro Flow
 
     enum WalletIntro: AnalyticsEvent {

@@ -13,7 +13,6 @@ public enum KYCParentFlow {
     case resubmission
     case onboarding
     case receive
-    case airdrop
     case cash
     case coin
 }

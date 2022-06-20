@@ -38,7 +38,6 @@ class KYCPageViewFactory {
             return KYCMoreInformationController.make(with: coordinator)
         case .welcome:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycWelcome)
-            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycSunriverStart)
             return KYCWelcomeController.make(with: coordinator)
         case .country:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycCountry)

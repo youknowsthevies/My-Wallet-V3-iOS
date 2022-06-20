@@ -11,8 +11,6 @@ final class PortfolioRouter {
 
     private let accountsRouter: AccountsRouting
     private let disposeBag = DisposeBag()
-    private let exchangeProviding: ExchangeProviding
-    private let navigationRouter: NavigationRouterAPI
 
     init(
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
@@ -20,24 +18,9 @@ final class PortfolioRouter {
         accountsRouter: AccountsRouting = resolve()
     ) {
         self.accountsRouter = accountsRouter
-        self.navigationRouter = navigationRouter
-        self.exchangeProviding = exchangeProviding
     }
 
     func showWalletActionScreen(for account: BlockchainAccount) {
         accountsRouter.route(to: account)
-    }
-
-    func showDetailsScreen(for currency: CryptoCurrency) {
-        let builder = AssetDetailsBuilder(
-            accountsRouter: accountsRouter,
-            currency: currency,
-            exchangeProviding: exchangeProviding
-        )
-        let controller = builder.build()
-        navigationRouter.present(
-            viewController: controller,
-            using: .modalOverTopMost
-        )
     }
 }

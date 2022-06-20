@@ -11,6 +11,7 @@ import XCTest
 @testable import Blockchain
 @testable import FeatureAuthenticationData
 @testable import WalletPayloadDataKit
+@testable import WalletPayloadKitMock
 
 /// Tests the pin interactor
 class PinInteractorTests: XCTestCase {
@@ -32,6 +33,8 @@ class PinInteractorTests: XCTestCase {
         MockBlockchainSettingsApp()
     }
 
+    var mockChangePasswordService: MockChangePasswordService!
+
     var passwordRepository: PasswordRepository {
         let walletRepository = MockWalletRepository()
         walletRepository.expectedPassword = "blockchain"
@@ -40,8 +43,14 @@ class PinInteractorTests: XCTestCase {
         return PasswordRepository(
             walletRepository: walletRepository,
             walletRepo: walletRepo,
+            changePasswordService: mockChangePasswordService,
             nativeWalletEnabled: { .just(false) }
         )
+    }
+
+    override func setUp() {
+        super.setUp()
+        mockChangePasswordService = MockChangePasswordService()
     }
 
     // MARK: - Test success cases

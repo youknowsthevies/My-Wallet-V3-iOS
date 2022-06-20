@@ -33,13 +33,14 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             ]
         )
 
-        state = featureFlagService.isEnabled(AppFeature.notificationPreferences)
+        state = featureFlagService
+            .isEnabled(AppFeature.notificationPreferences)
             .last()
-            .map { NotificationPreferencesEnabled -> SettingsSectionLoadingState in
-
-                let NotificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
-                if NotificationPreferencesEnabled, viewModel.items.contains(NotificationPreferencesCell) == false {
-                    viewModel.items.append(NotificationPreferencesCell)
+            .map { notificationPreferencesEnabled -> SettingsSectionLoadingState in
+                let notificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
+                if notificationPreferencesEnabled, viewModel.items.contains(notificationPreferencesCell) == false {
+                    viewModel.items.append(notificationPreferencesCell)
+                    viewModel.items.remove(at: 0)
                 }
                 return .loaded(next: .some(viewModel))
             }

@@ -14,8 +14,7 @@ extension EVMBalancesResponse {
     static func stubbed(cryptoCurrency: CryptoCurrency) -> EVMBalancesResponse {
         let balance = EVMBalancesResponse.Balance(
             identifier: cryptoCurrency.assetModel.kind.erc20ContractAddress!,
-            currency: cryptoCurrency.code,
-            balance: "2"
+            amount: "2"
         )
         let item = EVMBalancesResponse.Item(
             address: "",

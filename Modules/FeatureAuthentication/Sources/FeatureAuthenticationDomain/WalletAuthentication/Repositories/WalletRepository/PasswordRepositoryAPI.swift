@@ -15,10 +15,10 @@ public protocol PasswordRepositoryAPI: AnyObject {
     /// Streams the cached password or `nil` if it is not cached
     var password: AnyPublisher<String?, Never> { get }
 
-    /// Sets the password
+    /// Sets the password, **in-memory only**
     func set(password: String) -> AnyPublisher<Void, Never>
 
     /// Syncs the current `password` with the users wallet.
     /// This changes the users password.
-    func sync() -> AnyPublisher<Void, PasswordRepositoryError>
+    func changePassword(password: String) -> AnyPublisher<Void, PasswordRepositoryError>
 }

@@ -217,15 +217,14 @@ final class KYCRouter: KYCRouterAPI {
                 let shouldCheckForSDDEligibility = shouldUseSDDFlags ? isSDDEligible : false
                 let shouldCheckForSDDVerification = shouldUseSDDFlags ? isSDDVerified : false
 
-                let startingPage = user.isSunriverAirdropRegistered == true ?
-                    KYCPageType.welcome :
-                    KYCPageType.startingPage(
-                        forUser: user,
-                        requiredTier: tier,
-                        tiersResponse: tiersResponse,
-                        isSDDEligible: shouldCheckForSDDEligibility,
-                        isSDDVerified: shouldCheckForSDDVerification
-                    )
+                let startingPage = KYCPageType.startingPage(
+                    forUser: user,
+                    requiredTier: tier,
+                    tiersResponse: tiersResponse,
+                    isSDDEligible: shouldCheckForSDDEligibility,
+                    isSDDVerified: shouldCheckForSDDVerification
+                )
+
                 if startingPage != .accountStatus {
                     /// If the starting page is accountStatus, they do not have any additional
                     /// pages to view, so we don't want to set `isCompletingKyc` to `true`.
@@ -357,14 +356,13 @@ final class KYCRouter: KYCRouterAPI {
                     guard let self = self else { return }
                     let status = response.tierAccountStatus(for: .tier2)
 
-                    let isReceivingAirdrop = self.user?.isSunriverAirdropRegistered == true
                     controller.viewModel = KYCInformationViewModel.create(
                         for: status,
-                        isReceivingAirdrop: isReceivingAirdrop
+                        isReceivingAirdrop: false
                     )
                     controller.viewConfig = KYCInformationViewConfig.create(
                         for: status,
-                        isReceivingAirdrop: isReceivingAirdrop
+                        isReceivingAirdrop: false
                     )
                     controller.primaryButtonAction = { _ in
                         switch status {
@@ -454,7 +452,7 @@ final class KYCRouter: KYCRouterAPI {
             guard let response = userTiersResponse else { return nil }
             return .accountStatus(
                 status: response.tierAccountStatus(for: .tier2),
-                isReceivingAirdrop: user.isSunriverAirdropRegistered == true
+                isReceivingAirdrop: false
             )
         case .enterEmail,
              .welcome,
@@ -481,15 +479,13 @@ final class KYCRouter: KYCRouterAPI {
         isSDDVerified: Bool
     ) {
         guard let response = userTiersResponse else { return }
-        let startingPage = user.isSunriverAirdropRegistered == true ?
-            KYCPageType.welcome :
-            KYCPageType.startingPage(
-                forUser: user,
-                requiredTier: tier,
-                tiersResponse: response,
-                isSDDEligible: isSDDEligible,
-                isSDDVerified: isSDDVerified
-            )
+        let startingPage = KYCPageType.startingPage(
+            forUser: user,
+            requiredTier: tier,
+            tiersResponse: response,
+            isSDDEligible: isSDDEligible,
+            isSDDVerified: isSDDVerified
+        )
         var controller: KYCBaseViewController
         if startingPage == .accountStatus {
             controller = pageFactory.createFrom(
@@ -497,7 +493,7 @@ final class KYCRouter: KYCRouterAPI {
                 in: self,
                 payload: .accountStatus(
                     status: response.tierAccountStatus(for: .tier2),
-                    isReceivingAirdrop: user.isSunriverAirdropRegistered == true
+                    isReceivingAirdrop: false
                 )
             )
         } else {

@@ -32,6 +32,8 @@ struct DAppListEnvironment {
 }
 
 public struct DAppListState: Equatable {
+    typealias LocalizedString = LocalizationConstants.WalletConnect.List
+
     struct DAppViewState: Equatable, Identifiable {
         var id: String
         let imageResource: ImageResource?
@@ -40,7 +42,7 @@ public struct DAppListState: Equatable {
     }
 
     var sessions: [WalletConnectSession] = []
-    var title = String(format: LocalizationConstants.WalletConnect.connectedAppsCount, "0")
+    var title = String(format: LocalizedString.connectedAppsCount, "0")
 }
 
 extension DAppListState.DAppViewState {
@@ -96,10 +98,10 @@ let dAppListReducer = Reducer.combine(
             if case .success(let sessions) = result {
                 state.sessions = sessions
                 if sessions.count == 1 {
-                    state.title = LocalizationConstants.WalletConnect.connectedAppCount
+                    state.title = DAppListState.LocalizedString.connectedAppCount
                 } else {
                     state.title = String(
-                        format: LocalizationConstants.WalletConnect.connectedAppsCount,
+                        format: DAppListState.LocalizedString.connectedAppsCount,
                         String(sessions.count)
                     )
                 }

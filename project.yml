@@ -42,7 +42,7 @@ schemeTemplates:
           isEnabled: false
         - variable: OS_ACTIVITY_MODE
           value: disable
-          isEnabled: true
+          isEnabled: false
       commandLineArguments:
         "-_UIConstraintBasedLayoutLogUnsatisfiable NO": true
     test:
@@ -202,6 +202,8 @@ packages:
     path: Modules/CryptoAssets
   FeatureApp:
     path: Modules/FeatureApp
+  FeatureAppUpgrade:
+    path: Modules/FeatureAppUpgrade
   FeatureAccountPicker:
     path: Modules/FeatureAccountPicker
   FeatureActivity:
@@ -280,6 +282,9 @@ packages:
     path: Modules/WalletPayload
   BlockchainComponentLibrary:
     path: Modules/BlockchainComponentLibrary
+  FeatureAttribution:
+    path: Modules/FeatureAttribution
+
 targets:
   Blockchain:
     configFiles:
@@ -440,6 +445,8 @@ targets:
         product: WalletPayloadKit
       - package: WalletPayload
         product: WalletPayloadDataKit
+      - package: FeatureAttribution
+        product: FeatureAttribution
 
     platform: iOS
     postBuildScripts:

@@ -39,7 +39,8 @@ public final class PairExchangeService: PairExchangeServiceAPI {
                     .catchAndReturn(
                         PriceQuoteAtTime(
                             timestamp: time.date,
-                            moneyValue: .zero(currency: fiatCurrency)
+                            moneyValue: .zero(currency: fiatCurrency),
+                            marketCap: nil
                         )
                     )
                     .asObservable()

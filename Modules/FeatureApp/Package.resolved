@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "Embrace",
+        "repositoryURL": "https://github.com/embrace-io/embrace-spm",
+        "state": {
+          "branch": null,
+          "revision": "b496db4ce4b0d7e441471a0f3811f32ddf0572b3",
+          "version": "5.7.7"
+        }
+      },
+      {
         "package": "Frames",
         "repositoryURL": "https://github.com/checkout/frames-ios.git",
         "state": {
@@ -71,6 +80,15 @@
           "branch": null,
           "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
           "version": "3.3.1"
+        }
+      },
+      {
+        "package": "Lexicon",
+        "repositoryURL": "https://github.com/screensailor/Lexicon",
+        "state": {
+          "branch": null,
+          "revision": "160c4c417f8490658a8396d0283fb0d6fb98c327",
+          "version": null
         }
       },
       {
@@ -168,8 +186,8 @@
         "repositoryURL": "https://github.com/stripe/stripe-ios",
         "state": {
           "branch": null,
-          "revision": "d9b1d736488056d69e7c7d19da6536ecc6ecb860",
-          "version": "21.9.1"
+          "revision": "294dac6bb5b60b236c0f88d835ed768d7c25ef4d",
+          "version": "22.3.0"
         }
       },
       {
@@ -195,8 +213,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
-          "version": "0.7.0"
+          "revision": "ce9c0d897db8a840c39de64caaa9b60119cf4be8",
+          "version": "0.8.1"
         }
       },
       {
@@ -222,8 +240,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
-          "version": "0.32.0"
+          "revision": "2828dc44f6e3f81d84bcaba72c1ab1c0121d66f6",
+          "version": "0.34.0"
         }
       },
       {

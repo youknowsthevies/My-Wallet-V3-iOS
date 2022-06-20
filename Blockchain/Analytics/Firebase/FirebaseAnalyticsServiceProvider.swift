@@ -11,11 +11,6 @@ import ToolKit
 class FirebaseAnalyticsServiceProvider: AnalyticsServiceProviderAPI {
     var supportedEventTypes: [AnalyticsEventType] = [.firebase]
 
-    // Enumerates campaigns that can be used in analytics events
-    enum Campaigns: String, CaseIterable {
-        case sunriver
-    }
-
     private enum FirebaseConstants {
 
         enum MaxLength {

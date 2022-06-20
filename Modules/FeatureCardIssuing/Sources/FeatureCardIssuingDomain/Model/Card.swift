@@ -2,9 +2,9 @@
 
 import Foundation
 
-public struct Card: Codable, Equatable {
+public struct Card: Codable, Equatable, Identifiable {
 
-    public let cardId: String
+    public let id: String
 
     public let type: CardType
 
@@ -15,11 +15,31 @@ public struct Card: Codable, Equatable {
 
     public let brand: Brand
 
-    public let cardStatus: Status
+    public let status: Status
 
     public let orderStatus: [OrderStatus]?
 
     public let createdAt: String
+
+    public init(
+        id: String,
+        type: Card.CardType,
+        last4: String,
+        expiry: String,
+        brand: Card.Brand,
+        status: Card.Status,
+        orderStatus: [Card.OrderStatus]?,
+        createdAt: String
+    ) {
+        self.id = id
+        self.type = type
+        self.last4 = last4
+        self.expiry = expiry
+        self.brand = brand
+        self.status = status
+        self.orderStatus = orderStatus
+        self.createdAt = createdAt
+    }
 }
 
 extension Card {
@@ -35,9 +55,15 @@ extension Card {
     }
 
     public enum Status: String, Codable {
+        case initiated = "INITIATED"
         case created = "CREATED"
         case active = "ACTIVE"
         case terminated = "TERMINATED"
+        case suspended = "SUSPENDED"
+        case unsupported = "UNSUPPORTED"
+        case unactivated = "UNACTIVATED"
+        case limited = "LIMITED"
+        case locked = "LOCKED"
     }
 
     public struct OrderStatus: Codable, Equatable {
@@ -89,7 +115,11 @@ extension Card.OrderStatus {
 
 extension Card {
 
-    var creationDate: Date? {
+    public var creationDate: Date? {
         DateFormatter.iso8601Format.date(from: createdAt)
+    }
+
+    public var isLocked: Bool {
+        status == .locked
     }
 }
