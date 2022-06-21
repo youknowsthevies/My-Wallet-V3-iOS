@@ -42,6 +42,11 @@ blockchain:
 				action:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
+			localized:
+				error:
+					override:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.value
 			manual:
 				login:
 					is:

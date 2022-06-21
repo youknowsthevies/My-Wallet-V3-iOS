@@ -854,5 +854,19 @@ extension DependencyContainer {
                     .replaceError(with: false)
             )
         }
+
+        single { () -> RequestBuilderQueryParameters in
+            let app: AppProtocol = DIKit.resolve()
+            return RequestBuilderQueryParameters(
+                app.publisher(
+                    for: BlockchainNamespace.blockchain.app.configuration.localized.error.override,
+                    as: String.self
+                )
+                .map { result -> [URLQueryItem]? in
+                    try? [URLQueryItem(name: "localisedError", value: result.get().nilIfEmpty)]
+                }
+                .replaceError(with: [])
+            )
+        }
     }
 }

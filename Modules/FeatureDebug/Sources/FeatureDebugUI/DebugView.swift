@@ -134,6 +134,14 @@ extension DebugView {
                             Label("Copy", systemImage: "doc.on.doc.fill")
                         }
                     )
+                    if key.tag.is(blockchain.session.state.value) {
+                        Button(
+                            action: { app.state.clear(key) },
+                            label: {
+                                Label("Clear", systemImage: "trash.fill")
+                            }
+                        )
+                    }
                 }
             }
         }
