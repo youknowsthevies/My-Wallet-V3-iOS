@@ -44,6 +44,11 @@ let package = Package(
             name: "swift-algorithms",
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
+        ),
+        .package(
+            name: "Lottie",
+            url: "https://github.com/airbnb/lottie-ios.git",
+            from: "3.3.0"
         )
     ],
     targets: [
@@ -52,10 +57,12 @@ let package = Package(
             dependencies: [
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
-                .product(name: "Markdown", package: "swift-markdown")
+                .product(name: "Markdown", package: "swift-markdown"),
+                .product(name: "Lottie", package: "Lottie")
             ],
             resources: [
-                .process("Resources/Fonts")
+                .process("Resources/Fonts"),
+                .copy("Resources/Animation/loader.json")
             ]
         ),
         .testTarget(

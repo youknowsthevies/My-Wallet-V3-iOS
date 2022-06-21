@@ -133,16 +133,19 @@ let rootViewReducer = Reducer<
 
             environment.app.publisher(for: blockchain.ux.referral.giftbox.seen, as: Bool.self)
                 .replaceError(with: false)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$referralState.isHighlighted, $0 == false)) },
 
             environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$fab.data, $0)) },
 
             environment.app.publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
                 .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$tabs, $0)) }
         )

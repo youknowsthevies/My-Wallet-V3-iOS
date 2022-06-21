@@ -89,7 +89,10 @@ extension DebugView {
         func description(for key: Tag.Reference) -> String {
             var string = ""
             if key.indices.isNotEmpty {
-                string += key.indices.map { index in "\(index.key.id): \(index.value)" }.joined(separator: "\n")
+                string += key.indices
+                    .filter { tag, _ in key.tag != tag }
+                    .map { key, value in "\(key.id): \(value)" }
+                    .joined(separator: "\n")
             }
             string += observer.data[key]?.pretty ?? JSON.null.pretty
             return string
@@ -155,6 +158,7 @@ extension DebugView {
                         sum[result.metadata.ref] = try? result.value.decode(JSON.self)
                     }
                 }
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] results in
                     self?.data = results
                 }
@@ -345,7 +349,7 @@ extension AppProtocol {
     func binding(_ event: Tag.Event) -> Binding<Any?> {
         let key = event.key([:])
         switch key {
-        case blockchain.session.state.value:
+        case blockchain.session.state.value, blockchain.db.collection.id:
             return state.binding(event)
         case blockchain.session.configuration.value:
             return remoteConfiguration.binding(event)

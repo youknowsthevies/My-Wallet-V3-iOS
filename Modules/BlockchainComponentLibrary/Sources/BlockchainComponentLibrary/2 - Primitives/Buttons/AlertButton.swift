@@ -93,8 +93,8 @@ struct AlertButtonStyle: ButtonStyle {
                 ProgressView()
                     .progressViewStyle(
                         IndeterminateProgressViewStyle(
-                            railColor: colorCombination.progressViewRail,
-                            trackColor: colorCombination.progressViewTrack
+                            stroke: colorCombination.progressViewRail,
+                            background: colorCombination.progressViewTrack
                         )
                     )
                     .frame(width: 24, height: 24)

@@ -72,8 +72,8 @@ public struct PillButtonStyle: ButtonStyle {
                 ProgressView()
                     .progressViewStyle(
                         IndeterminateProgressViewStyle(
-                            railColor: colorCombination.progressViewRail,
-                            trackColor: colorCombination.progressViewTrack
+                            stroke: colorCombination.progressViewRail,
+                            background: colorCombination.progressViewTrack
                         )
                     )
                     .frame(width: size.minHeight / 2, height: size.minHeight / 2)
