@@ -67,7 +67,7 @@ extension DependencyContainer {
 
         // MARK: - Retail
 
-        single(tag: DIKitContext.retail) { RequestBuilder(config: Network.Config.retailConfig) }
+        single(tag: DIKitContext.retail) { RequestBuilder(config: Network.Config.retailConfig, queryParameters: DIKit.resolve()) }
 
         single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
 

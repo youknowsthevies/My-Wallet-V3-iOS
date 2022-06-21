@@ -89,6 +89,7 @@ public extension I_blockchain_app_configuration {
 	var `debug`: L_blockchain_app_configuration_debug { .init("\(__).debug") }
 	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
 	var `frequent`: L_blockchain_app_configuration_frequent { .init("\(__).frequent") }
+	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
@@ -224,6 +225,24 @@ public final class L_blockchain_app_configuration_frequent_action: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action", comment: "") }
 }
 public protocol I_blockchain_app_configuration_frequent_action: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_localized: L, I_blockchain_app_configuration_localized {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized", comment: "") }
+}
+public protocol I_blockchain_app_configuration_localized: I {}
+public extension I_blockchain_app_configuration_localized {
+	var `error`: L_blockchain_app_configuration_localized_error { .init("\(__).error") }
+}
+public final class L_blockchain_app_configuration_localized_error: L, I_blockchain_app_configuration_localized_error {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized.error", comment: "") }
+}
+public protocol I_blockchain_app_configuration_localized_error: I {}
+public extension I_blockchain_app_configuration_localized_error {
+	var `override`: L_blockchain_app_configuration_localized_error_override { .init("\(__).override") }
+}
+public final class L_blockchain_app_configuration_localized_error_override: L, I_blockchain_app_configuration_localized_error_override {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized.error.override", comment: "") }
+}
+public protocol I_blockchain_app_configuration_localized_error_override: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_app_configuration_manual: L, I_blockchain_app_configuration_manual {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.manual", comment: "") }
 }
