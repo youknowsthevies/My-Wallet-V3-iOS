@@ -11,6 +11,11 @@ public enum WalletAssetFetchError: Error {
     case fetchFailed(MetadataFetchError)
 }
 
+public enum WalletAssetSaveError: Error {
+    case notInitialized
+    case saveFailed(MetadataSaveError)
+}
+
 public protocol WalletMetadataEntryServiceAPI {
     /// Fetches a node entry from Metadata for the specified entry type
     /// - Parameter type: The type of Entry to be returned
@@ -18,6 +23,15 @@ public protocol WalletMetadataEntryServiceAPI {
     func fetchEntry<Entry: MetadataNodeEntry>(
         type: Entry.Type
     ) -> AnyPublisher<Entry, WalletAssetFetchError>
+
+    /// Saves a node entry to Metadata
+    /// - Parameters:
+    ///   - type: The type of Entry to be saved
+    ///   - node: A `MetadataNodeEntry`
+    /// - Returns: `AnyPublisher<EmptyValue, WalletAssetSaveError>`
+    func save<Node: MetadataNodeEntry>(
+        node: Node
+    ) -> AnyPublisher<EmptyValue, WalletAssetSaveError>
 }
 
 final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
@@ -50,6 +64,24 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
             .flatMap { [metadataService] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
                 metadataService.fetchEntry(with: metadataState)
                     .mapError(WalletAssetFetchError.fetchFailed)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func save<Node: MetadataNodeEntry>(node: Node) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+        walletHolder.walletStatePublisher
+            .flatMap { state -> AnyPublisher<MetadataState, WalletAssetSaveError> in
+                guard let metadata = state?.metadata else {
+                    return .failure(.notInitialized)
+                }
+                return .just(metadata)
+            }
+            .receive(on: queue)
+            .flatMap { [metadataService] metadataState -> AnyPublisher<EmptyValue, WalletAssetSaveError> in
+                metadataService.save(node: node, state: metadataState)
+                    .mapError(WalletAssetSaveError.saveFailed)
+                    .map { _ in .noValue }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

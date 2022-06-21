@@ -8,6 +8,7 @@ import MetadataHDWalletKit
 import ToolKit
 
 public enum SaveMetadataError: Error {
+    case unableToParseRemotePayload
     case failedToDeriveNode(MetadataNodeError)
     case failedToCreateMessage(Error)
     case failedToSignMessage(Error)
@@ -116,37 +117,44 @@ func saveMetadata(
     let metadata = input.metadata
 
     let writeMetadata: (Data) -> AnyPublisher<Void, SaveMetadataError> = { encrypted in
-        let encryptedPayloadBytes = encrypted
-            .base64EncodedString()
-            .bytes
-        return fetchMagic(address: metadata.address, fetchMetadata: fetchMetadata)
-            .flatMap { m -> AnyPublisher<(Data, [UInt8]), SaveMetadataError> in
+        fetchMagic(address: metadata.address, fetchMetadata: fetchMetadata)
+            .catch { error -> AnyPublisher<Data, SaveMetadataError> in
+                guard case .network(let networkError) = error else {
+                    return .failure(error)
+                }
+                guard networkError.is404 else {
+                    return .failure(error)
+                }
+                return .just(Data())
+            }
+            .flatMap { magic -> AnyPublisher<(Data, [UInt8]), SaveMetadataError> in
                 MetadataUtil.message(
-                    payload: encryptedPayloadBytes
+                    payload: encrypted.bytes,
+                    prevMagicHash: magic.isEmpty ? nil : magic.bytes
                 )
                 .publisher
                 .map { message -> (Data, [UInt8]) in
-                    (m, message)
+                    (magic, message)
                 }
                 .mapError(SaveMetadataError.failedToCreateMessage)
                 .eraseToAnyPublisher()
             }
-            .flatMap { m, message
+            .flatMap { magic, message
                 -> AnyPublisher<(Data, String), SaveMetadataError> in
                 sign(bitcoinMessage: message, with: metadata)
                     .map { sig -> (Data, String) in
-                        (m, sig)
+                        (magic, sig)
                     }
                     .mapError(SaveMetadataError.failedToSignMessage)
                     .publisher
                     .eraseToAnyPublisher()
             }
-            .flatMap { m, sig -> AnyPublisher<Void, SaveMetadataError> in
+            .flatMap { magic, sig -> AnyPublisher<Void, SaveMetadataError> in
                 let body = MetadataBody(
                     version: Constants.metadataVersion,
                     payload: encrypted.base64EncodedString(),
                     signature: sig,
-                    prevMagicHash: m.hex,
+                    prevMagicHash: magic.hex,
                     typeId: Int(metadata.type.rawValue)
                 )
                 return putMetadata(metadata.address, body)
@@ -195,9 +203,9 @@ private func fetchMagic(
     fetchMetadata(address)
         .mapError(SaveMetadataError.network)
         .flatMap { payload -> AnyPublisher<[UInt8], SaveMetadataError> in
-            let encryptedPayloadBytes = Data(payload.payload.utf8)
-                .base64EncodedData()
-                .bytes
+            guard let encryptedPayloadBytes = Data(base64Encoded: payload.payload)?.bytes else {
+                return .failure(.unableToParseRemotePayload)
+            }
 
             guard let prevMagicHash = payload.prevMagicHash else {
                 return MetadataUtil.magic(

@@ -69,7 +69,7 @@ final class GenerateNodesTests: XCTestCase {
             XCTAssertEqual(body.version, 1)
             XCTAssertEqual(
                 body.prevMagicHash,
-                "6eb1155680b700672efa885ea05beae186ed071f4128f45d4b3bc1d337013f80"
+                "0b08c4e284cef7d60c55abffdade42544db953dbe5fa2890d08e7560b6e8f1b2"
             )
             XCTAssertEqual(body.typeId, Int(type.rawValue))
 

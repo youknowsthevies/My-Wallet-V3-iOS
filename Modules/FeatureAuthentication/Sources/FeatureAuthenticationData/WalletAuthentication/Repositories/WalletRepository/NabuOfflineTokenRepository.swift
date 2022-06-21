@@ -11,15 +11,18 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
     private let credentialsFetcher: AccountCredentialsFetcherAPI
+    private let reactiveWallet: ReactiveWalletAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
         credentialsFetcher: AccountCredentialsFetcherAPI,
+        reactiveWallet: ReactiveWalletAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
         self.credentialsFetcher = credentialsFetcher
+        self.reactiveWallet = reactiveWallet
         self.nativeWalletEnabled = nativeWalletEnabled
 
         offlineToken = nativeWalletEnabled()
@@ -27,17 +30,21 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.offlineToken
                 }
-                return credentialsFetcher.fetchAccountCredentials(forceFetch: false)
-                    .mapError { _ in MissingCredentialsError.offlineToken }
-                    .map { credentials in
-                        NabuOfflineToken(
-                            userId: credentials.nabuUserId,
-                            token: credentials.nabuLifetimeToken,
-                            exchangeUserId: credentials.exchangeUserId,
-                            exchangeOfflineToken: credentials.exchangeLifetimeToken
-                        )
-                    }
+                return reactiveWallet.waitUntilInitializedFirst
                     .first()
+                    .flatMap { _ -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
+                        credentialsFetcher.fetchAccountCredentials(forceFetch: false)
+                            .mapError { _ in MissingCredentialsError.offlineToken }
+                            .map { credentials in
+                                NabuOfflineToken(
+                                    userId: credentials.nabuUserId,
+                                    token: credentials.nabuLifetimeToken,
+                                    exchangeUserId: credentials.exchangeUserId,
+                                    exchangeOfflineToken: credentials.exchangeLifetimeToken
+                                )
+                            }
+                            .eraseToAnyPublisher()
+                    }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
