@@ -533,6 +533,7 @@ public extension I_blockchain_app_deep__link {
 	var `buy`: L_blockchain_app_deep__link_buy { .init("\(__).buy") }
 	var `kyc`: L_blockchain_app_deep__link_kyc { .init("\(__).kyc") }
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
+	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
 	var `send`: L_blockchain_app_deep__link_send { .init("\(__).send") }
 }
 public final class L_blockchain_app_deep__link_activity: L, I_blockchain_app_deep__link_activity {
@@ -602,6 +603,10 @@ public final class L_blockchain_app_deep__link_qr: L, I_blockchain_app_deep__lin
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.qr", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_qr: I {}
+public final class L_blockchain_app_deep__link_referral: L, I_blockchain_app_deep__link_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.referral", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_referral: I {}
 public final class L_blockchain_app_deep__link_send: L, I_blockchain_app_deep__link_send {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send", comment: "") }
 }

@@ -130,6 +130,7 @@ blockchain:
 				tier:
 				+ blockchain.db.type.integer
 			qr:
+			referral:
 			send:
 				amount:
 				+ blockchain.db.type.integer
