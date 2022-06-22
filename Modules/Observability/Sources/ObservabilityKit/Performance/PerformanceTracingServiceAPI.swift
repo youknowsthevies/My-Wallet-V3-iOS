@@ -1,12 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 /// The ID of the Trace
-public enum TraceID: String {
+public struct TraceID: NewTypeString, RawRepresentable {
+
+    public var value: String
+    public var rawValue: String { value }
+
+    public init(_ value: String) {
+        self.value = value
+    }
+
+    public init?(rawValue: String) {
+        value = rawValue
+    }
 
     /// This trace should start when the PIN is enterered to the dashboard appearing
-    case pinToDashboard = "ios_trace_pin_to_dashboard"
+    public static let pinToDashboard: TraceID = "ios_trace_pin_to_dashboard"
 }
 
 /// This API provides a mechanism to trace metrics from the beginning to the end of a trace

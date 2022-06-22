@@ -92,6 +92,7 @@ public extension I_blockchain_app_configuration {
 	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
+	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
@@ -326,6 +327,17 @@ public final class L_blockchain_app_configuration_native_wallet_payload_is_enabl
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet.payload.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_native_wallet_payload_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_performance: L, I_blockchain_app_configuration_performance {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.performance", comment: "") }
+}
+public protocol I_blockchain_app_configuration_performance: I {}
+public extension I_blockchain_app_configuration_performance {
+	var `tracing`: L_blockchain_app_configuration_performance_tracing { .init("\(__).tracing") }
+}
+public final class L_blockchain_app_configuration_performance_tracing: L, I_blockchain_app_configuration_performance_tracing {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.performance.tracing", comment: "") }
+}
+public protocol I_blockchain_app_configuration_performance_tracing: I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_polygon: L, I_blockchain_app_configuration_polygon {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon", comment: "") }
 }

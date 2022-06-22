@@ -66,6 +66,9 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+			performance:
+				tracing:
+				+ blockchain.session.configuration.value
 			polygon:
 				is:
 					enabled:
@@ -182,6 +185,13 @@ blockchain:
 					deep_link:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.value
+		performance:
+			trace:
+				transaction:
+					start:
+						to:
+							enter:
+								amount:
 		process:
 			deep_link:
 				error:

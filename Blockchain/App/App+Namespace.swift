@@ -10,6 +10,7 @@ import FeatureReferralUI
 import Firebase
 import FirebaseProtocol
 import FraudIntelligence
+import ObservabilityKit
 import ToolKit
 import UIKit
 
@@ -40,6 +41,7 @@ extension AppProtocol {
         deepLink: DeepLinkCoordinator = resolve(),
         referralService: ReferralServiceAPI = resolve(),
         attributionService: AttributionServiceAPI = resolve(),
+        performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
@@ -56,6 +58,8 @@ extension AppProtocol {
         #endif
         observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
+        observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
+
         Task {
             let result = try await Installations.installations().installationID()
             state.transaction { state in
