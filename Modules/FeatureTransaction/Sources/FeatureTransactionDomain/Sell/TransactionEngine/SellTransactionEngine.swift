@@ -34,7 +34,13 @@ extension SellTransactionEngine {
     // MARK: - TransactionEngine
 
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
-        .just(amount)
+        sourceExchangeRatePair.map { exchangeRate -> MoneyValue in
+            if amount.isFiat {
+                return amount.convert(using: exchangeRate.inverseQuote.quote)
+            } else {
+                return amount
+            }
+        }
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -52,16 +58,6 @@ extension SellTransactionEngine {
         transactionExchangeRatePair
             .take(1)
             .asSingle()
-    }
-
-    func amountInSourceCurrency(for pendingTransaction: PendingTransaction) -> Single<MoneyValue> {
-        sourceExchangeRatePair.map { exchangeRate -> MoneyValue in
-            if pendingTransaction.amount.isFiat {
-                return pendingTransaction.amount.convert(using: exchangeRate.inverseQuote.quote)
-            } else {
-                return pendingTransaction.amount
-            }
-        }
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
@@ -109,23 +105,21 @@ extension SellTransactionEngine {
     }
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
-        Single.zip(
-            quotesEngine.quotePublisher.asSingle(),
-            amountInSourceCurrency(for: pendingTransaction)
-        )
-        .flatMap { [weak self] quote, convertedAmount -> Single<SellOrder> in
-            guard let self = self else { return .never() }
-            return self.orderCreationRepository.createOrder(
-                direction: self.orderDirection,
-                quoteIdentifier: quote.identifier,
-                volume: convertedAmount,
-                ccy: self.target.currencyType.code
-            )
+        quotesEngine.quotePublisher
             .asSingle()
-        }
-        .do(onSuccess: { [weak self] _ in
-            self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
-        })
+            .flatMap { [weak self] quote -> Single<SellOrder> in
+                guard let self = self else { return .never() }
+                return self.orderCreationRepository.createOrder(
+                    direction: self.orderDirection,
+                    quoteIdentifier: quote.identifier,
+                    volume: pendingTransaction.amount,
+                    ccy: self.target.currencyType.code
+                )
+                .asSingle()
+            }
+            .do(onSuccess: { [weak self] _ in
+                self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
+            })
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {

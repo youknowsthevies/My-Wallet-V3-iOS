@@ -40,7 +40,9 @@ extension SwapTransactionEngine {
     // MARK: - TransactionEngine
 
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
-        .just(amount)
+        currencyConversionService
+            .convert(amount, to: sourceAsset.currencyType)
+            .asSingle()
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -118,22 +120,17 @@ extension SwapTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let quote = quotesEngine.quotePublisher
-            .asSingle()
-        let amountInSourceCurrency = currencyConversionService
-            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
-            .asSingle()
         let sourceAsset = sourceAsset, targetAsset = targetAsset
-        return Single
-            .zip(quote, amountInSourceCurrency)
-            .map { [sourceAccount, target] pricedQuote, convertedAmount -> (PendingTransaction, PricedQuote) in
+        return quotesEngine.quotePublisher
+            .asSingle()
+            .map { [sourceAccount, target] pricedQuote -> (PendingTransaction, PricedQuote) in
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
-                let swapDestinationValue: MoneyValue = convertedAmount.convert(using: resultValue)
+                let swapDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
                     TransactionConfirmations.QuoteExpirationTimer(
                         expirationDate: pricedQuote.expirationDate
                     ),
-                    TransactionConfirmations.SwapSourceValue(cryptoValue: convertedAmount.cryptoValue!),
+                    TransactionConfirmations.SwapSourceValue(cryptoValue: pendingTransaction.amount.cryptoValue!),
                     TransactionConfirmations.SwapDestinationValue(cryptoValue: swapDestinationValue.cryptoValue!),
                     TransactionConfirmations.SwapExchangeRate(
                         baseValue: .one(currency: sourceAsset),
@@ -204,15 +201,11 @@ extension SwapTransactionEngine {
     // MARK: - SwapTransactionEngine
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
-        let amountInSourceCurrency = currencyConversionService
-            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
-
-        return Single.zip(
+        Single.zip(
             target.receiveAddress,
-            sourceAccount.receiveAddress,
-            amountInSourceCurrency.asSingle()
+            sourceAccount.receiveAddress
         )
-        .flatMap { [weak self] destinationAddress, refundAddress, convertedAmount -> Single<SwapOrder> in
+        .flatMap { [weak self] destinationAddress, refundAddress -> Single<SwapOrder> in
             guard let self = self else { return .never() }
             return self.quotesEngine.quotePublisher
                 .asSingle()
@@ -224,7 +217,7 @@ extension SwapTransactionEngine {
                         .createOrder(
                             direction: self.orderDirection,
                             quoteIdentifier: quote.identifier,
-                            volume: convertedAmount,
+                            volume: pendingTransaction.amount,
                             destinationAddress: destination,
                             refundAddress: refund
                         )
