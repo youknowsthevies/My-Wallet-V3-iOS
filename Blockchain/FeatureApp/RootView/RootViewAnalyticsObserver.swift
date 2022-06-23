@@ -35,6 +35,9 @@ final class RootViewAnalyticsObserver: Session.Observer {
         },
         app.on(blockchain.ux.frequent.action.sell) { [analytics] _ in
             analytics.record(event: WalletAnalyticsEvent.buySellClicked(type: "SELL"))
+        },
+        app.on(blockchain.ux.referral.giftbox) { [analytics] _ in
+            analytics.record(event: ReferralAnalyticsEvent.walletReferralProgramClicked())
         }
     ]
 
@@ -63,4 +66,9 @@ enum WalletAnalyticsEvent: AnalyticsEvent {
 
 extension WalletAnalyticsEvent {
     var type: AnalyticsEventType { .nabu }
+}
+
+enum ReferralAnalyticsEvent: AnalyticsEvent {
+    public var type: AnalyticsEventType { .nabu }
+    case walletReferralProgramClicked(source: String = "portfolio")
 }

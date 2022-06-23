@@ -23,8 +23,8 @@ extension LocalizationConstants.Referrals.ReferralScreen {
     )
 
     public static let stepsTitleLabel = NSLocalizedString(
-        "What my invited friends need to do?",
-        comment: "What my invited friends need to do?"
+        "To qualify, your friends must:",
+        comment: "To qualify, your friends must:"
     )
 
     public static let referalCodeLabel = NSLocalizedString(

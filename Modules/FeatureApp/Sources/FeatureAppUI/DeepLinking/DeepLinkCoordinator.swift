@@ -1,11 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainNamespace
 import Combine
+import DIKit
 import FeatureActivityUI
 import FeatureDashboardUI
 import FeatureReferralDomain
 import FeatureReferralUI
+import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import MoneyKit
@@ -24,6 +27,7 @@ public final class DeepLinkCoordinator: Session.Observer {
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let transactionsRouter: TransactionsRouterAPI
+    private let analyticsRecording: AnalyticsEventRecorderAPI
 
     private var bag: Set<AnyCancellable> = []
 
@@ -38,6 +42,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         payloadFactory: CryptoTargetPayloadFactoryAPI,
         topMostViewControllerProvider: TopMostViewControllerProviding,
         transactionsRouter: TransactionsRouterAPI,
+        analyticsRecording: AnalyticsEventRecorderAPI,
         accountsRouter: @escaping () -> AccountsRouting
     ) {
         self.accountsRouter = accountsRouter
@@ -48,6 +53,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         self.payloadFactory = payloadFactory
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.transactionsRouter = transactionsRouter
+        self.analyticsRecording = analyticsRecording
     }
 
     var observers: [AnyCancellable] {
@@ -133,10 +139,18 @@ public final class DeepLinkCoordinator: Session.Observer {
     }
 
     private func presentReferralCampaign(_ referral: Referral) {
+        analyticsRecording.record(event: AnalyticsEvents
+            .New
+            .Deeplinking
+            .walletReferralProgramClicked())
+
         let referralView = ReferFriendView(store: .init(
             initialState: .init(referralInfo: referral),
             reducer: ReferFriendModule.reducer,
-            environment: .init(mainQueue: .main)
+            environment: .init(
+                mainQueue: .main,
+                analyticsRecorder: DIKit.resolve()
+            )
         ))
 
         topMostViewControllerProvider

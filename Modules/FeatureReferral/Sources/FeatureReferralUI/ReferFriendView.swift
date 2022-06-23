@@ -148,19 +148,6 @@ extension ReferFriendView {
     }
 }
 
-struct ReferFriendView_Previews: PreviewProvider {
-    static var previews: some View {
-        ReferFriendView(store: .init(
-            initialState: .init(
-                codeIsCopied: false,
-                referralInfo: MockGenerator.referral
-            ),
-            reducer: ReferFriendModule.reducer,
-            environment: ReferFriendEnvironment(mainQueue: .main)
-        ))
-    }
-}
-
 struct ActivityViewController: UIViewControllerRepresentable {
 
     var itemsToShare: [Any]

@@ -1,5 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import BlockchainNamespace
 import Combine
@@ -83,7 +84,9 @@ enum RootViewRoute: NavigationRoute {
                     ReferFriendView(store: .init(
                         initialState: .init(referralInfo: referral),
                         reducer: ReferFriendModule.reducer,
-                        environment: .init(mainQueue: .main)
+                        environment: .init(
+                            mainQueue: .main
+                        )
                     ))
                     .identity(blockchain.ux.referral)
                     .ignoresSafeArea()
@@ -163,6 +166,7 @@ let rootViewReducer = Reducer<
     case .onReferralTap:
         return .merge(
             .fireAndForget {
+                environment.app.post(event: blockchain.ux.referral.giftbox)
                 environment.app.state.set(blockchain.ux.referral.giftbox.seen, to: true)
             },
             .enter(into: .referrals, context: .none)
