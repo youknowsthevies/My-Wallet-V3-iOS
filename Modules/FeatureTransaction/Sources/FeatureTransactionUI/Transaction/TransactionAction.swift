@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardPaymentDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -367,6 +368,12 @@ extension TransactionAction {
             newState.nextEnabled = true
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
+
+        case .fatalTransactionError(OrderConfirmationServiceError.applePay(ApplePayError.cancelled)):
+            return oldState
+                .update(keyPath: \.nextEnabled, value: true)
+                .update(keyPath: \.executionStatus, value: .inProgress)
+                .stateForMovingOneStepBack()
 
         case .fatalTransactionError(let error):
             Logger.shared.error(error)

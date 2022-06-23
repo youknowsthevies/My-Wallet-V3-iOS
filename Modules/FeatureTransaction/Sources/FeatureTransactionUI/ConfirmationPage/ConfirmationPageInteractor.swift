@@ -47,9 +47,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             .asDriver(onErrorJustReturn: .empty)
 
         presenter.continueButtonTapped
+            .throttle(.milliseconds(400))
             .asObservable()
             .withLatestFrom(transactionModel.state)
-            .take(1)
             .subscribe(onNext: { [weak self] state in
                 self?.analyticsHook.onTransactionSubmitted(with: state)
                 self?.transactionModel.process(action: .executeTransaction)
