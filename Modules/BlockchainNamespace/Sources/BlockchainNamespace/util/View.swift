@@ -68,7 +68,7 @@ extension View {
     ) -> some View where C.Element == Tag.Event {
         modifier(
             AsyncOnReceiveSessionEvents(
-                events: events.map { event in event.key }.set,
+                events: events.map { event in event.key() }.set,
                 action: action,
                 file: file,
                 line: line

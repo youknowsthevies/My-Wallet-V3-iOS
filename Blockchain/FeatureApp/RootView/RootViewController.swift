@@ -77,7 +77,6 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
     @LazyInject var backupRouter: FeatureDashboardUI.BackupRouterAPI
     @LazyInject var coincore: CoincoreAPI
-    @LazyInject var customerSupportChatRouter: CustomerSupportChatRouterAPI
     @LazyInject var eligibilityService: EligibilityServiceAPI
     @LazyInject var featureFlagService: FeatureFlagsServiceAPI
     @LazyInject var fiatCurrencyService: FiatCurrencyServiceAPI

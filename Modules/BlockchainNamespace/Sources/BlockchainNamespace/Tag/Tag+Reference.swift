@@ -4,25 +4,17 @@ import Foundation
 
 extension Tag {
 
-    public var reference: Tag.Reference { ref(to: [:]) }
+    public var reference: Tag.Reference { ref() }
 
-    public func ref(to indices: Tag.Context) -> Tag.Reference {
-        Tag.Reference(self, to: indices)
-    }
-
-    public func ref(to indices: Tag.Context, in app: AppProtocol) -> Tag.Reference {
+    public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
         Tag.Reference(self, to: indices, in: app)
-    }
-
-    public func ref(in app: AppProtocol) -> Tag.Reference {
-        Tag.Reference(self, to: [:], in: app)
     }
 }
 
 extension Tag.Reference {
 
-    public func ref(to indices: Tag.Context) -> Tag.Reference {
-        Tag.Reference(tag, to: context + indices)
+    public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
+        Tag.Reference(tag, to: context + indices, in: app)
     }
 }
 
@@ -41,6 +33,15 @@ extension Tag {
 
         private var error: Swift.Error?
 
+        @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
+            do {
+                self = try Self(checked: tag, context: context, in: app)
+            } catch {
+                self = Self(unchecked: tag, context: context)
+                self.error = error
+            }
+        }
+
         @usableFromInline init(unchecked tag: Tag, context: Tag.Context) {
             self.tag = tag
             self.context = context
@@ -51,28 +52,22 @@ extension Tag {
                 : nil
         }
 
-        @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
+        @usableFromInline init(checked tag: Tag, context: Tag.Context, in app: AppProtocol? = nil) throws {
             self.tag = tag
             self.context = context
-            do {
-                let ids = try tag.template.indices(from: context, in: app)
-                let indices = try Dictionary(
-                    uniqueKeysWithValues: zip(
-                        tag.template.indices.map { try Tag(id: $0, in: tag.language) },
-                        ids
-                    )
+            let ids = try tag.template.indices(from: context, in: app)
+            let indices = try Dictionary(
+                uniqueKeysWithValues: zip(
+                    tag.template.indices.map { try Tag(id: $0, in: tag.language) },
+                    ids
                 )
-                self.indices = indices
-                string = Self.id(
-                    tag: tag,
-                    to: context,
-                    indices: indices
-                )
-            } catch {
-                indices = [:]
-                string = tag.id
-                self.error = error
-            }
+            )
+            self.indices = indices
+            string = Self.id(
+                tag: tag,
+                to: context,
+                indices: indices
+            )
         }
     }
 }

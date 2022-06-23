@@ -24,6 +24,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var fab: FrequentActionState
     @BindableState var referralState: ReferralState
     @BindableState var buyAndSell: BuyAndSell = .init()
+    @BindableState var unreadSupportMessageCount: Int = 0
 }
 
 extension RootViewState {
@@ -147,7 +148,13 @@ let rootViewReducer = Reducer<
                 .compactMap(\.value)
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$tabs, $0)) }
+                .map { .binding(.set(\.$tabs, $0)) },
+
+            environment.app.publisher(for: blockchain.ux.customer.support.unread.count, as: Int.self)
+                .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$unreadSupportMessageCount, $0)) }
         )
     case .onDisappear:
         return .fireAndForget {

@@ -5,6 +5,7 @@ import ErrorsUI
 import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
+import FeatureCustomerSupportUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import Firebase
@@ -60,6 +61,23 @@ extension AppProtocol {
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 
+        let intercom = (
+            apiKey: Bundle.main.plist.intercomAPIKey[] as String?,
+            appId: Bundle.main.plist.intercomAppId[] as String?
+        )
+
+        if let apiKey = intercom.apiKey, let appId = intercom.appId {
+            observers.insert(
+                CustomerSupportObserver<Intercom>(
+                    app: self,
+                    apiKey: apiKey,
+                    appId: appId,
+                    open: UIApplication.shared.open,
+                    unreadNotificationName: NSNotification.Name.IntercomUnreadConversationCountDidChange
+                )
+            )
+        }
+
         Task {
             let result = try await Installations.installations().installationID()
             state.transaction { state in
@@ -91,6 +109,13 @@ extension Options: MobileIntelligenceOptions_p {}
 extension Response: MobileIntelligenceResponse_p {}
 extension UpdateOptions: MobileIntelligenceUpdateOptions_p {}
 
+#endif
+
+#if canImport(Intercom)
+import class Intercom.ICMUserAttributes
+import class Intercom.Intercom
+extension Intercom: Intercom_p {}
+extension ICMUserAttributes: IntercomUserAttributes_p {}
 #endif
 
 extension Tag.Event {

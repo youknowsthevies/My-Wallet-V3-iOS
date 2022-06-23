@@ -403,5 +403,7 @@ extension Tag {
 
 extension Tag.KeyTo: TaggedEvent, CustomStringConvertible {
     public var description: String { id(\.id) }
-    public func key(_ context: Tag.Context) -> Tag.Reference { id[].ref(to: Tag.Context(self.context) + context) }
+    public func key(to context: Tag.Context) -> Tag.Reference {
+        id[].ref(to: Tag.Context(self.context) + context)
+    }
 }

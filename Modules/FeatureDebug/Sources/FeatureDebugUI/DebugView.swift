@@ -355,8 +355,8 @@ enum JSON: Codable, Equatable, CustomStringConvertible {
 extension AppProtocol {
 
     func binding(_ event: Tag.Event) -> Binding<Any?> {
-        let key = event.key([:])
-        switch key {
+        let key = event.key()
+        switch key.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.binding(event)
         case blockchain.session.configuration.value:
@@ -371,8 +371,8 @@ extension Session.RemoteConfiguration {
 
     func binding(_ event: Tag.Event) -> Binding<Any?> {
         Binding(
-            get: { [unowned self] in try? get(event.key([:])) },
-            set: { [unowned self] newValue in override(event.key([:]), with: newValue as Any) }
+            get: { [unowned self] in try? get(event) },
+            set: { [unowned self] newValue in override(event, with: newValue as Any) }
         )
     }
 }

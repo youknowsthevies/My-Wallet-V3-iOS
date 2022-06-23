@@ -31,6 +31,9 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					url:
+					+ blockchain.db.type.url
+					+ blockchain.session.configuration.value
 			debug:
 				observers:
 				+ blockchain.db.type.array.of.tags
@@ -370,40 +373,6 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
-				policy:
-					discard:
-						if:
-						+ blockchain.db.type.boolean
-						when:
-						+ blockchain.db.type.boolean
-					perform:
-						if:
-						+ blockchain.db.type.boolean
-						when:
-						+ blockchain.db.type.boolean
-				then:
-					close:
-					enter:
-						into:
-						+ blockchain.db.type.tag
-					navigate:
-						to:
-						+ blockchain.db.type.tag
-					pop:
-						to:
-							root:
-					replace:
-						current:
-							stack:
-							+ blockchain.db.type.array.of.tags
-						root:
-							stack:
-							+ blockchain.db.type.array.of.tags
-					set:
-						session:
-							state:
-							+ blockchain.db.type.array.of.maps
-							+ blockchain.session.state.key.value.pair
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -605,7 +574,12 @@ blockchain:
 			support:
 			+ blockchain.ux.type.story
 				show:
-				+ blockchain.ux.type.analytics.action
+					messenger:
+					+ blockchain.ux.type.action
+				unread:
+					count:
+					+ blockchain.db.type.integer
+					+ blockchain.session.state.value
 		error:
 		+ blockchain.ux.type.story
 			then:
@@ -640,6 +614,16 @@ blockchain:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
+		nft:
+			asset:
+			+ blockchain.db.collection
+				select:
+			collection:
+			+ blockchain.db.collection
+				select:
+			wallet:
+			+ blockchain.db.collection
+				select:
 		payment:
 			method:
 				open:

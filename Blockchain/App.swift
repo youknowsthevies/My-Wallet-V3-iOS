@@ -85,8 +85,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
         window.setRootViewController(hostingController)
         let context = AppDelegateContext(
-            intercomApiKey: CustomerSupportChatConfiguration.apiKey,
-            intercomAppId: CustomerSupportChatConfiguration.appId,
             embraceAppId: ObservabilityConfiguration.appId
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))

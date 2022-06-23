@@ -29,5 +29,5 @@ extension Dictionary where Key == Tag {
 }
 
 extension Dictionary where Key == Tag.Reference {
-    public subscript(id: L) -> Value? { self[id.key] }
+    public subscript(id: L) -> Value? { self[id.key()] }
 }

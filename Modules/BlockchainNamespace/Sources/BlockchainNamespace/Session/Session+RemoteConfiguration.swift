@@ -102,7 +102,7 @@ extension Session {
         }
 
         public func override(_ event: Tag.Event, with value: Any) {
-            fetched[event.key.idToFirebaseConfigurationKeyImportant()] = value
+            fetched[event.key().idToFirebaseConfigurationKeyImportant()] = value
         }
 
         public func clear() {
@@ -112,11 +112,11 @@ extension Session {
         }
 
         public func clear(_ event: Tag.Event) {
-            fetched.removeValue(forKey: event.key.idToFirebaseConfigurationKeyImportant())
+            fetched.removeValue(forKey: event.key().idToFirebaseConfigurationKeyImportant())
         }
 
         public func get(_ event: Tag.Event) throws -> Any? {
-            let key = event.key
+            let key = event.key()
             guard isSynchronized else { throw Error.notSynchronized }
             guard let value = fetched[firstOf: key.firebaseConfigurationKeys] else {
                 throw Error.keyDoesNotExist(key)
@@ -133,7 +133,7 @@ extension Session {
         }
 
         public func result(for event: Tag.Event) -> FetchResult {
-            let key = event.key
+            let key = event.key()
             guard isSynchronized else {
                 return .error(.other(Error.notSynchronized), key.metadata(.remoteConfiguration))
             }
@@ -149,7 +149,7 @@ extension Session {
                 .filter(\.0)
                 .map(\.1)
                 .flatMap { configuration -> Just<FetchResult> in
-                    let key = event.key
+                    let key = event.key()
                     switch configuration[firstOf: key.firebaseConfigurationKeys] {
                     case let value?:
                         return Just(.value(value as Any, key.metadata(.remoteConfiguration)))
@@ -288,7 +288,7 @@ extension Session.RemoteConfiguration {
     public struct Default: ExpressibleByDictionaryLiteral {
         let dictionary: [Tag.Reference: Any?]
         public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
-            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key, $0.1) })
+            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
         }
     }
 }

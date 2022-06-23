@@ -127,12 +127,6 @@ extension DependencyContainer {
             return helper as SecondPasswordPresenterHelper
         }
 
-        factory { CustomerSupportChatClient() as CustomerSupportChatClientAPI }
-
-        factory { CustomerSupportChatService() as CustomerSupportChatServiceAPI }
-
-        factory { CustomerSupportChatRouter() as CustomerSupportChatRouterAPI }
-
         single { () -> SecondPasswordPromptable in
             SecondPasswordPrompter(
                 secondPasswordStore: DIKit.resolve(),

@@ -98,10 +98,11 @@ public class App: AppProtocol {
 
 extension AppProtocol {
 
-    public func signIn(userId: String) {
+    public func signIn(userId: String, transaction: ((Session.State) -> Void)? = nil) {
         post(event: blockchain.session.event.will.sign.in)
         state.transaction { state in
             state.set(blockchain.user.id, to: userId)
+            transaction?(state)
         }
         post(event: blockchain.session.event.did.sign.in)
     }
@@ -123,7 +124,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        state.set(event.key, to: value)
+        state.set(event.key(), to: value)
         post(event: event, context: [event: value], file: file, line: line)
     }
 
@@ -198,7 +199,7 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
-        events.filter(tags.map(\.key)).eraseToAnyPublisher()
+        events.filter(tags.map { $0.key() }).eraseToAnyPublisher()
     }
 }
 
@@ -216,11 +217,11 @@ private let s = (
 extension AppProtocol {
 
     public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: event.key).decode(T.self)
+        publisher(for: event.key()).decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let ref = event.key
+        let ref = event.key()
         switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.publisher(for: ref)
@@ -235,7 +236,7 @@ extension AppProtocol {
     public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
         try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
             .stream()
-            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key))
+            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
             .get()
     }
 

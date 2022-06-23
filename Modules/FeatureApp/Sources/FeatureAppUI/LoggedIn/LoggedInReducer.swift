@@ -153,11 +153,8 @@ let loggedInReducer = Reducer<
                 context: context
             )
         )
-    case .login(let result):
-        guard let user = try? result.get() else { return .none }
-        return .fireAndForget {
-            environment.app.signIn(userId: user.identifier)
-        }
+    case .login:
+        return .none
     case .deeplink(let content):
         let context = content.context
         guard context == .executeDeeplinkRouting else {
@@ -244,6 +241,7 @@ let loggedInReducer = Reducer<
         return .none
     }
 }
+.namespace()
 
 // MARK: Private
 
@@ -263,5 +261,47 @@ private func handleStartup(
         return Effect(value: .deeplink(deeplinkContent))
     case .none:
         return Effect(value: .handleExistingWalletSignIn)
+    }
+}
+
+extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Environment {
+
+    func namespace() -> Reducer {
+        combined(
+            with: Reducer { state, action, environment in
+                switch action {
+                case .login(let result):
+                    guard let user = try? result.get() else { return .none }
+                    return .fireAndForget {
+                        let id = user.identifier
+                        environment.app.signIn(userId: id) { state in
+                            state.set(blockchain.user.email.address, to: user.email.address)
+                            state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
+                            state.set(blockchain.user.name.last, to: user.personalDetails.lastName)
+                            let tag: Tag
+                            if let tier = user.tiers?.current {
+                                switch tier {
+                                case .tier0:
+                                    tag = blockchain.user.account.tier.none[]
+                                case .tier1:
+                                    tag = blockchain.user.account.tier.silver[]
+                                case .tier2:
+                                    tag = blockchain.user.account.tier.gold[]
+                                }
+                            } else {
+                                tag = blockchain.user.account.tier.none[]
+                            }
+                            state.set(blockchain.user.account.tier, to: tag)
+                        }
+                    }
+                case .logout:
+                    return .fireAndForget {
+                        environment.app.signOut()
+                    }
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }

@@ -45,7 +45,6 @@ public struct AppEnvironment {
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var sharedContainer: SharedContainerUserDefaults
-    var customerSupportChatService: CustomerSupportChatServiceAPI
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var crashlyticsRecorder: Recording
     var openBanking: OpenBanking
@@ -100,7 +99,6 @@ public struct AppEnvironment {
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
         supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
-        customerSupportChatService: CustomerSupportChatServiceAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         crashlyticsRecorder: Recording,
         openBanking: OpenBanking,
@@ -150,7 +148,6 @@ public struct AppEnvironment {
         self.supportedAssetsRemoteService = supportedAssetsRemoteService
         self.sharedContainer = sharedContainer
         self.analyticsRecorder = analyticsRecorder
-        self.customerSupportChatService = customerSupportChatService
         self.crashlyticsRecorder = crashlyticsRecorder
         self.openBanking = openBanking
         self.coincore = coincore

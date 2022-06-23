@@ -29,7 +29,7 @@ extension Session {
             id = Self.id
             self.date = date
             self.event = event
-            reference = event.key
+            reference = event.key()
             self.context = context
             source = (file, line)
         }
@@ -113,7 +113,7 @@ extension Tag.Context {
 extension Dictionary where Key: Tag.Event, Value: Hashable {
 
     func pairs() -> Set<Tag.Context.Pair> {
-        map { event, value in .init(key: event.key, value: value) }.set
+        map { event, value in .init(key: event.key(), value: value) }.set
     }
 }
 

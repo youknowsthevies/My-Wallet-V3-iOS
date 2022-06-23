@@ -16,13 +16,13 @@ extension Tag {
         }
 
         public subscript(reference: TaggedEvent) -> Value? {
-            get { dictionary[reference.key] }
-            set { dictionary[reference.key] = newValue }
+            get { dictionary[reference.key()] }
+            set { dictionary[reference.key()] = newValue }
         }
 
         public subscript<K: TaggedEvent>(reference: K) -> Value? {
-            get { dictionary[reference.key] }
-            set { dictionary[reference.key] = newValue }
+            get { dictionary[reference.key()] }
+            set { dictionary[reference.key()] = newValue }
         }
     }
 }
@@ -40,7 +40,7 @@ extension Tag.Context: ExpressibleByDictionaryLiteral {
 
     public init(dictionaryLiteral elements: (TaggedEvent, Wrapped.Value)...) {
         dictionary = Dictionary(elements.map { tag, value in
-            (tag.key, value)
+            (tag.key(), value)
         }, uniquingKeysWith: { $1 })
     }
 }
@@ -74,11 +74,11 @@ extension Tag.Context {
 extension Tag.Context {
 
     public func decode<K: TaggedEvent, T: Decodable>(
-        _ key: K,
+        _ event: K,
         as type: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
-        try FetchResult.value(self[key] as Any, key.key.metadata())
+        try FetchResult.value(self[event] as Any, event.key().metadata())
             .decode(T.self, using: decoder)
             .get()
     }
@@ -108,27 +108,31 @@ extension Tag.Context {
 }
 
 public protocol TaggedEvent: CustomStringConvertible {
-    func key(_ context: Tag.Context) -> Tag.Reference
+    func key(to context: Tag.Context) -> Tag.Reference
 }
 
 extension TaggedEvent {
-    var key: Tag.Reference { key([:]) }
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
+        key(to: context)
+    }
 }
 
 extension L: TaggedEvent, CustomStringConvertible {
     public var description: String { self(\.id) }
-    public func key(_ context: Tag.Context) -> Tag.Reference { Tag.Reference(unchecked: self[], context: context) }
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
+        self[].key(to: context)
+    }
 }
 
 extension Tag: TaggedEvent {
     public typealias Event = TaggedEvent
-    public var key: Tag.Reference { key([:]) }
-    public func key(_ context: Tag.Context) -> Tag.Reference { Tag.Reference(unchecked: self, context: context) }
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
+        Tag.Reference(unchecked: self, context: context)
+    }
 }
 
 extension Tag.Reference: TaggedEvent {
-    public var key: Tag.Reference { self }
-    public func key(_ context: Tag.Context) -> Tag.Reference {
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         if context.isEmpty { return self }
         return ref(to: context)
     }
@@ -145,7 +149,7 @@ extension TaggedEvent {
         case let reference as Tag.Reference:
             return reference.ref(to: context)
         default:
-            return event.key(context)
+            return event.key(to: context)
         }
     }
 }

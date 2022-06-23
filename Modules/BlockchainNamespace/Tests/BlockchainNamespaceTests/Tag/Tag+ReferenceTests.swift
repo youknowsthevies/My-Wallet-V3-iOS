@@ -37,7 +37,7 @@ final class TagReferenceTests: XCTestCase {
 
         XCTAssertEqual(ref.indices, [blockchain.user.id[]: id])
 
-        XCTAssertAnyEqual(
+        XCTAssertEqual(
             ref.context,
             Tag.Context(
                 [

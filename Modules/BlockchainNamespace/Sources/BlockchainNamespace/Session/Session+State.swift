@@ -35,7 +35,7 @@ extension Session.State {
 
         private let shared = "ø"
         private var user: String? {
-            store[blockchain.user.id.key] as? String
+            store[blockchain.user.id.key()] as? String
         }
 
         init(preferences: Preferences) {
@@ -68,11 +68,11 @@ extension Session.State {
     }
 
     public func contains(_ event: Tag.Event) -> Bool {
-        data.store.keys.contains(event.key)
+        data.store.keys.contains(event.key())
     }
 
     public func clear(_ event: Tag.Event) {
-        let key = event.key
+        let key = event.key()
         if key.tag.is(blockchain.user.id) {
             transaction { state in
                 let user = key
@@ -86,17 +86,17 @@ extension Session.State {
         data.clear(key)
     }
 
-    public func set(_ event: Tag.Event, to value: Any) {
-        data.set(event.key, to: value)
+    public func set(_ event: Tag.Event, to value: Any?) {
+        data.set(event.key(), to: value as Any)
     }
 
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
-        let key = event.key
+        let key = event.key()
         data.set(key, to: Data.Computed(key: key, yield: value))
     }
 
     public func get(_ event: Tag.Event) throws -> Any {
-        try data.get(event.key)
+        try data.get(event.key())
     }
 
     public func get<T: Decodable>(
@@ -108,7 +108,7 @@ extension Session.State {
     }
 
     public func result(for event: Tag.Event) -> FetchResult {
-        let key = event.key
+        let key = event.key()
         do {
             return try .value(get(key), key.metadata(.state))
         } catch let error as FetchResult.Error {
@@ -119,7 +119,7 @@ extension Session.State {
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let key = event.key
+        let key = event.key()
         return Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
