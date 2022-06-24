@@ -48,7 +48,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>CHECKOUT_ENV</key>
 	<string>$(CHECKOUT_ENV)</string>
 	<key>COMMIT_HASH</key>
