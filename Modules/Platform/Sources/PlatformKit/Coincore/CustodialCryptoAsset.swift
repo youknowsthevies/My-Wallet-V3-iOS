@@ -140,9 +140,15 @@ final class CustodialCryptoAsset: CryptoAsset {
                         accounts: []
                     )
                 }
+                let account = CryptoDelegatedCustodyAccount(
+                    asset: asset,
+                    balanceRepository: resolve(),
+                    featureFlagsService: resolve(),
+                    priceService: resolve()
+                )
                 return CryptoAccountNonCustodialGroup(
                     asset: asset,
-                    accounts: []
+                    accounts: [account]
                 )
             }
             .eraseToAnyPublisher()

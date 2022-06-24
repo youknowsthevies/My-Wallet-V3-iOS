@@ -29,7 +29,7 @@ public struct PrivateKey {
         _hdWalletKey.extendedPublic()
     }
 
-    var raw: Data {
+    public var raw: Data {
         _hdWalletKey.raw
     }
 
@@ -39,6 +39,14 @@ public struct PrivateKey {
 
     var index: UInt32 {
         _hdWalletKey.index
+    }
+
+    public var compressedPublicKey: Data {
+        _hdWalletKey.publicKey.compressedPublicKey
+    }
+
+    var uncompressedPublicKey: Data {
+        _hdWalletKey.publicKey.uncompressedPublicKey
     }
 
     private let _hdWalletKey: MetadataHDWalletKit.PrivateKey

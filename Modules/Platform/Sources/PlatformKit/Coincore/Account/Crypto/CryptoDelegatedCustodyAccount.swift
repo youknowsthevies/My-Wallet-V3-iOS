@@ -1,15 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DelegatedSelfCustodyDataKit
 import Foundation
 import MoneyKit
 import RxSwift
 import ToolKit
 
 final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
-    var asset: CryptoCurrency
+    let asset: CryptoCurrency
 
-    var isDefault: Bool = true
+    let isDefault: Bool = true
 
     lazy var identifier: AnyHashable = "CryptoDelegatedCustodyAccount.\(asset.code)"
 
@@ -26,37 +27,71 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     }
 
     var balance: AnyPublisher<MoneyValue, Error> {
-        .empty()
+        balanceRepository
+            .balances
+            .map { [asset] in
+                $0.balance(index: 0, currency: asset) ?? MoneyValue.zero(currency: asset)
+            }
+            .eraseToAnyPublisher()
     }
 
     var pendingBalance: AnyPublisher<MoneyValue, Error> {
-        .empty()
+        .just(.zero(currency: asset))
     }
 
     var actionableBalance: AnyPublisher<MoneyValue, Error> {
-        .empty()
+        .just(.zero(currency: asset))
     }
 
-    var label: String
+    var label: String {
+        asset.defaultWalletName
+    }
 
-    var accountType: AccountType = .nonCustodial
+    let accountType: AccountType = .nonCustodial
 
+    private let balanceRepository: DelegatedCustodyBalanceRepositoryAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let priceService: PriceServiceAPI
 
     init(
         asset: CryptoCurrency,
+        balanceRepository: DelegatedCustodyBalanceRepositoryAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         priceService: PriceServiceAPI
     ) {
         self.asset = asset
-        label = asset.defaultWalletName
+        self.balanceRepository = balanceRepository
         self.featureFlagsService = featureFlagsService
         self.priceService = priceService
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
-        .empty()
+        switch action {
+        case .buy:
+            return .just(false)
+        case .deposit:
+            return .just(false)
+        case .interestTransfer:
+            return .just(false)
+        case .interestWithdraw:
+            return .just(false)
+        case .receive:
+            return .just(true)
+        case .sell:
+            return .just(false)
+        case .send:
+            return .just(false)
+        case .sign:
+            return .just(false)
+        case .swap:
+            return .just(false)
+        case .viewActivity:
+            return .just(true)
+        case .withdraw:
+            return .just(false)
+        case .linkToDebitCard:
+            return .just(false)
+        }
     }
 
     func balancePair(

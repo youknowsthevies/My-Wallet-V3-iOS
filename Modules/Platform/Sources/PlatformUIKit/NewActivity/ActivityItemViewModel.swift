@@ -59,7 +59,9 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             switch (event.type, event.state) {
             case (.withdraw, .complete):
                 text = LocalizationStrings.withdraw + " \(event.cryptoCurrency.code)"
-            case (.withdraw, .pending):
+            case (.withdraw, .pending),
+                 (.withdraw, .processing),
+                 (.withdraw, .manualReview):
                 text = LocalizationStrings.withdrawing + " \(event.cryptoCurrency.code)"
             case (.interestEarned, _):
                 text = event.cryptoCurrency.code + " \(LocalizationStrings.rewardsEarned)"

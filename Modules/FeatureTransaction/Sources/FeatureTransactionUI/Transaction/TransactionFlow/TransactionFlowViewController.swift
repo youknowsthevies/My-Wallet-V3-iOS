@@ -21,6 +21,8 @@ final class TransactionFlowViewController: UINavigationController,
     TransactionFlowViewControllable
 {
 
+    let activityIndicator = UIActivityIndicatorView(style: .medium)
+
     weak var listener: TransactionFlowPresentableListener?
 
     init() {
@@ -38,11 +40,17 @@ final class TransactionFlowViewController: UINavigationController,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        activityIndicator.fillSuperview()
+
         // so that we'll be able to listen for system dismissal methods
         presentationController?.delegate = self
     }
 
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
+        activityIndicator.isHidden = viewController != nil
         guard let viewController = viewController else {
             return
         }

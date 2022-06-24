@@ -1,7 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Foundation
+
+public struct RequestBuilderQueryParameters {
+
+    public var publisher: AnyPublisher<[URLQueryItem]?, Never>
+
+    public init<P: Publisher>(_ publisher: P) where P.Output == [URLQueryItem]?, P.Failure == Never {
+        self.publisher = publisher.eraseToAnyPublisher()
+    }
+}
 
 public class RequestBuilder {
 
@@ -21,14 +31,23 @@ public class RequestBuilder {
     private let decoder: NetworkResponseDecoderAPI
     private let headers: HTTPHeaders
 
+    private var queryParameters: [URLQueryItem]?
+    private var subscription: AnyCancellable?
+
     public init(
         config: Network.Config = resolve(),
         decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
-        headers: HTTPHeaders = [:]
+        headers: HTTPHeaders = [:],
+        queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
     ) {
         networkConfig = config
         self.decoder = decoder
         self.headers = headers
+        #if DEBUG
+        subscription = queryParameters.publisher.sink { [weak self] parameters in
+            self?.queryParameters = parameters
+        }
+        #endif
     }
 
     // MARK: - GET
@@ -241,6 +260,9 @@ public class RequestBuilder {
         components.path += path
         if let parameters = parameters {
             components.queryItems = parameters
+        }
+        if let parameters = queryParameters {
+            components.queryItems = components.queryItems.map { $0 + parameters } ?? parameters
         }
         return components.url
     }

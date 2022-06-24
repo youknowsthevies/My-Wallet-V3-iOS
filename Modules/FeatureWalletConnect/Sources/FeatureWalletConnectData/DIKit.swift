@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureWalletConnectDomain
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -11,6 +12,10 @@ extension DependencyContainer {
 
         single { WalletConnectService() as WalletConnectServiceAPI }
 
-        single { SessionRepositoryMetadata() as SessionRepositoryAPI }
+        single { () -> SessionRepositoryAPI in
+            SessionRepositoryMetadata(
+                nativeWalletFlag: { nativeWalletFlagEnabled() }
+            )
+        }
     }
 }

@@ -2,8 +2,10 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import DIKit
+import ErrorsUI
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -44,6 +46,7 @@ public protocol UserActionServiceAPI {
 
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
+    private let app: AppProtocol
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
@@ -70,6 +73,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private var cancellables: Set<AnyCancellable> = []
 
     init(
+        app: AppProtocol = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         pendingOrdersService: PendingOrderDetailsServiceAPI = resolve(),
@@ -90,6 +94,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         receiveCoordinator: ReceiveCoordinator = ReceiveCoordinator(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
     ) {
+        self.app = app
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
         self.eligibilityService = eligibilityService
@@ -225,9 +230,9 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                     .eraseToAnyPublisher()
                 }
             }
-            .catch { [weak self] _ -> AnyPublisher<TransactionFlowResult, Never> in
+            .catch { [weak self] error -> AnyPublisher<TransactionFlowResult, Never> in
                 guard let self = self else { return .empty() }
-                return self.presentTooManyPendingOrdersError(from: presenter)
+                return self.presentError(error: error, action: action, from: presenter)
             }
             .eraseToAnyPublisher()
     }
@@ -453,7 +458,9 @@ extension TransactionsRouter {
         )
     }
 
-    private func presentTooManyPendingOrdersError(
+    private func presentError(
+        error: Error,
+        action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         let subject = PassthroughSubject<TransactionFlowResult, Never>()
@@ -464,15 +471,19 @@ extension TransactionsRouter {
             }
         }
 
+        let state = TransactionErrorState.fatalError(.generic(error))
+
         presenter.present(
-            PrimaryNavigationView {
-                TooManyPendingOrdersErrorView(
-                    okAction: dismiss
-                )
-                .whiteNavigationBarStyle()
-                .trailingNavigationButton(.close, action: dismiss)
-            }
+            ErrorView(
+                ux: state.ux(action: action.asset),
+                fallback: {
+                    Icon.globe.accentColor(.semantic.primary)
+                },
+                dismiss: dismiss
+            )
+            .app(app)
         )
+
         return subject.eraseToAnyPublisher()
     }
 }

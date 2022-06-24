@@ -67,6 +67,7 @@ let package = Package(
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
         .package(path: "../CommonCrypto"),
+        .package(path: "../DelegatedSelfCustody"),
         .package(path: "../Localization"),
         .package(path: "../Errors"),
         .package(path: "../Network"),
@@ -93,6 +94,7 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
+                .product(name: "DelegatedSelfCustodyKit", package: "DelegatedSelfCustody"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
                 .product(name: "FeatureAuthenticationData", package: "FeatureAuthentication"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),

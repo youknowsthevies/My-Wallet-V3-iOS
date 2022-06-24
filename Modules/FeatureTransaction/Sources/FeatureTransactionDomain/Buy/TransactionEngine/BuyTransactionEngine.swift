@@ -114,6 +114,7 @@ final class BuyTransactionEngine: TransactionEngine {
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+            .observe(on: MainScheduler.asyncInstance)
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -309,6 +310,7 @@ extension BuyTransactionEngine {
             )
         }
         .asSingle()
+        .observe(on: MainScheduler.asyncInstance)
     }
 
     private func fetchQuote(for amount: MoneyValue) -> Single<Quote> {
