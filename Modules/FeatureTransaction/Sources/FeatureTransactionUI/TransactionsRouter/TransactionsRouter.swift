@@ -474,13 +474,15 @@ extension TransactionsRouter {
         let state = TransactionErrorState.fatalError(.generic(error))
 
         presenter.present(
-            ErrorView(
-                ux: state.ux(action: action.asset),
-                fallback: {
-                    Icon.globe.accentColor(.semantic.primary)
-                },
-                dismiss: dismiss
-            )
+            NavigationView {
+                ErrorView(
+                    ux: state.ux(action: action.asset),
+                    fallback: {
+                        Icon.globe.accentColor(.semantic.primary)
+                    },
+                    dismiss: dismiss
+                )
+            }
             .app(app)
         )
 
