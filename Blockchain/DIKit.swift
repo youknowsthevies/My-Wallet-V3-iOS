@@ -854,8 +854,8 @@ extension DependencyContainer {
         }
 
         factory { () -> WalletDeactivationRepositoryAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.wallet)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.wallet)
             let client = WalletDeactivationClient(networkAdapter: adapter, requestBuilder: builder)
             return WalletDeactivationRepository(client: client)
         }

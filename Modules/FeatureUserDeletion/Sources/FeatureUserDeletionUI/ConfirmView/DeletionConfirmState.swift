@@ -29,7 +29,7 @@ public struct DeletionConfirmState: Equatable, NavigationState {
         let placeholder = LocalizedString.textField.placeholder
         let userIsTyping = firstResponder == .confirmation
         guard userIsTyping else {
-            shouldShowInvalidInputUI = isConfirmationInputValid
+            shouldShowInvalidInputUI = !isConfirmationInputValid
             return
         }
         let textSoFar = placeholder.prefix(textFieldText.count)

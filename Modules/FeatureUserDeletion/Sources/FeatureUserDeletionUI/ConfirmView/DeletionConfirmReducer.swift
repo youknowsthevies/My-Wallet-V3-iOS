@@ -22,9 +22,8 @@ extension DeletionConfirmModule {
                 state.route = routeItent
                 return .none
             case .deleteUserAccount:
-                state.validateConfirmationInputField()
                 guard state.isConfirmationInputValid else {
-                    return .none
+                    return Effect(value: .validateConfirmationInput)
                 }
                 state.isLoading = true
                 return environment
@@ -39,17 +38,19 @@ extension DeletionConfirmModule {
                         return DeletionConfirmAction.deactivateWallet
                     }
             case .deactivateWallet:
-                return environment
-                    .walletDeactivationRepository
-                    .deactivateWallet(guid: "", sharedKey: "", email: "", sessionToken: "")
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .map { result -> DeletionConfirmAction in
-                        if case .failure = result {
-                            return DeletionConfirmAction.showResultScreen(success: false)
-                        }
-                        return DeletionConfirmAction.showResultScreen(success: true)
-                    }
+                let config = environment.walletDeactivationConfig
+                return .merge(
+                    environment
+                        .walletDeactivationRepository
+                        .deactivateWallet(
+                            guid: config.guid,
+                            sharedKey: config.sharedKey,
+                            email: config.email,
+                            sessionToken: config.sessionToken
+                        )
+                        .fireAndForget(),
+                    Effect(value: DeletionConfirmAction.showResultScreen(success: false))
+                )
             case .binding(\.$textFieldText):
                 return Effect(value: .validateConfirmationInput)
             case .validateConfirmationInput:
