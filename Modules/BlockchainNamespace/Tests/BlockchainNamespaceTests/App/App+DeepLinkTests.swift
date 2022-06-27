@@ -85,6 +85,7 @@ final class AppDeepLinkTests: XCTestCase {
                 ]
             )
         )
+        app.state.set(blockchain.app.deep_link.dsl.is.enabled, to: true)
     }
 
     func test_handle_deep_link() throws {

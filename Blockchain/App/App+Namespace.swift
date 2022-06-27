@@ -42,6 +42,11 @@ extension AppProtocol {
         attributionService: AttributionServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
+
+        state.transaction { state in
+            state.set(blockchain.app.deep_link.dsl.is.enabled, to: BuildFlag.isInternal)
+        }
+
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
         observers.insert(ReferralAppObserver(
@@ -57,9 +62,9 @@ extension AppProtocol {
         observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         Task {
-            let result = try await Installations.installations().installationID()
+            let result = try await Installations.installations().authTokenForcingRefresh(true)
             state.transaction { state in
-                state.set(blockchain.user.token.firebase.installation, to: result)
+                state.set(blockchain.user.token.firebase.installation, to: result.authToken)
             }
         }
     }

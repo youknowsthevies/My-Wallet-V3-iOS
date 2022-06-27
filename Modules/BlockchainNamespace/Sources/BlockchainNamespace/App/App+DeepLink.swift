@@ -56,8 +56,8 @@ extension App {
         }
 
         func process(url: URL, with rules: [Rule]) {
-            #if DEBUG
-            if DSL.isDSL(url) {
+            let isDSLEnabled = (try? app.state.get(blockchain.app.deep_link.dsl.is.enabled)) ?? false
+            if isDSLEnabled, DSL.isDSL(url) {
                 do {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
@@ -76,7 +76,6 @@ extension App {
                 }
                 return
             }
-            #endif
             guard let match = rules.match(for: url) else {
                 return
             }

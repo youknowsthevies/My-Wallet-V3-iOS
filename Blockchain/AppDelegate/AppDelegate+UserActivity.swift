@@ -16,6 +16,7 @@ extension AppDelegate {
                     if let url = dynamiclink?.url {
                         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
                         components?.query = webpageURL.query
+                        components?.fragment = webpageURL.fragment
                         app.post(
                             event: blockchain.app.process.deep_link,
                             context: [

@@ -131,6 +131,10 @@ blockchain:
 				crypto:
 					code:
 					+ blockchain.db.type.string
+			dsl:
+				is:
+					enabled:
+					+ blockchain.session.state.shared.value
 			kyc:
 				tier:
 				+ blockchain.db.type.integer
