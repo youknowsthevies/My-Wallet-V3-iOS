@@ -41,6 +41,8 @@ import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureUserDeletionData
+import FeatureUserDeletionDomain
 import FeatureWalletConnectData
 import FirebaseDynamicLinks
 import FirebaseMessaging
@@ -840,6 +842,22 @@ extension DependencyContainer {
                 attributionRepository: attributionRepository,
                 featureFlagService: featureFlagService
             ) as AttributionServiceAPI
+        }
+
+        // MARK: User Deletion
+
+        factory { () -> UserDeletionRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = UserDeletionClient(networkAdapter: adapter, requestBuilder: builder)
+            return UserDeletionRepository(client: client)
+        }
+
+        factory { () -> WalletDeactivationRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = WalletDeactivationClient(networkAdapter: adapter, requestBuilder: builder)
+            return WalletDeactivationRepository(client: client)
         }
 
         // MARK: Pulse Network Debugging
