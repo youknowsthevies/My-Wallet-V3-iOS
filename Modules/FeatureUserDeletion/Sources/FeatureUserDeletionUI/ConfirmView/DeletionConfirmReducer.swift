@@ -49,7 +49,7 @@ extension DeletionConfirmModule {
                             sessionToken: config.sessionToken
                         )
                         .fireAndForget(),
-                    Effect(value: DeletionConfirmAction.showResultScreen(success: false))
+                    Effect(value: DeletionConfirmAction.showResultScreen(success: true))
                 )
             case .binding(\.$textFieldText):
                 return Effect(value: .validateConfirmationInput)
