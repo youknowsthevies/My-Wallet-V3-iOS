@@ -53,6 +53,7 @@ let package = Package(
         .package(path: "../FeatureCardPayment"),
         .package(path: "../FeatureNotificationPreferences"),
         .package(path: "../FeatureReferral")
+        .package(path: "../FeatureUserDeletion")
     ],
     targets: [
         .target(
@@ -89,6 +90,8 @@ let package = Package(
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
                 .product(name: "FeatureNotificationPreferencesUI", package: "FeatureNotificationPreferences"),
                 .product(name: "FeatureReferralUI", package: "FeatureReferral")
+                .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
+                .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion")
             ]
         ),
         .target(

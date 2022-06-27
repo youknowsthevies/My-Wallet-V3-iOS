@@ -111,13 +111,13 @@ let package = Package(
                 "FeatureUserDeletionDomain"
             ]
         ),
-        .testTarget(
-            name: "FeatureUserDeletionUITests",
-            dependencies: [
-                "FeatureUserDeletionData",
-                "FeatureUserDeletionDomain",
-                "FeatureUserDeletionUI"
-            ]
-        )
+//        .testTarget(
+//            name: "FeatureUserDeletionUITests",
+//            dependencies: [
+//                "FeatureUserDeletionData",
+//                "FeatureUserDeletionDomain",
+//                "FeatureUserDeletionUI"
+//            ]
+//        )
     ]
 )
