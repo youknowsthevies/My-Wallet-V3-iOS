@@ -36,6 +36,8 @@ extension SettingsSectionType.CellType.CommonCellType {
             return LocalizationConstants.Settings.Badge.cardIssuing
         case .notifications:
             return LocalizationConstants.Settings.Badge.notifications
+        case .userDeletion:
+            return LocalizationConstants.Settings.deleteAccount
         }
     }
 

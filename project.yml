@@ -290,6 +290,8 @@ packages:
     path: Modules/FeatureAttribution
   FeatureReferral:
     path: Modules/FeatureReferral
+  FeatureUserDeletion:
+    path: Modules/FeatureUserDeletion
 
 targets:
   Blockchain:
@@ -350,6 +352,8 @@ targets:
         embed: false
       - framework: Carthage/Build/Sift.xcframework
 
+      - package: FeatureAttribution
+        product: FeatureAttribution
       - package: FeatureAccountPicker
       - package: FeatureActivity
       - package: FeatureApp
@@ -375,6 +379,12 @@ targets:
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
+      - package: FeatureUserDeletion
+        product: FeatureUserDeletionData
+      - package: FeatureUserDeletion
+        product: FeatureUserDeletionDomain
+      - package: FeatureUserDeletion
+        product: FeatureUserDeletionUI
       - package: FeatureWithdrawalLocks
       - package: FeatureWalletConnect
 

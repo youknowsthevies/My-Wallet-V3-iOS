@@ -10,6 +10,8 @@ import FeatureNotificationPreferencesUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
+import FeatureUserDeletionData
+import FeatureUserDeletionUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -89,6 +91,10 @@ final class SettingsRouter: SettingsRouterAPI {
     private let exchangeUrlProvider: () -> String
     private let urlOpener: URLOpener
 
+    private let nabuUserService: NabuUserServiceAPI
+    private let nabuTokenRepository: NabuTokenRepositoryAPI
+    private let credentialsRepository: CredentialsRepositoryAPI
+
     private var topViewController: UIViewController {
         let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
         guard let viewController = topViewController else {
@@ -117,6 +123,9 @@ final class SettingsRouter: SettingsRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve(),
         cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
+        nabuUserService: NabuUserServiceAPI = resolve(),
+        nabuTokenRepository: NabuTokenRepositoryAPI = resolve(),
+        credentialsRepository: CredentialsRepositoryAPI = resolve(),
         urlOpener: URLOpener = resolve(),
         exchangeUrlProvider: @escaping () -> String
     ) {
@@ -139,6 +148,10 @@ final class SettingsRouter: SettingsRouterAPI {
         self.externalActionsProvider = externalActionsProvider
         self.cardIssuingAdapter = cardIssuingAdapter
         self.exchangeUrlProvider = exchangeUrlProvider
+        self.nabuUserService = nabuUserService
+        self.nabuTokenRepository = nabuTokenRepository
+        self.credentialsRepository = credentialsRepository
+
         self.urlOpener = urlOpener
 
         previousRelay
@@ -322,6 +335,8 @@ final class SettingsRouter: SettingsRouterAPI {
             showNotificationsSettingsScreen()
         case .showReferralScreen(let referral):
             showReferralScreen(with: referral)
+        case .showUserDeletionScreen:
+            showUserDeletionScreen()
         case .none:
             break
         }
@@ -401,6 +416,46 @@ final class SettingsRouter: SettingsRouterAPI {
             environment: .init(mainQueue: .main)
         ))
         presenter.present(referralView)
+    private func showUserDeletionScreen() {
+        guard let sessionToken = nabuTokenRepository.sessionToken else { return }
+
+        let presenter = topViewController
+        let logoutAndForgetWallet = { [weak self] in
+            self?.externalActionsProvider.logoutAndForgetWallet()
+        }
+
+        Publishers.Zip(
+            nabuUserService.fetchUser().eraseError(),
+            credentialsRepository.credentials.eraseError()
+        )
+        .eraseToAnyPublisher()
+        .receive(on: DispatchQueue.main)
+        .sink { user, credentials in
+            let (guid, sharedKey) = credentials
+            let config = WalletDeactivationConfig(
+                guid: guid,
+                sharedKey: sharedKey,
+                email: user.email.address,
+                sessionToken: sessionToken
+            )
+            let view = UserDeletionView(store: .init(
+                initialState: UserDeletionState(),
+                reducer: UserDeletionModule.reducer,
+                environment: .init(
+                    mainQueue: .main,
+                    walletDeactivationConfig: config,
+                    userDeletionRepository: resolve(),
+                    walletDeactivationRepository: resolve(),
+                    logoutAndForgetWallet: {
+                        presenter.dismiss(animated: true) {
+                            logoutAndForgetWallet()
+                        }
+                    }
+                )
+            ))
+
+            presenter.present(view)
+        }.store(in: &cancellables)
     }
 
     private func showBankLinkingFlow(currency: FiatCurrency) {

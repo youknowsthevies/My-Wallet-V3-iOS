@@ -79,6 +79,8 @@ extension SettingsSectionType.CellType {
                 return .showCardIssuing
             case .notifications:
                 return .showNotificationsSettings
+            case .userDeletion:
+                return .showUserDeletionScreen
             }
         case .switch:
             return .none

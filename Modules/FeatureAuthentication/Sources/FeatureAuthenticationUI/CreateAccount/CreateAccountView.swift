@@ -8,6 +8,8 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
+// MARK:
+
 private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.CreateAccount
 private typealias AccessibilityIdentifier = AccessibilityIdentifiers.CreateAccountScreen
 

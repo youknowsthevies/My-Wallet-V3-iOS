@@ -23,7 +23,8 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
                             .init(cellType: .badge(.recoveryPhrase, recoveryCellPresenter)),
                             .init(cellType: .common(.changePIN)),
                             .init(cellType: .switch(.bioAuthentication, bioAuthenticationCellPresenter)),
-                            .init(cellType: .common(.addresses))
+                            .init(cellType: .common(.addresses)),
+                            .init(cellType: .common(.userDeletion))
                         ]
                     )
                 )
