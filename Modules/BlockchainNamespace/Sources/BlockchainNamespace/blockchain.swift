@@ -568,6 +568,7 @@ public extension I_blockchain_app_deep__link {
 	var `activity`: L_blockchain_app_deep__link_activity { .init("\(__).activity") }
 	var `asset`: L_blockchain_app_deep__link_asset { .init("\(__).asset") }
 	var `buy`: L_blockchain_app_deep__link_buy { .init("\(__).buy") }
+	var `dsl`: L_blockchain_app_deep__link_dsl { .init("\(__).dsl") }
 	var `kyc`: L_blockchain_app_deep__link_kyc { .init("\(__).kyc") }
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
 	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
@@ -625,6 +626,24 @@ public final class L_blockchain_app_deep__link_buy_crypto_code: L, I_blockchain_
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.buy.crypto.code", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_buy_crypto_code: I_blockchain_db_type_string {}
+public final class L_blockchain_app_deep__link_dsl: L, I_blockchain_app_deep__link_dsl {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.dsl", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_dsl: I {}
+public extension I_blockchain_app_deep__link_dsl {
+	var `is`: L_blockchain_app_deep__link_dsl_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_deep__link_dsl_is: L, I_blockchain_app_deep__link_dsl_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.dsl.is", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_dsl_is: I {}
+public extension I_blockchain_app_deep__link_dsl_is {
+	var `enabled`: L_blockchain_app_deep__link_dsl_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_deep__link_dsl_is_enabled: L, I_blockchain_app_deep__link_dsl_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.dsl.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_dsl_is_enabled: I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_deep__link_kyc: L, I_blockchain_app_deep__link_kyc {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc", comment: "") }
 }

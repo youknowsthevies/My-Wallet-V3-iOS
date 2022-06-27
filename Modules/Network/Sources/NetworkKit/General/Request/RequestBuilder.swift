@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import Foundation
+import ToolKit
 
 public struct RequestBuilderQueryParameters {
 
@@ -43,11 +44,11 @@ public class RequestBuilder {
         networkConfig = config
         self.decoder = decoder
         self.headers = headers
-        #if DEBUG
-        subscription = queryParameters.publisher.sink { [weak self] parameters in
-            self?.queryParameters = parameters
+        if BuildFlag.isInternal {
+            subscription = queryParameters.publisher.sink { [weak self] parameters in
+                self?.queryParameters = parameters
+            }
         }
-        #endif
     }
 
     // MARK: - GET
