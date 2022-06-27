@@ -23,6 +23,7 @@ public struct DeletionResultView: View {
             }
             .whiteNavigationBarStyle()
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear(perform: {
                 viewStore.send(.onAppear)

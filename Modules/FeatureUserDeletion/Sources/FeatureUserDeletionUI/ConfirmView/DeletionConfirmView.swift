@@ -63,10 +63,10 @@ public struct DeletionConfirmView: View {
                 subText: shouldShowError ? LocalizedString.textField.errorSubText : nil,
                 subTextStyle: shouldShowError ? .error : .default,
                 placeholder: LocalizedString.textField.placeholder,
-                state: .default,
+                state: shouldShowError ? .error : .default,
                 configuration: {
                     $0.autocorrectionType = .no
-                    $0.autocapitalizationType = .none
+                    $0.autocapitalizationType = .allCharacters
                     $0.keyboardType = .default
                 },
                 onReturnTapped: {

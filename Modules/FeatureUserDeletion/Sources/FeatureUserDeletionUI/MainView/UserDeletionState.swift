@@ -31,6 +31,7 @@ extension UserDeletionState {
 
 public enum UserDeletionRoute: NavigationRoute, Hashable {
     case showConfirmationView(
+        walletDeactivationConfig: WalletDeactivationConfig,
         userDeletionRepository: UserDeletionRepositoryAPI,
         walletDeactivationRepository: WalletDeactivationRepositoryAPI,
         logoutAndForgetWallet: () -> Void
@@ -39,6 +40,7 @@ public enum UserDeletionRoute: NavigationRoute, Hashable {
     public func destination(in store: Store<UserDeletionState, UserDeletionAction>) -> some View {
         switch self {
         case .showConfirmationView(
+            let walletDeactivationConfig,
             let userDeletionRepository,
             let walletDeactivationRepository,
             let logoutAndForgetWallet
@@ -48,6 +50,7 @@ public enum UserDeletionRoute: NavigationRoute, Hashable {
                 reducer: DeletionConfirmModule.reducer,
                 environment: .init(
                     mainQueue: .main,
+                    walletDeactivationConfig: walletDeactivationConfig,
                     userDeletionRepository: userDeletionRepository,
                     walletDeactivationRepository: walletDeactivationRepository,
                     logoutAndForgetWallet: logoutAndForgetWallet

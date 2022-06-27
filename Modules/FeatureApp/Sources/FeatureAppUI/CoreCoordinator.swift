@@ -740,6 +740,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.onboardingSettings.reset()
 
         // forget wallet
+        environment.credentialsStore.erase()
         environment.walletManager.forgetWallet()
         environment.forgetWalletService.forget()
 
