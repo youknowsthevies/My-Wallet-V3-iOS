@@ -238,11 +238,11 @@ enum TransactionFlowDescriptor {
         case .swap,
              .withdraw,
              .interestWithdraw,
+             .deposit,
              .buy,
              .sell:
             return true
         case .sign,
-             .deposit,
              .receive,
              .linkToDebitCard,
              .send,
@@ -284,8 +284,19 @@ enum TransactionFlowDescriptor {
                 currencyCode,
                 accountLabel
             ).attributed
+        case .deposit:
+            if isSafeConnect == true {
+                return addSafeConnectTermsAndPolicyLink(
+                    String(
+                        format: LocalizedString.Deposit.safeConnectConfirmationDisclaimer,
+                        LocalizedString.termsOfService,
+                        LocalizedString.privacyPolicy
+                    )
+                )
+            } else {
+                return "".attributed
+            }
         case .sign,
-             .deposit,
              .receive,
              .send,
              .viewActivity,
