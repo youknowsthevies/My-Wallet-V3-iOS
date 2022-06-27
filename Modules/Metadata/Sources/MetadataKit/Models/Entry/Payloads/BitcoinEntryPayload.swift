@@ -6,5 +6,5 @@ public struct BitcoinEntryPayload: MetadataNodeEntry, Hashable {
 
     public static let type: EntryType = .bitcoin
 
-    // TODO:
+    public init() {}
 }

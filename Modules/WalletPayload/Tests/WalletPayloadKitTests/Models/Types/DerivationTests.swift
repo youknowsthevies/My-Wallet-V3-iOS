@@ -6,6 +6,7 @@
 import Combine
 import TestKit
 import ToolKit
+import WalletCore
 import XCTest
 
 final class DerivationTests: XCTestCase {

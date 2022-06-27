@@ -179,6 +179,13 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCoreHDWalletProvider in
+            let walletHolder: WalletHolderAPI = DIKit.resolve()
+            return provideWalletCoreHDWallet(
+                walletHolder: walletHolder
+            )
+        }
+
         factory { () -> ChangePasswordServiceAPI in
             ChangePasswordService(
                 walletSync: DIKit.resolve(),
