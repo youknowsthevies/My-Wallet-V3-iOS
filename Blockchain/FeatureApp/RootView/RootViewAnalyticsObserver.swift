@@ -70,5 +70,5 @@ extension WalletAnalyticsEvent {
 
 enum ReferralAnalyticsEvent: AnalyticsEvent {
     public var type: AnalyticsEventType { .nabu }
-    case walletReferralProgramClicked(source: String = "portfolio")
+    case walletReferralProgramClicked(origin: String = "portfolio")
 }

@@ -394,11 +394,11 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showReferralScreen(with referral: Referral) {
-        let source = AnalyticsEvents.New.Settings.ReferralSource.profile.rawValue
+        let origin = AnalyticsEvents.New.Settings.ReferralOrigin.profile.rawValue
         analyticsRecording.record(event: AnalyticsEvents
             .New
             .Settings
-            .walletReferralProgramClicked(source: source))
+            .walletReferralProgramClicked(origin: origin))
         let presenter = topViewController
         let referralView = ReferFriendView(store: .init(
             initialState: .init(referralInfo: referral),

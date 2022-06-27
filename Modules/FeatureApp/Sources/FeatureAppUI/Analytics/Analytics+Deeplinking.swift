@@ -7,6 +7,6 @@ extension AnalyticsEvents.New {
     enum Deeplinking: AnalyticsEvent {
         public var type: AnalyticsEventType { .nabu }
 
-        case walletReferralProgramClicked(source: String = "deeplink")
+        case walletReferralProgramClicked(origin: String = "deeplink")
     }
 }
