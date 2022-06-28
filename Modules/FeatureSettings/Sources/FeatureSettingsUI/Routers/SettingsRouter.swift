@@ -414,6 +414,8 @@ final class SettingsRouter: SettingsRouterAPI {
             )
         ))
         presenter.present(referralView)
+    }
+    
     private func showUserDeletionScreen() {
         let logoutAndForgetWallet = { [weak self] in
             self?.externalActionsProvider.logoutAndForgetWallet()
