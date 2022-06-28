@@ -1,6 +1,6 @@
 import Combine
-import Foundation
 import Errors
+import Foundation
 import NetworkKit
 
 public final class UserDeletionClient: UserDeletionClientAPI {

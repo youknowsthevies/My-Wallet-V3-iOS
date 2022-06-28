@@ -1,6 +1,6 @@
 import Combine
-import FeatureUserDeletionDomain
 import Errors
+import FeatureUserDeletionDomain
 
 public struct UserDeletionRepository: UserDeletionRepositoryAPI {
 
