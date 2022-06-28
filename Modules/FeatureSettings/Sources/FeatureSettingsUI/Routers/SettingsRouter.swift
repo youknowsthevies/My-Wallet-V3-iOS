@@ -406,6 +406,8 @@ final class SettingsRouter: SettingsRouterAPI {
             environment: .init(mainQueue: .main)
         ))
         presenter.present(referralView)
+    }
+    
     private func showUserDeletionScreen() {
         let logoutAndForgetWallet = { [weak self] in
             self?.externalActionsProvider.logoutAndForgetWallet()
