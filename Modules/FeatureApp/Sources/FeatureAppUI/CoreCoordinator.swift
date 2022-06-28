@@ -737,7 +737,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.siftService.removeUserId()
         environment.sharedContainer.reset()
         environment.blockchainSettings.reset()
-        environment.onboardingSettings.reset()
 
         // forget wallet
         environment.credentialsStore.erase()
