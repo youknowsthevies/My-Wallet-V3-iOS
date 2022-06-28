@@ -1,8 +1,5 @@
 import Foundation
 
-// swiftlint:disable type_name
-// swiftlint:disable line_length
-
 extension LocalizationConstants {
     public enum UserDeletion {
         public enum MainScreen {

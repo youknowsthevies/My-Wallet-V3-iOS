@@ -81,24 +81,6 @@ let package = Package(
                     package: "UIComponents"
                 )
             ]
-        ),
-//        .testTarget(
-//            name: "FeatureUserDeletionDataTests",
-//            dependencies: [
-//                "FeatureUserDeletionData"
-//            ],
-//        ),
-//        .testTarget(
-//            name: "FeatureUserDeletionDomainTests",
-//            dependencies: [
-//                "FeatureUserDeletionDomain"
-//            ]
-//        ),
-//        .testTarget(
-//            name: "FeatureUserDeletionUITests",
-//            dependencies: [
-//                "FeatureUserDeletionUI"
-//            ]
-//        )
+        )
     ]
 )

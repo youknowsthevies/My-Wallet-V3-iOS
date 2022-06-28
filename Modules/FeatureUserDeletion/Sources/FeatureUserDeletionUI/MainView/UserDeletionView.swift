@@ -5,10 +5,8 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-// TODO: back button in black
-// TODO: x icon in red
-// TODO: Analytics
-// TODO: acessibility identifiers
+// TODO: Analytics (next release)
+// TODO: acessibility identifiers (next release)
 
 private typealias LocalizedString = LocalizationConstants.UserDeletion.MainScreen
 

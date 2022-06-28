@@ -64,7 +64,7 @@ public enum UserDeletionResultRoute: NavigationRoute, Hashable {
 
     public func destination(in store: Store<DeletionConfirmState, DeletionConfirmAction>) -> some View {
         switch self {
-        case let .showResultScreen(success, dismissFlow, logoutAndForgetWallet):
+        case .showResultScreen(let success, let dismissFlow, let logoutAndForgetWallet):
             return DeletionResultView(store: .init(
                 initialState: .init(success: success),
                 reducer: DeletionResultModule.reducer,
