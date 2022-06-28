@@ -55,6 +55,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletService: WalletService!
     var mockWalletPayloadService: MockWalletPayloadService!
     var mockForgetWalletService: ForgetWalletService!
+    var mockWalletStateProvider: WalletStateProvider!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -109,6 +110,10 @@ final class MainAppReducerTests: XCTestCase {
             fetchUsingSecPassword: { _, _ in .empty() },
             recoverFromMetadata: { _ in .empty() }
         )
+        mockWalletStateProvider = WalletStateProvider(
+            isWalletInitializedPublisher: { .empty() },
+            releaseState: {}
+        )
         mockWalletPayloadService = MockWalletPayloadService()
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
@@ -153,7 +158,8 @@ final class MainAppReducerTests: XCTestCase {
                 nativeWalletFlagEnabled: { .just(false) },
                 buildVersionProvider: { "" },
                 performanceTracing: mockPerformanceTracing,
-                appUpgradeState: { .just(nil) }
+                appUpgradeState: { .just(nil) },
+                walletStateProvider: mockWalletStateProvider
             )
         )
     }
@@ -572,7 +578,7 @@ final class MainAppReducerTests: XCTestCase {
         // when
         mockWallet.mockIsInitialized = false
         testStore.send(.appForegrounded)
-
+        mockMainQueue.advance()
         // then
 
         testStore.receive(.loggedIn(.stop))

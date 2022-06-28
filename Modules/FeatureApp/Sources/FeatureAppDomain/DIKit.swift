@@ -9,6 +9,7 @@ import FeatureSettingsDomain
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import PlatformKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -30,6 +31,13 @@ extension DependencyContainer {
                     .eraseError()
                     .eraseToAnyPublisher()
             } as FeatureAuthenticationDomain.NabuUserEmailProvider
+        }
+
+        factory { () -> WalletStateProvider in
+            let holder: WalletHolderAPI = DIKit.resolve()
+            return WalletStateProvider.live(
+                holder: holder
+            )
         }
 
         // MARK: Withdrawal Lock

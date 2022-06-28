@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAppDomain
 import FeatureAppUpgradeDomain
 import FeatureAppUpgradeUI
 import FeatureOpenBankingDomain
@@ -113,7 +114,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                             featureFetcher: env.featureFlagsService
                         )
                         return service.state
-                    }
+                    },
+                    walletStateProvider: env.walletStateProvider
                 )
             }
         ),
@@ -136,15 +138,20 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         if environment.cardService.isEnteringDetails {
             return .none
         }
+
         return .merge(
-            .fireAndForget {
-                if environment.walletManager.walletIsInitialized() {
-                    if environment.blockchainSettings.guid != nil, environment.blockchainSettings.sharedKey != nil {
-                        environment.blockchainSettings.hasEndedFirstSession = true
+            nativeWalletFlagEnabled()
+                .flatMap { isEnabled -> Effect<AppAction, Never> in
+                    guard isEnabled else {
+                        if environment.walletManager.walletIsInitialized() {
+                            environment.walletManager.close()
+                        }
+                        return .none
                     }
-                    environment.walletManager.close()
+                    environment.walletStateProvider.releaseState()
+                    return .none
                 }
-            },
+                .fireAndForget(),
             .fireAndForget {
                 environment.urlSession.reset {
                     Logger.shared.debug("URLSession reset completed.")

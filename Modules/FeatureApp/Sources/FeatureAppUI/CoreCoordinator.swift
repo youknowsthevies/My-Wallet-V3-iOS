@@ -141,6 +141,7 @@ struct CoreAppEnvironment {
     var buildVersionProvider: () -> String
     var performanceTracing: PerformanceTracingServiceAPI
     var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
+    var walletStateProvider: WalletStateProvider
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -220,21 +221,35 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
 
     case .appForegrounded:
-        // check if we need to display the pin for authentication
-        guard environment.walletManager.walletIsInitialized() else {
-            // do nothing if we're on the authentication state,
-            // meaning we either need to register, login or recover
-            guard state.isLoggedIn else {
+        let isLoggedIn = state.isLoggedIn
+        return environment.nativeWalletFlagEnabled()
+            .flatMap { isEnabled -> AnyPublisher<Bool, Never> in
+                guard isEnabled else {
+                    return .just(environment.walletManager.walletIsInitialized())
+                }
+                return environment.walletStateProvider
+                    .isWalletInitializedPublisher()
+            }
+            .receive(on: environment.mainQueue)
+            .flatMap { isWalletInitialized -> Effect<CoreAppAction, Never> in
+                // check if we need to display the pin for authentication
+                guard isWalletInitialized else {
+                    // do nothing if we're on the authentication state,
+                    // meaning we either need to register, login or recover
+                    guard isLoggedIn else {
+                        return .none
+                    }
+                    // We need to send the `stop` action prior we show the pin entry,
+                    // this clears any running operation from the logged-in state.
+                    return .concatenate(
+                        Effect(value: .loggedIn(.stop)),
+                        Effect(value: .requirePin)
+                    )
+                }
                 return .none
             }
-            // We need to send the `stop` action prior we show the pin entry,
-            // this clears any running operation from the logged-in state.
-            return .concatenate(
-                Effect(value: .loggedIn(.stop)),
-                Effect(value: .requirePin)
-            )
-        }
-        return .none
+            .eraseToEffect()
+            .cancellable(id: WalletCancelations.ForegroundInitCheckId())
 
     case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
         // for context this performs side-effect to values in the appSettings

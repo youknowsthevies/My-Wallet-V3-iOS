@@ -46,7 +46,12 @@ extension AppEnvironment {
                 fetcher: DIKit.resolve(),
                 recovery: DIKit.resolve()
             ),
-            forgetWalletService: .live(forgetWallet: DIKit.resolve()),
+            walletStateProvider: .live(
+                holder: DIKit.resolve()
+            ),
+            forgetWalletService: .live(
+                forgetWallet: DIKit.resolve()
+            ),
             walletPayloadService: resolve(),
             walletManager: resolve(),
             walletUpgradeService: resolve(),

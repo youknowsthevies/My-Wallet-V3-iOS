@@ -10,6 +10,8 @@ final class WalletHolderSpy: WalletHolderAPI {
     var holdWalletCalled: (Bool, WalletState?) = (false, nil)
     var provideWalletStateCalled: (Bool, WalletState?) = (false, nil)
 
+    var releaseCalled: Bool = false
+
     var walletStatePublisher: AnyPublisher<WalletState?, Never> {
         walletStatePublisherCalled = true
         return spyOn.walletStatePublisher
@@ -30,5 +32,10 @@ final class WalletHolderSpy: WalletHolderAPI {
     func hold(walletState: WalletState) -> AnyPublisher<WalletState, Never> {
         holdWalletCalled = (true, walletState)
         return spyOn.hold(walletState: walletState)
+    }
+
+    func release() {
+        releaseCalled = false
+        spyOn.release()
     }
 }

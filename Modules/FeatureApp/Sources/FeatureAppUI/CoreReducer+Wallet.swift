@@ -29,6 +29,7 @@ enum WalletCancelations {
     struct RestoreFailedId: Hashable {}
     struct AssetInitializationId: Hashable {}
     struct SecondPasswordId: Hashable {}
+    struct ForegroundInitCheckId: Hashable {}
 }
 
 public enum WalletAction: Equatable {

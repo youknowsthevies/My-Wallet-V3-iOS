@@ -9,11 +9,11 @@ public protocol ForgetWalletAPI {
 final class ForgetWallet: ForgetWalletAPI {
 
     let walletRepo: WalletRepoAPI
-    let walletState: ReleasableWalletAPI
+    let walletState: WalletHolderAPI
 
     init(
         walletRepo: WalletRepoAPI,
-        walletState: ReleasableWalletAPI
+        walletState: WalletHolderAPI
     ) {
         self.walletRepo = walletRepo
         self.walletState = walletState

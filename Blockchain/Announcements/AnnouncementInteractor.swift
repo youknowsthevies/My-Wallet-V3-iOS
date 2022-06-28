@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import ERC20Kit
+import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureCryptoDomainDomain
 import MoneyKit
@@ -11,6 +12,7 @@ import PlatformUIKit
 import RxSwift
 import RxToolKit
 import ToolKit
+import WalletPayloadKit
 
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user
@@ -21,10 +23,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
     var preliminaryData: Single<AnnouncementPreliminaryData> {
-        guard wallet.isInitialized() else {
-            return Single.error(AnnouncementError.uninitializedWallet)
-        }
-
         let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
             .fetch(for: .assetRenameAnnouncement, as: AssetRenameAnnouncementFeature.self)
             .eraseError()
@@ -117,7 +115,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             }
             .asSingle()
 
-        return Single.zip(
+        let data = Single.zip(
             nabuUser,
             tiers,
             countries,
@@ -159,7 +157,16 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 user: user
             )
         }
-        .observe(on: MainScheduler.instance)
+
+        return isWalletInitialized()
+            .asSingle()
+            .flatMap { isInitialized -> Single<AnnouncementPreliminaryData> in
+                guard isInitialized else {
+                    return .error(AnnouncementError.uninitializedWallet)
+                }
+                return data
+            }
+            .observe(on: MainScheduler.instance)
     }
 
     // MARK: - Private properties
@@ -177,6 +184,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let tiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
     private let wallet: WalletProtocol
+    private let walletStateProvider: WalletStateProvider
 
     // MARK: - Setup
 
@@ -193,7 +201,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         userService: NabuUserServiceAPI = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet
+        wallet: WalletProtocol = WalletManager.shared.wallet,
+        walletStateProvider: WalletStateProvider = resolve()
     ) {
         self.beneficiariesService = beneficiariesService
         self.claimEligibilityRepository = claimEligibilityRepository
@@ -208,5 +217,18 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.tiersService = tiersService
         self.userService = userService
         self.wallet = wallet
+        self.walletStateProvider = walletStateProvider
+    }
+
+    private func isWalletInitialized() -> AnyPublisher<Bool, Never> {
+        nativeWalletFlagEnabled()
+            .flatMap { [wallet, walletStateProvider] isEnabled -> AnyPublisher<Bool, Never> in
+                guard isEnabled else {
+                    return .just(wallet.isInitialized())
+                }
+                return walletStateProvider
+                    .isWalletInitializedPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

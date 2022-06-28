@@ -5,6 +5,7 @@ import ToolKit
 import WalletPayloadKit
 
 public struct ForgetWalletService {
+    /// Clears the in-memory wallet state and removes values from `WalletRepo`
     public var forget: () -> Void
 }
 

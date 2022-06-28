@@ -56,6 +56,7 @@ public struct AppEnvironment {
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
 
     var walletService: WalletService
+    var walletStateProvider: WalletStateProvider
     var forgetWalletService: ForgetWalletService
     var walletPayloadService: WalletPayloadServiceAPI
     var secondPasswordPrompter: SecondPasswordPromptable
@@ -106,6 +107,7 @@ public struct AppEnvironment {
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletService: WalletService,
+        walletStateProvider: WalletStateProvider,
         forgetWalletService: ForgetWalletService,
         walletPayloadService: WalletPayloadServiceAPI,
         walletManager: WalletManagerAPI,
@@ -153,6 +155,7 @@ public struct AppEnvironment {
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletService = walletService
+        self.walletStateProvider = walletStateProvider
         self.forgetWalletService = forgetWalletService
         self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
