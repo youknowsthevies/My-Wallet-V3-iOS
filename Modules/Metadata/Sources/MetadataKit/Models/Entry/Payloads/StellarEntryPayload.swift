@@ -37,7 +37,7 @@ public struct StellarEntryPayload: MetadataNodeEntry, Hashable {
 
     public let accounts: [Account]
     public let defaultAccountIndex: Int
-    public let txNotes: [String: String]
+    public let txNotes: [String: String]?
 
     public init(
         accounts: [Account],
