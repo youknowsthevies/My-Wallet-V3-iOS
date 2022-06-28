@@ -407,6 +407,11 @@ extension LocalizationConstants.Transaction.Deposit {
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
 
     public static let depositNow = NSLocalizedString("Deposit Now", comment: "Deposit Now")
+
+    public static let safeConnectConfirmationDisclaimer = NSLocalizedString(
+        "By tapping Deposit Now, you agree to the SafeConnect %@ & %@.",
+        comment: ""
+    )
 }
 
 extension LocalizationConstants.Transaction.Send {

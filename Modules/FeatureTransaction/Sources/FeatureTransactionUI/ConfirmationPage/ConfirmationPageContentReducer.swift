@@ -146,6 +146,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                                 currencyCode: state.asset.code,
                                 accountLabel: state.destination?.label ?? "",
                                 isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
+                                    || (state.source as? LinkedBankAccount)?.data.partner == .yapily
                             )
                     )
                 )
