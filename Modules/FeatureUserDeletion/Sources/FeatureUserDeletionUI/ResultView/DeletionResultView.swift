@@ -26,7 +26,7 @@ public struct DeletionResultView: View {
             .navigationBarBackButtonHidden(true)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear(perform: {
-                viewStore.send(.dismissFlow)
+                viewStore.send(.onAppear)
             })
         }
     }
