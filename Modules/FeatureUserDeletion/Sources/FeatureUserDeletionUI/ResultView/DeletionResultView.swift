@@ -16,19 +16,17 @@ public struct DeletionResultView: View {
     }
 
     public var body: some View {
-        PrimaryNavigationView {
-            VStack {
-                contentView
-                    .padding()
-            }
-            .whiteNavigationBarStyle()
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear(perform: {
-                viewStore.send(.onAppear)
-            })
+        VStack {
+            contentView
+                .padding()
         }
+        .whiteNavigationBarStyle()
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear(perform: {
+            viewStore.send(.onAppear)
+        })
     }
 
     private var contentView: some View {
