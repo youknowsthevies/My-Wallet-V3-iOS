@@ -56,16 +56,21 @@ public struct DeletionConfirmState: Equatable, NavigationState {
 }
 
 public enum UserDeletionResultRoute: NavigationRoute, Hashable {
-    case showResultScreen(success: Bool, logoutAndForgetWallet: () -> Void)
+    case showResultScreen(
+        success: Bool,
+        dismissFlow: () -> Void,
+        logoutAndForgetWallet: () -> Void
+    )
 
     public func destination(in store: Store<DeletionConfirmState, DeletionConfirmAction>) -> some View {
         switch self {
-        case .showResultScreen(let success, let logoutAndForgetWallet):
+        case let .showResultScreen(success, dismissFlow, logoutAndForgetWallet):
             return DeletionResultView(store: .init(
                 initialState: .init(success: success),
                 reducer: DeletionResultModule.reducer,
                 environment: .init(
                     mainQueue: .main,
+                    dismissFlow: dismissFlow,
                     logoutAndForgetWallet: logoutAndForgetWallet
                 )
             ))

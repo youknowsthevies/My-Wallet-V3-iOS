@@ -36,6 +36,7 @@ public struct UserDeletionView: View {
                 .whiteNavigationBarStyle()
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle(LocalizedString.navBarTitle)
+                .navigationBarBackButtonHidden(true)
                 .trailingNavigationButton(.close, action: {
                     presentationMode.wrappedValue.dismiss()
                 })

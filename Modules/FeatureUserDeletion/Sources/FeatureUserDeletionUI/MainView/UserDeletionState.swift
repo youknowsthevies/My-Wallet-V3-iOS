@@ -31,28 +31,21 @@ extension UserDeletionState {
 
 public enum UserDeletionRoute: NavigationRoute, Hashable {
     case showConfirmationView(
-        walletDeactivationConfig: WalletDeactivationConfig,
         userDeletionRepository: UserDeletionRepositoryAPI,
-        walletDeactivationRepository: WalletDeactivationRepositoryAPI,
+        dismissFlow: () -> Void,
         logoutAndForgetWallet: () -> Void
     )
 
     public func destination(in store: Store<UserDeletionState, UserDeletionAction>) -> some View {
         switch self {
-        case .showConfirmationView(
-            let walletDeactivationConfig,
-            let userDeletionRepository,
-            let walletDeactivationRepository,
-            let logoutAndForgetWallet
-        ):
+        case let .showConfirmationView(userDeletionRepository, dismissFlow, logoutAndForgetWallet):
             return DeletionConfirmView(store: .init(
                 initialState: DeletionConfirmState(),
                 reducer: DeletionConfirmModule.reducer,
                 environment: .init(
                     mainQueue: .main,
-                    walletDeactivationConfig: walletDeactivationConfig,
                     userDeletionRepository: userDeletionRepository,
-                    walletDeactivationRepository: walletDeactivationRepository,
+                    dismissFlow: dismissFlow,
                     logoutAndForgetWallet: logoutAndForgetWallet
                 )
             )

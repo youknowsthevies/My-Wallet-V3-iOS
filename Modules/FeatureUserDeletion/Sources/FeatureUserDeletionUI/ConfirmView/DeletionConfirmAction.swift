@@ -6,7 +6,7 @@ public enum DeletionConfirmAction: Equatable, BindableAction, NavigationAction {
     case onAppear
     case showResultScreen(success: Bool)
     case deleteUserAccount
-    case deactivateWallet
     case route(RouteIntent<UserDeletionResultRoute>?)
     case validateConfirmationInput
+    case dismissFlow
 }
