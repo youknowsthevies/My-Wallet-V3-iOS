@@ -77,12 +77,11 @@ final class FiatCustodialBalanceViewPresenter: Equatable {
 
         interactor
             .fiatCurrency
-            .map(\.logoResource)
-            .map { logoResource in
+            .map { currency in
                 .primary(
-                    image: logoResource,
+                    image: currency.logoResource,
                     contentColor: .white,
-                    backgroundColor: .fiat,
+                    backgroundColor: currency.brandColor,
                     cornerRadius: .roundedHigh,
                     accessibilityIdSuffix: descriptors.badgeImageAccessibilitySuffix
                 )

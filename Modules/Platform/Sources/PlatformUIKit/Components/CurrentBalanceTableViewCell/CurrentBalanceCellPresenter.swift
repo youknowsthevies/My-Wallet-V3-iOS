@@ -127,7 +127,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             let badgeImageViewModel: BadgeImageViewModel = .primary(
                 image: fiatCurrency.logoResource,
                 contentColor: .white,
-                backgroundColor: .fiat,
+                backgroundColor: fiatCurrency.brandColor,
                 accessibilityIdSuffix: ""
             )
             badgeImageViewModel.marginOffsetRelay.accept(0)

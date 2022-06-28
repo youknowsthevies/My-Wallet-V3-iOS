@@ -101,7 +101,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             let badgeImageViewModel: BadgeImageViewModel = .primary(
                 image: fiatCurrency.logoResource,
                 contentColor: .white,
-                backgroundColor: .fiat,
+                backgroundColor: fiatCurrency.brandColor,
                 accessibilityIdSuffix: "\(AccessibilityId.badgeImageView)"
             )
             badgeImageViewModel.marginOffsetRelay.accept(0)

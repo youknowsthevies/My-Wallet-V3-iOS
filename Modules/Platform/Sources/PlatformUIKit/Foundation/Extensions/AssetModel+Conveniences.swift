@@ -27,6 +27,8 @@ extension AssetModel {
                 ?? UIColor(hex: ERC20Code.spotColor(code: code))!
         case .celoToken:
             return spotUIColor ?? .black
+        case .fiat where code == FiatCurrency.ARS.rawValue:
+            return .fiatARS
         case .fiat:
             return .fiat
         }
@@ -65,6 +67,8 @@ extension AssetModel {
             case FiatCurrency.EUR.rawValue:
                 return .local(name: "icon-eur", bundle: .platformUIKit)
             case FiatCurrency.USD.rawValue:
+                return .local(name: "icon-usd", bundle: .platformUIKit)
+            case FiatCurrency.ARS.rawValue:
                 return .local(name: "icon-usd", bundle: .platformUIKit)
             default:
                 return placeholderImageResource

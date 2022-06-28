@@ -1044,7 +1044,7 @@ extension FiatCurrency {
     static let achCurrencies: [FiatCurrency] = [.USD]
 
     /// The list of fiat currencies supported for bank wire transfers.
-    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD]
+    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD, .ARS]
 
     /// Whether the current fiat currency is supported for ACH.
     public var isACHSupportedCurrency: Bool {
@@ -1058,6 +1058,7 @@ extension FiatCurrency {
 
     /// The list of fiat currencies currently supported.
     public static let supported: [FiatCurrency] = [
+        .ARS,
         .AUD,
         .BRL,
         .CAD,

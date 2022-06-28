@@ -9,7 +9,8 @@ enum PaymentAccountBuilder {
     private static let builders: [PaymentAccountDescribing.Type] = [
         PaymentAccountGBP.self,
         PaymentAccountEUR.self,
-        PaymentAccountUSD.self
+        PaymentAccountUSD.self,
+        PaymentAccountARS.self
     ]
 
     // MARK: - Methods

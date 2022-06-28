@@ -21,6 +21,12 @@ public enum PaymentAccountProperty {
         case bankCountry(String)
         case iban(String)
         case bankCode(String)
+        case field(
+            name: String,
+            value: String,
+            help: String? = nil,
+            copy: Bool = false
+        )
 
         public var content: String {
             switch self {
@@ -39,6 +45,8 @@ public enum PaymentAccountProperty {
             case .iban(let value):
                 return value
             case .bankCode(let value):
+                return value
+            case .field(_, let value, _, _):
                 return value
             }
         }
@@ -62,6 +70,8 @@ public enum PaymentAccountProperty {
                 return LocalizedString.iban
             case .bankCode:
                 return LocalizedString.bankCode
+            case .field(let name, _, _, _):
+                return name
             }
         }
     }

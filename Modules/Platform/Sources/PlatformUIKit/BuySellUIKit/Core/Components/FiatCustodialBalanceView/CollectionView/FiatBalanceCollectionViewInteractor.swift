@@ -68,6 +68,14 @@ public final class FiatBalanceCollectionViewInteractor {
                 .asObservable()
                 .map { accounts in
                     accounts
+                        .filter { account in
+                            switch data.fiatCurrency {
+                            case .ARS:
+                                return ["ARS", "USD"].contains(account.currencyType.code)
+                            default:
+                                return true
+                            }
+                        }
                         .sorted { $0.currencyType.code < $1.currencyType.code }
                         .sorted { lhs, _ -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
                         .map(FiatCustodialBalanceViewInteractor.init(account:))

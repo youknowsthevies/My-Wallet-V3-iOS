@@ -6,29 +6,41 @@ public struct PaymentAccount {
     public struct Response: Decodable {
         struct Agent: Decodable {
             let account: String?
+            let accountType: String?
             let address: String?
             let code: String?
             let country: String?
             let name: String?
             let recipient: String?
             let routingNumber: String?
+            let label: String?
+            let holderDocument: String?
+            let bankName: String?
 
             init(
                 account: String?,
+                accountType: String? = nil,
                 address: String?,
                 code: String?,
                 country: String?,
                 name: String?,
                 recipient: String?,
-                routingNumber: String?
+                routingNumber: String?,
+                label: String? = nil,
+                holderDocument: String? = nil,
+                bankName: String? = nil
             ) {
                 self.account = account
+                self.accountType = accountType
                 self.address = address
                 self.code = code
                 self.country = country
                 self.name = name
                 self.recipient = recipient
                 self.routingNumber = routingNumber
+                self.label = label
+                self.holderDocument = holderDocument
+                self.bankName = bankName
             }
         }
 
@@ -77,21 +89,29 @@ public struct PaymentAccount {
 
     public struct Agent {
         public let account: String?
+        public let accountType: String?
         public let address: String?
         public let code: String?
         public let country: String?
         public let name: String?
         public let recipient: String?
         public let routingNumber: String?
+        public let label: String?
+        public let holderDocument: String?
+        public let bankName: String?
 
         init(agent: Response.Agent) {
             account = agent.account
+            accountType = agent.accountType
             address = agent.address
             code = agent.code
             country = agent.country
             name = agent.name
             recipient = agent.recipient
             routingNumber = agent.routingNumber
+            label = agent.label
+            holderDocument = agent.holderDocument
+            bankName = agent.bankName
         }
     }
 
