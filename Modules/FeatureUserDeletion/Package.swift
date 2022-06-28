@@ -28,29 +28,25 @@ let package = Package(
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
-        .package(path: "../Test"),
-        .package(path: "../Tool"),
         .package(path: "../UIComponents")
     ],
     targets: [
         .target(
             name: "FeatureUserDeletionData",
             dependencies: [
-                .product(name: "NetworkErrors", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
-//                .product(name: "ToolKit", package: "Tool"),
                 "FeatureUserDeletionDomain"
             ]
         ),
         .target(
             name: "FeatureUserDeletionDomain",
             dependencies: [
-                .product(name: "NetworkErrors", package: "NetworkErrors")
-//                .product(name: "ToolKit", package: "Tool")
+                .product(name: "Errors", package: "Errors")
             ]
         ),
         .target(
@@ -84,38 +80,23 @@ let package = Package(
                     name: "UIComponents",
                     package: "UIComponents"
                 )
-//                .product(name: "NetworkErrors", package: "NetworkErrors"),
-//                .product(name: "ToolKit", package: "Tool")
-            ]
-        ),
-        .testTarget(
-            name: "FeatureUserDeletionDataTests",
-            dependencies: [
-                //                .product(name: "NetworkErrors", package: "NetworkErrors"),
-//                .product(name: "TestKit", package: "Test"),
-//                .product(name: "ToolKit", package: "Tool"),
-//                .product(name: "ToolKitMock", package: "Tool"),
-                "FeatureUserDeletionData"
-            ],
-            resources: [
-                //                .process("Fixtures")
-            ]
-        ),
-        .testTarget(
-            name: "FeatureUserDeletionDomainTests",
-            dependencies: [
-                //                .product(name: "NetworkErrors", package: "NetworkErrors"),
-//                .product(name: "TestKit", package: "Test"),
-//                .product(name: "ToolKit", package: "Tool"),
-//                .product(name: "ToolKitMock", package: "Tool"),
-                "FeatureUserDeletionDomain"
             ]
         ),
 //        .testTarget(
+//            name: "FeatureUserDeletionDataTests",
+//            dependencies: [
+//                "FeatureUserDeletionData"
+//            ],
+//        ),
+//        .testTarget(
+//            name: "FeatureUserDeletionDomainTests",
+//            dependencies: [
+//                "FeatureUserDeletionDomain"
+//            ]
+//        ),
+//        .testTarget(
 //            name: "FeatureUserDeletionUITests",
 //            dependencies: [
-//                "FeatureUserDeletionData",
-//                "FeatureUserDeletionDomain",
 //                "FeatureUserDeletionUI"
 //            ]
 //        )

@@ -1,5 +1,5 @@
 import Combine
-import NetworkError
+import Errors
 
 public protocol UserDeletionRepositoryAPI {
     func deleteUser(

@@ -1,5 +1,5 @@
 import Combine
-import NetworkError
+import Errors
 import NetworkKit
 
 /// https://www.notion.so/blockchaincom/Delete-User-Account-BE-5d6ffb752d9c4cc5bc5d055a235a62f1

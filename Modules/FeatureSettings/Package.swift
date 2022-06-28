@@ -52,7 +52,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../FeatureCardPayment"),
         .package(path: "../FeatureNotificationPreferences"),
-        .package(path: "../FeatureReferral")
+        .package(path: "../FeatureReferral"),
         .package(path: "../FeatureUserDeletion")
     ],
     targets: [
@@ -89,7 +89,7 @@ let package = Package(
                 .product(name: "FeatureCardPaymentUI", package: "FeatureCardPayment"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
                 .product(name: "FeatureNotificationPreferencesUI", package: "FeatureNotificationPreferences"),
-                .product(name: "FeatureReferralUI", package: "FeatureReferral")
+                .product(name: "FeatureReferralUI", package: "FeatureReferral"),
                 .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion")
             ]
