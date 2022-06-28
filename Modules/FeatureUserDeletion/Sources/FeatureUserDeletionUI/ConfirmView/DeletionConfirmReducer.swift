@@ -10,13 +10,16 @@ extension DeletionConfirmModule {
         .init { state, action, environment in
             switch action {
             case .showResultScreen(let success):
-                let logoutAndForgetWallet = environment.logoutAndForgetWallet
                 state.route = .navigate(
                     to: .showResultScreen(
                         success: success,
-                        logoutAndForgetWallet: logoutAndForgetWallet
+                        dismissFlow: environment.dismissFlow,
+                        logoutAndForgetWallet: environment.logoutAndForgetWallet
                     )
                 )
+                return .none
+            case .dismissFlow:
+                environment.dismissFlow()
                 return .none
             case .route(let routeItent):
                 state.route = routeItent
@@ -32,25 +35,8 @@ extension DeletionConfirmModule {
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> DeletionConfirmAction in
-                        if case .failure = result {
-                            return DeletionConfirmAction.showResultScreen(success: false)
-                        }
-                        return DeletionConfirmAction.deactivateWallet
+                        .showResultScreen(success: result.isSuccess)
                     }
-            case .deactivateWallet:
-                let config = environment.walletDeactivationConfig
-                return .merge(
-                    environment
-                        .walletDeactivationRepository
-                        .deactivateWallet(
-                            guid: config.guid,
-                            sharedKey: config.sharedKey,
-                            email: config.email,
-                            sessionToken: config.sessionToken
-                        )
-                        .fireAndForget(),
-                    Effect(value: DeletionConfirmAction.showResultScreen(success: true))
-                )
             case .binding(\.$textFieldText):
                 return Effect(value: .validateConfirmationInput)
             case .validateConfirmationInput:

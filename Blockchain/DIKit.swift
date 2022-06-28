@@ -844,13 +844,6 @@ extension DependencyContainer {
             return UserDeletionRepository(client: client)
         }
 
-        factory { () -> WalletDeactivationRepositoryAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.wallet)
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.wallet)
-            let client = WalletDeactivationClient(networkAdapter: adapter, requestBuilder: builder)
-            return WalletDeactivationRepository(client: client)
-        }
-
         // MARK: Pulse Network Debugging
 
         single {

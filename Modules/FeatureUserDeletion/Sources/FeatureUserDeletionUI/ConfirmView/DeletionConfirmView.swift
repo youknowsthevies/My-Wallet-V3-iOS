@@ -40,7 +40,7 @@ public struct DeletionConfirmView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationRoute(in: store)
         .trailingNavigationButton(.close, action: {
-            presentationMode.wrappedValue.dismiss()
+            viewStore.send(.dismissFlow)
         })
         .onAppear(perform: {
             viewStore.send(.onAppear)

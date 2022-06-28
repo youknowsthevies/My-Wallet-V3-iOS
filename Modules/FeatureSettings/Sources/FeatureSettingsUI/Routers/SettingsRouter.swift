@@ -91,10 +91,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let exchangeUrlProvider: () -> String
     private let urlOpener: URLOpener
 
-    private let nabuUserService: NabuUserServiceAPI
-    private let nabuTokenRepository: NabuTokenRepositoryAPI
-    private let credentialsRepository: CredentialsRepositoryAPI
-
     private var topViewController: UIViewController {
         let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
         guard let viewController = topViewController else {
@@ -123,9 +119,6 @@ final class SettingsRouter: SettingsRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve(),
         cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
-        nabuUserService: NabuUserServiceAPI = resolve(),
-        nabuTokenRepository: NabuTokenRepositoryAPI = resolve(),
-        credentialsRepository: CredentialsRepositoryAPI = resolve(),
         urlOpener: URLOpener = resolve(),
         exchangeUrlProvider: @escaping () -> String
     ) {
@@ -148,9 +141,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.externalActionsProvider = externalActionsProvider
         self.cardIssuingAdapter = cardIssuingAdapter
         self.exchangeUrlProvider = exchangeUrlProvider
-        self.nabuUserService = nabuUserService
-        self.nabuTokenRepository = nabuTokenRepository
-        self.credentialsRepository = credentialsRepository
 
         self.urlOpener = urlOpener
 
@@ -417,45 +407,28 @@ final class SettingsRouter: SettingsRouterAPI {
         ))
         presenter.present(referralView)
     private func showUserDeletionScreen() {
-        guard let sessionToken = nabuTokenRepository.sessionToken else { return }
-
-        let presenter = topViewController
         let logoutAndForgetWallet = { [weak self] in
             self?.externalActionsProvider.logoutAndForgetWallet()
         }
 
-        Publishers.Zip(
-            nabuUserService.fetchUser().eraseError(),
-            credentialsRepository.credentials.eraseError()
-        )
-        .eraseToAnyPublisher()
-        .receive(on: DispatchQueue.main)
-        .sink { user, credentials in
-            let (guid, sharedKey) = credentials
-            let config = WalletDeactivationConfig(
-                guid: guid,
-                sharedKey: sharedKey,
-                email: user.email.address,
-                sessionToken: sessionToken
-            )
-            let view = UserDeletionView(store: .init(
-                initialState: UserDeletionState(),
-                reducer: UserDeletionModule.reducer,
-                environment: .init(
-                    mainQueue: .main,
-                    walletDeactivationConfig: config,
-                    userDeletionRepository: resolve(),
-                    walletDeactivationRepository: resolve(),
-                    logoutAndForgetWallet: {
-                        presenter.dismiss(animated: true) {
-                            logoutAndForgetWallet()
-                        }
+        let presenter = topViewController
+        let view = UserDeletionView(store: .init(
+            initialState: UserDeletionState(),
+            reducer: UserDeletionModule.reducer,
+            environment: .init(
+                mainQueue: .main,
+                userDeletionRepository: resolve(),
+                dismissFlow: {
+                    presenter.dismiss(animated: true)
+                },
+                logoutAndForgetWallet: {
+                    presenter.dismiss(animated: true) {
+                        logoutAndForgetWallet()
                     }
-                )
-            ))
-
-            presenter.present(view)
-        }.store(in: &cancellables)
+                }
+            )
+        ))
+        presenter.present(view)
     }
 
     private func showBankLinkingFlow(currency: FiatCurrency) {

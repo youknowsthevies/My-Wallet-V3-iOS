@@ -7,16 +7,11 @@ extension UserDeletionModule {
         .init { state, action, environment in
             switch action {
             case .showConfirmationScreen:
-                let logoutAndForgetWallet = environment.logoutAndForgetWallet
-                let userDeletionRepository = environment.userDeletionRepository
-                let walletDeactivationRepository = environment.walletDeactivationRepository
-                let walletDeactivationConfig = environment.walletDeactivationConfig
                 state.route = .navigate(
                     to: .showConfirmationView(
-                        walletDeactivationConfig: walletDeactivationConfig,
-                        userDeletionRepository: userDeletionRepository,
-                        walletDeactivationRepository: walletDeactivationRepository,
-                        logoutAndForgetWallet: logoutAndForgetWallet
+                        userDeletionRepository: environment.userDeletionRepository,
+                        dismissFlow: environment.dismissFlow,
+                        logoutAndForgetWallet: environment.logoutAndForgetWallet
                     )
                 )
                 return .none
