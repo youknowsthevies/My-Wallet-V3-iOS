@@ -31,6 +31,7 @@ public enum LoggedIn {
         case login(Result<NabuUser, NabuUserServiceError>)
         case stop
         case logout
+        case deleteWallet
         case deeplink(URIContent)
         case deeplinkHandled
         // wallet related actions
@@ -193,6 +194,14 @@ let loggedInReducer = Reducer<
         state.displayPostSignInOnboardingFlow = false
         return .none
     case .logout:
+        state = LoggedIn.State()
+        return .merge(
+            .cancel(id: LoggedInIdentifier()),
+            .fireAndForget {
+                environment.app.signOut()
+            }
+        )
+    case .deleteWallet:
         state = LoggedIn.State()
         return .merge(
             .cancel(id: LoggedInIdentifier()),
