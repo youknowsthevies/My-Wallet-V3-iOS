@@ -451,7 +451,7 @@ extension TransactionConfirmations {
 
     public struct BuyCryptoValue: TransactionConfirmation {
         public let id = UUID()
-        public let baseValue: CryptoValue
+        public let baseValue: MoneyValue
         public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
