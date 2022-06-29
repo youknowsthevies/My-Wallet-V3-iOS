@@ -330,17 +330,12 @@ final class TransactionAnalyticsHook {
                 )
             ])
         case .send:
-            guard let target = state.destination as? CryptoAccount,
-                  let source = state.source as? CryptoAccount
-            else {
-                return
-            }
             analyticsRecorder.record(event:
                 NewSendAnalyticsEvent.sendSubmitted(
-                    currency: target.currencyType.code,
+                    currency: state.destination?.currencyType.code ?? "",
                     feeRate: .init(state.feeSelection.selectedLevel),
-                    fromAccountType: .init(source),
-                    toAccountType: .init(target)
+                    fromAccountType: .init(state.source),
+                    toAccountType: .init(state.destination)
                 )
             )
         default:

@@ -13,7 +13,7 @@ final class FiatCustodialAccount: FiatAccount {
     let isDefault: Bool = true
     let label: String
     let fiatCurrency: FiatCurrency
-    let accountType: AccountType = .custodial
+    let accountType: AccountType = .trading
 
     var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)

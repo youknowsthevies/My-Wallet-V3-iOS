@@ -24,7 +24,7 @@ public final class PaymentMethodAccount: FiatAccount {
         self.paymentMethodType = paymentMethodType
         self.paymentMethod = paymentMethod
         self.priceService = priceService
-        accountType = paymentMethod.isCustodial ? .custodial : .nonCustodial
+        accountType = paymentMethod.isCustodial ? .trading : .nonCustodial
     }
 
     public let isDefault: Bool = false

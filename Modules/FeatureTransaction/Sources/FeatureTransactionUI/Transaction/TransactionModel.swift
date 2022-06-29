@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
 import Errors
 import FeatureOpenBankingDomain
 import FeatureTransactionDomain
@@ -20,6 +22,10 @@ final class TransactionModel {
     private let interactor: TransactionInteractor
     private var hasInitializedTransaction = false
 
+    private let analyticsHook: TransactionAnalyticsHook
+    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Public Properties
 
     var state: Observable<TransactionState> {
@@ -28,7 +34,14 @@ final class TransactionModel {
 
     // MARK: - Init
 
-    init(initialState: TransactionState, transactionInteractor: TransactionInteractor) {
+    init(
+        initialState: TransactionState,
+        transactionInteractor: TransactionInteractor,
+        analyticsHook: TransactionAnalyticsHook = resolve(),
+        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
+    ) {
+        self.analyticsHook = analyticsHook
+        self.sendEmailNotificationService = sendEmailNotificationService
         interactor = transactionInteractor
         mviModel = MviModel(
             initialState: initialState,
@@ -44,7 +57,7 @@ final class TransactionModel {
         mviModel.process(action: action)
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     func perform(previousState: TransactionState, action: TransactionAction) -> Disposable? {
         switch action {
         case .pendingTransactionStarted:
@@ -148,6 +161,7 @@ final class TransactionModel {
         case .showCheckout:
             return nil
         case .executeTransaction:
+            analyticsHook.onTransactionSubmitted(with: previousState)
             return processExecuteTransaction(
                 source: previousState.source,
                 order: previousState.order,
@@ -396,6 +410,7 @@ final class TransactionModel {
             .verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(
                 onSuccess: { [weak self] result in
+                    self?.triggerSendEmailNotification(source: source, transactionResult: result)
                     switch result {
                     case .unHashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                         self?.process(action: .performSecurityChecksForTransaction(result))
@@ -414,6 +429,27 @@ final class TransactionModel {
                     self?.process(action: .fatalTransactionError(error))
                 }
             )
+    }
+
+    private func triggerSendEmailNotification(
+        source: BlockchainAccount?,
+        transactionResult: TransactionResult
+    ) {
+        guard source?.accountType == .nonCustodial else {
+            return
+        }
+        switch transactionResult {
+        case .hashed(txHash: let txHash, amount: .some(let amount)):
+            sendEmailNotificationService
+                .postSendEmailNotificationTrigger(
+                    moneyValue: amount,
+                    txHash: txHash
+                )
+                .subscribe()
+                .store(in: &cancellables)
+        default:
+            break
+        }
     }
 
     private func processPollOrderStatus(orderId: String, state: TransactionState) -> Disposable? {

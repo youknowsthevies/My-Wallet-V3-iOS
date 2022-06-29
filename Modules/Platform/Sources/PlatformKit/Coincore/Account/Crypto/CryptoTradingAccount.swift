@@ -24,7 +24,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
-    public var accountType: AccountType = .custodial
+    public var accountType: AccountType = .trading
 
     public var requireSecondPassword: Single<Bool> {
         .just(false)
