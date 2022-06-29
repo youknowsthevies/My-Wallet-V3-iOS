@@ -75,7 +75,7 @@ public struct DeletionResultView: View {
                 title: LocalizedString.mainCTA,
                 action: {
                     guard viewStore.success else {
-                        presentationMode.wrappedValue.dismiss()
+                        viewStore.send(.dismissFlow)
                         return
                     }
                     viewStore.send(.logoutAndForgetWallet)

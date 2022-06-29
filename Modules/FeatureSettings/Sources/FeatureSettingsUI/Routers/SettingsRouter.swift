@@ -417,25 +417,24 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showUserDeletionScreen() {
-        let logoutAndForgetWallet = { [weak self] in
-            self?.externalActionsProvider.logoutAndForgetWallet()
-        }
-
         let presenter = topViewController
+        let logoutAndForgetWallet = { [weak self] in
+            presenter.dismiss(animated: true) {
+                self?.externalActionsProvider
+                    .logoutAndForgetWallet()
+            }
+        }
+        let dismissFlow = {
+            presenter.dismiss(animated: true)
+        }
         let view = UserDeletionView(store: .init(
             initialState: UserDeletionState(),
             reducer: UserDeletionModule.reducer,
             environment: .init(
                 mainQueue: .main,
                 userDeletionRepository: resolve(),
-                dismissFlow: {
-                    presenter.dismiss(animated: true)
-                },
-                logoutAndForgetWallet: {
-                    presenter.dismiss(animated: true) {
-                        logoutAndForgetWallet()
-                    }
-                }
+                dismissFlow: dismissFlow,
+                logoutAndForgetWallet: logoutAndForgetWallet
             )
         ))
         presenter.present(view)

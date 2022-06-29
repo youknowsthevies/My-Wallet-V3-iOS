@@ -25,23 +25,27 @@ public struct UserDeletionView: View {
     public var body: some View {
         PrimaryNavigationView {
             GeometryReader { (proxy: GeometryProxy) in
-
                 ScrollView {
                     contentView
                         .frame(height: proxy.size.height)
                 }
                 .navigationRoute(in: store)
-                .whiteNavigationBarStyle()
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle(LocalizedString.navBarTitle)
                 .navigationBarBackButtonHidden(true)
-                .trailingNavigationButton(.close, action: {
-                    presentationMode.wrappedValue.dismiss()
-                })
+                .primaryNavigation(
+                    title: LocalizedString.navBarTitle,
+                    trailing: dismissButton
+                )
                 .onAppear(perform: {
                     viewStore.send(.onAppear)
                 })
             }
+        }
+    }
+
+    @ViewBuilder
+    func dismissButton() -> some View {
+        IconButton(icon: .close) {
+            viewStore.send(.dismissFlow)
         }
     }
 
@@ -64,7 +68,9 @@ public struct UserDeletionView: View {
                 Spacer()
                     .frame(width: 24)
 
-                ImageAsset.iconClose
+                Icon.close
+                    .circle()
+                    .accentColor(.semantic.error)
                     .frame(width: 24, height: 24)
 
                 Text(LocalizedString.bulletPoints.first)
@@ -83,7 +89,9 @@ public struct UserDeletionView: View {
                 Spacer()
                     .frame(width: 24)
 
-                ImageAsset.iconClose
+                Icon.close
+                    .circle()
+                    .accentColor(.semantic.error)
                     .frame(width: 24, height: 24)
 
                 Text(LocalizedString.bulletPoints.second)

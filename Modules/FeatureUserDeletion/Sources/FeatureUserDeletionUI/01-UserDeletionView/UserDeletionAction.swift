@@ -3,7 +3,9 @@ import ComposableNavigation
 
 public enum UserDeletionAction: Equatable, BindableAction, NavigationAction {
     case binding(BindingAction<UserDeletionState>)
+    case dismissFlow
     case onAppear
-    case showConfirmationScreen
+    case onConfirmViewChanged(DeletionConfirmAction)
     case route(RouteIntent<UserDeletionRoute>?)
+    case showConfirmationScreen
 }

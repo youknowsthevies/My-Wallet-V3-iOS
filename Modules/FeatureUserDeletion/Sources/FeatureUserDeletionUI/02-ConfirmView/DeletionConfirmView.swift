@@ -22,8 +22,14 @@ public struct DeletionConfirmView: View {
             if viewStore.isLoading {
                 Group {
                     ProgressView()
-                        .progressViewStyle(.circular)
+                        .progressViewStyle(
+                            IndeterminateProgressViewStyle(
+                                railColor: Color.semantic.primary,
+                                trackColor: Color.semantic.blueBG
+                            )
+                        )
                         .frame(width: 104, height: 104)
+
                     Text(LocalizedString.processing)
                         .typography(.title3)
                         .foregroundColor(.textBody)
@@ -34,19 +40,26 @@ public struct DeletionConfirmView: View {
                     .padding()
             }
         }
-        .whiteNavigationBarStyle()
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(LocalizedString.navBarTitle)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationRoute(in: store)
-        .trailingNavigationButton(.close, action: {
-            viewStore.send(.dismissFlow)
-        })
+        .primaryNavigation(
+            title: LocalizedString.navBarTitle,
+            trailing: dismissButton
+        )
+        .navigationBarBackButtonHidden(true)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear(perform: {
             viewStore.send(.onAppear)
         })
     }
 
+    @ViewBuilder
+    func dismissButton() -> some View {
+        IconButton(icon: .close) {
+            viewStore.send(.dismissFlow)
+        }
+    }
+
+    @ViewBuilder
     private var contentView: some View {
         VStack(spacing: 16) {
             Text(LocalizedString.explanaition)
