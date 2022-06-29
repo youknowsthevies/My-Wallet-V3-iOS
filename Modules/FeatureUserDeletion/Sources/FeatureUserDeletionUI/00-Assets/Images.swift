@@ -1,20 +1,6 @@
 import SwiftUI
 
 struct ImageAsset {
-    static var iconExternalLink: Image {
-        Image(
-            "external-link-icon",
-            bundle: .FeatureUserDeletion
-        )
-    }
-
-    static var iconInfo: Image {
-        Image(
-            "info-circle-icon",
-            bundle: .FeatureUserDeletion
-        )
-    }
-
     enum Deletion {
         static var deletionFailed: Image {
             Image(

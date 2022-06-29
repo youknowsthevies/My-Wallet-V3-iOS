@@ -120,14 +120,22 @@ public struct UserDeletionView: View {
         VStack {
             PrimaryRow(
                 title: LocalizedString.externalLinks.dataRetention,
-                trailing: { ImageAsset.iconExternalLink },
+                trailing: {
+                    Icon.newWindow
+                        .accentColor(.semantic.muted)
+                        .frame(width: 24, height: 24)
+                },
                 action: {
                     openURL(viewStore.state.externalLinks.dataRetention)
                 }
             )
             PrimaryRow(
                 title: LocalizedString.externalLinks.needHelp,
-                trailing: { ImageAsset.iconExternalLink },
+                trailing: {
+                    Icon.newWindow
+                        .accentColor(.semantic.muted)
+                        .frame(width: 24, height: 24)
+                },
                 action: {
                     openURL(viewStore.state.externalLinks.needHelp)
                 }

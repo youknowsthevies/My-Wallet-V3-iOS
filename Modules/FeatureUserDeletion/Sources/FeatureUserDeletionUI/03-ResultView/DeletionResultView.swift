@@ -53,7 +53,8 @@ public struct DeletionResultView: View {
                     Spacer()
                         .frame(width: 24)
 
-                    ImageAsset.iconInfo
+                    Icon.information
+                        .accentColor(.semantic.warning)
                         .frame(width: 24, height: 24)
 
                     Text(LocalizedString.failure.reason)
