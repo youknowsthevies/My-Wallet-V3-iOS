@@ -21,11 +21,11 @@ public struct DeletionConfirmState: Equatable, NavigationState {
     var shouldShowInvalidInputUI: Bool = false
 
     mutating func validateConfirmationInputField() {
-        // isConfirmationInputValid
+        // handle isConfirmationInputValid
         isConfirmationInputValid = textFieldText ==
             LocalizedString.textField.placeholder
 
-        // shouldShowInvalidInputUI
+        // handle shouldShowInvalidInputUI
         let placeholder = LocalizedString.textField.placeholder
         let userIsTyping = firstResponder == .confirmation
         guard userIsTyping else {
