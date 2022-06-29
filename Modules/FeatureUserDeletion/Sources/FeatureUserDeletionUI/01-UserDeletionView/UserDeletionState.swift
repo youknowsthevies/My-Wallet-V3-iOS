@@ -5,9 +5,7 @@ import SwiftUI
 
 public struct UserDeletionState: Equatable, NavigationState {
     public var route: RouteIntent<UserDeletionRoute>?
-    public var confirmViewState: DeletionConfirmState? = {
-        DeletionConfirmState()
-    }()
+    public var confirmViewState: DeletionConfirmState? = DeletionConfirmState()
 
     public init(
         route: RouteIntent<UserDeletionRoute>? = nil
@@ -45,9 +43,8 @@ public enum UserDeletionRoute: NavigationRoute, Hashable {
                 ),
                 then: { store in
                     DeletionConfirmView(store: store)
-                })
+                }
+            )
         }
     }
-
-
 }
