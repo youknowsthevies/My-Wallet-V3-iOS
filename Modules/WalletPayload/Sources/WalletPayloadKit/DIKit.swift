@@ -193,6 +193,20 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> VerifyMnemonicBackupServiceAPI in
+            VerifyMnemonicBackupService(
+                walletHolder: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
+                walletRepo: DIKit.resolve()
+            )
+        }
+
+        factory { () -> MnemonicVerificationStatusProvider in
+            provideMnemonicVerificationStatus(
+                walletHolder: DIKit.resolve()
+            )
+        }
+
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }

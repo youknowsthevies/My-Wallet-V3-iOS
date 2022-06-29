@@ -1,10 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxRelay
-import RxSwift
+import Combine
 
 public protocol RecoveryPhraseStatusProviding {
     var isRecoveryPhraseVerified: Bool { get }
-    var isRecoveryPhraseVerifiedObservable: Observable<Bool> { get }
-    var fetchTriggerRelay: PublishRelay<Void> { get }
+    var isRecoveryPhraseVerifiedPublisher: AnyPublisher<Bool, Never> { get }
+    var fetchTriggerSubject: PassthroughSubject<Void, Never> { get }
 }

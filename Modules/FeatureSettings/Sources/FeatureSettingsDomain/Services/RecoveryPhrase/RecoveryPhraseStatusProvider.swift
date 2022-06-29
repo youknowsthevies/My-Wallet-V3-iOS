@@ -1,30 +1,38 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxRelay
-import RxSwift
+import WalletPayloadKit
 
 public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
 
-    public let fetchTriggerRelay = PublishRelay<Void>()
+    public let fetchTriggerSubject = PassthroughSubject<Void, Never>()
 
-    public var isRecoveryPhraseVerifiedObservable: Observable<Bool> {
-        fetchTriggerRelay
-            .flatMap(weak: self) { (self, _) -> Observable<Bool> in
-                .just(self.walletRecoveryVerifier.isRecoveryPhraseVerified())
-            }
-    }
+    public let isRecoveryPhraseVerifiedPublisher: AnyPublisher<Bool, Never>
 
     public var isRecoveryPhraseVerified: Bool {
         walletRecoveryVerifier.isRecoveryPhraseVerified()
     }
 
-    private let isVerified = PublishRelay<Bool>()
     private let walletRecoveryVerifier: WalletRecoveryVerifing
+    private let mnemonicVerificationStatusProvider: MnemonicVerificationStatusProvider
 
-    public init(walletRecoveryVerifier: WalletRecoveryVerifing = resolve()) {
+    public init(
+        walletRecoveryVerifier: WalletRecoveryVerifing = resolve(),
+        mnemonicVerificationStatusProvider: @escaping MnemonicVerificationStatusProvider = resolve()
+    ) {
         self.walletRecoveryVerifier = walletRecoveryVerifier
-        isVerified.accept(walletRecoveryVerifier.isRecoveryPhraseVerified())
+        self.mnemonicVerificationStatusProvider = mnemonicVerificationStatusProvider
+
+        isRecoveryPhraseVerifiedPublisher = fetchTriggerSubject
+            .zip(nativeWalletFlagEnabled())
+            .flatMap { _, isEnabled -> AnyPublisher<Bool, Never> in
+                guard isEnabled else {
+                    return .just(walletRecoveryVerifier.isRecoveryPhraseVerified())
+                }
+                return mnemonicVerificationStatusProvider()
+            }
+            .eraseToAnyPublisher()
     }
 }

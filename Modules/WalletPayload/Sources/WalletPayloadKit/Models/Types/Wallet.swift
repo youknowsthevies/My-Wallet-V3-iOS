@@ -22,6 +22,12 @@ public struct NativeWallet: Equatable {
         hdWallets.first
     }
 
+    /// Returns `true` if the mnemonic has been previously marked as verified
+    /// otherwise `false
+    var isMnemonicVerified: Bool {
+        defaultHDWallet?.mnemonicVerified ?? false
+    }
+
     var isHDWallet: Bool {
         !hdWallets.isEmpty
     }

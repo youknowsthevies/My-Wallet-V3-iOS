@@ -348,7 +348,12 @@ extension DependencyContainer {
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return RecoveryPhraseVerifyingService(wallet: manager.wallet) as RecoveryPhraseVerifyingServiceAPI
+            let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
+            return RecoveryPhraseVerifyingService(
+                wallet: manager.wallet,
+                verifyMnemonicBackupService: backupService,
+                nativeWalletEnabledFlag: { nativeWalletFlagEnabled() }
+            )
         }
 
         // MARK: - AppFeatureConfigurator
