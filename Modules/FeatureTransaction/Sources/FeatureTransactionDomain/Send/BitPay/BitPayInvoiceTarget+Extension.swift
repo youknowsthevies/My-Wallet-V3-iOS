@@ -18,8 +18,8 @@ extension BitPayInvoiceTarget {
 
     private enum Prefix {
         static let bitpay = "bitpay.com"
-        static let bitcoin = "bitcoin:?r="
-        static let bitcoinCash = "bitcoincash:?r="
+        static let bitcoin = "bitcoin:"
+        static let bitcoinCash = "bitcoincash:"
     }
 
     private static let bitpayRepository: BitPayRepositoryAPI = resolve()
@@ -46,13 +46,9 @@ extension BitPayInvoiceTarget {
         from data: String,
         asset: CryptoCurrency
     ) -> AnyPublisher<BitPayInvoiceTarget, BitPayError> {
-        guard isBitPay(data) else {
-            return .failure(.invalidBitPayURL)
-        }
-        guard isSupportedAsset(asset) else {
-            return .failure(.invalidBitPayURL)
-        }
-        return invoiceId(from: data)
+        BitPayInvoiceParser
+            .make(from: data, asset: asset)
+            .publisher
             .flatMap { invoiceId in
                 BitPayInvoiceTarget.bitpayRepository
                     .getBitPayPaymentRequest(
@@ -62,17 +58,5 @@ extension BitPayInvoiceTarget {
                     .mapError(BitPayError.invoiceFetchError)
             }
             .eraseToAnyPublisher()
-    }
-
-    // MARK: - Private Functions
-
-    private static func invoiceId(from data: String) -> AnyPublisher<String, BitPayError> {
-        let payload = data
-            .replacingOccurrences(of: Prefix.bitcoin, with: "")
-            .replacingOccurrences(of: Prefix.bitcoinCash, with: "")
-        guard let url = URL(string: payload) else {
-            return .failure(.missingInvoiceID)
-        }
-        return .just(url.lastPathComponent)
     }
 }
