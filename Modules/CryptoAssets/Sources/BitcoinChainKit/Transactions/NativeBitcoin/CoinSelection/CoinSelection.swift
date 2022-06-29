@@ -4,12 +4,12 @@ import BigInt
 import PlatformKit
 import ToolKit
 
-protocol CoinSelector {
+public protocol CoinSelector {
     func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError>
     func select(
         all coins: [UnspentOutput],
         feePerByte: BigUInt,
-        singleOutputType: UnspentOutput.Script
+        singleOutputType: BitcoinScriptType
     ) -> Result<SpendableUnspentOutputs, CoinSelectionError>
 }
 
@@ -114,7 +114,7 @@ struct CoinSelection: CoinSelector {
     func select(
         all coins: [UnspentOutput],
         feePerByte: BigUInt,
-        singleOutputType: UnspentOutput.Script
+        singleOutputType: BitcoinScriptType
     ) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
         let effectiveCoins = coins.effective(fee: feePerByte)
         let effectiveBalance = calculator.effectiveBalance(

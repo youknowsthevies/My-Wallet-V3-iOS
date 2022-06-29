@@ -143,7 +143,7 @@ final class EthereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI {
         case let target as ReceiveAddress:
             return .just(target)
         case let target as CryptoAccount:
-            return target.receiveAddress
+            return target.receiveAddress.asSingle()
         case let target as HotWalletTransactionTarget:
             return .just(target.hotWalletAddress)
         default:
@@ -266,7 +266,7 @@ final class EthereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI {
         )
         return Single
             .zip(
-                blockchainAccount.receiveAddress,
+                blockchainAccount.receiveAddress.asSingle(),
                 hotWalletAddress
             )
             .map { receiveAddress, hotWalletAddress in

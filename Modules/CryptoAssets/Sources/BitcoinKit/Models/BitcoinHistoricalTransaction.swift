@@ -5,19 +5,19 @@ import BitcoinChainKit
 import MoneyKit
 import PlatformKit
 
-public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
+struct BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
 
-    public static let requiredConfirmations: Int = 3
+    static let requiredConfirmations: Int = 3
 
     // MARK: - Output
 
-    public struct Output: Decodable {
+    struct Output: Decodable, Equatable {
         let spent: Bool
         let change: Bool
         let amount: CryptoValue
         let address: String
 
-        struct Xpub: Codable {
+        struct Xpub: Codable, Equatable {
             let value: String
 
             enum CodingKeys: String, CodingKey {
@@ -32,7 +32,7 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
             case address = "addr"
         }
 
-        public init(from decoder: Decoder) throws {
+        init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
             spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
@@ -45,43 +45,43 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
 
     // MARK: - Input
 
-    public struct Input: Decodable {
+    struct Input: Decodable, Equatable {
         let previousOutput: Output
 
         enum CodingKeys: String, CodingKey {
             case previousOutput = "prev_out"
         }
 
-        public init(from decoder: Decoder) throws {
+        init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
             previousOutput = try values.decode(Output.self, forKey: .previousOutput)
         }
     }
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     /**
      The transaction identifier, used for equality checking and backend calls.
 
      - Note: For Bitcoin, this is identical to `transactionHash`.
      */
-    public var identifier: String {
+    var identifier: String {
         transactionHash
     }
 
-    public let direction: Direction
-    public let fromAddress: BitcoinAssetAddress
-    public let toAddress: BitcoinAssetAddress
-    public let amount: CryptoValue
-    public let transactionHash: String
-    public let createdAt: Date
-    public let fee: CryptoValue?
-    public let note: String?
-    public let inputs: [Input]
-    public let outputs: [Output]
-    public let blockHeight: Int?
-    public var confirmations: Int = 0
-    public var isConfirmed: Bool {
+    let direction: Direction
+    let fromAddress: BitcoinAssetAddress
+    let toAddress: BitcoinAssetAddress
+    let amount: CryptoValue
+    let transactionHash: String
+    let createdAt: Date
+    let fee: CryptoValue?
+    let note: String?
+    let inputs: [Input]
+    let outputs: [Output]
+    let blockHeight: Int?
+    var confirmations: Int = 0
+    var isConfirmed: Bool {
         confirmations >= BitcoinHistoricalTransaction.requiredConfirmations
     }
 
@@ -97,7 +97,7 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
 
     // MARK: - Decodable
 
-    public required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
         let originalValue = BigInt(amount)
@@ -134,12 +134,16 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
         note = nil
     }
 
-    public func apply(latestBlockHeight: Int) {
-        guard let blockHeight = blockHeight else {
-            confirmations = 0
-            return
+    func applying(latestBlockHeight: Int) -> Self {
+        var transaction = self
+
+        guard let blockHeight = transaction.blockHeight else {
+            transaction.confirmations = 0
+            return transaction
         }
 
-        confirmations = (latestBlockHeight - blockHeight) + 1
+        transaction.confirmations = (latestBlockHeight - blockHeight) + 1
+
+        return transaction
     }
 }

@@ -259,52 +259,61 @@ extension UnspentOutput {
 
     static func create(
         with value: CryptoValue,
-        hash: String = "hash",
+        hash: String = "00",
         script: String,
         confirmations: UInt = 0,
         transactionIndex: Int = 0,
+        outputIndex: Int = 0,
         xpub: XPub = XPub(m: "m", path: "path")
     ) -> UnspentOutput {
         UnspentOutput(
-            hash: hash,
-            script: script,
-            value: value,
             confirmations: confirmations,
+            hash: hash,
+            hashBigEndian: Data(Data(hex: hash).reversed()).hexValue,
+            outputIndex: outputIndex,
+            script: script,
             transactionIndex: transactionIndex,
+            value: value,
             xpub: xpub
         )
     }
 
     static func createP2PKH(
         with value: CryptoValue,
-        hash: String = "hash",
+        hash: String = "00",
         confirmations: UInt = 0,
         transactionIndex: Int = 0,
+        outputIndex: Int = 0,
         xpub: XPub = XPub(m: "m", path: "path")
     ) -> UnspentOutput {
         UnspentOutput(
-            hash: hash,
-            script: "76a914641ad5051edd97029a003fe9efb29359fcee409d88ac",
-            value: value,
             confirmations: confirmations,
+            hash: hash,
+            hashBigEndian: Data(Data(hex: hash).reversed()).hexValue,
+            outputIndex: outputIndex,
+            script: "76a914641ad5051edd97029a003fe9efb29359fcee409d88ac",
             transactionIndex: transactionIndex,
+            value: value,
             xpub: xpub
         )
     }
 
     static func createP2WPKH(
         with value: CryptoValue,
-        hash: String = "hash",
+        hash: String = "00",
         confirmations: UInt = 0,
         transactionIndex: Int = 0,
+        outputIndex: Int = 0,
         xpub: XPub = XPub(m: "m", path: "path")
     ) -> UnspentOutput {
         UnspentOutput(
-            hash: hash,
-            script: "0014326e987644fa2d8ddf813ad40aa09b9b1229b71f",
-            value: value,
             confirmations: confirmations,
+            hash: hash,
+            hashBigEndian: Data(Data(hex: hash).reversed()).hexValue,
+            outputIndex: outputIndex,
+            script: "0014326e987644fa2d8ddf813ad40aa09b9b1229b71f",
             transactionIndex: transactionIndex,
+            value: value,
             xpub: xpub
         )
     }

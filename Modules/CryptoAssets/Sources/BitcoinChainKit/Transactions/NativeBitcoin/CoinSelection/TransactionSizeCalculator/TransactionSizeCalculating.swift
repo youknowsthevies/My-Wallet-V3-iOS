@@ -10,7 +10,7 @@ protocol TransactionSizeCalculating {
     ) -> Decimal
     func dustThreshold(
         for feePerByte: BigUInt,
-        type: UnspentOutput.Script
+        type: BitcoinScriptType
     ) -> Decimal
     func effectiveBalance(
         for feePerByte: BigUInt,
@@ -57,7 +57,7 @@ extension TransactionSizeCalculating {
     func effectiveBalance(
         fee feePerByte: BigUInt,
         inputs: [UnspentOutput],
-        singleOutputType: UnspentOutput.Script
+        singleOutputType: BitcoinScriptType
     ) -> BigUInt {
         let outputs: TransactionSizeCalculatorQuantities
         switch singleOutputType {

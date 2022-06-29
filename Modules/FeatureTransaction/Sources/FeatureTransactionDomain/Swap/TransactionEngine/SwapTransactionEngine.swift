@@ -20,7 +20,7 @@ protocol SwapTransactionEngine: TransactionEngine {
 extension PendingTransaction {
 
     fileprivate var quoteSubscription: Disposable? {
-        engineState[.quoteSubscription] as? Disposable
+        engineState.value[.quoteSubscription] as? Disposable
     }
 }
 
@@ -71,7 +71,7 @@ extension SwapTransactionEngine {
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
         var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         quotesEngine.stop()
     }
 
@@ -79,7 +79,7 @@ extension SwapTransactionEngine {
         var pendingTransaction = oldValue
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         return pendingTransaction.update(confirmations: [])
     }
 
@@ -168,7 +168,7 @@ extension SwapTransactionEngine {
             return .just(oldValue)
         }
         var pendingTransaction = oldValue
-        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching(pendingTransaction)
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = startQuotesFetching(pendingTransaction) }
         return .just(pendingTransaction)
     }
 
@@ -202,8 +202,8 @@ extension SwapTransactionEngine {
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
         Single.zip(
-            target.receiveAddress,
-            sourceAccount.receiveAddress
+            target.receiveAddress.asSingle(),
+            sourceAccount.receiveAddress.asSingle()
         )
         .flatMap { [weak self] destinationAddress, refundAddress -> Single<SwapOrder> in
             guard let self = self else { return .never() }

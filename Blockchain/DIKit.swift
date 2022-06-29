@@ -436,6 +436,16 @@ extension DependencyContainer {
             return walletManager.wallet.bitcoin
         }
 
+        factory { () -> WalletMnemonicProvider in
+            let mnemonicAccess: MnemonicAccessAPI = DIKit.resolve()
+            return {
+                mnemonicAccess.mnemonic
+                    .eraseError()
+                    .map(BitcoinChainKit.Mnemonic.init)
+                    .eraseToAnyPublisher()
+            }
+        }
+
         factory { () -> BitcoinChainSendBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin

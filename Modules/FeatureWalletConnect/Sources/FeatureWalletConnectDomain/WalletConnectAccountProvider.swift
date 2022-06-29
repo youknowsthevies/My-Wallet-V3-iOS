@@ -30,8 +30,8 @@ extension WalletConnectAccountProvider: WalletConnectPublicKeyProviderAPI {
         defaultAccount(network: network)
             .eraseError()
             .flatMap { account -> AnyPublisher<String, Error> in
-                account.receiveAddressPublisher
-                    .map { address in address.address }
+                account.receiveAddress
+                    .map(\.address)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

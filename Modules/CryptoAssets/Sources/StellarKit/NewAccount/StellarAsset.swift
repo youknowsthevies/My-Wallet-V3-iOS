@@ -107,8 +107,8 @@ extension StellarAsset: DomainResolutionRecordProviderAPI {
     var resolutionRecord: AnyPublisher<ResolutionRecord, Error> {
         defaultAccount
             .eraseError()
-            .flatMap { account in
-                account.receiveAddress.asPublisher().eraseError()
+            .flatMap { account -> AnyPublisher<ReceiveAddress, Error> in
+                account.receiveAddress
             }
             .map { [asset] receiveAddress in
                 ResolutionRecord(symbol: asset.code, walletAddress: receiveAddress.address)

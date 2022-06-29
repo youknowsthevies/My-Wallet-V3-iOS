@@ -53,7 +53,6 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
                 accounts
                     .map { account in
                         account.receiveAddress
-                            .publisher
                             .optional()
                             .replaceError(with: nil)
                     }

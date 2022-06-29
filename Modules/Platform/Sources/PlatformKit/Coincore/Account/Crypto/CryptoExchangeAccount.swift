@@ -56,15 +56,17 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(currency: asset))
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         cryptoReceiveAddressFactory
             .makeExternalAssetAddress(
                 address: address,
                 label: label,
                 onTxCompleted: onTxCompleted
             )
-            .single
             .map { $0 as ReceiveAddress }
+            .eraseError()
+            .publisher
+            .eraseToAnyPublisher()
     }
 
     public var pendingBalance: AnyPublisher<MoneyValue, Error> {

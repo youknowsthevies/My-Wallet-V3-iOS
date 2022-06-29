@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum Direction: String {
+public enum Direction: String, Equatable {
     /// A `credit` is an **increase** in liabilities (decrease in cash)
     /// relative to the account
     case credit

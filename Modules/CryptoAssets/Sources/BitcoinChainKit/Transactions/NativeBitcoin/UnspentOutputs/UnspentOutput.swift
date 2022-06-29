@@ -8,78 +8,75 @@ import WalletCore
 
 public struct UnspentOutput: Equatable {
 
-    struct XPub: Equatable {
-        let m: String
-        let path: String
+    public struct XPub: Equatable {
+        public let m: String
+        public let path: String
+
+        public init(m: String, path: String) {
+            self.m = m
+            self.path = path
+        }
     }
 
-    var magnitude: BigUInt {
+    public var magnitude: BigUInt {
         value.amount.magnitude
     }
 
-    let hash: String
+    public let confirmations: UInt
+    public let hash: String
+    public let hashBigEndian: String
+    public let outputIndex: Int
+    public let script: String
+    public let transactionIndex: Int
+    public let value: CryptoValue
+    public let xpub: XPub
 
-    let script: String
-
-    let value: CryptoValue
-
-    let confirmations: UInt
-
-    let transactionIndex: Int
-
-    let xpub: XPub
-
-    init(
-        hash: String,
-        script: String,
-        value: CryptoValue,
+    public init(
         confirmations: UInt,
+        hash: String,
+        hashBigEndian: String,
+        outputIndex: Int,
+        script: String,
         transactionIndex: Int,
-        xpub: XPub
+        value: CryptoValue,
+        xpub: UnspentOutput.XPub
     ) {
-        self.hash = hash
-        self.script = script
-        self.value = value
         self.confirmations = confirmations
+        self.hash = hash
+        self.hashBigEndian = hashBigEndian
+        self.outputIndex = outputIndex
+        self.script = script
         self.transactionIndex = transactionIndex
+        self.value = value
         self.xpub = xpub
     }
 }
 
 extension UnspentOutput {
-    enum Script: String {
-        case P2PKH
-        case P2SH
-        case P2WPKH
-        case P2WSH
-    }
-
-    var scriptType: Script {
-        guard let hexString = Data(hexString: script) else {
+    public var scriptType: BitcoinScriptType {
+        guard let script = BitcoinScriptType(scriptData: Data(hex: script)) else {
             fatalError("Misconfigured")
         }
-        let script = BitcoinScript(data: hexString)
-        if script.isPayToWitnessPublicKeyHash {
-            return .P2WPKH
-        } else if script.isPayToWitnessScriptHash {
-            return .P2WSH
-        } else if script.isPayToScriptHash {
-            return .P2SH
-        } else if script.matchPayToPubkeyHash() != nil {
-            return .P2PKH
+        return script
+    }
+
+    var isSegwit: Bool {
+        guard case .P2WPKH = scriptType else {
+            return false
         }
-        fatalError("Misconfigured")
+        return true
     }
 }
 
 extension UnspentOutput {
-    init(response: UnspentOutputResponse) {
-        let value = CryptoValue.create(minor: response.value, currency: .bitcoin)
-        hash = response.tx_hash
-        script = response.script
-        self.value = value
+    init(response: UnspentOutputResponse, coin: BitcoinChainCoin) {
         confirmations = response.confirmations
+        hash = response.tx_hash
+        hashBigEndian = response.tx_hash_big_endian
+        outputIndex = response.tx_output_n
+        script = response.script
         transactionIndex = response.tx_index
+        value = CryptoValue.create(minor: response.value, currency: coin.cryptoCurrency)
         xpub = XPub(responseXPub: response.xpub)
     }
 }

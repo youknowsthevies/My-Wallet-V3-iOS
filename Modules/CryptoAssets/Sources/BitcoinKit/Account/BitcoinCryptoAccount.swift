@@ -8,8 +8,11 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
+
+    let coinType: BitcoinChainCoin = .bitcoin
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
@@ -36,7 +39,8 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
             .eraseToAnyPublisher()
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        // TODO: use native receive address fetching
         bridge.receiveAddress(forXPub: xPub.address)
             .map { [label, onTxCompleted] address -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinToken>(
@@ -45,6 +49,8 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
                     onTxCompleted: onTxCompleted
                 )
             }
+            .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
@@ -105,7 +111,7 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let xPub: XPub
+    let xPub: XPub // TODO: Change this to `XPubs`
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let priceService: PriceServiceAPI

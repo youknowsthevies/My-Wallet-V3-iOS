@@ -31,7 +31,7 @@ struct TransactionSizeCalculator: TransactionSizeCalculating {
 
     func dustThreshold(
         for feePerByte: BigUInt,
-        type: UnspentOutput.Script
+        type: BitcoinScriptType
     ) -> Decimal {
         let cost = TransactionCost.PerInput.for(type) + TransactionCost.PerOutput.for(type)
         let feePerByte = feePerByte.decimal

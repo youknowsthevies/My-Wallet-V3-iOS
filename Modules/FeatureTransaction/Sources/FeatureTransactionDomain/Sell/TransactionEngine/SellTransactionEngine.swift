@@ -100,7 +100,7 @@ extension SellTransactionEngine {
         var pendingTransaction = oldValue
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         return pendingTransaction.update(confirmations: [])
     }
 
@@ -125,7 +125,7 @@ extension SellTransactionEngine {
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
         var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         quotesEngine.stop()
     }
 
@@ -148,7 +148,7 @@ extension SellTransactionEngine {
             return .just(oldValue)
         }
         var pendingTransaction = oldValue
-        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching()
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = startQuotesFetching() }
         return .just(pendingTransaction)
     }
 
@@ -282,6 +282,6 @@ extension TransactionLimits {
 extension PendingTransaction {
 
     fileprivate var quoteSubscription: Disposable? {
-        engineState[.quoteSubscription] as? Disposable
+        engineState.value[.quoteSubscription] as? Disposable
     }
 }

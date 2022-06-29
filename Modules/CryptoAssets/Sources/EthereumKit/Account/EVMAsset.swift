@@ -100,7 +100,7 @@ extension EVMAsset: DomainResolutionRecordProviderAPI {
         defaultAccount
             .eraseError()
             .flatMap { account in
-                account.receiveAddress.asPublisher().eraseError()
+                account.receiveAddress.eraseError()
             }
             .map { [asset] receiveAddress in
                 ResolutionRecord(symbol: asset.code, walletAddress: receiveAddress.address)

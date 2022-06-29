@@ -5,6 +5,11 @@ import DIKit
 import NetworkKit
 import PlatformKit
 
+public struct EncodedBitcoinChainTransaction {
+    let encodedTx: String
+    let replayProtectionLockSecret: String?
+}
+
 public protocol APIClientAPI {
 
     func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(
@@ -18,9 +23,14 @@ public protocol APIClientAPI {
     func unspentOutputs(
         for wallets: [XPub]
     ) -> AnyPublisher<UnspentOutputsResponse, NetworkError>
+
+    func push(
+        transaction: EncodedBitcoinChainTransaction
+    ) -> AnyPublisher<Void, NetworkError>
 }
 
 extension DerivationType {
+
     fileprivate var activeParameter: String {
         switch self {
         case .legacy:
@@ -44,6 +54,10 @@ final class APIClient: APIClientAPI {
 
         var unspent: [String] {
             base + ["unspent"]
+        }
+
+        var pushTx: [String] {
+            base + ["pushtx"]
         }
 
         let base: [String]
@@ -74,16 +88,19 @@ final class APIClient: APIClientAPI {
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
     private let endpoint: Endpoint
+    private let apicode: APICode
 
     // MARK: - Init
 
     init(
         coin: BitcoinChainCoin,
         requestBuilder: RequestBuilder = resolve(),
-        networkAdapter: NetworkAdapterAPI = resolve()
+        networkAdapter: NetworkAdapterAPI = resolve(),
+        apicode: APICode = resolve()
     ) {
         self.coin = coin
         self.requestBuilder = requestBuilder
+        self.apicode = apicode
         endpoint = Endpoint(coin: coin)
         self.networkAdapter = networkAdapter
     }
@@ -125,4 +142,43 @@ final class APIClient: APIClientAPI {
         )!
         return networkAdapter.perform(request: request)
     }
+
+    func push(
+        transaction: EncodedBitcoinChainTransaction
+    ) -> AnyPublisher<Void, NetworkError> {
+        let payload = PushTxPayload(
+            tx: transaction.encodedTx,
+            apiCode: apicode,
+            lockSecret: transaction.replayProtectionLockSecret
+        )
+        let parameters = payload
+            .dictionary
+            .map(URLQueryItem.init)
+        let body = RequestBuilder.body(from: parameters)
+        let request = requestBuilder.post(
+            path: endpoint.pushTx,
+            body: body,
+            contentType: .formUrlEncoded
+        )!
+        return networkAdapter.perform(request: request)
+    }
+}
+
+private struct PushTxPayload {
+
+    var dictionary: [String: String] {
+        var base = [
+            "tx": tx,
+            "api_code": apiCode,
+            "format": "plain"
+        ]
+        if let lockSecret = lockSecret {
+            base["lock_secret"] = lockSecret
+        }
+        return base
+    }
+
+    let tx: String
+    let apiCode: String
+    let lockSecret: String?
 }

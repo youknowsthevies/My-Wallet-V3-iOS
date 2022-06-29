@@ -118,6 +118,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         target
             .receiveAddress
+            .asSingle()
             .map(\.address)
             .flatMapCompletable { [fiatWithdrawRepository] address -> Completable in
                 fiatWithdrawRepository

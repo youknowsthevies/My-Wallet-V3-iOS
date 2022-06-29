@@ -14,7 +14,7 @@ enum TransactionCost {
         static let p2wpkh: Decimal = 67.75
         static let p2wsh: Decimal = 104.5
 
-        static func `for`(_ type: UnspentOutput.Script) -> Decimal {
+        static func `for`(_ type: BitcoinScriptType) -> Decimal {
             switch type {
             case .P2PKH:
                 return p2pkh
@@ -34,7 +34,7 @@ enum TransactionCost {
         static let p2wpkh: Decimal = 31
         static let p2wsh: Decimal = 43
 
-        static func `for`(_ type: UnspentOutput.Script) -> Decimal {
+        static func `for`(_ type: BitcoinScriptType) -> Decimal {
             switch type {
             case .P2PKH:
                 return p2pkh

@@ -2,13 +2,14 @@
 
 import Combine
 import DIKit
+import Errors
 import ToolKit
 
 /// Type alias representing fees data for specific crypto currencies.
 public typealias CryptoFeeType = TransactionFee & Decodable
 
 /// Service that provides fees of its associated type.
-public protocol CryptoFeeServiceAPI {
+public protocol CryptoFeeRepositoryAPI {
     associatedtype FeeType: CryptoFeeType
 
     /// Streams a single CryptoFeeType of the associated type.
@@ -17,18 +18,14 @@ public protocol CryptoFeeServiceAPI {
     var fees: AnyPublisher<FeeType, Never> { get }
 }
 
-public final class CryptoFeeService<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
+public final class CryptoFeeRepository<FeeType: TransactionFee & Decodable>: CryptoFeeRepositoryAPI {
 
-    // MARK: - CryptoFeeServiceAPI
+    private struct Key: Hashable {}
+
+    // MARK: - CryptoFeeRepositoryAPI
 
     public var fees: AnyPublisher<FeeType, Never> {
-        client.fees
-            .handleEvents(receiveCompletion: { status in
-                guard case .failure(let error) = status else {
-                    return
-                }
-                Logger.shared.error(error)
-            })
+        cachedValue.get(key: Key())
             .replaceError(with: FeeType.default)
             .eraseToAnyPublisher()
     }
@@ -37,10 +34,31 @@ public final class CryptoFeeService<FeeType: TransactionFee & Decodable>: Crypto
 
     private let client: CryptoFeeClient<FeeType>
 
+    private let cachedValue: CachedValueNew<
+        Key,
+        FeeType,
+        NetworkError
+    >
+
     // MARK: - Init
 
     init(client: CryptoFeeClient<FeeType>) {
         self.client = client
+
+        let feeCache = InMemoryCache<Key, FeeType>(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(
+                refreshInterval: .minutes(1)
+            )
+        )
+        .eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: feeCache,
+            fetch: { [client] _ in
+                client.fees
+            }
+        )
     }
 
     public convenience init() {
@@ -48,15 +66,16 @@ public final class CryptoFeeService<FeeType: TransactionFee & Decodable>: Crypto
     }
 }
 
-/// Type-erasure for CryptoFeeService.
-public struct AnyCryptoFeeService<FeeType: CryptoFeeType>: CryptoFeeServiceAPI {
+/// Type-erasure for CryptoFeeRepository.
+public struct AnyCryptoFeeRepository<FeeType: CryptoFeeType>: CryptoFeeRepositoryAPI {
 
-    private let _fees: () -> AnyPublisher<FeeType, Never>
     public var fees: AnyPublisher<FeeType, Never> {
         _fees()
     }
 
-    public init<API: CryptoFeeServiceAPI>(service: API) where API.FeeType == FeeType {
-        _fees = { service.fees }
+    private let _fees: () -> AnyPublisher<FeeType, Never>
+
+    public init<API: CryptoFeeRepositoryAPI>(repository: API) where API.FeeType == FeeType {
+        _fees = { repository.fees }
     }
 }

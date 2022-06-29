@@ -30,18 +30,22 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         .just(false)
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         custodialAddressService
             .receiveAddress(for: asset)
-            .flatMap(weak: self) { (self, address) in
-                self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
+            .eraseError()
+            .flatMap { [cryptoReceiveAddressFactory, label, onTxCompleted] address in
+                cryptoReceiveAddressFactory.makeExternalAssetAddress(
                     address: address,
-                    label: self.label,
-                    onTxCompleted: self.onTxCompleted
+                    label: label,
+                    onTxCompleted: onTxCompleted
                 )
-                .single
                 .map { $0 as ReceiveAddress }
+                .eraseError()
+                .publisher
+                .eraseToAnyPublisher()
             }
+            .eraseToAnyPublisher()
     }
 
     public var isFunded: AnyPublisher<Bool, Error> {
@@ -109,6 +113,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 return .error(PlatformKitError.default)
             }
             return self.receiveAddress
+                .asSingle()
                 .flatMapCompletable(weak: self) { (self, receiveAddress) -> Completable in
                     self.custodialPendingDepositService.createPendingDeposit(
                         value: amount,

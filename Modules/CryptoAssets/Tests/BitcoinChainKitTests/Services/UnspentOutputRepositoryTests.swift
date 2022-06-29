@@ -15,7 +15,7 @@ class UnspentOutputRepositoryTests: XCTestCase {
     override func setUp() {
         super.setUp()
         client = APIClientMock()
-        subject = UnspentOutputRepository(client: client)
+        subject = UnspentOutputRepository(client: client, coin: .bitcoin)
     }
 
     override func tearDown() {

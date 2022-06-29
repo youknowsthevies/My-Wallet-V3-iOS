@@ -100,6 +100,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         sourceAccount
             .receiveAddress
+            .asSingle()
             .map(\.address)
             .flatMap(weak: self) { (self, identifier) -> Single<String> in
                 self.bankTransferRepository

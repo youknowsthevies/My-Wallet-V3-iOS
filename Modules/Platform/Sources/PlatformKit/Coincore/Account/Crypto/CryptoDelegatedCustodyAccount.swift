@@ -18,8 +18,8 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
         .never()
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .never()
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .empty()
     }
 
     var requireSecondPassword: Single<Bool> {

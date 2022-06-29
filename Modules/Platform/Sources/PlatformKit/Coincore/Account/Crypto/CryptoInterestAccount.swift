@@ -26,11 +26,10 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public let isDefault: Bool = false
     public var accountType: AccountType = .trading
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         receiveAddressRepository
             .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
-            .eraseToAnyPublisher()
-            .asSingle()
+            .eraseError()
             .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
                 cryptoReceiveAddressFactory
                     .makeExternalAssetAddress(
@@ -38,9 +37,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                         label: "\(asset.code) \(LocalizationConstants.rewardsAccount)",
                         onTxCompleted: onTxCompleted
                     )
-                    .single
+                    .eraseError()
+                    .publisher
+                    .eraseToAnyPublisher()
             }
             .map { $0 as ReceiveAddress }
+            .eraseToAnyPublisher()
     }
 
     public var requireSecondPassword: Single<Bool> {

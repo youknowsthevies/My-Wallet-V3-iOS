@@ -72,8 +72,8 @@ public final class PaymentMethodAccount: FiatAccount {
         balance
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
     }
 
     public func balancePair(

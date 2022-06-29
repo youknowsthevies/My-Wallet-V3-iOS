@@ -469,21 +469,21 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 }
 
 extension BitcoinWallet: MnemonicAccessAPI {
-    var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
+    var mnemonic: AnyPublisher<WalletPayloadKit.Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
             return .failure(.generic)
         }
         return wallet.mnemonic
     }
 
-    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
+    var mnemonicPromptingIfNeeded: AnyPublisher<WalletPayloadKit.Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
             return .failure(.generic)
         }
         return wallet.mnemonicPromptingIfNeeded
     }
 
-    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
+    func mnemonic(with secondPassword: String?) -> AnyPublisher<WalletPayloadKit.Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
             return .failure(.generic)
         }

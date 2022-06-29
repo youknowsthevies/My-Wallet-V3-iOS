@@ -15,8 +15,8 @@ final class FiatCustodialAccount: FiatAccount {
     let fiatCurrency: FiatCurrency
     let accountType: AccountType = .trading
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
     }
 
     var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {

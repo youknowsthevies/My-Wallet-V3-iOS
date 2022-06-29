@@ -11,6 +11,8 @@ import ToolKit
 
 final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
 
+    let coinType: BitcoinChainCoin = .bitcoinCash
+
     private(set) lazy var identifier: AnyHashable = "BitcoinCashCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
     let asset: CryptoCurrency = .bitcoinCash
@@ -36,7 +38,13 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         balance
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        receiveAddressSingle
+            .asPublisher()
+            .eraseToAnyPublisher()
+    }
+
+    private var receiveAddressSingle: Single<ReceiveAddress> {
         bridge
             .receiveAddress(forXPub: xPub.address)
             .map { [label, onTxCompleted] address -> ReceiveAddress in
@@ -106,8 +114,9 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             .eraseToAnyPublisher()
     }
 
+    let xPub: XPub
+
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let xPub: XPub
     private let balanceService: BalanceServiceAPI
     private let priceService: PriceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI

@@ -9,7 +9,7 @@ final class StellarOnChainTransactionEngineFactory: OnChainTransactionEngineFact
             requireSecondPassword: requiresSecondPassword,
             walletCurrencyService: DIKit.resolve(),
             currencyConversionService: DIKit.resolve(),
-            feeService: DIKit.resolve(),
+            feeRepository: DIKit.resolve(),
             transactionDispatcher: DIKit.resolve()
         )
     }

@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import BitcoinChainKit
 @testable import BitcoinKit
+import Combine
 import Foundation
 import RxSwift
 

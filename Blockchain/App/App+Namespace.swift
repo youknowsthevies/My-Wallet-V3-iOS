@@ -19,18 +19,21 @@ let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
         default: [
-            blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
-            blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
-            blockchain.app.configuration.request.console.logging: false,
-            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.SSL.pinning.is.enabled: true,
-            blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
-            blockchain.app.configuration.native.bitcoin.transaction.is.enabled: false,
             blockchain.app.configuration.apple.pay.is.enabled: false,
             blockchain.app.configuration.card.issuing.is.enabled: false,
+            blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
+            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
+            blockchain.app.configuration.native.bitcoin.cash.is.enabled: false,
+            blockchain.app.configuration.native.bitcoin.is.enabled: false,
+            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.redesign.checkout.is.enabled: false,
-            blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha
+            blockchain.app.configuration.request.console.logging: false,
+            blockchain.app.configuration.SSL.pinning.is.enabled: true,
+            blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
+            blockchain.app.configuration.stx.all.users.is.enabled: false,
+            blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
+            blockchain.app.configuration.unified.sign_in.is.enabled: false
         ]
     )
 )
