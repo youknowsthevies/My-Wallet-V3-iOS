@@ -31,7 +31,6 @@ let package = Package(
         .package(path: "../Errors"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Platform"),
         .package(path: "../UIComponents")
     ],
     targets: [
@@ -71,10 +70,6 @@ let package = Package(
                 .product(
                     name: "Localization",
                     package: "Localization"
-                ),
-                .product(
-                    name: "PlatformKit",
-                    package: "Platform"
                 ),
                 .product(
                     name: "UIComponents",
