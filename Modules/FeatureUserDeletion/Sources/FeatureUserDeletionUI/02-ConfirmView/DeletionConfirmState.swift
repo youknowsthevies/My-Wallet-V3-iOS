@@ -70,7 +70,8 @@ public enum UserDeletionResultRoute: NavigationRoute, Hashable {
                 ),
                 then: { store in
                     DeletionResultView(store: store)
-                })
+                }
+            )
         }
     }
 }

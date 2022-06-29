@@ -7,20 +7,22 @@ public enum DeletionConfirmModule {}
 
 extension DeletionConfirmModule {
     public static var reducer = Reducer<DeletionConfirmState, DeletionConfirmAction, DeletionConfirmEnvironment>
-        .combine(DeletionResultModule
-            .reducer
-            .optional()
-            .pullback(
-                state: \.resultViewState,
-                action: /DeletionConfirmAction.onConfirmViewChanged,
-                environment: { env in
-                    DeletionResultEnvironment(
-                        mainQueue: .main,
-                        dismissFlow: env.dismissFlow,
-                        logoutAndForgetWallet: env.logoutAndForgetWallet)
-                }
-            )
-            ,deletionConfirmReducer
+        .combine(
+            DeletionResultModule
+                .reducer
+                .optional()
+                .pullback(
+                    state: \.resultViewState,
+                    action: /DeletionConfirmAction.onConfirmViewChanged,
+                    environment: { env in
+                        DeletionResultEnvironment(
+                            mainQueue: .main,
+                            dismissFlow: env.dismissFlow,
+                            logoutAndForgetWallet: env.logoutAndForgetWallet
+                        )
+                    }
+                ),
+            deletionConfirmReducer
         )
 
     public static var deletionConfirmReducer: Reducer<DeletionConfirmState, DeletionConfirmAction, DeletionConfirmEnvironment> {
