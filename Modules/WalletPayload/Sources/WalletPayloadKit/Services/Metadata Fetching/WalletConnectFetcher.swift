@@ -8,7 +8,7 @@ import ToolKit
 public protocol WalletConnectFetcherAPI {
     func fetchSessions() -> AnyPublisher<String, WalletAssetFetchError>
 
-    func update(v1Sessions: String) -> AnyPublisher<Void, WalletAssetFetchError>
+    func update(v1Sessions: String) -> AnyPublisher<Void, WalletAssetSaveError>
 }
 
 final class WalletConnectFetcher: WalletConnectFetcherAPI {
@@ -30,7 +30,9 @@ final class WalletConnectFetcher: WalletConnectFetcherAPI {
             .eraseToAnyPublisher()
     }
 
-    func update(v1Sessions: String) -> AnyPublisher<Void, WalletAssetFetchError> {
-        unimplemented()
+    func update(v1Sessions: String) -> AnyPublisher<Void, WalletAssetSaveError> {
+        let node = WalletConnectEntryPayload(sessions: v1Sessions)
+        return metadataEntryService.save(node: node)
+            .mapToVoid()
     }
 }
