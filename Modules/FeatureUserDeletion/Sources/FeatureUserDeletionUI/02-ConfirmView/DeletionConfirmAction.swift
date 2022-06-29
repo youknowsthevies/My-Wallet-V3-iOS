@@ -3,10 +3,11 @@ import ComposableNavigation
 
 public enum DeletionConfirmAction: Equatable, BindableAction, NavigationAction {
     case binding(BindingAction<DeletionConfirmState>)
-    case onAppear
-    case showResultScreen(success: Bool)
     case deleteUserAccount
-    case route(RouteIntent<UserDeletionResultRoute>?)
-    case validateConfirmationInput
     case dismissFlow
+    case onAppear
+    case onConfirmViewChanged(DeletionResultAction)
+    case route(RouteIntent<UserDeletionResultRoute>?)
+    case showResultScreen(success: Bool)
+    case validateConfirmationInput
 }

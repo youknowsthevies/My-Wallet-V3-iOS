@@ -8,13 +8,6 @@ struct ImageAsset {
         )
     }
 
-    static var iconClose: Image {
-        Image(
-            "close-circle-icon",
-            bundle: .FeatureUserDeletion
-        )
-    }
-
     static var iconInfo: Image {
         Image(
             "info-circle-icon",

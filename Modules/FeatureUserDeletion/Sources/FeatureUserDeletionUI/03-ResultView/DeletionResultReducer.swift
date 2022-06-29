@@ -7,13 +7,11 @@ extension DeletionResultModule {
         .init { _, action, environment in
             switch action {
             case .dismissFlow:
-                return .fireAndForget {
-                    environment.dismissFlow()
-                }
+                environment.dismissFlow()
+                return .none
             case .logoutAndForgetWallet:
-                return .fireAndForget {
-                    environment.logoutAndForgetWallet()
-                }
+                environment.logoutAndForgetWallet()
+                return .none
             default:
                 return .none
             }

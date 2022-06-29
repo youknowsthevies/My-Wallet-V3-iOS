@@ -13,12 +13,13 @@ public enum FormField {
 public struct DeletionConfirmState: Equatable, NavigationState {
     public var route: RouteIntent<UserDeletionResultRoute>?
 
-    @BindableState var textFieldText: String = ""
+    @BindableState public var textFieldText: String = ""
     @BindableState public var firstResponder: FormField?
 
-    var isLoading: Bool = false
-    var isConfirmationInputValid: Bool = false
-    var shouldShowInvalidInputUI: Bool = false
+    public var isLoading: Bool = false
+    public var isConfirmationInputValid: Bool = false
+    public var shouldShowInvalidInputUI: Bool = false
+    public var resultViewState: DeletionResultState?
 
     mutating func validateConfirmationInputField() {
         // handle isConfirmationInputValid
@@ -56,41 +57,20 @@ public struct DeletionConfirmState: Equatable, NavigationState {
 }
 
 public enum UserDeletionResultRoute: NavigationRoute, Hashable {
-    case showResultScreen(
-        success: Bool,
-        dismissFlow: () -> Void,
-        logoutAndForgetWallet: () -> Void
-    )
+    case showResultScreen
 
+    @ViewBuilder
     public func destination(in store: Store<DeletionConfirmState, DeletionConfirmAction>) -> some View {
         switch self {
-        case .showResultScreen(let success, let dismissFlow, let logoutAndForgetWallet):
-            return DeletionResultView(store: .init(
-                initialState: .init(success: success),
-                reducer: DeletionResultModule.reducer,
-                environment: .init(
-                    mainQueue: .main,
-                    dismissFlow: dismissFlow,
-                    logoutAndForgetWallet: logoutAndForgetWallet
-                )
-            ))
-        }
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        switch self {
         case .showResultScreen:
-            hasher.combine("showResultScreen")
-        }
-    }
-
-    public static func == (
-        lhs: UserDeletionResultRoute,
-        rhs: UserDeletionResultRoute
-    ) -> Bool {
-        switch (lhs, rhs) {
-        case (.showResultScreen, .showResultScreen):
-            return true
+            IfLetStore(
+                store.scope(
+                    state: \.resultViewState,
+                    action: DeletionConfirmAction.onConfirmViewChanged
+                ),
+                then: { store in
+                    DeletionResultView(store: store)
+                })
         }
     }
 }
