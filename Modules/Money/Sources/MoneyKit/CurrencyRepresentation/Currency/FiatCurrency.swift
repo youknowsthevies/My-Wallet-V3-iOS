@@ -25,6 +25,7 @@
  ```
  */
 import Foundation
+import Localization
 
 public enum FiatCurrency: String, Currency, Codable, CaseIterable, Equatable {
 
@@ -956,7 +957,18 @@ extension FiatCurrency {
     public static let maxDisplayPrecision: Int = allCases.map(\.displayPrecision).max() ?? 0
 
     public var name: String {
-        currentLocale.localizedString(forCurrencyCode: code) ?? ""
+        switch self {
+        case .USD:
+            return LocalizationConstants.Fiat.usd
+        case .GBP:
+            return LocalizationConstants.Fiat.gbp
+        case .EUR:
+            return LocalizationConstants.Fiat.eur
+        case .ARS:
+            return LocalizationConstants.Fiat.ars
+        default:
+            return currentLocale.localizedString(forCurrencyCode: code) ?? ""
+        }
     }
 
     public var code: String { rawValue }

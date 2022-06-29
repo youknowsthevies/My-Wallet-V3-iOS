@@ -26,7 +26,8 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../Localization")
     ],
     targets: [
         .target(
@@ -34,7 +35,8 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "Localization", package: "Localization")
             ],
             resources: [
                 .copy("Resources/local-currencies-custodial.json"),
