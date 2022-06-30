@@ -59,9 +59,10 @@ private func walletCoreKeyPair(
     let childKeyPath = derivationPath(
         for: unspentOutput
     )
+    let unspentOutputIsSegWit = unspentOutput.isSegwit
     let derivation = context.derivations.all
-        .first(where: {
-            $0.type.isSegwit == unspentOutput.isSegwit
+        .first(where: { derivation in
+            derivation.type.isSegwit == unspentOutputIsSegWit
         })!
     let key = derivation.childKey(with: childKeyPath)
     let xpriv = derivation.xpriv

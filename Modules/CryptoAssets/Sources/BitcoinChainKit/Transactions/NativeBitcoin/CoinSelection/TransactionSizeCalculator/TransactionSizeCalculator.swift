@@ -4,6 +4,24 @@ import BigInt
 import PlatformKit
 import ToolKit
 
+protocol TransactionSizeCalculating {
+    func transactionBytes(
+        inputs: TransactionSizeCalculatorQuantities,
+        outputs: TransactionSizeCalculatorQuantities
+    ) -> Decimal
+
+    func dustThreshold(
+        for feePerByte: BigUInt,
+        type: BitcoinScriptType
+    ) -> Decimal
+
+    func effectiveBalance(
+        for feePerByte: BigUInt,
+        inputs: [UnspentOutput],
+        outputs: TransactionSizeCalculatorQuantities
+    ) -> BigUInt
+}
+
 struct TransactionSizeCalculator: TransactionSizeCalculating {
 
     /// The total bytes used for a transaction with the given inputs and outputs.
@@ -13,11 +31,8 @@ struct TransactionSizeCalculator: TransactionSizeCalculating {
     ) -> Decimal {
         var vBytesTotal: Decimal = 0
 
-        vBytesTotal += TransactionCost.PerInput.p2pkh * Decimal(inputs.p2pkh)
-        vBytesTotal += TransactionCost.PerInput.p2wpkh * Decimal(inputs.p2wpkh)
-
-        vBytesTotal += TransactionCost.PerOutput.p2pkh * Decimal(outputs.p2pkh)
-        vBytesTotal += TransactionCost.PerOutput.p2wpkh * Decimal(outputs.p2wpkh)
+        vBytesTotal += inputs.vBytesTotalInput
+        vBytesTotal += outputs.vBytesTotalOutput
 
         var overhead: Decimal = overhead(for: inputs)
 
@@ -45,7 +60,10 @@ struct TransactionSizeCalculator: TransactionSizeCalculating {
         outputs: TransactionSizeCalculatorQuantities
     ) -> BigUInt {
         let feePerByte = feePerByte.decimal
-        let transactionBytes = transactionBytes(inputs: quantify(unspentOutputs: inputs), outputs: outputs)
+        let transactionBytes = transactionBytes(
+            inputs: .init(unspentOutputs: inputs),
+            outputs: outputs
+        )
         let cost = (transactionBytes * feePerByte).roundTo(places: 0, roundingMode: .up)
         let balance = inputs.sum()
         let costBig = BigUInt((cost as NSDecimalNumber).stringValue)!

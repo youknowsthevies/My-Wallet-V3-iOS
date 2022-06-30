@@ -48,8 +48,8 @@ class TransactionSizeCalculatorTests: XCTestCase {
             }
 
             return subject.transactionBytes(
-                inputs: inputs,
-                outputs: outputs
+                inputs: .init(unspentOutputs: inputs),
+                outputs: .init(unspentOutputs: outputs)
             )
         }
     }
@@ -127,11 +127,11 @@ class TransactionSizeCalculatorTests: XCTestCase {
 
     func testEffectiveBalanceNoInputNoOutput() {
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 0, inputs: [], outputs: []),
+            subject.effectiveBalance(for: 0, inputs: [], outputs: .zero),
             0
         )
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 55, inputs: [], outputs: []),
+            subject.effectiveBalance(for: 55, inputs: [], outputs: .zero),
             0
         )
     }
@@ -146,13 +146,14 @@ class TransactionSizeCalculatorTests: XCTestCase {
             .createP2PKH(with: .zero(currency: .bitcoin)),
             .createP2PKH(with: .zero(currency: .bitcoin))
         ]
+        let outputQuantities = TransactionSizeCalculatorQuantities(unspentOutputs: outputs)
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 0, inputs: inputs, outputs: outputQuantities),
             45000
         )
         // 45000 - 55 * (10 + 3*148 + 2*34) = 45000 - ceil(28710) = 16290
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 55, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 55, inputs: inputs, outputs: outputQuantities),
             16290
         )
     }
@@ -167,13 +168,14 @@ class TransactionSizeCalculatorTests: XCTestCase {
             .createP2PKH(with: .zero(currency: .bitcoin)),
             .createP2PKH(with: .zero(currency: .bitcoin))
         ]
+        let outputQuantities = TransactionSizeCalculatorQuantities(unspentOutputs: outputs)
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 0, inputs: inputs, outputs: outputQuantities),
             45000
         )
         // 45000 - 55 * (10.75 + 2*67.75 + 148 + 2*34) = 45000 - ceil(19923.75) = 25076
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 55, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 55, inputs: inputs, outputs: outputQuantities),
             25076
         )
     }
@@ -188,13 +190,14 @@ class TransactionSizeCalculatorTests: XCTestCase {
             .createP2PKH(with: .zero(currency: .bitcoin)),
             .createP2PKH(with: .zero(currency: .bitcoin))
         ]
+        let outputQuantities = TransactionSizeCalculatorQuantities(unspentOutputs: outputs)
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 0, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 0, inputs: inputs, outputs: outputQuantities),
             45000
         )
         // 45000 - 55 * (10.75 + 3*67.75 + 2*34) = 45000 - ceil(15510) = 29490
         XCTAssertEqual(
-            subject.effectiveBalance(fee: 55, inputs: inputs, outputs: outputs),
+            subject.effectiveBalance(for: 55, inputs: inputs, outputs: outputQuantities),
             29490
         )
     }

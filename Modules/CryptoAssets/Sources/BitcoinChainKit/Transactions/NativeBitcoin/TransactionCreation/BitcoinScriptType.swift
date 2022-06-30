@@ -14,7 +14,18 @@ public enum BitcoinScriptType: String {
     case P2WSH
 
     public init?(scriptData: Data) {
-        let script = BitcoinScript(data: scriptData)
+        self.init(script: WalletCore.BitcoinScript(data: scriptData))
+    }
+
+    public init?(address: String, coin: BitcoinChainCoin) {
+        let lockScript = WalletCore.BitcoinScript.lockScriptForAddress(
+            address: address,
+            coin: coin.walletCoreCoinType
+        )
+        self.init(script: lockScript)
+    }
+
+    private init?(script: WalletCore.BitcoinScript) {
         if script.isPayToWitnessPublicKeyHash {
             self = .P2WPKH
         } else if script.isPayToWitnessScriptHash {
@@ -26,13 +37,5 @@ public enum BitcoinScriptType: String {
         } else {
             return nil
         }
-    }
-
-    public init?(address: String, coin: BitcoinChainCoin) {
-        let lockScript = WalletCore.BitcoinScript.lockScriptForAddress(
-            address: address,
-            coin: coin.walletCoreCoinType
-        )
-        self.init(scriptData: lockScript.data)
     }
 }
