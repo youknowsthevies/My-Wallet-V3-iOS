@@ -739,6 +739,51 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.DecryptId()),
             .cancel(id: WalletCancelations.AuthenticationId())
         )
+    case .loggedIn(.deleteWallet):
+
+        // logout
+        environment.walletManager.close()
+
+        NotificationCenter.default.post(name: .logout, object: nil)
+        environment.analyticsRecorder.record(
+            event: AnalyticsEvents.New.Navigation.signedOut
+        )
+
+        environment.siftService.removeUserId()
+        environment.sharedContainer.reset()
+        environment.blockchainSettings.reset()
+
+        // forget wallet
+        environment.credentialsStore.erase()
+        environment.walletManager.forgetWallet()
+        environment.forgetWalletService.forget()
+
+        // update state
+        state.loggedIn = nil
+        state.onboarding = .init(
+            welcomeState: .init()
+        )
+
+        return .merge(
+            environment
+                .pushNotificationsRepository
+                .revokeToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
+            environment
+                .mobileAuthSyncService
+                .updateMobileSetup(isMobileSetup: false)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
+            environment
+                .mobileAuthSyncService
+                .verifyCloudBackup(hasCloudBackup: false)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget()
+        )
 
     case .onboarding(.welcomeScreen(.informWalletFetched(let context))):
         return Effect(value: .wallet(.walletFetched(.success(context))))

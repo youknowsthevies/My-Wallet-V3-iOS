@@ -463,6 +463,11 @@ extension RootViewController: LoggedInBridge {
         )
     }
 
+    func logoutAndForgetWallet() {
+        viewStore.send(.dismiss())
+        send(.deleteWallet)
+    }
+
     func handleAccountsAndAddresses() {
         let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
         let viewController = storyboard.instantiateViewController(

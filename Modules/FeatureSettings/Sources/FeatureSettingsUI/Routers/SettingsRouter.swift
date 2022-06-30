@@ -10,6 +10,8 @@ import FeatureNotificationPreferencesUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
+import FeatureUserDeletionData
+import FeatureUserDeletionUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -139,6 +141,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.externalActionsProvider = externalActionsProvider
         self.cardIssuingAdapter = cardIssuingAdapter
         self.exchangeUrlProvider = exchangeUrlProvider
+
         self.urlOpener = urlOpener
 
         previousRelay
@@ -322,6 +325,8 @@ final class SettingsRouter: SettingsRouterAPI {
             showNotificationsSettingsScreen()
         case .showReferralScreen(let referral):
             showReferralScreen(with: referral)
+        case .showUserDeletionScreen:
+            showUserDeletionScreen()
         case .none:
             break
         }
@@ -409,6 +414,30 @@ final class SettingsRouter: SettingsRouterAPI {
             )
         ))
         presenter.present(referralView)
+    }
+
+    private func showUserDeletionScreen() {
+        let presenter = topViewController
+        let logoutAndForgetWallet = { [weak self] in
+            presenter.dismiss(animated: true) {
+                self?.externalActionsProvider
+                    .logoutAndForgetWallet()
+            }
+        }
+        let dismissFlow = {
+            presenter.dismiss(animated: true)
+        }
+        let view = UserDeletionView(store: .init(
+            initialState: UserDeletionState(),
+            reducer: UserDeletionModule.reducer,
+            environment: .init(
+                mainQueue: .main,
+                userDeletionRepository: resolve(),
+                dismissFlow: dismissFlow,
+                logoutAndForgetWallet: logoutAndForgetWallet
+            )
+        ))
+        presenter.present(view)
     }
 
     private func showBankLinkingFlow(currency: FiatCurrency) {

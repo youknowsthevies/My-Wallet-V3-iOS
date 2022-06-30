@@ -30,5 +30,6 @@ public enum SettingsScreenAction {
     case showCardIssuing
     case showNotificationsSettings
     case showReferralScreen(Referral)
+    case showUserDeletionScreen
     case none
 }
