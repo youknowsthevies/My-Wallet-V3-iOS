@@ -8,6 +8,7 @@ import ComposableNavigation
 import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
+import WalletPayloadKit
 
 // MARK: - Type
 
@@ -40,6 +41,7 @@ public enum WelcomeAction: Equatable, NavigationAction {
     case manualPairing(CredentialsAction) // should only be on internal build
     case informSecondPasswordDetected
     case informForWalletInitialization
+    case informWalletFetched(WalletFetchedContext)
 
     case triggerAuthenticate // needed for legacy wallet flow
     case triggerCancelAuthenticate // needed for legacy wallet flow
@@ -276,6 +278,12 @@ public let welcomeReducer = Reducer.combine(
         case .createWallet(.triggerAuthenticate):
             return Effect(value: .triggerAuthenticate)
 
+        case .createWallet(.informWalletFetched(let context)):
+            return Effect(value: .informWalletFetched(context))
+
+        case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.informWalletFetched(let context))))):
+            return Effect(value: .informWalletFetched(context))
+
         // TODO: refactor this by not relying on access lower level reducers
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),
              .emailLogin(.verifyDevice(.upgradeAccount(.skipUpgrade(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
@@ -297,6 +305,9 @@ public let welcomeReducer = Reducer.combine(
              .manualPairing(.secondPasswordNotice(.returnTapped)):
             return .dismiss()
 
+        case .manualPairing(.seedPhrase(.informWalletFetched(let context))):
+            return Effect(value: .informWalletFetched(context))
+
         case .manualPairing:
             return .none
 
@@ -306,8 +317,12 @@ public let welcomeReducer = Reducer.combine(
         case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.triggerAuthenticate)))):
             return Effect(value: .triggerAuthenticate)
 
-        case .restoreWallet(.restored(.success)),
-             .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success))))):
+        case .restoreWallet(.restored(.success(.right(let context)))),
+             .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success(.right(let context))))))):
+            return Effect(value: .informWalletFetched(context))
+
+        case .restoreWallet(.restored(.success(.left(.noValue)))),
+             .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success(.left(.noValue))))))):
             return environment.nativeWalletEnabled()
                 .eraseToEffect()
                 .map { isEnabled -> WelcomeAction in
@@ -336,7 +351,8 @@ public let welcomeReducer = Reducer.combine(
 
         case .triggerAuthenticate,
              .triggerCancelAuthenticate,
-             .informForWalletInitialization:
+             .informForWalletInitialization,
+             .informWalletFetched:
             // handled in core coordinator
             return .none
 

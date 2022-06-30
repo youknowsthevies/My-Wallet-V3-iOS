@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 @testable import FeatureAuthenticationDomain
+@testable import WalletPayloadKit
+
+import Combine
 import ToolKit
-import WalletPayloadKit
 
 public final class WalletFetcherServiceMock {
     public var fetchWalletCalled: Bool = false
@@ -13,13 +14,31 @@ public final class WalletFetcherServiceMock {
 
     public func mock() -> WalletFetcherService {
         WalletFetcherService(
-            fetchWallet: { [weak self] _, _, _ -> AnyPublisher<EmptyValue, WalletError> in
+            fetchWallet: { [weak self] guid, sharedKey, password
+                -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
                 self?.fetchWalletCalled = true
-                return .just(.noValue)
+                return .just(
+                    .right(
+                        WalletFetchedContext(
+                            guid: guid,
+                            sharedKey: sharedKey,
+                            passwordPartHash: hashPassword(password)
+                        )
+                    )
+                )
             },
-            fetchWalletAfterAccountRecovery: { [weak self] _, _, _, _ -> AnyPublisher<EmptyValue, WalletError> in
+            fetchWalletAfterAccountRecovery: { [weak self] guid, sharedKey, password, _
+                -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
                 self?.fetchWalletAfterAccountRecoveryCalled = true
-                return .just(.noValue)
+                return .just(
+                    .right(
+                        WalletFetchedContext(
+                            guid: guid,
+                            sharedKey: sharedKey,
+                            passwordPartHash: hashPassword(password)
+                        )
+                    )
+                )
             }
         )
     }

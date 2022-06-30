@@ -10,6 +10,7 @@ import Localization
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+import WalletPayloadKit
 
 public enum CreateAccountIds {
     public struct CreationId: Hashable {}
@@ -178,6 +179,8 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case accountRecoveryFailed(WalletRecoveryError)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
     case accountImported(Result<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError>)
+    case walletFetched(Result<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError>)
+    case informWalletFetched(WalletFetchedContext)
     // required for legacy flow
     case triggerAuthenticate
     case none
@@ -365,9 +368,28 @@ let createAccountReducer = Reducer<
                     .fetchWallet(context.guid, context.sharedKey, context.password)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
-                    .map { _ in CreateAccountAction.none }
+                    .map(CreateAccountAction.walletFetched)
             )
         )
+
+    case .walletFetched(.success(.left(.noValue))):
+        // do nothing, this for the legacy JS, to be removed
+        return .none
+
+    case .walletFetched(.success(.right(let context))):
+        return Effect(value: .informWalletFetched(context))
+
+    case .walletFetched(.failure(let error)):
+        let title = LocalizationConstants.ErrorAlert.title
+        let message = error.errorDescription ?? LocalizationConstants.ErrorAlert.message
+        return Effect(
+            value: .alert(
+                .show(title: title, message: message)
+            )
+        )
+
+    case .informWalletFetched:
+        return .none
 
     case .accountImported(.success(.right(.noValue))):
         // this will only be true in case of legacy wallet

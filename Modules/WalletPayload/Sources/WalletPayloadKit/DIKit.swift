@@ -47,6 +47,7 @@ extension DependencyContainer {
                 walletRepo: DIKit.resolve(),
                 payloadCrypto: DIKit.resolve(),
                 walletLogic: DIKit.resolve(),
+                walletPayloadRepository: DIKit.resolve(),
                 operationsQueue: queue
             )
         }

@@ -740,6 +740,9 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.AuthenticationId())
         )
 
+    case .onboarding(.welcomeScreen(.informWalletFetched(let context))):
+        return Effect(value: .wallet(.walletFetched(.success(context))))
+
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):
         // reset
