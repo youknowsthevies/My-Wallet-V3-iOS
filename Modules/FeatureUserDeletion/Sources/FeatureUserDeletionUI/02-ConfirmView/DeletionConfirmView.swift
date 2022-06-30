@@ -23,10 +23,7 @@ public struct DeletionConfirmView: View {
                 Group {
                     ProgressView()
                         .progressViewStyle(
-                            IndeterminateProgressViewStyle(
-                                railColor: Color.semantic.primary,
-                                trackColor: Color.semantic.blueBG
-                            )
+                            IndeterminateProgressViewStyle()
                         )
                         .frame(width: 104, height: 104)
 
