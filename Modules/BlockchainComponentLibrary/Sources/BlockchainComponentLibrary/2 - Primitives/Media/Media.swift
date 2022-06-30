@@ -1,4 +1,5 @@
 import AVKit
+import CasePaths
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -6,6 +7,7 @@ public enum Media: View {
 
     case image(Image)
     case svg(SVG)
+    case gif(GIF)
     case video(VideoPlayer<EmptyView>)
 
     @ViewBuilder public var body: some View {
@@ -14,6 +16,8 @@ public enum Media: View {
             image
         case .svg(let svg):
             svg
+        case .gif(let gif):
+            gif
         case .video(let video):
             video
         }
@@ -47,10 +51,18 @@ public struct AsyncMedia<Content: View>: View {
 
     public var body: some View {
         if uniformTypeIdentifier.conforms(to: .svg) {
-            AsyncSVG(
+            AsyncDataView(
+                type: SVG.self,
                 url: url,
                 transaction: transaction,
                 content: { phase in content(phase.map(Media.svg)) }
+            )
+        } else if uniformTypeIdentifier.conforms(to: .gif) {
+            AsyncDataView(
+                type: GIF.self,
+                url: url,
+                transaction: transaction,
+                content: { phase in content(phase.map(Media.gif)) }
             )
         } else if uniformTypeIdentifier.conforms(to: .audiovisualContent) {
             if let url = url {
@@ -65,13 +77,11 @@ public struct AsyncMedia<Content: View>: View {
                 content(.empty)
             }
         } else {
-            Backport.AsyncImage(
+            AsyncDataView(
+                type: Image.self,
                 url: url,
-                scale: scale,
                 transaction: transaction,
-                content: { phase in
-                    content(phase.map { image in Media.image(image.resizable()) })
-                }
+                content: { phase in content(phase.map(Media.image)) }
             )
         }
     }
@@ -176,4 +186,82 @@ extension AsyncPhase where Success == Media {
 extension URL {
 
     var uniformTypeIdentifier: UTType? { UTType(filenameExtension: pathExtension) }
+}
+
+public protocol DataContent: View {
+    init?(_ data: Data?)
+}
+
+public struct AsyncDataView<Data, Content>: View where Data: DataContent, Content: View {
+
+    private let url: URL?
+    private let transaction: Transaction
+    private let content: (AsyncPhase<Data>) -> Content
+
+    @StateObject private var loader: AsyncLoader<Data>
+
+    public init(
+        type: Data.Type = Data.self,
+        url: URL?,
+        transaction: Transaction = Transaction(),
+        @ViewBuilder content: @escaping (AsyncPhase<Data>) -> Content
+    ) {
+        self.url = url
+        self.transaction = transaction
+        self.content = content
+        _loader = .init(wrappedValue: .init(transform: { data in Data(data) }))
+    }
+
+    public var body: some View {
+        withTransaction(transaction) {
+            content(loader.phase)
+        }
+        .onChange(of: url) { url in
+            loader.load(resource: url)
+        }
+        .onAppear {
+            loader.load(resource: url)
+        }
+        .id(url)
+    }
+}
+
+extension AsyncDataView {
+
+    public init(url: URL?) where Content == _ConditionalContent<Data, Icon> {
+        self.init(url: url, placeholder: { Icon.error })
+    }
+}
+
+extension AsyncDataView {
+
+    public init<I: View, P: View>(
+        url: URL?,
+        @ViewBuilder content: @escaping (Data) -> I,
+        @ViewBuilder placeholder: @escaping () -> P
+    ) where Content == _ConditionalContent<I, P> {
+        self.init(url: url) { phase in
+            if case .success(let view) = phase {
+                content(view)
+            } else {
+                placeholder()
+            }
+        }
+    }
+
+    public init<P: View>(
+        url: URL?,
+        @ViewBuilder placeholder: @escaping () -> P
+    ) where Content == _ConditionalContent<Data, P> {
+        self.init(
+            url: url,
+            content: { phase in
+                if case .success(let view) = phase {
+                    view
+                } else {
+                    placeholder()
+                }
+            }
+        )
+    }
 }

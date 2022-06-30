@@ -151,6 +151,14 @@ public final class SVG: Codable {
     }
 }
 
+extension SVG: DataContent {
+
+    public convenience init?(_ data: Data?) {
+        guard let data = data else { return nil }
+        self.init(data)
+    }
+}
+
 extension SVG: CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
@@ -255,7 +263,7 @@ public struct AsyncSVG<Content>: View where Content: View {
     private let transaction: Transaction
     private let content: (AsyncPhase<SVG>) -> Content
 
-    @StateObject private var loader: Loader
+    @StateObject private var loader: AsyncLoader<SVG>
 
     public init(
         url: URL?,
@@ -265,7 +273,7 @@ public struct AsyncSVG<Content>: View where Content: View {
         self.url = url
         self.transaction = transaction
         self.content = content
-        _loader = .init(wrappedValue: .init())
+        _loader = .init(wrappedValue: .init(transform: { data in SVG(data) }))
     }
 
     public var body: some View {
@@ -343,46 +351,52 @@ extension AsyncPhase where Success == SVG {
     }
 }
 
-extension AsyncSVG {
+class AsyncLoader<Media: View>: ObservableObject {
 
-    private class Loader: ObservableObject {
+    @Published private(set) var phase: AsyncPhase<Media> = .empty
 
-        @Published private(set) var phase: AsyncPhase<SVG> = .empty
+    private let session: URLSession
+    private let transform: (Data) -> Media?
+    private var cancellable: AnyCancellable?
 
-        private var cancellable: AnyCancellable?
+    init(
+        session: URLSession = .shared,
+        transform: @escaping (Data?) -> Media?
+    ) {
+        self.session = session
+        self.transform = transform
+    }
 
-        init() {}
-        deinit { cancel() }
+    deinit { cancel() }
 
-        func load(resource: URL?) {
-            switch resource {
-            case nil:
-                phase = .empty
-            case let url?:
-                cancellable = URLSession.shared.dataTaskPublisher(for: url)
-                    .receive(on: DispatchQueue.main)
-                    .sink(
-                        receiveCompletion: { [weak self] completion in
-                            switch completion {
-                            case .failure(let error):
-                                self?.phase = .failure(error)
-                            case .finished:
-                                break
-                            }
-                        },
-                        receiveValue: { [weak self] output in
-                            if let svg = SVG(output.data) {
-                                self?.phase = .success(svg)
-                            } else {
-                                self?.phase = .empty
-                            }
+    func load(resource: URL?) {
+        switch resource {
+        case nil:
+            phase = .empty
+        case let url?:
+            cancellable = session.dataTaskPublisher(for: url)
+                .receive(on: DispatchQueue.main)
+                .sink(
+                    receiveCompletion: { [weak self] completion in
+                        switch completion {
+                        case .failure(let error):
+                            self?.phase = .failure(error)
+                        case .finished:
+                            break
                         }
-                    )
-            }
+                    },
+                    receiveValue: { [weak self] output in
+                        if let media = self?.transform(output.data) {
+                            self?.phase = .success(media)
+                        } else {
+                            self?.phase = .empty
+                        }
+                    }
+                )
         }
+    }
 
-        func cancel() {
-            cancellable?.cancel()
-        }
+    func cancel() {
+        cancellable?.cancel()
     }
 }

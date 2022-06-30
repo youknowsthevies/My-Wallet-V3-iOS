@@ -1,6 +1,7 @@
 import Lottie
 import SwiftUI
 
+#if canImport(UIKit)
 public struct LottieView: UIViewRepresentable {
 
     public let json: Data?
@@ -38,7 +39,7 @@ public struct LottieView: UIViewRepresentable {
         Container(frame: .zero)
     }
 
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
+    public func updateUIView(_ uiView: Container, context: Context) {
         if let json = json {
             do {
                 uiView.animationView.animation = try JSONDecoder()
@@ -51,6 +52,58 @@ public struct LottieView: UIViewRepresentable {
         uiView.animationView.play()
     }
 }
+#else
+public struct LottieView: NSViewRepresentable {
+
+    public let json: Data?
+    public let loopMode: LottieLoopMode
+
+    public init(json: String, loopMode: LottieLoopMode = .loop) {
+        self.json = Data(json.utf8)
+        self.loopMode = loopMode
+    }
+
+    public init(json: Data?, loopMode: LottieLoopMode = .loop) {
+        self.json = json
+        self.loopMode = loopMode
+    }
+
+    public class Container: NSView {
+        let animationView = AnimationView()
+        override public func viewDidMoveToSuperview() {
+            super.viewDidMoveToSuperview()
+            animationView.contentMode = .scaleAspectFit
+            animationView.translatesAutoresizingMaskIntoConstraints = false
+            if animationView.superview !== self {
+                addSubview(animationView)
+                NSLayoutConstraint.activate(
+                    [
+                        animationView.heightAnchor.constraint(equalTo: heightAnchor),
+                        animationView.widthAnchor.constraint(equalTo: widthAnchor)
+                    ]
+                )
+            }
+        }
+    }
+
+    public func makeNSView(context: NSViewRepresentableContext<LottieView>) -> Container {
+        Container(frame: .zero)
+    }
+
+    public func updateNSView(_ nsView: Container, context: Context) {
+        if let json = json {
+            do {
+                nsView.animationView.animation = try JSONDecoder()
+                    .decode(Animation.self, from: json)
+            } catch {
+                nsView.animationView.animation = nil
+            }
+        }
+        nsView.animationView.loopMode = loopMode
+        nsView.animationView.play()
+    }
+}
+#endif
 
 struct LottieView_Previews: PreviewProvider {
 
