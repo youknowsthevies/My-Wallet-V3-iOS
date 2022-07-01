@@ -45,7 +45,7 @@ public struct AccountSnapshot: Identifiable, Equatable {
     }
 }
 
-public struct AccountBalance: Codable, Equatable {
+public struct AccountBalance: Decodable, Equatable {
 
     public let balance: Money
 

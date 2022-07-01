@@ -44,7 +44,7 @@ struct ProductSelectionView: View {
                         .onTapGesture {}
                 }
                 PrimaryButton(title: localizedStrings.Selection.Button.Title.create) {
-                    viewStore.send(.setStep(.creating))
+                    viewStore.send(.createCard)
                 }
                 .disabled(!viewStore.state.termsAccepted || viewStore.state.products.isEmpty)
             }

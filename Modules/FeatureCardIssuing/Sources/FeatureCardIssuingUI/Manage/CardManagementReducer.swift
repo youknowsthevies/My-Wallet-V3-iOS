@@ -29,9 +29,12 @@ public enum CardManagementAction: Equatable, BindableAction {
     case showManagementDetails
     case showSelectLinkedAccountFlow
     case showSupportFlow
-    case showTransaction(CardTransaction)
+    case showTransaction(Card.Transaction)
     case openBuyFlow
     case openSwapFlow
+    case fetchMoreTransactions
+    case fetchTransactionsResponse(Result<[Card.Transaction], NabuNetworkError>)
+    case setTransactionDetailsVisible(Bool)
     case binding(BindingAction<CardManagementState>)
 }
 
@@ -40,6 +43,7 @@ public struct CardManagementState: Equatable {
     @BindableState var isLocked = false
     @BindableState var isDetailScreenVisible = false
     @BindableState var isTopUpPresented = false
+    @BindableState var isTransactionListPresented = false
     @BindableState var isDeleteCardPresented = false
     @BindableState var isDeleting = false
 
@@ -47,9 +51,10 @@ public struct CardManagementState: Equatable {
     var cardHelperUrl: URL?
     var cardHelperIsReady = false
     var error: NabuNetworkError?
-    var transactions: [CardTransaction] = []
-    var displayedTransaction: CardTransaction?
+    var transactions: [Card.Transaction] = []
+    var displayedTransaction: Card.Transaction?
     var linkedAccount: AccountSnapshot?
+    var canFetchMoreTransactions = true
 
     public init(
         card: Card? = nil,
@@ -57,7 +62,7 @@ public struct CardManagementState: Equatable {
         cardHelperUrl: URL? = nil,
         cardHelperIsReady: Bool = false,
         error: NabuNetworkError? = nil,
-        transactions: [CardTransaction] = []
+        transactions: [Card.Transaction] = []
     ) {
         self.card = card
         self.isLocked = isLocked
@@ -88,6 +93,7 @@ public struct CardManagementEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardService: CardServiceAPI
     let productsService: ProductsServiceAPI
+    let transactionService: TransactionServiceAPI
     let accountModelProvider: AccountProviderAPI
     let topUpRouter: TopUpRouterAPI
     let supportRouter: SupportRouterAPI
@@ -98,6 +104,7 @@ public struct CardManagementEnvironment {
         cardService: CardServiceAPI,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         productsService: ProductsServiceAPI,
+        transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
         topUpRouter: TopUpRouterAPI,
         close: @escaping () -> Void
@@ -105,6 +112,7 @@ public struct CardManagementEnvironment {
         self.mainQueue = mainQueue
         self.cardService = cardService
         self.productsService = productsService
+        self.transactionService = transactionService
         self.accountModelProvider = accountModelProvider
         self.supportRouter = supportRouter
         self.topUpRouter = topUpRouter
@@ -128,16 +136,22 @@ public let cardManagementReducer = Reducer<
         state.isDetailScreenVisible = false
         return .none
     case .onAppear:
-        return env.cardService
-            .fetchCards()
-            .map { cards in
-                cards.first(where: { card in
-                    card.status == .active
-                        || card.status == .locked
-                })
-            }
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardManagementAction.getCardResponse)
+        return .merge(
+            env.cardService
+                .fetchCards()
+                .map { cards in
+                    cards.first(where: { card in
+                        card.status == .active
+                            || card.status == .locked
+                    })
+                }
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.getCardResponse),
+            env.transactionService
+                .fetchTransactions()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.fetchTransactionsResponse)
+        )
     case .onDisappear:
         return .none
     case .showManagementDetails:
@@ -256,6 +270,22 @@ public let cardManagementReducer = Reducer<
     case .showTransaction(let transaction):
         state.displayedTransaction = transaction
         return .none
+    case .fetchMoreTransactions:
+        guard state.canFetchMoreTransactions else {
+            return .none
+        }
+        state.canFetchMoreTransactions = false
+        return env.transactionService
+            .fetchMore()
+            .receive(on: env.mainQueue)
+            .catchToEffect(CardManagementAction.fetchTransactionsResponse)
+    case .fetchTransactionsResponse(.success(let transactions)):
+        state.canFetchMoreTransactions = transactions != state.transactions
+        state.transactions = transactions
+        return .none
+    case .fetchTransactionsResponse(.failure):
+        state.canFetchMoreTransactions = false
+        return .none
     case .binding(\.$isLocked):
         guard let card = state.card else { return .none }
         switch state.isLocked {
@@ -270,6 +300,11 @@ public let cardManagementReducer = Reducer<
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardManagementAction.unlockCardResponse)
         }
+    case .setTransactionDetailsVisible(let visible):
+        if !visible {
+            state.displayedTransaction = nil
+        }
+        return .none
     case .binding:
         return .none
     }
@@ -284,6 +319,7 @@ extension CardManagementEnvironment {
             cardService: MockServices(),
             mainQueue: .main,
             productsService: MockServices(),
+            transactionService: MockServices(),
             supportRouter: MockServices(),
             topUpRouter: MockServices(),
             close: {}

@@ -285,7 +285,7 @@ extension FeatureCardIssuingDomain.Card.Address {
             line1: address.lineOne,
             line2: address.lineTwo,
             city: address.city,
-            postcode: address.postalCode,
+            postCode: address.postalCode,
             state: address.state,
             country: address.country.code
         )

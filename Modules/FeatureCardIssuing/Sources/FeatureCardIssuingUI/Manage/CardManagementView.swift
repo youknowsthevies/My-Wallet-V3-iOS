@@ -37,6 +37,7 @@ struct CardManagementView: View {
     }
 
     @ViewBuilder var content: some View {
+        // swiftlint:disable closure_body_length
         WithViewStore(store) { viewStore in
             ScrollView {
                 LazyVStack {
@@ -79,15 +80,44 @@ struct CardManagementView: View {
                             .stroke(Color.semantic.light, lineWidth: 1)
                     )
                     .padding(Spacing.padding2)
+                    VStack {
+                        HStack {
+                            Text(localizedStrings.RecentTransactions.title)
+                                .typography(.body2)
+                            Spacer()
+                            SmallMinimalButton(title: localizedStrings.Button.seeAll) {
+                                viewStore.send(
+                                    .binding(
+                                        .set(
+                                            \.$isTransactionListPresented,
+                                            true
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                        .padding(.horizontal, Spacing.padding2)
+                        VStack(spacing: 0) {
+                            PrimaryDivider()
+                            ForEach(viewStore.state.transactions.prefix(3)) { transaction in
+                                ActivityRow(transaction) {
+                                    viewStore.send(.showTransaction(transaction))
+                                }
+                                PrimaryDivider()
+                            }
+                        }
+                    }
+                    Text(localizedStrings.disclaimer)
+                        .typography(.caption1.regular())
+                        .multilineTextAlignment(.center)
+                        .padding(Spacing.padding4)
+                        .foregroundColor(.semantic.muted)
                 }
                 .listStyle(PlainListStyle())
                 .background(Color.semantic.background.ignoresSafeArea())
             }
             .onAppear { viewStore.send(.onAppear) }
             .onDisappear { viewStore.send(.onDisappear) }
-            .sheet(isPresented: viewStore.binding(\.$isDetailScreenVisible)) {
-                CardManagementDetailsView(store: store)
-            }
             .navigationTitle(
                 LocalizationConstants
                     .CardIssuing
@@ -97,6 +127,26 @@ struct CardManagementView: View {
             .bottomSheet(
                 isPresented: viewStore.binding(\.$isTopUpPresented),
                 content: { topUpSheet }
+            )
+            .sheet(
+                isPresented: viewStore.binding(\.$isDetailScreenVisible),
+                content: { CardManagementDetailsView(store: store) }
+            )
+            .bottomSheet(
+                isPresented: viewStore.binding(
+                    get: {
+                        $0.displayedTransaction != nil
+                    },
+                    send: CardManagementAction.setTransactionDetailsVisible
+                ),
+                content: {
+                    ActivityDetailsView(store: store.scope(state: \.displayedTransaction))
+                }
+            )
+            PrimaryNavigationLink(
+                destination: ActivityListView(store: store),
+                isActive: viewStore.binding(\.$isTransactionListPresented),
+                label: EmptyView.init
             )
         }
     }

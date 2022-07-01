@@ -14,6 +14,8 @@ extension DependencyContainer {
                 accountModelProvider: DIKit.resolve(),
                 cardService: DIKit.resolve(),
                 productService: DIKit.resolve(),
+                residentialAddressService: DIKit.resolve(),
+                transactionService: DIKit.resolve(),
                 supportRouter: DIKit.resolve(),
                 topUpRouter: DIKit.resolve()
             ) as CardIssuingBuilderAPI

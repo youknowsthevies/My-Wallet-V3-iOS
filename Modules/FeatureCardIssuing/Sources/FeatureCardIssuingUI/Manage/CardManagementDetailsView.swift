@@ -56,6 +56,15 @@ struct CardManagementDetailsView: View {
                     )
                     PrimaryDivider()
                     PrimaryRow(
+                        title: localizedStrings.Personal.title,
+                        subtitle: localizedStrings.Personal.subtitle,
+                        trailing: { chevronRight },
+                        action: {
+                            viewStore.send(.showSupportFlow)
+                        }
+                    )
+                    PrimaryDivider()
+                    PrimaryRow(
                         title: localizedStrings.Support.title,
                         subtitle: localizedStrings.Support.subtitle,
                         trailing: { chevronRight },

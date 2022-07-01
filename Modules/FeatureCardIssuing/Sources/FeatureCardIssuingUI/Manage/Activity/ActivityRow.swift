@@ -12,105 +12,120 @@ struct ActivityRow: View {
 
     let merchant: String
     let amount: String
-    let status: String
+    let counterAmount: String
     let date: String
-    let statusColor: Color
     let icon: Icon
+    let tag: TagView
     let action: () -> Void
 
     init(
         merchant: String,
         amount: String,
-        status: String,
+        counterAmount: String,
         date: String,
-        statusColor: Color,
         icon: Icon,
+        tag: TagView,
         action: @escaping () -> Void
     ) {
         self.merchant = merchant
         self.amount = amount
-        self.status = status
+        self.counterAmount = counterAmount
         self.date = date
-        self.statusColor = statusColor
         self.icon = icon
+        self.tag = tag
         self.action = action
     }
 
     var body: some View {
-        PrimaryRow(
-            title: merchant,
-            subtitle: date,
-            leading: {
-                icon
-                    .frame(width: 20, height: 20)
-                    .accentColor(.WalletSemantic.muted)
-            },
-            trailing: {
-                VStack(alignment: .trailing, spacing: 5) {
+        HStack(alignment: .center, spacing: Spacing.padding2) {
+            icon
+                .frame(width: 20, height: 20, alignment: .center)
+                .accentColor(.semantic.muted)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(alignment: .center) {
+                    Text(merchant)
+                        .typography(.body2)
+                        .foregroundColor(.semantic.title)
+                    Spacer()
                     Text(amount)
                         .typography(.body2)
                         .foregroundColor(.WalletSemantic.title)
-
-                    Text(status)
-                        .typography(.paragraph1)
-                        .foregroundColor(
-                            statusColor
-                        )
                 }
-            },
-            action: action
-        )
+                HStack(alignment: .center) {
+                    tag
+                    Spacer()
+                    Text(counterAmount)
+                        .typography(.paragraph1)
+                        .foregroundColor(.WalletSemantic.muted)
+                }
+            }
+        }
+        .padding()
+        .background(Color.semantic.background)
+        .onTapGesture {
+            action()
+        }
     }
 }
 
 extension ActivityRow {
 
-    init(_ transaction: CardTransaction, action: @escaping () -> Void) {
+    init(_ transaction: Card.Transaction, action: @escaping () -> Void) {
         merchant = transaction.merchantName
-        amount = transaction.displayAmount
-        status = transaction.displayStatus
+        amount = transaction.originalAmount.displayString
+        counterAmount = transaction.counterAmount?.displayString ?? ""
         date = transaction.displayDate
-        statusColor = transaction.statusColor
         icon = transaction.icon
+        tag = transaction.tag
         self.action = action
     }
 }
 
 #if DEBUG
 
-extension CardTransaction {
+extension Card.Transaction {
 
-    static var success = CardTransaction(
+    static var success = Card.Transaction(
         id: "42",
-        value: Money(
-            value: "40000",
-            symbol: "BTC"
-        ),
-        date: Date(),
-        status: .settled,
-        merchantName: "Blockchain.com"
+        cardId: "42",
+        type: .payment,
+        state: .completed,
+        originalAmount: Money(value: "100.000000", symbol: "USD"),
+        fundingAmount: Money(value: "100.000000", symbol: "USD"),
+        reversedAmount: Money(value: "0.000000", symbol: "USD"),
+        clearedFundingAmount: Money(value: "0.000000", symbol: "USD"),
+        userTransactionTime: Date(),
+        merchantName: "Blockchain.com",
+        fee: Money(value: "0.000000", symbol: "USD")
     )
 
-    static var pending = CardTransaction(
+    static var pending = Card.Transaction(
         id: "43",
-        value: Money(
-            value: "42000",
-            symbol: "BTC"
-        ),
-        date: Date(),
-        status: .pending,
-        merchantName: "Blockchain.com"
+        cardId: "42",
+        type: .payment,
+        state: .pending,
+        originalAmount: Money(value: "100.000000", symbol: "USD"),
+        fundingAmount: Money(value: "100.000000", symbol: "USD"),
+        reversedAmount: Money(value: "100.000000", symbol: "USD"),
+        clearedFundingAmount: Money(value: "100.000000", symbol: "USD"),
+        userTransactionTime: Date(),
+        merchantName: "Blockchain.com",
+        fee: Money(value: "100.000000", symbol: "USD")
     )
 
-    static var failed = CardTransaction(
-        id: "44",
-        value: Money(
-            value: "41000",
-            symbol: "BTC"
-        ),
-        date: Date(),
-        status: .failed,
-        merchantName: "Blockchain.com"
+    static var failed = Card.Transaction(
+        id: "43",
+        cardId: "42",
+        type: .payment,
+        state: .declined,
+        originalAmount: Money(value: "100.000000", symbol: "USD"),
+        fundingAmount: Money(value: "100.000000", symbol: "USD"),
+        reversedAmount: Money(value: "100.000000", symbol: "USD"),
+        clearedFundingAmount: Money(value: "100.000000", symbol: "USD"),
+        userTransactionTime: Date(),
+        merchantName: "Blockchain.com",
+        declineReason: "Not enough funds",
+        fee: Money(value: "100.000000", symbol: "USD")
     )
 }
 
@@ -119,13 +134,27 @@ struct ActivityRow_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ScrollView {
-                LazyVStack {
-                    ActivityRow(CardTransaction.success) {}
+                LazyVStack(spacing: 0) {
                     PrimaryDivider()
-                    ActivityRow(CardTransaction.pending) {}
+                    ActivityRow(
+                        merchant: "Blockchain.com",
+                        amount: "$100.00",
+                        counterAmount: "0.0000021 BTC",
+                        date: "Jun 17",
+                        icon: Icon.walletSend.circle(),
+                        tag: TagView(text: "Success", variant: .success),
+                        action: {}
+                    )
                     PrimaryDivider()
-                    ActivityRow(CardTransaction.failed) {}
-                    PrimaryDivider()
+                    ActivityRow(
+                        merchant: "Blockchain.com",
+                        amount: "$100.00",
+                        counterAmount: "",
+                        date: "Jun 17",
+                        icon: Icon.walletSend.circle(),
+                        tag: TagView(text: "Pending", variant: .infoAlt),
+                        action: {}
+                    )
                 }
             }
         }

@@ -30,22 +30,19 @@ struct CardIssuingIntroView: View {
                     .typography(.paragraph1)
                     .foregroundColor(.WalletSemantic.body)
                     .multilineTextAlignment(.center)
-                PrimaryButton(title: localizedStrings.Intro.Button.Title.order) {
-                    viewStore.send(.setStep(.selection))
-                }
+                PrimaryButton(title: localizedStrings.Intro.Button.Title.order, action: {
+                    viewStore.send(.binding(.set(\.$isAddressConfirmationVisible, true)))
+                })
+                PrimaryNavigationLink(
+                    destination: ResidentialAddressConfirmationView(store: store),
+                    isActive: viewStore.binding(\.$isAddressConfirmationVisible),
+                    label: EmptyView.init
+                )
                 .padding(.top, Spacing.padding2)
                 Spacer()
             }
             .padding(Spacing.padding3)
             .primaryNavigation(title: LocalizationConstants.CardIssuing.Navigation.title)
-            .onAppear {
-                viewStore.send(.setStep(.intro))
-            }
-            PrimaryNavigationLink(
-                destination: ProductSelectionView(store: store),
-                isActive: viewStore.binding(\.$isProductSelectionVisible),
-                label: EmptyView.init
-            )
         }
     }
 }

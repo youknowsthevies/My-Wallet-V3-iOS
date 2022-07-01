@@ -145,3 +145,121 @@ extension LocalizationConstants.CardIssuing {
         }
     }
 }
+
+extension LocalizationConstants.CardIssuing.Order {
+
+    enum KYC {
+
+        enum Buttons {
+
+            static let next = NSLocalizedString(
+                "Next",
+                comment: "Card Issuing: Next Button"
+            )
+
+            static let save = NSLocalizedString(
+                "Save",
+                comment: "Card Issuing: Save Button"
+            )
+        }
+
+        enum Address {
+
+            enum Navigation {
+
+                static let title = NSLocalizedString(
+                    "Residential Address",
+                    comment: "Card Issuing: Residential Address Navigation Title"
+                )
+            }
+
+            static let title = NSLocalizedString(
+                "Verify Your Address",
+                comment: "Card Issuing: Verify Your Address Title"
+            )
+
+            static let description = NSLocalizedString(
+                """
+                Confirm your residential address below to avoid delays. \
+                Your will be able to specify a different shipping address later.
+                """,
+                comment: "Card Issuing: Verify Your Address Description"
+            )
+
+            enum Form {
+
+                static let addressLine1 = NSLocalizedString(
+                    "Address Line 1",
+                    comment: "Card Issuing: Form Address Line 1"
+                )
+
+                static let addressLine2 = NSLocalizedString(
+                    "Address Line 2",
+                    comment: "Card Issuing: Form Address Line 1"
+                )
+
+                static let city = NSLocalizedString(
+                    "City",
+                    comment: "Card Issuing: Form City"
+                )
+
+                static let state = NSLocalizedString(
+                    "State",
+                    comment: "Card Issuing: Form State"
+                )
+
+                static let zip = NSLocalizedString(
+                    "Zip",
+                    comment: "Card Issuing: Form Zip"
+                )
+
+                static let placeholder = NSLocalizedString(
+                    "1234 Road Street",
+                    comment: "Card Issuing: Form Placeholder"
+                )
+            }
+        }
+
+        enum SSN {
+
+            enum Navigation {
+
+                static let title = NSLocalizedString(
+                    "SSN",
+                    comment: "Card Issuing: SSN Navigation Title"
+                )
+            }
+
+            static let title = NSLocalizedString(
+                "Verify Your Identity",
+                comment: "Card Issuing: Verify Your Identity Title"
+            )
+
+            static let description = NSLocalizedString(
+                """
+                Please confirm your SSN or Tax ID below to prevent others from \
+                creating fraudulent accounts in your name.
+                """,
+                comment: "Card Issuing: Verify Your Identity Description"
+            )
+
+            enum Input {
+
+                static let title = NSLocalizedString(
+                    "SSN or Individual Tax ID #",
+                    comment: "Card Issuing: SSN Input Title"
+                )
+
+                static let placeholder = NSLocalizedString(
+                    "XX-XX-XXXX",
+                    comment: "Card Issuing: SSN Input Placeholder"
+                )
+
+                static let caption = NSLocalizedString(
+                    "Information secured with 256-bit encryption",
+                    comment: "Card Issuing: SSN Input Encryption Caption"
+                )
+            }
+        }
+    }
+}
