@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
@@ -108,6 +109,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     blockchainAccountRepository: NoOpBlockchainAccountRepository(),
                     kycVerificationService: NoOpKYCVerificationService(),
                     transactionRouterAPI: NoOpTransactionsRouter(),
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     mainQueue: .main
                 )
             ),

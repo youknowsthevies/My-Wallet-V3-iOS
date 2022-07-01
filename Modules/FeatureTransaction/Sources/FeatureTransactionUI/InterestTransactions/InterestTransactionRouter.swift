@@ -54,6 +54,11 @@ final class InterestTransactionRouter: RIBs.Router<InterestTransactionInteractab
             let viewControllable = router.viewControllable.uiviewController
             attachChild(router)
             present(viewController: viewControllable)
+            analyticsRecorder.record(
+                event: .interestWithdrawalViewed(
+                    currency: sourceAccount.currencyType.code
+                )
+            )
         }
     }
 
@@ -69,6 +74,11 @@ final class InterestTransactionRouter: RIBs.Router<InterestTransactionInteractab
             let viewControllable = router.viewControllable.uiviewController
             attachChild(router)
             present(viewController: viewControllable)
+            analyticsRecorder.record(
+                event: .interestDepositViewed(
+                    currency: target.currencyType.code
+                )
+            )
         }
     }
 

@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import ToolKit
 
@@ -16,9 +18,15 @@ final class TransactionAnalyticsHook {
     typealias NewReceiveAnalyticsEvent = AnalyticsEvents.New.Receive
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let pricesService: PriceServiceAPI
+    private var cancellables = Set<AnyCancellable>()
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        pricesService: PriceServiceAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
+        self.pricesService = pricesService
     }
 
     func onStepChanged(_ newState: TransactionState) {
@@ -226,6 +234,19 @@ final class TransactionAnalyticsHook {
                     outputCurrency: target.currencyType.code
                 )
             )
+        case .interestTransfer:
+            analyticsRecorder.record(
+                event: .interestDepositMaxAmountClicked(
+                    currency: state.source?.currencyType.code ?? "",
+                    fromAccountType: .init(state.source)
+                )
+            )
+        case .interestWithdraw:
+            analyticsRecorder.record(
+                event: .walletRewardsWithdrawMaxAmountClicked(
+                    currency: state.destination?.currencyType.code ?? ""
+                )
+            )
         default:
             return
         }
@@ -279,6 +300,12 @@ final class TransactionAnalyticsHook {
                     inputAmount: state.amount.displayMajorValue.doubleValue,
                     inputCurrency: source.currencyType.code,
                     outputCurrency: target.currencyType.code
+                )
+            )
+        case .interestTransfer:
+            analyticsRecorder.record(
+                event: .interestDepositAmountEntered(
+                    currency: state.source?.currencyType.code ?? ""
                 )
             )
         default:
@@ -338,6 +365,49 @@ final class TransactionAnalyticsHook {
                     toAccountType: .init(state.destination)
                 )
             )
+        case .interestTransfer:
+            guard let currency = state.source?.currencyType.cryptoCurrency else {
+                return
+            }
+            pricesService.price(of: currency, in: FiatCurrency.USD)
+                .sink { [analyticsRecorder] price in
+                    let exchangeRate = MoneyValuePair(
+                        base: .one(currency: state.amount.currency),
+                        quote: price.moneyValue
+                    )
+                    let amountUsd = try? state.amount.convert(using: exchangeRate)
+                    analyticsRecorder.record(
+                        event: .walletRewardsDepositTransferClicked(
+                            amount: state.amount.displayMajorValue.doubleValue,
+                            amountUsd: amountUsd?.displayMajorValue.doubleValue ?? 0,
+                            currency: state.source?.currencyType.code ?? "",
+                            type: .init(state.source)
+                        )
+                    )
+                }
+                .store(in: &cancellables)
+
+        case .interestWithdraw:
+            guard let currency = state.source?.currencyType.cryptoCurrency else {
+                return
+            }
+            pricesService.price(of: currency, in: FiatCurrency.USD)
+                .sink { [analyticsRecorder] price in
+                    let exchangeRate = MoneyValuePair(
+                        base: .one(currency: state.amount.currency),
+                        quote: price.moneyValue
+                    )
+                    let amountUsd = try? state.amount.convert(using: exchangeRate)
+                    analyticsRecorder.record(
+                        event: .walletRewardsWithdrawTransferClicked(
+                            amount: state.amount.displayMajorValue.doubleValue,
+                            amountUsd: amountUsd?.displayMajorValue.doubleValue ?? 0,
+                            currency: state.source?.currencyType.code ?? "",
+                            type: .init(state.source)
+                        )
+                    )
+                }
+                .store(in: &cancellables)
         default:
             break
         }
