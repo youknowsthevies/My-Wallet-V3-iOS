@@ -237,6 +237,8 @@ final class AnnouncementPresenter {
                 announcement = ukEntitySwitch(user: preliminaryData.user)
             case .walletConnect:
                 announcement = walletConnect()
+            case .applePay:
+                announcement = applePay()
             case .taxCenter:
                 announcement = taxCenter(
                     userCountry: preliminaryData.user.address?.country,
@@ -413,6 +415,19 @@ extension AnnouncementPresenter {
                     url: "https://medium.com/blockchain/introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9",
                     from: topMostViewController
                 )
+            }
+        )
+    }
+
+    private func applePay() -> Announcement {
+        ApplePayAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                // Enable when Oliver's PR is merged
+                // app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: "APPLE_PAY")
+                self?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }

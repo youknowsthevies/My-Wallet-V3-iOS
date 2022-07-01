@@ -268,6 +268,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum ApplePay {
+            public static let title = NSLocalizedString(
+                "New: Apple Pay",
+                comment: "Apple Pay announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Enjoy frictionless crypto purchases with Apple Pay.",
+                comment: "Apple Pay announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Buy Crypto",
+                comment: "Apple Pay announcement card CTA button title"
+            )
+        }
+
         public enum TaxCenter {
             public static let title = NSLocalizedString(
                 "Tax Center is Now Available!",
