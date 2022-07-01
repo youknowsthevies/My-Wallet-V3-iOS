@@ -365,7 +365,10 @@ extension AnnouncementPresenter {
     }
 
     private func showCoinView(for currency: CryptoCurrency) {
-        app.post(event: blockchain.ux.asset[currency.code].select)
+        app.post(
+            event: blockchain.ux.asset[currency.code].select,
+            context: [blockchain.ux.asset.select.origin: "ANNOUNCEMENT"]
+        )
     }
 
     /// Computes asset rename card announcement.

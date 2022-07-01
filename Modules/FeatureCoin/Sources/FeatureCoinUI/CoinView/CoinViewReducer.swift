@@ -167,7 +167,14 @@ public let coinViewReducer = Reducer<
             }
             return .none
         case .dismiss:
-            return .fireAndForget(environment.dismiss)
+            return .merge(
+                .fireAndForget(environment.dismiss),
+                .fireAndForget { [state] in
+                    environment.app.post(
+                        event: blockchain.ux.asset[state.currency.code].event.did.dismiss
+                    )
+                }
+            )
         case .graph, .binding, .observation:
             return .none
         }

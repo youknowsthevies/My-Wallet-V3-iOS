@@ -178,7 +178,10 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
                     break
                 case .crypto(let cryptoPresenter):
                     let currency = cryptoPresenter.cryptoCurrency
-                    app.post(event: blockchain.ux.asset[currency.code].select)
+                    app.post(
+                        event: blockchain.ux.asset[currency.code].select,
+                        context: [blockchain.ux.asset.select.origin: "HOME"]
+                    )
                 }
             })
             .disposed(by: disposeBag)

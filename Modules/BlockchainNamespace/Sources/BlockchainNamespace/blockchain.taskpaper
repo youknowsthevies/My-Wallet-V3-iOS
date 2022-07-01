@@ -558,6 +558,8 @@ blockchain:
 			+ blockchain.ux.type.analytics.action
 			select:
 			+ blockchain.ux.type.action
+				origin:
+				+ blockchain.session.state.value
 			sell:
 			+ blockchain.ux.type.action
 			send:
@@ -746,6 +748,10 @@ blockchain:
 			story:
 			+ blockchain.ux.type.analytics.state
 				entry:
+				event:
+					did:
+						dismiss:
+						+ blockchain.ux.type.analytics.event
 		user:
 			KYC:
 			+ blockchain.ux.type.story
