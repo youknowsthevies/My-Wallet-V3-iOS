@@ -1,3 +1,5 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import AVKit
 import CasePaths
 import SwiftUI
@@ -52,16 +54,16 @@ public struct AsyncMedia<Content: View>: View {
     public var body: some View {
         if uniformTypeIdentifier.conforms(to: .svg) {
             AsyncDataView(
-                type: SVG.self,
                 url: url,
                 transaction: transaction,
+                transform: SVG.init,
                 content: { phase in content(phase.map(Media.svg)) }
             )
         } else if uniformTypeIdentifier.conforms(to: .gif) {
             AsyncDataView(
-                type: GIF.self,
                 url: url,
                 transaction: transaction,
+                transform: GIF.init,
                 content: { phase in content(phase.map(Media.gif)) }
             )
         } else if uniformTypeIdentifier.conforms(to: .audiovisualContent) {
@@ -78,9 +80,9 @@ public struct AsyncMedia<Content: View>: View {
             }
         } else {
             AsyncDataView(
-                type: Image.self,
                 url: url,
                 transaction: transaction,
+                transform: Image.init,
                 content: { phase in content(phase.map(Media.image)) }
             )
         }
@@ -99,8 +101,8 @@ extension AsyncMedia {
     public init(
         url: URL?,
         scale: CGFloat = 1
-    ) where Content == _ConditionalContent<Media, Icon> {
-        self.init(url: url, scale: scale, placeholder: { Icon.error })
+    ) where Content == _ConditionalContent<Media, ProgressView<EmptyView, EmptyView>> {
+        self.init(url: url, scale: scale, placeholder: { ProgressView() })
     }
 
     public init<I: View, P: View>(
@@ -110,7 +112,7 @@ extension AsyncMedia {
         @ViewBuilder placeholder: @escaping () -> P
     ) where Content == _ConditionalContent<I, P> {
         self.init(url: url, scale: scale) { phase in
-            if let media = phase.media {
+            if case .success(let media) = phase {
                 content(media)
             } else {
                 placeholder()
@@ -127,7 +129,7 @@ extension AsyncMedia {
             url: url,
             scale: scale,
             content: { phase in
-                if let media = phase.media {
+                if case .success(let media) = phase {
                     media
                 } else {
                     placeholder()
@@ -137,131 +139,7 @@ extension AsyncMedia {
     }
 }
 
-extension AsyncPhase {
-
-    @inlinable public func map<T>(_ transform: (Success) -> T) -> AsyncPhase<T> {
-        switch self {
-        case .empty:
-            return .empty
-        case .success(let success):
-            return .success(transform(success))
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-
-    @inlinable public func flatMap<T>(_ transform: (Success) -> AsyncPhase<T>) -> AsyncPhase<T> {
-        switch self {
-        case .empty:
-            return .empty
-        case .success(let success):
-            return transform(success)
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-}
-
-extension AsyncPhase where Success == Media {
-
-    public var media: Media? {
-        switch self {
-        case .success(let media):
-            return media
-        default:
-            return nil
-        }
-    }
-
-    public var error: Error? {
-        switch self {
-        case .failure(let error):
-            return error
-        default:
-            return nil
-        }
-    }
-}
-
 extension URL {
 
     var uniformTypeIdentifier: UTType? { UTType(filenameExtension: pathExtension) }
-}
-
-public protocol DataContent: View {
-    init?(_ data: Data?)
-}
-
-public struct AsyncDataView<Data, Content>: View where Data: DataContent, Content: View {
-
-    private let url: URL?
-    private let transaction: Transaction
-    private let content: (AsyncPhase<Data>) -> Content
-
-    @StateObject private var loader: AsyncLoader<Data>
-
-    public init(
-        type: Data.Type = Data.self,
-        url: URL?,
-        transaction: Transaction = Transaction(),
-        @ViewBuilder content: @escaping (AsyncPhase<Data>) -> Content
-    ) {
-        self.url = url
-        self.transaction = transaction
-        self.content = content
-        _loader = .init(wrappedValue: .init(transform: { data in Data(data) }))
-    }
-
-    public var body: some View {
-        withTransaction(transaction) {
-            content(loader.phase)
-        }
-        .onChange(of: url) { url in
-            loader.load(resource: url)
-        }
-        .onAppear {
-            loader.load(resource: url)
-        }
-        .id(url)
-    }
-}
-
-extension AsyncDataView {
-
-    public init(url: URL?) where Content == _ConditionalContent<Data, Icon> {
-        self.init(url: url, placeholder: { Icon.error })
-    }
-}
-
-extension AsyncDataView {
-
-    public init<I: View, P: View>(
-        url: URL?,
-        @ViewBuilder content: @escaping (Data) -> I,
-        @ViewBuilder placeholder: @escaping () -> P
-    ) where Content == _ConditionalContent<I, P> {
-        self.init(url: url) { phase in
-            if case .success(let view) = phase {
-                content(view)
-            } else {
-                placeholder()
-            }
-        }
-    }
-
-    public init<P: View>(
-        url: URL?,
-        @ViewBuilder placeholder: @escaping () -> P
-    ) where Content == _ConditionalContent<Data, P> {
-        self.init(
-            url: url,
-            content: { phase in
-                if case .success(let view) = phase {
-                    view
-                } else {
-                    placeholder()
-                }
-            }
-        )
-    }
 }

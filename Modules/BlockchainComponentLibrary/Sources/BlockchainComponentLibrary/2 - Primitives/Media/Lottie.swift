@@ -1,3 +1,5 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import Lottie
 import SwiftUI
 
@@ -76,13 +78,12 @@ public struct LottieView: NSViewRepresentable {
             animationView.translatesAutoresizingMaskIntoConstraints = false
             if animationView.superview !== self {
                 addSubview(animationView)
-                NSLayoutConstraint.activate(
-                    [
-                        animationView.heightAnchor.constraint(equalTo: heightAnchor),
-                        animationView.widthAnchor.constraint(equalTo: widthAnchor)
-                    ]
-                )
             }
+        }
+
+        override public func layout() {
+            super.layout()
+            animationView.frame = bounds
         }
     }
 

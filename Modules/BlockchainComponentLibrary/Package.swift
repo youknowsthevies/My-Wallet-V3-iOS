@@ -49,6 +49,11 @@ let package = Package(
             name: "Lottie",
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"
+        ),
+        .package(
+            name: "SwiftyGif",
+            url: "https://github.com/kirualex/SwiftyGif.git",
+            from: "5.4.3"
         )
     ],
     targets: [
@@ -58,7 +63,8 @@ let package = Package(
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown"),
-                .product(name: "Lottie", package: "Lottie")
+                .product(name: "Lottie", package: "Lottie"),
+                .product(name: "SwiftyGif", package: "SwiftyGif")
             ],
             resources: [
                 .process("Resources/Fonts"),

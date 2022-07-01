@@ -10,7 +10,7 @@ extension View {
     public var backport: Backport.ContentView<Self> { Backport.ContentView(content: self) }
 }
 
-extension Image: DataContent {
+extension Image: OptionalDataInit {
 
     public init?(_ data: Data?) {
         #if canImport(AppKit)

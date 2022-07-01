@@ -1,3 +1,5 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import Combine
 import Darwin
 import Foundation
@@ -151,7 +153,7 @@ public final class SVG: Codable {
     }
 }
 
-extension SVG: DataContent {
+extension SVG: OptionalDataInit {
 
     public convenience init?(_ data: Data?) {
         guard let data = data else { return nil }
@@ -243,160 +245,12 @@ extension SVG: NSViewRepresentable {
 }
 #endif
 
+public typealias AsyncSVG<Content> = AsyncDataView<SVG, Content> where Content: View
+
 extension String {
     fileprivate var deobfuscated: String { Data(base64Encoded: String(reversed()))!.string }
 }
 
 extension Data {
     fileprivate var string: String { String(decoding: self, as: UTF8.self) }
-}
-
-public enum AsyncPhase<Success: View> {
-    case empty
-    case success(Success)
-    case failure(Error)
-}
-
-public struct AsyncSVG<Content>: View where Content: View {
-
-    private let url: URL?
-    private let transaction: Transaction
-    private let content: (AsyncPhase<SVG>) -> Content
-
-    @StateObject private var loader: AsyncLoader<SVG>
-
-    public init(
-        url: URL?,
-        transaction: Transaction = Transaction(),
-        @ViewBuilder content: @escaping (AsyncPhase<SVG>) -> Content
-    ) {
-        self.url = url
-        self.transaction = transaction
-        self.content = content
-        _loader = .init(wrappedValue: .init(transform: { data in SVG(data) }))
-    }
-
-    public var body: some View {
-        withTransaction(transaction) {
-            content(loader.phase)
-        }
-        .onChange(of: url) { url in
-            loader.load(resource: url)
-        }
-        .onAppear {
-            loader.load(resource: url)
-        }
-        .id(url)
-    }
-}
-
-extension AsyncSVG {
-
-    public init(url: URL?) where Content == _ConditionalContent<SVG, Icon> {
-        self.init(url: url, placeholder: { Icon.error })
-    }
-}
-
-extension AsyncSVG {
-
-    public init<I: View, P: View>(
-        url: URL?,
-        @ViewBuilder content: @escaping (SVG) -> I,
-        @ViewBuilder placeholder: @escaping () -> P
-    ) where Content == _ConditionalContent<I, P> {
-        self.init(url: url) { phase in
-            if let svg = phase.svg {
-                content(svg)
-            } else {
-                placeholder()
-            }
-        }
-    }
-
-    public init<P: View>(
-        url: URL?,
-        @ViewBuilder placeholder: @escaping () -> P
-    ) where Content == _ConditionalContent<SVG, P> {
-        self.init(
-            url: url,
-            content: { phase in
-                if let svg = phase.svg {
-                    svg
-                } else {
-                    placeholder()
-                }
-            }
-        )
-    }
-}
-
-extension AsyncPhase where Success == SVG {
-
-    public var svg: SVG? {
-        switch self {
-        case .success(let svg):
-            return svg
-        default:
-            return nil
-        }
-    }
-
-    public var error: Error? {
-        switch self {
-        case .failure(let error):
-            return error
-        default:
-            return nil
-        }
-    }
-}
-
-class AsyncLoader<Media: View>: ObservableObject {
-
-    @Published private(set) var phase: AsyncPhase<Media> = .empty
-
-    private let session: URLSession
-    private let transform: (Data) -> Media?
-    private var cancellable: AnyCancellable?
-
-    init(
-        session: URLSession = .shared,
-        transform: @escaping (Data?) -> Media?
-    ) {
-        self.session = session
-        self.transform = transform
-    }
-
-    deinit { cancel() }
-
-    func load(resource: URL?) {
-        switch resource {
-        case nil:
-            phase = .empty
-        case let url?:
-            cancellable = session.dataTaskPublisher(for: url)
-                .receive(on: DispatchQueue.main)
-                .sink(
-                    receiveCompletion: { [weak self] completion in
-                        switch completion {
-                        case .failure(let error):
-                            self?.phase = .failure(error)
-                        case .finished:
-                            break
-                        }
-                    },
-                    receiveValue: { [weak self] output in
-                        if let media = self?.transform(output.data) {
-                            self?.phase = .success(media)
-                        } else {
-                            self?.phase = .empty
-                        }
-                    }
-                )
-        }
-    }
-
-    func cancel() {
-        cancellable?.cancel()
-    }
 }
