@@ -428,8 +428,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                // Enable when Oliver's PR is merged
-                // app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: "APPLE_PAY")
+                self?.app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: "APPLE_PAY")
                 self?.handleBuyCrypto(currency: .bitcoin)
             }
         )

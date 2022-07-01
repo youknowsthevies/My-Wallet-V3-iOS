@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -62,6 +63,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     /// The interactor that `SingleAmountPresenter` uses
     private let amountViewInteractor: AmountViewInteracting
 
+    private let app: AppProtocol
     private let transactionModel: TransactionModel
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
@@ -79,9 +81,11 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         navigationModel: ScreenNavigationModel,
         restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
+        app: AppProtocol = resolve(),
         eventsRecorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
         self.action = action
+        self.app = app
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
@@ -130,7 +134,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         amountViewInteractor
             .amount
-            .debounce(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .debounce(.milliseconds(250), scheduler: MainScheduler.asyncInstance)
             .distinctUntilChanged()
             .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
@@ -166,6 +170,22 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 self?.amountViewInteractor.set(amount: amount)
             }
             .disposeOnDeactivate(interactor: self)
+
+        Task(priority: .userInitiated) {
+
+            guard try await app.get(
+                blockchain.app.configuration.transaction.should.prefill.with.previous.amount
+            ) else { return }
+
+            let previous = blockchain.ux.transaction.source.target.previous
+            let money = try await MoneyValue(
+                amount: app.get(previous.input.amount),
+                currency: CurrencyType(code: app.get(previous.input.currency.code))
+            )
+            await MainActor.run {
+                amountViewInteractor.set(amount: money)
+            }
+        }
 
         let spendable = Observable
             .combineLatest(

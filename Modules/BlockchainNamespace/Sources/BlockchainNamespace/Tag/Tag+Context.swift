@@ -58,6 +58,10 @@ extension Tag.Context {
     public init(_ object: [Tag.Reference: Wrapped.Value]) {
         dictionary = object
     }
+
+    public func `in`(app: AppProtocol) -> Tag.Context {
+        Tag.Context(dictionary.mapKeys { $0.in(app: app) })
+    }
 }
 
 extension Tag.Context {

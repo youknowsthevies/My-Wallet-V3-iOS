@@ -120,6 +120,15 @@ blockchain:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.preference.value
 					+ blockchain.session.state.shared.value
+			transaction:
+			+ blockchain.db.collection
+				should:
+					prefill:
+						with:
+							previous:
+								amount:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 			unified:
 				sign_in:
 					is:
@@ -195,13 +204,6 @@ blockchain:
 					deep_link:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.value
-		performance:
-			trace:
-				transaction:
-					start:
-						to:
-							enter:
-								amount:
 		process:
 			deep_link:
 				error:
@@ -241,11 +243,15 @@ blockchain:
 			+ blockchain.db.leaf
 			boolean:
 			+ blockchain.db.leaf
+			data:
+			+ blockchain.db.leaf
 			date:
 			+ blockchain.db.leaf
 			enum:
 			+ blockchain.db.leaf
 			integer:
+			+ blockchain.db.leaf
+			map:
 			+ blockchain.db.leaf
 			number:
 			+ blockchain.db.leaf
@@ -701,6 +707,18 @@ blockchain:
 						transfer:
 							instructions:
 			checkout:
+			crypto:
+			+ blockchain.db.collection
+				buy:
+					previous:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							+ blockchain.session.state.preference.value
+							currency:
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.preference.value
 			did:
 				error:
 				finish:
@@ -723,9 +741,28 @@ blockchain:
 										+ blockchain.session.configuration.value
 				payment:
 					method:
+			previous:
+				payment:
+					method:
+						id:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.preference.value
 			select:
 				source:
 				target:
+			source:
+			+ blockchain.db.collection
+				target:
+				+ blockchain.db.collection
+					previous:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							+ blockchain.session.state.preference.value
+							currency:
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.preference.value
 		type:
 			action:
 			+ blockchain.ui.type.action

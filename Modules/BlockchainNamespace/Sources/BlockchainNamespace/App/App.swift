@@ -124,8 +124,15 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        state.set(event.key(), to: value)
-        post(event: event, context: [event: value], file: file, line: line)
+        let reference = event.key().in(app: self)
+        state.set(reference, to: value)
+        post(
+            event: event,
+            reference: reference,
+            context: [event: value],
+            file: file,
+            line: line
+        )
     }
 
     public func post(
@@ -134,9 +141,26 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
+        post(
+            event: event,
+            reference: event.key().in(app: self),
+            context: context,
+            file: file,
+            line: line
+        )
+    }
+
+    func post(
+        event: Tag.Event,
+        reference: Tag.Reference,
+        context: Tag.Context = [:],
+        file: String = #fileID,
+        line: Int = #line
+    ) {
         events.send(
             Session.Event(
                 event: event,
+                reference: reference,
                 context: [
                     s.file: file,
                     s.line: line
@@ -177,15 +201,13 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        events.send(
-            Session.Event(
-                event: event,
-                context: context + [
-                    e.message: "\(error.localizedDescription)",
-                    e.file: file,
-                    e.line: line
-                ]
-            )
+        post(
+            event: event,
+            context: context + [
+                e.message: "\(error.localizedDescription)",
+                e.file: file,
+                e.line: line
+            ]
         )
     }
 
@@ -199,7 +221,8 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
-        events.filter(tags.map { $0.key() }).eraseToAnyPublisher()
+        events.filter(tags.map { $0.key().in(app: self) })
+            .eraseToAnyPublisher()
     }
 }
 
@@ -217,11 +240,11 @@ private let s = (
 extension AppProtocol {
 
     public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: event.key()).decode(T.self)
+        publisher(for: event).decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let ref = event.key()
+        let ref = event.key().in(app: self)
         switch ref.tag {
         case blockchain.session.state.value, blockchain.db.collection.id:
             return state.publisher(for: ref)

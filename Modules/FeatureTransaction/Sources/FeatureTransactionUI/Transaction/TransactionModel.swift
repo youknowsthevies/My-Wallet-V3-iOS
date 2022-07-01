@@ -19,8 +19,8 @@ final class TransactionModel {
     // MARK: - Private Properties
 
     private var mviModel: MviModel<TransactionState, TransactionAction>!
-    private let interactor: TransactionInteractor
-    private var hasInitializedTransaction = false
+    internal let interactor: TransactionInteractor
+    internal private(set) var hasInitializedTransaction = false
 
     private let analyticsHook: TransactionAnalyticsHook
     private let sendEmailNotificationService: SendEmailNotificationServiceAPI
@@ -30,6 +30,10 @@ final class TransactionModel {
 
     var state: Observable<TransactionState> {
         mviModel.state
+    }
+
+    var actions: Observable<TransactionAction> {
+        mviModel.actions
     }
 
     // MARK: - Init
@@ -318,8 +322,15 @@ final class TransactionModel {
                         return
                     }
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
+
+                    let previousMethod = try? self?.interactor.app.state.get(
+                        blockchain.ux.transaction.previous.payment.method.id
+                    ) as? String
+
                     if action == .buy, let first = sourceAccounts.first(
                         where: { ($0 as? PaymentMethodAccount)?.paymentMethodType.method.rawType == preferredMethod }
+                    ) ?? sourceAccounts.first(
+                        where: { account in (account.identifier as? String) == previousMethod }
                     ) ?? sourceAccounts.first {
                         // For buy, we don't want to display the list of possible sources straight away.
                         // Instead, we want to select the default payment method returned by the API.
@@ -574,7 +585,9 @@ final class TransactionModel {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
         process(action: .fetchTransactionExchangeRates)
         process(action: .fetchUserKYCInfo)
-        process(action: .updateAmount(amount))
+        if amount.isPositive {
+            process(action: .updateAmount(amount))
+        }
     }
 
     private func processTargetAccountsListUpdate(fromAccount: BlockchainAccount, action: AssetAction) -> Disposable {

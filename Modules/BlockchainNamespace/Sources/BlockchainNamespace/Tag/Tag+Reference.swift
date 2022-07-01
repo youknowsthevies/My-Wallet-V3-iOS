@@ -13,6 +13,10 @@ extension Tag {
 
 extension Tag.Reference {
 
+    public func `in`(app: AppProtocol) -> Tag.Reference {
+        Tag.Reference(tag, to: context, in: app)
+    }
+
     public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
         Tag.Reference(tag, to: context + indices, in: app)
     }
@@ -65,8 +69,7 @@ extension Tag {
             self.indices = indices
             string = Self.id(
                 tag: tag,
-                to: context,
-                indices: indices
+                to: indices
             )
         }
     }
@@ -115,16 +118,14 @@ extension Tag.Reference {
     public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
         Self.id(
             tag: tag,
-            to: context,
-            indices: indices,
+            to: indices,
             ignoring: ignoring
         )
     }
 
     fileprivate static func id(
         tag: Tag,
-        to context: Tag.Context,
-        indices: Indices,
+        to indices: Indices,
         ignoring: Set<Tag> = []
     ) -> String {
         var ignoring = ignoring
@@ -140,7 +141,7 @@ extension Tag.Reference {
                 guard
                     let collectionId = info["id"],
                     ignoring.doesNotContain(collectionId),
-                    let id = context[collectionId]
+                    let id = indices[collectionId]
                 else {
                     return info.name
                 }
@@ -153,15 +154,15 @@ extension Tag.Reference {
 extension Tag.Reference: Equatable {
 
     public static func == (lhs: Tag.Reference, rhs: Tag.Reference) -> Bool {
-        lhs.string == rhs.string && lhs.context == rhs.context
+        lhs.string == rhs.string
     }
 
     public static func == (lhs: Tag.Reference, rhs: Tag) -> Bool {
-        lhs.string == rhs.id && lhs.context.isEmpty
+        lhs.string == rhs.id
     }
 
     public static func == (lhs: Tag.Reference, rhs: L) -> Bool {
-        lhs.string == rhs(\.id) && lhs.context.isEmpty
+        lhs.string == rhs(\.id)
     }
 
     public static func != (lhs: Tag.Reference, rhs: Tag) -> Bool {
@@ -226,7 +227,7 @@ extension Tag.Reference {
                     return value
                 } else if tag.id == id {
                     return "ø"
-                } else if let tag = app?.language[id], let value = try? app?.state.get(tag) as? String {
+                } else if let tag = app?.language[id], let value = try? app?.state.get(tag, as: String.self) {
                     return value
                 } else {
                     throw tag.error(message: "Missing index \(id) for ref to \(tag.id)")

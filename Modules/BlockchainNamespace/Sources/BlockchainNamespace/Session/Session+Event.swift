@@ -22,6 +22,7 @@ extension Session {
         init(
             date: Date = Date(),
             event: Tag.Event,
+            reference: Tag.Reference,
             context: Tag.Context = [:],
             file: String = #fileID,
             line: Int = #line
@@ -29,7 +30,7 @@ extension Session {
             id = Self.id
             self.date = date
             self.event = event
-            reference = event.key()
+            self.reference = reference
             self.context = context
             source = (file, line)
         }
@@ -110,10 +111,10 @@ extension Tag.Context {
     }
 }
 
-extension Dictionary where Key: Tag.Event, Value: Hashable {
+extension Tag.Reference.Indices {
 
     func pairs() -> Set<Tag.Context.Pair> {
-        map { event, value in .init(key: event.key(), value: value) }.set
+        map { event, value in .init(key: event.reference, value: value) }.set
     }
 }
 
@@ -140,6 +141,7 @@ extension AppProtocol {
         _ rest: Tag.Event...,
         file: String = #fileID,
         line: Int = #line,
+        priority: TaskPriority? = nil,
         action: @escaping (Session.Event) async throws -> Void
     ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
@@ -147,6 +149,7 @@ extension AppProtocol {
             events: [first] + rest,
             file: file,
             line: line,
+            priority: priority,
             action: action
         )
     }
@@ -163,6 +166,7 @@ public final class BlockchainEventSubscription: Hashable {
     let app: AppProtocol
     let events: [Tag.Event]
     let action: Action
+    let priority: TaskPriority?
 
     let file: String, line: Int
 
@@ -180,6 +184,7 @@ public final class BlockchainEventSubscription: Hashable {
         self.events = events
         self.file = file
         self.line = line
+        priority = nil
         self.action = .sync(action)
     }
 
@@ -188,6 +193,7 @@ public final class BlockchainEventSubscription: Hashable {
         events: [Tag.Event],
         file: String,
         line: Int,
+        priority: TaskPriority? = nil,
         action: @escaping (Session.Event) async throws -> Void
     ) {
         id = Self.id
@@ -195,6 +201,7 @@ public final class BlockchainEventSubscription: Hashable {
         self.events = events
         self.file = file
         self.line = line
+        self.priority = priority
         self.action = .async(action)
     }
 
@@ -213,7 +220,7 @@ public final class BlockchainEventSubscription: Hashable {
                         self.app.post(error: error, file: self.file, line: self.line)
                     }
                 case .async(let action):
-                    Task {
+                    Task(priority: self.priority) {
                         do {
                             try await action(event)
                         } catch {
