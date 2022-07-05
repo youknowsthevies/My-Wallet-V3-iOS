@@ -70,6 +70,11 @@ Install a recent ruby version:
     $ rbenv install 2.6.9
     $ rbenv global 2.6.9
     $ eval "$(rbenv init -)"
+    
+For M1 use this:
+    $ rbenv install 2.7.6
+    $ rbenv global 2.7.6
+    $ eval "$(rbenv init -)"
 
 Then the project ruby dependencies (`fastlane`, etc.):
 
