@@ -6,7 +6,7 @@ import Errors
 import PlatformKit
 import ToolKit
 
-typealias FetchUnspentOutputsFor = ([XPub]) -> AnyPublisher<UnspentOutputs, NetworkError>
+public typealias FetchUnspentOutputsFor = ([XPub]) -> AnyPublisher<UnspentOutputs, NetworkError>
 
 public protocol UnspentOutputRepositoryAPI {
 
@@ -21,7 +21,7 @@ public protocol UnspentOutputRepositoryAPI {
 
 extension UnspentOutputRepositoryAPI {
 
-    func unspentOutputs(
+    public func unspentOutputs(
         for addresses: [XPub]
     ) -> AnyPublisher<UnspentOutputs, NetworkError> {
         unspentOutputs(for: addresses, forceFetch: false)

@@ -8,6 +8,7 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
 
@@ -39,26 +40,47 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        receiveAddressSingle
-            .asPublisher()
+        nativeWalletEnabled()
+            .flatMap { [receiveAddressProvider, bridge, hdAccountIndex, xPub] isEnabled
+                -> AnyPublisher<String, Error> in
+                guard isEnabled else {
+                    return bridge
+                        .receiveAddress(forXPub: xPub.address)
+                        .asPublisher()
+                        .eraseToAnyPublisher()
+                }
+                return receiveAddressProvider
+                    .receiveAddressProvider(UInt32(hdAccountIndex))
+                    .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
+                    .eraseError()
+                    .eraseToAnyPublisher()
+            }
+            .map { [label, onTxCompleted] address -> ReceiveAddress in
+                BitcoinChainReceiveAddress<BitcoinCashToken>(
+                    address: address,
+                    label: label,
+                    onTxCompleted: onTxCompleted
+                )
+            }
             .eraseToAnyPublisher()
     }
 
-    private var receiveAddressSingle: Single<ReceiveAddress> {
-        bridge
-            .receiveAddress(forXPub: xPub.address)
-            .map { [label, onTxCompleted] address -> ReceiveAddress in
-                BitcoinChainReceiveAddress<BitcoinCashToken>(
-                    address: address,
-                    label: label,
-                    onTxCompleted: onTxCompleted
-                )
-            }
-    }
-
     var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        bridge
-            .firstReceiveAddress(forXPub: xPub.address)
+        nativeWalletEnabled()
+            .flatMap { [receiveAddressProvider, bridge, hdAccountIndex, xPub] isEnabled
+                -> AnyPublisher<String, Error> in
+                guard isEnabled else {
+                    return bridge
+                        .firstReceiveAddress(forXPub: xPub.address)
+                        .asPublisher()
+                        .eraseToAnyPublisher()
+                }
+                return receiveAddressProvider
+                    .firstReceiveAddressProvider(UInt32(hdAccountIndex))
+                    .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
+                    .eraseError()
+                    .eraseToAnyPublisher()
+            }
             .map { [label, onTxCompleted] address -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinCashToken>(
                     address: address,
@@ -66,7 +88,6 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
                     onTxCompleted: onTxCompleted
                 )
             }
-            .asPublisher()
             .eraseToAnyPublisher()
     }
 
@@ -123,6 +144,9 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
 
+    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
+    private let receiveAddressProvider: BitcoinChainReceiveAddressProviderAPI
+
     init(
         xPub: XPub,
         label: String?,
@@ -133,7 +157,11 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
         bridge: BitcoinCashWalletBridgeAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() },
+        receiveAddressProvider: BitcoinChainReceiveAddressProviderAPI = resolve(
+            tag: BitcoinChainKit.BitcoinChainCoin.bitcoinCash
+        )
     ) {
         self.xPub = xPub
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
@@ -145,6 +173,8 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
         self.featureFlagsService = featureFlagsService
+        self.nativeWalletEnabled = nativeWalletEnabled
+        self.receiveAddressProvider = receiveAddressProvider
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {

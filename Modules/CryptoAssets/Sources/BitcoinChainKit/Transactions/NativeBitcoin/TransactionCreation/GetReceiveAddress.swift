@@ -36,7 +36,7 @@ func receiveAddressContext(
     )
 }
 
-private func deriveReceiveAddress(
+func deriveReceiveAddress(
     context: AccountKeyContext,
     coin: BitcoinChainCoin,
     receiveIndex: UInt32

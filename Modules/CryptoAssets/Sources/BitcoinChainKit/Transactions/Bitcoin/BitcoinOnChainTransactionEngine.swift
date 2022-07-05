@@ -487,11 +487,15 @@ extension BitcoinOnChainTransactionEngine {
 
         let environment = nativeBitcoinEnvironment
 
-        let createTransactionContextPublisher = getTransactionContext(
-            for: source,
+        let transactionContextProvider = getTransactionContextProvider(
             walletMnemonicProvider: environment.mnemonicProvider,
             fetchUnspentOutputsFor: environment.unspentOutputRepository.unspentOutputs(for:),
             fetchMultiAddressFor: environment.fetchMultiAddressFor
+        )
+
+        let createTransactionContextPublisher = getTransactionContext(
+            for: source,
+            transactionContextFor: transactionContextProvider
         )
 
         func state(for pendingTransaction: PendingTransaction) -> BTCOnChainTxEngineState<Token>? {

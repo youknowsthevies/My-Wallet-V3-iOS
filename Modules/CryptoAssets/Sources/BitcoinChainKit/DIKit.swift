@@ -16,7 +16,7 @@ extension DependencyContainer {
             BitcoinChainKit.APIClient(coin: .bitcoin) as BitcoinChainKit.APIClientAPI
         }
 
-        factory(tag: BitcoinChainCoin.bitcoin) { () -> UnspentOutputRepositoryAPI in
+        single(tag: BitcoinChainCoin.bitcoin) { () -> UnspentOutputRepositoryAPI in
             UnspentOutputRepository(
                 client: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
                 coin: BitcoinChainCoin.bitcoin
@@ -46,6 +46,14 @@ extension DependencyContainer {
                 unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
                 coinSelection: DIKit.resolve(),
                 coin: .bitcoin
+            )
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinChainReceiveAddressProviderAPI in
+            BitcoinChainReceiveAddressProvider<BitcoinToken>(
+                mnemonicProvider: DIKit.resolve(),
+                fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
             )
         }
 
@@ -85,6 +93,14 @@ extension DependencyContainer {
                 unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
                 coinSelection: DIKit.resolve(),
                 coin: .bitcoinCash
+            )
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> BitcoinChainReceiveAddressProviderAPI in
+            BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
+                mnemonicProvider: DIKit.resolve(),
+                fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash)
             )
         }
 

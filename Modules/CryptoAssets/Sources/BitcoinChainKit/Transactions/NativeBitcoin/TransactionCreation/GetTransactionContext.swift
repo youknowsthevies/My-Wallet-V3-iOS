@@ -12,35 +12,46 @@ struct NativeBitcoinTransactionContext {
     let coin: BitcoinChainCoin
 }
 
+typealias TransactionContextFor =
+    (BitcoinChainAccount) -> AnyPublisher<NativeBitcoinTransactionContext, Error>
+
 func getTransactionContext(
     for account: BitcoinChainAccount,
-    walletMnemonicProvider: WalletMnemonicProvider,
+    transactionContextFor: TransactionContextFor
+) -> AnyPublisher<NativeBitcoinTransactionContext, Error> {
+    transactionContextFor(account)
+}
+
+func getTransactionContextProvider(
+    walletMnemonicProvider: @escaping WalletMnemonicProvider,
     fetchUnspentOutputsFor: @escaping FetchUnspentOutputsFor,
     fetchMultiAddressFor: @escaping FetchMultiAddressFor
-) -> AnyPublisher<NativeBitcoinTransactionContext, Error> {
-    getAccountKeys(
-        for: account,
-        walletMnemonicProvider: walletMnemonicProvider
-    )
-    .flatMap { context -> AnyPublisher<NativeBitcoinTransactionContext, Error> in
-        let xpubs = context.xpubs
-        let unspentOutputsPublisher = getUnspentOutputs(
+) -> (BitcoinChainAccount) -> AnyPublisher<NativeBitcoinTransactionContext, Error> {
+    { [walletMnemonicProvider] account in
+        getAccountKeys(
             for: account,
-            xpubs: xpubs,
-            fetchUnspentOutputsFor: fetchUnspentOutputsFor
+            walletMnemonicProvider: walletMnemonicProvider
         )
-        let multiAddressPublisher = getMultiAddress(
-            xpubs: xpubs,
-            fetchMultiAddressFor: fetchMultiAddressFor
-        )
-        return Publishers.Zip(unspentOutputsPublisher, multiAddressPublisher)
-            .map { unspentOutputs, addressItems in
-                (context, unspentOutputs, addressItems, account.coin)
-            }
-            .map(NativeBitcoinTransactionContext.init)
-            .eraseToAnyPublisher()
+        .flatMap { context -> AnyPublisher<NativeBitcoinTransactionContext, Error> in
+            let xpubs = context.xpubs
+            let unspentOutputsPublisher = getUnspentOutputs(
+                for: account,
+                xpubs: xpubs,
+                fetchUnspentOutputsFor: fetchUnspentOutputsFor
+            )
+            let multiAddressPublisher = getMultiAddress(
+                xpubs: xpubs,
+                fetchMultiAddressFor: fetchMultiAddressFor
+            )
+            return Publishers.Zip(unspentOutputsPublisher, multiAddressPublisher)
+                .map { unspentOutputs, addressItems in
+                    (context, unspentOutputs, addressItems, account.coin)
+                }
+                .map(NativeBitcoinTransactionContext.init)
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
-    .eraseToAnyPublisher()
 }
 
 private func getUnspentOutputs(
