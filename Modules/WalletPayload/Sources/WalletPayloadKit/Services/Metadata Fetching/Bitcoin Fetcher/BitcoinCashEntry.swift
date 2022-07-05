@@ -36,7 +36,7 @@ public struct BitcoinCashEntry: Equatable {
                     index: btcAccount.index,
                     publicKey: publicKey ?? extendedPublicKey,
                     label: accountData?.label,
-                    derivationType: btcAccount.defaultDerivation,
+                    derivationType: .legacy,
                     archived: accountData?.archived ?? false
                 )
             }
