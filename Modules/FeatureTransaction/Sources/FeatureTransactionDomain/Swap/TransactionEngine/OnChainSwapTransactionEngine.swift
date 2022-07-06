@@ -60,26 +60,15 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     }
 
     private func startOnChainEngine(pricedQuote: PricedQuote) -> Single<Void> {
-        let value = receiveAddressFactory.makeExternalAssetAddress(
-            asset: sourceAsset,
-            address: pricedQuote.sampleDepositAddress,
-            label: pricedQuote.sampleDepositAddress,
-            onTxCompleted: { _ in .empty() }
-        )
-        switch value {
-        case .failure(let error):
-            return .error(error)
-        case .success(let receiveAddress):
-            return createTransactionTarget(depositAddress: receiveAddress.address)
-                .flatMap { [onChainEngine, sourceAccount] transactionTarget in
-                    onChainEngine.start(
-                        sourceAccount: sourceAccount!,
-                        transactionTarget: transactionTarget,
-                        askForRefreshConfirmation: { _ in .empty() }
-                    )
-                    return .just(())
-                }
-        }
+        createTransactionTarget(swapOrderDepositAddress: pricedQuote.sampleDepositAddress)
+            .flatMap { [onChainEngine, sourceAccount] transactionTarget in
+                onChainEngine.start(
+                    sourceAccount: sourceAccount!,
+                    transactionTarget: transactionTarget,
+                    askForRefreshConfirmation: { _ in .empty() }
+                )
+                return .just(())
+            }
     }
 
     private func defaultFeeLevel(pendingTransaction: PendingTransaction) -> FeeLevel {
@@ -174,7 +163,8 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             }
             .flatMap { [weak self] swapOrder -> Single<TransactionResult> in
                 guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
-                return self.createTransactionTarget(depositAddress: swapOrder.depositAddress)
+
+                return self.createTransactionTarget(swapOrderDepositAddress: swapOrder.depositAddress)
                     .flatMap { [weak self] transactionTarget -> Single<TransactionResult> in
                         guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                         return self.executeOnChain(
@@ -200,29 +190,31 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
      You can check how this works and the reasons for its implementation here:
      https://www.notion.so/blockchaincom/Up-to-75-cheaper-EVM-wallet-private-key-to-custody-transfers-9675695a02ec49b893af1095ead6cc07
      */
+
     private func createTransactionTarget(
-        depositAddress: String
+        swapOrderDepositAddress: String
     ) -> Single<TransactionTarget> {
         let depositAddress = receiveAddressFactory.makeExternalAssetAddress(
             asset: sourceAsset,
-            address: depositAddress,
-            label: depositAddress,
+            address: swapOrderDepositAddress,
+            label: swapOrderDepositAddress,
             onTxCompleted: { _ in .empty() }
         )
-        return Single
-            .zip(
-                depositAddress.single,
-                hotWalletReceiveAddress
-            )
-            .map { depositAddress, hotWalletAddress -> TransactionTarget in
-                guard let hotWalletAddress = hotWalletAddress else {
-                    return depositAddress
+        switch depositAddress {
+        case .failure(let error):
+            return .error(error)
+        case .success(let receiveAddress):
+            return hotWalletReceiveAddress
+                .map { hotWalletAddress -> TransactionTarget in
+                    guard let hotWalletAddress = hotWalletAddress else {
+                        return receiveAddress
+                    }
+                    return HotWalletTransactionTarget(
+                        realAddress: receiveAddress,
+                        hotWalletAddress: hotWalletAddress
+                    )
                 }
-                return HotWalletTransactionTarget(
-                    realAddress: depositAddress,
-                    hotWalletAddress: hotWalletAddress
-                )
-            }
+        }
     }
 
     /// Returns the Hot Wallet receive address for the current cryptocurrency.
