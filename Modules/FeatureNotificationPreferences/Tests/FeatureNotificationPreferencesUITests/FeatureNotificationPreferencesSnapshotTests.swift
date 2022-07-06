@@ -3,10 +3,10 @@
 import AnalyticsKitMock
 import ComposableArchitecture
 import CoreMedia
+import Errors
 import FeatureNotificationPreferencesMocks
 @testable import FeatureNotificationPreferencesUI
 import Foundation
-import NetworkError
 import SnapshotTesting
 import TestKit
 import XCTest

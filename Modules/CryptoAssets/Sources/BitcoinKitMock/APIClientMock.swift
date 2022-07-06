@@ -4,11 +4,11 @@
 @testable import BitcoinKit
 
 import Combine
-import NetworkError
+import Errors
 
 class APIClientMock: BitcoinKit.APIClientAPI {
     var multiAddressResult: Result<BitcoinMultiAddressResponse, NetworkError> = .failure(
-        NetworkError.serverError(.badResponse)
+        NetworkError.unknown
     )
 
     func multiAddress(
@@ -22,12 +22,12 @@ class APIClientMock: BitcoinKit.APIClientAPI {
     func balances(
         for addresses: [XPub]
     ) -> AnyPublisher<BitcoinBalanceResponse, NetworkError> {
-        .failure(.serverError(.badResponse))
+        .failure(.unknown)
     }
 
     func unspentOutputs(
         for addresses: [XPub]
     ) -> AnyPublisher<UnspentOutputsResponse, NetworkError> {
-        .failure(.serverError(.badResponse))
+        .failure(.unknown)
     }
 }

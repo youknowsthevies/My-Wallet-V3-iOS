@@ -174,25 +174,41 @@ extension String {
 
     /// Contains emoji check.
     ///
-    /// Checks if string contains any unicode character from the `Miscellaneous Symbols`, `Dingbats`, or
-    /// `Variation Selectors` groups of the `Basic Multilingual Plane`, or if contains any unicode
-    /// character from `Emoticons`, `Miscellaneous Symbols and Pictographs`, or `Transport and Map Symbols`
-    /// groups of the `Supplementary Multilingual Plane`
-    /// Group ranges can be verified in https://www.unicode.org/versions/Unicode8.0.0/UnicodeStandard-8.0.pdf
+    /// Checks if string contains any unicode character from a preselected set of Unicode groups.
+    /// Group ranges can be verified in https://www.unicode.org/versions/Unicode14.0.0/UnicodeStandard-14.0.pdf
     public var containsEmoji: Bool {
         for scalar in unicodeScalars {
             switch scalar.value {
             case
-                // Supplementary Multilingual Plane > Emoticons
-                0x1f600...0x1f64f,
+                // Supplementary Multilingual Plane
+
+                // Supplementary Multilingual Plane > Playing Cards
+                0x1f000...0x1f02f,
+                // Supplementary Multilingual Plane > Domino Tiles
+                0x1f030...0x1f09f,
+                // Supplementary Multilingual Plane > Mahjong Tiles
+                0x1f0a0...0x1f0ff,
+                // Supplementary Multilingual Plane > Enclosed Alphanumeric Supplement
+                0x1f100...0x1f1ff,
                 // Supplementary Multilingual Plane > Miscellaneous Symbols and Pictographs
                 0x1f300...0x1f5ff,
+                // Supplementary Multilingual Plane > Emoticons
+                0x1f600...0x1f64f,
                 // Supplementary Multilingual Plane > Transport and Map Symbols
                 0x1f680...0x1f6ff,
+                // Supplementary Multilingual Plane > Supplemental Symbols and Pictographs
+                0x1f900...0x1f9ff,
+
+                // Basic Multilingual Plane
+
+                // Basic Multilingual Plane > Miscellaneous Technical
+                0x2300...0x23ff,
                 // Basic Multilingual Plane > Miscellaneous Symbols
                 0x2600...0x26ff,
                 // Basic Multilingual Plane > Dingbats
                 0x2700...0x27bf,
+                // Basic Multilingual Plane > Miscellaneous Symbols and Arrows
+                0x2b00...0x2bff,
                 // Basic Multilingual Plane > Variation Selectors
                 0xfe00...0xfe0f:
                 return true

@@ -66,7 +66,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
-    private let featureFlagService: FeatureFlagsServiceAPI
     private let analyticsHook: TransactionAnalyticsHook
     private let eventsRecorder: Recording
 
@@ -79,7 +78,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
         restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
         eventsRecorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
@@ -87,7 +85,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
-        featureFlagService = featureFlagsService
         self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.eventsRecorder = eventsRecorder
@@ -151,6 +148,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     }
                     .asObservable()
             }
+            .subscribe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
@@ -244,7 +242,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 availableSources,
                 availableTargets
             )
-            .map { [action] availableSources, availableTargets -> [Account] in
+            .compactMap { [action] availableSources, availableTargets -> [Account]? in
                 guard action == .buy || action == .deposit else {
                     return availableTargets
                 }
@@ -342,27 +340,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(to: amountViewInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
 
-        let transactionStateAndLimitsFeature: Observable<(TransactionState, Bool)> = Observable
-            .combineLatest(
-                transactionState,
-                featureFlagService
-                    .isEnabled(.newLimitsUIEnabled)
-                    .asObservable()
-            )
-
-        let interactorState = transactionStateAndLimitsFeature
-            .scan(initialState()) { [weak self] currentState, tuple -> State in
-                let (updater, newLimitsUIEnabled) = tuple
+        let interactorState = transactionState
+            .subscribe(on: MainScheduler.asyncInstance)
+            .scan(initialState()) { [weak self] currentState, updater -> State in
                 guard let self = self else {
                     return currentState
                 }
-                let newState = self.calculateNextState(
+                return self.calculateNextState(
                     with: currentState,
                     updater: updater
                 )
-                // NOTE: temporary overrides to check for the feature flag's value
-                return newState
-                    .update(\.showErrorRecoveryAction, value: newLimitsUIEnabled && newState.showErrorRecoveryAction)
             }
             .asDriverCatchError()
 

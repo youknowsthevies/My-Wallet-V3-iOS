@@ -1,6 +1,6 @@
 import Combine
+import Errors
 import FeatureProductsData
-import NabuNetworkError
 import ToolKit
 
 final class ProductsClientMock: ProductsClientAPI {

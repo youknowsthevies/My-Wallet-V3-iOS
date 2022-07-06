@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureFormDomain
-import NabuNetworkError
 import PlatformKit
 
 public protocol KYCAccountUsageServiceAPI {

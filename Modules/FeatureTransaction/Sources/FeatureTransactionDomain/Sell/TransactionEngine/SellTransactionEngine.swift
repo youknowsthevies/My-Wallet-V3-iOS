@@ -9,11 +9,10 @@ import RxSwift
 protocol SellTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
-    var quotesEngine: QuotesEngine { get }
+    var quotesEngine: QuotesEngineAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
-    var quote: Observable<PricedQuote> { get }
 }
 
 extension SellTransactionEngine {
@@ -66,7 +65,8 @@ extension SellTransactionEngine {
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
-        quote
+        quotesEngine.quotePublisher
+            .asObservable()
             .map { [target] pricedQuote -> MoneyValue in
                 MoneyValue(amount: pricedQuote.price, currency: target.currencyType)
             }
@@ -110,7 +110,7 @@ extension SellTransactionEngine {
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
         Single.zip(
-            quote.take(1).asSingle(),
+            quotesEngine.quotePublisher.asSingle(),
             amountInSourceCurrency(for: pendingTransaction)
         )
         .flatMap { [weak self] quote, convertedAmount -> Single<SellOrder> in
@@ -123,13 +123,15 @@ extension SellTransactionEngine {
             )
             .asSingle()
         }
-        .do(onDispose: { [weak self] in
+        .do(onSuccess: { [weak self] _ in
             self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
         })
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
+        var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
+        pendingTransaction.engineState[.quoteSubscription] = nil
         quotesEngine.stop()
     }
 
@@ -139,6 +141,39 @@ extension SellTransactionEngine {
 
     func defaultDoValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
+    }
+
+    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        startQuotesFetchingIfNotStarted(pendingTransaction: pendingTransaction)
+    }
+
+    private func startQuotesFetchingIfNotStarted(
+        pendingTransaction oldValue: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        guard oldValue.quoteSubscription == nil else {
+            return .just(oldValue)
+        }
+        var pendingTransaction = oldValue
+        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching()
+        return .just(pendingTransaction)
+    }
+
+    private func startQuotesFetching() -> Disposable {
+        quotesEngine
+            .quotePublisher
+            .asObservable()
+            .flatMap { [weak self] _ -> Observable<Void> in
+                self?.askForRefreshConfirmation(true) ?? .empty()
+            }
+            .subscribe()
+    }
+
+    func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        doBuildConfirmations(pendingTransaction: pendingTransaction)
+    }
+
+    func stop(pendingTransaction: PendingTransaction) {
+        disposeQuotesFetching(pendingTransaction: pendingTransaction)
     }
 
     // MARK: - Exchange Rates

@@ -101,8 +101,8 @@ extension Session {
                 .store(in: &bag)
         }
 
-        public func override(_ key: Tag.Reference, with value: Any) {
-            fetched[key.idToFirebaseConfigurationKeyImportant()] = value
+        public func override(_ event: Tag.Event, with value: Any) {
+            fetched[event.key.idToFirebaseConfigurationKeyImportant()] = value
         }
 
         public func clear() {
@@ -111,11 +111,12 @@ extension Session {
             }
         }
 
-        public func clear(_ key: Tag.Reference) {
-            fetched.removeValue(forKey: key.idToFirebaseConfigurationKeyImportant())
+        public func clear(_ event: Tag.Event) {
+            fetched.removeValue(forKey: event.key.idToFirebaseConfigurationKeyImportant())
         }
 
-        public func get(_ key: Tag.Reference) throws -> Any? {
+        public func get(_ event: Tag.Event) throws -> Any? {
+            let key = event.key
             guard isSynchronized else { throw Error.notSynchronized }
             guard let value = fetched[firstOf: key.firebaseConfigurationKeys] else {
                 throw Error.keyDoesNotExist(key)
@@ -123,7 +124,16 @@ extension Session {
             return value
         }
 
-        public func result(for key: Tag.Reference) -> FetchResult {
+        public func get<T: Decodable>(
+            _ event: Tag.Event,
+            as type: T.Type = T.self,
+            using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+        ) throws -> T {
+            try decoder.decode(T.self, from: get(event) as Any)
+        }
+
+        public func result(for event: Tag.Event) -> FetchResult {
+            let key = event.key
             guard isSynchronized else {
                 return .error(.other(Error.notSynchronized), key.metadata(.remoteConfiguration))
             }
@@ -133,12 +143,13 @@ extension Session {
             return .value(value as Any, key.metadata(.remoteConfiguration))
         }
 
-        public func publisher(for key: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
             _isSynchronized
                 .combineLatest(_fetched)
                 .filter(\.0)
                 .map(\.1)
                 .flatMap { configuration -> Just<FetchResult> in
+                    let key = event.key
                     switch configuration[firstOf: key.firebaseConfigurationKeys] {
                     case let value?:
                         return Just(.value(value as Any, key.metadata(.remoteConfiguration)))

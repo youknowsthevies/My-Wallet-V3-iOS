@@ -24,7 +24,7 @@ let package = Package(
     dependencies: [
         .package(path: "../Tool"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../BlockchainNamespace")
     ],
     targets: [
@@ -40,7 +40,8 @@ let package = Package(
             name: "FeatureAttributionDomain",
             dependencies: [
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "Errors", package: "Errors")
             ]
         )
     ]

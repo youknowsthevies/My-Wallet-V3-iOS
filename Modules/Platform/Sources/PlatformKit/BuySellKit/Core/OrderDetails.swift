@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BigInt
+import Errors
 import FeatureCardPaymentDomain
 import FeatureOpenBankingDomain
 import Localization
@@ -218,6 +219,15 @@ public struct OrderDetails {
             return details.error
         case .sell(let details):
             return details.error
+        }
+    }
+
+    public var ux: Nabu.Error.UX? {
+        switch _value {
+        case .buy(let details):
+            return details.ux
+        case .sell(let details):
+            return details.ux
         }
     }
 

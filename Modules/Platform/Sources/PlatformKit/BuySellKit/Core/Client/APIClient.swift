@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
-import NabuNetworkError
 import NetworkKit
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &
@@ -60,8 +60,6 @@ final class APIClient: SimpleBuyClientAPI {
         static let tradingPairs = ["custodial", "trades", "pairs"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
-        // TODO: remove old quote endpoint when the new pricing model becomes stable
-        static let oldQuote = ["simple-buy", "quote"]
         static let quote = ["brokerage", "quote"]
         static let eligible = ["simple-buy", "eligible"]
         static let withdrawalLocks = ["payments", "withdrawals", "locks"]
@@ -364,36 +362,6 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),
-            authenticated: true
-        )!
-        return networkAdapter.perform(request: request)
-    }
-
-    // MARK: - QuoteClientAPI
-
-    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
-    func getOldQuote(
-        for action: Order.Action,
-        to currency: Currency,
-        amount: MoneyValue
-    ) -> AnyPublisher<OldQuoteResponse, NabuNetworkError> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.currencyPair,
-                value: "\(currency.code)-\(amount.code)"
-            ),
-            URLQueryItem(
-                name: Parameter.action,
-                value: action.rawValue
-            ),
-            URLQueryItem(
-                name: Parameter.amount,
-                value: amount.minorString
-            )
-        ]
-        let request = requestBuilder.get(
-            path: Path.oldQuote,
-            parameters: parameters,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

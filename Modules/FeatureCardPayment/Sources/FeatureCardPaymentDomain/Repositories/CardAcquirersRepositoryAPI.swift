@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NabuNetworkError
+import Errors
 import ToolKit
 
 public protocol CardAcquirersRepositoryAPI: AnyObject {

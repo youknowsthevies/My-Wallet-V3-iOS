@@ -272,22 +272,50 @@ extension CoincoreAPI {
         }
         return accountsPublisher.hasAnyFundedAccounts()
     }
+
+    public func hasPositiveDisplayableBalanceAccounts(for assetType: AssetType) -> AnyPublisher<Bool, Error> {
+        let accountsPublisher: AnyPublisher<[SingleAccount], Error>
+        switch assetType {
+        case .all:
+            accountsPublisher = allAccounts
+                .map(\.accounts)
+                .eraseError()
+                .eraseToAnyPublisher()
+        case .fiat:
+            accountsPublisher = fiatAsset
+                .accountGroup(filter: .all)
+                .map(\.accounts)
+                .eraseError()
+                .eraseToAnyPublisher()
+        case .crypto:
+            accountsPublisher = cryptoAccounts()
+                .map { accounts in
+                    accounts.map { $0 as SingleAccount }
+                }
+                .eraseToAnyPublisher()
+        }
+        return accountsPublisher.hasPositiveDisplayableBalanceAccounts()
+    }
 }
 
 extension Sequence where Element == SingleAccount {
 
     public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Error> {
-        map { account -> AnyPublisher<Bool, Error> in
-            account
-                .isFunded
-                .asPublisher()
-                .eraseToAnyPublisher()
-        }
-        .zip()
-        .map { results -> Bool in
-            results.contains(true)
-        }
-        .eraseToAnyPublisher()
+        map(\.isFunded)
+            .zip()
+            .map { results -> Bool in
+                results.contains(true)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func hasPositiveDisplayableBalanceAccounts() -> AnyPublisher<Bool, Error> {
+        map(\.hasPositiveDisplayableBalance)
+            .zip()
+            .map { results -> Bool in
+                results.contains(true)
+            }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -296,6 +324,13 @@ extension Publisher where Output: Sequence, Output.Element == SingleAccount, Fai
     public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Failure> {
         flatMap { accounts -> AnyPublisher<Bool, Failure> in
             accounts.hasAnyFundedAccounts()
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func hasPositiveDisplayableBalanceAccounts() -> AnyPublisher<Bool, Failure> {
+        flatMap { accounts -> AnyPublisher<Bool, Failure> in
+            accounts.hasPositiveDisplayableBalanceAccounts()
         }
         .eraseToAnyPublisher()
     }

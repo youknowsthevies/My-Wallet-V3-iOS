@@ -25,7 +25,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
     let requireSecondPassword: Bool
 
     var sourceAccount: BlockchainAccount!
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var transactionTarget: TransactionTarget!
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -57,6 +57,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
 
     private var bitcoinChainCryptoAccount: BitcoinChainCryptoAccount {
         sourceAccount as! BitcoinChainCryptoAccount
+    }
+
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount
+            .actionableBalance
+            .asSingle()
     }
 
     private var receiveAddress: Single<BitcoinChainReceiveAddress<Token>> {
@@ -134,7 +140,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     func start(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        askForRefreshConfirmation: @escaping (Bool) -> Completable
+        askForRefreshConfirmation: @escaping AskForRefreshConfirmation
     ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
@@ -157,7 +163,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
                 walletCurrencyService
                     .displayCurrency
                     .asSingle(),
-                availableBalance,
+                actionableBalance,
                 app.publisher(for: blockchain.app.configuration.native.bitcoin.transaction.is.enabled, as: Bool.self)
                     .prefix(1)
                     .replaceError(with: false)
@@ -190,24 +196,22 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
             .map { fiatAmountAndFees, feeSelectionOption -> (
                 amountInFiat: MoneyValue,
                 feesInFiat: MoneyValue,
-                feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                feeSelectionOption: TransactionConfirmations.FeeSelection
             ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
             .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
                 [
-                    .sendDestinationValue(.init(value: pendingTransaction.amount)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.transactionTarget.label)),
-                    .feeSelection(payload.feeSelectionOption),
-                    .feedTotal(
-                        .init(
-                            amount: pendingTransaction.amount,
-                            amountInFiat: payload.amountInFiat,
-                            fee: pendingTransaction.feeAmount,
-                            feeInFiat: payload.feesInFiat
-                        )
+                    TransactionConfirmations.SendDestinationValue(value: pendingTransaction.amount),
+                    TransactionConfirmations.Source(value: self.sourceAccount.label),
+                    TransactionConfirmations.Destination(value: self.transactionTarget.label),
+                    payload.feeSelectionOption,
+                    TransactionConfirmations.FeedTotal(
+                        amount: pendingTransaction.amount,
+                        amountInFiat: payload.amountInFiat,
+                        fee: pendingTransaction.feeAmount,
+                        feeInFiat: payload.feesInFiat
                     )
                 ]
             }
@@ -332,7 +336,7 @@ extension BitcoinOnChainTransactionEngine {
     }
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
-        sourceAccount.balance.map { [sourceAccount, transactionTarget] sourceBalance -> Void in
+        actionableBalance.map { [sourceAccount, transactionTarget] sourceBalance -> Void in
             guard (try? pendingTransaction.amount > pendingTransaction.feeAmount) == true else {
                 throw TransactionValidationFailure(
                     state: .belowFees(pendingTransaction.feeAmount, sourceBalance)
@@ -363,10 +367,10 @@ extension BitcoinOnChainTransactionEngine {
 
     private func makeFeeSelectionOption(
         pendingTransaction: PendingTransaction
-    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    ) -> Single<TransactionConfirmations.FeeSelection> {
         getFeeState(pendingTransaction: pendingTransaction)
-            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
-                TransactionConfirmation.Model.FeeSelection(
+            .map { feeState -> TransactionConfirmations.FeeSelection in
+                TransactionConfirmations.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,
                     fee: pendingTransaction.feeAmount

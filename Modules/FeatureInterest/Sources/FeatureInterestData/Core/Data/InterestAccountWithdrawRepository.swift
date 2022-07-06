@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureInterestDomain
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import ToolKit
 

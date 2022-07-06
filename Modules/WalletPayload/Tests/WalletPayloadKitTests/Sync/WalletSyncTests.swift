@@ -6,7 +6,7 @@
 @testable import WalletPayloadKit
 
 import Combine
-import NetworkError
+import Errors
 import TestKit
 import ToolKit
 import XCTest

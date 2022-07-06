@@ -36,7 +36,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
         .package(path: "../Test")
@@ -46,14 +46,13 @@ let package = Package(
             name: "FeatureNotificationPreferencesDomain",
             dependencies: [
                 .product(
+                    name: "Errors",
+                    package: "Errors"
+                ),
+                .product(
                     name: "Localization",
                     package: "Localization"
                 ),
-                .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
-                ),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
@@ -72,8 +71,8 @@ let package = Package(
                     package: "Network"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 )
             ],
             path: "Sources/NotificationPreferences/NotificationPreferencesData"
@@ -105,8 +104,8 @@ let package = Package(
                     package: "Tool"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(
@@ -144,8 +143,8 @@ let package = Package(
                     package: "Tool"
                 ),
                 .product(
-                    name: "NetworkError",
-                    package: "NetworkErrors"
+                    name: "Errors",
+                    package: "Errors"
                 ),
                 .product(
                     name: "ComposableArchitectureExtensions",

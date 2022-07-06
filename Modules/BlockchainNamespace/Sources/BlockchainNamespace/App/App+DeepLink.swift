@@ -8,6 +8,8 @@ extension App {
     public class DeepLink {
 
         private(set) unowned var app: AppProtocol
+
+        private var rules: CurrentValueSubject<[Rule], Never> = .init([])
         private var bag: Set<AnyCancellable> = []
 
         init(_ app: AppProtocol) {
@@ -15,10 +17,12 @@ extension App {
         }
 
         func start() {
-            let rules = app
-                .publisher(for: blockchain.app.configuration.deep_link.rules, as: [Rule?].self)
+            app.publisher(for: blockchain.app.configuration.deep_link.rules, as: [Rule?].self)
                 .compactMap(\.value)
+                .map { rules in Array(rules.compacted()) }
                 .removeDuplicates()
+                .assign(to: \.rules.value, on: self)
+                .store(in: &bag)
 
             app.on(blockchain.app.process.deep_link)
                 .combineLatest(
@@ -30,7 +34,7 @@ extension App {
                 .map(\.0)
                 .combineLatest(rules)
                 .sink { [weak self] event, rules in
-                    self?.process(event: event, with: rules.compactMap { $0 })
+                    self?.process(event: event, with: rules)
                 }
                 .store(in: &bag)
         }
@@ -46,9 +50,14 @@ extension App {
             }
         }
 
+        public func canProcess(url: URL) -> Bool {
+            let isReady = (try? app.state.get(blockchain.app.is.ready.for.deep_link) as? Bool) == true
+            return isReady && rules.value.match(for: url) != nil
+        }
+
         func process(url: URL, with rules: [Rule]) {
-            #if DEBUG
-            if DSL.isDSL(url) {
+            let isDSLEnabled = (try? app.state.get(blockchain.app.deep_link.dsl.is.enabled)) ?? false
+            if isDSLEnabled, DSL.isDSL(url) {
                 do {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
@@ -67,7 +76,6 @@ extension App {
                 }
                 return
             }
-            #endif
             guard let match = rules.match(for: url) else {
                 return
             }

@@ -78,4 +78,15 @@ extension View {
             self
         }
     }
+
+    /// apply the closure to a given view, allows you to jump out of the current context
+    /// and provide conditional modifiers like #if os(iOS) to decide what should be applied to the view
+    /// - Parameters:
+    ///   - then: call closure with self
+    /// - Returns: Self with modifiers applied,
+    @ViewBuilder public func apply<Then: View>(
+        @ViewBuilder _ then: (Self) -> Then
+    ) -> some View {
+        then(self)
+    }
 }

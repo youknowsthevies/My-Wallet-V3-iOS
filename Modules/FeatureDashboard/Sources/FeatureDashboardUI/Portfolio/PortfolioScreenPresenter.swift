@@ -159,10 +159,11 @@ public final class PortfolioScreenPresenter {
             .map { asset -> Observable<CurrencyBalance> in
                 let currency = asset.asset
                 return asset.accountGroup(filter: .all)
-                    .asObservable()
-                    .asSingle()
-                    .flatMap { group -> Single<Bool> in
-                        group.balance.map(\.hasPositiveDisplayableBalance)
+                    .eraseError()
+                    .flatMap { group in
+                        group.balance
+                            .map(\.hasPositiveDisplayableBalance)
+                            .eraseError()
                     }
                     .map { hasPositiveDisplayableBalance -> CurrencyBalance in
                         (currency, hasPositiveDisplayableBalance)

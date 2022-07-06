@@ -3,9 +3,9 @@
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
+import Errors
 import FeatureCardIssuingDomain
 import Localization
-import NabuNetworkError
 import SwiftUI
 import ToolKit
 
@@ -149,15 +149,13 @@ extension Error {
         with viewStore: ViewStore<CardOrderingState, CardOrderingAction>
     ) -> (() -> Void)? {
 
-        guard let error = self as? NabuNetworkError,
-              case .nabuError(let nabuError) = error
-        else {
+        guard let error = self as? NabuNetworkError else {
             return {
                 viewStore.send(.setStep(.creating))
             }
         }
 
-        switch nabuError.code {
+        switch error.code {
         case .stateNotEligible:
             return {
                 viewStore.send(.displayEligibleStateList)

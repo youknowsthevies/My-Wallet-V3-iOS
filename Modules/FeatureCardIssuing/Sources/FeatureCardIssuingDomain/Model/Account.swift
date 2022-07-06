@@ -45,17 +45,13 @@ public struct AccountSnapshot: Identifiable, Equatable {
     }
 }
 
-public struct AccountBalancePair: Codable, Equatable {
-
-    public let accountId: String
+public struct AccountBalance: Codable, Equatable {
 
     public let balance: Money
 
     public init(
-        accountId: String,
         balance: Money
     ) {
-        self.accountId = accountId
         self.balance = balance
     }
 }

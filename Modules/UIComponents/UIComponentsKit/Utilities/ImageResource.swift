@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import SwiftUI
 
 #if canImport(UIKit)
@@ -41,5 +42,33 @@ public enum ImageResource: Hashable {
         #elseif canImport(AppKit)
         return Image(nsImage: image)
         #endif
+    }
+
+    @ViewBuilder
+    public var view: some View {
+        switch self {
+        case .local(let name, let bundle):
+            UniversalImage(named: name, in: bundle, compatibleWith: nil).map { image in
+                #if canImport(UIKit)
+                return Image(uiImage: image).resizable()
+                #elseif canImport(AppKit)
+                return Image(nsImage: image).resizable()
+                #endif
+            }
+        case .remote(let url):
+            Backport.AsyncImage(
+                url: url,
+                content: { image in image.resizable() },
+                placeholder: {
+                    Image(systemName: "squareshape.squareshape.dashed")
+                        .resizable()
+                        .overlay(ProgressView().opacity(0.3))
+                        .foregroundColor(.semantic.light)
+                }
+            )
+        case .systemName(let string):
+            Image(systemName: string)
+                .resizable()
+        }
     }
 }

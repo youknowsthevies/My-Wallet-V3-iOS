@@ -35,6 +35,7 @@ class WalletRecoveryServiceTests: XCTestCase {
         }
 
         let mockMetadata = MetadataServiceMock()
+        let walletSync = WalletSyncMock()
         let upgrader = WalletUpgrader(workflows: [])
 
         let walletLogic = WalletLogic(
@@ -42,10 +43,11 @@ class WalletRecoveryServiceTests: XCTestCase {
             decoder: decoder,
             upgrader: upgrader,
             metadata: mockMetadata,
+            walletSync: walletSync,
             notificationCenter: .default
         )
 
-        let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.payloadError(.emptyData))))
+        let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
         let walletPayloadRepository = WalletPayloadRepository(apiClient: mockWalletPayloadClient)
         let queue = DispatchQueue(label: "temp.recovery.queue")
         let walletRecoveryService = WalletRecoveryService(
@@ -96,12 +98,14 @@ class WalletRecoveryServiceTests: XCTestCase {
         )
 
         let upgrader = WalletUpgrader(workflows: [])
+        let walletSyncMock = WalletSyncMock()
 
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder,
             upgrader: upgrader,
             metadata: mockMetadata,
+            walletSync: walletSyncMock,
             notificationCenter: .default
         )
 

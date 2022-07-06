@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainNamespace
+import Errors
 import Foundation
 import ToolKit
 
@@ -9,6 +10,7 @@ extension OpenBanking {
     public enum Error: Swift.Error, Equatable, Hashable {
         case message(String)
         case code(String)
+        case ux(Nabu.Error.UX)
         case namespace(FetchResult.Error)
         case other(Swift.Error)
         case timeout
@@ -21,6 +23,8 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         switch error {
         case let error as OpenBanking.Error:
             self = error
+        case let error as Nabu.Error.UX:
+            self = .ux(error)
         case let error as FetchResult.Error:
             self = .namespace(error)
         case let error:
@@ -30,7 +34,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 
     public var any: Error {
         switch self {
-        case .message, .code, .timeout:
+        case .message, .code, .timeout, .ux:
             return self
         case .namespace(let error):
             return error
@@ -49,7 +53,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 
     public var code: String? {
         switch self {
-        case .timeout, .message, .namespace, .other:
+        case .timeout, .message, .namespace, .other, .ux:
             return nil
         case .code(let code):
             return code
@@ -60,6 +64,11 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         switch self {
         case .timeout:
             return "timeout"
+        case .ux(let error):
+            return """
+            \(error.title)
+            \(error.message)
+            """
         case .message(let description), .code(let description):
             return description
         case .namespace(let error):
@@ -80,11 +89,17 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 extension OpenBanking.Error: Codable {
 
     public init(from decoder: Decoder) throws {
-        self = try .code(String(from: decoder))
+        do {
+            self = try .ux(Nabu.Error.UX(from: decoder))
+        } catch {
+            self = try .code(String(from: decoder))
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
         switch self {
+        case .ux(let ux):
+            try ux.encode(to: encoder)
         case .code(let code):
             try code.encode(to: encoder)
         default:

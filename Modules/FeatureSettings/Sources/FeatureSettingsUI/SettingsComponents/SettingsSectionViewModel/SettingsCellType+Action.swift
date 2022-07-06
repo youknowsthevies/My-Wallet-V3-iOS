@@ -79,9 +79,14 @@ extension SettingsSectionType.CellType {
                 return .showCardIssuing
             case .notifications:
                 return .showNotificationsSettings
+            case .userDeletion:
+                return .showUserDeletionScreen
             }
         case .switch:
             return .none
+
+        case .refferal(_, let viewModel):
+            return .showReferralScreen(viewModel.referral)
         }
     }
 }

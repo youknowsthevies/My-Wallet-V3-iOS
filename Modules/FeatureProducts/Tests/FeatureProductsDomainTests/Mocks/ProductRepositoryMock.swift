@@ -1,6 +1,6 @@
 import Combine
+import Errors
 import FeatureProductsDomain
-import NabuNetworkError
 import ToolKit
 
 final class ProductsRepositoryMock: ProductsRepositoryAPI {

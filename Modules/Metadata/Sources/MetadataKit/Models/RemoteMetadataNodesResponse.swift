@@ -5,9 +5,8 @@ import Foundation
 struct RemoteMetadataNodesResponse: Codable {
 
     var areAllMetadataNodesAvailable: Bool {
-        metadata != nil && mdid != nil
+        metadata != nil
     }
 
     var metadata: String?
-    var mdid: String?
 }

@@ -47,9 +47,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             .asDriver(onErrorJustReturn: .empty)
 
         presenter.continueButtonTapped
+            .throttle(.milliseconds(400))
             .asObservable()
             .withLatestFrom(transactionModel.state)
-            .take(1)
             .subscribe(onNext: { [weak self] state in
                 self?.analyticsHook.onTransactionSubmitted(with: state)
                 self?.transactionModel.process(action: .executeTransaction)
@@ -68,20 +68,20 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
         case .back:
             listener?.checkoutDidTapBack()
         case .updateMemo(let memo, let oldModel):
-            let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
-            transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
+            let model = TransactionConfirmations.Memo(textMemo: memo, required: oldModel.required)
+            transactionModel.process(action: .modifyTransactionConfirmation(model))
         case .toggleTermsOfServiceAgreement(let value):
-            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+            let model = TransactionConfirmations.AnyBoolOption<Bool>(
                 value: value,
                 type: .agreementInterestTandC
             )
-            transactionModel.process(action: .modifyTransactionConfirmation(.termsOfService(model)))
+            transactionModel.process(action: .modifyTransactionConfirmation(model))
         case .toggleHoldPeriodAgreement(let value):
-            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+            let model = TransactionConfirmations.AnyBoolOption<Bool>(
                 value: value,
                 type: .agreementInterestTransfer
             )
-            transactionModel.process(action: .modifyTransactionConfirmation(.transferAgreement(model)))
+            transactionModel.process(action: .modifyTransactionConfirmation(model))
         case .tappedHyperlink(let titledLink):
             router?.showWebViewWithTitledLink(titledLink)
         }
@@ -97,7 +97,7 @@ extension ConfirmationPageInteractor {
     enum Effects: Equatable {
         case close
         case back
-        case updateMemo(String?, oldModel: TransactionConfirmation.Model.Memo)
+        case updateMemo(String?, oldModel: TransactionConfirmations.Memo)
         case tappedHyperlink(TitledLink)
         case toggleTermsOfServiceAgreement(Bool)
         case toggleHoldPeriodAgreement(Bool)

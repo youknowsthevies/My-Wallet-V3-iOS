@@ -7,7 +7,7 @@ import SwiftUI
 
 public enum OpenBankingState: Equatable {
     case institutionList(InstitutionListState)
-    case approve(ApproveState)
+    case bank(BankState)
 }
 
 extension OpenBankingState {
@@ -25,15 +25,13 @@ extension OpenBankingState {
         product: String,
         from bankAccount: OpenBanking.BankAccount
     ) -> Self {
-        .approve(
-            .init(
-                bank: .init(
-                    data: .init(
-                        account: bankAccount,
-                        action: .deposit(
-                            amountMinor: amountMinor,
-                            product: product
-                        )
+        .bank(
+            BankState(
+                data: .init(
+                    account: bankAccount,
+                    action: .deposit(
+                        amountMinor: amountMinor,
+                        product: product
                     )
                 )
             )
@@ -44,14 +42,12 @@ extension OpenBankingState {
         order: OpenBanking.Order,
         from bankAccount: OpenBanking.BankAccount
     ) -> Self {
-        .approve(
-            .init(
-                bank: .init(
-                    data: .init(
-                        account: bankAccount,
-                        action: .confirm(
-                            order: order
-                        )
+        .bank(
+            BankState(
+                data: .init(
+                    account: bankAccount,
+                    action: .confirm(
+                        order: order
                     )
                 )
             )
@@ -61,7 +57,7 @@ extension OpenBankingState {
 
 public enum OpenBankingAction: Equatable {
     case institutionList(InstitutionListAction)
-    case approve(ApproveAction)
+    case bank(BankAction)
 }
 
 public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, OpenBankingEnvironment>
@@ -72,26 +68,24 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
                 action: /OpenBankingAction.institutionList,
                 environment: \.environment
             ),
-        approveReducer
+        bankReducer
             .pullback(
-                state: /OpenBankingState.approve,
-                action: /OpenBankingAction.approve,
+                state: /OpenBankingState.bank,
+                action: /OpenBankingAction.bank,
                 environment: \.environment
             ),
         .init { _, action, environment in
             switch action {
-            case .approve(.bank(.failure(let error))),
-                 .institutionList(.approve(.bank(.failure(let error)))):
+            case .bank(.failure(let error)),
+                 .institutionList(.bank(.failure(let error))):
                 environment.eventPublisher.send(.failure(error))
                 return .none
-            case .institutionList(.approve(.bank(.finished))), .approve(.bank(.finished)):
+            case .institutionList(.bank(.finished)), .bank(.finished):
                 environment.eventPublisher.send(.success(()))
                 return .none
-            case .institutionList(.approve(.deny)), .approve(.deny), .approve(.bank(.cancel)):
+            case .bank(.cancel):
                 return .fireAndForget(environment.cancel)
-            case .approve:
-                return .none
-            case .institutionList:
+            case .institutionList, .bank:
                 return .none
             }
         }
@@ -113,9 +107,9 @@ public struct OpenBankingView: View {
                 then: InstitutionList.init(store:)
             )
             CaseLet(
-                state: /OpenBankingState.approve,
-                action: OpenBankingAction.approve,
-                then: ApproveView.init(store:)
+                state: /OpenBankingState.bank,
+                action: OpenBankingAction.bank,
+                then: BankView.init(store:)
             )
         }
     }

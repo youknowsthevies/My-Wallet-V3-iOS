@@ -199,6 +199,7 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func handleAccountsAndAddresses() { wrapped.handleAccountsAndAddresses() }
     func handleSupport() { wrapped.handleSupport() }
     func handleSecureChannel() { wrapped.handleSecureChannel() }
+    func logoutAndForgetWallet() { wrapped.logoutAndForgetWallet() }
 }
 
 class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
@@ -237,4 +238,5 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func handleAccountsAndAddresses() {}
     func handleSupport() {}
     func handleSecureChannel() {}
+    func logoutAndForgetWallet() {}
 }

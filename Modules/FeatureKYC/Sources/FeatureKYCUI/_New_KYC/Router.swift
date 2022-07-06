@@ -114,14 +114,13 @@ public protocol Routing {
 }
 
 /// A class that encapsulates routing logic for the KYC flow. Use this to present the app user with any part of the KYC flow.
-public class Router: Routing {
+public final class Router: Routing {
 
     private let legacyRouter: PlatformUIKit.KYCRouterAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let loadingViewPresenter: PlatformUIKit.LoadingViewPresenting
     private let emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI
     private let kycService: PlatformKit.KYCTiersServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
     private let openMailApp: (@escaping (Bool) -> Void) -> Void
     private let openURL: (URL) -> Void
     private let userDefaults: UserDefaults
@@ -135,7 +134,6 @@ public class Router: Routing {
         loadingViewPresenter: PlatformUIKit.LoadingViewPresenting,
         legacyRouter: PlatformUIKit.KYCRouterAPI,
         kycService: PlatformKit.KYCTiersServiceAPI,
-        featureFlagsService: FeatureFlagsServiceAPI,
         emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI,
         openMailApp: @escaping (@escaping (Bool) -> Void) -> Void,
         openURL: @escaping (URL) -> Void,
@@ -145,7 +143,6 @@ public class Router: Routing {
         self.loadingViewPresenter = loadingViewPresenter
         self.legacyRouter = legacyRouter
         self.kycService = kycService
-        self.featureFlagsService = featureFlagsService
         self.emailVerificationService = emailVerificationService
         self.openMailApp = openMailApp
         self.openURL = openURL
@@ -374,46 +371,36 @@ public class Router: Routing {
     }
 
     public func presentLimitsOverview(from presenter: UIViewController) {
-        func internalPresentKYC(from presenter: UIViewController, requiredTier: KYC.Tier) {
-            presentKYC(from: presenter, requiredTier: requiredTier)
-                .receive(on: DispatchQueue.main)
-                .sink(receiveValue: { _ in
-                    // no-op
-                })
-                .store(in: &cancellables)
+        let close: () -> Void = { [weak presenter] in
+            presenter?.dismiss(animated: true, completion: nil)
         }
-        return featureFlagsService.isEnabled(.newLimitsUIEnabled)
-            .receive(on: DispatchQueue.main)
-            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
-            .sink { [analyticsRecorder, kycService, disposeBag, internalPresentKYC, openURL] newLimitsUIEnabled in
-                guard newLimitsUIEnabled else {
-                    KYCTiersViewController
-                        .routeToTiers(fromViewController: presenter)
-                        .disposed(by: disposeBag)
+        let presentKYCFlow: (KYC.Tier) -> Void = { [weak self, weak presenter] requiredTier in
+            presenter?.dismiss(animated: true) { [weak self] in
+                guard let self = self, let presenter = presenter else {
                     return
                 }
-                let view = TradingLimitsView(
-                    store: .init(
-                        initialState: TradingLimitsState(),
-                        reducer: tradingLimitsReducer,
-                        environment: TradingLimitsEnvironment(
-                            close: {
-                                presenter.dismiss(animated: true, completion: nil)
-                            },
-                            openURL: openURL,
-                            presentKYCFlow: { requiredTier in
-                                presenter.dismiss(animated: true) {
-                                    internalPresentKYC(presenter, requiredTier)
-                                }
-                            },
-                            fetchLimitsOverview: kycService.fetchOverview,
-                            analyticsRecorder: analyticsRecorder
-                        )
-                    )
-                )
-                presenter.present(view)
+                self.presentKYC(from: presenter, requiredTier: requiredTier)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveValue: { _ in
+                        // no-op
+                    })
+                    .store(in: &self.cancellables)
             }
-            .store(in: &cancellables)
+        }
+        let view = TradingLimitsView(
+            store: .init(
+                initialState: TradingLimitsState(),
+                reducer: tradingLimitsReducer,
+                environment: TradingLimitsEnvironment(
+                    close: close,
+                    openURL: openURL,
+                    presentKYCFlow: presentKYCFlow,
+                    fetchLimitsOverview: kycService.fetchOverview,
+                    analyticsRecorder: analyticsRecorder
+                )
+            )
+        )
+        presenter.present(view)
     }
 }
 

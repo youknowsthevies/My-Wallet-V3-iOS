@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
 import ToolKit
@@ -222,6 +223,7 @@ public enum OrderPayload {
         public let paymentMethodId: String?
         let side: Side
         public let attributes: Attributes?
+        @Optional.Codable public var ux: Nabu.Error.UX?
 
         let processingErrorType: String?
     }

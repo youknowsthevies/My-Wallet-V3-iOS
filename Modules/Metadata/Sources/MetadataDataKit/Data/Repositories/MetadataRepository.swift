@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
 import MetadataKit
-import NetworkError
 import ToolKit
 
 final class MetadataRepository: MetadataRepositoryAPI {

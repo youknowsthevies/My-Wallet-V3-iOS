@@ -18,6 +18,11 @@ public struct Tag {
     public var parent: Tag? { parentID.flatMap(language.tag) }
     private let parentID: ID?
 
+    var isGraphNode: Bool {
+        guard let parent = parent else { return true }
+        return parent.isGraphNode && parent.node.children.keys.contains(name)
+    }
+
     public var protonym: Tag? { Tag.protonym(of: self) }
     public let ownChildren: [Name: Tag]
     public var children: [Name: Tag] { Tag.children(of: self) }
@@ -279,8 +284,15 @@ extension Tag {
 
     static func ownType(_ tag: Tag) -> [ID: Tag] {
         var type: [ID: Tag] = [:]
-        for id in tag.node.type {
-            type[id] = tag.language.tag(id)
+        if tag.isGraphNode {
+            for id in tag.node.type {
+                type[id] = tag.language.tag(id)
+            }
+        } else {
+            for id in tag.parent?.node.type ?? [] {
+                guard let node = tag.language.tag(id)?[tag.node.name] else { continue }
+                type[node.id] = node
+            }
         }
         return type
     }

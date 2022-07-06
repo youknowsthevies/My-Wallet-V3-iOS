@@ -35,8 +35,16 @@ public final class DetailsScreenViewController: BaseTableViewController {
         tableView.selfSizingBehaviour = .fill
         setupTableView()
         setupNavigationBar()
+        for viewModel in presenter.disclaimers {
+            let disclaimerView = DisclaimerView()
+            disclaimerView.viewModel = viewModel
+            addStickyBottomView(disclaimerView)
+        }
         for viewModel in presenter.buttons {
-            addButton(with: viewModel)
+            let buttonView = ButtonView()
+            buttonView.viewModel = viewModel
+            buttonView.layout(dimension: .height, to: 48)
+            addStickyBottomView(buttonView)
         }
         keyboardInteractionController = .init(in: scrollView)
         setupPresenter()

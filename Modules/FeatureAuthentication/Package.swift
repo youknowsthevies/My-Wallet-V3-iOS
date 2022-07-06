@@ -44,11 +44,12 @@ let package = Package(
             from: "0.34.0"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
@@ -60,7 +61,7 @@ let package = Package(
             dependencies: [
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
@@ -72,8 +73,7 @@ let package = Package(
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
@@ -81,6 +81,7 @@ let package = Package(
             name: "FeatureAuthenticationUI",
             dependencies: [
                 .target(name: "FeatureAuthenticationDomain"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "AnalyticsKit", package: "Analytics"),

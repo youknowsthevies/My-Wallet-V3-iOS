@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import MoneyKit
-import NabuNetworkError
 import ToolKit
 
 public protocol OrdersActivityServiceAPI: AnyObject {

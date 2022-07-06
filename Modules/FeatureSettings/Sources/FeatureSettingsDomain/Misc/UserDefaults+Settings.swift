@@ -17,8 +17,6 @@ extension UserDefaults {
         case passwordPartHash
         case biometryEnabled
         case cloudBackupEnabled
-        case exchangeLinkIdentifier = "pitLinkIdentifier"
-        case didTapOnExchangeDeepLink = "didTapOnPitDeepLink"
         case custodySendInterstitialViewed
         case sendToDomainAnnouncementViewed
         case pin

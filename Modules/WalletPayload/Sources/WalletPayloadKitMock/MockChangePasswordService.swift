@@ -4,7 +4,7 @@
 @testable import WalletPayloadKit
 
 import Combine
-import NetworkError
+import Errors
 
 final class MockChangePasswordService: ChangePasswordServiceAPI {
 

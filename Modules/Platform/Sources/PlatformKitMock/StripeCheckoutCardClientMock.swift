@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
-import NabuNetworkError
 import PlatformKit
 
 private class CardClientMock: CardClientAPI {

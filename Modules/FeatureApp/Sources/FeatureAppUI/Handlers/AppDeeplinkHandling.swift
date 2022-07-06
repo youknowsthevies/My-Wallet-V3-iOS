@@ -361,7 +361,6 @@ public final class FirebaseDeeplinkHandler: URIHandlingAPI {
                     } catch let error as AppDeeplinkError {
                         promise(.failure(error))
                     } catch {
-                        Logger.shared.error("Got error handling universal link: \(String(describing: error))")
                         promise(.failure(.dynamicLink(error)))
                     }
                 }

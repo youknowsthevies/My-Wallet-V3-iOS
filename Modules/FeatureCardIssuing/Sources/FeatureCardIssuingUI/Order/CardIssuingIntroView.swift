@@ -30,15 +30,11 @@ struct CardIssuingIntroView: View {
                     .typography(.paragraph1)
                     .foregroundColor(.WalletSemantic.body)
                     .multilineTextAlignment(.center)
-                Spacer()
-                VStack(spacing: Spacing.padding1) {
-                    PrimaryButton(title: localizedStrings.Intro.Button.Title.order) {
-                        viewStore.send(.setStep(.selection))
-                    }
-                    MinimalButton(title: localizedStrings.Intro.Button.Title.link) {
-                        viewStore.send(.setStep(.link))
-                    }
+                PrimaryButton(title: localizedStrings.Intro.Button.Title.order) {
+                    viewStore.send(.setStep(.selection))
                 }
+                .padding(.top, Spacing.padding2)
+                Spacer()
             }
             .padding(Spacing.padding3)
             .primaryNavigation(title: LocalizationConstants.CardIssuing.Navigation.title)
@@ -47,7 +43,7 @@ struct CardIssuingIntroView: View {
             }
             PrimaryNavigationLink(
                 destination: ProductSelectionView(store: store),
-                isActive: .constant(viewStore.state.isProductSelectionVisible),
+                isActive: viewStore.binding(\.$isProductSelectionVisible),
                 label: EmptyView.init
             )
         }
@@ -57,13 +53,22 @@ struct CardIssuingIntroView: View {
 #if DEBUG
 struct CardIssuingIntro_Previews: PreviewProvider {
     static var previews: some View {
-        CardIssuingIntroView(
-            store: Store(
-                initialState: .init(),
-                reducer: cardOrderingReducer,
-                environment: .preview
+        Group {
+            CardIssuingIntroView(
+                store: Store(
+                    initialState: .init(),
+                    reducer: cardOrderingReducer,
+                    environment: .preview
+                )
             )
-        )
+            CardIssuingIntroView(
+                store: Store(
+                    initialState: .init(),
+                    reducer: cardOrderingReducer,
+                    environment: .preview
+                )
+            )
+        }
     }
 }
 #endif

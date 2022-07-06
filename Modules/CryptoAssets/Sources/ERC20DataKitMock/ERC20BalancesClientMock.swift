@@ -2,9 +2,9 @@
 
 import Combine
 @testable import ERC20DataKit
+import Errors
 import EthereumKit
 import MoneyKit
-import NetworkError
 import PlatformKit
 
 final class ERC20BalancesClientMock: ERC20BalancesClientAPI {
@@ -52,12 +52,12 @@ final class ERC20BalancesClientMock: ERC20BalancesClientAPI {
         case .succeed:
             return .just(.stubbed(cryptoCurrency: cryptoCurrency))
         case .fail:
-            return .failure(.payloadError(.emptyData))
+            return .failure(.unknown)
         case .failThenSucceed:
             defer { evmTokensBalancesCallCount += 1 }
             switch evmTokensBalancesCallCount {
             case 0:
-                return .failure(.payloadError(.emptyData))
+                return .failure(.unknown)
             case 1:
                 return .just(.stubbed(cryptoCurrency: cryptoCurrency))
             default:
@@ -73,12 +73,12 @@ final class ERC20BalancesClientMock: ERC20BalancesClientAPI {
         case .succeed:
             return .just(.stubbed(cryptoCurrency: cryptoCurrency))
         case .fail:
-            return .failure(.payloadError(.emptyData))
+            return .failure(.unknown)
         case .failThenSucceed:
             defer { ethereumTokensBalancesCallCount += 1 }
             switch ethereumTokensBalancesCallCount {
             case 0:
-                return .failure(.payloadError(.emptyData))
+                return .failure(.unknown)
             case 1:
                 return .just(.stubbed(cryptoCurrency: cryptoCurrency))
             default:

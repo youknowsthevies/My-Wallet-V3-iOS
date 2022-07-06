@@ -21,22 +21,18 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         ERC20OnChainTransactionEngineFactory(erc20Token: erc20Token)
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
-    var balance: Single<MoneyValue> {
-        balancePublisher.asSingle()
-    }
-
-    var balancePublisher: AnyPublisher<MoneyValue, Error> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         balanceService
             .balance(for: ethereumAddress, cryptoCurrency: asset)
             .map(\.moneyValue)
             .eraseError()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
@@ -231,8 +227,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             return .just(true)
         case .interestTransfer:
             return isInterestTransferAvailable
-                .flatMap { [isFundedPublisher] isEnabled in
-                    isEnabled ? isFundedPublisher : .just(false)
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
         case .deposit,
@@ -245,7 +241,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         case .send:
-            return isFundedPublisher
+            return isFunded
         case .swap:
             return isPairToCryptoAvailable
                 .flatMap { [hasPositiveDisplayableBalance] isPairToCryptoAvailable -> AnyPublisher<Bool, Never> in
@@ -277,15 +273,15 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: asset, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balancePublisher)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+    func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     func invalidateAccountBalance() {

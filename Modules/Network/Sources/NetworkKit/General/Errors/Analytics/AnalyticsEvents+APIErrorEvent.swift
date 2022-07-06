@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import NetworkError
+import Errors
 
 enum APIErrorEvent: AnalyticsEvent {
     case payloadError(ErrorDetails?)
@@ -70,7 +70,7 @@ enum APIErrorEvent: AnalyticsEvent {
         error: NetworkError,
         decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
     ) {
-        switch error {
+        switch error.type {
         case .rawServerError(let rawServerError):
             self = .serverError(ErrorDetails(
                 request: request,

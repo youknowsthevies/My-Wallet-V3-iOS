@@ -33,7 +33,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../UIComponents"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Platform"),
@@ -46,8 +46,7 @@ let package = Package(
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),
@@ -56,7 +55,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureInterestDomain"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),

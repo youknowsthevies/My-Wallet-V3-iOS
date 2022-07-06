@@ -2,13 +2,14 @@
 
 import ComposableArchitecture
 import ComposableArchitectureExtensions
+import Errors
 import FeatureCoinDomain
-import NetworkError
 
 public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction {
     case onAppear
     case onDisappear
     case update(Result<(KYCStatus, [Account.Snapshot]), Error>)
+    case fetchInterestRate
     case fetchedInterestRate(Result<Double, NetworkError>)
     case fetchedAssetInformation(Result<AssetInformation, NetworkError>)
     case refresh

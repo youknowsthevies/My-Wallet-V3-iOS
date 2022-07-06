@@ -2,11 +2,11 @@
 
 // swiftlint:disable file_length
 
+import Errors
 import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import ToolKit
 import UIComponentsKit
@@ -79,20 +79,17 @@ extension TransactionErrorState {
                     return ui.info.title
                 } else if
                     let error = error as? OrderConfirmationServiceError,
-                    case .nabu(.nabuError(let networkError)) = error
+                    case .nabu(let networkError) = error
                 {
                     text = transactionErrorTitle(
                         for: networkError.code,
                         action: action
-                    ) ?? networkError.serverDescription
-                } else if
-                    let error = error as? NabuNetworkError,
-                    case .nabuError(let networkError) = error
-                {
+                    ) ?? Localization.nextworkErrorShort
+                } else if let networkError = error as? NabuNetworkError {
                     text = transactionErrorTitle(
                         for: networkError.code,
                         action: action
-                    ) ?? networkError.serverDescription
+                    ) ?? Localization.nextworkErrorShort
                 } else if let error = error as? TransactionValidationFailure {
                     text = error.title(action)
                 } else {
@@ -102,7 +99,7 @@ extension TransactionErrorState {
                 text = nil
             }
         case .nabuError(let error):
-            text = transactionErrorTitle(for: error.code, action: action) ?? error.serverDescription
+            text = transactionErrorTitle(for: error.code, action: action) ?? Localization.nextworkErrorShort
         case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
@@ -179,7 +176,7 @@ extension TransactionErrorState {
             text = localizedOverMaxPersonalLimitMessage(action: action)
         case .nabuError(let error):
             text = transactionErrorDescription(for: error.code, action: action)
-                ?? error.serverDescription
+                ?? error.description
                 ?? Localization.unknownErrorDescription
         case .fatalError(let fatalTransactionError):
             text = transactionErrorDescription(for: fatalTransactionError, action: action)
@@ -278,16 +275,9 @@ extension TransactionErrorState {
 extension TransactionErrorState {
 
     private func transactionErrorDescription(for networkError: NabuNetworkError, action: AssetAction) -> String {
-        let errorDescription: String
-        switch networkError {
-        case .nabuError(let error):
-            errorDescription = transactionErrorDescription(for: error.code, action: action)
-                ?? error.serverDescription
-                ?? Localization.unknownError
-        case .communicatorError(let error):
-            errorDescription = String(describing: error)
-        }
-        return errorDescription
+        transactionErrorDescription(for: networkError.code, action: action)
+            ?? networkError.description
+            ?? Localization.unknownErrorDescription
     }
 
     private func transactionErrorDescription(for fatalError: FatalTransactionError, action: AssetAction) -> String {

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Localization
-import NetworkError
 
 public struct PinStoreResponse: Decodable & Error {
 

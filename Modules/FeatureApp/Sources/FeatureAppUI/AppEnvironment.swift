@@ -25,7 +25,6 @@ public struct AppEnvironment {
     var app: AppProtocol
     var nabuUserService: NabuUserServiceAPI
     var loadingViewPresenter: LoadingViewPresenting
-    var onboardingSettings: OnboardingSettingsAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var cacheSuite: CacheSuite
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
@@ -81,7 +80,6 @@ public struct AppEnvironment {
         app: AppProtocol,
         nabuUserService: NabuUserServiceAPI,
         loadingViewPresenter: LoadingViewPresenting,
-        onboardingSettings: OnboardingSettingsAPI,
         blurEffectHandler: BlurVisualEffectHandlerAPI,
         cacheSuite: CacheSuite,
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
@@ -131,7 +129,6 @@ public struct AppEnvironment {
         self.app = app
         self.nabuUserService = nabuUserService
         self.loadingViewPresenter = loadingViewPresenter
-        self.onboardingSettings = onboardingSettings
         self.blurEffectHandler = blurEffectHandler
         self.cacheSuite = cacheSuite
         self.remoteNotificationServiceContainer = remoteNotificationServiceContainer

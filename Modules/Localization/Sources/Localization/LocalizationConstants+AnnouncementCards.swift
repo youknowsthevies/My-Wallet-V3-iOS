@@ -98,6 +98,21 @@ extension LocalizationConstants {
 
         // MARK: - One time
 
+        public enum ViewNFT {
+            public static let title = NSLocalizedString(
+                "View NFTs In Your Wallet",
+                comment: "View NFTs In Your Wallet"
+            )
+            public static let description = NSLocalizedString(
+                "Soon you will be able to view your NFTs right from the comfort of your wallet.",
+                comment: "Soon you will be able to view your NFTs right from the comfort of your wallet."
+            )
+            public static let buttonTitle = NSLocalizedString(
+                "Join Waitlist",
+                comment: "Join Waitlist"
+            )
+        }
+
         public enum IdentityVerification {
             public static let title = NSLocalizedString(
                 "Finish Verifying Your Account",

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -27,8 +27,8 @@ struct TransactionState: StateType {
 
     let action: AssetAction
 
-    var availableSources: [BlockchainAccount] = []
-    var availableTargets: [TransactionTarget] = []
+    var availableSources: [BlockchainAccount]?
+    var availableTargets: [TransactionTarget]?
 
     var source: BlockchainAccount?
     var destination: TransactionTarget?
@@ -176,8 +176,8 @@ extension TransactionState: Equatable {
             && lhs.source?.identifier == rhs.source?.identifier
             && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
-            && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
-            && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.availableSources?.map(\.identifier) == rhs.availableSources?.map(\.identifier)
+            && lhs.availableTargets?.map(\.label) == rhs.availableTargets?.map(\.label)
             && lhs.userKYCStatus == rhs.userKYCStatus
     }
 }
@@ -410,6 +410,7 @@ enum TransactionFlowStep: Equatable {
     case validateSource
     case confirmDetail
     case inProgress
+    case error
     case securityConfirmation
     case errorRecoveryInfo
     case closed
@@ -432,6 +433,7 @@ extension TransactionFlowStep {
              .enterPassword,
              .initial,
              .kycChecks,
+             .error,
              .validateSource,
              .linkPaymentMethod,
              .linkACard,
@@ -460,6 +462,7 @@ extension TransactionFlowStep {
              .enterPassword,
              .errorRecoveryInfo,
              .inProgress,
+             .error,
              .initial,
              .selectSource,
              .selectTarget,

@@ -3,9 +3,9 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import Foundation
 import MoneyKit
-import NabuNetworkError
 import NetworkKit
 import ToolKit
 

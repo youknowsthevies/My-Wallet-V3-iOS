@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureCardPaymentDomain
+import FeatureReferralDomain
 import MoneyKit
 import PlatformKit
 
@@ -28,5 +29,7 @@ public enum SettingsScreenAction {
     case showWebLogin
     case showCardIssuing
     case showNotificationsSettings
+    case showReferralScreen(Referral)
+    case showUserDeletionScreen
     case none
 }

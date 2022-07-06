@@ -114,6 +114,24 @@ func getMnemonic(
         .map(\.mnemonic)
 }
 
+/// Gets the masterNode (BIP39 seed) from the given wallet
+/// This is used to calculate the derivations, xpriv/xpubs etc
+///
+/// - Parameters:
+///   - wallet: A `Wallet` value to retrieve the mnemonic from
+///   - secondPassword: A optional `String` representing the second password of the wallet
+/// - Returns: A `String` of the seed
+func getMasterNode(
+    from wallet: NativeWallet,
+    secondPassword: String? = nil
+) -> Result<String, WalletError> {
+    getSeedHex(from: wallet, secondPassword: secondPassword)
+        .map(Data.init(hex:))
+        .flatMap(getHDWallet(from:))
+        .map(\.seed)
+        .map(\.toHexString)
+}
+
 /// Returns  the seedHex from the given wallet
 /// - Parameters:
 ///   - wallet: A `Wallet` object to retrieve the seedHex

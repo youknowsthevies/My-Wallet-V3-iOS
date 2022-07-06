@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 /// An asset (crypto or fiat).
 public struct AssetModel: Hashable {
@@ -41,7 +42,11 @@ public struct AssetModel: Hashable {
         displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
         precision = assetResponse.precision
-        products = assetResponse.products.compactMap(AssetModelProduct.init)
+        var products = assetResponse.products.compactMap(AssetModelProduct.init)
+        if BuildFlag.isInternal, code == "STX" {
+            products.append(.dynamicSelfCustody)
+        }
+        self.products = products.unique
         logoPngUrl = URL(string: assetResponse.type.logoPngUrl ?? "")
         spotColor = assetResponse.type.spotColor
 
@@ -164,7 +169,7 @@ extension AssetModel {
 
     public static let polygon = AssetModel(
         code: "MATIC.MATIC",
-        displayCode: "MATIC (Polygon)",
+        displayCode: "MATIC",
         kind: .coin(minimumOnChainConfirmations: 128),
         name: "Polygon",
         precision: 18,

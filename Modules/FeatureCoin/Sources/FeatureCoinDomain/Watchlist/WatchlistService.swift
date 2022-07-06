@@ -2,9 +2,9 @@
 
 import BlockchainNamespace
 import Combine
+import Errors
 import Foundation
 import MoneyKit
-import NetworkError
 
 public class WatchlistService {
 

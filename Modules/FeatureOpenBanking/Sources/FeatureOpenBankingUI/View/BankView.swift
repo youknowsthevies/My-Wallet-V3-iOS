@@ -3,6 +3,8 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import Errors
+import ErrorsUI
 import FeatureOpenBankingDomain
 import SwiftUI
 import ToolKit
@@ -25,6 +27,7 @@ public struct BankState: Equatable {
         public internal(set) var action: [Action]?
     }
 
+    public internal(set) var error: Nabu.Error.UX?
     public internal(set) var ui: UI?
     public internal(set) var data: OpenBanking.Data
     public var showActions: Bool = false
@@ -91,7 +94,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 environment.openBanking.reset()
             },
             environment.openBanking.start(state.data)
-                .compactMap { state in
+                .compactMap { state -> BankAction in
                     switch state {
                     case .waitingForConsent:
                         return .waitingForConsent
@@ -163,11 +166,12 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         switch error {
         case .timeout:
             state.ui = .pending()
-            return .none
+        case .ux(let error):
+            state.error = error
         default:
             state.ui = .error(error, currency: state.currency, in: environment)
-            return .cancel(id: ID.ConsentError())
         }
+        return .cancel(id: ID.ConsentError())
     }
 }
 .analytics()
@@ -213,7 +217,12 @@ public struct BankView: View {
 
     public var body: some View {
         WithViewStore(store) { viewStore in
-            if let ui = viewStore.ui {
+            if let ux = viewStore.error {
+                ErrorView(
+                    ux: UX.Error(nabu: ux),
+                    dismiss: { viewStore.send(.dismiss) }
+                )
+            } else if let ui = viewStore.ui {
                 ActionableView(
                     ui.info,
                     buttons: viewStore.showActions ? buttons(from: ui.action, in: viewStore) : []

@@ -297,12 +297,11 @@ final class TransactionAnalyticsHook {
             }
             let confirmations = state.pendingTransaction?
                 .confirmations
-                .compactMap { confirmation -> TransactionConfirmation.Model.NetworkFee? in
-                    if case .networkFee(let fee) = confirmation {
-                        return fee
-                    } else {
+                .compactMap { confirmation -> TransactionConfirmations.NetworkFee? in
+                    guard let networkFee = confirmation as? TransactionConfirmations.NetworkFee else {
                         return nil
                     }
+                    return networkFee
                 }
             let networkFeeInputAmount = confirmations?.first(where: {
                 $0.feeType == .withdrawalFee

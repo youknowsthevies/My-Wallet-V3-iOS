@@ -73,6 +73,7 @@ extension DependencyContainer {
                 decoder: decoder,
                 upgrader: upgrader,
                 metadata: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
                 notificationCenter: .default
             )
         }
@@ -117,20 +118,29 @@ extension DependencyContainer {
         factory { () -> WalletMetadataEntryServiceAPI in
             let holder: WalletHolderAPI = DIKit.resolve()
             let metadata: MetadataServiceAPI = DIKit.resolve()
+            let queue = DispatchQueue(label: "wallet.metadata.operations.queue")
             return WalletMetadataEntryService(
                 walletHolder: holder,
-                metadataService: metadata
+                metadataService: metadata,
+                queue: queue
             )
         }
 
-        factory { () -> UserCredentialsFetcherAPI in
+        factory { () -> WalletConnectFetcherAPI in
+            let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            return WalletConnectFetcher(
+                metadataEntryService: metadataEntryService
+            )
+        }
+
+        single { () -> UserCredentialsFetcherAPI in
             let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
             return UserCredentialsFetcher(
                 metadataEntryService: metadataEntryService
             )
         }
 
-        factory { () -> AccountCredentialsFetcherAPI in
+        single { () -> AccountCredentialsFetcherAPI in
             let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
             let userCredentialsFetcher: UserCredentialsFetcherAPI = DIKit.resolve()
             return AccountCredentialsFetcher(

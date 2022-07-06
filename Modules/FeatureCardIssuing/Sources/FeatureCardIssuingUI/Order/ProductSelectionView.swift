@@ -9,8 +9,6 @@ import ToolKit
 
 struct ProductSelectionView: View {
 
-    @State var detailsPresented: Bool = false
-
     private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
 
     private let store: Store<CardOrderingState, CardOrderingAction>
@@ -22,39 +20,102 @@ struct ProductSelectionView: View {
     var body: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: Spacing.padding3) {
-                Image("card-selection", bundle: .cardIssuing)
-                    .resizable()
-                    .scaledToFit()
-                VStack(spacing: Spacing.padding1) {
-                    Text(LocalizationConstants.CardIssuing.CardType.Virtual.title)
-                        .typography(.title2)
-                        .multilineTextAlignment(.center)
-                    Text(LocalizationConstants.CardIssuing.CardType.Virtual.description)
-                        .typography(.paragraph1)
+                if !viewStore.state.products.isEmpty {
+                    TabView(selection: viewStore.binding(
+                        get: \.selectedProductIndex,
+                        send: CardOrderingAction.selectProduct(_:)
+                    )) {
+                        ForEach(viewStore.state.products) { product in
+                            ProductView(
+                                product: product,
+                                action: {
+                                    viewStore.send(.binding(.set(\.$isProductDetailsVisible, true)))
+                                }
+                            )
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle())
+                }
+                HStack {
+                    Checkbox(isOn: viewStore.binding(\.$termsAccepted))
+                    Text(localizedStrings.Selection.acceptTerms)
                         .foregroundColor(.WalletSemantic.body)
-                        .multilineTextAlignment(.center)
+                        .typography(.caption1)
+                        .onTapGesture {}
                 }
-                InfoButton(title: localizedStrings.Selection.Button.Title.details) {
-                    detailsPresented = true
-                }
-                Spacer()
                 PrimaryButton(title: localizedStrings.Selection.Button.Title.create) {
                     viewStore.send(.setStep(.creating))
                 }
+                .disabled(!viewStore.state.termsAccepted || viewStore.state.products.isEmpty)
             }
             .padding(Spacing.padding3)
-            .primaryNavigation(title: localizedStrings.Selection.Navigation.title)
-            .sheet(isPresented: $detailsPresented) {
-                ProductDetailsView {
-                    detailsPresented = false
-                }
+            .bottomSheet(isPresented: viewStore.binding(\.$isProductDetailsVisible)) {
+                IfLetStore(
+                    store.scope(state: \.selectedProduct),
+                    then: { store in
+                        ProductDetailsView(
+                            store: store,
+                            close: {
+                                viewStore.send(.binding(.set(\.$isProductDetailsVisible, false)))
+                            }
+                        )
+                    },
+                    else: EmptyView.init
+                )
             }
 
             PrimaryNavigationLink(
-                destination: OrderProcessingView(store: store),
-                isActive: .constant(viewStore.state.isOrderProcessingVisible),
+                destination: LegalView(),
+                isActive: viewStore.binding(\.$isLegalViewVisible),
                 label: EmptyView.init
             )
+            PrimaryNavigationLink(
+                destination: OrderProcessingView(store: store),
+                isActive: viewStore.binding(\.$isOrderProcessingVisible),
+                label: EmptyView.init
+            )
+            .onAppear {
+                viewStore.send(.fetchProducts)
+            }
+        }
+        .primaryNavigation(title: localizedStrings.Selection.Navigation.title)
+    }
+}
+
+struct ProductView: View {
+
+    private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
+
+    private let product: Product
+    private let action: () -> Void
+
+    init(
+        product: Product,
+        action: @escaping () -> Void
+    ) {
+        self.product = product
+        self.action = action
+    }
+
+    var body: some View {
+        VStack {
+            Image("card-selection", bundle: .cardIssuing)
+                .resizable()
+                .scaledToFit()
+            VStack(spacing: Spacing.padding1) {
+                Text(product.type.localizedTitle)
+                    .typography(.title2)
+                    .multilineTextAlignment(.center)
+                Text(product.type.localizedDescription)
+                    .typography(.paragraph1)
+                    .foregroundColor(.WalletSemantic.body)
+                    .multilineTextAlignment(.center)
+            }
+            SmallMinimalButton(
+                title: localizedStrings.Selection.Button.Title.details,
+                action: action
+            )
+            .padding(.bottom, Spacing.padding4)
         }
     }
 }
@@ -75,46 +136,35 @@ struct ProductSelection_Previews: PreviewProvider {
 }
 #endif
 
-struct InfoButton: View {
+extension Card.CardType {
 
-    private let title: String
-    private let action: () -> Void
-
-    init(
-        title: String,
-        action: @escaping () -> Void
-    ) {
-        self.title = title
-        self.action = action
+    var localizedTitle: String {
+        let localized = LocalizationConstants.CardIssuing.CardType.self
+        switch self {
+        case .physical:
+            return localized.Physical.title
+        case .virtual:
+            return localized.Virtual.title
+        }
     }
 
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: Spacing.baseline) {
-                Icon
-                    .alert
-                    .accentColor(.WalletSemantic.primary)
-                    .frame(width: 16)
-                    .background(
-                        Circle()
-                            .foregroundColor(Color.white)
-                            .frame(width: 10)
-                    )
-                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 0, z: 1))
-                Text(title)
-                    .typography(.paragraph1)
-                    .foregroundColor(.WalletSemantic.title)
-                Icon
-                    .arrowRight
-                    .frame(width: 16)
-                    .accentColor(.WalletSemantic.primary)
-            }
+    var localizedLongTitle: String {
+        let localized = LocalizationConstants.CardIssuing.CardType.self
+        switch self {
+        case .physical:
+            return localized.Physical.longTitle
+        case .virtual:
+            return localized.Virtual.longTitle
         }
-        .padding([.leading, .trailing], Spacing.padding1)
-        .padding(.init(top: 6, leading: 8, bottom: 6, trailing: 8))
-        .background(
-            RoundedRectangle(cornerRadius: Spacing.roundedBorderRadius(for: 32))
-                .fill(Color.WalletSemantic.light)
-        )
+    }
+
+    var localizedDescription: String {
+        let localized = LocalizationConstants.CardIssuing.CardType.self
+        switch self {
+        case .physical:
+            return localized.Physical.description
+        case .virtual:
+            return localized.Virtual.description
+        }
     }
 }

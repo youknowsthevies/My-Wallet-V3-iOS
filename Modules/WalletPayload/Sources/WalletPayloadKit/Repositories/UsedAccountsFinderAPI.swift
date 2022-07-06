@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
-import NetworkError
 
 public typealias XpubRetriever = (_ type: WalletPayloadKit.DerivationType, _ index: UInt) -> String
 

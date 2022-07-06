@@ -21,18 +21,18 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         BitcoinOnChainTransactionEngineFactory<BitcoinCashToken>()
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: .bitcoinCash))
     }
 
-    var balance: Single<MoneyValue> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         balanceService
             .balance(for: xPub)
-            .asSingle()
-            .moneyValue
+            .map(\.moneyValue)
+            .eraseToAnyPublisher()
     }
 
-    var actionableBalance: Single<MoneyValue> {
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
@@ -48,7 +48,7 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             }
     }
 
-    var firstReceiveAddress: Single<ReceiveAddress> {
+    var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
         bridge
             .firstReceiveAddress(forXPub: xPub.address)
             .map { [label, onTxCompleted] address -> ReceiveAddress in
@@ -58,6 +58,8 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
                     onTxCompleted: onTxCompleted
                 )
             }
+            .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     var activity: Single<[ActivityItemEvent]> {
@@ -151,8 +153,8 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
             return .just(false)
         case .interestTransfer:
             return isInterestTransferAvailable
-                .flatMap { [isFundedPublisher] isEnabled in
-                    isEnabled ? isFundedPublisher : .just(false)
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
         case .sell, .swap:
@@ -160,15 +162,15 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: asset, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balancePublisher)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+    func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

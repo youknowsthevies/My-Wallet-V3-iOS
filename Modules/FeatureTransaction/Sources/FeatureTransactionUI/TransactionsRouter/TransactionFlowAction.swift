@@ -57,3 +57,22 @@ extension TransactionFlowAction: Equatable {
         }
     }
 }
+
+// swiftlint:disable switch_case_on_newline
+extension TransactionFlowAction {
+    var asset: AssetAction {
+        switch self {
+        case .buy: return .buy
+        case .sell: return .sell
+        case .swap: return .swap
+        case .send: return .send
+        case .receive: return .receive
+        case .order: return .buy
+        case .deposit: return .deposit
+        case .withdraw: return .withdraw
+        case .interestTransfer: return .interestTransfer
+        case .interestWithdraw: return .interestWithdraw
+        case .sign: return .sign
+        }
+    }
+}

@@ -141,6 +141,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let prefix = "CreateAccountScreen."
 
         static let emailGroup = "\(prefix)emailGroup"
+        static let referralGroup = "\(prefix)referralGroup"
         static let agreementPromptText = "\(prefix)agreementPromptText"
         static let termsOfServiceButton = "\(prefix)termsOfServiceButton"
         static let privacyPolicyButton = "\(prefix)privacyPolicyButton"

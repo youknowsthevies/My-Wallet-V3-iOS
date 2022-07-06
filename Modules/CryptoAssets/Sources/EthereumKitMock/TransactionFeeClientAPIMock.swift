@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import EthereumKit
 import MoneyKit
-import NetworkError
 import PlatformKit
 
 class TransactionFeeClientAPIMock: TransactionFeeClientAPI {

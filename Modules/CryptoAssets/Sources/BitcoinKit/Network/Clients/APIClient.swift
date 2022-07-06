@@ -3,7 +3,7 @@
 import BitcoinChainKit
 import Combine
 import DIKit
-import NetworkError
+import Errors
 import PlatformKit
 
 protocol APIClientAPI {

@@ -27,7 +27,7 @@ let package = Package(
         .package(path: "../FeatureAuthentication"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
@@ -61,7 +61,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureActivityDomain"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),

@@ -39,7 +39,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
     let padding = (
         highlight: 20.cg,
         trailing: 26.cg,
-        text: 16.cg
+        text: 20.cg
     )
 
     private let memoized: LineShape.Memoized
@@ -217,7 +217,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
                         CGAffineTransform(
                             translationX: (offset.x - _minimumTitleSize.width / 2)
                                 .clamped(to: Spacing.padding1...max(Spacing.padding1, width - Spacing.padding1)),
-                            y: _size.height + padding.text + _minimumTitleSize.height
+                            y: _size.height + padding.text
                         )
                     )
                     .anchorPreference(key: MinTitleSizePreferenceKey.self, value: .bounds) { anchor in

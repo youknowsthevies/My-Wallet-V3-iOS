@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureProductsDomain
-import NabuNetworkError
 import ToolKit
 
 public final class ProductsRepository: ProductsRepositoryAPI {

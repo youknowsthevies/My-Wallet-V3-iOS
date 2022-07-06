@@ -33,8 +33,9 @@ extension Session.State {
 
         var preferences: Preferences
 
-        private var scope: String {
-            store[blockchain.user.id.key] as? String ?? "ø"
+        private let shared = "ø"
+        private var user: String? {
+            store[blockchain.user.id.key] as? String
         }
 
         init(preferences: Preferences) {
@@ -76,6 +77,7 @@ extension Session.State {
             transaction { state in
                 let user = key
                 for key in data.store.keys where key.tag.isNot(blockchain.session.state.shared.value) {
+                    guard key.tag.isNot(blockchain.session.state.preference.value) else { continue }
                     guard key != user else { continue }
                     state.clear(key)
                 }
@@ -95,6 +97,14 @@ extension Session.State {
 
     public func get(_ event: Tag.Event) throws -> Any {
         try data.get(event.key)
+    }
+
+    public func get<T: Decodable>(
+        _ event: Tag.Event,
+        as type: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try decoder.decode(T.self, from: get(event) as Any)
     }
 
     public func result(for event: Tag.Event) -> FetchResult {
@@ -130,9 +140,13 @@ extension Session.State.Data {
             return try (value as? Computed)?.yield() ?? value
         }
 
-        switch key.tag {
+        let tag = key.tag
+        switch tag {
         case blockchain.session.state.preference.value:
-            guard let value = preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string] else {
+            guard let value = tag.is(blockchain.session.state.shared.value)
+                ? preference(key, in: shared)
+                : user.flatMap({ user in preference(key, in: user) })
+            else {
                 throw FetchResult.Error.keyDoesNotExist(key)
             }
             set(key, to: value)
@@ -148,7 +162,23 @@ extension Session.State.Data {
             if isNotInTransaction {
                 update([key: value])
             }
+            if key.tag == blockchain.user.id[], let id = value as? String {
+                beginTransaction()
+                let user = key
+                for key in subjects.keys {
+                    guard key != user else { continue }
+                    guard key.tag.is(blockchain.session.state.preference.value) else { continue }
+                    guard key.tag.isNot(blockchain.session.state.shared.value) else { continue }
+                    guard let value = preference(key, in: id) else { continue }
+                    set(key, to: value)
+                }
+                endTransaction()
+            }
         }
+    }
+
+    private func preference(_ key: Tag.Reference, in scope: String) -> Any? {
+        preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string]
     }
 
     func clear(_ key: Tag.Reference) {
@@ -212,15 +242,26 @@ extension Session.State.Data {
                 }
             }
             preferences.transaction(blockchain.session.state(\.id)) { object in
-                var dictionary = object[scope] as? [String: Any] ?? [:]
-                for (key, value) in data.filter({ key, _ in key.tag.is(blockchain.session.state.preference.value) }) {
-                    if value is Tombstone.Type {
-                        dictionary.removeValue(forKey: key.id())
-                    } else {
-                        dictionary[key.id()] = value
+                update(
+                    object: &object,
+                    from: data,
+                    scope: shared,
+                    filter: { tag in
+                        tag.is(blockchain.session.state.preference.value)
+                            && tag.is(blockchain.session.state.shared.value)
                     }
+                )
+                if let user = user {
+                    update(
+                        object: &object,
+                        from: data,
+                        scope: user,
+                        filter: { tag in
+                            tag.is(blockchain.session.state.preference.value)
+                                && tag.isNot(blockchain.session.state.shared.value)
+                        }
+                    )
                 }
-                object[scope] = dictionary
             }
             for (key, value) in data {
                 switch value {
@@ -231,6 +272,18 @@ extension Session.State.Data {
                 }
             }
         }
+    }
+
+    private func update(object: inout Any?, from data: [Tag.Reference: Any], scope: String, filter: (Tag) -> Bool) {
+        var dictionary = object[scope] as? [String: Any] ?? [:]
+        for (key, value) in data.filter({ key, _ in filter(key.tag) }) {
+            if value is Tombstone.Type {
+                dictionary.removeValue(forKey: key.id())
+            } else {
+                dictionary[key.id()] = value
+            }
+        }
+        object[scope] = dictionary
     }
 
     @discardableResult

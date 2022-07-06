@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Localization
 import MoneyKit
 import RxSwift
@@ -29,52 +30,60 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
             }
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        return Single
-            .zip(accounts.map(\.actionableBalance))
-            .map { [asset] values -> MoneyValue in
+        return accounts
+            .map(\.actionableBalance)
+            .zip()
+            .tryMap { [asset] values -> MoneyValue in
                 try values.reduce(.zero(currency: asset), +)
             }
+            .eraseToAnyPublisher()
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
         .error(AccountGroupError.noReceiveAddress)
     }
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         if accounts.isEmpty {
             return .just(false)
         }
-        return Single
-            .zip(accounts.map(\.isFunded))
+        return accounts
+            .map(\.isFunded)
+            .zip()
             .map { values -> Bool in
                 values.contains(true)
             }
+            .eraseToAnyPublisher()
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        return Single
-            .zip(accounts.map(\.pendingBalance))
-            .map { [asset] values -> MoneyValue in
+        return accounts
+            .map(\.pendingBalance)
+            .zip()
+            .tryMap { [asset] values -> MoneyValue in
                 try values.reduce(.zero(currency: asset), +)
             }
+            .eraseToAnyPublisher()
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        return Single
-            .zip(accounts.map(\.balance))
-            .map { [asset] values -> MoneyValue in
+        return accounts
+            .map(\.balance)
+            .zip()
+            .tryMap { [asset] values -> MoneyValue in
                 try values.reduce(.zero(currency: asset), +)
             }
+            .eraseToAnyPublisher()
     }
 
     public init(asset: CryptoCurrency, accounts: [SingleAccount]) {

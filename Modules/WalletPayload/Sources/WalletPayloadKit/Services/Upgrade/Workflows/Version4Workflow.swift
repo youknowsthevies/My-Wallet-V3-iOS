@@ -20,18 +20,18 @@ final class Version4Workflow: WalletUpgradeWorkflow {
     }
 
     func upgrade(wrapper: Wrapper) -> AnyPublisher<Wrapper, WalletUpgradeError> {
-        getSeedHex(from: wrapper.wallet)
+        getMasterNode(from: wrapper.wallet)
             .publisher
             .mapError { _ in WalletUpgradeError.unableToRetrieveSeedHex }
-            .flatMap { seedHex -> AnyPublisher<HDWallet, WalletUpgradeError> in
+            .flatMap { masterNode -> AnyPublisher<HDWallet, WalletUpgradeError> in
                 guard let hdWallet = wrapper.wallet.defaultHDWallet else {
                     return .failure(.upgradeFailed)
                 }
                 // run through the accounts of default HD Wallet
                 let upgradedAccounts = hdWallet.accounts.map { account -> Account in
-                    // for sanity let's recreate all derivations from seed hex for this account
+                    // for sanity let's recreate all derivations from master node for this account
                     let derivations = generateDerivations(
-                        masterSeedHex: seedHex,
+                        masterNode: masterNode,
                         index: account.index
                     )
                     return Account(

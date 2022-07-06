@@ -28,8 +28,7 @@ extension DependencyContainer {
             TransactionLimitsService(
                 repository: DIKit.resolve(),
                 conversionService: DIKit.resolve(),
-                walletCurrencyService: DIKit.resolve(),
-                featureFlagService: DIKit.resolve()
+                walletCurrencyService: DIKit.resolve()
             )
         }
 
@@ -41,5 +40,7 @@ extension DependencyContainer {
         }
 
         factory { HotWalletAddressService() as HotWalletAddressServiceAPI }
+
+        factory { QuotesEngine() as QuotesEngineAPI }
     }
 }

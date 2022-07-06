@@ -12,7 +12,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     let canTransactFiat: Bool = true
     var requireSecondPassword: Bool = false
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -20,18 +20,12 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
 
-    lazy var quote: Observable<PricedQuote> = quotesEngine
-        .startPollingRate(
-            direction: orderDirection,
-            pair: .init(
-                sourceCurrencyType: sourceAsset,
-                destinationCurrencyType: target.currencyType
-            )
-        )
-        .asObservable()
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
 
     init(
-        quotesEngine: QuotesEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
@@ -66,11 +60,19 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+        return Single
             .zip(
-                quote.take(1).asSingle(),
+                quotesEngine.quotePublisher.asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
-                sourceAccount.actionableBalance
+                actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
@@ -111,7 +113,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.zip(
             validateUpdateAmount(amount),
-            sourceAccount.actionableBalance
+            actionableBalance
         )
         .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
             pendingTransaction.update(amount: normalized, available: balance)
@@ -129,28 +131,35 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let quote = quote.take(1).asSingle()
-        return Single
-            .zip(quote, amountInSourceCurrency(for: pendingTransaction))
+        Single
+            .zip(quotesEngine.quotePublisher.asSingle(), amountInSourceCurrency(for: pendingTransaction))
             .map { [targetAsset] pricedQuote, sellSourceValue -> (PendingTransaction, PricedQuote) in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: sellSourceValue.currency)
                 let sellDestinationValue: MoneyValue = sellSourceValue.convert(using: resultValue)
 
-                var confirmations = [TransactionConfirmation]()
+                var confirmations: [TransactionConfirmation] = [
+                    TransactionConfirmations.QuoteExpirationTimer(
+                        expirationDate: pricedQuote.expirationDate
+                    )
+                ]
                 if let sellSourceCryptoValue = sellSourceValue.cryptoValue {
-                    confirmations.append(.sellSourceValue(.init(cryptoValue: sellSourceCryptoValue)))
+                    confirmations.append(TransactionConfirmations.SellSourceValue(cryptoValue: sellSourceCryptoValue))
                 }
                 if let sellDestinationFiatValue = sellDestinationValue.fiatValue {
-                    confirmations.append(.sellDestinationValue(.init(fiatValue: sellDestinationFiatValue)))
+                    confirmations.append(
+                        TransactionConfirmations.SellDestinationValue(
+                            fiatValue: sellDestinationFiatValue
+                        )
+                    )
                 }
                 if !pricedQuote.staticFee.isZero {
-                    confirmations.append(.transactionFee(.init(fee: pricedQuote.staticFee)))
+                    confirmations.append(TransactionConfirmations.FiatTransactionFee(fee: pricedQuote.staticFee))
                 }
                 confirmations += [
-                    .sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label))
+                    TransactionConfirmations.SellExchangeRateValue(baseValue: baseValue, resultValue: resultValue),
+                    TransactionConfirmations.Source(value: self.sourceAccount.label),
+                    TransactionConfirmations.Destination(value: self.target.label)
                 ]
                 let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
                 return (updatedTransaction, pricedQuote)

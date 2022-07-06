@@ -2,8 +2,8 @@
 
 @testable import BitcoinChainKit
 import Combine
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 enum TestAPIClientError: Error {
@@ -13,18 +13,18 @@ enum TestAPIClientError: Error {
 class APIClientMock: BitcoinChainKit.APIClientAPI {
 
     var underlyingUnspentOutputs: AnyPublisher<UnspentOutputsResponse, NetworkError> =
-        .failure(.authentication(TestAPIClientError.testError))
+        .failure(NetworkError(request: nil, type: .authentication(TestAPIClientError.testError)))
 
     func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(
         for wallets: [XPub]
     ) -> AnyPublisher<BitcoinChainMultiAddressResponse<T>, NetworkError> {
-        .failure(.authentication(TestAPIClientError.testError))
+        .failure(NetworkError(request: nil, type: .authentication(TestAPIClientError.testError)))
     }
 
     func balances(
         for wallets: [XPub]
     ) -> AnyPublisher<BitcoinChainBalanceResponse, NetworkError> {
-        .failure(.authentication(TestAPIClientError.testError))
+        .failure(NetworkError(request: nil, type: .authentication(TestAPIClientError.testError)))
     }
 
     func unspentOutputs(

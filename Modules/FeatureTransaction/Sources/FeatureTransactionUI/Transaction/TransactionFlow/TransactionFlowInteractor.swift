@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -41,11 +42,6 @@ protocol TransactionFlowRouting: Routing {
 
     /// The back button was tapped.
     func didTapBack()
-
-    /// Show the failure screen. Sometimes an error is thrown when selecting an
-    /// account or entering in transaction details. If this error occurs, we should
-    /// show a failure screen.
-    func showFailure(error: Error)
 
     /// Presents a modal with information  about the transaction error state and, if needed, a call to action for the user to resolve that error state.
     func showErrorRecoverySuggestion(
@@ -95,6 +91,9 @@ protocol TransactionFlowRouting: Routing {
 
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Route to the in error screen. This pushes onto the navigation stack.
+    func routeToError(state: TransactionState, model: TransactionModel)
 
     /// Route to the transaction security checks screen (e.g. 3DS checks for card payments)
     func routeToSecurityChecks(transactionModel: TransactionModel)
@@ -153,8 +152,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let restrictionsProvider: TransactionRestrictionsProviderAPI
     private let analyticsHook: TransactionAnalyticsHook
     private let messageRecorder: MessageRecording
+    private let app: AppProtocol
 
-    private var cancellables = Set<AnyCancellable>()
+    private var bag = Set<AnyCancellable>()
 
     init(
         transactionModel: TransactionModel,
@@ -164,7 +164,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         presenter: TransactionFlowPresentable,
         restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
-        messageRecorder: MessageRecording = resolve()
+        messageRecorder: MessageRecording = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.transactionModel = transactionModel
         self.action = action
@@ -173,16 +174,20 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.messageRecorder = messageRecorder
+        self.app = app
         super.init(presenter: presenter)
         presenter.listener = self
+        onInit()
     }
 
     deinit {
         transactionModel.destroy()
+        bag.removeAll()
     }
 
     override func didBecomeActive() {
         super.didBecomeActive()
+
         transactionModel
             .state
             .distinctUntilChanged(\.step)
@@ -357,7 +362,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func showGenericFailure(error: Error) {
-        router?.showFailure(error: error)
+        transactionModel.process(action: .fatalTransactionError(error))
     }
 
     // MARK: - Private Functions
@@ -386,6 +391,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
     private func showFlowStep(previousState: TransactionState?, newState: TransactionState) {
         messageRecorder.record("Transaction Step: \(String(describing: previousState?.step)) -> \(newState.step)")
         guard previousState?.step != newState.step else {
@@ -540,6 +546,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 transactionModel: transactionModel,
                 action: action
             )
+
+        case .error:
+            router?.routeToError(state: newState, model: transactionModel)
 
         case .selectSource:
             let canAddMoreSources = newState.userKYCStatus?.tiers.isTier2Approved ?? false
@@ -781,5 +790,111 @@ extension AssetAction {
             canPresentKYCUpgradeFlow = false
         }
         return canPresentKYCUpgradeFlow
+    }
+}
+
+extension TransactionFlowInteractor {
+
+    func onInit() {
+
+        app.post(event: blockchain.ux.transaction.did.start)
+
+        transactionModel.state.distinctUntilChanged(\.step).publisher
+            .sink { [app] state in
+                switch state.step {
+                case .closed:
+                    app.post(event: blockchain.ux.transaction.did.finish)
+                case .inProgress:
+                    app.post(event: blockchain.ux.transaction.in.progress)
+                case .enterAmount:
+                    app.post(event: blockchain.ux.transaction.enter.amount)
+                case .enterAddress:
+                    app.post(event: blockchain.ux.transaction.enter.address)
+                case .linkABank:
+                    app.post(event: blockchain.ux.transaction.link.a.bank)
+                case .linkACard:
+                    app.post(event: blockchain.ux.transaction.link.a.card)
+                case .linkPaymentMethod:
+                    app.post(event: blockchain.ux.transaction.link.payment.method)
+                case .confirmDetail:
+                    app.post(event: blockchain.ux.transaction.checkout)
+                case .selectSource:
+                    app.post(
+                        event: blockchain.ux.transaction.select.source,
+                        context: [blockchain.ux.transaction.select.source: state.source?.identifier as AnyHashable]
+                    )
+                case .selectTarget:
+                    app.post(event: blockchain.ux.transaction.select.target)
+                case .error:
+                    app.post(
+                        value: state.errorState.ux(action: state.action),
+                        of: blockchain.ux.transaction.did.error
+                    )
+                default:
+                    break
+                }
+            }
+            .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.change.payment.method) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+            transactionModel.process(action: .showSourceSelection)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.add.card) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+            transactionModel.process(action: .showCardLinkingFlow)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.add.bank) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+            transactionModel.process(action: .showBankLinkingFlow)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.add.account) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+            transactionModel.process(action: .showAddAccountFlow)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.go.back) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .returnToPreviousStep)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .showEnterAmount)
+            transactionModel.process(action: .showBankWiringInstructions)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.transaction.action.reset) { [weak self] _ in
+            guard let transactionModel = self?.transactionModel else { return }
+            transactionModel.process(action: .resetFlow)
+        }
+        .subscribe()
+        .store(in: &bag)
     }
 }

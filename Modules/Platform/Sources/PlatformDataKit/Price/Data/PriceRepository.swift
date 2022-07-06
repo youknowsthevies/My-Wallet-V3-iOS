@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import Foundation
 import MoneyKit
-import NetworkError
 import PlatformKit
 import ToolKit
 

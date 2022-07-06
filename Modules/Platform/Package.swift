@@ -67,8 +67,9 @@ let package = Package(
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
         .package(path: "../CommonCrypto"),
+        .package(path: "../DelegatedSelfCustody"),
         .package(path: "../Localization"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Network"),
         .package(path: "../Money"),
         .package(path: "../Test"),
@@ -79,6 +80,7 @@ let package = Package(
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureForm"),
         .package(path: "../FeatureCardPayment")
@@ -92,14 +94,14 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
+                .product(name: "DelegatedSelfCustodyKit", package: "DelegatedSelfCustody"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
                 .product(name: "FeatureAuthenticationData", package: "FeatureAuthentication"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool"),
@@ -118,8 +120,7 @@ let package = Package(
                 .target(name: "PlatformKit"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
@@ -139,6 +140,7 @@ let package = Package(
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ],
@@ -149,8 +151,7 @@ let package = Package(
         .target(
             name: "PlatformKitMock",
             dependencies: [
-                .target(name: "PlatformKit"),
-                .product(name: "NabuNetworkErrorMock", package: "NetworkErrors")
+                .target(name: "PlatformKit")
             ]
         ),
         .target(
@@ -167,7 +168,7 @@ let package = Package(
                 .target(name: "PlatformKit"),
                 .target(name: "PlatformKitMock"),
                 .product(name: "MoneyKitMock", package: "Money"),
-                .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
+                .product(name: "FeatureAuthenticationMock", package: "FeatureAuthentication"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "ToolKitMock", package: "Tool"),
                 .product(name: "TestKit", package: "Test"),

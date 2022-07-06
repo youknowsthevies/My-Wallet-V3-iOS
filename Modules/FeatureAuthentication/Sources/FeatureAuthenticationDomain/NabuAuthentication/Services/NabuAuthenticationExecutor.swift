@@ -86,7 +86,9 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         _ networkResponsePublisher: @escaping NetworkResponsePublisher
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         getToken()
-            .mapError(NetworkError.authentication)
+            .mapError { error in
+                NetworkError(request: nil, type: .authentication(error))
+            }
             .flatMap { payload -> AnyPublisher<ServerResponse, NetworkError> in
                 networkResponsePublisher(payload.sessionToken.token)
                     .catch { communicatorError -> AnyPublisher<ServerResponse, NetworkError> in
@@ -201,7 +203,9 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
             }
             .flatMap { _ -> AnyPublisher<ServerResponse, NetworkError> in
                 refreshToken(offlineToken: offlineToken)
-                    .mapError(NetworkError.authentication)
+                    .mapError { error in
+                        NetworkError(request: nil, type: .authentication(error))
+                    }
                     .flatMap { sessionToken -> AnyPublisher<ServerResponse, NetworkError> in
                         publisherProvider(sessionToken.token)
                     }

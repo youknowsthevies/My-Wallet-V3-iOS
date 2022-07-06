@@ -131,7 +131,6 @@ struct CoreAppEnvironment {
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
     var walletPayloadService: WalletPayloadServiceAPI
@@ -725,6 +724,51 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.DecryptId()),
             .cancel(id: WalletCancelations.AuthenticationId())
         )
+    case .loggedIn(.deleteWallet):
+
+        // logout
+        environment.walletManager.close()
+
+        NotificationCenter.default.post(name: .logout, object: nil)
+        environment.analyticsRecorder.record(
+            event: AnalyticsEvents.New.Navigation.signedOut
+        )
+
+        environment.siftService.removeUserId()
+        environment.sharedContainer.reset()
+        environment.blockchainSettings.reset()
+
+        // forget wallet
+        environment.credentialsStore.erase()
+        environment.walletManager.forgetWallet()
+        environment.forgetWalletService.forget()
+
+        // update state
+        state.loggedIn = nil
+        state.onboarding = .init(
+            welcomeState: .init()
+        )
+
+        return .merge(
+            environment
+                .pushNotificationsRepository
+                .revokeToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
+            environment
+                .mobileAuthSyncService
+                .updateMobileSetup(isMobileSetup: false)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
+            environment
+                .mobileAuthSyncService
+                .verifyCloudBackup(hasCloudBackup: false)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget()
+        )
 
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):
@@ -739,7 +783,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.siftService.removeUserId()
         environment.sharedContainer.reset()
         environment.blockchainSettings.reset()
-        environment.onboardingSettings.reset()
 
         // update state
         state.loggedIn = nil

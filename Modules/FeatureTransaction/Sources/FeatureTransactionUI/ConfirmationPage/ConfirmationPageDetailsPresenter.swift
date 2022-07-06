@@ -43,8 +43,16 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
         contentReducer.buttons
     }
 
+    var disclaimers: [DisclaimerViewModel] {
+        contentReducer.disclaimers
+    }
+
     var cells: [DetailsScreen.CellType] {
         contentReducer.cells
+    }
+
+    func header(for section: Int) -> HeaderBuilder? {
+        contentReducer.header
     }
 
     // MARK: - Private Properties

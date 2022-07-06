@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureCardIssuingDomain
 import Foundation
-import NabuNetworkError
 
 protocol CardClientAPI {
 
@@ -28,7 +28,7 @@ protocol CardClientAPI {
         for cardId: String
     ) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
-    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalancePair], NabuNetworkError>
+    func eligibleAccounts(for cardId: String) -> AnyPublisher<[AccountBalance], NabuNetworkError>
 
     func lock(cardId: String) -> AnyPublisher<Card, NabuNetworkError>
 

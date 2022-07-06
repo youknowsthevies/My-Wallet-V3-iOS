@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Localization
 import MoneyKit
 import RxSwift
@@ -21,24 +22,24 @@ public class FiatAccountGroup: AccountGroup {
         .just(false)
     }
 
-    public var isFunded: Single<Bool> {
-        .error(AccountGroupError.noBalance)
+    public var isFunded: AnyPublisher<Bool, Error> {
+        .failure(AccountGroupError.noBalance)
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
         .error(AccountGroupError.noReceiveAddress)
     }
 
-    public var actionableBalance: Single<MoneyValue> {
-        .error(AccountGroupError.noBalance)
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
+        .failure(AccountGroupError.noBalance)
     }
 
-    public var pendingBalance: Single<MoneyValue> {
-        .error(AccountGroupError.noBalance)
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
+        .failure(AccountGroupError.noBalance)
     }
 
-    public var balance: Single<MoneyValue> {
-        .error(AccountGroupError.noBalance)
+    public var balance: AnyPublisher<MoneyValue, Error> {
+        .failure(AccountGroupError.noBalance)
     }
 
     public func invalidateAccountBalance() {

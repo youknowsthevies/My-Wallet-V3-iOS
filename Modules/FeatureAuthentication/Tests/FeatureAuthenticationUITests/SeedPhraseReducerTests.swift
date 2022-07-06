@@ -42,7 +42,8 @@ final class SeedPhraseReducerTests: XCTestCase {
                 walletCreationService: .mock(),
                 walletFetcherService: walletFetcherServiceMock.mock(),
                 accountRecoveryService: MockAccountRecoveryService(),
-                errorRecorder: MockErrorRecorder()
+                errorRecorder: MockErrorRecorder(),
+                featureFlagsService: MockFeatureFlagsService()
             )
         )
     }
@@ -135,7 +136,8 @@ final class SeedPhraseReducerTests: XCTestCase {
                 walletCreationService: .mock(),
                 walletFetcherService: walletFetcherServiceMock.mock(),
                 accountRecoveryService: MockAccountRecoveryService(),
-                errorRecorder: MockErrorRecorder()
+                errorRecorder: MockErrorRecorder(),
+                featureFlagsService: MockFeatureFlagsService()
             )
         )
 

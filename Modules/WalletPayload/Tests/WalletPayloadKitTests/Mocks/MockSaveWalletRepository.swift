@@ -4,12 +4,12 @@
 @testable import WalletPayloadKit
 
 import Combine
-import NetworkError
+import Errors
 
 final class SaveWalletRepositoryMock: SaveWalletRepositoryAPI {
     var saveWalletCalled: Bool = false
     var payload: WalletCreationPayload?
-    var saveWalletResult: Result<Void, NetworkError> = .failure(.serverError(.badResponse))
+    var saveWalletResult: Result<Void, NetworkError> = .failure(.unknown)
     func saveWallet(
         payload: WalletCreationPayload,
         addresses: String?

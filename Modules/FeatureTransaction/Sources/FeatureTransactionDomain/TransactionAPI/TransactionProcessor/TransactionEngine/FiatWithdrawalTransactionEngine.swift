@@ -17,7 +17,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
@@ -57,7 +57,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
-            sourceAccount.actionableBalance,
+            sourceAccount.actionableBalance.asSingle(),
             withdrawalService.withdrawFeeAndLimit(
                 for: target.fiatCurrency,
                 paymentMethodType: target.paymentType
@@ -96,11 +96,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         .just(pendingTransaction
             .update(
                 confirmations: [
-                    .source(.init(value: sourceAccount.label)),
-                    .destination(.init(value: target.label)),
-                    .transactionFee(.init(fee: pendingTransaction.feeAmount)),
-                    .arrivalDate(.default),
-                    .total(.init(total: pendingTransaction.amount))
+                    TransactionConfirmations.Source(value: sourceAccount.label),
+                    TransactionConfirmations.Destination(value: target.label),
+                    TransactionConfirmations.FiatTransactionFee(fee: pendingTransaction.feeAmount),
+                    TransactionConfirmations.FundsArrivalDate.default,
+                    TransactionConfirmations.Total(total: pendingTransaction.amount)
                 ]
             )
         )

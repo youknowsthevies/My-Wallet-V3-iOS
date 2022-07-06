@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureKYCDomain
-import PlatformKit
+@testable import PlatformKit
 import XCTest
 
 // swiftlint:disable:next type_body_length

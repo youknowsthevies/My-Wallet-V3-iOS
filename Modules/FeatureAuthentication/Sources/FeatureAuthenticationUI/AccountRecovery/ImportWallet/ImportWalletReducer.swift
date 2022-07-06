@@ -32,6 +32,7 @@ struct ImportWalletEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
+    let featureFlagsService: FeatureFlagsServiceAPI
 }
 
 let importWalletReducer = Reducer.combine(
@@ -48,7 +49,8 @@ let importWalletReducer = Reducer.combine(
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
-                    walletFetcherService: $0.walletFetcherService
+                    walletFetcherService: $0.walletFetcherService,
+                    featureFlagsService: $0.featureFlagsService
                 )
             }
         ),

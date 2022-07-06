@@ -3,10 +3,10 @@
 import AnalyticsKit
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 import FeatureNotificationPreferencesDetailsUI
 import FeatureNotificationPreferencesDomain
 import Foundation
-import NetworkError
 import SwiftUI
 
 // MARK: - State
@@ -114,7 +114,6 @@ public let notificationPreferencesReducer = Reducer
                 return .none
 
             case .onReloadTap:
-                state.viewState = .loading
                 return environment
                     .notificationPreferencesRepository
                     .fetchPreferences()

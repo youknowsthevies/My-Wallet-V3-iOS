@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -58,6 +59,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
     private var availableBalance: Single<MoneyValue> {
         sourceAccount
             .balance
+            .asSingle()
     }
 
     private var interestAccountLimits: Single<InterestAccountLimits> {
@@ -187,15 +189,13 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
                 pendingTransaction
                     .update(
                         confirmations: [
-                            .source(.init(value: source)),
-                            .destination(.init(value: destination)),
-                            .feedTotal(
-                                .init(
-                                    amount: pendingTransaction.amount,
-                                    amountInFiat: fiatAmount.moneyValue,
-                                    fee: pendingTransaction.feeAmount,
-                                    feeInFiat: fiatFees.moneyValue
-                                )
+                            TransactionConfirmations.Source(value: source),
+                            TransactionConfirmations.Destination(value: destination),
+                            TransactionConfirmations.FeedTotal(
+                                amount: pendingTransaction.amount,
+                                amountInFiat: fiatAmount.moneyValue,
+                                fee: pendingTransaction.feeAmount,
+                                feeInFiat: fiatFees.moneyValue
                             )
                         ]
                     )

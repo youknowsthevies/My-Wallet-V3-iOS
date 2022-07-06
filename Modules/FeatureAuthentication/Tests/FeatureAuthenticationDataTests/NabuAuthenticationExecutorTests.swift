@@ -452,9 +452,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
                         payload: nil
                     )
                     return AnyPublisher.failure(
-                        .rawServerError(
-                            serverErrorResponse
-                        )
+                        .unknown
                     )
                 }
             }
@@ -515,10 +513,13 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             }
         """.data(using: .utf8)
 
-        let mockNetworkError: NetworkError = .rawServerError(
-            .init(
-                response: mockHttpResponse,
-                payload: mockPayload
+        let mockNetworkError: NetworkError = NetworkError(
+            request: URLRequest(url: "https://www.blockchain.com"),
+            type: .rawServerError(
+                .init(
+                    response: mockHttpResponse,
+                    payload: mockPayload
+                )
             )
         )
         nabuRepository.expectedSessionToken = .failure(mockNetworkError)

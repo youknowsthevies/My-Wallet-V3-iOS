@@ -35,6 +35,10 @@ final class RootViewController: UIHostingController<RootView> {
             initialState: RootViewState(
                 fab: .init(
                     animate: !defaults.hasInteractedWithFrequentActionButton
+                ),
+                referralState: .init(
+                    isHighlighted: false,
+                    referral: nil
                 )
             ),
             reducer: rootViewReducer,
@@ -81,7 +85,6 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
     @LazyInject var tiersService: KYCTiersServiceAPI
     @LazyInject var transactionsRouter: FeatureTransactionUI.TransactionsRouterAPI
-    @LazyInject var userStateService: UserAdapterAPI
     @Inject var walletConnectService: WalletConnectServiceAPI
     @Inject var walletConnectRouter: WalletConnectRouterAPI
 

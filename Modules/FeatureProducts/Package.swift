@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Test"),
         .package(path: "../Tool")
     ],
@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "FeatureProductsData",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 "FeatureProductsDomain"
@@ -35,14 +35,14 @@ let package = Package(
         .target(
             name: "FeatureProductsDomain",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .testTarget(
             name: "FeatureProductsDataTests",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ToolKitMock", package: "Tool"),
@@ -55,7 +55,7 @@ let package = Package(
         .testTarget(
             name: "FeatureProductsDomainTests",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ToolKitMock", package: "Tool"),

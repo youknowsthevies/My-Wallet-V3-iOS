@@ -414,7 +414,7 @@ struct CoinView_PreviewProvider: PreviewProvider {
                         isFavorite: false,
                         graph: .init(
                             interval: .day,
-                            result: .failure(.serverError(.badResponse))
+                            result: .failure(.init(request: nil, type: .serverError(.badResponse)))
                         )
                     ),
                     reducer: coinViewReducer,

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardPaymentDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -61,6 +62,7 @@ enum TransactionAction: MviAction {
     case resetFlow
     case showSourceSelection
     case showTargetSelection
+    case showEnterAmount
     case showCheckout
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
@@ -280,6 +282,16 @@ extension TransactionAction {
                 .update(keyPath: \.isGoingBack, value: oldState.action != .buy)
                 .withUpdatedBackstack(oldState: oldState)
 
+        case .showEnterAmount:
+            return oldState
+                .update(keyPath: \.step, value: .enterAmount)
+                .update(keyPath: \.isGoingBack, value: false)
+                .update(keyPath: \.errorState, value: .none)
+                .update(
+                    keyPath: \.stepsBackStack,
+                    value: oldState.stepsBackStack.split(separator: .enterAmount).first.map(Array.init).or([])
+                )
+
         case .performKYCChecks:
             return oldState.stateForMovingForward(to: .kycChecks)
                 // disable next until kyc checks are done
@@ -357,11 +369,17 @@ extension TransactionAction {
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
 
+        case .fatalTransactionError(OrderConfirmationServiceError.applePay(ApplePayError.cancelled)):
+            return oldState
+                .update(keyPath: \.nextEnabled, value: true)
+                .update(keyPath: \.executionStatus, value: .inProgress)
+                .stateForMovingOneStepBack()
+
         case .fatalTransactionError(let error):
             Logger.shared.error(error)
             var newState = oldState
             newState.nextEnabled = true
-            newState.step = .inProgress
+            newState.step = .error
             newState.errorState = .fatalError(FatalTransactionError(error: error))
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
@@ -428,6 +446,17 @@ enum FatalTransactionError: Error, Equatable, CustomStringConvertible {
             return
         }
         self = .rxError(error)
+    }
+
+    var error: Error {
+        switch self {
+        case .generic(let error):
+            return error
+        case .rxError(let error):
+            return error
+        default:
+            return self
+        }
     }
 
     var rxError: RxError? {

@@ -45,7 +45,6 @@ enum Constants {
     }
 
     enum Booleans {
-        static let isUsingScreenSizeEqualIphone5S = UIScreen.main.bounds.size.height == Measurements.ScreenHeightIphone5S
         static let IsUsingScreenSizeLargerThan5s = UIScreen.main.bounds.size.height > Measurements.ScreenHeightIphone5S
     }
 

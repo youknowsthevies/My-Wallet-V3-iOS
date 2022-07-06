@@ -407,6 +407,11 @@ extension LocalizationConstants.Transaction.Deposit {
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
 
     public static let depositNow = NSLocalizedString("Deposit Now", comment: "Deposit Now")
+
+    public static let safeConnectConfirmationDisclaimer = NSLocalizedString(
+        "By tapping Deposit Now, you agree to the SafeConnect %@ & %@.",
+        comment: ""
+    )
 }
 
 extension LocalizationConstants.Transaction.Send {
@@ -492,6 +497,10 @@ extension LocalizationConstants.Transaction.Buy {
         "Your final amount might change due to market activity.",
         comment: ""
     )
+    public static let safeConnectConfirmationDisclaimer = NSLocalizedString(
+        "By tapping Buy %@, you agree to the SafeConnect %@ & %@.",
+        comment: ""
+    )
     public static let lockInfo = NSLocalizedString(
         "For security purposes, buy orders with a %@ are subject to a %@ holding period. You can Swap or Sell during this time. We will notify you once the funds are available to be withdrawn.",
         comment: ""
@@ -540,6 +549,11 @@ extension LocalizationConstants.Transaction.Sell {
         "Select a wallet to sell to.",
         comment: "Title of screen to select the Crypto Currency to Buy"
     )
+
+    public static let confirmationDisclaimer = NSLocalizedString(
+        "Final amount may change due to market activity. By approving this Sell you agree to Blockchain.com’s %@.",
+        comment: "Confirmation screen disclaimer."
+    )
 }
 
 extension LocalizationConstants.Transaction.Swap {
@@ -553,7 +567,7 @@ extension LocalizationConstants.Transaction.Swap {
         comment: "Swap Max"
     )
     public static let confirmationDisclaimer = NSLocalizedString(
-        "The amounts you send and receive may change slightly due to market activity. Once an order starts, we are unable to stop it.",
+        "Final amount may change due to market activity. By approving this Swap you agree to Blockchain.com’s %@.",
         comment: "Confirmation screen disclaimer."
     )
     public static let sourceAccountPicketSubtitle = NSLocalizedString(
@@ -1768,6 +1782,21 @@ extension LocalizationConstants.Transaction.Error {
 
 extension LocalizationConstants.Transaction {
     public static let ok = NSLocalizedString("OK", comment: "OK")
+
+    public static let termsOfService = NSLocalizedString(
+        "Terms of Service",
+        comment: "Name of the terms of Service."
+    )
+
+    public static let privacyPolicy = NSLocalizedString(
+        "Privacy Policy",
+        comment: "Name of the privacy policy."
+    )
+
+    public static let refundPolicy = NSLocalizedString(
+        "Refund Policy",
+        comment: "Name of the refund policy."
+    )
 }
 
 extension LocalizationConstants.Transaction.TradingCurrency {

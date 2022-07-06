@@ -3,8 +3,8 @@
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
+import Errors
 import Localization
-import NabuNetworkError
 import SwiftUI
 import ToolKit
 

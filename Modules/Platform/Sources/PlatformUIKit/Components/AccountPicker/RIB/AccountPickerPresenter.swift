@@ -67,7 +67,6 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
                 }
             }
             .map { [$0] }
-            .startWith([])
 
         let headerModel = headerModel
         let navigationModel = navigationModel

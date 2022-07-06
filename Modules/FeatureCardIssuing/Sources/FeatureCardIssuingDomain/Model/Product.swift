@@ -2,7 +2,10 @@
 
 import Foundation
 
-public struct Product: Codable, Equatable {
+public struct Product: Decodable, Equatable, Identifiable {
+    public var id: String {
+        productCode
+    }
 
     public let productCode: String
 

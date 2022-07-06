@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import Errors
 import FeatureAccountPickerUI
 import FeatureCardIssuingDomain
 import FeatureCardIssuingUI
@@ -11,7 +12,6 @@ import FeatureTransactionUI
 import Foundation
 import Localization
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -149,6 +149,11 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
 
 class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountProviding {
 
+    private struct Account {
+        let details: BlockchainAccount
+        let balance: AccountBalance
+    }
+
     private let nabuUserService: NabuUserServiceAPI
     private let coinCore: CoincoreAPI
     private var cancellables = [AnyCancellable]()
@@ -167,24 +172,24 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
         self.nabuUserService = nabuUserService
     }
 
-    private let accountPublisher = CurrentValueSubject<[(BlockchainAccount, AccountBalancePair)], Never>([])
+    private let accountPublisher = CurrentValueSubject<[Account], Never>([])
     private var router: AccountPickerRouting?
 
     var accounts: Observable<[BlockchainAccount]> {
         accountPublisher
             .map { pairs in
-                pairs.map(\.0)
+                pairs.map(\.details)
             }
             .asObservable()
     }
 
-    func selectAccount(for card: Card) -> AnyPublisher<AccountBalancePair, NabuNetworkError> {
+    func selectAccount(for card: Card) -> AnyPublisher<AccountBalance, NabuNetworkError> {
 
-        let publisher = PassthroughSubject<AccountBalancePair, NabuNetworkError>()
+        let publisher = PassthroughSubject<AccountBalance, NabuNetworkError>()
         let accounts = cardService.eligibleAccounts(for: card)
         let accountBalances = Publishers
             .CombineLatest(accounts.eraseError(), coinCore.allAccounts.eraseError())
-            .map { accountBalances, group -> [(SingleAccount, AccountBalancePair)] in
+            .map { accountBalances, group -> [Account] in
                 accountBalances
                     .compactMap { accountBalance in
                         guard let account = group.accounts.first(where: {
@@ -193,7 +198,7 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
                         }) else {
                             return nil
                         }
-                        return (account, accountBalance)
+                        return Account(details: account, balance: accountBalance)
                     }
             }
 
@@ -204,10 +209,10 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
 
         let router = builder.build(
             listener: .simple { [weak self] account in
-                if let account = self?.accountPublisher.value.first(where: { pair in
-                    pair.0.identifier == account.identifier
-                })?.1 {
-                    publisher.send(account)
+                if let balance = self?.accountPublisher.value.first(where: { pair in
+                    pair.details.identifier == account.identifier
+                })?.balance {
+                    publisher.send(balance)
                 }
                 self?.router?.viewControllable
                     .uiviewController
@@ -293,7 +298,7 @@ extension AccountSnapshot {
         _ account: SingleAccount,
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<FeatureCardIssuingDomain.AccountSnapshot, Never> {
-        account.balancePublisher.ignoreFailure()
+        account.balance.ignoreFailure()
             .combineLatest(
                 account.fiatBalance(fiatCurrency: fiatCurrency)
                     .ignoreFailure()

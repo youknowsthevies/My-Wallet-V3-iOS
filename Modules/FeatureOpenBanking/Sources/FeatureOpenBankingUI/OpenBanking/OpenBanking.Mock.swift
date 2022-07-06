@@ -20,6 +20,7 @@ extension OpenBankingEnvironment {
         openURL: ToLogAppOpener(),
         fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
         cryptoCurrencyFormatter: NoFormatCurrencyFormatter(),
+        analytics: NoAnalyticsRecorder(),
         currency: "GBP"
     )
 }
@@ -103,3 +104,9 @@ extension OpenBanking.Institution {
     )
 }
 #endif
+
+import AnalyticsKit
+
+class NoAnalyticsRecorder: AnalyticsEventRecorderAPI {
+    func record(event: AnalyticsEvent) {}
+}

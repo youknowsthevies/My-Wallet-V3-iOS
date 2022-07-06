@@ -120,7 +120,10 @@ public struct PendingTransaction: Equatable {
     /// Insert a `TransactionConfirmation`, replacing any previous value with the same confirmation type.
     public func insert(confirmation: TransactionConfirmation, prepend: Bool = false) -> PendingTransaction {
         var copy = self
-        if let idx = copy.confirmations.firstIndex(where: { $0.bareCompare(to: confirmation) }) {
+        if let idx = copy.confirmations.firstIndex(where: {
+            String(describing: Swift.type(of: $0)) == String(describing: Swift.type(of: confirmation))
+                && $0.type == confirmation.type
+        }) {
             copy.confirmations.replaceSubrange(idx...idx, with: [confirmation])
         } else {
             prepend ? copy.confirmations.insert(confirmation, at: 0) : copy.confirmations.append(confirmation)
@@ -143,7 +146,7 @@ public struct PendingTransaction: Equatable {
     }
 
     /// Removes confirmations of the given type from the confirmations list.
-    public func remove(optionType: TransactionConfirmation.Kind) -> PendingTransaction {
+    public func remove(optionType: TransactionConfirmationKind) -> PendingTransaction {
         var copy = self
         copy.confirmations = confirmations.filter { $0.type != optionType }
         return copy
@@ -163,7 +166,7 @@ public struct PendingTransaction: Equatable {
             && lhs.feeForFullAvailable == rhs.feeForFullAvailable
             && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
             && lhs.feeLevel == rhs.feeLevel
-            && lhs.confirmations == rhs.confirmations
+            && TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations)
             && lhs.limits == rhs.limits
             && lhs.validationState == rhs.validationState
     }
@@ -255,7 +258,7 @@ extension PendingTransaction {
         else {
             return false
         }
-        guard case .termsOfService(let option) = confirmation else { return false }
+        guard let option = confirmation as? TransactionConfirmations.AnyBoolOption<Bool> else { return false }
         return option.value
     }
 
@@ -265,7 +268,7 @@ extension PendingTransaction {
         else {
             return false
         }
-        guard case .transferAgreement(let option) = confirmation else { return false }
+        guard let option = confirmation as? TransactionConfirmations.AnyBoolOption<Bool> else { return false }
         return option.value
     }
 }

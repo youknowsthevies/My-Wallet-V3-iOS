@@ -81,31 +81,31 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let notice = TransactionConfirmation.Model.Notice(
+        let notice = TransactionConfirmations.Notice(
             value: String(
                 format: LocalizationConstants.Transaction.Sign.dappRequestWarning,
                 walletConnectTarget.dAppName
             )
         )
-        let imageNotice = TransactionConfirmation.Model.ImageNotice(
+        let imageNotice = TransactionConfirmations.ImageNotice(
             imageURL: walletConnectTarget.dAppLogoURL,
             title: walletConnectTarget.dAppName,
             subtitle: walletConnectTarget.dAppAddress
         )
-        let network = TransactionConfirmation.Model.Network(
+        let network = TransactionConfirmations.Network(
             network: walletConnectTarget.network.name
         )
-        let message = TransactionConfirmation.Model.Message(
+        let message = TransactionConfirmations.Message(
             dAppName: walletConnectTarget.dAppName,
             message: walletConnectTarget.readableMessage
         )
         return .just(
             pendingTransaction.update(
                 confirmations: [
-                    .imageNotice(imageNotice),
-                    .notice(notice),
-                    .network(network),
-                    .message(message)
+                    imageNotice,
+                    notice,
+                    network,
+                    message
                 ]
             )
         )

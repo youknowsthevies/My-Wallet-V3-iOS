@@ -115,6 +115,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
         sessionToken: String
     ) -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> {
 
+        let headers = [HttpHeaderField.authorization: "Bearer \(sessionToken)"]
+        let request = walletRequestBuilder.get(
+            path: Path.pollWalletInfo,
+            headers: headers
+        )!
+
         func decodeType(
             response: RawServerResponse
         ) -> AnyPublisher<WalletInfoPollResponse.ResponseType, NetworkError> {
@@ -125,7 +131,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
                     case .success(let type):
                         return .just(type)
                     case .failure(let error):
-                        return .failure(NetworkError.payloadError(.badData(rawPayload: error.localizedDescription)))
+                        return .failure(
+                            NetworkError(
+                                request: request.urlRequest,
+                                type: .payloadError(.badData(rawPayload: error.localizedDescription))
+                            )
+                        )
                     }
                 }
                 .eraseToAnyPublisher()
@@ -144,7 +155,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
                         case .success(let walletInfo):
                             return .just(.walletInfo(walletInfo))
                         case .failure(let error):
-                            return .failure(NetworkError.payloadError(.badData(rawPayload: error.localizedDescription)))
+                            return .failure(
+                                NetworkError(
+                                    request: request.urlRequest,
+                                    type: .payloadError(.badData(rawPayload: error.localizedDescription))
+                                )
+                            )
                         }
                     }
                     .eraseToAnyPublisher()
@@ -155,11 +171,6 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             }
         }
 
-        let headers = [HttpHeaderField.authorization: "Bearer \(sessionToken)"]
-        let request = walletRequestBuilder.get(
-            path: Path.pollWalletInfo,
-            headers: headers
-        )!
         return networkAdapter.perform(request: request)
             .flatMap { response -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> in
                 decodeType(response: response)

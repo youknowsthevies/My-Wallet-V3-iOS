@@ -48,7 +48,7 @@ let package = Package(
         ),
         .package(path: "../Metadata"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Money"),
         .package(path: "../Platform"),
         .package(path: "../FeatureCryptoDomain"),
@@ -176,7 +176,7 @@ let package = Package(
             name: "EthereumKitMock",
             dependencies: [
                 .target(name: "EthereumKit"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),

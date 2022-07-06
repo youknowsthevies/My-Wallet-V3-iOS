@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkError
+import Errors
 
 protocol BlockchainNameResolutionClientAPI {
 

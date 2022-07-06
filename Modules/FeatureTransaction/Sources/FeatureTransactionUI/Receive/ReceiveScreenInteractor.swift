@@ -29,8 +29,9 @@ final class ReceiveScreenInteractor {
 
     var state: AnyPublisher<State?, Never> {
         account.receiveAddressPublisher
-            .flatMap { [resolutionService, analyticsRecorder] receiveAddress -> AddressAndDomainsPublisher in
-                resolutionService.reverseResolve(address: receiveAddress.address)
+            .zip(account.firstReceiveAddress)
+            .flatMap { [resolutionService, analyticsRecorder] receiveAddress, firstReceiveAddress -> AddressAndDomainsPublisher in
+                resolutionService.reverseResolve(address: firstReceiveAddress.address)
                     .handleEvents(
                         receiveOutput: { [analyticsRecorder] _ in
                             analyticsRecorder.record(

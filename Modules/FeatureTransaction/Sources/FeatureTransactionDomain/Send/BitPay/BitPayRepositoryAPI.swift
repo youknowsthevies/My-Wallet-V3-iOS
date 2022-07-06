@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import MoneyKit
-import NetworkError
 import PlatformKit
 import ToolKit
 

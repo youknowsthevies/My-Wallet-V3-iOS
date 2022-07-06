@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Foundation
 import ToolKit
 
@@ -71,6 +72,7 @@ extension OpenBanking {
         public var currency: String?
         public var details: Details?
         public var error: OpenBanking.Error?
+        @Optional.Codable public var ux: Nabu.Error.UX?
         public var attributes: Attributes
         public var addedAt: String?
 
@@ -81,6 +83,7 @@ extension OpenBanking {
             currency: String? = nil,
             details: OpenBanking.BankAccount.Details? = nil,
             error: OpenBanking.Error? = nil,
+            ux: Nabu.Error.UX? = nil,
             attributes: OpenBanking.BankAccount.Attributes,
             addedAt: String? = nil
         ) {
@@ -90,6 +93,7 @@ extension OpenBanking {
             self.currency = currency
             self.details = details
             self.error = error
+            self.ux = ux
             self.attributes = attributes
             self.addedAt = addedAt
         }
@@ -100,6 +104,7 @@ extension OpenBanking {
         public struct Attributes: Codable, Hashable {
             public var callbackPath: String
             public var error: OpenBanking.Error?
+            @Optional.Codable public var ux: Nabu.Error.UX?
         }
 
         public var id: Identity<Self> { paymentId }
@@ -141,6 +146,8 @@ extension OpenBanking {
             price: String?,
             paymentMethodId: String,
             paymentType: String,
+            paymentError: OpenBanking.Error? = nil,
+            ux: Nabu.Error.UX? = nil,
             attributes: OpenBanking.Order.Attributes = .init()
         ) {
             self.id = id
@@ -152,6 +159,8 @@ extension OpenBanking {
             self.price = price
             self.paymentMethodId = paymentMethodId
             self.paymentType = paymentType
+            self.paymentError = paymentError
+            self.ux = ux
             self.attributes = attributes
         }
 
@@ -163,7 +172,8 @@ extension OpenBanking {
                 authorisationUrl: URL? = nil,
                 consentId: String? = nil,
                 expiresAt: String? = nil,
-                error: OpenBanking.Error? = nil
+                error: OpenBanking.Error? = nil,
+                ux: Nabu.Error.UX? = nil
             ) {
                 self.callbackPath = callbackPath
                 self.qrCodeUrl = qrCodeUrl
@@ -171,6 +181,7 @@ extension OpenBanking {
                 self.consentId = consentId
                 self.expiresAt = expiresAt
                 self.error = error
+                self.ux = ux
             }
 
             public var callbackPath: String?
@@ -179,6 +190,7 @@ extension OpenBanking {
             public var consentId: String?
             public var expiresAt: String?
             public var error: OpenBanking.Error?
+            public var ux: Nabu.Error.UX?
         }
 
         public var id: Identity<Self>
@@ -191,6 +203,7 @@ extension OpenBanking {
         public var paymentMethodId: String
         public var paymentType: String
         public var paymentError: OpenBanking.Error?
+        @Optional.Codable public var ux: Nabu.Error.UX?
         public var attributes: Attributes? = .init()
     }
 }
@@ -253,6 +266,7 @@ extension OpenBanking.Payment {
         public var txHash: String?
         public var beneficiaryId: String
         public var error: OpenBanking.Error?
+        @Optional.Codable public var ux: Nabu.Error.UX?
     }
 }
 

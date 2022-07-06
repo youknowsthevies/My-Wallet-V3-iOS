@@ -55,6 +55,7 @@ public final class SettingsScreenPresenter {
     private let banksSectionPresenter: BanksSectionPresenter
     private let cardsSectionPresenter: CardsSectionPresenter
     private let helpSectionPresenter: HelpSectionPresenter
+    private let referralSectionPresenter: ReferralSectionPresenter
 
     // MARK: - Init
 
@@ -96,6 +97,8 @@ public final class SettingsScreenPresenter {
             preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor
         )
 
+        referralSectionPresenter = ReferralSectionPresenter(refferalAdapter: interactor.referralAdapter)
+
         sectionsProvider = SettingsSectionsProvider(
             about: helpSectionPresenter,
             connect: connectPresenter,
@@ -103,7 +106,8 @@ public final class SettingsScreenPresenter {
             cards: cardsSectionPresenter,
             security: securitySectionPresenter,
             profile: profileSectionPresenter,
-            preferences: preferencesSectionPresenter
+            preferences: preferencesSectionPresenter,
+            referral: referralSectionPresenter
         )
 
         self.router = router

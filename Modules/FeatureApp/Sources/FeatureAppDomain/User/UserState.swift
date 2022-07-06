@@ -20,13 +20,6 @@ extension UserStateError: Equatable {
 /// A data structure that represents the state of the user
 public struct UserState: Equatable {
 
-    /// A data structure wrapping key information about the user's holdings
-    public struct BalanceData: Equatable {
-        public let hasAnyBalance: Bool
-        public let hasAnyFiatBalance: Bool
-        public let hasAnyCryptoBalance: Bool
-    }
-
     /// A data structure that represents the KYC status of the user
     public enum KYCStatus: Equatable {
         case unverified
@@ -52,7 +45,6 @@ public struct UserState: Equatable {
     }
 
     public let kycStatus: KYCStatus
-    public let balanceData: BalanceData
     public let linkedPaymentMethods: [PaymentMethod]
     public let hasEverPurchasedCrypto: Bool
     public let products: [ProductValue]

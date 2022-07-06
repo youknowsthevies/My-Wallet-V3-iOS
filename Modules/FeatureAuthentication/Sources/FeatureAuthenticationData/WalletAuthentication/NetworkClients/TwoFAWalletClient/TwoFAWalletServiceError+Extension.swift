@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureAuthenticationDomain
 import Foundation
-import NetworkError
 
 extension TwoFAWalletServiceError: FromNetworkError {
 
@@ -29,7 +29,7 @@ extension TwoFAWalletServiceError: FromNetworkError {
     }
 
     public static func from(_ networkError: NetworkError) -> TwoFAWalletServiceError {
-        switch networkError {
+        switch networkError.type {
         case .payloadError(.badData(rawPayload: let payload)):
             guard let error = TwoFAWalletServiceError(plainServerError: payload) else {
                 return .networkError(networkError)

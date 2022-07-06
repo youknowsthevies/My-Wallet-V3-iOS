@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
 import MoneyKit
-import NetworkError
 
 public protocol HistoricalPriceRepositoryAPI {
 

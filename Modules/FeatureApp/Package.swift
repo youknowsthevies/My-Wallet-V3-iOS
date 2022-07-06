@@ -103,9 +103,7 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "FeatureCardIssuingUI", package: "FeatureCardIssuing"),
-                .product(name: "FeatureCardIssuingDomain", package: "FeatureCardIssuing")
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(

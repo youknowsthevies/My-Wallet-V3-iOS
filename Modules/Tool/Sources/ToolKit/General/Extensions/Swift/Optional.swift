@@ -15,7 +15,7 @@ public protocol OptionalProtocol: ExpressibleByNilLiteral {
 
 extension OptionalProtocol {
     public var isNil: Bool { wrapped == nil }
-    public var isNotNil: Bool { wrapped == nil }
+    public var isNotNil: Bool { wrapped != nil }
 }
 
 extension Optional: OptionalProtocol {
@@ -118,3 +118,54 @@ extension Optional: CustomStringConvertible {
         }
     }
 }
+
+public protocol OptionalCodingPropertyWrapper {
+    associatedtype WrappedType: ExpressibleByNilLiteral
+    var wrappedValue: WrappedType { get }
+    init(wrappedValue: WrappedType)
+}
+
+extension KeyedDecodingContainer {
+
+    public func decode<T>(
+        _ type: T.Type,
+        forKey key: KeyedDecodingContainer<K>.Key
+    ) throws -> T where T: Decodable, T: OptionalCodingPropertyWrapper {
+        try decodeIfPresent(T.self, forKey: key) ?? T(wrappedValue: nil)
+    }
+}
+
+extension KeyedEncodingContainer {
+
+    public mutating func encode<T>(
+        _ value: T,
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws where T: Encodable, T: OptionalCodingPropertyWrapper {
+        if case Optional<Any>.none = value.wrappedValue as Any { return }
+        try encodeIfPresent(value, forKey: key)
+    }
+}
+
+extension Optional where Wrapped: Swift.Codable {
+
+    @propertyWrapper
+    public struct Codable: Swift.Codable, OptionalCodingPropertyWrapper {
+
+        public var wrappedValue: Wrapped?
+
+        public init(wrappedValue: Wrapped?) {
+            self.wrappedValue = wrappedValue
+        }
+
+        public init(from decoder: Decoder) throws {
+            wrappedValue = try? Wrapped(from: decoder)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            try? wrappedValue.encode(to: encoder)
+        }
+    }
+}
+
+extension Optional.Codable: Equatable where Wrapped: Equatable {}
+extension Optional.Codable: Hashable where Wrapped: Hashable {}

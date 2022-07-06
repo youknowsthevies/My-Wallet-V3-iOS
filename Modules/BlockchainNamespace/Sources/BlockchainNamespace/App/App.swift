@@ -12,6 +12,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     var state: Session.State { get }
     var observers: Session.Observers { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
+    var deepLinks: App.DeepLink { get }
 
     #if canImport(SwiftUI)
     var environmentObject: App.EnvironmentObject { get }
@@ -31,7 +32,7 @@ public class App: AppProtocol {
     public lazy var environmentObject = App.EnvironmentObject(self)
     #endif
 
-    internal lazy var deepLinks = DeepLink(self)
+    public lazy var deepLinks = DeepLink(self)
 
     public convenience init<Remote: RemoteConfiguration_p>(
         language: Language = Language.root.language,
@@ -123,7 +124,7 @@ extension AppProtocol {
         line: Int = #line
     ) {
         state.set(event.key, to: value)
-        post(event: event, context: [event: value])
+        post(event: event, context: [event: value], file: file, line: line)
     }
 
     public func post(
@@ -214,9 +215,8 @@ private let s = (
 
 extension AppProtocol {
 
-    public func publisher<T>(for event: Tag.Event, as _: T.Type) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: event.key)
-            .decode(T.self)
+    public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: event.key).decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
@@ -230,6 +230,28 @@ extension AppProtocol {
             return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
                 .eraseToAnyPublisher()
         }
+    }
+
+    public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
+        try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
+            .stream()
+            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key))
+            .get()
+    }
+
+    public func stream(
+        _ event: Tag.Event,
+        bufferingPolicy: AsyncStream<FetchResult>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<FetchResult> {
+        publisher(for: event).stream(bufferingPolicy: bufferingPolicy)
+    }
+
+    public func stream<T: Decodable>(
+        _ event: Tag.Event,
+        as _: T.Type = T.self,
+        bufferingPolicy: AsyncStream<FetchResult.Value<T>>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<FetchResult.Value<T>> {
+        publisher(for: event, as: T.self).stream(bufferingPolicy: bufferingPolicy)
     }
 }
 

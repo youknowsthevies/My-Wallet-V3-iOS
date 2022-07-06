@@ -2,9 +2,9 @@
 
 import BlockchainNamespace
 import Combine
+import Errors
 @testable import FeatureCoinDomain
 import MoneyKit
-import NetworkError
 import TestKit
 import XCTest
 

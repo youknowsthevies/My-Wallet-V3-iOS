@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
 
@@ -20,6 +21,7 @@ public struct BuyOrderDetails {
 
     public let creationDate: Date?
     public let error: String?
+    public let ux: Nabu.Error.UX?
 
     public internal(set) var paymentMethodId: String?
 
@@ -86,6 +88,7 @@ public struct BuyOrderDetails {
         }
 
         error = response.paymentError ?? response.attributes?.error
+        ux = response.ux
     }
 }
 

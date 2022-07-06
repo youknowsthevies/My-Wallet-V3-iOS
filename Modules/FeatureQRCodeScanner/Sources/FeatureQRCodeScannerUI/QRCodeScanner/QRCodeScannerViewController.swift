@@ -150,6 +150,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
 
         switch presentationType {
         case .modal(dismissWithAnimation: let animated):
+            presentedViewController?.dismiss(animated: true)
             dismiss(animated: animated) { [weak self] in
                 self?.viewModel.completed(result)
             }

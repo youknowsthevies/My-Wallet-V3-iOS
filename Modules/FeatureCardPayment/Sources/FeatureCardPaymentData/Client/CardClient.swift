@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import Foundation
-import NabuNetworkError
 import NetworkKit
 
 final class CardClient: CardClientAPI {

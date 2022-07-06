@@ -2,8 +2,8 @@
 
 import BigInt
 import Combine
+import Errors
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 import ToolKit
 
@@ -48,18 +48,15 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
     private let repository: TransactionLimitsRepositoryAPI
     private let conversionService: CurrencyConversionServiceAPI
     private let walletCurrencyService: FiatCurrencyServiceAPI
-    private let featureFlagService: FeatureFlagsServiceAPI
 
     init(
         repository: TransactionLimitsRepositoryAPI,
         conversionService: CurrencyConversionServiceAPI,
-        walletCurrencyService: FiatCurrencyServiceAPI,
-        featureFlagService: FeatureFlagsServiceAPI
+        walletCurrencyService: FiatCurrencyServiceAPI
     ) {
         self.repository = repository
         self.conversionService = conversionService
         self.walletCurrencyService = walletCurrencyService
-        self.featureFlagService = featureFlagService
     }
 
     func fetchLimits(
@@ -84,18 +81,11 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         destination: LimitsAccount,
         limitsCurrency: FiatCurrency
     ) -> TransactionLimitsServicePublisher {
-        featureFlagService.isEnabled(.newLimitsUIEnabled)
-            .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
-                guard newLimitsEnabled else {
-                    return .just(.noLimits(for: limitsCurrency.currencyType))
-                }
-                return self.fetchCrossBorderLimits(
-                    source: source,
-                    destination: destination,
-                    limitsCurrency: limitsCurrency
-                )
-            }
-            .eraseToAnyPublisher()
+        fetchCrossBorderLimits(
+            source: source,
+            destination: destination,
+            limitsCurrency: limitsCurrency
+        )
     }
 
     func fetchLimits(
@@ -104,8 +94,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
         walletCurrencyService.displayCurrencyPublisher
-            .zip(featureFlagService.isEnabled(.newLimitsUIEnabled))
-            .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
+            .flatMap { [unowned self] walletCurrency -> TransactionLimitsServicePublisher in
                 let convertedTradeLimits = self
                     .fetchTradeLimits(
                         fiatCurrency: walletCurrency,
@@ -118,10 +107,6 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
                         using: self.conversionService
                     )
                     .eraseToAnyPublisher()
-
-                guard newLimitsEnabled else {
-                    return convertedTradeLimits
-                }
 
                 let convertedCrossBorderLimits = self
                     .fetchCrossBorderLimits(
@@ -165,22 +150,15 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
                 )
         }
         .catchInactiveUserError(limitsCurrency: limitsCurrency)
-        .flatMap { [featureFlagService] transactionLimits in
-            featureFlagService
-                .isEnabled(.newLimitsUIEnabled)
-                .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
-                    guard newLimitsEnabled else {
-                        return .just(transactionLimits)
-                    }
-                    return self.fetchCrossBorderLimits(
-                        for: paymentMethod,
-                        targetCurrency: targetCurrency,
-                        limitsCurrency: limitsCurrency
-                    )
-                }
-                .map { crossBorderLimits -> TransactionLimits in
-                    transactionLimits.merge(with: crossBorderLimits)
-                }
+        .flatMap { [unowned self] transactionLimits in
+            self.fetchCrossBorderLimits(
+                for: paymentMethod,
+                targetCurrency: targetCurrency,
+                limitsCurrency: limitsCurrency
+            )
+            .map { crossBorderLimits -> TransactionLimits in
+                transactionLimits.merge(with: crossBorderLimits)
+            }
         }
         .eraseToAnyPublisher()
     }
@@ -258,7 +236,7 @@ extension Publisher where Output == TransactionLimits, Failure == TransactionLim
     fileprivate func catchInactiveUserError(limitsCurrency: CurrencyType) -> AnyPublisher<Output, Failure> {
         self.catch { error -> AnyPublisher<Output, Failure> in
             switch error {
-            case .network(.nabuError(let error)) where error.code == .userNotActive:
+            case .network(let error) where error.code == .userNotActive:
                 return .just(.zero(for: limitsCurrency))
             default:
                 return .failure(error)

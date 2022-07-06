@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NabuNetworkError
+import Errors
 import NetworkKit
 import PlatformKit
 import RxCocoa

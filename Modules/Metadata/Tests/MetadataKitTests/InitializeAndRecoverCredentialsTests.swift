@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 @testable import MetadataDataKit
 @testable import MetadataKit
-import NetworkError
 import XCTest
 
 class InitializeAndRecoverCredentialsTests: XCTestCase {
@@ -46,16 +46,7 @@ class InitializeAndRecoverCredentialsTests: XCTestCase {
             )
             .get()
 
-        // swiftlint:disable:next line_length
-        let expectedSharedMetadataNodeXPriv = "xprv9uvPCc4fpcjbVyL5ZWsNMsaTfSRTaPpdiZ1Bbu2djMue6QcrsCHd8pnofy33uJd1sTS2vpi4yufRCKmBvMkNrUoBmEezJ8A3y5YCnPg8dBN"
-        let expectedSharedMetadataNode = try PrivateKey
-            .bitcoinKeyFromXPriv(
-                xpriv: expectedSharedMetadataNodeXPriv
-            )
-            .get()
-
         let expected = RemoteMetadataNodes(
-            sharedMetadataNode: expectedSharedMetadataNode,
             metadataNode: expectedMetadataNode
         )
 
@@ -87,10 +78,6 @@ class InitializeAndRecoverCredentialsTests: XCTestCase {
                 let nodes = metadataState.metadataNodes
                 XCTAssertEqual(nodes, expected)
                 XCTAssertEqual(nodes.metadataNode.xpriv, expectedMetadataNodeXPriv)
-                XCTAssertEqual(
-                    nodes.sharedMetadataNode.xpriv,
-                    expectedSharedMetadataNodeXPriv
-                )
                 XCTAssertEqual(credentials, expectedCredentials)
                 successfullyRecoveredAndInitializedExpectation.fulfill()
             })

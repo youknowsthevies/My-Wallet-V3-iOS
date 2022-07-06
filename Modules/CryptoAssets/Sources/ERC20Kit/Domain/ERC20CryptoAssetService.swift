@@ -72,7 +72,7 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
         .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
         .flatMap { account -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
             account
-                .isFundedPublisher
+                .isFunded
                 .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
                 .flatMap { isFunded -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
                     guard isFunded else {

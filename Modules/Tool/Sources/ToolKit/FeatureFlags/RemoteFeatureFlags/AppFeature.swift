@@ -69,12 +69,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Notification Preferences
     case notificationPreferences
 
-    /// Enables the new Limits UI in Transaction Flow
-    case newLimitsUIEnabled
-
-    /// Enables the new pricing model
-    case newQuoteForSimpleBuy
-
     /// Enables the use of the hot wallet address for custodial transactions.
     case hotWalletCustodial
 
@@ -97,9 +91,20 @@ public enum AppFeature: Int, CaseIterable {
 
     case cardIssuing
 
+    /// Enables Referral button in Settings
+    case referral
+
     // MARK: - SKAdNetworkAttribution
 
     case skAdNetworkAttribution
+
+    // MARK: - Dynamic Self Custody - Stacks
+
+    /// Stacks enabled to all users.
+    case stxForAllUsers
+
+    /// Stacks enabled to users that received the STX Airdrop.
+    case stxForAirdropUsers
 }
 
 extension AppFeature {
@@ -136,10 +141,6 @@ extension AppFeature {
             return "ios_open_banking"
         case .newCardAcquirers:
             return "ios_ff_new_card_acquirers"
-        case .newLimitsUIEnabled:
-            return "ios_use_new_limits_ui"
-        case .newQuoteForSimpleBuy:
-            return "ios_ff_new_pricing"
         case .walletConnectEnabled:
             return "ios_ff_wallet_connect"
         case .newOnboardingTour:
@@ -164,6 +165,12 @@ extension AppFeature {
             return "ios_ff_account_credentials_metadata_migration"
         case .skAdNetworkAttribution:
             return "ios_ff_skAdNetwork_attribution"
+        case .referral:
+            return "ios_ff_referral"
+        case .stxForAllUsers:
+            return "ios_ff_stx_all_users"
+        case .stxForAirdropUsers:
+            return "ios_ff_stx_airdrop_users"
         }
     }
 
@@ -200,10 +207,6 @@ extension AppFeature {
             return true
         case .openBanking:
             return true
-        case .newLimitsUIEnabled:
-            return true
-        case .newQuoteForSimpleBuy:
-            return true
         case .walletConnectEnabled:
             return true
         case .newOnboardingTour:
@@ -227,6 +230,12 @@ extension AppFeature {
         case .accountCredentialsMetadataMigration:
             return false
         case .skAdNetworkAttribution:
+            return true
+        case .referral:
+            return true
+        case .stxForAllUsers:
+            return true
+        case .stxForAirdropUsers:
             return true
         }
     }

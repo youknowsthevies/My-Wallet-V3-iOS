@@ -14,8 +14,9 @@ final class SettingsSectionsProvider {
                 presenters[.cards]!.state,
                 presenters[.security]!.state,
                 presenters[.profile]!.state,
-                presenters[.preferences]!.state
-            ) { (about: $0, connect: $1, banks: $2, cards: $3, security: $4, profile: $5, preferences: $6) }
+                presenters[.preferences]!.state,
+                presenters[.referral]!.state
+            ) { (about: $0, connect: $1, banks: $2, cards: $3, security: $4, profile: $5, preferences: $6, referral: $7) }
             .map { states in
                 SettingSectionsLoadingStates(statePerSection: [
                     .help: states.about,
@@ -24,7 +25,8 @@ final class SettingsSectionsProvider {
                     .cards: states.cards,
                     .security: states.security,
                     .profile: states.profile,
-                    .preferences: states.preferences
+                    .preferences: states.preferences,
+                    .referral: states.referral
                 ])
             }
             .share()
@@ -51,7 +53,8 @@ final class SettingsSectionsProvider {
         cards: SettingsSectionPresenting,
         security: SettingsSectionPresenting,
         profile: SettingsSectionPresenting,
-        preferences: SettingsSectionPresenting
+        preferences: SettingsSectionPresenting,
+        referral: SettingsSectionPresenting
     ) {
         presenters[.profile] = profile
         presenters[.help] = about
@@ -60,5 +63,6 @@ final class SettingsSectionsProvider {
         presenters[.cards] = cards
         presenters[.security] = security
         presenters[.preferences] = preferences
+        presenters[.referral] = referral
     }
 }

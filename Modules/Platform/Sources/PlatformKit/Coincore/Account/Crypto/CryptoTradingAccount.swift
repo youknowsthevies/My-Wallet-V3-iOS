@@ -44,11 +44,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             }
     }
 
-    public var isFunded: Single<Bool> {
-        isFundedPublisher.asSingle()
-    }
-
-    public var isFundedPublisher: AnyPublisher<Bool, Error> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         balances
             .map { $0 != .absent }
             .setFailureType(to: Error.self)
@@ -61,25 +57,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .eraseToAnyPublisher()
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.pending)
             .replaceNil(with: .zero(currency: currencyType))
-            .asSingle()
+            .eraseError()
     }
 
-    public var balance: Single<MoneyValue> {
-        balancePublisher.asSingle()
-    }
-
-    public var balancePublisher: AnyPublisher<MoneyValue, Never> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.available)
             .replaceNil(with: .zero(currency: currencyType))
-            .eraseToAnyPublisher()
+            .eraseError()
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance)
             .map { [asset] balance -> (available: MoneyValue, pending: MoneyValue) in
@@ -88,20 +80,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return (balance.available, balance.pending)
             }
-            .asSingle()
-            .map { [asset] values -> MoneyValue in
+            .eraseError()
+            .tryMap { [asset] values -> MoneyValue in
                 guard values.available.isPositive else {
                     return .zero(currency: asset)
                 }
                 return try values.available - values.pending
             }
+            .eraseToAnyPublisher()
     }
 
-    public var withdrawableBalance: Single<MoneyValue> {
+    public var withdrawableBalance: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.withdrawable)
             .replaceNil(with: .zero(currency: currencyType))
-            .asSingle()
+            .eraseError()
     }
 
     public var onTxCompleted: (TransactionResult) -> Completable {
@@ -175,7 +168,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFlagService: FeatureFlagsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
@@ -193,7 +185,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         ordersActivity: OrdersActivityServiceAPI = resolve(),
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
@@ -216,11 +208,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.featureFlagService = featureFlagService
+        self.featureFlagsService = featureFlagsService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
-        featureFlagsService = featureFlagService
     }
 
     private var isPairToFiatAvailable: AnyPublisher<Bool, Never> {
@@ -245,7 +236,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
              .withdraw:
             return .just(false)
         case .send:
-            return isFundedPublisher
+            return isFunded
         case .buy:
             return isPairToFiatAvailable
                 .setFailureType(to: Error.self)
@@ -256,6 +247,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .eraseToAnyPublisher()
         case .swap:
             return canPerformSwap
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         case .interestTransfer:
             return canPerformInterestTransfer
                 .setFailureType(to: Error.self)
@@ -267,14 +260,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         fiatCurrency: FiatCurrency,
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: asset, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balancePublisher)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     public func invalidateAccountBalance() {
@@ -284,15 +274,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     // MARK: - Private Functions
 
-    private var canPerformSwap: AnyPublisher<Bool, Error> {
+    private var canPerformSwap: AnyPublisher<Bool, Never> {
         hasPositiveDisplayableBalance
-            .flatMap { [eligibilityService] hasPositiveDisplayableBalance -> AnyPublisher<Bool, Error> in
+            .flatMap { [eligibilityService] hasPositiveDisplayableBalance -> AnyPublisher<Bool, Never> in
                 guard hasPositiveDisplayableBalance else {
                     return .just(false)
                 }
                 return eligibilityService.isEligiblePublisher
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -314,7 +302,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         Publishers
             .Zip3(
                 disabledReason.map(\.isEligible),
-                isFundedPublisher,
+                isFunded,
                 isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
             )
             .map { isEligible, isFunded, isInterestWithdrawAndDepositEnabled in

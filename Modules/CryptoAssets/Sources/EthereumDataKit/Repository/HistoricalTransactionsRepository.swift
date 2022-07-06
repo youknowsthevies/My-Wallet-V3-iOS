@@ -2,10 +2,10 @@
 
 import Combine
 import DIKit
+import Errors
 import EthereumKit
 import Foundation
 import MoneyKit
-import NetworkError
 import ToolKit
 
 final class HistoricalTransactionsRepository: HistoricalTransactionsRepositoryAPI {

@@ -175,7 +175,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.register(RadioAccountTableViewCell.self)
-        tableView.register(HostingTableViewCell<AlertCard>.self)
+        tableView.register(HostingTableViewCell<AlertCard<EmptyView>>.self)
         tableView.register(TextFieldTableViewCell.self)
 
         view.addSubview(tableView)
@@ -213,7 +213,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     }
 
     private func cardCell(for indexPath: IndexPath, model: TargetSelectionCardModel) -> UITableViewCell {
-        let cell = tableView.dequeue(HostingTableViewCell<AlertCard>.self, for: indexPath)
+        let cell = tableView.dequeue(HostingTableViewCell<AlertCard<EmptyView>>.self, for: indexPath)
         let alertCard = AlertCard(
             title: model.title,
             message: model.subtitle,

@@ -3,9 +3,9 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import FeatureKYCDomain
 import Localization
-import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import PlatformUIKit

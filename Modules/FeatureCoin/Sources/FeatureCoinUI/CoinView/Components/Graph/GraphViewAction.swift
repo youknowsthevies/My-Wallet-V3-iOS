@@ -2,8 +2,8 @@
 
 import BlockchainNamespace
 import ComposableArchitecture
+import Errors
 import FeatureCoinDomain
-import NetworkError
 
 public enum GraphViewAction: BindableAction {
     case onAppear(Tag.Context)

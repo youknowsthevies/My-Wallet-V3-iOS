@@ -10,6 +10,7 @@ import ToolKit
 
 /// A CryptoAccount, NonCustodialAccount object used by Receive screen to display currencies that are not yet currently loaded.
 final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount {
+
     var asset: CryptoCurrency
 
     var isDefault: Bool = true
@@ -18,11 +19,15 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
 
     let accountType: AccountType = .nonCustodial
 
-    var balance: Single<MoneyValue> {
+    var balance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
-    var pendingBalance: Single<MoneyValue> {
+    var pendingBalance: AnyPublisher<MoneyValue, Error> {
+        .just(.zero(currency: asset))
+    }
+
+    var actionableBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
@@ -30,11 +35,10 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just([])
     }
 
-    var isFunded: Single<Bool> {
-        .just(false)
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+    func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
         .just(.zero(baseCurrency: asset.currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
@@ -44,10 +48,6 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
 
     var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
-    }
-
-    var actionableBalance: Single<MoneyValue> {
-        .just(.zero(currency: asset))
     }
 
     var requireSecondPassword: Single<Bool> {

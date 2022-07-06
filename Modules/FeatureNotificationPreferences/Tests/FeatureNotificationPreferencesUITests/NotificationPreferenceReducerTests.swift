@@ -3,10 +3,10 @@
 import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 import FeatureNotificationPreferencesDetailsUI
 import FeatureNotificationPreferencesMocks
 @testable import FeatureNotificationPreferencesUI
-import NetworkError
 import UIComponentsKit
 import XCTest
 
@@ -66,7 +66,7 @@ class NotificationPreferencesReducerTest: XCTestCase {
     }
 
     func test_onFetchedSettings_failure() {
-        testStore.send(.onFetchedSettings(Result.failure(NetworkError.serverError(.badResponse)))) { state in
+        testStore.send(.onFetchedSettings(Result.failure(NetworkError.unknown))) { state in
             state.viewState = .error
         }
     }

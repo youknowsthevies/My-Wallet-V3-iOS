@@ -2,8 +2,8 @@
 
 import BigInt
 import Combine
+import Errors
 import EthereumKit
-import NetworkError
 import ToolKit
 
 final class LatestBlockRepository: LatestBlockRepositoryAPI {

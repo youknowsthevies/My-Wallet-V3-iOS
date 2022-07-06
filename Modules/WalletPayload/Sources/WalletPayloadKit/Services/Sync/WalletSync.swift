@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 protocol WalletSyncAPI {
@@ -17,7 +17,7 @@ protocol WalletSyncAPI {
     ) -> AnyPublisher<EmptyValue, WalletSyncError>
 }
 
-enum WalletSyncError: LocalizedError {
+public enum WalletSyncError: LocalizedError, Equatable {
     case unknown
     case notInitialized
     case failureSyncingWallet

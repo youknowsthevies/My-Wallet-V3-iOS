@@ -2,9 +2,9 @@
 
 import Combine
 import DIKit
+import Errors
 import Localization
 import MoneyKit
-import NetworkError
 import PlatformKit
 import RxToolKit
 import ToolKit
@@ -107,7 +107,7 @@ final class PaymentAccountsService: PaymentAccountsServiceAPI {
             }
             .mapError { error in
                 guard let networkError = error as? NetworkError else {
-                    return NetworkError.authentication(error)
+                    return NetworkError(request: nil, type: .authentication(error))
                 }
                 return networkError
             }

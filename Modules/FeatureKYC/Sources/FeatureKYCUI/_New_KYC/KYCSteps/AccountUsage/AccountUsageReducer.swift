@@ -3,9 +3,9 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import Errors
 import FeatureFormDomain
 import Localization
-import NabuNetworkError
 import ToolKit
 
 enum AccountUsage {
@@ -53,13 +53,9 @@ enum AccountUsage {
                     state = .success(AccountUsage.Form.State(questions: form))
                 case .failure(let error):
                     // If we receive a 204, the user doesn't have to complete the form, so we can just complete
-                    if case .communicatorError(let networkError) = error {
-                        if case .payloadError(let payloadError) = networkError {
-                            if case .emptyData = payloadError {
-                                state = .success(AccountUsage.Form.State(questions: []))
-                                return Effect(value: .onComplete)
-                            }
-                        }
+                    if error.code.rawValue == 204 {
+                        state = .success(AccountUsage.Form.State(questions: []))
+                        return Effect(value: .onComplete)
                     }
 
                     // Otherwise, handle the failure

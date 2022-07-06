@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureOpenBankingDomain
 import MoneyKit
 import PlatformKit
@@ -113,6 +114,7 @@ final class BuyTransactionEngine: TransactionEngine {
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+            .observe(on: MainScheduler.asyncInstance)
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -153,19 +155,22 @@ final class BuyTransactionEngine: TransactionEngine {
                 let purchase = try totalCost - fee
 
                 var confirmations: [TransactionConfirmation] = [
-                    .buyCryptoValue(.init(baseValue: cryptoAmount)),
-                    .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
-                    .purchase(.init(purchase: purchase)),
-                    .transactionFee(.init(fee: fee))
+                    TransactionConfirmations.BuyCryptoValue(baseValue: cryptoAmount),
+                    TransactionConfirmations.BuyExchangeRateValue(
+                        baseValue: moneyPair.source.quote,
+                        code: moneyPair.source.base.code
+                    ),
+                    TransactionConfirmations.Purchase(purchase: purchase),
+                    TransactionConfirmations.FiatTransactionFee(fee: fee)
                 ]
 
                 if let customFeeAmount = pendingTransaction.customFeeAmount {
-                    confirmations.append(.transactionFee(.init(fee: customFeeAmount)))
+                    confirmations.append(TransactionConfirmations.FiatTransactionFee(fee: customFeeAmount))
                 }
 
                 confirmations += [
-                    .total(.init(total: totalCost)),
-                    .buyPaymentMethod(.init(name: sourceAccountLabel))
+                    TransactionConfirmations.Total(total: totalCost),
+                    TransactionConfirmations.BuyPaymentMethodValue(name: sourceAccountLabel)
                 ]
 
                 return pendingTransaction.update(confirmations: confirmations)
@@ -274,7 +279,7 @@ extension BuyTransactionEngine {
 
     enum MakeTransactionError: Error {
         case priceError(PriceServiceError)
-        case kycError(KYCTierServiceError)
+        case nabuError(Nabu.Error)
         case limitsError(TransactionLimitsServiceError)
     }
 
@@ -305,6 +310,7 @@ extension BuyTransactionEngine {
             )
         }
         .asSingle()
+        .observe(on: MainScheduler.asyncInstance)
     }
 
     private func fetchQuote(for amount: MoneyValue) -> Single<Quote> {
@@ -348,7 +354,6 @@ extension BuyTransactionEngine {
     private func convertSourceBalance(to currency: CurrencyType) -> AnyPublisher<MoneyValue, MakeTransactionError> {
         sourceAccount
             .balance
-            .asPublisher()
             .replaceError(with: .zero(currency: currency))
             .flatMap { [currencyConversionService] balance in
                 currencyConversionService.convert(balance, to: currency)

@@ -3,8 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 public protocol NetworkCommunicatorAPI {
@@ -98,7 +98,9 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         session.erasedWebSocketTaskPublisher(
             for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
         )
-        .mapError(NetworkError.urlError)
+        .mapError { error in
+            NetworkError(request: request.urlRequest, type: .urlError(error))
+        }
         .flatMap { elements in
             request.responseHandler.handle(message: elements, for: request)
         }
@@ -138,7 +140,9 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 )
             }
         )
-        .mapError(NetworkError.urlError)
+        .mapError { error in
+            NetworkError(request: request.urlRequest, type: .urlError(error))
+        }
         .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
             request.responseHandler.handle(elements: elements, for: request)
         }
@@ -182,7 +186,9 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 )
             }
         )
-        .mapError(NetworkError.urlError)
+        .mapError { error in
+            NetworkError(request: request.urlRequest, type: .urlError(error))
+        }
         .flatMap { messages -> AnyPublisher<ServerResponse, NetworkError> in
             request.responseHandler.handle(message: messages, for: request)
         }

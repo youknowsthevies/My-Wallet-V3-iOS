@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureOpenBankingDomain
 import FeatureTransactionDomain
 import Localization
@@ -205,7 +206,7 @@ final class TransactionModel {
             // If no check passed, we stop here (no further actions required).
             return nil
         case .sourceAccountSelected(let sourceAccount):
-            if let target = previousState.destination, !previousState.availableTargets.isEmpty {
+            if let target = previousState.destination, previousState.availableTargets?.isEmpty == false {
                 // This is going to initialize a new PendingTransaction with a 0 amount.
                 // This makes sense for transaction types like Swap where changing the source would invalidate the amount entirely.
                 // For Buy, though we can simply use the amount we have in `previousState`, so the transaction ca be re-validated.
@@ -249,6 +250,8 @@ final class TransactionModel {
         case .showSourceSelection:
             return nil
         case .showTargetSelection:
+            return nil
+        case .showEnterAmount:
             return nil
         }
     }
@@ -420,14 +423,12 @@ final class TransactionModel {
                 .asObservable()
                 .subscribe(onNext: { [weak self] order in
                     switch order.state {
-                    case .cancelled, .expired:
-                        self?.process(
-                            action: .fatalTransactionError(
-                                FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                    case .failed, .expired, .cancelled:
+                        if let error = order.ux {
+                            self?.process(
+                                action: .fatalTransactionError(UX.Error(nabu: error))
                             )
-                        )
-                    case .failed:
-                        if let error = order.error {
+                        } else if let error = order.error {
                             self?.process(
                                 action: .fatalTransactionError(OpenBanking.Error.code(error))
                             )
@@ -613,7 +614,7 @@ final class TransactionModel {
 }
 
 extension PaymentMethodAccount {
-    fileprivate var isYapily: Bool {
+    var isYapily: Bool {
         switch paymentMethodType {
         case .linkedBank(let linkedBank):
             return linkedBank.isYapily

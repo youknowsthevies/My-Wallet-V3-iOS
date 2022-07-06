@@ -4,13 +4,27 @@ import Combine
 import DIKit
 import FeatureWalletConnectDomain
 import Foundation
+import WalletPayloadKit
+
+/// A wrapper that encapsulates the versions on WalletConnectSession from metadata
+struct WalletConnectSessionWrapper: Codable {
+    let v1: [WalletConnectSession]
+}
 
 final class SessionRepositoryMetadata: SessionRepositoryAPI {
 
     private let walletConnectMetadata: WalletConnectMetadataAPI
+    private let walletConnectFetcher: WalletConnectFetcherAPI
+    private let nativeWalletFlag: () -> AnyPublisher<Bool, Never>
 
-    init(walletConnectMetadata: WalletConnectMetadataAPI = resolve()) {
+    init(
+        walletConnectMetadata: WalletConnectMetadataAPI = resolve(),
+        walletConnectFetcher: WalletConnectFetcherAPI = resolve(),
+        nativeWalletFlag: @escaping () -> AnyPublisher<Bool, Never>
+    ) {
         self.walletConnectMetadata = walletConnectMetadata
+        self.walletConnectFetcher = walletConnectFetcher
+        self.nativeWalletFlag = nativeWalletFlag
     }
 
     func contains(session: WalletConnectSession) -> AnyPublisher<Bool, Never> {
@@ -66,13 +80,69 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
     }
 
     private func loadSessions() -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> {
-        walletConnectMetadata.v1Sessions
+        nativeWalletFlag()
+            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> in
+                guard isEnabled else {
+                    return walletConnectMetadata.v1Sessions
+                }
+                return walletConnectFetcher.fetchSessions()
+                    .mapError { _ in WalletConnectMetadataError.unavailable }
+                    .flatMap { sessions -> AnyPublisher<WalletConnectSessionWrapper, WalletConnectMetadataError> in
+                        decodeWalletConnectData(json: sessions)
+                            .publisher
+                            .eraseToAnyPublisher()
+                    }
+                    .map(\.v1)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 
     private func store(sessions: [WalletConnectSession]) -> AnyPublisher<Void, Never> {
-        walletConnectMetadata
-            .update(v1Sessions: sessions)
-            .replaceError(with: ())
+        nativeWalletFlag()
+            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled -> AnyPublisher<Void, Never> in
+                guard isEnabled else {
+                    return walletConnectMetadata
+                        .update(v1Sessions: sessions)
+                        .replaceError(with: ())
+                        .eraseToAnyPublisher()
+                }
+                return encodeWalletConnectSession(model: sessions)
+                    .publisher
+                    .eraseToAnyPublisher()
+                    .flatMap { json -> AnyPublisher<Void, Never> in
+                        walletConnectFetcher
+                            .update(v1Sessions: json)
+                            .replaceError(with: ())
+                            .eraseToAnyPublisher()
+                    }
+                    .mapToVoid()
+                    .replaceError(with: ())
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
+}
+
+private func decodeWalletConnectData(
+    json: String
+) -> Result<WalletConnectSessionWrapper, WalletConnectMetadataError> {
+    let wrapper = try? JSONDecoder().decode(WalletConnectSessionWrapper.self, from: Data(json.utf8))
+    guard let wrapper = wrapper else {
+        return .failure(.unavailable)
+    }
+    return .success(wrapper)
+}
+
+private func encodeWalletConnectSession(
+    model: [WalletConnectSession]
+) -> Result<String, WalletConnectMetadataError> {
+    let wrapper = WalletConnectSessionWrapper(v1: model)
+    let encoded = try? JSONEncoder().encode(wrapper)
+    guard let encoded = encoded,
+          let json = String(data: encoded, encoding: .utf8)
+    else {
+        return .failure(.unavailable)
+    }
+    return .success(json)
 }

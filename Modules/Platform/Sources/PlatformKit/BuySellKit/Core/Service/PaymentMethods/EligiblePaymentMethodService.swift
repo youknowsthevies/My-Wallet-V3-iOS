@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
-import NabuNetworkError
 import RxRelay
 import RxSwift
 import ToolKit

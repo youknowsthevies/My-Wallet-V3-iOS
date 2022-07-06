@@ -2,8 +2,8 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import Errors
 import Localization
-import NabuNetworkError
 import SwiftUI
 
 struct ErrorView: View {
@@ -131,11 +131,7 @@ extension ErrorView {
 extension NabuNetworkError {
 
     func displayTitle(fallback: String) -> String {
-        guard case .nabuError(let error) = self else {
-            return fallback
-        }
-
-        switch error.code {
+        switch code {
         case .cardIssuingKycFailed:
             return LocalizationConstants
                 .CardIssuing
@@ -180,11 +176,7 @@ extension NabuNetworkError {
     }
 
     func displayDescription(fallback: String) -> String {
-        guard case .nabuError(let error) = self else {
-            return fallback
-        }
-
-        switch error.code {
+        switch code {
         case .cardIssuingKycFailed:
             return LocalizationConstants
                 .CardIssuing
@@ -227,16 +219,7 @@ extension NabuNetworkError {
     }
 
     var retryTitle: String {
-        let retry = LocalizationConstants
-            .CardIssuing
-            .Error
-            .retry
-
-        guard case .nabuError(let error) = self else {
-            return retry
-        }
-
-        switch error.code {
+        switch code {
         case .stateNotEligible:
             return LocalizationConstants
                 .CardIssuing
@@ -250,7 +233,10 @@ extension NabuNetworkError {
                 .StateNotEligible
                 .seeList
         default:
-            return retry
+            return LocalizationConstants
+                .CardIssuing
+                .Error
+                .retry
         }
     }
 }

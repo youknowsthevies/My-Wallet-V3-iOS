@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
@@ -32,6 +33,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     private var availableBalance: Single<MoneyValue> {
         sourceAccount
             .balance
+            .asSingle()
     }
 
     private var minimumLimit: Single<MoneyValue> {
@@ -142,19 +144,17 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
                 pendingTransaction
                     .update(
                         confirmations: [
-                            .source(.init(value: source)),
-                            .destination(.init(value: destination)),
-                            .feedTotal(
-                                .init(
-                                    amount: pendingTransaction.amount,
-                                    amountInFiat: fiatAmount.moneyValue,
-                                    fee: pendingTransaction.feeAmount,
-                                    feeInFiat: fiatFees.moneyValue
-                                )
+                            TransactionConfirmations.Source(value: source),
+                            TransactionConfirmations.Destination(value: destination),
+                            TransactionConfirmations.FeedTotal(
+                                amount: pendingTransaction.amount,
+                                amountInFiat: fiatAmount.moneyValue,
+                                fee: pendingTransaction.feeAmount,
+                                feeInFiat: fiatFees.moneyValue
                             ),
                             // TODO: Account for memo if the transactionTarget
                             // has a memo.
-                            .total(.init(total: pendingTransaction.amount))
+                            TransactionConfirmations.Total(total: pendingTransaction.amount)
                         ]
                     )
             }

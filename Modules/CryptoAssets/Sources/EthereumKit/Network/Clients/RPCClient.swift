@@ -148,13 +148,13 @@ final class RPCClient: EstimateGasClientAPI,
         encodable: Encodable
     ) -> Result<NetworkRequest, NetworkError> {
         guard let data = try? encodable.data() else {
-            return .failure(.payloadError(.emptyData))
+            return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
         }
         return requestBuilder.post(
             path: Endpoint.nodePath(for: network),
             body: data
         )
         .flatMap { .success($0) }
-        ?? .failure(.payloadError(.emptyData))
+        ?? .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
     }
 }

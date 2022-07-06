@@ -197,13 +197,10 @@ extension RootViewController: LoggedInBridge {
     func handleSwapCrypto(account: CryptoAccount?) {
         let transactionsRouter = transactionsRouter
         let onboardingRouter = onboardingRouter
-        userStateService
-            .userState
-            .first()
+        coincore.hasPositiveDisplayableBalanceAccounts(for: .crypto)
             .receive(on: DispatchQueue.main)
-            .flatMap { result -> AnyPublisher<TransactionFlowResult, Never> in
-                // if we successfully got a user state object and that shows the user has a crypto balance <= 0, show the empty state
-                if case .success(let userState) = result, !userState.balanceData.hasAnyCryptoBalance {
+            .flatMap { positiveBalance -> AnyPublisher<TransactionFlowResult, Never> in
+                if !positiveBalance {
                     guard let viewController = UIApplication.shared.topMostViewController else {
                         fatalError("Top most view controller cannot be nil")
                     }
@@ -211,9 +208,9 @@ extension RootViewController: LoggedInBridge {
                         .presentRequiredCryptoBalanceView(from: viewController)
                         .map(TransactionFlowResult.init)
                         .eraseToAnyPublisher()
+                } else {
+                    return transactionsRouter.presentTransactionFlow(to: .swap(account))
                 }
-                // if instead we didn't get a user state, or the user state shows the user has a crypto balance > 0, just navigate to swap
-                return transactionsRouter.presentTransactionFlow(to: .swap(account))
             }
             .sink { result in
                 "\(result)".peek("🧾 \(#function)")
@@ -304,10 +301,6 @@ extension RootViewController: LoggedInBridge {
             interestAccountList,
             animated: true
         )
-    }
-
-    func handleExchange() {
-        ExchangeCoordinator.shared.start(from: self)
     }
 
     func handleSupport() {
@@ -468,6 +461,11 @@ extension RootViewController: LoggedInBridge {
                 ]
             )
         )
+    }
+
+    func logoutAndForgetWallet() {
+        viewStore.send(.dismiss())
+        send(.deleteWallet)
     }
 
     func handleAccountsAndAddresses() {

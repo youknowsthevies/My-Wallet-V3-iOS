@@ -7,7 +7,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-public final class OpenBankingViewController: UIHostingController<OpenBankingView> {
+public final class OpenBankingViewController: UIHostingController<OpenBankingViewController.Container> {
 
     public var eventPublisher: AnyPublisher<Result<Void, OpenBanking.Error>, Never>
 
@@ -45,6 +45,17 @@ public final class OpenBankingViewController: UIHostingController<OpenBankingVie
         self.init(.linkBankAccount(account), environment: environment)
     }
 
+    public struct Container: View {
+
+        let store: Store<OpenBankingState, OpenBankingAction>
+        let environment: OpenBankingEnvironment
+
+        public var body: some View {
+            OpenBankingView(store: store)
+                .app(environment.app)
+        }
+    }
+
     required init(_ state: OpenBankingState, environment: OpenBankingEnvironment) {
         eventPublisher = environment.eventPublisher.eraseToAnyPublisher()
         let store = Store<OpenBankingState, OpenBankingAction>(
@@ -52,7 +63,9 @@ public final class OpenBankingViewController: UIHostingController<OpenBankingVie
             reducer: openBankingReducer,
             environment: environment
         )
-        super.init(rootView: OpenBankingView(store: store))
+        super.init(
+            rootView: Container(store: store, environment: environment)
+        )
     }
 
     @objc dynamic required init?(coder aDecoder: NSCoder) {

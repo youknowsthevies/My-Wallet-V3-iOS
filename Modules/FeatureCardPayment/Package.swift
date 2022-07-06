@@ -44,7 +44,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
         .package(path: "../Money")
@@ -53,8 +53,7 @@ let package = Package(
         .target(
             name: "FeatureCardPaymentDomain",
             dependencies: [
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "MoneyKit", package: "Money")
@@ -66,7 +65,7 @@ let package = Package(
                 .target(name: "FeatureCardPaymentDomain"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "Frames", package: "Frames"),
                 .product(name: "Stripe", package: "Stripe"),
                 .product(name: "ToolKit", package: "Tool"),

@@ -17,7 +17,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
     var accounts: Observable<[BlockchainAccount]> {
         transactionModel
             .state
-            .map(transform)
+            .compactMap(transform)
             .distinctUntilChanged { lhs, rhs in
                 lhs.map(\.identifier) == rhs.map(\.identifier)
             }
@@ -35,7 +35,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
             .map(\.destination)
     }
 
-    private let transform: (TransactionState) -> [BlockchainAccount]
+    private let transform: (TransactionState) -> [BlockchainAccount]?
 
     /// TransactionModelAccountProvider
     ///
@@ -43,7 +43,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
     /// - parameter transform: A transform function to apply to each source element of `TransactionModel.state`.
     init(
         transactionModel: TransactionModel,
-        transform: @escaping (TransactionState) -> [BlockchainAccount]
+        transform: @escaping (TransactionState) -> [BlockchainAccount]?
     ) {
         self.transactionModel = transactionModel
         self.transform = transform

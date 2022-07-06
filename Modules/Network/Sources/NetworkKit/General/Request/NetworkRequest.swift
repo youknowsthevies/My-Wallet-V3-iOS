@@ -4,6 +4,7 @@ import DIKit
 import Foundation
 
 public typealias HTTPHeaders = [String: String]
+private var sessionId = UUID()
 
 public struct NetworkRequest {
 
@@ -21,11 +22,11 @@ public struct NetworkRequest {
     }
 
     public var urlRequest: URLRequest {
-        if authenticated, headers[HttpHeaderField.authorization] == nil {
-            fatalError("Missing Autentication Header")
-        }
+//        if authenticated, headers[HttpHeaderField.authorization] == nil {
+//            fatalError("Missing Authentication Header")
+//        }
 
-        let request = NSMutableURLRequest(
+        var request = URLRequest(
             url: endpoint,
             cachePolicy: allowsCachingResponse ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData,
             timeoutInterval: timeoutInterval
@@ -50,9 +51,9 @@ public struct NetworkRequest {
             )
         }
 
-        addHttpBody(to: request)
+        addHttpBody(to: &request)
 
-        return request.copy() as! URLRequest
+        return request
     }
 
     public let method: NetworkMethod
@@ -89,6 +90,7 @@ public struct NetworkRequest {
     private var defaultHeaders: HTTPHeaders {
         [
             HttpHeaderField.requestId: requestId.uuidString,
+            HttpHeaderField.sessionId: sessionId.uuidString,
             HttpHeaderField.acceptLanguage: Set(acceptLanguage).sorted(like: acceptLanguage).qualityEncoded()
         ]
     }
@@ -129,7 +131,7 @@ public struct NetworkRequest {
         return request
     }
 
-    private func addHttpBody(to request: NSMutableURLRequest) {
+    private func addHttpBody(to request: inout URLRequest) {
         guard let data = body else {
             return
         }
@@ -178,12 +180,12 @@ extension NetworkRequest: Hashable {
     }
 }
 
-extension NSMutableURLRequest {
+extension URLRequest {
 
-    public func encode(params: [String: String]) {
+    public mutating func encode(params: [String: String]) {
         let encodedParamsArray = params.map { keyPair -> String in
             let (key, value) = keyPair
-            return "\(key)=\(self.percentEscapeString(value))"
+            return "\(key)=\(percentEscapeString(value))"
         }
         httpBody = encodedParamsArray.joined(separator: "&").data(using: .utf8)
     }

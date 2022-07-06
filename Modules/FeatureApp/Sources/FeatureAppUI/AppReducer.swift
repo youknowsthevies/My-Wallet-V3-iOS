@@ -51,7 +51,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                 AppDelegateEnvironment(
                     app: $0.app,
                     appSettings: $0.blockchainSettings,
-                    onboardingSettings: $0.onboardingSettings,
                     cacheSuite: $0.cacheSuite,
                     remoteNotificationBackgroundReceiver: $0.remoteNotificationServiceContainer.backgroundReceiver,
                     remoteNotificationAuthorizer: $0.remoteNotificationServiceContainer.authorizer,
@@ -100,7 +99,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     sharedContainer: env.sharedContainer,
                     analyticsRecorder: env.analyticsRecorder,
                     siftService: env.siftService,
-                    onboardingSettings: env.onboardingSettings,
                     mainQueue: env.mainQueue,
                     appStoreOpener: env.appStoreOpener,
                     walletPayloadService: env.walletPayloadService,

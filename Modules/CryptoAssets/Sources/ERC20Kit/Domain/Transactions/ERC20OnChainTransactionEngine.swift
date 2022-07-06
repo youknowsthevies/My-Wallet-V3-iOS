@@ -53,6 +53,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount as! ERC20CryptoAccount
     }
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     // MARK: - Init
 
     init(
@@ -103,7 +107,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             walletCurrencyService
                 .displayCurrency
                 .asSingle(),
-            availableBalance
+            actionableBalance
         )
         .map { [cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
@@ -139,24 +143,22 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 (
                     amountInFiat: MoneyValue,
                     feesInFiat: MoneyValue,
-                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                    feeSelectionOption: TransactionConfirmations.FeeSelection
                 ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
             .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
                 [
-                    .sendDestinationValue(.init(value: pendingTransaction.amount)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.transactionTarget.label)),
-                    .feeSelection(payload.feeSelectionOption),
-                    .feedTotal(
-                        .init(
-                            amount: pendingTransaction.amount,
-                            amountInFiat: payload.amountInFiat,
-                            fee: pendingTransaction.feeAmount,
-                            feeInFiat: payload.feesInFiat
-                        )
+                    TransactionConfirmations.SendDestinationValue(value: pendingTransaction.amount),
+                    TransactionConfirmations.Source(value: self.sourceAccount.label),
+                    TransactionConfirmations.Destination(value: self.transactionTarget.label),
+                    payload.feeSelectionOption,
+                    TransactionConfirmations.FeedTotal(
+                        amount: pendingTransaction.amount,
+                        amountInFiat: payload.amountInFiat,
+                        fee: pendingTransaction.feeAmount,
+                        feeInFiat: payload.feesInFiat
                     )
                 ]
             }
@@ -174,7 +176,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
         return Single.zip(
-            sourceAccount.actionableBalance,
+            actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
         .map { values -> PendingTransaction in
@@ -192,14 +194,15 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         newConfirmation: TransactionConfirmation
     ) -> Single<PendingTransaction> {
-        switch newConfirmation {
-        case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
+        if let feeSelection = newConfirmation as? TransactionConfirmations.FeeSelection,
+           feeSelection.selectedLevel != pendingTransaction.feeLevel
+        {
             return updateFeeSelection(
                 pendingTransaction: pendingTransaction,
-                newFeeLevel: value.selectedLevel,
+                newFeeLevel: feeSelection.selectedLevel,
                 customFeeAmount: nil
             )
-        default:
+        } else {
             return defaultDoOptionUpdateRequest(
                 pendingTransaction: pendingTransaction,
                 newConfirmation: newConfirmation
@@ -310,8 +313,7 @@ extension ERC20OnChainTransactionEngine {
         guard sourceAccount != nil else {
             fatalError("sourceAccount should never be nil when this is called")
         }
-        return sourceAccount
-            .actionableBalance
+        return actionableBalance
             .map { [sourceAccount, transactionTarget] actionableBalance -> Void in
                 guard try pendingTransaction.amount <= actionableBalance else {
                     throw TransactionValidationFailure(
@@ -345,10 +347,10 @@ extension ERC20OnChainTransactionEngine {
 
     private func makeFeeSelectionOption(
         pendingTransaction: PendingTransaction
-    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    ) -> Single<TransactionConfirmations.FeeSelection> {
         getFeeState(pendingTransaction: pendingTransaction)
-            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
-                TransactionConfirmation.Model.FeeSelection(
+            .map { feeState -> TransactionConfirmations.FeeSelection in
+                TransactionConfirmations.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,
                     fee: pendingTransaction.feeAmount

@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NabuNetworkError
+import Errors
 
 /// A Service that provides supported trading pairs for Swap.
 public protocol TradingPairsServiceAPI {

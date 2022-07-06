@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import SwiftUI
 
@@ -99,20 +100,38 @@ extension RouteIntent {
     }
 }
 
+private class NoEnvironmentObject: ObservableObject {}
+
 extension View {
 
     @ViewBuilder
     public func navigationRoute<State: NavigationState>(
         in store: Store<State, State.RouteType.Action>
     ) -> some View {
-        navigationRoute(State.RouteType.self, in: store)
+        navigationRoute(State.RouteType.self, in: store, environmentObject: NoEnvironmentObject())
     }
 
     @ViewBuilder
     public func navigationRoute<Route: NavigationRoute>(
         _ route: Route.Type = Route.self, in store: Store<Route.State, Route.Action>
     ) -> some View {
-        modifier(NavigationRouteViewModifier<Route>(store))
+        modifier(NavigationRouteViewModifier<Route, NoEnvironmentObject>(store, NoEnvironmentObject()))
+    }
+
+    @ViewBuilder
+    public func navigationRoute<State: NavigationState, EnvironmentObject: ObservableObject>(
+        in store: Store<State, State.RouteType.Action>,
+        environmentObject: EnvironmentObject?
+    ) -> some View {
+        navigationRoute(State.RouteType.self, in: store, environmentObject: environmentObject)
+    }
+
+    @ViewBuilder
+    public func navigationRoute<Route: NavigationRoute, EnvironmentObject: ObservableObject>(
+        _ route: Route.Type = Route.self, in store: Store<Route.State, Route.Action>,
+        environmentObject: EnvironmentObject?
+    ) -> some View {
+        modifier(NavigationRouteViewModifier<Route, EnvironmentObject>(store, environmentObject))
     }
 }
 
@@ -135,20 +154,24 @@ extension Effect where Output: NavigationAction {
 }
 
 /// A modifier to create NavigationLink and sheet views ahead of time
-public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier {
+public struct NavigationRouteViewModifier<Route: NavigationRoute, EnvironmentObject: ObservableObject>: ViewModifier {
+
+    @BlockchainApp var app
 
     public typealias State = Route.State
     public typealias Action = Route.Action
 
     public let store: Store<State, Action>
+    private let environmentObject: EnvironmentObject?
 
     @ObservedObject private var viewStore: ViewStore<RouteIntent<Route>?, Action>
 
     @SwiftUI.State private var intent: Identified<UUID, RouteIntent<Route>>?
     @SwiftUI.State private var isReady: Identified<UUID, RouteIntent<Route>>?
 
-    public init(_ store: Store<State, Action>) {
+    public init(_ store: Store<State, Action>, _ environmentObject: EnvironmentObject?) {
         self.store = store
+        self.environmentObject = environmentObject
         viewStore = ViewStore(store.scope(state: \.route))
     }
 
@@ -176,11 +199,10 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
         switch intent.value.action {
         case .navigateTo:
             PrimaryNavigationLink(
-                destination: intent.value.route.destination(in: store),
+                destination: intent.value.route.destination(in: store).environmentObject(environmentObject),
                 isActive: Binding(binding, to: intent, isReady: $isReady),
                 label: EmptyView.init
             )
-
         case .enterInto(let context) where context.contains(.fullScreen):
             #if os(macOS)
             Color.clear
@@ -188,9 +210,9 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if context.contains(.destinationEmbeddedIntoNavigationView) {
-                            PrimaryNavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }.environmentObject(environmentObject)
                         } else {
-                            intent.value.route.destination(in: store)
+                            intent.value.route.destination(in: store).environmentObject(environmentObject)
                         }
                     }
                 )
@@ -200,9 +222,9 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if context.contains(.destinationEmbeddedIntoNavigationView) {
-                            PrimaryNavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }.environmentObject(environmentObject)
                         } else {
-                            intent.value.route.destination(in: store)
+                            intent.value.route.destination(in: store).environmentObject(environmentObject)
                         }
                     }
                 )
@@ -214,12 +236,24 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         if context.contains(.destinationEmbeddedIntoNavigationView) {
-                            PrimaryNavigationView { intent.value.route.destination(in: store) }
+                            PrimaryNavigationView { intent.value.route.destination(in: store) }.environmentObject(environmentObject)
                         } else {
-                            intent.value.route.destination(in: store)
+                            intent.value.route.destination(in: store).environmentObject(environmentObject)
                         }
                     }
                 )
+        }
+    }
+}
+
+extension View {
+
+    @ViewBuilder
+    fileprivate func environmentObject<O: ObservableObject>(_ object: O?) -> some View {
+        if let object = object {
+            environmentObject(object)
+        } else {
+            self
         }
     }
 }

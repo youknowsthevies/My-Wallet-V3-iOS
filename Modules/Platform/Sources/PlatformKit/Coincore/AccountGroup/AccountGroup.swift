@@ -79,7 +79,10 @@ extension AccountGroup {
             .eraseToAnyPublisher()
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
         accounts
             .chunks(ofCount: 100)
             .map { accounts in

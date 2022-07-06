@@ -26,6 +26,21 @@ extension LocalizationConstants {
                 comment: "Add Card Screen: This card has already been saved"
             )
         }
+
+        public enum CreditCardDisclaimer {
+            public static let title = NSLocalizedString(
+                "Did you know?",
+                comment: "Add Card Screen: Credit Card Learn More Title"
+            )
+            public static let message = NSLocalizedString(
+                "Many credit cards don’t support crypto purchases. Debit cards usually work best.",
+                comment: "Add Card Screen: Credit Card Learn More Message"
+            )
+            public static let button = NSLocalizedString(
+                "Learn More",
+                comment: "Add Card Screen: Credit Card Learn More Button to launch Zendesk article"
+            )
+        }
     }
 
     public enum BillingAddressScreen {

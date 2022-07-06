@@ -10,6 +10,12 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     private let client: ExchangeClientAPI
     private let coincore: CoincoreAPI
 
+    private var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> {
+        nabuUserService.user
+            .map(\.hasLinkedExchangeAccount)
+            .replaceError(with: ExchangeAccountRepositoryError.failedCheckLinkedExchange)
+    }
+
     init(
         nabuUserService: NabuUserServiceAPI = resolve(),
         client: ExchangeClientAPI = resolve(),
@@ -18,12 +24,6 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
         self.nabuUserService = nabuUserService
         self.client = client
         self.coincore = coincore
-    }
-
-    var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> {
-        nabuUserService.user
-            .map(\.hasLinkedExchangeAccount)
-            .replaceError(with: ExchangeAccountRepositoryError.failedCheckLinkedExchange)
     }
 
     func syncDepositAddressesIfLinked() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
@@ -37,7 +37,7 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
+    private func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
         cryptoReceiveAddressesToSync()
             .flatMap { [client] addresses -> AnyPublisher<Void, ExchangeAccountRepositoryError> in
                 client.syncDepositAddress(accounts: addresses)

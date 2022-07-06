@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureNotificationPreferencesDomain
 import Foundation
-import NetworkError
 
 public enum MockGenerator {
     static let emailMethod = NotificationMethodInfo(

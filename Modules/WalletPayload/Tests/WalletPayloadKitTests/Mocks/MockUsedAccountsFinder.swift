@@ -3,12 +3,12 @@
 @testable import WalletPayloadKit
 
 import Combine
-import NetworkError
+import Errors
 
 class MockUsedAccountsFinder: UsedAccountsFinderAPI {
 
     var findUsedAccountResult: Result<Int, UsedAccountsFinderError> = .failure(
-        .networkError(.serverError(.badResponse))
+        .networkError(.unknown)
     )
 
     func findUsedAccounts(

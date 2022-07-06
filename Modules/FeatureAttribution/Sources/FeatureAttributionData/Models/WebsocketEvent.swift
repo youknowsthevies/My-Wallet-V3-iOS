@@ -5,6 +5,7 @@ import Foundation
 public enum WebsocketEvent: Decodable, Equatable {
     case heartbeatUpdated(HeartbeatResponse)
     case conversionValueUpdated(AttributionResponse.Updated)
+    case conversionValueSubscribed(AttributionResponse.Subscribed)
 
     private enum CodingKeys: String, CodingKey {
         case channel
@@ -28,9 +29,13 @@ public enum WebsocketEvent: Decodable, Equatable {
 
         case .conversion:
             switch event {
-            case .updated, .subscribed:
+            case .updated:
                 let response = try singleValueContainer.decode(AttributionResponse.Updated.self)
                 self = .conversionValueUpdated(response)
+
+            case .subscribed:
+                let response = try singleValueContainer.decode(AttributionResponse.Subscribed.self)
+                self = .conversionValueSubscribed(response)
             }
         }
     }

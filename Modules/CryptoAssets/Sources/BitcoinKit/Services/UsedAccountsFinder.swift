@@ -2,8 +2,8 @@
 
 import BitcoinChainKit
 import Combine
+import Errors
 import Foundation
-import NetworkError
 import WalletPayloadKit
 
 final class UsedAccountsFinder: UsedAccountsFinderAPI {

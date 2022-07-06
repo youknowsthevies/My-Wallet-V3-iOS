@@ -344,7 +344,7 @@ extension FeatureCoinDomain.Account {
                     .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
                     .eraseToAnyPublisher()
             },
-            cryptoBalancePublisher: account.balancePublisher.ignoreFailure(),
+            cryptoBalancePublisher: account.balance.ignoreFailure(),
             fiatBalancePublisher: account.fiatBalance(fiatCurrency: fiatCurrency).ignoreFailure()
         )
     }

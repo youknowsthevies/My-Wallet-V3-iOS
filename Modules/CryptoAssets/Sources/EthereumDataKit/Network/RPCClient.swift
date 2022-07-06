@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import EthereumKit
-import NetworkError
 import NetworkKit
 
 protocol LatestBlockClientAPI {
@@ -74,13 +74,13 @@ final class RPCClient: LatestBlockClientAPI {
         encodable: Encodable
     ) -> Result<NetworkRequest, NetworkError> {
         guard let data = try? encodable.data() else {
-            return .failure(.payloadError(.emptyData))
+            return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
         }
         return requestBuilder.post(
             path: Endpoint.nodePath(for: network),
             body: data
         )
         .flatMap { .success($0) }
-        ?? .failure(.payloadError(.emptyData))
+        ?? .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
     }
 }

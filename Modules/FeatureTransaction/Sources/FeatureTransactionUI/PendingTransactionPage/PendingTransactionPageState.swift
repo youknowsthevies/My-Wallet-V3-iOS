@@ -26,7 +26,6 @@ struct PendingTransactionPageState {
     let primaryButtonViewModel: ButtonViewModel?
     let secondaryButtonViewModel: ButtonViewModel?
     let action: AssetAction
-    let error: TransactionErrorState?
 
     static let empty: PendingTransactionPageState = .init(
         title: "",
@@ -41,8 +40,7 @@ struct PendingTransactionPageState {
         effect: Effect = .none,
         primaryButtonViewModel: ButtonViewModel? = nil,
         secondaryButtonViewModel: ButtonViewModel? = nil,
-        action: AssetAction,
-        error: TransactionErrorState? = nil
+        action: AssetAction
     ) {
         self.title = .init(
             text: title,
@@ -65,7 +63,6 @@ struct PendingTransactionPageState {
         self.secondaryButtonViewModel = secondaryButtonViewModel
         self.effect = effect
         self.action = action
-        self.error = error
     }
 }
 

@@ -6,6 +6,11 @@ extension LocalizationConstants.CardIssuing {
 
     public enum Manage {
 
+        static let title = NSLocalizedString(
+            "My Cards",
+            comment: "Card Issuing: title My Cards"
+        )
+
         enum Activity {
 
             enum Button {
@@ -73,13 +78,18 @@ extension LocalizationConstants.CardIssuing {
 
         enum Button {
             static let manage = NSLocalizedString(
-                "Manage",
+                "Manage Card",
                 comment: "Card Issuing: Manage"
             )
 
-            static let topUp = NSLocalizedString(
-                "Top Up",
-                comment: "Card Issuing: Top Up"
+            static let addFunds = NSLocalizedString(
+                "Add Funds",
+                comment: "Card Issuing: Add Funds"
+            )
+
+            static let changeSource = NSLocalizedString(
+                "Change Source",
+                comment: "Card Issuing: Change Source"
             )
 
             enum ChoosePaymentMethod {

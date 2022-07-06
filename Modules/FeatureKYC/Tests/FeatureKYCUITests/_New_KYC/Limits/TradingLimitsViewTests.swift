@@ -3,6 +3,7 @@
 import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 @testable import FeatureKYCUI
 import PlatformKit
 import TestKit
@@ -70,7 +71,7 @@ final class TradingLimitsViewTests: XCTestCase {
             $0.loading = true
         }
         testScheduler.advance(by: .seconds(2))
-        testStore.receive(.didFetchLimits(.failure(KYCTierServiceError.other(MockError.unknown)))) {
+        testStore.receive(.didFetchLimits(.failure(Nabu.Error.unknown))) {
             $0.loading = false
             $0.featuresList = LimitedFeaturesListState(
                 features: [],
@@ -182,7 +183,7 @@ final class TradingLimitsViewTests: XCTestCase {
                     guard failCalls else {
                         return .just(self.stubOverview)
                     }
-                    return .failure(KYCTierServiceError.other(MockError.unknown))
+                    return .failure(Nabu.Error.unknown)
                 },
                 analyticsRecorder: MockAnalyticsRecorder(),
                 mainQueue: testScheduler.eraseToAnyScheduler()

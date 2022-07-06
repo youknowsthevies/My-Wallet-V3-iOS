@@ -16,6 +16,7 @@ extension App {
         public var observers: Session.Observers { app.observers }
         public var remoteConfiguration: Session.RemoteConfiguration { app.remoteConfiguration }
         public var environmentObject: App.EnvironmentObject { self }
+        public var deepLinks: DeepLink { app.deepLinks }
 
         public init(_ app: AppProtocol) {
             self.app = app

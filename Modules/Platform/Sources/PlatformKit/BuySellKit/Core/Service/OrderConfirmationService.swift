@@ -3,8 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
-import NabuNetworkError
 
 /// Used to execute the order once created
 public protocol OrderConfirmationServiceAPI: AnyObject {

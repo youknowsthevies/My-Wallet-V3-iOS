@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureAuthenticationData
-import NabuNetworkError
 import NetworkKit
 
 public protocol UpdateWalletInformationClientAPI: AnyObject {

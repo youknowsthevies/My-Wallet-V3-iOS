@@ -3,8 +3,8 @@
 import BlockchainComponentLibrary
 
 import DIKit
+import Errors
 import Localization
-import NabuNetworkError
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -46,7 +46,12 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
-        addButton(with: presenter.buttonViewModel)
+
+        let buttonView = ButtonView()
+        buttonView.viewModel = presenter.buttonViewModel
+        buttonView.layout(dimension: .height, to: 48)
+        addStickyBottomView(buttonView)
+
         keyboardInteractionController = KeyboardInteractionController(
             in: scrollView,
             disablesToolBar: false
@@ -58,7 +63,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .emit(onNext: { [weak self] error in
                 guard let self = self else { return }
                 switch error {
-                case .nabuError(let nabu) as NabuNetworkError:
+                case let nabu as NabuNetworkError:
                     switch nabu.code {
                     case .cardInsufficientFunds:
                         self.presentError(

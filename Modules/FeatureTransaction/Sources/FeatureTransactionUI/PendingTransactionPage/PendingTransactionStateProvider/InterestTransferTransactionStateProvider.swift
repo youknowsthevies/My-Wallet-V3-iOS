@@ -13,19 +13,17 @@ final class InterestTransferTransactionStateProvider: PendingTransactionStatePro
     // MARK: - PendingTransactionStateProviding
 
     func connect(state: Observable<TransactionState>) -> Observable<PendingTransactionPageState> {
-        state
-            .map(weak: self) { (self, state) in
-                switch state.executionStatus {
-                case .inProgress,
-                     .pending,
-                     .notStarted:
-                    return self.pending(state: state)
-                case .completed:
-                    return self.success(state: state)
-                case .error:
-                    return self.failed(state: state)
-                }
+        state.compactMap { [weak self] state -> PendingTransactionPageState? in
+            guard let self = self else { return nil }
+            switch state.executionStatus {
+            case .inProgress, .pending, .notStarted:
+                return self.pending(state: state)
+            case .completed:
+                return self.success(state: state)
+            case .error:
+                return nil
             }
+        }
     }
 
     // MARK: - Private Functions
@@ -68,27 +66,6 @@ final class InterestTransferTransactionStateProvider: PendingTransactionStatePro
                 )
             ),
             action: state.action
-        )
-    }
-
-    private func failed(state: TransactionState) -> PendingTransactionPageState {
-        .init(
-            title: state.transactionErrorTitle,
-            subtitle: state.transactionErrorDescription,
-            compositeViewType: .composite(
-                .init(
-                    baseViewType: .image(state.asset.logoResource),
-                    sideViewAttributes: .init(
-                        type: .image(.local(name: "circular-error-icon", bundle: .platformUIKit)),
-                        position: .radiusDistanceFromCenter
-                    ),
-                    cornerRadiusRatio: 0.5
-                )
-            ),
-            effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
-            action: state.action,
-            error: state.errorState
         )
     }
 }

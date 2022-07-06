@@ -56,7 +56,7 @@ extension Binding where Value == Bool {
     @inlinable public func inverted() -> Binding {
         .init(
             get: { !wrappedValue },
-            set: { transaction(transaction).wrappedValue = !$0 }
+            set: { newValue, txn in transaction(txn).wrappedValue = !newValue }
         )
     }
 }

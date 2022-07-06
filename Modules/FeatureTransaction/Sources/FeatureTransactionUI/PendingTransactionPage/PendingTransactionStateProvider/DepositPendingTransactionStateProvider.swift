@@ -14,19 +14,17 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
     // MARK: - PendingTransactionStateProviding
 
     func connect(state: Observable<TransactionState>) -> Observable<PendingTransactionPageState> {
-        state
-            .map(weak: self) { (self, state) in
-                switch state.executionStatus {
-                case .notStarted,
-                     .pending,
-                     .inProgress:
-                    return self.pending(state: state)
-                case .error:
-                    return self.failed(state: state)
-                case .completed:
-                    return self.success(state: state)
-                }
+        state.compactMap { [weak self] state -> PendingTransactionPageState? in
+            guard let self = self else { return nil }
+            switch state.executionStatus {
+            case .notStarted, .pending, .inProgress:
+                return self.pending(state: state)
+            case .error:
+                return nil
+            case .completed:
+                return self.success(state: state)
             }
+        }
     }
 
     // MARK: - Private Functions
@@ -92,43 +90,6 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             action: state.action
-        )
-    }
-
-    private func failed(state: TransactionState) -> PendingTransactionPageState {
-        let currency = state.amount.currency
-        let icon: CompositeStatusViewType.Composite.BaseViewType = .badgeImageViewModel(
-            .primary(
-                image: currency.logoResource,
-                contentColor: .white,
-                backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
-                cornerRadius: .roundedHigh,
-                accessibilityIdSuffix: "PendingTransactionFailureBadge"
-            )
-        )
-        if let details = state.order as? OrderDetails, let code = details.error {
-            return bankingError(
-                in: state,
-                error: .code(code),
-                icon: icon
-            )
-        }
-        return .init(
-            title: state.transactionErrorTitle,
-            subtitle: state.transactionErrorDescription,
-            compositeViewType: .composite(
-                .init(
-                    baseViewType: icon,
-                    sideViewAttributes: .init(
-                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
-                        position: .radiusDistanceFromCenter
-                    )
-                )
-            ),
-            effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
-            action: state.action,
-            error: state.errorState
         )
     }
 }

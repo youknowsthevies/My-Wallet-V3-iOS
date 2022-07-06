@@ -14,15 +14,19 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     init(
-        quotesEngine: QuotesEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
@@ -43,22 +47,20 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         precondition((target as! CryptoTradingAccount).asset != sourceAsset)
     }
 
-    lazy var quote: Observable<PricedQuote> = quotesEngine
-        .startPollingRate(
-            direction: orderDirection,
-            pair: .init(
-                sourceCurrencyType: sourceAsset,
-                destinationCurrencyType: target.currencyType
-            )
-        )
-        .asObservable()
-
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAccount.currencyType,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+        return Single
             .zip(
-                quote.take(1).asSingle(),
+                quotesEngine.quotePublisher.asSingle(),
                 walletCurrencyService.displayCurrency.asSingle(),
-                sourceAccount.actionableBalance
+                actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
@@ -97,7 +99,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.zip(
             validateUpdateAmount(amount),
-            sourceAccount.actionableBalance
+            actionableBalance
         )
         .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
             pendingTransaction.update(amount: normalized, available: balance)

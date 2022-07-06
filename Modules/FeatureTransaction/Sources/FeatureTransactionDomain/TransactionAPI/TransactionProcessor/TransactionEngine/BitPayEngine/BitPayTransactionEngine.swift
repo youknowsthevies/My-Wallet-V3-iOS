@@ -67,12 +67,16 @@ final class BitPayTransactionEngine: TransactionEngine {
     func start(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        askForRefreshConfirmation: @escaping (Bool) -> Completable
+        askForRefreshConfirmation: @escaping AskForRefreshConfirmation
     ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
-        onChainEngine.start(sourceAccount: sourceAccount, transactionTarget: transactionTarget, askForRefreshConfirmation: askForRefreshConfirmation)
+        onChainEngine.start(
+            sourceAccount: sourceAccount,
+            transactionTarget: transactionTarget,
+            askForRefreshConfirmation: askForRefreshConfirmation
+        )
     }
 
     func assertInputsValid() {
@@ -110,8 +114,8 @@ final class BitPayTransactionEngine: TransactionEngine {
             .map(weak: self) { (self, pendingTransaction) in
                 pendingTransaction
                     .insert(
-                        confirmation: .bitpayCountdown(
-                            .init(secondsRemaining: self.timeRemainingSeconds)
+                        confirmation: TransactionConfirmations.BitPayCountdown(
+                            secondsRemaining: self.timeRemainingSeconds
                         ),
                         prepend: true
                     )
@@ -122,9 +126,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         .just(
             pendingTransaction
                 .insert(
-                    confirmation: .bitpayCountdown(
-                        .init(secondsRemaining: timeRemainingSeconds)
-                    ),
+                    confirmation: TransactionConfirmations.BitPayCountdown(secondsRemaining: timeRemainingSeconds),
                     prepend: true
                 )
         )

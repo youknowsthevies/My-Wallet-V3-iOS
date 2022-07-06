@@ -28,7 +28,7 @@ final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
         MessagingMessageInfo()
     }
 
-    func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?) {
+    func subscribe(toTopic topic: String, completion: ((Error?) -> Void)?) {
         if shouldSubscribeToTopicsSuccessfully {
             topics.insert(topic)
             completion!(nil)

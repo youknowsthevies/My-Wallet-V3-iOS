@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 public protocol NetworkResponseHandlerAPI {
@@ -39,13 +39,14 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
         message: URLSessionWebSocketTask.Message,
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        handler(message: message)
+        handler(message: message, for: request)
             .publisher
             .eraseToAnyPublisher()
     }
 
     private func handler(
-        message: URLSessionWebSocketTask.Message
+        message: URLSessionWebSocketTask.Message,
+        for request: NetworkRequest
     ) -> Result<ServerResponse, NetworkError> {
         switch message {
 
@@ -64,7 +65,7 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
             return .success(response)
 
         default:
-            return .failure(.payloadError(.emptyData))
+            return .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
         }
     }
 
@@ -77,7 +78,7 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
         Result<(data: Data, response: URLResponse), NetworkError>.success(elements)
             .flatMap { elements -> Result<ServerResponse, NetworkError> in
                 guard let response = elements.response as? HTTPURLResponse else {
-                    return .failure(.serverError(.badResponse))
+                    return .failure(NetworkError(request: request.urlRequest, type: .serverError(.badResponse)))
                 }
                 let payload = elements.data
                 switch response.statusCode {
@@ -91,8 +92,11 @@ public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
                 default:
                     request.peek("🌎 ‼️ \(response.statusCode)", \.endpoint)
                     return .failure(
-                        .rawServerError(
-                            ServerErrorResponse(response: response, payload: payload)
+                        NetworkError(
+                            request: request.urlRequest,
+                            type: .rawServerError(
+                                ServerErrorResponse(response: response, payload: payload)
+                            )
                         )
                     )
                 }

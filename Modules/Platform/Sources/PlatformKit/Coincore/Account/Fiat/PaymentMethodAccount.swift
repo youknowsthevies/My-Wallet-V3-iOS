@@ -52,11 +52,11 @@ public final class PaymentMethodAccount: FiatAccount {
         paymentMethodType.label
     }
 
-    public var isFunded: Single<Bool> {
+    public var isFunded: AnyPublisher<Bool, Error> {
         .just(true)
     }
 
-    public var balance: Single<MoneyValue> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         .just(paymentMethodType.balance)
     }
 
@@ -64,11 +64,11 @@ public final class PaymentMethodAccount: FiatAccount {
         .just(action == .buy)
     }
 
-    public var pendingBalance: Single<MoneyValue> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
-    public var actionableBalance: Single<MoneyValue> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
 
@@ -76,15 +76,15 @@ public final class PaymentMethodAccount: FiatAccount {
         .error(ReceiveAddressError.notSupported)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        priceService
-            .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
-            .eraseError()
-            .zip(balancePublisher)
-            .tryMap { fiatPrice, balance in
-                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-            .eraseToAnyPublisher()
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
     }
 
     public func invalidateAccountBalance() {

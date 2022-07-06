@@ -8,6 +8,7 @@ import FeatureCryptoDomainDomain
 import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
+import FeatureNFTDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -45,7 +46,6 @@ final class AnnouncementPresenter {
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
-    private let exchangeCoordinator: ExchangeCoordinator
     private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
     private let reactiveWallet: ReactiveWalletAPI
@@ -56,6 +56,7 @@ final class AnnouncementPresenter {
     private let navigationRouter: NavigationRouterAPI
     private let exchangeProviding: ExchangeProviding
     private let accountsRouter: AccountsRouting
+    private let viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI
 
     private let coincore: CoincoreAPI
     private let nabuUserService: NabuUserServiceAPI
@@ -84,11 +85,11 @@ final class AnnouncementPresenter {
         walletOperating: WalletOperationsRouting = DIKit.resolve(),
         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
-        exchangeCoordinator: ExchangeCoordinator = .shared,
         kycRouter: KYCRouterAPI = DIKit.resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
         kycSettings: KYCSettingsAPI = DIKit.resolve(),
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
+        viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI = DIKit.resolve(),
         wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
@@ -96,11 +97,11 @@ final class AnnouncementPresenter {
     ) {
         self.app = app
         self.interactor = interactor
+        self.viewWaitlistRegistration = viewWaitlistRegistration
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
-        self.exchangeCoordinator = exchangeCoordinator
         self.kycRouter = kycRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
@@ -212,10 +213,10 @@ final class AnnouncementPresenter {
                 )
             case .verifyIdentity:
                 announcement = verifyIdentity(using: preliminaryData.user)
-            case .exchangeLinking:
-                announcement = exchangeLinking(user: preliminaryData.user)
             case .bitpay:
                 announcement = bitpay
+            case .viewNFTWaitlist:
+                announcement = viewNFTComingSoonAnnouncement()
             case .resubmitDocuments:
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyKYCIncomplete:
@@ -361,19 +362,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Computes Wallet-Exchange linking announcement
-    private func exchangeLinking(user: NabuUser) -> Announcement {
-        ExchangeLinkingAnnouncement(
-            shouldShowExchangeAnnouncement: !user.hasLinkedExchangeAccount,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak exchangeCoordinator] in
-                exchangeCoordinator?.start()
-            }
-        )
-    }
-
     private func showCoinView(for currency: CryptoCurrency) {
         app.post(event: blockchain.ux.asset[currency.code].select)
     }
@@ -505,6 +493,47 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             }
         )
+    }
+
+    private func registerEmailForNFTViewWaitlist() {
+        viewWaitlistRegistration
+            .registerEmailForNFTViewWaitlist()
+            .sink(receiveCompletion: { [analyticsRecorder] result in
+                switch result {
+                case .finished:
+                    break
+                case .failure(let error):
+                    switch error {
+                    case .emailUnavailable:
+                        analyticsRecorder
+                            .record(
+                                event: ClientEvent.clientError(
+                                    error: "VIEW_NFT_WAITLIST_EMAIL_ERROR",
+                                    source: "WALLET",
+                                    title: "",
+                                    action: "ANNOUNCEMENT"
+                                )
+                            )
+                    case .network(let nabuNetworkError):
+                        Logger.shared.error("\(error)")
+                        analyticsRecorder
+                            .record(
+                                event: ClientEvent.clientError(
+                                    error: "VIEW_NFT_WAITLIST_REGISTRATION_ERROR",
+                                    networkEndpoint: nabuNetworkError.request?.url?.absoluteString ?? "",
+                                    networkErrorCode: "\(nabuNetworkError.code)",
+                                    networkErrorDescription: nabuNetworkError.description,
+                                    networkErrorId: nil,
+                                    networkErrorType: nabuNetworkError.type.rawValue,
+                                    source: "EXPLORER",
+                                    title: "",
+                                    action: "ANNOUNCEMENT"
+                                )
+                            )
+                    }
+                }
+            }, receiveValue: { _ in })
+            .store(in: &cancellables)
     }
 
     private func presentClaimIntroductionHostingController() {
@@ -651,6 +680,17 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 self?.settingsStarter.showSettingsView()
+            }
+        )
+    }
+
+    private func viewNFTComingSoonAnnouncement() -> Announcement {
+        ViewNFTComingSoonAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            }, action: { [weak self] in
+                guard let self = self else { return }
+                self.registerEmailForNFTViewWaitlist()
             }
         )
     }

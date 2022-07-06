@@ -17,29 +17,19 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderDirection: OrderDirection = .fromUserKey
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let quotesEngine: QuotesEngine
+    let quotesEngine: QuotesEngineAPI
     let hotWalletAddressService: HotWalletAddressServiceAPI
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
 
-    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    lazy var quote: Observable<PricedQuote> = quotesEngine
-        .startPollingRate(
-            direction: orderDirection,
-            pair: .init(
-                sourceCurrencyType: sourceAsset,
-                destinationCurrencyType: target.currencyType
-            )
-        )
-        .asObservable()
-
     init(
-        quotesEngine: QuotesEngine,
         requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
+        quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
@@ -98,8 +88,16 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        quote
-            .take(1)
+        quotesEngine
+            .startPollingRate(
+                direction: orderDirection,
+                pair: .init(
+                    sourceCurrencyType: sourceAsset,
+                    destinationCurrencyType: target.currencyType
+                )
+            )
+        return quotesEngine
+            .quotePublisher
             .asSingle()
             .flatMap { [weak self] pricedQuote -> Single<PendingTransaction> in
                 guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
@@ -299,8 +297,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        quote
-            .take(1)
+        quotesEngine
+            .quotePublisher
             .asSingle()
             .map { [targetAsset, sourceAccount, target] pricedQuote -> (PendingTransaction, PricedQuote) in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
@@ -311,35 +309,46 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 var confirmations = [TransactionConfirmation]()
 
                 if let pendingTransactionAmount = pendingTransaction.amount.cryptoValue {
-                    confirmations.append(.sellSourceValue(.init(cryptoValue: pendingTransactionAmount)))
+                    confirmations.append(
+                        TransactionConfirmations.SellSourceValue(
+                            cryptoValue: pendingTransactionAmount
+                        )
+                    )
                 }
                 if let sellDestinationFiatValue = sellDestinationValue.fiatValue {
-                    confirmations.append(.sellDestinationValue(.init(fiatValue: sellDestinationFiatValue)))
+                    confirmations.append(
+                        TransactionConfirmations.SellDestinationValue(
+                            fiatValue: sellDestinationFiatValue
+                        )
+                    )
                 }
-                confirmations.append(.sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)))
+                confirmations.append(
+                    TransactionConfirmations.SellExchangeRateValue(
+                        baseValue: baseValue,
+                        resultValue: resultValue
+                    )
+                )
                 if let sourceAccountLabel = sourceAccount?.label {
-                    confirmations.append(.source(.init(value: sourceAccountLabel)))
+                    confirmations.append(TransactionConfirmations.Source(value: sourceAccountLabel))
                 }
                 if !pricedQuote.staticFee.isZero {
-                    confirmations.append(.transactionFee(.init(fee: pricedQuote.staticFee)))
+                    confirmations.append(TransactionConfirmations.FiatTransactionFee(fee: pricedQuote.staticFee))
                 }
                 confirmations += [
-                    .destination(.init(value: target.label)),
-                    .networkFee(.init(
+                    TransactionConfirmations.Destination(value: target.label),
+                    TransactionConfirmations.NetworkFee(
                         primaryCurrencyFee: pendingTransaction.feeAmount,
                         secondaryCurrencyFee: sellFiatFeeValue,
                         feeType: .withdrawalFee
-                    ))
+                    )
                 ]
                 if let sellTotalFiatValue = (try? sellDestinationValue + sellFiatFeeValue),
                    let sellTotalCryptoValue = (try? pendingTransaction.amount + pendingTransaction.feeAmount)
                 {
                     confirmations.append(
-                        .totalCost(
-                            .init(
-                                primaryCurrencyFee: sellTotalCryptoValue,
-                                secondaryCurrencyFee: sellTotalFiatValue
-                            )
+                        TransactionConfirmations.TotalCost(
+                            primaryCurrencyFee: sellTotalCryptoValue,
+                            secondaryCurrencyFee: sellTotalFiatValue
                         )
                     )
                 }

@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureAuthenticationDomain
 
 final class DeviceVerificationRepository: DeviceVerificationRepositoryAPI {
@@ -46,7 +47,7 @@ final class DeviceVerificationRepository: DeviceVerificationRepositoryAPI {
                     guard let error = response.error,
                           !error.isEmpty
                     else {
-                        return .failure(.networkError(.payloadError(.emptyData)))
+                        return .failure(.networkError(NetworkError(request: nil, type: .payloadError(.emptyData))))
                     }
                     // Since this API doesn't return specific error codes
                     // we send a specific error case

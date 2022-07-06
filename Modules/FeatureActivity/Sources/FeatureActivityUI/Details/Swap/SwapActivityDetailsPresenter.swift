@@ -21,7 +21,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - DetailsScreenPresenterAPI
 
-    let cells: [DetailsScreen.CellType]
+    var cells: [DetailsScreen.CellType]
 
     let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
@@ -55,7 +55,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let amountFromPresenter: LineItemCellPresenting
     private let amountForPresenter: LineItemCellPresenting
     private let toPresenter: LineItemCellPresenting
-    private let fromPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting?
 
     // MARK: - Init
 
@@ -135,11 +135,14 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
 
-            let source = event.depositTxHash ?? ""
-            fromPresenter = TransactionalLineItem.from(source).defaultCopyablePresenter(
-                analyticsRecorder: analyticsRecorder,
-                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-            )
+            if let source = event.depositTxHash {
+                fromPresenter = TransactionalLineItem.from(source).defaultCopyablePresenter(
+                    analyticsRecorder: analyticsRecorder,
+                    accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+                )
+            } else {
+                fromPresenter = nil
+            }
         case false:
             let destination = "\(event.pair.outputCurrencyType.displayCode) \(LocalizedString.wallet)"
             toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
@@ -169,9 +172,14 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .lineItem(totalPresenter),
             .separator,
             .lineItem(toPresenter),
-            .separator,
-            .lineItem(fromPresenter),
             .separator
         ]
+
+        if let fromPresenter = fromPresenter {
+            cells += [
+                .lineItem(fromPresenter),
+                .separator
+            ]
+        }
     }
 }

@@ -21,7 +21,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     // MARK: - PendingTransactionStateProviding
 
     func connect(state: Observable<TransactionState>) -> Observable<PendingTransactionPageState> {
-        state.map(weak: self) { (self, state) in
+        state.compactMap { [weak self] state -> PendingTransactionPageState? in
+            guard let self = self else { return nil }
             switch state.executionStatus {
             case .inProgress,
                  .notStarted:
@@ -31,7 +32,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             case .completed:
                 return self.success(state: state)
             case .error:
-                return self.failed(state: state)
+                return nil
             }
         }
     }
@@ -68,11 +69,10 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     private func inProgress(state: TransactionState) -> PendingTransactionPageState {
         let fiat = state.amount
         let crypto = state.pendingTransaction?.confirmations.compactMap { confirmation -> MoneyValue? in
-            if case .buyCryptoValue(let value) = confirmation {
-                return MoneyValue(cryptoValue: value.baseValue)
-            } else {
+            guard let buyCryptoValue = confirmation as? TransactionConfirmations.BuyCryptoValue else {
                 return nil
             }
+            return MoneyValue(cryptoValue: buyCryptoValue.baseValue)
         }.first
         let title = String(
             format: LocalizationIds.InProgress.title,
@@ -112,31 +112,6 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             effect: .complete,
             primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
             action: state.action
-        )
-    }
-
-    private func failed(state: TransactionState) -> PendingTransactionPageState {
-        if let details = state.order as? OrderDetails, let code = details.error {
-            return bankingError(in: state, error: .code(code), icon: coreBuyIcon)
-        }
-        return .init(
-            title: state.transactionErrorTitle,
-            subtitle: state.transactionErrorDescription,
-            compositeViewType: .composite(
-                .init(
-                    baseViewType: coreBuyIcon,
-                    sideViewAttributes: .init(
-                        type: .image(.local(name: "circular-error-icon", bundle: .platformUIKit)),
-                        position: .radiusDistanceFromCenter
-                    ),
-                    backgroundColor: .primaryButton,
-                    cornerRadiusRatio: 0.5
-                )
-            ),
-            effect: .close,
-            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
-            action: state.action,
-            error: state.errorState
         )
     }
 }

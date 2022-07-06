@@ -153,3 +153,7 @@ extension Anything: ExpressibleByStringInterpolation {
         self.init(stringInterpolation.description)
     }
 }
+
+public struct CodableVoid: Codable, Equatable, Hashable {
+    public init() {}
+}

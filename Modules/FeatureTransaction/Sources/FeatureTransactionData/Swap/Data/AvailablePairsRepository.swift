@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureTransactionDomain
-import NabuNetworkError
 import PlatformKit
 
 final class AvailablePairsRepository: AvailablePairsRepositoryAPI {

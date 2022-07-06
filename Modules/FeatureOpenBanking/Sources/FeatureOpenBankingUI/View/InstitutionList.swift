@@ -16,7 +16,7 @@ public struct InstitutionListState: Equatable, NavigationState {
     public var route: RouteIntent<InstitutionListRoute>?
 
     var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
-    var selection: ApproveState?
+    var selection: BankState?
 }
 
 public enum InstitutionListAction: Hashable, NavigationAction, FailureAction {
@@ -29,21 +29,22 @@ public enum InstitutionListAction: Hashable, NavigationAction, FailureAction {
     case select(OpenBanking.BankAccount, OpenBanking.Institution)
     case showTransferDetails
 
-    case approve(ApproveAction)
+    case bank(BankAction)
+
     case dismiss
 }
 
 public enum InstitutionListRoute: CaseIterable, NavigationRoute {
 
-    case approve
+    case bank
 
     @ViewBuilder
     public func destination(in store: Store<InstitutionListState, InstitutionListAction>) -> some View {
         switch self {
-        case .approve:
+        case .bank:
             IfLetStore(
-                store.scope(state: \.selection, action: InstitutionListAction.approve),
-                then: ApproveView.init(store:)
+                store.scope(state: \.selection, action: InstitutionListAction.bank),
+                then: BankView.init(store:)
             )
         }
     }
@@ -51,11 +52,11 @@ public enum InstitutionListRoute: CaseIterable, NavigationRoute {
 
 public let institutionListReducer = Reducer<InstitutionListState, InstitutionListAction, OpenBankingEnvironment>
     .combine(
-        approveReducer
+        bankReducer
             .optional()
             .pullback(
                 state: \.selection,
-                action: /InstitutionListAction.approve,
+                action: /InstitutionListAction.bank,
                 environment: \.environment
             ),
         .init { state, action, environment in
@@ -77,29 +78,24 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return .fireAndForget(environment.showTransferDetails)
             case .select(let account, let institution):
                 state.selection = .init(
-                    bank: .init(
-                        data: .init(
-                            account: account,
-                            action: .link(institution: institution)
-                        )
+                    data: .init(
+                        account: account,
+                        action: .link(institution: institution)
                     )
                 )
                 return .merge(
-                    .navigate(to: .approve),
+                    .navigate(to: .bank),
                     .fireAndForget {
                         environment.analytics.record(
                             event: .linkBankSelected(institution: institution.name, account: account)
                         )
                     }
                 )
-            case .approve(.deny):
-                state.route = nil
-                return .none
-            case .approve(.bank(.cancel)):
+            case .bank(.cancel):
                 state.route = nil
                 state.result = nil
                 return Effect(value: .fetch)
-            case .approve:
+            case .bank:
                 return .none
             case .dismiss:
                 return .fireAndForget(environment.dismiss)
@@ -111,6 +107,8 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
     )
 
 public struct InstitutionList: View {
+
+    @BlockchainApp var app
 
     private let store: Store<InstitutionListState, InstitutionListAction>
 
@@ -155,7 +153,7 @@ public struct InstitutionList: View {
                         .onAppear { viewStore.send(.fetch) }
                 }
             }
-            .navigationRoute(in: store)
+            .navigationRoute(in: store, environmentObject: app)
             .navigationTitle(Localization.InstitutionList.title)
             .whiteNavigationBarStyle()
             .trailingNavigationButton(.close) {
@@ -222,7 +220,7 @@ extension InstitutionList {
                 },
                 action: action
             )
-            .frame(height: 9.5.vh, alignment: .center)
+            .frame(height: 9.5.vh)
             .background(Color.semantic.background)
         }
     }
@@ -244,8 +242,9 @@ struct InstitutionList_Previews: PreviewProvider {
                     environment: .mock
                 )
             )
-            .ignoresSafeArea()
         }
+
+        InstitutionList.Item(.mock, action: {})
     }
 }
 #endif

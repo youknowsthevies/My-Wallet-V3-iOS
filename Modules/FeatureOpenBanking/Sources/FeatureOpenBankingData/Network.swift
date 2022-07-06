@@ -111,7 +111,13 @@ struct AnyNetwork<N: NetworkAdapterAPI, R>: Network where R: Request & NetworkRe
         request: Request, responseType: ResponseType.Type = ResponseType.self
     ) -> AnyPublisher<ResponseType, NetworkError> where ResponseType: Decodable {
         guard let request = request as? R else {
-            return Fail(error: .urlError(URLError(.badURL))).eraseToAnyPublisher()
+            return Fail(
+                error: NetworkError(
+                    request: request.urlRequest,
+                    type: .urlError(URLError(.badURL))
+                )
+            )
+            .eraseToAnyPublisher()
         }
         return perform(request: request, responseType: ResponseType.self)
     }
@@ -203,14 +209,26 @@ public class OfflineNetwork: Network {
             let method = request.urlRequest.httpMethod,
             let value = data[url]?[method]
         else {
-            return Fail(error: .urlError(URLError(.unsupportedURL))).eraseToAnyPublisher()
+            return Fail(
+                error: NetworkError(
+                    request: request.urlRequest,
+                    type: .urlError(URLError(.unsupportedURL))
+                )
+            )
+            .eraseToAnyPublisher()
         }
         do {
             let data = try JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed)
             let object = try JSONDecoder().decode(ResponseType.self, from: data)
             return Just(object).setFailureType(to: NetworkError.self).eraseToAnyPublisher()
         } catch {
-            return Fail(error: .payloadError(.emptyData)).eraseToAnyPublisher()
+            return Fail(
+                error: NetworkError(
+                    request: request.urlRequest,
+                    type: .payloadError(.emptyData)
+                )
+            )
+            .eraseToAnyPublisher()
         }
     }
 }
@@ -228,10 +246,12 @@ public class SessionNetwork: Network {
         responseType: ResponseType.Type = ResponseType.self
     ) -> AnyPublisher<ResponseType, NetworkError> where ResponseType: Decodable {
         session.dataTaskPublisher(for: request.urlRequest)
-            .mapError(NetworkError.urlError)
+            .mapError { error in
+                NetworkError(request: request.urlRequest, type: .urlError(error))
+            }
             .map(\.data)
             .decode(type: ResponseType.self, decoder: JSONDecoder())
-            .mapError { _ in NetworkError.serverError(.badResponse) }
+            .mapError { _ in NetworkError(request: request.urlRequest, type: .serverError(.badResponse)) }
             .eraseToAnyPublisher()
     }
 }

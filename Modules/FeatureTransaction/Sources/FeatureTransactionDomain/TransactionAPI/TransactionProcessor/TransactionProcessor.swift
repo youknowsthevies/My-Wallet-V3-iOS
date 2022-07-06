@@ -16,14 +16,12 @@ public final class TransactionProcessor {
         engine.canTransactFiat
     }
 
-    public var transactionExchangeRates: Observable<TransactionExchangeRates> {
-        pendingTxSubject
-            .asObservable()
-            .flatMap { [engine] pendingTransaction -> Observable<TransactionExchangeRates> in
-                engine.fetchExchangeRates(for: pendingTransaction)
-                    .asObservable()
-            }
-    }
+    public lazy var transactionExchangeRates: Observable<TransactionExchangeRates> = pendingTxSubject
+        .asObservable()
+        .flatMap { [engine] pendingTransaction -> Observable<TransactionExchangeRates> in
+            engine.fetchExchangeRates(for: pendingTransaction)
+                .asObservable()
+        }
 
     // Initialise the transaction as required.
     // This will start propagating the pendingTx to the client code.
@@ -89,7 +87,10 @@ public final class TransactionProcessor {
         Logger.shared.debug("!TRANSACTION!> in `set(transactionConfirmation): \(transactionConfirmation)`")
         do {
             let pendingTx = try pendingTransaction()
-            if !pendingTx.confirmations.contains(where: { $0.bareCompare(to: transactionConfirmation) }) {
+            if !pendingTx.confirmations.contains(where: {
+                String(describing: Swift.type(of: $0)) == String(describing: Swift.type(of: transactionConfirmation))
+                    && $0.type == transactionConfirmation.type
+            }) {
                 let error = PlatformKitError.illegalStateException(
                     message: "Unsupported TransactionConfirmation: \(transactionConfirmation)"
                 )
@@ -275,25 +276,26 @@ public final class TransactionProcessor {
 
     // Called back by the engine if it has received an external signal and the existing confirmation set
     // requires a refresh
-    private func refreshConfirmations(revalidate: Bool) -> Completable {
+    private func refreshConfirmations(revalidate: Bool) -> Observable<Void> {
         Logger.shared.debug("!TRANSACTION!> in `refreshConfirmations`")
         guard let pendingTransaction = try? pendingTransaction() else {
-            return .empty() // TODO: or error?
+            return .empty()
         }
         guard !pendingTransaction.confirmations.isEmpty else {
             return .empty()
         }
         return engine.doRefreshConfirmations(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
+            .flatMap { [engine] pendingTransaction -> Single<PendingTransaction> in
                 if revalidate {
-                    return self.engine.doValidateAll(pendingTransaction: pendingTransaction)
+                    return engine.doValidateAll(pendingTransaction: pendingTransaction)
                 }
                 return .just(pendingTransaction)
             }
             .do(onSuccess: { [weak self] pendingTransaction in
                 self?.updatePendingTx(pendingTransaction)
             })
-            .asCompletable()
+            .mapToVoid()
+            .asObservable()
     }
 
     private func pendingTransaction() throws -> PendingTransaction {

@@ -3,6 +3,7 @@
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIKit
 
 open class BaseTableViewController: BaseScreenViewController {
 
@@ -16,7 +17,9 @@ open class BaseTableViewController: BaseScreenViewController {
     private let separatorView = UIView()
     private let outerStackView = UIStackView()
     private let bottomContainerView = UIView()
-    private let buttonStackView = UIStackView()
+    private let bottomStackView = UIStackView()
+    private var contentBottomZeroHeightConstraint: NSLayoutConstraint?
+    private let disposeBag = DisposeBag()
 
     // MARK: - Public UI Constraints
 
@@ -41,9 +44,10 @@ open class BaseTableViewController: BaseScreenViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(outerStackView)
         outerStackView.addArrangedSubview(tableView)
-        outerStackView.addArrangedSubview(bottomContainerView)
+
+        view.addSubview(bottomContainerView)
         bottomContainerView.addSubview(separatorView)
-        bottomContainerView.addSubview(buttonStackView)
+        bottomContainerView.addSubview(bottomStackView)
 
         // Setup Table View
         tableView.isScrollEnabled = false
@@ -53,12 +57,19 @@ open class BaseTableViewController: BaseScreenViewController {
         tableView.estimatedSectionHeaderHeight = 0
         tableView.sectionFooterHeight = 28
         tableView.estimatedSectionFooterHeight = 0
+        tableView.contentInset.bottom = 28
 
         // Setup Scrollview
         scrollView.keyboardDismissMode = .interactive
         scrollView.layout(edges: .leading, .trailing, .top, to: view, usesSafeAreaLayoutGuide: true)
-        contentBottomConstraint = scrollView
-            .layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
+        scrollView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor).isActive = true
+
+        bottomContainerView.layout(edges: .leading, .trailing, .bottom, to: view)
+        bottomContainerView.backgroundColor = .clear
+        contentBottomZeroHeightConstraint = bottomContainerView.heightAnchor.constraint(equalToConstant: 0)
+        contentBottomZeroHeightConstraint?.isActive = true
+        contentBottomConstraint = bottomContainerView
+            .layoutToSuperview(.bottom)
 
         // Setup OuterStackView
         outerStackView.axis = .vertical
@@ -75,26 +86,21 @@ open class BaseTableViewController: BaseScreenViewController {
         // Setup SeparatorView
         separatorView.layout(dimension: .height, to: 1)
         separatorView.layout(edges: .leading, .trailing, .top, to: bottomContainerView)
-        separatorView.layout(edge: .bottom, to: .top, of: buttonStackView, offset: -16.0, priority: .defaultHigh)
+        separatorView.layout(edge: .bottom, to: .top, of: bottomStackView, offset: -16.0, priority: .defaultHigh)
+        separatorView.backgroundColor = .lightBorder
 
         // Setup ButtonStackView
-        buttonStackView.axis = .vertical
-        buttonStackView.distribution = .fill
-        buttonStackView.spacing = 8
-        buttonStackView.layoutToSuperview(.leading, offset: 24)
-        buttonStackView.layoutToSuperview(.trailing, offset: -24)
-        buttonStackView.layoutToSuperview(.bottom, offset: -16)
+        bottomStackView.axis = .vertical
+        bottomStackView.distribution = .fill
+        bottomStackView.spacing = 8
+        bottomStackView.layoutToSuperview(.leading, offset: 24)
+        bottomStackView.layoutToSuperview(.trailing, offset: -24)
+        bottomStackView.layoutToSuperview(.bottom, offset: -32)
     }
 
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
-    public func addButton(with viewModel: ButtonViewModel) {
-        let buttonView = ButtonView()
-        buttonView.viewModel = viewModel
-        buttonStackView.addArrangedSubview(buttonView)
-        buttonView.layout(dimension: .height, to: 48)
+    public func addStickyBottomView(_ view: UIView) {
+        bottomStackView.addArrangedSubview(view)
+        contentBottomZeroHeightConstraint?.isActive = bottomStackView.subviews.isEmpty
     }
 
     override open func viewDidLayoutSubviews() {

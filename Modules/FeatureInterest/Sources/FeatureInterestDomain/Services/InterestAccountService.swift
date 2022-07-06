@@ -72,6 +72,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
                     return .value(details)
                 }
             }
+            .asSingle()
     }
 
     // MARK: - InterestAccountOverviewAPI
@@ -87,10 +88,11 @@ final class InterestAccountService: InterestAccountServiceAPI {
             .store(in: &cancellables)
     }
 
-    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
+    func balance(for currency: CryptoCurrency) -> AnyPublisher<CustodialAccountBalanceState, Never> {
         interestAccountsBalance
             .map(CustodialAccountBalanceStates.init)
             .map(\.[currency.currencyType])
+            .eraseToAnyPublisher()
     }
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
@@ -100,21 +102,25 @@ final class InterestAccountService: InterestAccountServiceAPI {
             .asSingle()
     }
 
-    private var interestAccountsBalance: Single<InterestAccountBalances> {
-        Single
-            .zip(
-                kycTiersService.tiers.map(\.isTier2Approved).asSingle(),
-                fiatCurrencyService.displayCurrency.asSingle()
-            )
-            .flatMap { [interestAccountBalanceRepository] tier2Approved, fiatCurrency
-                -> Single<InterestAccountBalances> in
-                guard tier2Approved else {
+    private var interestAccountsBalance: AnyPublisher<InterestAccountBalances, Never> {
+        let isTier2Approved = kycTiersService.tiers
+            .map(\.isTier2Approved)
+            .eraseError()
+        let displayCurrency = fiatCurrencyService
+            .displayCurrency
+            .eraseError()
+        return isTier2Approved
+            .zip(displayCurrency)
+            .flatMap { [interestAccountBalanceRepository] isTier2Approved, displayCurrency
+                -> AnyPublisher<InterestAccountBalances, Error> in
+                guard isTier2Approved else {
                     return .just(.empty)
                 }
                 return interestAccountBalanceRepository
-                    .fetchInterestAccountsBalance(fiatCurrency: fiatCurrency)
-                    .asSingle()
+                    .fetchInterestAccountsBalance(fiatCurrency: displayCurrency)
+                    .eraseError()
             }
-            .catchAndReturn(InterestAccountBalances.empty)
+            .replaceError(with: .empty)
+            .eraseToAnyPublisher()
     }
 }

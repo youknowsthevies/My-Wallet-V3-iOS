@@ -22,7 +22,7 @@ let package = Package(
         .package(path: "../CommonCrypto"),
         .package(path: "../Keychain"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Metadata"),
         .package(path: "../Test"),
         .package(path: "../Tool")
@@ -35,7 +35,7 @@ let package = Package(
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "MetadataKit", package: "Metadata"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit")
             ]
@@ -47,7 +47,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),
@@ -66,7 +66,7 @@ let package = Package(
                 .target(name: "WalletPayloadKitMock"),
                 .product(name: "MetadataKitMock", package: "Metadata"),
                 .product(name: "KeychainKitMock", package: "Keychain"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKit", package: "Tool"),

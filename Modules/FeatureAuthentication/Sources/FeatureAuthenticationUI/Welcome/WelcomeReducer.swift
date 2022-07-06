@@ -87,6 +87,7 @@ public struct WelcomeEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let checkReferralClient: CheckReferralClientAPI
     let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
@@ -104,6 +105,7 @@ public struct WelcomeEnvironment {
         walletCreationService: WalletCreationService = DIKit.resolve(),
         walletFetcherService: WalletFetcherService = DIKit.resolve(),
         accountRecoveryService: AccountRecoveryServiceAPI = DIKit.resolve(),
+        checkReferralClient: CheckReferralClientAPI = DIKit.resolve(),
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.app = app
@@ -120,6 +122,7 @@ public struct WelcomeEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.checkReferralClient = checkReferralClient
         self.nativeWalletEnabled = nativeWalletEnabled
     }
 }
@@ -138,7 +141,10 @@ public let welcomeReducer = Reducer.combine(
                     analyticsRecorder: $0.analyticsRecorder,
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
-                    walletFetcherService: $0.walletFetcherService
+                    walletFetcherService: $0.walletFetcherService,
+                    featureFlagsService: $0.featureFlagsService,
+                    checkReferralClient: $0.checkReferralClient,
+                    app: $0.app
                 )
             }
         ),
@@ -178,7 +184,8 @@ public let welcomeReducer = Reducer.combine(
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
                     accountRecoveryService: $0.accountRecoveryService,
-                    errorRecorder: $0.errorRecorder
+                    errorRecorder: $0.errorRecorder,
+                    featureFlagsService: $0.featureFlagsService
                 )
             }
         ),

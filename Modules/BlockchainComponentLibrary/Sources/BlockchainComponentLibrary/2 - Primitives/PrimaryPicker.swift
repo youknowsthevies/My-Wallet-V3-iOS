@@ -260,6 +260,7 @@ extension PrimaryPicker {
     /// Shaped background with optional rounded corners.
     private struct RowBackground: View {
         let position: Row.Position
+        let inputState: InputState
         var body: some View {
             ZStack {
                 Rectangle()

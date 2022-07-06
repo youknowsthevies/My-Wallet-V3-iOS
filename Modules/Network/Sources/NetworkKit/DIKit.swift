@@ -2,8 +2,8 @@
 
 import AnalyticsKit
 import DIKit
+@_exported import Errors
 import Foundation
-@_exported import NetworkError
 
 public enum DIKitContext: String {
     case explorer
@@ -67,7 +67,12 @@ extension DependencyContainer {
 
         // MARK: - Retail
 
-        single(tag: DIKitContext.retail) { RequestBuilder(config: Network.Config.retailConfig) }
+        single(tag: DIKitContext.retail) {
+            RequestBuilder(
+                config: Network.Config.retailConfig,
+                queryParameters: DIKit.resolve()
+            )
+        }
 
         single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
 

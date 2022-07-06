@@ -79,10 +79,11 @@ let package = Package(
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
+        .package(path: "../Errors"),
         .package(path: "../Platform"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -96,8 +97,7 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Localization", package: "Localization"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
@@ -120,6 +120,7 @@ let package = Package(
                 .target(name: "FeatureTransactionDomain"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "FeatureKYCDomain", package: "FeatureKYC"),
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
@@ -133,7 +134,8 @@ let package = Package(
                 .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "UIComponents", package: "UIComponents")
+                .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "ErrorsUI", package: "Errors")
             ]
         ),
         .target(

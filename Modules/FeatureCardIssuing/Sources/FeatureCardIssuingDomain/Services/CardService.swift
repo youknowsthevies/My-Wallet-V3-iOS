@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import Foundation
-import NabuNetworkError
 
 final class CardService: CardServiceAPI {
 
@@ -46,11 +46,11 @@ final class CardService: CardServiceAPI {
         repository.fetchLinkedAccount(for: card)
     }
 
-    func update(account: AccountBalancePair, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
+    func update(account: AccountBalance, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         repository.update(account: account, for: card)
     }
 
-    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalancePair], NabuNetworkError> {
+    func eligibleAccounts(for card: Card) -> AnyPublisher<[AccountBalance], NabuNetworkError> {
         repository.eligibleAccounts(for: card)
     }
 

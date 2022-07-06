@@ -7,6 +7,8 @@ final class SessionStateTests: XCTestCase {
     var app = App()
     var state: Session.State { app.state }
 
+    let userId = "160c4c417f8490658a8396d0283fb0d6fb98c327"
+
     override func setUp() {
         super.setUp()
         app = App()
@@ -95,9 +97,8 @@ final class SessionStateTests: XCTestCase {
     func test_preference() throws {
 
         state.data.preferences = Mock.UserDefaults()
-        let id = "160c4c417f8490658a8396d0283fb0d6fb98c327"
 
-        state.set(blockchain.user.id, to: id)
+        state.set(blockchain.user.id, to: userId)
         state.set(blockchain.session.state.preference.value, to: true)
 
         do {
@@ -106,7 +107,7 @@ final class SessionStateTests: XCTestCase {
             )
             try XCTAssertAnyEqual(state.get(blockchain.session.state.preference.value), true)
             try XCTAssertEqual(
-                object[id, "blockchain.session.state.preference.value"].unwrap() as? Bool,
+                object[userId, "blockchain.session.state.preference.value"].unwrap() as? Bool,
                 true
             )
         }
@@ -117,11 +118,12 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            XCTAssertThrowsError(try state.get(blockchain.session.state.preference.value))
-            try XCTAssertAnyEqual(object[id].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
+            XCTAssertNoThrow(try state.get(blockchain.session.state.preference.value))
+            try XCTAssertAnyEqual(object["ø"].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
+            try XCTAssertAnyEqual(object[userId].unwrap(), ["blockchain.session.state.preference.value": true])
         }
 
-        state.set(blockchain.user.id, to: id)
+        state.set(blockchain.user.id, to: userId)
 
         state.set(blockchain.app.configuration.test.shared.preference, to: true)
 
@@ -131,7 +133,7 @@ final class SessionStateTests: XCTestCase {
             )
             try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[id, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
+                object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }
@@ -144,10 +146,41 @@ final class SessionStateTests: XCTestCase {
             )
             try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
-                object[id, "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
+                object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
             )
         }
+    }
+
+    func test_preference_value_notifies_on_login() {
+
+        let mock = Mock.UserDefaults()
+        mock.set(
+            [
+                userId: [
+                    "blockchain.session.state.preference.value": "signed_in"
+                ],
+                "ø": [
+                    "blockchain.session.state.preference.value": "signed_out"
+                ]
+            ],
+            forKey: "blockchain.session.state"
+        )
+
+        state.data.preferences = mock
+
+        var string: String?
+
+        app.publisher(for: blockchain.session.state.preference.value, as: String.self)
+            .map(\.value)
+            .sink { string = $0 }
+            .tearDown(after: self)
+
+        XCTAssertNil(string)
+
+        state.set(blockchain.user.id, to: userId)
+
+        XCTAssertEqual(string, "signed_in")
     }
 }
 
@@ -168,5 +201,12 @@ extension Mock {
         override func set(_ value: Any?, forKey defaultName: String) {
             store[defaultName] = value
         }
+    }
+}
+
+extension AnyCancellable {
+
+    func tearDown(after testCase: XCTestCase) {
+        testCase.addTeardownBlock(cancel)
     }
 }

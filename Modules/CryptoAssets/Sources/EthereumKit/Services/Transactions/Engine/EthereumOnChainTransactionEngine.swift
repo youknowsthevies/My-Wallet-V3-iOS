@@ -49,6 +49,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount as! EVMCryptoAccount
     }
 
+    private var actionableBalance: Single<MoneyValue> {
+        sourceAccount.actionableBalance.asSingle()
+    }
+
     // MARK: - Init
 
     init(
@@ -106,7 +110,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             walletCurrencyService
                 .displayCurrency
                 .asSingle(),
-            availableBalance
+            actionableBalance
         )
         .map { [network, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
@@ -157,21 +161,21 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         feesInFiat: MoneyValue,
         feeState: FeeState
     ) -> PendingTransaction {
-        let sendDestinationValue = TransactionConfirmation.Model.SendDestinationValue(
+        let sendDestinationValue = TransactionConfirmations.SendDestinationValue(
             value: pendingTransaction.amount
         )
-        let source = TransactionConfirmation.Model.Source(
+        let source = TransactionConfirmations.Source(
             value: sourceAccount.label
         )
-        let destination = TransactionConfirmation.Model.Destination(
+        let destination = TransactionConfirmations.Destination(
             value: transactionTarget.label
         )
-        let feeSelection = TransactionConfirmation.Model.FeeSelection(
+        let feeSelection = TransactionConfirmations.FeeSelection(
             feeState: feeState,
             selectedLevel: pendingTransaction.feeLevel,
             fee: pendingTransaction.feeAmount
         )
-        let feedTotal = TransactionConfirmation.Model.FeedTotal(
+        let feedTotal = TransactionConfirmations.FeedTotal(
             amount: pendingTransaction.amount,
             amountInFiat: amountInFiat,
             fee: pendingTransaction.feeAmount,
@@ -179,11 +183,11 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         )
         return pendingTransaction.update(
             confirmations: [
-                .sendDestinationValue(sendDestinationValue),
-                .source(source),
-                .destination(destination),
-                .feeSelection(feeSelection),
-                .feedTotal(feedTotal)
+                sendDestinationValue,
+                source,
+                destination,
+                feeSelection,
+                feedTotal
             ]
         )
     }
@@ -199,7 +203,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             preconditionFailure("Not an \(network.rawValue) value.")
         }
         return Single.zip(
-            sourceAccount.actionableBalance,
+            actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
         .map { actionableBalance, fee -> PendingTransaction in
@@ -219,14 +223,13 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction,
         newConfirmation: TransactionConfirmation
     ) -> Single<PendingTransaction> {
-        switch newConfirmation {
-        case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
+        if let feeSelection = newConfirmation as? TransactionConfirmations.FeeSelection {
             return updateFeeSelection(
                 pendingTransaction: pendingTransaction,
-                newFeeLevel: value.selectedLevel,
+                newFeeLevel: feeSelection.selectedLevel,
                 customFeeAmount: nil
             )
-        default:
+        } else {
             return defaultDoOptionUpdateRequest(
                 pendingTransaction: pendingTransaction,
                 newConfirmation: newConfirmation
@@ -237,7 +240,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func doValidateAll(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        sourceAccount.actionableBalance
+        actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateSufficientFunds(
                     pendingTransaction: pendingTransaction,

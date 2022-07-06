@@ -18,9 +18,6 @@ extension MetadataState {
     // swiftlint:disable:next line_length
     private static var metadataNodeXPriv = "xprv9usvuXHXKk2VR4igogrz9JXxyCEKhauoy4JbHT5TM8HTebb4RUTEtBqwXx1tQApuwYHT1oBM5CLdYTYvqxD8m7P98JC3LcHKRgPMhXpgaHH"
 
-    // swiftlint:disable:next line_length
-    private static var sharedMetadataNodeXPriv = "xprv9usvuXHbudCrLssoaHAHt2ReANFuQpEaEV6775CkarJtbYZWdQrC3a6Y6Y3L8JyNNdBhVYrR69EDniTFjUyKJdHEpr25eFoUMieKUr87ZgR"
-
     private static var metadataNodes: RemoteMetadataNodes = {
 
         // swiftlint:disable:next force_try
@@ -29,15 +26,7 @@ extension MetadataState {
                 xpriv: metadataNodeXPriv
             )
             .get()
-
-        // swiftlint:disable:next force_try
-        let sharedMetadataNode = try! MetadataKit.PrivateKey
-            .bitcoinKeyFromXPriv(
-                xpriv: sharedMetadataNodeXPriv
-            )
-            .get()
         return RemoteMetadataNodes(
-            sharedMetadataNode: sharedMetadataNode,
             metadataNode: metadataNode
         )
     }()

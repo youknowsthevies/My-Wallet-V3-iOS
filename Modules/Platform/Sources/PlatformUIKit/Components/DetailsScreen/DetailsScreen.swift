@@ -29,7 +29,11 @@ public enum DetailsScreen {
     public enum NavigationBarAppearance {
         case defaultLight
         case defaultDark
-        case custom(leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton, barStyle: Screen.Style.Bar)
+        case custom(
+            leading: Screen.Style.LeadingButton,
+            trailing: Screen.Style.TrailingButton,
+            barStyle: Screen.Style.Bar
+        )
         case hidden
     }
 }

@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import MoneyKit
-import NabuNetworkError
 import PlatformKit
 
 /// Use this protocol to fetch limits data specific to an internal use case.

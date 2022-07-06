@@ -24,7 +24,6 @@ public enum CurrencyUpdateError: LocalizedError {
 }
 
 final class SettingsClient: SettingsClientAPI {
-
     /// Enumerates the API methods supported by the wallet settings endpoint.
     enum Method: String {
         case getInfo = "get-info"

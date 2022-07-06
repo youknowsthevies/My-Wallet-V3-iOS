@@ -21,16 +21,8 @@ final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
     func hold(
         walletState: WalletState
     ) -> AnyPublisher<WalletState, Never> {
-        Deferred { [weak self] in
-            Future<WalletState, Never> { promise in
-                self?.walletState.mutate { $0 = walletState }
-                promise(
-                    .success(walletState)
-                )
-            }
-        }
-        .setFailureType(to: Never.self)
-        .eraseToAnyPublisher()
+        self.walletState.mutate { $0 = walletState }
+        return .just(walletState)
     }
 
     func release() {

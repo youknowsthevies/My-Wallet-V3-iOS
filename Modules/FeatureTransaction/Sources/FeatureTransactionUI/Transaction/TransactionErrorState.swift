@@ -1,16 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Errors
 import FeatureOpenBankingDomain
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import MoneyKit
-import NabuNetworkError
-import NetworkError
 import PlatformKit
 import SwiftUI
 import ToolKit
 
-enum TransactionErrorState: Equatable {
+enum TransactionErrorState: Equatable, Error {
     /// The tansaction is valid
     case none
     /// Any other error
@@ -62,63 +62,48 @@ extension TransactionErrorState {
 
 extension TransactionErrorState {
 
-    func analytics(for action: AssetAction) -> ClientEvent? {
-
-        guard self != .none else { return nil }
-
-        let title = recoveryWarningTitle(for: action)
-        let error = title == nil ? "OOPS_ERROR" : label.snakeCase().uppercased()
-        let oops = "Oops! Something went wrong"
-        let action = action.description.snakeCase().uppercased()
-
-        if let nabuError = extract(NabuError.self, from: self) {
-            return ClientEvent.clientError(
-                error: error,
-                networkEndpoint: nil,
-                networkErrorCode: nabuError.code.rawValue.description,
-                networkErrorDescription: nabuError.serverDescription,
-                networkErrorId: nabuError.id,
-                networkErrorType: nabuError.type.rawValue,
-                source: "NABU",
-                title: title.or(oops),
-                action: action
-            )
-        } else if let networkError = extract(NetworkError.self, from: self) {
-            return ClientEvent.clientError(
-                error: error,
-                networkEndpoint: networkError.endpoint,
-                networkErrorCode: networkError.code?.description,
-                networkErrorDescription: networkError.description,
-                networkErrorId: nil,
-                networkErrorType: "NETWORK",
-                source: "NABU",
-                title: title.or(oops),
-                action: action
-            )
-        } else if let openBankingError = extract(OpenBanking.Error.self, from: self) {
-            return ClientEvent.clientError(
-                error: error,
-                networkEndpoint: nil,
-                networkErrorCode: nil,
-                networkErrorDescription: openBankingError.description,
-                networkErrorId: nil,
-                networkErrorType: openBankingError.code,
-                source: "NABU",
-                title: title.or(oops),
-                action: action
+    func ux(action: AssetAction) -> UX.Error {
+        if let error = extract(UX.Error.self, from: self) {
+            return error
+        } else if let error = extract(Nabu.Error.self, from: self), error.ux.isNotNil {
+            return UX.Error(nabu: error)
+        } else if let error = extract(NetworkError.self, from: self).map(Nabu.Error.from), error.ux.isNotNil {
+            return UX.Error(nabu: error)
+        } else if let error = extract(OpenBanking.Error.self, from: self) {
+            let ob = BankState.UI.errors[error, default: .defaultError]
+            return UX.Error(
+                source: error,
+                title: ob.info.title,
+                message: ob.info.subtitle,
+                icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
+                actions: .default
             )
         } else {
-            return ClientEvent.clientError(
-                error: error,
-                networkEndpoint: nil,
-                networkErrorCode: nil,
-                networkErrorDescription: extract(CustomStringConvertible.self, from: self).description,
-                networkErrorId: nil,
-                networkErrorType: label.snakeCase().uppercased(),
-                source: "CLIENT",
-                title: title.or(oops),
-                action: action
+            let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
+            return UX.Error(
+                source: self,
+                title: recoveryWarningTitle(for: action),
+                message: recoveryWarningMessage(for: action),
+                metadata: error?.metadata ?? [:]
             )
         }
+    }
+
+    func analytics(for action: AssetAction) -> ClientEvent? {
+        guard self != .none else { return nil }
+        let error = ux(action: action)
+        let nabu = error.source as? Nabu.Error
+        let network = error.source as? NetworkError
+        return ClientEvent.clientError(
+            error: error.expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
+            networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
+            networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
+            networkErrorDescription: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
+            networkErrorId: nabu?.id,
+            networkErrorType: nabu?.type.rawValue,
+            source: nabu.isNotNil ? "NABU" : "CLIENT",
+            title: error.title,
+            action: action.description.snakeCase().uppercased()
+        )
     }
 }

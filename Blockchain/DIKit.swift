@@ -35,10 +35,14 @@ import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
 import FeatureProductsData
 import FeatureProductsDomain
+import FeatureReferralData
+import FeatureReferralDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureUserDeletionData
+import FeatureUserDeletionDomain
 import FeatureWalletConnectData
 import FirebaseDynamicLinks
 import FirebaseMessaging
@@ -55,8 +59,6 @@ import ToolKit
 import WalletPayloadKit
 
 // MARK: - Settings Dependencies
-
-extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
 
 extension UIApplication: PlatformKit.AppStoreOpening {}
 
@@ -82,13 +84,6 @@ extension DependencyContainer {
     static var blockchain = module {
 
         factory { NavigationRouter() as NavigationRouterAPI }
-
-        single { OnboardingSettings() }
-
-        factory { () -> OnboardingSettingsAPI in
-            let settings: OnboardingSettings = DIKit.resolve()
-            return settings as OnboardingSettingsAPI
-        }
 
         factory { DeepLinkHandler() as DeepLinkHandling }
 
@@ -171,13 +166,6 @@ extension DependencyContainer {
         }
 
         // MARK: ExchangeCoordinator
-
-        factory { ExchangeCoordinator.shared }
-
-        factory { () -> ExchangeCoordinating in
-            let coordinator: ExchangeCoordinator = DIKit.resolve()
-            return coordinator as ExchangeCoordinating
-        }
 
         // MARK: - AuthenticationCoordinator
 
@@ -399,7 +387,6 @@ extension DependencyContainer {
         // so, better have a single instance of this object.
         single { () -> UserAdapterAPI in
             UserAdapter(
-                balanceDataFetcher: BalanceDataFetcher(coincore: DIKit.resolve()),
                 kycTiersService: DIKit.resolve(),
                 paymentMethodsService: DIKit.resolve(),
                 productsService: DIKit.resolve(),
@@ -568,6 +555,12 @@ extension DependencyContainer {
                 walletCryptoService: DIKit.resolve(),
                 parsingService: DIKit.resolve()
             ) as AutoWalletPairingServiceAPI
+        }
+
+        factory { () -> CheckReferralClientAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return CheckReferralClient(networkAdapter: adapter, requestBuilder: builder)
         }
 
         factory { () -> GuidServiceAPI in
@@ -740,11 +733,29 @@ extension DependencyContainer {
             return AsssetProviderService(
                 repository: AssetProviderRepository(
                     client: FeatureNFTData.APIClient(
-                        networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
-                        requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+                        retailNetworkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                        defaultNetworkAdapter: DIKit.resolve(),
+                        retailRequestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                        defaultRequestBuilder: DIKit.resolve()
                     )
                 ),
                 ethereumWalletAddressPublisher: publisher
+            )
+        }
+
+        factory { () -> FeatureNFTDomain.ViewWaitlistRegistrationRepositoryAPI in
+            let emailService: EmailSettingsServiceAPI = DIKit.resolve()
+            let publisher = emailService
+                .emailPublisher
+                .eraseError()
+            return ViewWaitlistRegistrationRepository(
+                client: FeatureNFTData.APIClient(
+                    retailNetworkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    defaultNetworkAdapter: DIKit.resolve(),
+                    retailRequestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                    defaultRequestBuilder: DIKit.resolve()
+                ),
+                emailAddressPublisher: publisher
             )
         }
 
@@ -780,6 +791,25 @@ extension DependencyContainer {
             return NotificationPreferencesRepository(client: client)
         }
 
+        // MARK: Feature Referrals
+
+        factory { () -> ReferralRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = ReferralClientClient(networkAdapter: adapter, requestBuilder: builder)
+            return ReferralRepository(client: client)
+        }
+
+        factory { () -> ReferralServiceAPI in
+            let currencyService: FiatCurrencyServiceAPI = DIKit.resolve()
+            let repository: ReferralRepositoryAPI = DIKit.resolve()
+
+            return ReferralService(
+                repository: repository,
+                currencyService: currencyService
+            )
+        }
+
         // MARK: - Websocket
 
         single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
@@ -805,6 +835,15 @@ extension DependencyContainer {
             ) as AttributionServiceAPI
         }
 
+        // MARK: User Deletion
+
+        factory { () -> UserDeletionRepositoryAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = UserDeletionClient(networkAdapter: adapter, requestBuilder: builder)
+            return UserDeletionRepository(client: client)
+        }
+
         // MARK: Pulse Network Debugging
 
         single {
@@ -824,6 +863,20 @@ extension DependencyContainer {
                 app.publisher(for: flag, as: Bool.self)
                     .prefix(1)
                     .replaceError(with: false)
+            )
+        }
+
+        single { () -> RequestBuilderQueryParameters in
+            let app: AppProtocol = DIKit.resolve()
+            return RequestBuilderQueryParameters(
+                app.publisher(
+                    for: BlockchainNamespace.blockchain.app.configuration.localized.error.override,
+                    as: String.self
+                )
+                .map { result -> [URLQueryItem]? in
+                    try? [URLQueryItem(name: "localisedError", value: result.get().nilIfEmpty)]
+                }
+                .replaceError(with: [])
             )
         }
     }

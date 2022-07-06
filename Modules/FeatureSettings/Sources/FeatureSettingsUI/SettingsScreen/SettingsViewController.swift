@@ -77,6 +77,7 @@ public final class SettingsViewController: BaseScreenViewController {
         tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
         tableView.registerNibCell(SwitchTableViewCell.self, in: .module)
+        tableView.registerNibCell(ReferralTableViewCell.self, in: .module)
         tableView.registerNibCell(ClipboardTableViewCell.self, in: .module)
         tableView.registerNibCell(BadgeTableViewCell.self, in: .platformUIKit)
         tableView.registerNibCell(CommonTableViewCell.self, in: .module)
@@ -116,6 +117,8 @@ public final class SettingsViewController: BaseScreenViewController {
                 }
             case .switch(_, let presenter):
                 cell = self.switchCell(for: indexPath, presenter: presenter)
+            case .refferal(_, let viewModel):
+                cell = self.referralCell(for: indexPath, viewModel: viewModel)
             }
             cell.selectionStyle = .none
             return cell
@@ -203,6 +206,15 @@ extension SettingsViewController: UITableViewDelegate {
     private func badgeCell(for indexPath: IndexPath, presenter: BadgeCellPresenting) -> BadgeTableViewCell {
         let cell = tableView.dequeue(BadgeTableViewCell.self, for: indexPath)
         cell.presenter = presenter
+        return cell
+    }
+
+    private func referralCell(
+        for indexPath: IndexPath,
+        viewModel: ReferralTableViewCellViewModel
+    ) -> ReferralTableViewCell {
+        let cell = tableView.dequeue(ReferralTableViewCell.self, for: indexPath)
+        cell.viewModel = viewModel
         return cell
     }
 }

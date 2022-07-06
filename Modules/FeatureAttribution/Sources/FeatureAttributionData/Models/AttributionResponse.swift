@@ -17,4 +17,10 @@ public struct AttributionResponse: Equatable {
         public let channel: Channel
         public var conversionValue: Int
     }
+
+    public struct Subscribed: Equatable, Codable {
+        public let seqnum: Int
+        public let event: EventType
+        public let channel: Channel
+    }
 }

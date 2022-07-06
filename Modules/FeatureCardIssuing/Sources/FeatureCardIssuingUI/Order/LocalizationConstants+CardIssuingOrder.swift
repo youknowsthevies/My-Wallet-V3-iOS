@@ -7,12 +7,12 @@ extension LocalizationConstants.CardIssuing {
     enum Order {
         enum Intro {
             static let title = NSLocalizedString(
-                "Your Gateway To The Blockchain Debit Card",
+                "Get the Blockchain.com\nVisa Card",
                 comment: "Card Issuing: Order screen title"
             )
 
             static let caption = NSLocalizedString(
-                "A card that lets you spend and earn in crypto right from your Blockchain account.",
+                "Spend your crypto or cash without fees.\nEarn 1% back in crypto.",
                 comment: "Card Issuing: Order screen caption"
             )
 
@@ -39,10 +39,15 @@ extension LocalizationConstants.CardIssuing {
                 )
             }
 
+            static let acceptTerms = NSLocalizedString(
+                "I agree to Blockchain.com's Terms of Service",
+                comment: "Card Issuing: Accept Terms & Conditions"
+            )
+
             enum Button {
                 enum Title {
                     static let details = NSLocalizedString(
-                        "See Card Details",
+                        "See Card Details ->",
                         comment: "Card Issuing: See card details button"
                     )
 
@@ -55,51 +60,40 @@ extension LocalizationConstants.CardIssuing {
         }
 
         enum Details {
-            enum Navigation {
-                static let title = NSLocalizedString(
-                    "Card Details",
-                    comment: "Card Issuing: Card Details title"
-                )
-            }
 
-            enum Benefits {
+            enum Rewards {
                 static let title = NSLocalizedString(
-                    "Card Benefits",
-                    comment: "Card Issuing: Card Benefits Details Section"
+                    "Crypto Rewards",
+                    comment: "Card Issuing: Cashback Rewards title"
                 )
 
-                static let rewards = NSLocalizedString(
-                    "Cashback Rewards",
-                    comment: "Card Issuing: Cashback Rewards"
+                static let description = NSLocalizedString(
+                    "Earn 1% back in crypto rewards on all your purchases.",
+                    comment: "Card Issuing: Cashback Rewards description"
                 )
             }
 
             enum Fees {
                 static let title = NSLocalizedString(
-                    "Fees",
-                    comment: "Card Issuing: Fees Details Section"
+                    "No Fees",
+                    comment: "Card Issuing: Fees item"
                 )
 
-                static let annual = NSLocalizedString(
-                    "Annual Fee",
-                    comment: "Card Issuing: Annual Fee"
-                )
-
-                static let delivery = NSLocalizedString(
-                    "Delivery Fee",
-                    comment: "Card Issuing: Delivery Fee"
-                )
-
-                static let noCharge = NSLocalizedString(
-                    "No Charge",
-                    comment: "Card Issuing: No Charge"
+                static let description = NSLocalizedString(
+                    "No sign up fees. No annual fees. No transaction fees.",
+                    comment: "Card Issuing: Fees description"
                 )
             }
 
-            enum Card {
+            enum Legal {
+                static let navigationTitle = NSLocalizedString(
+                    "Legal Disclosures",
+                    comment: "Card Issuing: Legal Navigation Title"
+                )
+
                 static let title = NSLocalizedString(
-                    "Card",
-                    comment: "Card Issuing: Card Details Section"
+                    "The Legal Stuff",
+                    comment: "Card Issuing: Legal Title"
                 )
 
                 static let contactless = NSLocalizedString(

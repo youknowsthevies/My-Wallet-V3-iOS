@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkError
+import Errors
 
 /// Protocol definition for interacting with the `WalletSettings` object.
 protocol SettingsClientAPI: AnyObject {

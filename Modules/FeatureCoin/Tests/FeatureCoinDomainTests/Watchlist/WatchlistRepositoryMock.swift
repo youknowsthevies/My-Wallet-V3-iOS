@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureCoinDomain
 import Foundation
-import NetworkError
 
 final class WatchlistRepositoryMock: WatchlistRepositoryAPI {
     struct RecordedInvocations {

@@ -30,13 +30,13 @@ extension AnnouncementRecord {
         // MARK: - One Time
 
         case identityVerification
-        case exchange
         case bitpay
         case resubmitDocuments
         case fiatFundsKYC
         case fiatFundsNoKYC
         case cloudBackup
         case interestFunds
+        case viewNFTWaitlist
         case newAsset(code: String)
         case assetRename(code: String)
         case ukEntitySwitch
@@ -76,10 +76,10 @@ extension AnnouncementRecord {
 
             // MARK: - One Time
 
+            case .viewNFTWaitlist:
+                key = "view-nft-waitlist"
             case .identityVerification:
                 key = "cache-identity-verification"
-            case .exchange:
-                key = "cache-pit"
             case .bitpay:
                 key = "cache-bitpay"
             case .resubmitDocuments:

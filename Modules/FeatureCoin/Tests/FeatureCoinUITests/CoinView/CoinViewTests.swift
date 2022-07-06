@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainComponentLibrary
-import BlockchainNamespace
 @testable import FeatureCoinDomain
 @testable import FeatureCoinUI
+
+import BlockchainComponentLibrary
+import BlockchainNamespace
+import Errors
 import SnapshotTesting
 import SwiftUI
 import XCTest
@@ -114,7 +116,7 @@ final class CoinViewTests: XCTestCase {
                         isFavorite: false,
                         graph: .init(
                             interval: .day,
-                            result: .failure(.serverError(.badResponse))
+                            result: .failure(NetworkError.unknown)
                         )
                     ),
                     reducer: coinViewReducer,

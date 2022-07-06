@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Errors
 import FeatureCoinDomain
 import Foundation
-import NetworkError
 
 public struct GraphViewState: Equatable {
     @BindableState var selected: Int?

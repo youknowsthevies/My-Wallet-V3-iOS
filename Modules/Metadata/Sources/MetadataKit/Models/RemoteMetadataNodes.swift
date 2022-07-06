@@ -3,7 +3,6 @@
 import Foundation
 
 public struct RemoteMetadataNodes: Equatable {
-    let sharedMetadataNode: PrivateKey
     let metadataNode: PrivateKey
 }
 
@@ -11,8 +10,7 @@ extension RemoteMetadataNodes {
 
     var payload: RemoteMetadataNodesPayload {
         RemoteMetadataNodesPayload(
-            metadata: metadataNode.xpriv,
-            mdid: sharedMetadataNode.xpriv
+            metadata: metadataNode.xpriv
         )
     }
 }

@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BigInt
+import Errors
 import MoneyKit
 
 public struct SellOrderDetails {
@@ -22,6 +23,7 @@ public struct SellOrderDetails {
 
     public let state: State
     public let error: String?
+    public let ux: Nabu.Error.UX?
 
     // MARK: - Setup
 
@@ -68,5 +70,6 @@ public struct SellOrderDetails {
         }
 
         error = response.paymentError ?? response.attributes?.error
+        ux = response.ux
     }
 }

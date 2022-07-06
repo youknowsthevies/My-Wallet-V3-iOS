@@ -8,8 +8,5 @@ public enum ExchangeAccountRepositoryError: Error {
 }
 
 public protocol ExchangeAccountRepositoryAPI {
-    var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> { get }
-
-    func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError>
     func syncDepositAddressesIfLinked() -> AnyPublisher<Void, ExchangeAccountRepositoryError>
 }

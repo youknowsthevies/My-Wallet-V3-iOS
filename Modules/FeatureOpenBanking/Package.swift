@@ -44,6 +44,7 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
+        .package(path: "../Errors"),
         .package(path: "../Network"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -56,7 +57,8 @@ let package = Package(
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "Errors", package: "Errors")
             ]
         ),
         .target(
@@ -78,7 +80,8 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
-                .product(name: "UIComponents", package: "UIComponents")
+                .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "ErrorsUI", package: "Errors")
             ]
         ),
         .target(

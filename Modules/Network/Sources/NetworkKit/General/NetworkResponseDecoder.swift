@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Errors
 import Foundation
-import NetworkError
 import ToolKit
 
 public protocol NetworkResponseDecoderAPI {
@@ -30,7 +30,7 @@ public protocol NetworkResponseDecoderAPI {
     ) -> Result<ResponseType, NetworkError>
 
     func decode<ErrorResponseType: FromNetworkErrorConvertible>(
-        error: ServerErrorResponse,
+        error: NetworkError,
         for request: NetworkRequest
     ) -> ErrorResponseType
 
@@ -41,18 +41,18 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     // MARK: - Properties
 
-    public static let defaultJSONDecoder: JSONDecoder = {
+    public static let defaultJSONDecoder: () -> JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
-    }()
+    }
 
-    private let jsonDecoder: JSONDecoder
+    private let makeJSONDecoder: () -> JSONDecoder
 
     // MARK: - Setup
 
-    public init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
-        self.jsonDecoder = jsonDecoder
+    public init(_ makeJSONDecoder: @escaping () -> JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
+        self.makeJSONDecoder = makeJSONDecoder
     }
 
     // MARK: - NetworkResponseDecoderAPI
@@ -67,7 +67,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             for: request,
             emptyPayloadHandler: { serverResponse in
                 guard serverResponse.response?.statusCode == 204 else {
-                    return .failure(.payloadError(.emptyData))
+                    return .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
                 }
                 return .success(nil)
             }
@@ -84,7 +84,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             for: request,
             emptyPayloadHandler: { serverResponse in
                 guard serverResponse.response?.statusCode == 204 else {
-                    return .failure(.payloadError(.emptyData))
+                    return .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
                 }
                 return .success(nil)
             }
@@ -108,38 +108,28 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             response: response,
             for: request,
             emptyPayloadHandler: { _ in
-                .failure(.payloadError(.emptyData))
+                .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
             }
         )
     }
 
     public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
-        error: ServerErrorResponse,
+        error: NetworkError,
         for request: NetworkRequest
     ) -> ErrorResponseType {
         guard let payload = error.payload else {
-            return ErrorResponseType.from(.payloadError(.emptyData))
+            return ErrorResponseType.from(error)
         }
-        let decodedErrorResponse: ErrorResponseType
+        let errorResponse: ErrorResponseType
         do {
-            decodedErrorResponse = try jsonDecoder.decode(ErrorResponseType.self, from: payload)
-        } catch let decodingError {
-            let rawPayload = String(data: payload, encoding: .utf8) ?? ""
-            let errorMessage = debugErrorMessage(
-                for: decodingError,
-                response: error.response,
-                responseType: ErrorResponseType.self,
-                request: request,
-                rawPayload: rawPayload
-            )
-            Logger.shared.error(errorMessage)
-            // TODO: Fix decoding errors then uncomment this: IOS-4501
-            // if BuildFlag.isInternal {
-            //     fatalError(errorMessage)
-            // }
-            return ErrorResponseType.from(.payloadError(.badData(rawPayload: rawPayload)))
+            let decoder = makeJSONDecoder()
+            decoder.userInfo[.networkURLRequest] = request.urlRequest
+            decoder.userInfo[.networkHTTPResponse] = error.response
+            errorResponse = try decoder.decode(ErrorResponseType.self, from: payload)
+        } catch _ {
+            return ErrorResponseType.from(error)
         }
-        return decodedErrorResponse
+        return errorResponse
     }
 
     public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
@@ -172,7 +162,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let message = String(data: payload, encoding: .utf8) ?? ""
             return .success(message as! ResponseType)
         }
-        return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
+        return Result { try self.makeJSONDecoder().decode(ResponseType.self, from: payload) }
             .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
@@ -187,7 +177,12 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 // if BuildFlag.isInternal {
                 //     fatalError(errorMessage)
                 // }
-                return .failure(.payloadError(.badData(rawPayload: rawPayload)))
+                return .failure(
+                    NetworkError(
+                        request: request.urlRequest,
+                        type: .payloadError(.badData(rawPayload: rawPayload))
+                    )
+                )
             }
     }
 
@@ -202,10 +197,15 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         \n----------------------
         Payload decoding error.
           Error: '\(String(describing: ResponseType.self))': \(decodingError).
-            URL: \(response?.url!.absoluteString),
+            URL: \(response?.url?.absoluteString ?? ""),
         Request: \(request),
         Payload: \(rawPayload)
         ======================\n
         """
     }
+}
+
+extension CodingUserInfoKey {
+    public static let networkURLRequest = CodingUserInfoKey(rawValue: "com.blockchain.network.url.request")!
+    public static let networkHTTPResponse = CodingUserInfoKey(rawValue: "com.blockchain.network.http.response")!
 }

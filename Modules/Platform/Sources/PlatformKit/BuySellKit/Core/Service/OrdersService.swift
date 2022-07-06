@@ -3,7 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
-import NabuNetworkError
+import Errors
 import RxRelay
 import RxSwift
 import RxToolKit
