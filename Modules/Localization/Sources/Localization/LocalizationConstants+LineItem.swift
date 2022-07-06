@@ -172,6 +172,7 @@ extension LocalizationConstants.LineItem.Transactional {
     public static let alias = NSLocalizedString("Alias", comment: "Wire Transfer Line Item: Account Alias Label")
     public static let aliasHelp = NSLocalizedString("The banking alias allows you to identify your bank account much easier than with the 22 CBU digits.", comment: "Wire Transfer Line Item: Account Alias Help Label")
 
+    public static let accountType = NSLocalizedString("Account Type", comment: "Wire Transfer Line Item: Account Type Label")
     public static let accountHolder = NSLocalizedString("Account Holder", comment: "Wire Transfer Line Item: Account Holder Label")
     public static let CUIT = NSLocalizedString("CUIT", comment: "Wire Transfer Line Item: Account CUIT Label")
     public static let CBU = NSLocalizedString("CBU", comment: "Wire Transfer Line Item: Account CBU Label")

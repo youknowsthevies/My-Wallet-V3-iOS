@@ -49,6 +49,7 @@ public struct PaymentAccount {
         let agent: Agent
         let currency: CurrencyType
         let state: PaymentAccountProperty.State
+        let partner: String?
 
         enum CodingKeys: String, CodingKey {
             case currency
@@ -56,6 +57,7 @@ public struct PaymentAccount {
             case agent
             case state
             case address
+            case partner
         }
 
         public init(from decoder: Decoder) throws {
@@ -66,6 +68,7 @@ public struct PaymentAccount {
             address = try values.decode(String.self, forKey: .address)
             agent = try values.decode(Agent.self, forKey: .agent)
             state = try values.decode(PaymentAccountProperty.State.self, forKey: .state)
+            partner = try values.decodeIfPresent(String.self, forKey: .partner)
         }
 
         init(
@@ -73,13 +76,15 @@ public struct PaymentAccount {
             address: String,
             agent: Agent,
             currency: CurrencyType,
-            state: PaymentAccountProperty.State
+            state: PaymentAccountProperty.State,
+            partner: String? = nil
         ) {
             self.id = id
             self.address = address
             self.agent = agent
             self.currency = currency
             self.state = state
+            self.partner = partner
         }
 
         public var account: PaymentAccount {
@@ -120,6 +125,7 @@ public struct PaymentAccount {
     public let agent: Agent
     public let currency: CurrencyType
     public let state: PaymentAccountProperty.State
+    public let partner: String?
 
     init(response: Response) {
         id = response.id
@@ -127,5 +133,6 @@ public struct PaymentAccount {
         agent = .init(agent: response.agent)
         currency = response.currency
         state = response.state
+        partner = response.partner
     }
 }

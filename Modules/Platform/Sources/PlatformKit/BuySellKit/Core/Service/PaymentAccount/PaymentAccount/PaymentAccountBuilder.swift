@@ -10,6 +10,7 @@ enum PaymentAccountBuilder {
         PaymentAccountGBP.self,
         PaymentAccountEUR.self,
         PaymentAccountUSD.self,
+        PaymentAccountUSDBIND.self,
         PaymentAccountARS.self
     ]
 
