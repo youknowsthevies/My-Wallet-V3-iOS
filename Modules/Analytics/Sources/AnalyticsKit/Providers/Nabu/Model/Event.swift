@@ -12,19 +12,6 @@ struct Event: Codable, Equatable {
         originalTimestamp = Date()
         name = title
         type = .event
-        self.properties = properties?.compactMapValues { value -> JSONValue? in
-            switch value {
-            case let value as String:
-                return .string(value)
-            case let value as Int:
-                return .int(value)
-            case let value as Double:
-                return .double(value)
-            case let value as Bool:
-                return .bool(value)
-            default:
-                return nil
-            }
-        }
+        self.properties = properties?.compactMapValues(JSONValue.init)
     }
 }

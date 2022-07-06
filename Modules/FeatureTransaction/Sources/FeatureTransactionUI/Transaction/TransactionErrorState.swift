@@ -103,7 +103,8 @@ extension TransactionErrorState {
             networkErrorType: nabu?.type.rawValue,
             source: nabu.isNotNil ? "NABU" : "CLIENT",
             title: error.title,
-            action: action.description.snakeCase().uppercased()
+            action: action.description.snakeCase().uppercased(),
+            category: error.categories
         )
     }
 }
