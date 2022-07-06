@@ -13,8 +13,9 @@ extension Tag {
 
 extension Tag.Reference {
 
-    public func `in`(app: AppProtocol) -> Tag.Reference {
-        Tag.Reference(tag, to: context, in: app)
+    public func `in`(_ app: AppProtocol) -> Tag.Reference {
+        if ObjectIdentifier(app) == self.app { return self }
+        return Tag.Reference(tag, to: context, in: app)
     }
 
     public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
@@ -36,6 +37,7 @@ extension Tag {
         public let string: String
 
         private var error: Swift.Error?
+        private var app: ObjectIdentifier?
 
         @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
             do {
@@ -51,7 +53,7 @@ extension Tag {
             self.context = context
             indices = [:]
             string = tag.id
-            error = tag.template.indices.isNotEmpty
+            error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
                 ? tag.error(message: "Missing indices for ref to \(tag.id)")
                 : nil
         }
@@ -66,6 +68,7 @@ extension Tag {
                     ids
                 )
             )
+            self.app = app.map(ObjectIdentifier.init)
             self.indices = indices
             string = Self.id(
                 tag: tag,
@@ -115,7 +118,11 @@ extension Tag.Reference {
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
+    public static let volatileIndices: Set<Tag> = [
+        blockchain.user.id[]
+    ]
+
+    public func id(ignoring: Set<Tag> = Tag.Reference.volatileIndices) -> String {
         Self.id(
             tag: tag,
             to: indices,
@@ -126,7 +133,7 @@ extension Tag.Reference {
     fileprivate static func id(
         tag: Tag,
         to indices: Indices,
-        ignoring: Set<Tag> = []
+        ignoring: Set<Tag> = Tag.Reference.volatileIndices
     ) -> String {
         var ignoring = ignoring
         if tag.is(blockchain.db.collection.id) {

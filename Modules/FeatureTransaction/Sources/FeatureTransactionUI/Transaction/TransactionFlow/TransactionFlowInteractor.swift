@@ -816,18 +816,16 @@ extension TransactionFlowInteractor {
                     }
 
                     switch action {
+                    case .fatalTransactionError:
+                        state.set(blockchain.ux.transaction.source.target.previous.did.error, to: true)
                     case .showCheckout:
                         guard let value = tx.pendingTransaction?.amount else { break }
 
                         let amount = try value.amount.json()
-                        let previous = try blockchain.ux.transaction.source[
-                            state.get(blockchain.ux.transaction.source.id)
-                        ].target[
-                            state.get(blockchain.ux.transaction.source.target.id)
-                        ].previous
 
-                        state.set(previous.input.amount, to: amount)
-                        state.set(previous.input.currency.code, to: value.currency.code)
+                        state.clear(blockchain.ux.transaction.source.target.previous.did.error)
+                        state.set(blockchain.ux.transaction.source.target.previous.input.amount, to: amount)
+                        state.set(blockchain.ux.transaction.source.target.previous.input.currency.code, to: value.currency.code)
 
                         if intent == .buy, let source = tx.source {
                             state.set(blockchain.ux.transaction.previous.payment.method.id, to: source.identifier)

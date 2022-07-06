@@ -15,7 +15,7 @@ public enum Media: View {
     @ViewBuilder public var body: some View {
         switch self {
         case .image(let image):
-            image
+            image.resizable()
         case .svg(let svg):
             svg
         case .gif(let gif):

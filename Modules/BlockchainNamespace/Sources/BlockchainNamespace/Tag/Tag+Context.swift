@@ -60,7 +60,11 @@ extension Tag.Context {
     }
 
     public func `in`(app: AppProtocol) -> Tag.Context {
-        Tag.Context(dictionary.mapKeys { $0.in(app: app) })
+        Tag.Context(dictionary.mapKeys { $0.in(app) })
+    }
+
+    public func mapKeys<A>(_ transform: (Tag.Reference) throws -> A) rethrows -> [A: Value] {
+        try reduce(into: [:]) { a, e in try a[transform(e.key)] = e.value }
     }
 }
 

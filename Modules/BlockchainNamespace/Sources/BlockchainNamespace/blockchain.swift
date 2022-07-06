@@ -2996,8 +2996,20 @@ public final class L_blockchain_ux_transaction_source_target_previous: L, I_bloc
 }
 public protocol I_blockchain_ux_transaction_source_target_previous: I {}
 public extension I_blockchain_ux_transaction_source_target_previous {
+	var `did`: L_blockchain_ux_transaction_source_target_previous_did { .init("\(__).did") }
 	var `input`: L_blockchain_ux_transaction_source_target_previous_input { .init("\(__).input") }
 }
+public final class L_blockchain_ux_transaction_source_target_previous_did: L, I_blockchain_ux_transaction_source_target_previous_did {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.previous.did", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_previous_did: I {}
+public extension I_blockchain_ux_transaction_source_target_previous_did {
+	var `error`: L_blockchain_ux_transaction_source_target_previous_did_error { .init("\(__).error") }
+}
+public final class L_blockchain_ux_transaction_source_target_previous_did_error: L, I_blockchain_ux_transaction_source_target_previous_did_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.previous.did.error", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_previous_did_error: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_source_target_previous_input: L, I_blockchain_ux_transaction_source_target_previous_input {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.previous.input", comment: "") }
 }

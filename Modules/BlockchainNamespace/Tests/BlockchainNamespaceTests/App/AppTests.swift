@@ -45,6 +45,24 @@ final class AppTests: XCTestCase {
 
         XCTAssertEqual(count[blockchain.ux.type.analytics.event], 4)
     }
+
+    func test_ref_no_id_then_update_when_session_value_arrives() throws {
+
+        var token: String?
+        let subscription = app.publisher(for: blockchain.user.token.firebase.installation, as: String.self)
+            .sink { token = $0.value }
+        addTeardownBlock(subscription.cancel)
+
+        XCTAssertNil(token)
+
+        app.state.set(blockchain.user["Oliver"].token.firebase.installation, to: "Token")
+
+        XCTAssertNil(token)
+
+        app.state.set(blockchain.user.id, to: "Oliver")
+
+        XCTAssertEqual(token, "Token")
+    }
 }
 
 extension App {

@@ -178,6 +178,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             ) else { return }
 
             let previous = blockchain.ux.transaction.source.target.previous
+
+            guard try await app.get(previous.did.error) else { return }
+
             let money = try await MoneyValue(
                 amount: app.get(previous.input.amount),
                 currency: CurrencyType(code: app.get(previous.input.currency.code))

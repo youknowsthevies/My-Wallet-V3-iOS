@@ -35,6 +35,7 @@ public struct Metadata {
 extension Metadata {
 
     public enum Source {
+        case app
         case undefined
         case state
         case remoteConfiguration

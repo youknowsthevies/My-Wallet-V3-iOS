@@ -124,7 +124,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        let reference = event.key().in(app: self)
+        let reference = event.key().in(self)
         state.set(reference, to: value)
         post(
             event: event,
@@ -143,7 +143,7 @@ extension AppProtocol {
     ) {
         post(
             event: event,
-            reference: event.key().in(app: self),
+            reference: event.key().in(self),
             context: context,
             file: file,
             line: line
@@ -221,7 +221,7 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
-        events.filter(tags.map { $0.key().in(app: self) })
+        events.filter(tags.map { $0.key().in(self) })
             .eraseToAnyPublisher()
     }
 }
@@ -244,14 +244,47 @@ extension AppProtocol {
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let ref = event.key().in(app: self)
-        switch ref.tag {
-        case blockchain.session.state.value, blockchain.db.collection.id:
-            return state.publisher(for: ref)
-        case blockchain.session.configuration.value:
-            return remoteConfiguration.publisher(for: ref)
-        default:
-            return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
+
+        func _publisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+            switch ref.tag {
+            case blockchain.session.state.value, blockchain.db.collection.id:
+                return state.publisher(for: ref)
+            case blockchain.session.configuration.value:
+                return remoteConfiguration.publisher(for: ref)
+            default:
+                return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
+                    .eraseToAnyPublisher()
+            }
+        }
+
+        let ref = event.key().in(self)
+        let ids = ref.context.mapKeys(\.tag)
+
+        do {
+            let dynamicKeys = try ref.tag.template.indices.set
+                .subtracting(ids.keys.map(\.id))
+                .map { try Tag(id: $0, in: language) }
+            guard dynamicKeys.isNotEmpty else {
+                return try _publisher(ref.validated())
+            }
+            let context = Tag.Context(ids)
+            return try dynamicKeys.map { try $0.ref(to: context, in: self).validated() }
+                .map(_publisher)
+                .combineLatest()
+                .flatMap { output -> AnyPublisher<FetchResult, Never> in
+                    do {
+                        let values = try output.map { try $0.decode(String.self).get() }
+                        let indices = zip(dynamicKeys, values).reduce(into: [:]) { $0[$1.0] = $1.1 }
+                        return try _publisher(ref.ref(to: context + Tag.Context(indices)).validated())
+                            .eraseToAnyPublisher()
+                    } catch {
+                        return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
+                            .eraseToAnyPublisher()
+                    }
+                }
+                .eraseToAnyPublisher()
+        } catch {
+            return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
                 .eraseToAnyPublisher()
         }
     }

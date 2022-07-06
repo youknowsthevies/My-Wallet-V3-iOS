@@ -755,6 +755,10 @@ blockchain:
 				target:
 				+ blockchain.db.collection
 					previous:
+						did:
+							error:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
 						input:
 							amount:
 							+ blockchain.db.type.bigint
