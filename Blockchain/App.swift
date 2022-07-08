@@ -191,7 +191,9 @@ private func eraseWalletForUITestsIfNeeded() {
         // This behaviour happens even on non-debug builds, this is necessary because our UI tests
         // run on real devices with 'release-staging' builds.
         WalletManager.shared.forgetWallet()
-        BlockchainSettings.App.shared.clear()
+        UserDefaults.standard.removePersistentDomain(
+            forName: MainBundleProvider.mainBundle.bundleIdentifier!
+        )
     }
 }
 
