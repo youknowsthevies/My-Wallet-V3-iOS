@@ -966,6 +966,8 @@ extension FiatCurrency {
             return LocalizationConstants.Fiat.eur
         case .ARS:
             return LocalizationConstants.Fiat.ars
+        case .BRL:
+            return LocalizationConstants.Fiat.brl
         default:
             return currentLocale.localizedString(forCurrencyCode: code) ?? ""
         }
@@ -1056,7 +1058,7 @@ extension FiatCurrency {
     static let achCurrencies: [FiatCurrency] = [.USD]
 
     /// The list of fiat currencies supported for bank wire transfers.
-    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD, .ARS]
+    static let bankWireSupported: [FiatCurrency] = MoneyKit.allEnabledFiatCurrencies
 
     /// Whether the current fiat currency is supported for ACH.
     public var isACHSupportedCurrency: Bool {
