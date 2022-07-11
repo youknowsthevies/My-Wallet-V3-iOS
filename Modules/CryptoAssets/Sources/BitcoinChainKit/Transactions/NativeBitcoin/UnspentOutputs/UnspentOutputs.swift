@@ -3,15 +3,15 @@
 import BigInt
 import PlatformKit
 
-struct UnspentOutputs: Equatable {
+public struct UnspentOutputs: Equatable {
 
     let outputs: [UnspentOutput]
 }
 
 extension UnspentOutputs {
-    init(networkResponse: UnspentOutputsResponse) {
+    init(networkResponse: UnspentOutputsResponse, coin: BitcoinChainCoin) {
         outputs = networkResponse
             .unspent_outputs
-            .map { UnspentOutput(response: $0) }
+            .map { UnspentOutput(response: $0, coin: coin) }
     }
 }

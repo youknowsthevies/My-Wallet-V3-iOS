@@ -32,6 +32,8 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     private let accountModelProvider: AccountProviderAPI
     private let cardService: CardServiceAPI
     private let productService: ProductsServiceAPI
+    private let residentialAddressService: ResidentialAddressServiceAPI
+    private let transactionService: TransactionServiceAPI
     private let supportRouter: SupportRouterAPI
     private let topUpRouter: TopUpRouterAPI
 
@@ -39,12 +41,16 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         accountModelProvider: AccountProviderAPI,
         cardService: CardServiceAPI,
         productService: ProductsServiceAPI,
+        residentialAddressService: ResidentialAddressServiceAPI,
+        transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
         topUpRouter: TopUpRouterAPI
     ) {
         self.accountModelProvider = accountModelProvider
         self.cardService = cardService
         self.productService = productService
+        self.residentialAddressService = residentialAddressService
+        self.transactionService = transactionService
         self.supportRouter = supportRouter
         self.topUpRouter = topUpRouter
     }
@@ -71,7 +77,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             mainQueue: .main,
             cardService: cardService,
             productsService: productService,
-            address: address,
+            residentialAddressService: residentialAddressService,
             onComplete: onComplete
         )
 
@@ -104,6 +110,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             cardService: cardService,
             mainQueue: .main,
             productsService: productService,
+            transactionService: transactionService,
             supportRouter: supportRouter,
             topUpRouter: topUpRouter,
             close: onComplete

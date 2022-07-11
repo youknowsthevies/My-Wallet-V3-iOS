@@ -22,6 +22,7 @@ extension Session {
         private var fetch: ((AppProtocol, Bool) -> Void)?
         private var bag: Set<AnyCancellable> = []
         private var preferences: Preferences
+        private unowned var app: AppProtocol!
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
@@ -29,6 +30,7 @@ extension Session {
             default defaultValue: Default = [:]
         ) {
             self.preferences = preferences
+            let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
                 Task(priority: .userInitiated) {
                     let cached = preferences.object(
@@ -52,10 +54,9 @@ extension Session {
                         _ = try await remote.fetch(withExpirationDuration: expiration)
                         _ = try await remote.activate()
                     } catch {
-                        print("😱", "unable to fetch remote configuration", error)
-                        #if DEBUG
-                        fatalError(String(describing: error))
-                        #endif
+                        print("😱", "unable to fetch remote configuration, retrying...", error)
+                        try await backoff.next()
+                        self.fetch?(app, isStale)
                     }
 
                     let keys = remote.allKeys(from: .remote)
@@ -90,6 +91,7 @@ extension Session {
         }
 
         func start(app: AppProtocol) {
+            self.app = app
             app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
                 .replaceError(with: false)
                 .scan((stale: false, count: 0)) { ($1, $0.count + 1) }
@@ -101,8 +103,12 @@ extension Session {
                 .store(in: &bag)
         }
 
+        private func key(_ event: Tag.Event) -> Tag.Reference {
+            event.key().in(app)
+        }
+
         public func override(_ event: Tag.Event, with value: Any) {
-            fetched[event.key.idToFirebaseConfigurationKeyImportant()] = value
+            fetched[key(event).idToFirebaseConfigurationKeyImportant()] = value
         }
 
         public func clear() {
@@ -112,11 +118,11 @@ extension Session {
         }
 
         public func clear(_ event: Tag.Event) {
-            fetched.removeValue(forKey: event.key.idToFirebaseConfigurationKeyImportant())
+            fetched.removeValue(forKey: key(event).idToFirebaseConfigurationKeyImportant())
         }
 
         public func get(_ event: Tag.Event) throws -> Any? {
-            let key = event.key
+            let key = key(event)
             guard isSynchronized else { throw Error.notSynchronized }
             guard let value = fetched[firstOf: key.firebaseConfigurationKeys] else {
                 throw Error.keyDoesNotExist(key)
@@ -133,7 +139,7 @@ extension Session {
         }
 
         public func result(for event: Tag.Event) -> FetchResult {
-            let key = event.key
+            let key = key(event)
             guard isSynchronized else {
                 return .error(.other(Error.notSynchronized), key.metadata(.remoteConfiguration))
             }
@@ -148,8 +154,8 @@ extension Session {
                 .combineLatest(_fetched)
                 .filter(\.0)
                 .map(\.1)
-                .flatMap { configuration -> Just<FetchResult> in
-                    let key = event.key
+                .flatMap { [key] configuration -> Just<FetchResult> in
+                    let key = key(event)
                     switch configuration[firstOf: key.firebaseConfigurationKeys] {
                     case let value?:
                         return Just(.value(value as Any, key.metadata(.remoteConfiguration)))
@@ -288,7 +294,28 @@ extension Session.RemoteConfiguration {
     public struct Default: ExpressibleByDictionaryLiteral {
         let dictionary: [Tag.Reference: Any?]
         public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
-            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key, $0.1) })
+            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
         }
+    }
+}
+
+private actor ExponentialBackoff {
+
+    var n = 0
+    var rng = SystemRandomNumberGenerator()
+    let unit: TimeInterval
+
+    init(unit: TimeInterval = 0.5) {
+        self.unit = unit
+    }
+
+    func next() async throws {
+        n += 1
+        try await Task.sleep(
+            nanoseconds: UInt64(TimeInterval.random(
+                in: unit...unit * pow(2, TimeInterval(n - 1)),
+                using: &rng
+            ) * 1_000_000)
+        )
     }
 }

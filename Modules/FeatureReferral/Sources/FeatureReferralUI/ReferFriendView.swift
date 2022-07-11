@@ -7,6 +7,8 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
+typealias LocalizedStrings = LocalizationConstants.Referrals.ReferralScreen
+
 public struct ReferFriendView: View {
     let store: Store<ReferFriendState, ReferFriendAction>
     @Environment(\.presentationMode) var presentationMode
@@ -46,7 +48,11 @@ public struct ReferFriendView: View {
             isPresented: viewStore
                 .binding(\.$isShareModalPresented),
             content: {
-                ActivityViewController(itemsToShare: [viewStore.referralInfo.code])
+                let itemtoShare = ActivityItemSource(
+                    title: LocalizedStrings.shareTitle,
+                    text: LocalizedStrings.shareMessage(viewStore.referralInfo.code)
+                )
+                ActivityViewController(itemsToShare: [itemtoShare])
             }
         )
     }
@@ -84,7 +90,7 @@ extension ReferFriendView {
 
     private var referalCodeSection: some View {
         VStack(spacing: 6, content: {
-            Text(LocalizationConstants.Referrals.ReferralScreen.referalCodeLabel)
+            Text(LocalizedStrings.referalCodeLabel)
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
 
@@ -94,8 +100,8 @@ extension ReferFriendView {
                     .fontWeight(.medium)
                     .kerning(15)
                 Button(viewStore.state.codeIsCopied ?
-                    LocalizationConstants.Referrals.ReferralScreen.copiedLabel :
-                    LocalizationConstants.Referrals.ReferralScreen.copyLabel) {
+                    LocalizedStrings.copiedLabel :
+                    LocalizedStrings.copyLabel) {
                         viewStore.send(.onCopyTapped)
                     }
                     .foregroundColor(Color.WalletSemantic.primary)
@@ -110,7 +116,7 @@ extension ReferFriendView {
 
     private var stepsSection: some View {
         VStack(spacing: Spacing.padding4) {
-            Text(LocalizationConstants.Referrals.ReferralScreen.stepsTitleLabel)
+            Text(LocalizedStrings.stepsTitleLabel)
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
             VStack(alignment: .leading, spacing: Spacing.padding2, content: {
@@ -130,7 +136,7 @@ extension ReferFriendView {
     }
 
     private var shareButton: some View {
-        PrimaryButton(title: LocalizationConstants.Referrals.ReferralScreen.shareButton) {
+        PrimaryButton(title: LocalizedStrings.shareButton) {
             viewStore.send(.onShareTapped)
         }
         .frame(maxWidth: .infinity)
@@ -145,19 +151,6 @@ extension ReferFriendView {
             .padding(12)
             .background(Color.WalletSemantic.blueBG)
             .clipShape(Circle())
-    }
-}
-
-struct ReferFriendView_Previews: PreviewProvider {
-    static var previews: some View {
-        ReferFriendView(store: .init(
-            initialState: .init(
-                codeIsCopied: false,
-                referralInfo: MockGenerator.referral
-            ),
-            reducer: ReferFriendModule.reducer,
-            environment: ReferFriendEnvironment(mainQueue: .main)
-        ))
     }
 }
 
@@ -180,4 +173,36 @@ struct ActivityViewController: UIViewControllerRepresentable {
         _ uiViewController: UIActivityViewController,
         context: UIViewControllerRepresentableContext<ActivityViewController>
     ) {}
+}
+
+class ActivityItemSource: NSObject, UIActivityItemSource {
+    var title: String
+    var text: String
+
+    init(title: String, text: String) {
+        self.title = title
+        self.text = text
+        super.init()
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        text
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        itemForActivityType activityType: UIActivity.ActivityType?
+    ) -> Any? {
+        text
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        subjectForActivityType activityType: UIActivity.ActivityType?
+    ) -> String {
+        if activityType == .mail {
+            return title
+        }
+        return ""
+    }
 }

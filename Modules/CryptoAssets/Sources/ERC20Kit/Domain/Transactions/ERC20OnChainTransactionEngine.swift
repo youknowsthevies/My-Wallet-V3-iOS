@@ -356,6 +356,7 @@ extension ERC20OnChainTransactionEngine {
                     fee: pendingTransaction.feeAmount
                 )
             }
+            .asSingle()
     }
 
     private func fiatAmountAndFees(

@@ -151,7 +151,7 @@ extension Error {
 
         guard let error = self as? NabuNetworkError else {
             return {
-                viewStore.send(.setStep(.creating))
+                viewStore.send(.createCard)
             }
         }
 
@@ -166,7 +166,7 @@ extension Error {
             }
         default:
             return {
-                viewStore.send(.setStep(.creating))
+                viewStore.send(.createCard)
             }
         }
     }

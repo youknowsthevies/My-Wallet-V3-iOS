@@ -158,7 +158,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         Single
             .zip(
                 fiatAmountAndFees(from: pendingTransaction),
-                getFeeState(pendingTransaction: pendingTransaction)
+                getFeeState(pendingTransaction: pendingTransaction).asSingle()
             )
             .map(weak: self) { (self, payload) -> PendingTransaction in
                 let ((amount, fees), feeState) = payload
@@ -378,6 +378,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private func validateSourceAddress() -> Completable {
         sourceAccount
             .receiveAddress
+            .asSingle()
             .map { [walletConnectTarget] receiveAddress in
                 guard receiveAddress.address.caseInsensitiveCompare(walletConnectTarget.transaction.from) == .orderedSame else {
                     throw TransactionValidationFailure(state: .invalidAddress)
@@ -488,12 +489,12 @@ extension EthereumSendTransactionTarget {
 extension PendingTransaction {
 
     fileprivate var gasPrice: BigUInt! {
-        get { engineState[.gasPrice] as? BigUInt }
-        set { engineState[.gasPrice] = newValue }
+        get { engineState.value[.gasPrice] as? BigUInt }
+        set { engineState.mutate { $0[.gasPrice] = newValue } }
     }
 
     fileprivate var gasLimit: BigUInt! {
-        get { engineState[.gasLimit] as? BigUInt }
-        set { engineState[.gasLimit] = newValue }
+        get { engineState.value[.gasLimit] as? BigUInt }
+        set { engineState.mutate { $0[.gasLimit] = newValue } }
     }
 }

@@ -72,9 +72,13 @@ private struct BitcoinChainBalances {
     let total: CryptoValue
 
     init(response: BitcoinChainBalanceResponse, coin: BitcoinChainCoin) {
-        total = (try? response.values
-            .map { item in .create(minor: item.finalBalance, currency: coin.cryptoCurrency) }
-            .reduce(.zero(currency: coin.cryptoCurrency), +)
-        ) ?? .zero(currency: coin.cryptoCurrency)
+        let balances = response.values.map(\.finalBalance)
+        let moneyBalances = balances.map { amount in
+            CryptoValue.create(minor: amount, currency: coin.cryptoCurrency)
+        }
+        guard let total = try? moneyBalances.reduce(.zero(currency: coin.cryptoCurrency), +) else {
+            impossible()
+        }
+        self.total = total
     }
 }

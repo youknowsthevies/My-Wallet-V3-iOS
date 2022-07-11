@@ -3,7 +3,7 @@
 import Combine
 import PlatformKit
 
-final class CryptoFeeServiceMock<FeeType: TransactionFee & Decodable>: CryptoFeeServiceAPI {
+final class CryptoFeeRepositoryMock<FeeType: TransactionFee & Decodable>: CryptoFeeRepositoryAPI {
 
     var underlyingFees: FeeType!
 

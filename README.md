@@ -8,7 +8,7 @@
 
 Homebrew: 3.4.1+
 Xcode: 13.2.1+
-Ruby: 2.6.5
+Ruby: 2.6.9
 Ruby-Gems: 3.0.3
 Swiftlint: 0.46.5+
 Swiftformat: 0.49.5+
@@ -67,8 +67,13 @@ Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
 
 Install a recent ruby version:
 
-    $ rbenv install 2.6.5
-    $ rbenv global 2.6.5
+    $ rbenv install 2.6.9
+    $ rbenv global 2.6.9
+    $ eval "$(rbenv init -)"
+    
+For M1 use this:
+    $ rbenv install 2.7.6
+    $ rbenv global 2.7.6
     $ eval "$(rbenv init -)"
 
 Then the project ruby dependencies (`fastlane`, etc.):

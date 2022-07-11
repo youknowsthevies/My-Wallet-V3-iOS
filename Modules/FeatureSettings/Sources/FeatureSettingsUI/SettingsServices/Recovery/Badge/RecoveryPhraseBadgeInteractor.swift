@@ -9,7 +9,8 @@ final class RecoveryPhraseBadgeInteractor: DefaultBadgeAssetInteractor {
 
     init(provider: RecoveryPhraseStatusProviding) {
         super.init()
-        provider.isRecoveryPhraseVerifiedObservable
+        provider.isRecoveryPhraseVerifiedPublisher
+            .asObservable()
             .map { $0 == true ? .confirmed : .unconfirmed }
             .map { .loaded(next: $0) }
             .bindAndCatch(to: stateRelay)

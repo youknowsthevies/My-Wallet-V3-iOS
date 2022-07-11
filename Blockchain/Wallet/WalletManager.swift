@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinChainKit
 import BitcoinKit
 import DIKit
 import FeatureAuthenticationDomain

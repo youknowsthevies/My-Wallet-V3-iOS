@@ -27,9 +27,9 @@ public enum WalletError: LocalizedError, Equatable {
         case .encryption(let error):
             return error.errorDescription
         case .upgrade(let error):
-            return error.localizedDescription
+            return error.errorDescription
         case .sync(let error):
-            return error.localizedDescription
+            return error.errorDescription
         case .unknown:
             return ""
         }

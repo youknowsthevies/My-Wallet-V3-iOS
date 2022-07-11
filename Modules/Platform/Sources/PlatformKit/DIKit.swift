@@ -98,7 +98,9 @@ extension DependencyContainer {
 
         factory { CustodialPendingDepositService() as CustodialPendingDepositServiceAPI }
 
-        factory { CustodialAddressService() as CustodialAddressServiceAPI }
+        factory { () -> CustodialAddressServiceAPI in
+            CustodialAddressService(client: DIKit.resolve())
+        }
 
         factory { () -> MaintenanceServicing in
             let service: WalletOptionsAPI = DIKit.resolve()

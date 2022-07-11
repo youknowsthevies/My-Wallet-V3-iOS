@@ -61,7 +61,7 @@ extension DependencyContainer {
             )
         }
 
-        single { AnyCryptoFeeService(service: CryptoFeeService<StellarTransactionFee>()) }
+        single { AnyCryptoFeeRepository(repository: CryptoFeeRepository<StellarTransactionFee>()) }
 
         factory { () -> StellarTransactionDispatcherAPI in
             StellarTransactionDispatcher(

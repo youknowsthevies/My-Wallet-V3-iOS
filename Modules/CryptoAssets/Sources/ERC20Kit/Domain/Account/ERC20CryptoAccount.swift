@@ -36,11 +36,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .just(erc20ReceiveAddress)
-    }
-
-    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .just(erc20ReceiveAddress)
     }
 

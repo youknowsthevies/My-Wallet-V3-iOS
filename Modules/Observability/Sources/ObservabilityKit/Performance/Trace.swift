@@ -60,7 +60,7 @@ struct Trace {
             let timeInterval = ended.timeInterval
             let seconds = timeInterval.string(with: 2)
             Logger.shared.debug(
-                "Trace \(traceId.rawValue), finished in \(seconds) seconds"
+                "Trace \(traceId), finished in \(seconds) seconds"
             )
         }
     }

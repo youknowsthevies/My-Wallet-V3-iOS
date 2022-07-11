@@ -3,6 +3,7 @@
 import BigInt
 import MoneyKit
 import PlatformKit
+import WalletCore
 
 public enum BitcoinChainCoin: String {
     case bitcoin = "BTC"
@@ -41,6 +42,16 @@ public enum BitcoinChainCoin: String {
             return "bitcoincash"
         }
     }
+
+    /// Unsigned integer value to be used for the 'coin type' field when deriving a Blockchain.com wallet for this token.
+    public var derivationCoinType: UInt32 {
+        switch self {
+        case .bitcoin:
+            return 0
+        case .bitcoinCash:
+            return 0
+        }
+    }
 }
 
 public protocol BitcoinChainToken {
@@ -53,4 +64,16 @@ public struct BitcoinToken: BitcoinChainToken {
 
 public struct BitcoinCashToken: BitcoinChainToken {
     public static let coin: BitcoinChainCoin = .bitcoinCash
+}
+
+extension BitcoinChainCoin {
+    /// WalletCore CoinType for the associated Token.
+    var walletCoreCoinType: WalletCore.CoinType {
+        switch self {
+        case .bitcoin:
+            return .bitcoin
+        case .bitcoinCash:
+            return .bitcoinCash
+        }
+    }
 }

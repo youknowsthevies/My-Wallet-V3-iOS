@@ -30,7 +30,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     var transactionDispatcher: StellarTransactionDispatcherAPI
-    var feeService: AnyCryptoFeeService<StellarTransactionFee>
+    var feeRepository: AnyCryptoFeeRepository<StellarTransactionFee>
 
     // MARK: - Private properties
 
@@ -39,7 +39,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         case let target as ReceiveAddress:
             return .just(target)
         case let target as CryptoAccount:
-            return target.receiveAddress
+            return target.receiveAddress.asSingle()
         default:
             fatalError("Engine requires transactionTarget to be a ReceiveAddress or CryptoAccount.")
         }
@@ -70,7 +70,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var absoluteFee: Single<CryptoValue> {
-        feeService.fees.map(\.regular).asSingle()
+        feeRepository.fees
+            .map(\.regular)
+            .asSingle()
     }
 
     private var actionableBalance: Single<MoneyValue> {
@@ -85,14 +87,14 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI,
         currencyConversionService: CurrencyConversionServiceAPI,
-        feeService: AnyCryptoFeeService<StellarTransactionFee>,
+        feeRepository: AnyCryptoFeeRepository<StellarTransactionFee>,
         transactionDispatcher: StellarTransactionDispatcherAPI
     ) {
         self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.transactionDispatcher = transactionDispatcher
-        self.feeService = feeService
+        self.feeRepository = feeRepository
     }
 
     // MARK: - Internal Methods
@@ -110,9 +112,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
         )
-        .flatMap(weak: self) { (self, pendingTransaction) in
+        .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
             Single.zip(self.receiveAddress, self.isMemoRequired)
-                .map { receiveAddress, isMemoRequired in
+                .map { receiveAddress, isMemoRequired -> PendingTransaction in
                     guard let stellarReceive = receiveAddress as? StellarReceiveAddress else {
                         return pendingTransaction
                     }
@@ -272,7 +274,7 @@ extension StellarOnChainTransactionEngine {
         let label = sourceAccount.label
         return Single
             .zip(
-                sourceAccount.receiveAddress,
+                sourceAccount.receiveAddress.asSingle(),
                 receiveAddress
             )
             .map { fromAddress, receiveAddress -> SendDetails in
@@ -356,11 +358,11 @@ extension StellarOnChainTransactionEngine {
 extension PendingTransaction {
 
     fileprivate var memo: TransactionConfirmations.Memo {
-        engineState[.xlmMemo] as! TransactionConfirmations.Memo
+        engineState.value[.xlmMemo] as! TransactionConfirmations.Memo
     }
 
     fileprivate mutating func setMemo(memo: TransactionConfirmations.Memo) {
-        engineState[.xlmMemo] = memo
+        engineState.mutate { $0[.xlmMemo] = memo }
     }
 }
 

@@ -36,7 +36,6 @@ extension AppEnvironment {
             fiatCurrencySettingsService: resolve(),
             supportedAssetsRemoteService: resolve(),
             sharedContainer: .default,
-            customerSupportChatService: resolve(),
             analyticsRecorder: resolve(),
             crashlyticsRecorder: resolve(tag: "CrashlyticsRecorder"),
             openBanking: resolve(),
@@ -47,7 +46,12 @@ extension AppEnvironment {
                 fetcher: DIKit.resolve(),
                 recovery: DIKit.resolve()
             ),
-            forgetWalletService: .live(forgetWallet: DIKit.resolve()),
+            walletStateProvider: .live(
+                holder: DIKit.resolve()
+            ),
+            forgetWalletService: .live(
+                forgetWallet: DIKit.resolve()
+            ),
             walletPayloadService: resolve(),
             walletManager: resolve(),
             walletUpgradeService: resolve(),

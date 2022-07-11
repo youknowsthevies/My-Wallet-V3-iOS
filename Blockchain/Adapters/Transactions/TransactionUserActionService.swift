@@ -56,7 +56,7 @@ final class TransactionUserActionService: UserActionServiceAPI {
 extension TransactionUserActionService: TransactionRestrictionsProviderAPI {
 
     func canPerform(_ action: AssetAction, using target: TransactionTarget) -> Bool {
-        guard target.accountType == .custodial else {
+        guard target.accountType.isCustodial else {
             return true
         }
         guard let rawProduct = latestUserState?.product(id: .custodialWallet) else {

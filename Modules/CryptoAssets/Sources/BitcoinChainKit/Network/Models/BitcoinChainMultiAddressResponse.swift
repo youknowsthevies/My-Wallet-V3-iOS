@@ -2,12 +2,12 @@
 
 import Foundation
 
-public protocol BitcoinChainHistoricalTransactionResponse: Decodable {
+public protocol BitcoinChainHistoricalTransactionResponse: Decodable, Equatable {
 
-    func apply(latestBlockHeight: Int)
+    func applying(latestBlockHeight: Int) -> Self
 }
 
-public struct BitcoinChainMultiAddressResponse<T: BitcoinChainHistoricalTransactionResponse>: Decodable {
+public struct BitcoinChainMultiAddressResponse<T: BitcoinChainHistoricalTransactionResponse>: Decodable, Equatable {
 
     public let addresses: [BitcoinChainAddressResponse]
     public let transactions: [T]
@@ -32,9 +32,15 @@ public struct BitcoinChainMultiAddressResponse<T: BitcoinChainHistoricalTransact
         let info = try values.nestedContainer(keyedBy: InfoCodingKeys.self, forKey: .info)
         let latestBlock = try info.nestedContainer(keyedBy: LatestBlockCodingKeys.self, forKey: .latestBlock)
         addresses = try values.decode([BitcoinChainAddressResponse].self, forKey: .addresses)
-        latestBlockHeight = try latestBlock.decode(Int.self, forKey: .height)
-        transactions = try values.decode([T].self, forKey: .txs)
-        transactions.forEach { $0.apply(latestBlockHeight: latestBlockHeight) }
+
+        let _latestBlockHeight = try latestBlock.decode(Int.self, forKey: .height)
+        latestBlockHeight = _latestBlockHeight
+
+        let txs = try values.decode([T].self, forKey: .txs)
+
+        transactions = txs.map { transaction in
+            transaction.applying(latestBlockHeight: _latestBlockHeight)
+        }
     }
 
     init(

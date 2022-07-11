@@ -31,6 +31,9 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					url:
+					+ blockchain.db.type.url
+					+ blockchain.session.configuration.value
 			debug:
 				observers:
 				+ blockchain.db.type.array.of.tags
@@ -55,17 +58,24 @@ blockchain:
 						+ blockchain.session.configuration.value
 			native:
 				bitcoin:
-					transaction:
+					cash:
 						is:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 				wallet:
 					payload:
 						is:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+			performance:
+				tracing:
+				+ blockchain.session.configuration.value
 			polygon:
 				is:
 					enabled:
@@ -89,19 +99,18 @@ blockchain:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
 			stx:
-				for:
-					airdrop:
-						users:
-							is:
-								enabled:
-								+ blockchain.db.type.boolean
-								+ blockchain.session.configuration.value
-					all:
-						users:
-							is:
-								enabled:
-								+ blockchain.db.type.boolean
-								+ blockchain.session.configuration.value
+				airdrop:
+					users:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+				all:
+					users:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			tabs:
 			+ blockchain.db.type.array.of.tags
 			+ blockchain.session.configuration.value
@@ -111,6 +120,15 @@ blockchain:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.preference.value
 					+ blockchain.session.state.shared.value
+			transaction:
+			+ blockchain.db.collection
+				should:
+					prefill:
+						with:
+							previous:
+								amount:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 			unified:
 				sign_in:
 					is:
@@ -139,6 +157,7 @@ blockchain:
 				tier:
 				+ blockchain.db.type.integer
 			qr:
+			referral:
 			send:
 				amount:
 				+ blockchain.db.type.integer
@@ -224,11 +243,15 @@ blockchain:
 			+ blockchain.db.leaf
 			boolean:
 			+ blockchain.db.leaf
+			data:
+			+ blockchain.db.leaf
 			date:
 			+ blockchain.db.leaf
 			enum:
 			+ blockchain.db.leaf
 			integer:
+			+ blockchain.db.leaf
+			map:
 			+ blockchain.db.leaf
 			number:
 			+ blockchain.db.leaf
@@ -363,40 +386,6 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
-				policy:
-					discard:
-						if:
-						+ blockchain.db.type.boolean
-						when:
-						+ blockchain.db.type.boolean
-					perform:
-						if:
-						+ blockchain.db.type.boolean
-						when:
-						+ blockchain.db.type.boolean
-				then:
-					close:
-					enter:
-						into:
-						+ blockchain.db.type.tag
-					navigate:
-						to:
-						+ blockchain.db.type.tag
-					pop:
-						to:
-							root:
-					replace:
-						current:
-							stack:
-							+ blockchain.db.type.array.of.tags
-						root:
-							stack:
-							+ blockchain.db.type.array.of.tags
-					set:
-						session:
-							state:
-							+ blockchain.db.type.array.of.maps
-							+ blockchain.session.state.key.value.pair
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -575,6 +564,8 @@ blockchain:
 			+ blockchain.ux.type.analytics.action
 			select:
 			+ blockchain.ux.type.action
+				origin:
+				+ blockchain.session.state.value
 			sell:
 			+ blockchain.ux.type.action
 			send:
@@ -598,7 +589,12 @@ blockchain:
 			support:
 			+ blockchain.ux.type.story
 				show:
-				+ blockchain.ux.type.analytics.action
+					messenger:
+					+ blockchain.ux.type.action
+				unread:
+					count:
+					+ blockchain.db.type.integer
+					+ blockchain.session.state.value
 		error:
 		+ blockchain.ux.type.story
 			then:
@@ -633,6 +629,16 @@ blockchain:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
+		nft:
+			asset:
+			+ blockchain.db.collection
+				select:
+			collection:
+			+ blockchain.db.collection
+				select:
+			wallet:
+			+ blockchain.db.collection
+				select:
 		payment:
 			method:
 				open:
@@ -701,6 +707,18 @@ blockchain:
 						transfer:
 							instructions:
 			checkout:
+			crypto:
+			+ blockchain.db.collection
+				buy:
+					previous:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							+ blockchain.session.state.preference.value
+							currency:
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.preference.value
 			did:
 				error:
 				finish:
@@ -723,9 +741,32 @@ blockchain:
 										+ blockchain.session.configuration.value
 				payment:
 					method:
+			previous:
+				payment:
+					method:
+						id:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.preference.value
 			select:
 				source:
 				target:
+			source:
+			+ blockchain.db.collection
+				target:
+				+ blockchain.db.collection
+					previous:
+						did:
+							error:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							+ blockchain.session.state.preference.value
+							currency:
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.preference.value
 		type:
 			action:
 			+ blockchain.ui.type.action
@@ -748,6 +789,10 @@ blockchain:
 			story:
 			+ blockchain.ux.type.analytics.state
 				entry:
+				event:
+					did:
+						dismiss:
+						+ blockchain.ux.type.analytics.event
 		user:
 			KYC:
 			+ blockchain.ux.type.story

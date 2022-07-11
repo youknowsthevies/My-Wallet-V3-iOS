@@ -73,20 +73,9 @@ extension Card {
 
     public struct Address: Codable, Equatable {
 
-        public init(
-            line1: String?,
-            line2: String?,
-            city: String?,
-            postcode: String?,
-            state: String?,
-            country: String
-        ) {
-            self.line1 = line1
-            self.line2 = line2
-            self.city = city
-            self.postcode = postcode
-            self.state = state
-            self.country = country
+        public enum Constants {
+            static let usIsoCode = "US"
+            public static let usPrefix = "US-"
         }
 
         public let line1: String?
@@ -95,12 +84,36 @@ extension Card {
 
         public let city: String?
 
-        public let postcode: String?
+        public let postCode: String?
 
         public let state: String?
 
         /// Country code in ISO-2
-        public let country: String
+        public let country: String?
+
+        public init(
+            line1: String?,
+            line2: String?,
+            city: String?,
+            postCode: String?,
+            state: String?,
+            country: String?
+        ) {
+            self.line1 = line1
+            self.line2 = line2
+            self.city = city
+            self.postCode = postCode
+            self.country = country
+
+            if let state = state,
+               country == Constants.usIsoCode,
+               !state.hasPrefix(Constants.usPrefix)
+            {
+                self.state = Constants.usPrefix + state
+            } else {
+                self.state = state
+            }
+        }
     }
 }
 

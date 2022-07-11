@@ -70,7 +70,7 @@ class WalletRecoveryServiceTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation], timeout: 10)
 
         XCTAssertFalse(walletDecoderCalled)
     }
@@ -133,6 +133,12 @@ class WalletRecoveryServiceTests: XCTestCase {
         // swiftlint:disable:next line_length
         let validMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 
+        let expectedContext = WalletFetchedContext(
+            guid: "dfa6d0af-7b04-425d-b35c-ded8efaa0016",
+            sharedKey: "b4a3dcbc-3e85-4cbf-8d0f-e31f9663e888",
+            passwordPartHash: "561e1"
+        )
+
         walletRecoveryService
             .recover(from: validMnemonic)
             .sink { completion in
@@ -143,12 +149,12 @@ class WalletRecoveryServiceTests: XCTestCase {
                     XCTFail("should not fail: \(failureError)")
                 }
             } receiveValue: { value in
-                XCTAssertEqual(value, .noValue)
+                XCTAssertEqual(value, expectedContext)
                 expectation.fulfill()
             }
             .store(in: &cancellables)
 
-        waitForExpectations(timeout: 2)
+        waitForExpectations(timeout: 10)
 
         XCTAssertTrue(walletDecoderCalled)
         XCTAssertEqual(walletRepo.credentials.guid, "dfa6d0af-7b04-425d-b35c-ded8efaa0016")

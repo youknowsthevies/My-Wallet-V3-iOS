@@ -142,7 +142,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         Single
             .zip(
                 fiatAmountAndFees(from: pendingTransaction),
-                getFeeState(pendingTransaction: pendingTransaction)
+                getFeeState(pendingTransaction: pendingTransaction).asSingle()
             )
             .map(weak: self) { (self, payload) -> PendingTransaction in
                 let ((amount, fees), feeState) = payload

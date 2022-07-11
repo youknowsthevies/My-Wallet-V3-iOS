@@ -82,11 +82,6 @@ extension DependencyContainer {
             WalletEncoder() as WalletEncodingAPI
         }
 
-        factory { () -> ReleasableWalletAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as ReleasableWalletAPI
-        }
-
         factory { () -> WalletHolderAPI in
             let holder: WalletHolder = DIKit.resolve()
             return holder as WalletHolderAPI

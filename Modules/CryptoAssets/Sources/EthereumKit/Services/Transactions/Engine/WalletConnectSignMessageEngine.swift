@@ -147,6 +147,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceAccount.receiveAddress
+            .asSingle()
             .map { [walletConnectTarget] receiveAddress in
                 guard receiveAddress.address.caseInsensitiveCompare(walletConnectTarget.account) == .orderedSame else {
                     throw TransactionValidationFailure(state: .invalidAddress)

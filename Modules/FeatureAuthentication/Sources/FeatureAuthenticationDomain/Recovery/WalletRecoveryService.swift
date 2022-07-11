@@ -7,7 +7,7 @@ import WalletPayloadKit
 public struct WalletRecoveryService {
     public var recoverFromMetadata: (
         _ mnemonic: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
+    ) -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletError>
 }
 
 extension WalletRecoveryService {
@@ -19,11 +19,15 @@ extension WalletRecoveryService {
         Self(
             recoverFromMetadata: { [walletManager, walletRecovery, nativeWalletEnabled, legacyRecover] mnemonic in
                 nativeWalletEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<EmptyValue, WalletError> in
+                    .flatMap { isEnabled -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletError> in
                         guard isEnabled else {
                             return legacyRecover(mnemonic, walletManager)
+                                .map(Either.left)
+                                .eraseToAnyPublisher()
                         }
                         return walletRecovery.recover(from: mnemonic)
+                            .map { value in .right(value) }
+                            .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
             }

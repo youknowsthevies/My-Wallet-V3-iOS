@@ -186,6 +186,9 @@ extension FundsTransferDetailScreenPresenter {
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
                 termsTextViewModel = nil
+            case .ARS:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
+                termsTextViewModel = nil
             default:
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil
@@ -240,6 +243,8 @@ extension Array where Element == PaymentAccountProperty.Field {
                  .paymentAccountField(.bankCode),
                  .paymentAccountField(.sortCode):
                 return true
+            case .paymentAccountField(.field(_, _, _, copy: let copy)):
+                return copy
             default:
                 return false
             }

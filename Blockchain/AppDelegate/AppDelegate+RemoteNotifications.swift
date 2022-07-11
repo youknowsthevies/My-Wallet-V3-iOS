@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import UIKit
+#if canImport(Intercom)
+import Intercom
+#endif
 
 extension AppDelegate {
 
@@ -71,5 +74,8 @@ extension AppDelegate {
                 )
             )
         )
+        #if canImport(Intercom)
+        Intercom.setDeviceToken(deviceToken, failure: nil)
+        #endif
     }
 }

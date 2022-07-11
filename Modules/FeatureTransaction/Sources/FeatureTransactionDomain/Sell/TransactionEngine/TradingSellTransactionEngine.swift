@@ -93,11 +93,9 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        let order = createOrder(pendingTransaction: pendingTransaction)
-        return Single
-            .zip(order, amountInSourceCurrency(for: pendingTransaction))
-            .map { order, amount in
-                TransactionResult.unHashed(amount: amount, orderId: order.identifier)
+        createOrder(pendingTransaction: pendingTransaction)
+            .map { order in
+                TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: order.identifier)
             }
     }
 
@@ -131,9 +129,10 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single
-            .zip(quotesEngine.quotePublisher.asSingle(), amountInSourceCurrency(for: pendingTransaction))
-            .map { [targetAsset] pricedQuote, sellSourceValue -> (PendingTransaction, PricedQuote) in
+        quotesEngine.quotePublisher
+            .asSingle()
+            .map { [targetAsset] pricedQuote -> (PendingTransaction, PricedQuote) in
+                let sellSourceValue = pendingTransaction.amount
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: sellSourceValue.currency)
                 let sellDestinationValue: MoneyValue = sellSourceValue.convert(using: resultValue)

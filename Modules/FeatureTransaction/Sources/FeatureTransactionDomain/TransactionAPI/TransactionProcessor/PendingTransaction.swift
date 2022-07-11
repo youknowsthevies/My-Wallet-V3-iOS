@@ -13,6 +13,7 @@ public struct PendingTransaction: Equatable {
         case bitpayTimer
         case gasPrice
         case gasLimit
+        case btc
     }
 
     public var amount: MoneyValue
@@ -27,7 +28,7 @@ public struct PendingTransaction: Equatable {
     public private(set) var confirmations: [TransactionConfirmation] = []
 
     public var validationState: TransactionValidationState = .uninitialized
-    public var engineState: [EngineStateKey: Any] = [:]
+    public let engineState: Atomic<[EngineStateKey: Any]> = Atomic([:])
 
     public var limits: TransactionLimits? {
         get {
@@ -39,7 +40,6 @@ public struct PendingTransaction: Equatable {
     }
 
     /// store/cache the feature flag
-    @available(*, deprecated, message: "Don't use this, this is for native bitcoin work and will be removed once the feature is shipped")
     public var nativeBitcoinTransactionEnabled: Bool
 
     // this struct has become too big for Swift to handle :(

@@ -31,7 +31,8 @@ public enum ClientEvent: AnalyticsEvent {
         networkErrorType: String? = nil,
         source: String,
         title: String,
-        action: String? = nil
+        action: String? = nil,
+        category: [String] = []
     )
 }
 

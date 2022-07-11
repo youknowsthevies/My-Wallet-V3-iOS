@@ -1,12 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-protocol CoinSortingStrategy {
+public protocol CoinSortingStrategy {
     func sort(coins: [UnspentOutput]) -> [UnspentOutput]
 }
 
 /// Prioritizes smaller coins, better coin consolidation but a higher fee.
-struct AscentDrawSortingStrategy: CoinSortingStrategy {
-    func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
+public struct AscentDrawSortingStrategy: CoinSortingStrategy {
+
+    public init() {}
+
+    public func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
         coins.sorted(by: { lhs, rhs -> Bool in
             lhs.magnitude < rhs.magnitude
         })
@@ -14,8 +17,11 @@ struct AscentDrawSortingStrategy: CoinSortingStrategy {
 }
 
 /// Prioritizes larger coins, worse coin consolidation but a lower fee.
-struct DescentDrawSortingStrategy: CoinSortingStrategy {
-    func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
+public struct DescentDrawSortingStrategy: CoinSortingStrategy {
+
+    public init() {}
+
+    public func sort(coins: [UnspentOutput]) -> [UnspentOutput] {
         coins.sorted(by: { lhs, rhs -> Bool in
             lhs.magnitude > rhs.magnitude
         })

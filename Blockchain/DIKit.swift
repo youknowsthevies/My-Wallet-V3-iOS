@@ -129,12 +129,6 @@ extension DependencyContainer {
             return helper as SecondPasswordPresenterHelper
         }
 
-        factory { CustomerSupportChatClient() as CustomerSupportChatClientAPI }
-
-        factory { CustomerSupportChatService() as CustomerSupportChatServiceAPI }
-
-        factory { CustomerSupportChatRouter() as CustomerSupportChatRouterAPI }
-
         single { () -> SecondPasswordPromptable in
             SecondPasswordPrompter(
                 secondPasswordStore: DIKit.resolve(),
@@ -285,23 +279,9 @@ extension DependencyContainer {
             return manager as WalletManagerAPI
         }
 
-        factory { () -> MnemonicAccessAPI in
-            let app: AppProtocol = DIKit.resolve()
-            let ref = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled[].reference
-            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
-            if isEnabled ?? false {
-                let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
-                let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
-                    secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
-                        .mapError { _ in MnemonicAccessError.wrongSecondPassword }
-                        .eraseToAnyPublisher()
-                }
-                return MnemonicAccessService(
-                    secondPasswordPrompter: secondPasswordIfNeeded
-                )
-            }
+        factory { () -> LegacyMnemonicAccessAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet as MnemonicAccessAPI
+            return walletManager.wallet as LegacyMnemonicAccessAPI
         }
 
         factory { () -> WalletRepositoryProvider in
@@ -356,7 +336,12 @@ extension DependencyContainer {
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return RecoveryPhraseVerifyingService(wallet: manager.wallet) as RecoveryPhraseVerifyingServiceAPI
+            let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
+            return RecoveryPhraseVerifyingService(
+                wallet: manager.wallet,
+                verifyMnemonicBackupService: backupService,
+                nativeWalletEnabledFlag: { nativeWalletFlagEnabled() }
+            )
         }
 
         // MARK: - AppFeatureConfigurator
@@ -442,6 +427,16 @@ extension DependencyContainer {
         factory { () -> BitcoinWalletBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin
+        }
+
+        factory { () -> WalletMnemonicProvider in
+            let mnemonicAccess: MnemonicAccessAPI = DIKit.resolve()
+            return {
+                mnemonicAccess.mnemonic
+                    .eraseError()
+                    .map(BitcoinChainKit.Mnemonic.init)
+                    .eraseToAnyPublisher()
+            }
         }
 
         factory { () -> BitcoinChainSendBridgeAPI in

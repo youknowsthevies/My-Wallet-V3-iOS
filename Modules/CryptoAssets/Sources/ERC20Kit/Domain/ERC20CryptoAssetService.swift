@@ -90,7 +90,7 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
         account: SingleAccount,
         network: EVMNetwork
     ) -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
-        account.receiveAddressPublisher
+        account.receiveAddress
             .map { receiveAddress -> EthereumAddress? in
                 EthereumAddress(address: receiveAddress.address)
             }

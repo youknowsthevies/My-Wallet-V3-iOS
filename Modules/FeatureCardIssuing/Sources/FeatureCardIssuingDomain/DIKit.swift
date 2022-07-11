@@ -25,5 +25,17 @@ extension DependencyContainer {
                 repository: DIKit.resolve()
             ) as RewardsServiceAPI
         }
+
+        factory {
+            ResidentialAddressService(
+                repository: DIKit.resolve()
+            ) as ResidentialAddressServiceAPI
+        }
+
+        factory {
+            TransactionService(
+                repository: DIKit.resolve()
+            ) as TransactionServiceAPI
+        }
     }
 }

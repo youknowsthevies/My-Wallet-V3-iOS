@@ -153,7 +153,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         bitpayClientEngine
-            .doPrepareTransaction(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+            .doPrepareBitPayTransaction(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
             .subscribe(on: MainScheduler.instance)
             .flatMap(weak: self) { (self, transaction) -> Single<String> in
                 self.doExecuteTransaction(
@@ -164,11 +164,16 @@ final class BitPayTransactionEngine: TransactionEngine {
             .do(onSuccess: { [weak self] _ in
                 guard let self = self else { return }
                 // TICKET: IOS-4492 - Analytics
-                self.bitpayClientEngine.doOnTransactionSuccess(pendingTransaction: pendingTransaction)
+                self.bitpayClientEngine.doOnBitPayTransactionSuccess(
+                    pendingTransaction: pendingTransaction
+                )
             }, onError: { [weak self] error in
                 guard let self = self else { return }
                 // TICKET: IOS-4492 - Analytics
-                self.bitpayClientEngine.doOnTransactionFailed(pendingTransaction: pendingTransaction, error: error)
+                self.bitpayClientEngine.doOnBitPayTransactionFailed(
+                    pendingTransaction: pendingTransaction,
+                    error: error
+                )
             }, onSubscribe: { [weak self] in
                 guard let self = self else { return }
                 self.stopCountdown.on(.next(()))
@@ -251,10 +256,10 @@ final class BitPayTransactionEngine: TransactionEngine {
 
 extension PendingTransaction {
     fileprivate mutating func setCountdownTimer(timer: Disposable) {
-        engineState[.bitpayTimer] = timer
+        engineState.mutate { $0[.bitpayTimer] = timer }
     }
 
     var bitpayTimer: Disposable? {
-        engineState[.bitpayTimer] as? Disposable
+        engineState.value[.bitpayTimer] as? Disposable
     }
 }

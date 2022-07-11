@@ -11,16 +11,13 @@ public protocol WalletHolderAPI {
     /// Returns a `Wallet` object if it exists, otherwise `nil`
     func provideWalletState() -> WalletState?
 
-    /// Creates and stores a new `Wallet` using a factory closure
-    /// - Parameter creator: A `ProvideWallet` factory closure
-    /// - Returns: `AnyPublisher<Wallet, Never>`
+    /// Stores a given `WalletState`
+    /// - Parameter walletState: A `WalletState` to be stoed
+    /// - Returns: `AnyPublisher<WalletState, Never>`
     func hold(
         walletState: WalletState
     ) -> AnyPublisher<WalletState, Never>
-}
 
-/// Types adopting `ReleasableWalletAPI` should be able to release a previous initialized `Wallet` object
-public protocol ReleasableWalletAPI {
     /// Releases a in-memory `Wallet` object
     func release()
 }

@@ -1,10 +1,12 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "CryptoAssets",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .macOS(.v10_12), .iOS(.v14)
+    ],
     products: [
         .library(name: "BitcoinCashKit", targets: ["BitcoinCashKit"]),
         .library(name: "BitcoinChainKit", targets: ["BitcoinChainKit"]),
@@ -22,29 +24,28 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.2.0"
         ),
         .package(
-            name: "stellarsdk",
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
-            .exact("2.2.1")
+            from: "2.2.1"
         ),
         .package(
-            name: "WalletCore",
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
-            .exact("2.6.36-blockchain")
+            from: "2.6.36-blockchain"
+        ),
+        .package(
+            url: "https://github.com/paulo-bc/YenomBitcoinKit.git",
+            branch: "paulo/dust-mixing"
         ),
         .package(path: "../Metadata"),
         .package(path: "../Network"),
@@ -67,7 +68,8 @@ let package = Package(
                 .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "YenomBitcoinKit", package: "YenomBitcoinKit")
             ]
         ),
         .target(
@@ -79,7 +81,8 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletCore", package: "WalletCore")
+                .product(name: "WalletCore", package: "wallet-core"),
+                .product(name: "MetadataKit", package: "Metadata")
             ]
         ),
         .target(
@@ -91,7 +94,7 @@ let package = Package(
                 .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletCore", package: "WalletCore")
+                .product(name: "WalletCore", package: "wallet-core")
             ]
         ),
         .target(
@@ -131,7 +134,7 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletCore", package: "WalletCore"),
+                .product(name: "WalletCore", package: "wallet-core"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
@@ -144,7 +147,7 @@ let package = Package(
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "stellarsdk", package: "stellarsdk"),
+                .product(name: "stellarsdk", package: "stellar-ios-mac-sdk"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -203,6 +206,9 @@ let package = Package(
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "RxBlocking", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift")
+            ],
+            resources: [
+                .process("Fixtures")
             ]
         ),
         .testTarget(

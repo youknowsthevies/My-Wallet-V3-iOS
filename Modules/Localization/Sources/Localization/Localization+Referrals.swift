@@ -23,8 +23,8 @@ extension LocalizationConstants.Referrals.ReferralScreen {
     )
 
     public static let stepsTitleLabel = NSLocalizedString(
-        "What my invited friends need to do?",
-        comment: "What my invited friends need to do?"
+        "To qualify, your friends must:",
+        comment: "To qualify, your friends must:"
     )
 
     public static let referalCodeLabel = NSLocalizedString(
@@ -41,4 +41,18 @@ extension LocalizationConstants.Referrals.ReferralScreen {
         "Copied",
         comment: "Copied"
     )
+
+    public static let shareTitle = NSLocalizedString(
+        "Join me on Blockchain.com",
+        comment: "Join me on Blockchain.com"
+    )
+
+    public static func shareMessage(_ code: String) -> String {
+        // swiftformat:disable line_length
+        // swiftlint:disable line_length
+        NSLocalizedString(
+            "Join me and sign up to a Blockchain.com Wallet with referral code \(code), and get a bonus in crypto!\n\nFind the app here: https://blockchainwallet.page.link/join",
+            comment: "Join me and sign up to a Blockchain.com Wallet with referral code \(code), and get a bonus in crypto!\n\nFind the app here: https://blockchainwallet.page.link/join"
+        )
+    }
 }

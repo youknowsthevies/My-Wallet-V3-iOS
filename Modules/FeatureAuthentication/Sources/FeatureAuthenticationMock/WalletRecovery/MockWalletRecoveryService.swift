@@ -1,14 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 @testable import FeatureAuthenticationDomain
-import WalletPayloadKit
+@testable import WalletPayloadKit
 
-extension WalletRecoveryService {
+import Combine
+import ToolKit
+
+extension FeatureAuthenticationDomain.WalletRecoveryService {
     public static func mock() -> Self {
         Self(
-            recoverFromMetadata: { _ in
-                .just(.noValue)
+            recoverFromMetadata: { _ -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletError> in
+                .just(.left(.noValue))
             }
         )
     }

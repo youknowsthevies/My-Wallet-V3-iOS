@@ -8,15 +8,15 @@ public struct XPubs: Equatable {
     public let xpubs: [XPub]
 
     public var `default`: XPub {
-        bech32 ?? legacy
+        bech32
     }
 
-    private var bech32: XPub? {
-        xpubs.first { $0.derivationType == .bech32 }
+    private var bech32: XPub {
+        xpubs.first { $0.derivationType == .bech32 }!
     }
 
-    private var legacy: XPub! {
-        xpubs.first { $0.derivationType == .legacy }
+    private var legacy: XPub {
+        xpubs.first { $0.derivationType == .legacy }!
     }
 
     public init(xpubs: [XPub]) {
@@ -35,9 +35,27 @@ public struct XPub: Equatable, Hashable {
     }
 }
 
-public enum DerivationType: String, Decodable {
+public enum DerivationType: String, Decodable, CaseIterable {
     case legacy
     case bech32
+
+    var isSegwit: Bool {
+        switch self {
+        case .bech32:
+            return true
+        case .legacy:
+            return false
+        }
+    }
+
+    var purpose: UInt32 {
+        switch self {
+        case .bech32:
+            return 84
+        case .legacy:
+            return 44
+        }
+    }
 }
 
 #warning("Consolidate to use one DerivationType enum")

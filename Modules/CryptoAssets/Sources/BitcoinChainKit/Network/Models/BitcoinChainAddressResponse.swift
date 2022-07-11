@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct BitcoinChainAddressResponse: Decodable {
+public struct BitcoinChainAddressResponse: Decodable, Equatable {
     public let accountIndex: Int
     public let address: String
     public let changeIndex: Int

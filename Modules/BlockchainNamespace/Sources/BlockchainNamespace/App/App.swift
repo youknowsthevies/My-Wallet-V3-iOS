@@ -98,10 +98,11 @@ public class App: AppProtocol {
 
 extension AppProtocol {
 
-    public func signIn(userId: String) {
+    public func signIn(userId: String, transaction: ((Session.State) -> Void)? = nil) {
         post(event: blockchain.session.event.will.sign.in)
         state.transaction { state in
             state.set(blockchain.user.id, to: userId)
+            transaction?(state)
         }
         post(event: blockchain.session.event.did.sign.in)
     }
@@ -123,8 +124,15 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        state.set(event.key, to: value)
-        post(event: event, context: [event: value], file: file, line: line)
+        let reference = event.key().in(self)
+        state.set(reference, to: value)
+        post(
+            event: event,
+            reference: reference,
+            context: [event: value],
+            file: file,
+            line: line
+        )
     }
 
     public func post(
@@ -133,9 +141,26 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
+        post(
+            event: event,
+            reference: event.key().in(self),
+            context: context,
+            file: file,
+            line: line
+        )
+    }
+
+    func post(
+        event: Tag.Event,
+        reference: Tag.Reference,
+        context: Tag.Context = [:],
+        file: String = #fileID,
+        line: Int = #line
+    ) {
         events.send(
             Session.Event(
                 event: event,
+                reference: reference,
                 context: [
                     s.file: file,
                     s.line: line
@@ -176,15 +201,13 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line
     ) {
-        events.send(
-            Session.Event(
-                event: event,
-                context: context + [
-                    e.message: "\(error.localizedDescription)",
-                    e.file: file,
-                    e.line: line
-                ]
-            )
+        post(
+            event: event,
+            context: context + [
+                e.message: "\(error.localizedDescription)",
+                e.file: file,
+                e.line: line
+            ]
         )
     }
 
@@ -198,7 +221,8 @@ extension AppProtocol {
     public func on<Tags>(
         _ tags: Tags
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
-        events.filter(tags.map(\.key)).eraseToAnyPublisher()
+        events.filter(tags.map { $0.key().in(self) })
+            .eraseToAnyPublisher()
     }
 }
 
@@ -216,18 +240,51 @@ private let s = (
 extension AppProtocol {
 
     public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
-        publisher(for: event.key).decode(T.self)
+        publisher(for: event).decode(T.self)
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let ref = event.key
-        switch ref.tag {
-        case blockchain.session.state.value, blockchain.db.collection.id:
-            return state.publisher(for: ref)
-        case blockchain.session.configuration.value:
-            return remoteConfiguration.publisher(for: ref)
-        default:
-            return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
+
+        func _publisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+            switch ref.tag {
+            case blockchain.session.state.value, blockchain.db.collection.id:
+                return state.publisher(for: ref)
+            case blockchain.session.configuration.value:
+                return remoteConfiguration.publisher(for: ref)
+            default:
+                return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
+                    .eraseToAnyPublisher()
+            }
+        }
+
+        let ref = event.key().in(self)
+        let ids = ref.context.mapKeys(\.tag)
+
+        do {
+            let dynamicKeys = try ref.tag.template.indices.set
+                .subtracting(ids.keys.map(\.id))
+                .map { try Tag(id: $0, in: language) }
+            guard dynamicKeys.isNotEmpty else {
+                return try _publisher(ref.validated())
+            }
+            let context = Tag.Context(ids)
+            return try dynamicKeys.map { try $0.ref(to: context, in: self).validated() }
+                .map(_publisher)
+                .combineLatest()
+                .flatMap { output -> AnyPublisher<FetchResult, Never> in
+                    do {
+                        let values = try output.map { try $0.decode(String.self).get() }
+                        let indices = zip(dynamicKeys, values).reduce(into: [:]) { $0[$1.0] = $1.1 }
+                        return try _publisher(ref.ref(to: context + Tag.Context(indices)).validated())
+                            .eraseToAnyPublisher()
+                    } catch {
+                        return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
+                            .eraseToAnyPublisher()
+                    }
+                }
+                .eraseToAnyPublisher()
+        } catch {
+            return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
                 .eraseToAnyPublisher()
         }
     }
@@ -235,7 +292,7 @@ extension AppProtocol {
     public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
         try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
             .stream()
-            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key))
+            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
             .get()
     }
 

@@ -22,7 +22,8 @@ extension DependencyContainer {
         factory { () -> ForgetWalletAPI in
             ForgetWallet(
                 walletRepo: DIKit.resolve(),
-                walletState: DIKit.resolve()
+                walletState: DIKit.resolve(),
+                walletPersistence: DIKit.resolve()
             )
         }
 
@@ -35,6 +36,7 @@ extension DependencyContainer {
                 payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
+                syncPubKeysAddressesProvider: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
             )
@@ -47,6 +49,7 @@ extension DependencyContainer {
                 walletRepo: DIKit.resolve(),
                 payloadCrypto: DIKit.resolve(),
                 walletLogic: DIKit.resolve(),
+                walletPayloadRepository: DIKit.resolve(),
                 operationsQueue: queue
             )
         }
@@ -179,9 +182,44 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCoreHDWalletProvider in
+            let walletHolder: WalletHolderAPI = DIKit.resolve()
+            return provideWalletCoreHDWallet(
+                walletHolder: walletHolder
+            )
+        }
+
         factory { () -> ChangePasswordServiceAPI in
             ChangePasswordService(
                 walletSync: DIKit.resolve(),
+                walletHolder: DIKit.resolve()
+            )
+        }
+
+        factory { () -> VerifyMnemonicBackupServiceAPI in
+            VerifyMnemonicBackupService(
+                walletHolder: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
+                walletRepo: DIKit.resolve()
+            )
+        }
+
+        single { () -> MnemonicAccessAPI in
+            MnemonicAccessProvider(
+                legacyProvider: DIKit.resolve(),
+                nativeProvider: DIKit.resolve(),
+                nativeWalletFeatureFlag: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> MnemonicVerificationStatusProvider in
+            provideMnemonicVerificationStatus(
+                walletHolder: DIKit.resolve()
+            )
+        }
+
+        factory { () -> NativeMnemonicAccessAPI in
+            MnemonicAccessService(
                 walletHolder: DIKit.resolve()
             )
         }

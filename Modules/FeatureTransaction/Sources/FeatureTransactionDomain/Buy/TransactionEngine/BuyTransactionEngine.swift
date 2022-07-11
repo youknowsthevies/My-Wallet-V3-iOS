@@ -119,36 +119,17 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let sourceAccountLabel = sourceAccount.label
-        let orderFuture = createOrder(pendingTransaction: pendingTransaction)
+        return createOrder(pendingTransaction: pendingTransaction)
             .map { order -> OrderDetails in
                 guard let order = order as? OrderDetails else {
                     impossible("Buy transactions should only create \(OrderDetails.self) orders")
                 }
                 return order
             }
-        return Single.zip(orderFuture, fiatExchangeRatePairsSingle)
-            .map { order, moneyPair in
-                let fiatAmount: FiatValue
-                let cryptoAmount: CryptoValue
-
-                // Ideally, we should use the value in the created order, since we have one
-                if let input = order.inputValue.fiatValue, let output = order.outputValue.cryptoValue {
-                    fiatAmount = input
-                    cryptoAmount = output
-                } else {
-                    // as a fallback... and probably after there's no longer a need to create an order to get the correct fees...
-                    if pendingTransaction.amount.isFiat {
-                        fiatAmount = pendingTransaction.amount.fiatValue!
-                        cryptoAmount = try pendingTransaction.amount
-                            .convert(using: moneyPair.destination)
-                            .cryptoValue!
-                    } else {
-                        fiatAmount = try pendingTransaction.amount
-                            .convert(using: moneyPair.source)
-                            .fiatValue!
-                        cryptoAmount = pendingTransaction.amount.cryptoValue!
-                    }
-                }
+            .map { order -> PendingTransaction in
+                let fiatAmount = order.inputValue
+                let cryptoAmount = order.outputValue
+                let exchangeRate = MoneyValuePair(base: cryptoAmount, quote: fiatAmount).exchangeRate
 
                 let totalCost = order.inputValue
                 let fee = order.fee ?? .zero(currency: fiatAmount.currency)
@@ -157,8 +138,8 @@ final class BuyTransactionEngine: TransactionEngine {
                 var confirmations: [TransactionConfirmation] = [
                     TransactionConfirmations.BuyCryptoValue(baseValue: cryptoAmount),
                     TransactionConfirmations.BuyExchangeRateValue(
-                        baseValue: moneyPair.source.quote,
-                        code: moneyPair.source.base.code
+                        baseValue: exchangeRate.quote,
+                        code: exchangeRate.base.code
                     ),
                     TransactionConfirmations.Purchase(purchase: purchase),
                     TransactionConfirmations.FiatTransactionFee(fee: fee)

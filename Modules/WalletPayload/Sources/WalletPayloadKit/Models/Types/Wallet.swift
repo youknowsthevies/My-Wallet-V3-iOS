@@ -12,6 +12,8 @@ public struct NativeWallet: Equatable {
     public let doubleEncrypted: Bool
     public let doublePasswordHash: String?
     public let metadataHDNode: String?
+    public let txNotes: [String: String]?
+    public let tagNames: [[Int: String]]?
     public let options: Options
     public let hdWallets: [HDWallet]
     public let addresses: [Address]
@@ -20,6 +22,12 @@ public struct NativeWallet: Equatable {
     /// - NOTE: We never add multiple HDWallet(s)
     var defaultHDWallet: HDWallet? {
         hdWallets.first
+    }
+
+    /// Returns `true` if the mnemonic has been previously marked as verified
+    /// otherwise `false
+    var isMnemonicVerified: Bool {
+        defaultHDWallet?.mnemonicVerified ?? false
     }
 
     var isHDWallet: Bool {
@@ -38,6 +46,8 @@ public struct NativeWallet: Equatable {
         doubleEncrypted: Bool,
         doublePasswordHash: String?,
         metadataHDNode: String?,
+        txNotes: [String: String]?,
+        tagNames: [[Int: String]]?,
         options: Options,
         hdWallets: [HDWallet],
         addresses: [Address]
@@ -50,6 +60,8 @@ public struct NativeWallet: Equatable {
         self.options = options
         self.hdWallets = hdWallets
         self.addresses = addresses
+        self.txNotes = txNotes
+        self.tagNames = tagNames
     }
 }
 
@@ -67,6 +79,8 @@ func generateWallet(context: WalletCreationContext) -> Result<NativeWallet, Wall
                 doubleEncrypted: false,
                 doublePasswordHash: nil,
                 metadataHDNode: nil,
+                txNotes: [:],
+                tagNames: [],
                 options: Options.default,
                 hdWallets: [hdWallet],
                 addresses: []

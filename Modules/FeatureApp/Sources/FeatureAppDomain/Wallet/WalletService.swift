@@ -16,7 +16,7 @@ public struct WalletService {
 
     public var recoverFromMetadata: (
         _ mnemonic: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
+    ) -> AnyPublisher<WalletFetchedContext, WalletError>
 }
 
 extension WalletService {
@@ -31,7 +31,7 @@ extension WalletService {
             fetchUsingSecPassword: { password, secondPassword -> AnyPublisher<WalletFetchedContext, WalletError> in
                 fetcher.fetch(using: password, secondPassword: secondPassword)
             },
-            recoverFromMetadata: { mnemonic -> AnyPublisher<EmptyValue, WalletError> in
+            recoverFromMetadata: { mnemonic -> AnyPublisher<WalletFetchedContext, WalletError> in
                 recovery.recover(from: mnemonic)
             }
         )

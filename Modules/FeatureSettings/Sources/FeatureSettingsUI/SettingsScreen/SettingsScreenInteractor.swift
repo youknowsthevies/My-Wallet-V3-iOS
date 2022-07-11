@@ -101,7 +101,7 @@ public final class SettingsScreenInteractor {
     }
 
     func refresh() {
-        recoveryPhraseStatusProviding.fetchTriggerRelay.accept(())
+        recoveryPhraseStatusProviding.fetchTriggerSubject.send(())
         tiersProviding.fetchTriggerRelay.accept(())
         settingsService.fetch(force: true)
             .subscribe()

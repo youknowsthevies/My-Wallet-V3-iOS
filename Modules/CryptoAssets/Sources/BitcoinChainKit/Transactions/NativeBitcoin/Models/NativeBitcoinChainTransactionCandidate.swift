@@ -2,10 +2,27 @@
 
 import MoneyKit
 
-public struct NativeBitcoinChainTransactionCandidate<Token: BitcoinChainToken> {
+public struct NativeBitcoinTransactionCandidate {
+
+    public struct MaxValue {
+
+        let available: CryptoValue
+        let feeForMaxAvailable: CryptoValue
+
+        public init(
+            available: CryptoValue,
+            feeForMaxAvailable: CryptoValue
+        ) {
+            self.available = available
+            self.feeForMaxAvailable = feeForMaxAvailable
+        }
+    }
 
     /// The array of wallet key pair of the source account
-    public let source: [WalletKeyPair]
+    public let keys: [WalletKeyPair]
+
+    /// The change address for the transaction
+    public let changeAddress: String
 
     /// The wallet address for the destination account
     public let destinationAddress: String
@@ -16,37 +33,31 @@ public struct NativeBitcoinChainTransactionCandidate<Token: BitcoinChainToken> {
     /// The fee for the transaction (BTC/BCH)
     public let fees: CryptoValue
 
+    /// The change for the transaction (BTC/BCH)
+    public let change: CryptoValue
+
     /// The unspent outputs from coin selection result
     public let utxos: [UnspentOutput]
 
+    public let maxValue: MaxValue
+
     public init(
-        source: [WalletKeyPair],
+        keys: [WalletKeyPair],
+        changeAddress: String,
         destinationAddress: String,
         amount: CryptoValue,
         fees: CryptoValue,
-        utxos: [UnspentOutput]
+        change: CryptoValue,
+        utxos: [UnspentOutput],
+        maxValue: MaxValue
     ) {
-        self.source = source
-        self.destinationAddress = destinationAddress
         self.amount = amount
+        self.change = change
+        self.changeAddress = changeAddress
+        self.destinationAddress = destinationAddress
         self.fees = fees
+        self.keys = keys
+        self.maxValue = maxValue
         self.utxos = utxos
-    }
-}
-
-public struct NativeBitcoinChainSweepCandidate<Token: BitcoinChainToken> {
-
-    /// The total available amount can be sent (sweeping a wallet)
-    public let sweepAmount: CryptoValue
-
-    /// The fee to sweep a wallet (the fee needed to send the sweep amount)
-    public let sweepFee: CryptoValue
-
-    public init(
-        sweepAmount: CryptoValue,
-        sweepFee: CryptoValue
-    ) {
-        self.sweepAmount = sweepAmount
-        self.sweepFee = sweepFee
     }
 }

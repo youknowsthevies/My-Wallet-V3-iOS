@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -73,15 +74,18 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     private var disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
     private let withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Private Properties
 
     init(
         messageRecorder: MessageRecording = resolve(),
-        withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI = resolve()
+        withdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.messageRecorder = messageRecorder
         self.withdrawalLocksCheckRepository = withdrawalLocksCheckRepository
+        self.analyticsRecorder = analyticsRecorder
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
         memoModel = TextFieldViewModel(

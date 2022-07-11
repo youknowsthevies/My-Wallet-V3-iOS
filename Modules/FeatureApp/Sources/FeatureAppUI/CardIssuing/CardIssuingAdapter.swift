@@ -132,7 +132,7 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
                 return self
                     .transactionsRouter
                     .presentTransactionFlow(to: .buy(accounts.first(where: { account in
-                        account.accountType == .custodial
+                        account.accountType.isCustodial
                     })))
             }
             .subscribe()
@@ -194,7 +194,7 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
                     .compactMap { accountBalance in
                         guard let account = group.accounts.first(where: {
                             accountBalance.balance.symbol == $0.currencyType.code
-                                && $0.accountType == .custodial
+                                && $0.accountType.isCustodial
                         }) else {
                             return nil
                         }
@@ -262,7 +262,7 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
                 -> AnyPublisher<AccountSnapshot?, Never> in
                 guard let account = group.accounts.first(where: { account in
                     account.currencyType.code == accountCurrency.accountCurrency
-                        && account.accountType == .custodial
+                        && account.accountType.isCustodial
                 }) else {
                     return .just(nil)
                 }
@@ -285,7 +285,7 @@ extension FeatureCardIssuingDomain.Card.Address {
             line1: address.lineOne,
             line2: address.lineTwo,
             city: address.city,
-            postcode: address.postalCode,
+            postCode: address.postalCode,
             state: address.state,
             country: address.country.code
         )

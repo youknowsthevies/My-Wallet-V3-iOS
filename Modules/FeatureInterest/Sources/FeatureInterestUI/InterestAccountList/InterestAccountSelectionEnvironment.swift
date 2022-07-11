@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -16,6 +17,7 @@ struct InterestAccountSelectionEnvironment {
     let blockchainAccountRepository: BlockchainAccountRepositoryAPI
     let kycVerificationService: KYCVerificationServiceAPI
     let transactionRouterAPI: TransactionsRouterAPI
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -29,6 +31,7 @@ extension InterestAccountSelectionEnvironment {
         blockchainAccountRepository: resolve(),
         kycVerificationService: resolve(),
         transactionRouterAPI: resolve(),
+        analyticsRecorder: resolve(),
         mainQueue: .main
     )
 }

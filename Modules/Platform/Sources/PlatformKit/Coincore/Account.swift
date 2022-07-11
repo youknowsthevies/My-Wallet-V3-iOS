@@ -3,14 +3,22 @@
 import MoneyKit
 
 public enum AccountType {
-    /// An account controlled by BCDC
-    case custodial
+    /// Trading custodial account controlled by BCDC
+    case trading
+    /// Exchange custodial account controlled by BCDC
+    case exchange
     /// An account controlled by the user within the BCDC ecosystem
     case nonCustodial
     /// An external account, such as an external crypto address
     case external
     /// An account representing a group of accounts
     case group
+}
+
+extension AccountType {
+    public var isCustodial: Bool {
+        self == .trading || self == .exchange
+    }
 }
 
 public protocol Account {

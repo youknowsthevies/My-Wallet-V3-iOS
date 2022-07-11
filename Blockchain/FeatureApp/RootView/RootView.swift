@@ -232,11 +232,33 @@ struct RootView: View {
     }
 
     @ViewBuilder func account() -> some View {
-        WithViewStore(store.stateless) { viewStore in
+        WithViewStore(store) { viewStore in
             IconButton(icon: .user) {
                 viewStore.send(.enter(into: .account, context: .none))
             }
+            .overlay(Badge(count: viewStore.unreadSupportMessageCount))
             .identity(blockchain.ux.user.account.entry)
+        }
+    }
+}
+
+// swiftlint:disable empty_count
+struct Badge: View {
+    let count: Int
+
+    var body: some View {
+        if count > 0 {
+            ZStack(alignment: .topTrailing) {
+                Color.clear
+                Text(count.description)
+                    .typography(.micro.bold())
+                    .foregroundColor(.semantic.light)
+                    .padding(4)
+                    .background(Color.semantic.error)
+                    .clipShape(Circle())
+                    .alignmentGuide(.top) { $0[.bottom] }
+                    .alignmentGuide(.trailing) { $0[.trailing] - $0.width * 0.2 }
+            }
         }
     }
 }

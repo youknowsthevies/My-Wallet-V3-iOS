@@ -174,6 +174,9 @@ public final class CoinViewObserver: Session.Observer {
 
     lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event in
         let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
+        let origin = try event.context.decode(blockchain.ux.asset.select.origin) as String
+        app.state.set(blockchain.ux.asset[cryptoCurrency.code].select.origin, to: origin)
+
         var vc: UIViewController?
         vc = UIHostingController(
             rootView: CoinAdapterView(

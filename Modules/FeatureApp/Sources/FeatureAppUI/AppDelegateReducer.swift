@@ -21,18 +21,11 @@ typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 struct BackgroundTaskId: Hashable {}
 
 public struct AppDelegateContext: Equatable {
-    let intercomApiKey: String
-    let intercomAppId: String
-
     let embraceAppId: String
 
     public init(
-        intercomApiKey: String,
-        intercomAppId: String,
         embraceAppId: String
     ) {
-        self.intercomApiKey = intercomApiKey
-        self.intercomAppId = intercomAppId
         self.embraceAppId = embraceAppId
     }
 }
@@ -80,7 +73,6 @@ struct AppDelegateEnvironment {
     var certificatePinner: CertificatePinnerAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
-    var customerSupportChatService: CustomerSupportChatServiceAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
@@ -137,12 +129,6 @@ let appDelegateReducer = Reducer<
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
-
-            initializeCustomerChatSupport(
-                using: environment.customerSupportChatService,
-                apiKey: context.intercomApiKey,
-                appId: context.intercomAppId
-            ),
 
             initializeObservability(
                 using: environment.observabilityService,
@@ -238,16 +224,6 @@ private func applyBlurFilter(
     }
     return Effect.fireAndForget {
         handler.applyEffect(on: view)
-    }
-}
-
-private func initializeCustomerChatSupport(
-    using service: CustomerSupportChatServiceAPI,
-    apiKey: String,
-    appId: String
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        service.initializeWithAcccountKey(apiKey, appId: appId)
     }
 }
 

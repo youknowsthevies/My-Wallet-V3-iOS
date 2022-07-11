@@ -35,7 +35,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 

@@ -173,7 +173,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             }
             .distinctUntilChanged()
             .asPublisher()
-            .replaceError(with: .USD)
+            .replaceError(with: Locale.current.currencyCode.flatMap(FiatCurrency.init(code:)) ?? .USD)
             .eraseToAnyPublisher()
     }
 
@@ -195,7 +195,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
     var supportedFiatCurrencies: AnyPublisher<Set<FiatCurrency>, Never> {
         supportedPairsService
             .fetchSupportedTradingCurrencies()
-            .replaceError(with: [.USD, .GBP, .USD])
+            .replaceError(with: [.USD, .GBP, .EUR, .ARS])
             .eraseToAnyPublisher()
     }
 

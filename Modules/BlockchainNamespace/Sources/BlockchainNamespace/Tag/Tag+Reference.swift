@@ -4,25 +4,22 @@ import Foundation
 
 extension Tag {
 
-    public var reference: Tag.Reference { ref(to: [:]) }
+    public var reference: Tag.Reference { ref() }
 
-    public func ref(to indices: Tag.Context) -> Tag.Reference {
-        Tag.Reference(self, to: indices)
-    }
-
-    public func ref(to indices: Tag.Context, in app: AppProtocol) -> Tag.Reference {
+    public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
         Tag.Reference(self, to: indices, in: app)
-    }
-
-    public func ref(in app: AppProtocol) -> Tag.Reference {
-        Tag.Reference(self, to: [:], in: app)
     }
 }
 
 extension Tag.Reference {
 
-    public func ref(to indices: Tag.Context) -> Tag.Reference {
-        Tag.Reference(tag, to: context + indices)
+    public func `in`(_ app: AppProtocol) -> Tag.Reference {
+        if ObjectIdentifier(app) == self.app { return self }
+        return Tag.Reference(tag, to: context, in: app)
+    }
+
+    public func ref(to indices: Tag.Context = [:], in app: AppProtocol? = nil) -> Tag.Reference {
+        Tag.Reference(tag, to: context + indices, in: app)
     }
 }
 
@@ -40,39 +37,43 @@ extension Tag {
         public let string: String
 
         private var error: Swift.Error?
+        private var app: ObjectIdentifier?
+
+        @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
+            do {
+                self = try Self(checked: tag, context: context, in: app)
+            } catch {
+                self = Self(unchecked: tag, context: context)
+                self.error = error
+            }
+        }
 
         @usableFromInline init(unchecked tag: Tag, context: Tag.Context) {
             self.tag = tag
             self.context = context
             indices = [:]
             string = tag.id
-            error = tag.template.indices.isNotEmpty
+            error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
                 ? tag.error(message: "Missing indices for ref to \(tag.id)")
                 : nil
         }
 
-        @usableFromInline init(_ tag: Tag, to context: Tag.Context, in app: AppProtocol? = nil) {
+        @usableFromInline init(checked tag: Tag, context: Tag.Context, in app: AppProtocol? = nil) throws {
             self.tag = tag
             self.context = context
-            do {
-                let ids = try tag.template.indices(from: context, in: app)
-                let indices = try Dictionary(
-                    uniqueKeysWithValues: zip(
-                        tag.template.indices.map { try Tag(id: $0, in: tag.language) },
-                        ids
-                    )
+            let ids = try tag.template.indices(from: context, in: app)
+            let indices = try Dictionary(
+                uniqueKeysWithValues: zip(
+                    tag.template.indices.map { try Tag(id: $0, in: tag.language) },
+                    ids
                 )
-                self.indices = indices
-                string = Self.id(
-                    tag: tag,
-                    to: context,
-                    indices: indices
-                )
-            } catch {
-                indices = [:]
-                string = tag.id
-                self.error = error
-            }
+            )
+            self.app = app.map(ObjectIdentifier.init)
+            self.indices = indices
+            string = Self.id(
+                tag: tag,
+                to: indices
+            )
         }
     }
 }
@@ -117,20 +118,22 @@ extension Tag.Reference {
 
 extension Tag.Reference {
 
-    public func id(ignoring: Set<Tag> = [blockchain.user.id[]]) -> String {
+    public static let volatileIndices: Set<Tag> = [
+        blockchain.user.id[]
+    ]
+
+    public func id(ignoring: Set<Tag> = Tag.Reference.volatileIndices) -> String {
         Self.id(
             tag: tag,
-            to: context,
-            indices: indices,
+            to: indices,
             ignoring: ignoring
         )
     }
 
     fileprivate static func id(
         tag: Tag,
-        to context: Tag.Context,
-        indices: Indices,
-        ignoring: Set<Tag> = []
+        to indices: Indices,
+        ignoring: Set<Tag> = Tag.Reference.volatileIndices
     ) -> String {
         var ignoring = ignoring
         if tag.is(blockchain.db.collection.id) {
@@ -145,7 +148,7 @@ extension Tag.Reference {
                 guard
                     let collectionId = info["id"],
                     ignoring.doesNotContain(collectionId),
-                    let id = context[collectionId]
+                    let id = indices[collectionId]
                 else {
                     return info.name
                 }
@@ -158,15 +161,15 @@ extension Tag.Reference {
 extension Tag.Reference: Equatable {
 
     public static func == (lhs: Tag.Reference, rhs: Tag.Reference) -> Bool {
-        lhs.string == rhs.string && lhs.context == rhs.context
+        lhs.string == rhs.string
     }
 
     public static func == (lhs: Tag.Reference, rhs: Tag) -> Bool {
-        lhs.string == rhs.id && lhs.context.isEmpty
+        lhs.string == rhs.id
     }
 
     public static func == (lhs: Tag.Reference, rhs: L) -> Bool {
-        lhs.string == rhs(\.id) && lhs.context.isEmpty
+        lhs.string == rhs(\.id)
     }
 
     public static func != (lhs: Tag.Reference, rhs: Tag) -> Bool {
@@ -231,7 +234,7 @@ extension Tag.Reference {
                     return value
                 } else if tag.id == id {
                     return "ø"
-                } else if let tag = app?.language[id], let value = try? app?.state.get(tag) as? String {
+                } else if let tag = app?.language[id], let value = try? app?.state.get(tag, as: String.self) {
                     return value
                 } else {
                     throw tag.error(message: "Missing index \(id) for ref to \(tag.id)")

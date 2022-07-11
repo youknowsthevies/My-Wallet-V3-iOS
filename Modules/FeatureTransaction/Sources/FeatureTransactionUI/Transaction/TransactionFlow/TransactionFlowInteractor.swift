@@ -795,9 +795,51 @@ extension AssetAction {
 
 extension TransactionFlowInteractor {
 
+    // swiftlint:disable multiline_function_chains
     func onInit() {
 
         app.post(event: blockchain.ux.transaction.did.start)
+        app.state.set(blockchain.app.configuration.transaction.id, to: action)
+
+        let intent = action
+        transactionModel.actions.publisher
+            .withLatestFrom(transactionModel.state.publisher) { ($1, $0) }
+            .sink { [app] state, action in
+                let tx = state
+                app.state.transaction { state in
+                    switch tx.step {
+                    case .initial:
+                        state.set(blockchain.ux.transaction.source.id, to: tx.source?.currencyType.code)
+                        state.set(blockchain.ux.transaction.source.target.id, to: tx.destination?.currencyType.code)
+                    default:
+                        break
+                    }
+
+                    switch action {
+                    case .fatalTransactionError:
+                        state.set(blockchain.ux.transaction.source.target.previous.did.error, to: true)
+                    case .showCheckout:
+                        guard let value = tx.pendingTransaction?.amount else { break }
+
+                        let amount = try value.amount.json()
+
+                        state.clear(blockchain.ux.transaction.source.target.previous.did.error)
+                        state.set(blockchain.ux.transaction.source.target.previous.input.amount, to: amount)
+                        state.set(blockchain.ux.transaction.source.target.previous.input.currency.code, to: value.currency.code)
+
+                        if intent == .buy, let source = tx.source {
+                            state.set(blockchain.ux.transaction.previous.payment.method.id, to: source.identifier)
+                        }
+                    case .sourceAccountSelected(let source):
+                        state.set(blockchain.ux.transaction.source.id, to: source.currencyType.code)
+                    case .targetAccountSelected(let target):
+                        state.set(blockchain.ux.transaction.source.target.id, to: target.currencyType.code)
+                    default:
+                        break
+                    }
+                }
+            }
+            .store(in: &bag)
 
         transactionModel.state.distinctUntilChanged(\.step).publisher
             .sink { [app] state in

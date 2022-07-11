@@ -108,7 +108,7 @@ struct TradingCurrencySelector_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(
                     displayCurrency: .JPY,
-                    currencies: [.EUR, .GBP, .USD]
+                    currencies: [.EUR, .GBP, .USD, .ARS]
                 ),
                 reducer: TradingCurrency.reducer,
                 environment: .init(

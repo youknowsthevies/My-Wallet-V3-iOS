@@ -32,8 +32,8 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         account?.actionableBalance ?? .just(.zero(currency: asset))
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        account?.receiveAddress ?? .error(ReceiveAddressError.notSupported)
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        account?.receiveAddress ?? .failure(ReceiveAddressError.notSupported)
     }
 
     public var balance: AnyPublisher<MoneyValue, Error> {

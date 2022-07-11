@@ -16,6 +16,7 @@ public enum UX {
         public var icon: UX.Icon?
         public var metadata: Metadata
         public var actions: [Action]
+        public var categories: [String] = []
 
         public init(
             source: Swift.Error? = nil,
@@ -90,6 +91,7 @@ extension UX.Error {
             message = ux.message
             icon = ux.icon
             actions = ux.actions ?? []
+            categories = ux.categories ?? []
         } else {
             title = L10n.networkError.title
             message = nabu.description ?? L10n.oops.message
@@ -117,6 +119,7 @@ extension UX.Error {
         icon = ux.icon
         actions = ux.actions ?? .default
         metadata = [:]
+        categories = ux.categories ?? []
     }
 }
 

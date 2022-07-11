@@ -12,7 +12,7 @@ public protocol WalletRecoveryServiceAPI {
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func recover(
         from mnemonic: String
-    ) -> AnyPublisher<EmptyValue, WalletError>
+    ) -> AnyPublisher<WalletFetchedContext, WalletError>
 }
 
 struct WalletPayloadContext: Equatable {
@@ -23,6 +23,8 @@ struct WalletPayloadContext: Equatable {
 struct DecryptedPayloadContext: Equatable {
     let walletPayload: WalletPayload
     let payload: String
+    let guid: String
+    let sharedKey: String
     let password: String
 }
 
@@ -51,7 +53,7 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
 
     func recover(
         from mnemonic: String
-    ) -> AnyPublisher<EmptyValue, WalletError> {
+    ) -> AnyPublisher<WalletFetchedContext, WalletError> {
         guard WalletCore.Mnemonic.isValid(mnemonic: mnemonic) else {
             return .failure(.recovery(.invalidMnemonic))
         }
@@ -82,7 +84,8 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
             }
             .flatMap { [payloadCrypto] walletPayloadContext -> AnyPublisher<DecryptedPayloadContext, WalletError> in
                 let payloadWrapper = walletPayloadContext.payload.payloadWrapper
-                let password = walletPayloadContext.credentials.password
+                let credentials = walletPayloadContext.credentials
+                let password = credentials.password
                 guard let wrapper = payloadWrapper, !wrapper.payload.isEmpty else {
                     return .failure(WalletError.payloadNotFound)
                 }
@@ -96,12 +99,14 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                     DecryptedPayloadContext(
                         walletPayload: walletPayloadContext.payload,
                         payload: payload,
+                        guid: credentials.guid,
+                        sharedKey: credentials.sharedKey,
                         password: password
                     )
                 }
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletLogic] decryptedWalletPayloadContext -> AnyPublisher<WalletState, WalletError> in
+            .flatMap { [walletLogic] decryptedWalletPayloadContext -> AnyPublisher<DecryptedPayloadContext, WalletError> in
                 guard let data = decryptedWalletPayloadContext.payload.data(using: .utf8) else {
                     return .failure(.decryption(.decryptionError))
                 }
@@ -110,8 +115,16 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                     payload: decryptedWalletPayloadContext.walletPayload,
                     decryptedWallet: data
                 )
+                .map { _ in decryptedWalletPayloadContext }
+                .eraseToAnyPublisher()
             }
-            .map { _ in .noValue }
+            .map { context in
+                WalletFetchedContext(
+                    guid: context.guid,
+                    sharedKey: context.sharedKey,
+                    passwordPartHash: hashPassword(context.password)
+                )
+            }
             .eraseToAnyPublisher()
     }
 

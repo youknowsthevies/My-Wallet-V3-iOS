@@ -475,8 +475,17 @@ extension LocalizationConstants.SimpleBuy {
                             "Funds will be credited to your GBP wallet as soon as we receive them. In the UK Faster Payments Network, this can take a couple of hours.",
                             comment: "Funds will be credited to your GBP wallet as soon as we receive them. In the UK Faster Payments Network, this can take a couple of hours."
                         )
+                        public static let ARS = NSLocalizedString(
+                            "Funds will be credited to your ARS wallet as soon as we receive them. Funds are generally available within one business day.",
+                            comment: "Funds will be credited to your ARS wallet as soon as we receive them. Funds are generally available within one business day."
+                        )
                     }
                 }
+
+                public static let recipientNameARS = NSLocalizedString(
+                    "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",
+                    comment: "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
+                )
 
                 public static let recipientNameUSD = NSLocalizedString(
                     "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",

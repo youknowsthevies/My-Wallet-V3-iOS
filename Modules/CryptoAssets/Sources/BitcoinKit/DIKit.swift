@@ -31,5 +31,30 @@ extension DependencyContainer {
                 client: DIKit.resolve()
             )
         }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinChainTransactionSigningServiceAPI in
+            BitcoinTransactionSigningService()
+        }
+
+        single(tag: BitcoinChainCoin.bitcoin) {
+            MultiAddressRepository<BitcoinHistoricalTransaction>(
+                client: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
+            )
+        }
+
+        factory(tag: BitcoinChainCoin.bitcoin) { () -> FetchMultiAddressFor in
+            let repository: MultiAddressRepository<BitcoinHistoricalTransaction> =
+                DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
+            return { xpubs in
+                repository.multiAddress(for: xpubs)
+                    .map {
+                        BitcoinChainMultiAddressData(
+                            addresses: $0.addresses,
+                            latestBlockHeight: $0.latestBlockHeight
+                        )
+                    }
+                    .eraseToAnyPublisher()
+            }
+        }
     }
 }

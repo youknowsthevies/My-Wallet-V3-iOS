@@ -6,12 +6,26 @@ import Errors
 import PlatformKit
 import ToolKit
 
-protocol UnspentOutputRepositoryAPI {
+public typealias FetchUnspentOutputsFor = ([XPub]) -> AnyPublisher<UnspentOutputs, NetworkError>
+
+public protocol UnspentOutputRepositoryAPI {
 
     /// Emits unspent outputs of the provided addresses (extended public key)
     func unspentOutputs(
-        for addresses: [XPub]
+        for addresses: [XPub],
+        forceFetch: Bool
     ) -> AnyPublisher<UnspentOutputs, NetworkError>
+
+    func invalidateCache()
+}
+
+extension UnspentOutputRepositoryAPI {
+
+    public func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputs, NetworkError> {
+        unspentOutputs(for: addresses, forceFetch: false)
+    }
 }
 
 final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
@@ -25,18 +39,20 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
 
     // MARK: - Init
 
-    init(client: BitcoinChainKit.APIClientAPI) {
+    init(client: BitcoinChainKit.APIClientAPI, coin: BitcoinChainCoin) {
         self.client = client
         let cache: AnyCache<Set<XPub>, UnspentOutputs> = InMemoryCache(
-            configuration: .onLoginLogout(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
         cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] xPubs in
                 client
                     .unspentOutputs(for: Array(xPubs))
-                    .map(UnspentOutputs.init(networkResponse:))
+                    .map { response in
+                        UnspentOutputs(networkResponse: response, coin: coin)
+                    }
                     .eraseToAnyPublisher()
             }
         )
@@ -45,8 +61,13 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     // MARK: - Methods
 
     func unspentOutputs(
-        for addresses: [XPub]
+        for addresses: [XPub],
+        forceFetch: Bool
     ) -> AnyPublisher<UnspentOutputs, NetworkError> {
-        cachedValue.get(key: Set(addresses))
+        cachedValue.get(key: Set(addresses), forceFetch: forceFetch)
+    }
+
+    func invalidateCache() {
+        cachedValue.invalidateCache()
     }
 }

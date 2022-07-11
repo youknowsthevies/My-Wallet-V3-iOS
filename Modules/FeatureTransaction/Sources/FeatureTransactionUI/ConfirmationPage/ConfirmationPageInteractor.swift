@@ -21,17 +21,14 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
     weak var listener: ConfirmationPageListener?
 
     private let transactionModel: TransactionModel
-    private let analyticsHook: TransactionAnalyticsHook
     private let webViewRouter: WebViewRouterAPI
 
     init(
         presenter: ConfirmationPagePresentable,
         transactionModel: TransactionModel,
-        analyticsHook: TransactionAnalyticsHook = resolve(),
         webViewRouter: WebViewRouterAPI = resolve()
     ) {
         self.transactionModel = transactionModel
-        self.analyticsHook = analyticsHook
         self.webViewRouter = webViewRouter
         super.init(presenter: presenter)
     }
@@ -47,12 +44,10 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             .asDriver(onErrorJustReturn: .empty)
 
         presenter.continueButtonTapped
-            .throttle(.milliseconds(400))
+            .throttle(.seconds(5), latest: false)
             .asObservable()
-            .withLatestFrom(transactionModel.state)
-            .subscribe(onNext: { [weak self] state in
-                self?.analyticsHook.onTransactionSubmitted(with: state)
-                self?.transactionModel.process(action: .executeTransaction)
+            .subscribe(onNext: { [transactionModel] in
+                transactionModel.process(action: .executeTransaction)
             })
             .disposeOnDeactivate(interactor: self)
 

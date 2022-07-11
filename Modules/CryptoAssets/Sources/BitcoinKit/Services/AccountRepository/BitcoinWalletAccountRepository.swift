@@ -59,7 +59,7 @@ final class BitcoinWalletAccountRepository {
         }
 
         let fetch_new = { [bitcoinEntryFetcher] () -> AnyPublisher<BTCAccounts, BitcoinWalletRepositoryError> in
-            bitcoinEntryFetcher.fetchBitcoin()
+            bitcoinEntryFetcher.fetchOrCreateBitcoin()
                 .mapError { _ in .missingWallet }
                 .map { entry in
                     let defaultIndex = entry.defaultAccountIndex

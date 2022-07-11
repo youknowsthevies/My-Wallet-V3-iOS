@@ -42,9 +42,7 @@ public final class TransactionProcessor {
     private let engine: TransactionEngine
     private let notificationCenter: NotificationCenter
     private let pendingTxSubject: BehaviorSubject<PendingTransaction>
-    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
     private let disposeBag = DisposeBag()
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
@@ -52,12 +50,10 @@ public final class TransactionProcessor {
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
         engine: TransactionEngine,
-        notificationCenter: NotificationCenter = .default,
-        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
+        notificationCenter: NotificationCenter = .default
     ) {
         self.engine = engine
         self.notificationCenter = notificationCenter
-        self.sendEmailNotificationService = sendEmailNotificationService
         pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
         engine.start(
             sourceAccount: sourceAccount,
@@ -180,6 +176,7 @@ public final class TransactionProcessor {
         } catch {
             return .error(error)
         }
+
         return engine
             .doValidateAll(pendingTransaction: pendingTransaction)
             .map { validatedTransaction in
@@ -202,10 +199,8 @@ public final class TransactionProcessor {
                     .catchAndReturn(transactionResult)
             }
             .do(
-                afterSuccess: { [weak self] transactionResult in
-                    guard let self = self else { return }
-                    self.triggerSendEmailNotification(transactionResult)
-                    self.notificationCenter.post(
+                onSuccess: { [notificationCenter] _ in
+                    notificationCenter.post(
                         name: .transaction,
                         object: nil
                     )
@@ -256,26 +251,8 @@ public final class TransactionProcessor {
 
     // MARK: - Private methods
 
-    private func triggerSendEmailNotification(_ transactionResult: TransactionResult) {
-        guard engine.sourceAccount is NonCustodialAccount else {
-            return
-        }
-        switch transactionResult {
-        case .hashed(txHash: let txHash, amount: .some(let amount)):
-            sendEmailNotificationService
-                .postSendEmailNotificationTrigger(
-                    moneyValue: amount,
-                    txHash: txHash
-                )
-                .subscribe()
-                .store(in: &cancellables)
-        default:
-            break
-        }
-    }
-
-    // Called back by the engine if it has received an external signal and the existing confirmation set
-    // requires a refresh
+    /// Called back by the engine if it has received an external signal and the existing confirmation set
+    /// requires a refresh
     private func refreshConfirmations(revalidate: Bool) -> Observable<Void> {
         Logger.shared.debug("!TRANSACTION!> in `refreshConfirmations`")
         guard let pendingTransaction = try? pendingTransaction() else {

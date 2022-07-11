@@ -24,7 +24,7 @@ import FeatureWalletConnectData
 import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
-import Firebase
+import FirebaseCore
 import FirebaseCrashlytics
 import MetadataDataKit
 import MetadataKit
@@ -85,8 +85,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
         window.setRootViewController(hostingController)
         let context = AppDelegateContext(
-            intercomApiKey: CustomerSupportChatConfiguration.apiKey,
-            intercomAppId: CustomerSupportChatConfiguration.appId,
             embraceAppId: ObservabilityConfiguration.appId
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
@@ -193,7 +191,9 @@ private func eraseWalletForUITestsIfNeeded() {
         // This behaviour happens even on non-debug builds, this is necessary because our UI tests
         // run on real devices with 'release-staging' builds.
         WalletManager.shared.forgetWallet()
-        BlockchainSettings.App.shared.clear()
+        UserDefaults.standard.removePersistentDomain(
+            forName: MainBundleProvider.mainBundle.bundleIdentifier!
+        )
     }
 }
 

@@ -17,17 +17,33 @@ struct ActivityListView: View {
     }
 
     var body: some View {
-        WithViewStore(store.scope(state: \.transactions)) { viewStore in
+        WithViewStore(store) { viewStore in
             ScrollView {
-                ForEach(viewStore.state) { transaction in
+                ForEach(viewStore.state.transactions) { transaction in
                     ActivityRow(transaction) {
                         viewStore.send(.showTransaction(transaction))
+                    }
+                    .onAppear {
+                        if transaction == viewStore.state.transactions.last {
+                            viewStore.send(.fetchMoreTransactions)
+                        }
                     }
                     PrimaryDivider()
                 }
             }
             .padding(0)
             .navigationTitle(localized.transactionListTitle)
+            .bottomSheet(
+                isPresented: viewStore.binding(
+                    get: {
+                        $0.displayedTransaction != nil
+                    },
+                    send: CardManagementAction.setTransactionDetailsVisible
+                ),
+                content: {
+                    ActivityDetailsView(store: store.scope(state: \.displayedTransaction))
+                }
+            )
         }
     }
 }

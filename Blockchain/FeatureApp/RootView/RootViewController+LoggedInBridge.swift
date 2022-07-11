@@ -337,12 +337,12 @@ extension RootViewController: LoggedInBridge {
                         break
                     }
                 },
-                receiveValue: { [customerSupportChatRouter] tiers in
+                receiveValue: { [app] tiers in
                     guard tiers.isTier2Approved else {
                         self.showLegacySupportAlert()
                         return
                     }
-                    customerSupportChatRouter.start()
+                    app.post(event: blockchain.ux.customer.support.show.messenger)
                 }
             )
             .store(in: &bag)

@@ -243,6 +243,7 @@ extension UIColor {
     // MARK: Currency
 
     public static let fiat = green500
+    public static let fiatARS = blue300
 
     // MARK: Tiers
 

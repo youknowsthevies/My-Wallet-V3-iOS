@@ -72,6 +72,10 @@ public enum JSONValidationError: Error, Equatable {
 }
 
 func validateJSON(jsonString: String) -> Result<String, JSONValidationError> {
-    // TODO: Implement this
-    .success(jsonString)
+    guard let data = jsonString.data(using: .utf8) else {
+        return .failure(.invalidJSON)
+    }
+    return Result { try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) }
+        .mapError { _ in .invalidJSON }
+        .map { _ in jsonString }
 }

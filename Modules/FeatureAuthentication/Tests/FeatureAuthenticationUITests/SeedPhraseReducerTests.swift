@@ -7,6 +7,7 @@ import ComposableArchitecture
 @testable import FeatureAuthenticationUI
 import HDWalletKit
 import ToolKit
+@testable import WalletPayloadKit
 import XCTest
 
 @testable import AnalyticsKitMock
@@ -161,6 +162,7 @@ final class SeedPhraseReducerTests: XCTestCase {
             sharedKey: "sharedKey",
             password: "password"
         )
+        let passwordHash = "5e884" // hash for "password" from `hashPasword`
         testStore.receive(.triggerAuthenticate)
         testStore.receive(.accountCreation(.success(walletCreatedContext)))
         mockMainQueue.advance()
@@ -170,7 +172,13 @@ final class SeedPhraseReducerTests: XCTestCase {
         )
         testStore.receive(.accountRecovered(accountRecoverContext))
         mockMainQueue.advance()
+        let context = WalletFetchedContext(
+            guid: "guid",
+            sharedKey: "sharedKey",
+            passwordPartHash: passwordHash
+        )
         XCTAssertTrue(walletFetcherServiceMock.fetchWalletAfterAccountRecoveryCalled)
-        testStore.receive(.none)
+        testStore.receive(.walletFetched(.success(.right(context))))
+        testStore.receive(.informWalletFetched(context))
     }
 }
