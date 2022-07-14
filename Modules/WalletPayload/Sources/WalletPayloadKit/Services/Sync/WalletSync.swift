@@ -27,6 +27,7 @@ final class WalletSync: WalletSyncAPI {
     private let operationQueue: DispatchQueue
     private let saveWalletRepository: SaveWalletRepositoryAPI
     private let syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI
+    private let logger: NativeWalletLoggerAPI
     private let checksumProvider: (Data) -> String
 
     init(
@@ -36,6 +37,7 @@ final class WalletSync: WalletSyncAPI {
         walletEncoder: WalletEncodingAPI,
         saveWalletRepository: SaveWalletRepositoryAPI,
         syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI,
+        logger: NativeWalletLoggerAPI,
         operationQueue: DispatchQueue,
         checksumProvider: @escaping (Data) -> String
     ) {
@@ -47,6 +49,7 @@ final class WalletSync: WalletSyncAPI {
         self.syncPubKeysAddressesProvider = syncPubKeysAddressesProvider
         self.operationQueue = operationQueue
         self.checksumProvider = checksumProvider
+        self.logger = logger
     }
 
     /// Syncs the given `Wrapper` of a `Wallet` with the backend.
@@ -61,12 +64,16 @@ final class WalletSync: WalletSyncAPI {
         let saveOperations = saveOperations(
             walletEncoder: walletEncoder,
             payloadCrypto: payloadCrypto,
+            logger: logger,
             checksumProvider: checksumProvider,
             saveWalletRepository: saveWalletRepository,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProvider
         )
         return Just(wrapper)
             .receive(on: operationQueue)
+            .logMessageOnOutput(logger: logger, message: { wrapper in
+                "Wrapper to be synced: \(wrapper)"
+            })
             .flatMap { wrapper -> AnyPublisher<WalletCreationPayload, WalletSyncError> in
                 saveOperations(wrapper, password)
                     .eraseToAnyPublisher()
@@ -119,9 +126,11 @@ final class WalletSync: WalletSyncAPI {
 ///   - checksumProvider: A `(Data) -> String` closure that applies a checksum
 ///   - saveWalletRepository: A `SaveWalletRepositoryAPI` for saving the wallet to the backend
 ///  - Returns: A closure `(Wrapper, Password) -> AnyPublisher<WalletCreationPayload, WalletSyncError>`
+// swiftlint:disable function_parameter_count
 private func saveOperations(
     walletEncoder: WalletEncodingAPI,
     payloadCrypto: PayloadCryptoAPI,
+    logger: NativeWalletLoggerAPI,
     checksumProvider: @escaping (Data) -> String,
     saveWalletRepository: SaveWalletRepositoryAPI,
     syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI
@@ -143,12 +152,17 @@ private func saveOperations(
                 .mapError(WalletSyncError.encodingError)
                 .eraseToAnyPublisher()
         }
-        .flatMap { [syncPubKeysAddressesProvider] payload
+        .logMessageOnOutput(logger: logger, message: { walletPayload in
+            "Encrypted payload be synced: \(walletPayload)"
+        })
+        .flatMap { [syncPubKeysAddressesProvider, logger] payload
             -> AnyPublisher<(WalletCreationPayload, String?), WalletSyncError> in
             guard wrapper.syncPubKeys else {
+                logger.log(message: "syncPubKeys not required", metadata: nil)
                 return .just((payload, nil))
             }
             // To get notifications working we need to pass a list of lookahead addresses
+            logger.log(message: "syncPubKeys required", metadata: nil)
             let accounts = wrapper.wallet.defaultHDWallet?.accounts ?? []
             return syncPubKeysAddressesProvider.provideAddresses(
                 active: wrapper.wallet.spendableActiveAddresses,
@@ -156,8 +170,15 @@ private func saveOperations(
             )
             .mapError(WalletSyncError.syncPubKeysFailure)
             .map { addresses in (payload, addresses) }
+            .logMessageOnOutput(logger: logger, message: { _, addresses in
+                let addresses = addresses ?? ""
+                return "Addresses to sync \(addresses)"
+            })
             .eraseToAnyPublisher()
         }
+        .logMessageOnOutput(logger: logger, message: { payload, _ in
+            "!!! About to sync \(payload)"
+        })
         .flatMap { [saveWalletRepository] payload, addresses -> AnyPublisher<WalletCreationPayload, WalletSyncError> in
             saveWalletRepository.saveWallet(
                 payload: payload,
@@ -167,6 +188,9 @@ private func saveOperations(
             .map { _ in payload }
             .eraseToAnyPublisher()
         }
+        .logMessageOnOutput(logger: logger, message: { _ in
+            "Wallet synced successfully"
+        })
         .eraseToAnyPublisher()
     }
 }

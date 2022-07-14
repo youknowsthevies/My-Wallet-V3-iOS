@@ -839,6 +839,12 @@ extension DependencyContainer {
             return UserDeletionRepository(client: client)
         }
 
+        // MARK: Native Wallet Debugging
+
+        single {
+            NativeWalletLogger() as NativeWalletLoggerAPI
+        }
+
         // MARK: Pulse Network Debugging
 
         single {

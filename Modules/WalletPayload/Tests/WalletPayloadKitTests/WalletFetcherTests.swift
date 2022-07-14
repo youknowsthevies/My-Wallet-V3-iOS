@@ -42,14 +42,16 @@ class WalletFetcherTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: notificationCenterSpy
+            notificationCenter: notificationCenterSpy,
+            logger: NoopNativeWalletLogging()
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: dispatchQueue
+            operationsQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging()
         )
 
         let encryptedPayload = String(data: jsonV4, encoding: .utf8)!
@@ -137,14 +139,16 @@ class WalletFetcherTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: notificationCenterSpy
+            notificationCenter: notificationCenterSpy,
+            logger: NoopNativeWalletLogging()
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: dispatchQueue
+            operationsQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging()
         )
 
         let encryptedPayload = String(data: jsonV4, encoding: .utf8)!

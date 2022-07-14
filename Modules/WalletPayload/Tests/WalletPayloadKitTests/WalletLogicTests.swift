@@ -42,7 +42,8 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging()
         )
 
         let walletPayload = WalletPayload(
@@ -85,7 +86,7 @@ class WalletLogicTests: XCTestCase {
 
         let upgraderSpy = WalletUpgraderSpy(
             realUpgrader: WalletUpgrader(
-                workflows: [Version4Workflow()]
+                workflows: [Version4Workflow(logger: NoopNativeWalletLogging())]
             )
         )
 
@@ -95,7 +96,8 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgraderSpy,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging()
         )
 
         let walletPayload = WalletPayload(
@@ -152,7 +154,7 @@ class WalletLogicTests: XCTestCase {
 
         let upgraderSpy = WalletUpgraderSpy(
             realUpgrader: WalletUpgrader(
-                workflows: [Version4Workflow()]
+                workflows: [Version4Workflow(logger: NoopNativeWalletLogging())]
             )
         )
 
@@ -162,7 +164,8 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgraderSpy,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging()
         )
 
         let walletPayload = WalletPayload(

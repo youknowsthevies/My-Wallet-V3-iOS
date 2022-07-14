@@ -55,6 +55,7 @@ final class WalletLogic: WalletLogicAPI {
     private let metadata: MetadataServiceAPI
     private let walletSync: WalletSyncAPI
     private let notificationCenter: NotificationCenter
+    private let logger: NativeWalletLoggerAPI
 
     #warning("TODO: This should be removed, pass opaque context from initialize methods instead")
     private var tempPassword: String?
@@ -65,7 +66,8 @@ final class WalletLogic: WalletLogicAPI {
         upgrader: WalletUpgraderAPI,
         metadata: MetadataServiceAPI,
         walletSync: WalletSyncAPI,
-        notificationCenter: NotificationCenter
+        notificationCenter: NotificationCenter,
+        logger: NativeWalletLoggerAPI
     ) {
         self.holder = holder
         self.decoder = decoder
@@ -73,6 +75,7 @@ final class WalletLogic: WalletLogicAPI {
         self.metadata = metadata
         self.walletSync = walletSync
         self.notificationCenter = notificationCenter
+        self.logger = logger
     }
 
     func initialize(
@@ -109,10 +112,17 @@ final class WalletLogic: WalletLogicAPI {
         decryptedWallet: Data
     ) -> AnyPublisher<WalletState, WalletError> {
         decoder(payload, decryptedWallet)
-            .flatMap { [upgrader, walletSync] wrapper -> AnyPublisher<Wrapper, WalletError> in
+            .logMessageOnOutput(
+                logger: logger,
+                message: { wrapper in
+                    "Wrapper decoded from response: \(wrapper)"
+                }
+            )
+            .flatMap { [upgrader, walletSync, logger] wrapper -> AnyPublisher<Wrapper, WalletError> in
                 runUpgradeAndSyncIfNeeded(
                     upgrader: upgrader,
                     walletSync: walletSync,
+                    logger: logger,
                     password: password,
                     wrapper: wrapper
                 )
@@ -148,13 +158,15 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [decoder, upgrader, walletSync] metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+            .flatMap { [decoder, upgrader, walletSync, logger] metadataState
+                -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
                 decoder(payload, decryptedWallet)
                     .map { ($0, metadataState) }
                     .flatMap { wrapper, metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
                         runUpgradeAndSyncIfNeeded(
                             upgrader: upgrader,
                             walletSync: walletSync,
+                            logger: logger,
                             password: password,
                             wrapper: wrapper
                         )
@@ -241,12 +253,15 @@ final class WalletLogic: WalletLogicAPI {
         .map { input in
             (input, wrapper)
         }
-        .flatMap { [metadata] input, wrapper -> AnyPublisher<WalletState, WalletError> in
+        .flatMap { [metadata, logger] input, wrapper -> AnyPublisher<WalletState, WalletError> in
             metadata.initialize(
                 credentials: input.credentials,
                 masterKey: input.masterKey,
                 payloadIsDoubleEncrypted: input.payloadIsDoubleEncrypted
             )
+            .logMessageOnOutput(logger: logger, message: { _ in
+                "Metadata initialized"
+            })
             .map { metadataState -> WalletState in
                 .loaded(wrapper: wrapper, metadata: metadataState)
             }
@@ -280,20 +295,28 @@ final class WalletLogic: WalletLogicAPI {
 private func runUpgradeAndSyncIfNeeded(
     upgrader: WalletUpgraderAPI,
     walletSync: WalletSyncAPI,
+    logger: NativeWalletLoggerAPI,
     password: String,
     wrapper: Wrapper
 ) -> AnyPublisher<Wrapper, WalletError> {
     guard upgrader.upgradedNeeded(wrapper: wrapper) else {
+        logger.log(message: "Skipping wallet upgrade", metadata: nil)
         return .just(wrapper)
     }
     return upgrader.performUpgrade(wrapper: wrapper)
         .mapError(WalletError.upgrade)
+        .logMessageOnOutput(logger: logger, message: { wrapper in
+            "!¡! Upgraded wrapper to be sync: \(wrapper)"
+        })
         .flatMap { wrapper -> AnyPublisher<Wrapper, WalletError> in
             walletSync.sync(wrapper: wrapper, password: password)
                 .map { _ in wrapper }
                 .mapError(WalletError.sync)
                 .eraseToAnyPublisher()
         }
+        .logMessageOnOutput(logger: logger, message: { _ in
+            "Upgraded wrapper synced"
+        })
         .eraseToAnyPublisher()
 }
 

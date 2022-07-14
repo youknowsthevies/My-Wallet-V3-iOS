@@ -44,7 +44,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSync,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging()
         )
 
         let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
@@ -106,7 +107,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging()
         )
 
         let response = WalletPayloadClient.Response(

@@ -2,6 +2,7 @@
 
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import TestKit
@@ -51,6 +52,7 @@ class Version3WorkflowTests: XCTestCase {
 
         let workflow = Version3Workflow(
             entropyService: rngService,
+            logger: NoopNativeWalletLogging(),
             operationQueue: .main
         )
 

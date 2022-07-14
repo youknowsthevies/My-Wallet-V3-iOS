@@ -37,6 +37,7 @@ extension DependencyContainer {
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
                 syncPubKeysAddressesProvider: DIKit.resolve(),
+                logger: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
             )
@@ -50,7 +51,8 @@ extension DependencyContainer {
                 payloadCrypto: DIKit.resolve(),
                 walletLogic: DIKit.resolve(),
                 walletPayloadRepository: DIKit.resolve(),
-                operationsQueue: queue
+                operationsQueue: queue,
+                logger: DIKit.resolve()
             )
         }
 
@@ -59,9 +61,12 @@ extension DependencyContainer {
             let queue = DispatchQueue(label: "wallet.upgrading.op.queue", qos: .userInitiated, target: targetQueue)
             let version3Flow = Version3Workflow(
                 entropyService: DIKit.resolve(),
+                logger: DIKit.resolve(),
                 operationQueue: queue
             )
-            let version4Flow = Version4Workflow()
+            let version4Flow = Version4Workflow(
+                logger: DIKit.resolve()
+            )
             return WalletUpgrader(
                 workflows: [version3Flow, version4Flow]
             )
@@ -77,7 +82,8 @@ extension DependencyContainer {
                 upgrader: upgrader,
                 metadata: DIKit.resolve(),
                 walletSync: DIKit.resolve(),
-                notificationCenter: .default
+                notificationCenter: .default,
+                logger: DIKit.resolve()
             )
         }
 
@@ -125,6 +131,7 @@ extension DependencyContainer {
             return WalletMetadataEntryService(
                 walletHolder: holder,
                 metadataService: metadata,
+                logger: DIKit.resolve(),
                 queue: queue
             )
         }
@@ -192,7 +199,8 @@ extension DependencyContainer {
         factory { () -> ChangePasswordServiceAPI in
             ChangePasswordService(
                 walletSync: DIKit.resolve(),
-                walletHolder: DIKit.resolve()
+                walletHolder: DIKit.resolve(),
+                logger: DIKit.resolve()
             )
         }
 
@@ -200,7 +208,8 @@ extension DependencyContainer {
             VerifyMnemonicBackupService(
                 walletHolder: DIKit.resolve(),
                 walletSync: DIKit.resolve(),
-                walletRepo: DIKit.resolve()
+                walletRepo: DIKit.resolve(),
+                logger: DIKit.resolve()
             )
         }
 

@@ -42,6 +42,7 @@ final class WalletFetcher: WalletFetcherAPI {
     private let walletLogic: WalletLogic
     private let walletPayloadRepository: WalletPayloadRepositoryAPI
     private let operationsQueue: DispatchQueue
+    private let logger: NativeWalletLoggerAPI
 
     private let doLoadPayload: LoadAndInitializePayload
 
@@ -50,19 +51,22 @@ final class WalletFetcher: WalletFetcherAPI {
         payloadCrypto: PayloadCryptoAPI,
         walletLogic: WalletLogic,
         walletPayloadRepository: WalletPayloadRepositoryAPI,
-        operationsQueue: DispatchQueue
+        operationsQueue: DispatchQueue,
+        logger: NativeWalletLoggerAPI
     ) {
         self.walletRepo = walletRepo
         self.payloadCrypto = payloadCrypto
         self.walletLogic = walletLogic
         self.walletPayloadRepository = walletPayloadRepository
         self.operationsQueue = operationsQueue
+        self.logger = logger
 
         doLoadPayload = loadPayload(
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletRepo: walletRepo,
-            queue: operationsQueue
+            queue: operationsQueue,
+            logger: logger
         )
     }
 
@@ -122,7 +126,8 @@ private func loadPayload(
     payloadCrypto: PayloadCryptoAPI,
     walletLogic: WalletLogic,
     walletRepo: WalletRepoAPI,
-    queue: DispatchQueue
+    queue: DispatchQueue,
+    logger: NativeWalletLoggerAPI
 ) -> LoadAndInitializePayload {
     { [payloadCrypto, walletLogic, walletRepo] payload, password -> AnyPublisher<WalletFetchedContext, WalletError> in
         guard let payloadWrapper = payload.payloadWrapper, !payloadWrapper.payload.isEmpty else {
@@ -136,6 +141,12 @@ private func loadPayload(
         .map { (payload, $0) }
         .mapError { _ in WalletError.decryption(.decryptionError) }
         .eraseToAnyPublisher()
+        .logMessageOnOutput(
+            logger: logger,
+            message: { _, decrypted in
+                "Decrypted payload: \(decrypted)"
+            }
+        )
         .flatMap { [walletLogic] walletPayload, decryptedPayload -> AnyPublisher<WalletState, WalletError> in
             guard let data = decryptedPayload.data(using: .utf8) else {
                 return .failure(.decryption(.decryptionError))

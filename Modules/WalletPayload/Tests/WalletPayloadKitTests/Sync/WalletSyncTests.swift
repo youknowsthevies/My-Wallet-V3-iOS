@@ -93,6 +93,7 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum
         )
@@ -207,6 +208,7 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum
         )

@@ -2,6 +2,7 @@
 
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import TestKit
@@ -69,7 +70,9 @@ class Version4WorkflowTests: XCTestCase {
         let expectedSegwitXpriv = "xprv9xyd6QiiJ9PHLpoaGZ1J2ZAit27rMoZBsg7pGfZu18Y9KYyeVsbF7fqFoKYD1yVvALxSUeLCD3LGxfk5kPPNQhx1P57ukDfoKRDqjEFTvYT"
         let expectedSegwitXpub = "xpub6BxyVvFc8WwaZJt3NaYJPh7TS3xLmGH3Eu3R53yWZU58CMJo3QuVfU9jedpAuVA1idn7tJX6TrLVpeifbAySPewVEdH52tSQchLwSznnyCY"
 
-        let workflow = Version4Workflow()
+        let workflow = Version4Workflow(
+            logger: NoopNativeWalletLogging()
+        )
 
         workflow.upgrade(wrapper: version3Wrapper)
             .sink(receiveCompletion: { completion in

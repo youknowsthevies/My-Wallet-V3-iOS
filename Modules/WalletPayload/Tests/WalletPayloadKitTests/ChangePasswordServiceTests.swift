@@ -25,7 +25,8 @@ class ChangePasswordServiceTests: XCTestCase {
         // given
         let service = ChangePasswordService(
             walletSync: walletSync,
-            walletHolder: walletHolderSpy
+            walletHolder: walletHolderSpy,
+            logger: NoopNativeWalletLogging()
         )
 
         let expectation = expectation(description: "change password should succeed")
