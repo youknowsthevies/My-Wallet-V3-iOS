@@ -282,46 +282,8 @@ public final class L_blockchain_app_configuration_native: L, I_blockchain_app_co
 }
 public protocol I_blockchain_app_configuration_native: I {}
 public extension I_blockchain_app_configuration_native {
-	var `bitcoin`: L_blockchain_app_configuration_native_bitcoin { .init("\(__).bitcoin") }
 	var `wallet`: L_blockchain_app_configuration_native_wallet { .init("\(__).wallet") }
 }
-public final class L_blockchain_app_configuration_native_bitcoin: L, I_blockchain_app_configuration_native_bitcoin {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin: I {}
-public extension I_blockchain_app_configuration_native_bitcoin {
-	var `cash`: L_blockchain_app_configuration_native_bitcoin_cash { .init("\(__).cash") }
-	var `is`: L_blockchain_app_configuration_native_bitcoin_is { .init("\(__).is") }
-}
-public final class L_blockchain_app_configuration_native_bitcoin_cash: L, I_blockchain_app_configuration_native_bitcoin_cash {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin.cash", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin_cash: I {}
-public extension I_blockchain_app_configuration_native_bitcoin_cash {
-	var `is`: L_blockchain_app_configuration_native_bitcoin_cash_is { .init("\(__).is") }
-}
-public final class L_blockchain_app_configuration_native_bitcoin_cash_is: L, I_blockchain_app_configuration_native_bitcoin_cash_is {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin.cash.is", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin_cash_is: I {}
-public extension I_blockchain_app_configuration_native_bitcoin_cash_is {
-	var `enabled`: L_blockchain_app_configuration_native_bitcoin_cash_is_enabled { .init("\(__).enabled") }
-}
-public final class L_blockchain_app_configuration_native_bitcoin_cash_is_enabled: L, I_blockchain_app_configuration_native_bitcoin_cash_is_enabled {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin.cash.is.enabled", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin_cash_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
-public final class L_blockchain_app_configuration_native_bitcoin_is: L, I_blockchain_app_configuration_native_bitcoin_is {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin.is", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin_is: I {}
-public extension I_blockchain_app_configuration_native_bitcoin_is {
-	var `enabled`: L_blockchain_app_configuration_native_bitcoin_is_enabled { .init("\(__).enabled") }
-}
-public final class L_blockchain_app_configuration_native_bitcoin_is_enabled: L, I_blockchain_app_configuration_native_bitcoin_is_enabled {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.bitcoin.is.enabled", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_bitcoin_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_native_wallet: L, I_blockchain_app_configuration_native_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet", comment: "") }
 }

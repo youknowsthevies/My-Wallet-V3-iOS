@@ -26,8 +26,6 @@ let app: AppProtocol = App(
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.native.bitcoin.cash.is.enabled: false,
-            blockchain.app.configuration.native.bitcoin.is.enabled: false,
             blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.redesign.checkout.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
