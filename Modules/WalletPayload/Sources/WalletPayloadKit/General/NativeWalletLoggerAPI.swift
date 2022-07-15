@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import ToolKit
 
 public protocol NativeWalletLoggerAPI {
     func log(message: String, metadata: [String: String]?)
@@ -12,29 +13,23 @@ extension Publisher {
         logger: NativeWalletLoggerAPI,
         messageAndMetadata: @escaping (Self.Output) -> (String, [String: String]?)
     ) -> Publishers.HandleEvents<Self> {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         handleEvents(receiveOutput: { value in
-            let (message, metadata) = messageAndMetadata(value)
-            return logger.log(
-                message: message,
-                metadata: metadata
-            )
+            if BuildFlag.isInternal || BuildFlag.isAlpha {
+                let (message, metadata) = messageAndMetadata(value)
+                logger.log(message: message, metadata: metadata)
+            }
         })
-        #endif
     }
 
     func logMessageOnOutput(
         logger: NativeWalletLoggerAPI,
         message: @escaping (Self.Output) -> String
     ) -> Publishers.HandleEvents<Self> {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         handleEvents(receiveOutput: { value in
-            let message = message(value)
-            return logger.log(
-                message: message,
-                metadata: nil
-            )
+            if BuildFlag.isInternal || BuildFlag.isAlpha {
+                let message = message(value)
+                logger.log(message: message, metadata: nil)
+            }
         })
-        #endif
     }
 }
