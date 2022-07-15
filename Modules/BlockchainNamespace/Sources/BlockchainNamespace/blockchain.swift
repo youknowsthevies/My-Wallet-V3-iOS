@@ -94,6 +94,7 @@ public extension I_blockchain_app_configuration {
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
 	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
+	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
@@ -375,6 +376,24 @@ public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_prefill: L, I_blockchain_app_configuration_prefill {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill", comment: "") }
+}
+public protocol I_blockchain_app_configuration_prefill: I {}
+public extension I_blockchain_app_configuration_prefill {
+	var `is`: L_blockchain_app_configuration_prefill_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_prefill_is: L, I_blockchain_app_configuration_prefill_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_prefill_is: I {}
+public extension I_blockchain_app_configuration_prefill_is {
+	var `enabled`: L_blockchain_app_configuration_prefill_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_prefill_is_enabled: L, I_blockchain_app_configuration_prefill_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_prefill_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_pubkey: L, I_blockchain_app_configuration_pubkey {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey", comment: "") }
 }

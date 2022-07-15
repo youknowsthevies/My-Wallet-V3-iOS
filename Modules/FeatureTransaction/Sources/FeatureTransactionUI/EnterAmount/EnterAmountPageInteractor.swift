@@ -113,7 +113,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .state
             .share(replay: 1, scope: .whileConnected)
 
-        // THIS IS NO AMOUNT CONVERSION. NAME IS CONFUSING.
         amountViewInteractor
             .effect
             .subscribe { [weak self] effect in
