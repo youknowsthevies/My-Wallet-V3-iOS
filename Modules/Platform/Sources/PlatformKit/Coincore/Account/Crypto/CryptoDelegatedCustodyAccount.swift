@@ -19,7 +19,27 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     }
 
     var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        .empty()
+        addressesRepository
+            .addresses(for: asset)
+            .map { [publicKey] addresses in
+                addresses
+                    .first(where: { address in
+                        address.publicKey == publicKey && address.isDefault
+                    })
+            }
+            .onNil(ReceiveAddressError.notSupported)
+            .flatMap { [addressFactory] match in
+                addressFactory
+                    .makeExternalAssetAddress(
+                        address: match.address,
+                        label: match.address,
+                        onTxCompleted: { _ in .empty() }
+                    )
+                    .publisher
+                    .eraseError()
+            }
+            .map { $0 as ReceiveAddress }
+            .eraseToAnyPublisher()
     }
 
     var requireSecondPassword: Single<Bool> {
@@ -49,17 +69,26 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
 
     let accountType: AccountType = .nonCustodial
 
+    private let addressesRepository: DelegatedCustodyAddressesRepositoryAPI
+    private let addressFactory: ExternalAssetAddressFactory
     private let balanceRepository: DelegatedCustodyBalanceRepositoryAPI
     private let priceService: PriceServiceAPI
+    private let publicKey: String
 
     init(
+        addressesRepository: DelegatedCustodyAddressesRepositoryAPI,
+        addressFactory: ExternalAssetAddressFactory,
         asset: CryptoCurrency,
         balanceRepository: DelegatedCustodyBalanceRepositoryAPI,
-        priceService: PriceServiceAPI
+        priceService: PriceServiceAPI,
+        publicKey: String
     ) {
+        self.addressesRepository = addressesRepository
+        self.addressFactory = addressFactory
         self.asset = asset
         self.balanceRepository = balanceRepository
         self.priceService = priceService
+        self.publicKey = publicKey
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {

@@ -5,6 +5,12 @@ import MoneyKit
 import NetworkKit
 
 protocol AccountDataClientAPI {
+    func addresses(
+        guidHash: String,
+        sharedKeyHash: String,
+        currencies: [String]
+    ) -> AnyPublisher<AddressesResponse, NetworkError>
+
     func balance(
         guidHash: String,
         sharedKeyHash: String,
@@ -22,6 +28,36 @@ extension Client: AccountDataClientAPI {
         let auth: AuthDataPayload
         let currencies: [CurrencyEntry]?
         let fiatCurrency: String
+    }
+
+    private struct AddressesRequestPayload: Encodable {
+        struct CurrencyEntry: Encodable {
+            let ticker: String
+            let memo: String?
+        }
+
+        let auth: AuthDataPayload
+        let currencies: [CurrencyEntry]
+    }
+
+    func addresses(
+        guidHash: String,
+        sharedKeyHash: String,
+        currencies: [String]
+    ) -> AnyPublisher<AddressesResponse, NetworkError> {
+        let payload = AddressesRequestPayload(
+            auth: AuthDataPayload(guidHash: guidHash, sharedKeyHash: sharedKeyHash),
+            currencies: currencies
+                .map { .init(ticker: $0, memo: nil) }
+        )
+        let request = requestBuilder
+            .post(
+                path: Endpoint.addresses,
+                body: try? payload.encode()
+            )!
+
+        return networkAdapter
+            .perform(request: request)
     }
 
     func balance(

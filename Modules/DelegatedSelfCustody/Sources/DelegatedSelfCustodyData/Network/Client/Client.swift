@@ -6,6 +6,7 @@ import NetworkKit
 final class Client {
 
     enum Endpoint {
+        static let addresses = "/wallet-pubkey/addresses"
         static let balance = "/wallet-pubkey/balance"
         static let auth = "/wallet-pubkey/auth"
         static let subscriptions = "/wallet-pubkey/subscriptions"

@@ -91,5 +91,12 @@ extension DependencyContainer {
                 app: DIKit.resolve()
             )
         }
+
+        single { () -> DelegatedCustodyAddressesRepositoryAPI in
+            AddressesRepository(
+                client: DIKit.resolve(),
+                authenticationDataRepository: DIKit.resolve()
+            )
+        }
     }
 }
