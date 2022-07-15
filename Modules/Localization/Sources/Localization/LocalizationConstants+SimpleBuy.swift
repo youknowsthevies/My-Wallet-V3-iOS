@@ -411,6 +411,11 @@ extension LocalizationConstants.SimpleBuy {
 
     public enum TransferDetails {
 
+        public static let error = NSLocalizedString(
+            "Error, unable to load bank transfer details. We are working to resolve this.",
+            comment: "Error, unable to load bank transfer details. We are working to resolve this issue."
+        )
+
         public enum Funds {
 
             public static let bankTransfer = NSLocalizedString(

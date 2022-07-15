@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -29,6 +30,7 @@ public final class FiatBalanceCollectionViewInteractor {
 
     // MARK: - Injected Properties
 
+    private let app: AppProtocol
     private let tiersService: KYCTiersServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
@@ -63,19 +65,18 @@ public final class FiatBalanceCollectionViewInteractor {
         .combineLatest(
             fiatCurrencyService.displayCurrencyPublisher.asObservable(),
             refreshRelay.asObservable(),
-            userService.fetchUser().asObservable()
-        ) { (fiatCurrency: $0, _: $1, user: $2) }
+            app.publisher(for: blockchain.user.currency.currencies, as: [FiatCurrency].self)
+                .compactMap(\.value)
+                .asObservable()
+        ) { (fiatCurrency: $0, _: $1, currencies: $2) }
         .flatMapLatest(weak: self) { (self, data) in
             self.fiatAccounts()
                 .asObservable()
                 .map { accounts in
-                    accounts
-                        .filter { account in
-                            guard let currency = account.currencyType.fiatCurrency
-                            else { return false }
-                            return data.user.currencies.userFiatCurrencies.contains(currency)
+                    data.currencies
+                        .compactMap { currency in
+                            accounts.first(where: { account in account.currencyType.fiatCurrency == currency })
                         }
-                        .sorted { lhs, _ -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
                         .map(FiatCustodialBalanceViewInteractor.init(account:))
                 }
         }
@@ -86,6 +87,7 @@ public final class FiatBalanceCollectionViewInteractor {
         .disposed(by: disposeBag)
 
     public init(
+        app: AppProtocol = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
@@ -93,6 +95,7 @@ public final class FiatBalanceCollectionViewInteractor {
         coincore: CoincoreAPI = resolve(),
         userService: NabuUserServiceAPI = resolve()
     ) {
+        self.app = app
         self.coincore = coincore
         self.tiersService = tiersService
         self.paymentMethodsService = paymentMethodsService
@@ -116,7 +119,7 @@ extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
     public var hasBalances: Observable<Bool> {
         interactorsState
             .compactMap(\.value)
-            .map { $0.count > 0 }
+            .map(\.isNotEmpty)
             .catchAndReturn(false)
     }
 
