@@ -70,8 +70,6 @@ final class KYCAccountUsageController: KYCBaseViewController {
     }
 
     override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
-        // default handler navifation tap handler
-        // define var as handler return default
         switch navControllerCTAType() {
         case .none, .help:
             break
