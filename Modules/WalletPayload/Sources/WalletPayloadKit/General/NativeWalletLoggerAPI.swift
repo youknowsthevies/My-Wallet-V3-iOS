@@ -4,6 +4,10 @@ import Combine
 import Foundation
 import ToolKit
 
+///
+/// This is specific to NativeWallet for logging purposes.
+/// It logs sensitive information and should **ONLY** be used on internal builds for debugging pursposes.
+///
 public protocol NativeWalletLoggerAPI {
     func log(message: String, metadata: [String: String]?)
 }

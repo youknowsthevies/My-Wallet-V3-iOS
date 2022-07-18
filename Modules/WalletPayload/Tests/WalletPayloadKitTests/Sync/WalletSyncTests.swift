@@ -8,6 +8,7 @@
 
 import Combine
 import Errors
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -93,6 +94,7 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            tracer: LogMessageTracing.noop,
             logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum
@@ -208,6 +210,7 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            tracer: LogMessageTracing.noop,
             logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum

@@ -93,6 +93,13 @@ extension DependencyContainer {
 
         factory { PerformanceTracing.live as PerformanceTracingServiceAPI }
 
+        single { () -> LogMessageServiceAPI in
+            let loggers = LogMessageTracing.provideLoggers()
+            return LogMessageTracing.live(
+                loggers: loggers
+            )
+        }
+
         factory { CrashlyticsRecorder() as MessageRecording }
 
         factory { CrashlyticsRecorder() as ErrorRecording }

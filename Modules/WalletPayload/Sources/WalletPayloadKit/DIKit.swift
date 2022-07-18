@@ -37,6 +37,7 @@ extension DependencyContainer {
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
                 syncPubKeysAddressesProvider: DIKit.resolve(),
+                tracer: DIKit.resolve(),
                 logger: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
@@ -52,6 +53,7 @@ extension DependencyContainer {
                 walletLogic: DIKit.resolve(),
                 walletPayloadRepository: DIKit.resolve(),
                 operationsQueue: queue,
+                tracer: DIKit.resolve(),
                 logger: DIKit.resolve()
             )
         }
@@ -99,7 +101,8 @@ extension DependencyContainer {
                 payloadCrypto: payloadCrypto,
                 walletRepo: repo,
                 walletPayloadRepository: payloadRepository,
-                operationsQueue: queue
+                operationsQueue: queue,
+                tracer: DIKit.resolve()
             )
         }
 
@@ -113,6 +116,7 @@ extension DependencyContainer {
                 createWalletRepository: DIKit.resolve(),
                 usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
+                tracer: DIKit.resolve(),
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),
                 generateWrapper: generateWrapper(wallet:language:version:),

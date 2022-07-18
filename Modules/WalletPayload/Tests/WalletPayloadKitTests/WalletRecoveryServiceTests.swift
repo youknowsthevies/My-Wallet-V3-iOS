@@ -7,6 +7,7 @@
 @testable import WalletPayloadKitMock
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -56,7 +57,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")
@@ -128,7 +130,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")

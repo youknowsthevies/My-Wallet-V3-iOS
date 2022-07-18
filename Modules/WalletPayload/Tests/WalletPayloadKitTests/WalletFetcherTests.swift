@@ -7,6 +7,7 @@
 @testable import WalletPayloadKitMock
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -51,6 +52,7 @@ class WalletFetcherTests: XCTestCase {
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
             operationsQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
             logger: NoopNativeWalletLogging()
         )
 
@@ -148,6 +150,7 @@ class WalletFetcherTests: XCTestCase {
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
             operationsQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
             logger: NoopNativeWalletLogging()
         )
 

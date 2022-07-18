@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import Foundation
+import ObservabilityKit
 import ToolKit
 
 protocol WalletSyncAPI {
@@ -27,6 +28,7 @@ final class WalletSync: WalletSyncAPI {
     private let operationQueue: DispatchQueue
     private let saveWalletRepository: SaveWalletRepositoryAPI
     private let syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI
+    private let tracer: LogMessageServiceAPI
     private let logger: NativeWalletLoggerAPI
     private let checksumProvider: (Data) -> String
 
@@ -37,6 +39,7 @@ final class WalletSync: WalletSyncAPI {
         walletEncoder: WalletEncodingAPI,
         saveWalletRepository: SaveWalletRepositoryAPI,
         syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI,
+        tracer: LogMessageServiceAPI,
         logger: NativeWalletLoggerAPI,
         operationQueue: DispatchQueue,
         checksumProvider: @escaping (Data) -> String
@@ -49,6 +52,7 @@ final class WalletSync: WalletSyncAPI {
         self.syncPubKeysAddressesProvider = syncPubKeysAddressesProvider
         self.operationQueue = operationQueue
         self.checksumProvider = checksumProvider
+        self.tracer = tracer
         self.logger = logger
     }
 
@@ -78,6 +82,7 @@ final class WalletSync: WalletSyncAPI {
                 saveOperations(wrapper, password)
                     .eraseToAnyPublisher()
             }
+            .logErrorOrCrash(tracer: tracer)
             .flatMap { [walletRepo] payload -> AnyPublisher<WalletCreationPayload, Never> in
                 walletRepo.set(keyPath: \.credentials.password, value: password)
                     .get()
