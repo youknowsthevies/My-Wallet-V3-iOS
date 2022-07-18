@@ -104,9 +104,6 @@ extension UX.Error {
             if let id = request.allHTTPHeaderFields?["X-Request-ID"] {
                 metadata[L10n.request] = id
             }
-            if let id = request.allHTTPHeaderFields?["X-Session-ID"] {
-                metadata[L10n.session] = id
-            }
         }
 
         self.metadata = metadata
@@ -127,6 +124,8 @@ extension UX.Error {
 
     public init(error: Swift.Error?) {
         switch error {
+        case let ux as UX.Error:
+            self = ux
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:
