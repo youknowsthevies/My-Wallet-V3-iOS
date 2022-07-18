@@ -69,8 +69,8 @@ final class KYCAccountUsageController: KYCBaseViewController {
             break
         case .dismiss:
             app.state.clear(blockchain.ux.kyc.extra.questions.form)
+            dismiss(animated: true)
         }
-        super.navControllerRightBarButtonTapped(navController)
     }
 
     // MARK: - UI Configuration
