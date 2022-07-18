@@ -2,6 +2,7 @@
 
 import PlatformUIKit
 import UIKit
+import BlockchainComponentLibrary
 
 enum NavigationCTA {
     case dismiss
@@ -13,7 +14,11 @@ extension NavigationCTA {
     var image: UIImage? {
         switch self {
         case .dismiss:
-            return UIImage(named: "close", in: .featureKYCUI, compatibleWith: nil)
+            return UIImage(
+                named: "Close Circle v2",
+                in: .componentLibrary,
+                compatibleWith: nil
+            )?.withRenderingMode(.alwaysOriginal)
         case .help:
             return UIImage(named: "ios_icon_more", in: .featureKYCUI, compatibleWith: nil)
         case .none:
@@ -21,7 +26,7 @@ extension NavigationCTA {
         }
     }
 
-    var visibility: Visibility {
+    var visibility: PlatformUIKit.Visibility {
         switch self {
         case .dismiss:
             return .visible

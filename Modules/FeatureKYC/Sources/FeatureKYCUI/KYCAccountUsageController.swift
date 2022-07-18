@@ -29,11 +29,6 @@ final class KYCAccountUsageController: KYCBaseViewController {
         super.viewDidLoad()
         embedAccountUsageView()
         title = LocalizationConstants.NewKYC.Steps.AccountUsage.title
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .close,
-            target: self,
-            action: #selector(dismissWithAnimation)
-        )
     }
 
     private func embedAccountUsageView() {
@@ -67,10 +62,20 @@ final class KYCAccountUsageController: KYCBaseViewController {
         app.state.clear(blockchain.ux.kyc.extra.questions.form)
         dismiss(animated: true)
     }
+    
+    override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
+        switch navControllerCTAType() {
+        case .none, .help:
+            break
+        case .dismiss:
+            app.state.clear(blockchain.ux.kyc.extra.questions.form)
+        }
+        super.navControllerRightBarButtonTapped(navController)
+    }
 
     // MARK: - UI Configuration
 
     override func navControllerCTAType() -> NavigationCTA {
-        .none
+        .dismiss
     }
 }
