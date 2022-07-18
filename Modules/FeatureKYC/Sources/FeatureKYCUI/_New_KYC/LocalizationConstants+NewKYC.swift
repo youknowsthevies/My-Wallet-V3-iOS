@@ -276,6 +276,11 @@ extension LocalizationConstants {
                     "Use of Account Information",
                     comment: "KYC Step - Account Usage Questions - Screen Title"
                 )
+                
+                static let skipButtonTitle = NSLocalizedString(
+                    "Skip",
+                    comment: "KYC Step - Account Usage Questions - Skip Button Title"
+                )
 
                 static let submitActionTitle = NSLocalizedString(
                     "Next",

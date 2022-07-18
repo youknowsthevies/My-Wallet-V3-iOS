@@ -14,6 +14,8 @@ import UIKit
 
 final class KYCAccountUsageController: KYCBaseViewController {
 
+    private var isBlocking = true
+
     override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = KYCAccountUsageController()
         controller.pageType = .accountUsageForm
@@ -44,6 +46,10 @@ final class KYCAccountUsageController: KYCBaseViewController {
                             .compactMap { data in data.value as? Result<FeatureFormDomain.Form, Nabu.Error> }
                             .get()
                             .prefix(1)
+                            .map { [weak self] in
+                                self?.isBlocking = $0.blocking
+                                return $0
+                            }
                             .eraseToAnyPublisher()
                     },
                     submitForm: accountUsageService.submitExtraKYCQuestions,
@@ -67,6 +73,8 @@ final class KYCAccountUsageController: KYCBaseViewController {
         switch navControllerCTAType() {
         case .none, .help:
             break
+        case .skip:
+            continueToNextStep()
         case .dismiss:
             app.state.clear(blockchain.ux.kyc.extra.questions.form)
             dismiss(animated: true)
@@ -76,6 +84,10 @@ final class KYCAccountUsageController: KYCBaseViewController {
     // MARK: - UI Configuration
 
     override func navControllerCTAType() -> NavigationCTA {
-        .dismiss
+        if isBlocking {
+            return .dismiss
+        } else {
+            return .skip
+        }
     }
 }
