@@ -80,11 +80,11 @@ final class Version3Workflow: WalletUpgradeWorkflow {
                 doubleEncrypted: wrapper.wallet.doubleEncrypted,
                 doublePasswordHash: wrapper.wallet.doublePasswordHash,
                 metadataHDNode: wrapper.wallet.metadataHDNode,
-                txNotes: wrapper.wallet.txNotes,
-                tagNames: wrapper.wallet.tagNames,
                 options: wrapper.wallet.options,
                 hdWallets: [hdWallet],
-                addresses: wrapper.wallet.addresses
+                addresses: wrapper.wallet.addresses,
+                txNotes: wrapper.wallet.txNotes,
+                addressBook: wrapper.wallet.addressBook
             )
             return Wrapper(
                 pbkdf2Iterations: Int(wrapper.pbkdf2Iterations),

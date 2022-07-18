@@ -57,11 +57,11 @@ class Version4WorkflowTests: XCTestCase {
                 doubleEncrypted: false,
                 doublePasswordHash: nil,
                 metadataHDNode: nil,
-                txNotes: nil,
-                tagNames: nil,
                 options: .default,
                 hdWallets: [hdWalletV3],
-                addresses: []
+                addresses: [],
+                txNotes: nil,
+                addressBook: nil
             )
         )
 

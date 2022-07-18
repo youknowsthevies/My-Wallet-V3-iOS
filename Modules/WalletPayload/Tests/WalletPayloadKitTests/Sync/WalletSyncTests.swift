@@ -47,11 +47,11 @@ class WalletSyncTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,
@@ -160,11 +160,11 @@ class WalletSyncTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,
