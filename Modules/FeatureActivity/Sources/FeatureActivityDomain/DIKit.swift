@@ -1,12 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BitcoinCashKit
-import BitcoinKit
 import DIKit
-import ERC20Kit
-import EthereumKit
 import PlatformKit
-import StellarKit
 
 extension DependencyContainer {
 
@@ -18,6 +13,11 @@ extension DependencyContainer {
 
         // MARK: Public
 
-        factory { BuySellActivityItemEventService() as BuySellActivityItemEventServiceAPI }
+        factory {
+            BuySellActivityItemEventService(
+                ordersService: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as BuySellActivityItemEventServiceAPI
+        }
     }
 }

@@ -2,11 +2,12 @@
 
 import MoneyKit
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, FiatBalanceCollectionViewPresenting {
+final class FiatBalanceCollectionViewPresenter: Equatable {
 
     // MARK: - Exposed Properties
 
@@ -15,7 +16,7 @@ public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, Fi
         return presentersRelay.asDriver()
     }
 
-    override public var tap: Signal<CurrencyType> {
+    var tap: Signal<CurrencyType> {
         tapRelay
             .asSignal()
     }
@@ -46,24 +47,23 @@ public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, Fi
 
     // MARK: - Setup
 
-    public init(interactor: FiatBalanceCollectionViewInteractor) {
+    init(interactor: FiatBalanceCollectionViewInteractor) {
         self.interactor = interactor
-        super.init()
     }
 
     // MARK: - Public
 
-    public func selected(currencyType: CurrencyType) {
+    func selected(currencyType: CurrencyType) {
         tapRelay.accept(currencyType)
     }
 
-    public func refresh() {
+    func refresh() {
         _ = setup
         interactor.refresh()
     }
 
     // Equatable
-    public static func == (lhs: FiatBalanceCollectionViewPresenter, rhs: FiatBalanceCollectionViewPresenter) -> Bool {
+    static func == (lhs: FiatBalanceCollectionViewPresenter, rhs: FiatBalanceCollectionViewPresenter) -> Bool {
         lhs.interactor.interactorsStateRelay.value == rhs.interactor.interactorsStateRelay.value
     }
 }

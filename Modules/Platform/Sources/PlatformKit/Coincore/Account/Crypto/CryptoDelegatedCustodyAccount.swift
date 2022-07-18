@@ -14,8 +14,8 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
 
     lazy var identifier: AnyHashable = "CryptoDelegatedCustodyAccount.\(asset.code)"
 
-    var activity: Single<[ActivityItemEvent]> {
-        .never()
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
+        .just([])
     }
 
     var receiveAddress: AnyPublisher<ReceiveAddress, Error> {

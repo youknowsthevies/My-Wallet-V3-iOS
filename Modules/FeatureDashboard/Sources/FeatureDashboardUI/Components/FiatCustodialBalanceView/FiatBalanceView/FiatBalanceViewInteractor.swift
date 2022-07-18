@@ -6,15 +6,15 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public final class FiatBalanceViewInteractor {
+final class FiatBalanceViewInteractor {
 
     // MARK: - Types
 
-    public typealias InteractionState = FiatBalanceViewAsset.State.Interaction
+    typealias InteractionState = FiatBalanceViewAsset.State.Interaction
 
     // MARK: - Exposed Properties
 
-    public var state: Observable<InteractionState> {
+    var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
 
@@ -23,7 +23,7 @@ public final class FiatBalanceViewInteractor {
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
 
-    public init(
+    init(
         account: SingleAccount,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
@@ -42,7 +42,7 @@ public final class FiatBalanceViewInteractor {
             .disposed(by: disposeBag)
     }
 
-    public init(balance: MoneyValue) {
+    init(balance: MoneyValue) {
         stateRelay.accept(
             .loaded(
                 next: .init(

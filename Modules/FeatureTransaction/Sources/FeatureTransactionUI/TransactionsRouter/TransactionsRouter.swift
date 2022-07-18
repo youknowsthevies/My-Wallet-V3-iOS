@@ -268,7 +268,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
                     return self.pendingOrdersService.pendingOrderDetails
-                        .asPublisher()
                         .receive(on: DispatchQueue.main)
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self = self else { return .empty() }
@@ -286,6 +285,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                                 return self.presentNewTransactionFlow(action, from: presenter)
                             }
                         }
+                        .eraseError()
                         .eraseToAnyPublisher()
                 } else {
                     return self.presentTooManyPendingOrders(

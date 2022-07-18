@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import MoneyKit
+import PlatformKit
 import RxRelay
 import RxSwift
 import RxToolKit
@@ -10,22 +11,17 @@ import ToolKit
 
 // swiftformat:disable all
 
-/// Provides a state of `PortfolioBalanceChange` indicating the total balance change.
-public protocol PortfolioBalanceChangeProviding {
-    var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> { get }
+struct PortfolioBalanceChange {
+    let balance: MoneyValue
+    let changePercentage: Decimal
+    let change: MoneyValue
 }
 
-public struct PortfolioBalanceChange {
-    public let balance: MoneyValue
-    public let changePercentage: Decimal
-    public let change: MoneyValue
-}
-
-public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProviding {
+final class PortfolioBalanceChangeProvider {
 
     // MARK: - Exposed Properties
 
-    public var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> {
+    var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> {
         changeRelay.asObservable()
     }
 
@@ -104,7 +100,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
 
     // MARK: - Setup
 
-    public init(
+    init(
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
@@ -113,9 +109,9 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
         _ = setup
     }
 
-    // MARK: - Public Functions
+    // MARK: - Functions
 
-    public func refreshBalance() {
+    func refreshBalance() {
         refreshRelay.accept(())
     }
 }

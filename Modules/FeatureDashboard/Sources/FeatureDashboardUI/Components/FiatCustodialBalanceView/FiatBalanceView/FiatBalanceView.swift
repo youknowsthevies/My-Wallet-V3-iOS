@@ -1,14 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxCocoa
 import RxSwift
-import UIKit
 
-public final class FiatBalanceView: UIView {
+final class FiatBalanceView: UIView {
 
     // MARK: - Injected
 
-    public var presenter: FiatBalanceViewPresenter! {
+    var presenter: FiatBalanceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -75,7 +75,7 @@ public final class FiatBalanceView: UIView {
     }
 
     /// Should be called once when the parent view loads
-    public func shimmer(estimatedFiatLabelSize: CGSize, estimatedCryptoLabelSize: CGSize) {
+    func shimmer(estimatedFiatLabelSize: CGSize, estimatedCryptoLabelSize: CGSize) {
         fiatLabelShimmeringView = ShimmeringView(
             in: self,
             anchorView: quoteLabel,

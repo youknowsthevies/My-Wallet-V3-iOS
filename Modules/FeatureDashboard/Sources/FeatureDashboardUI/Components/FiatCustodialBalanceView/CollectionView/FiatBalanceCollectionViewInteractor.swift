@@ -8,16 +8,16 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class FiatBalanceCollectionViewInteractor {
+final class FiatBalanceCollectionViewInteractor {
 
     // MARK: - Types
 
-    public typealias State = ValueCalculationState<[FiatCustodialBalanceViewInteractor]>
+    typealias State = ValueCalculationState<[FiatCustodialBalanceViewInteractor]>
 
     // MARK: - Exposed Properties
 
     /// Streams the interactors
-    public var interactorsState: Observable<State> {
+    var interactorsState: Observable<State> {
         _ = setup
         return interactorsStateRelay.asObservable()
     }
@@ -46,18 +46,17 @@ public final class FiatBalanceCollectionViewInteractor {
 
     private func fiatAccounts() -> Single<[SingleAccount]> {
         tiersService.tiers
-            .asSingle()
             .map(\.isTier2Approved)
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .asSingle()
             .flatMap(weak: self) { (self, isTier2Approved) in
                 guard isTier2Approved else {
                     return .just([])
                 }
                 return self.coincore.fiatAsset
                     .accountGroup(filter: .all)
-                    .asObservable()
-                    .asSingle()
                     .map(\.accounts)
+                    .asSingle()
             }
     }
 
@@ -86,7 +85,7 @@ public final class FiatBalanceCollectionViewInteractor {
         .bindAndCatch(to: interactorsStateRelay)
         .disposed(by: disposeBag)
 
-    public init(
+    init(
         app: AppProtocol = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -104,26 +103,26 @@ public final class FiatBalanceCollectionViewInteractor {
         self.userService = userService
     }
 
-    public func refresh() {
+    func refresh() {
         refreshRelay.accept(())
     }
 }
 
 extension FiatBalanceCollectionViewInteractor: Equatable {
-    public static func == (lhs: FiatBalanceCollectionViewInteractor, rhs: FiatBalanceCollectionViewInteractor) -> Bool {
+    static func == (lhs: FiatBalanceCollectionViewInteractor, rhs: FiatBalanceCollectionViewInteractor) -> Bool {
         lhs.interactorsStateRelay.value == rhs.interactorsStateRelay.value
     }
 }
 
-extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
-    public var hasBalances: Observable<Bool> {
+extension FiatBalanceCollectionViewInteractor {
+    var hasBalances: Observable<Bool> {
         interactorsState
             .compactMap(\.value)
             .map(\.isNotEmpty)
             .catchAndReturn(false)
     }
 
-    public func reloadBalances() {
+    func reloadBalances() {
         refresh()
     }
 }

@@ -1,11 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class FiatBalanceViewPresenter {
+final class FiatBalanceViewPresenter {
 
     // MARK: - Types
 
@@ -33,7 +34,7 @@ public final class FiatBalanceViewPresenter {
 
     // MARK: - Setup
 
-    public init(
+    init(
         alignment: UIStackView.Alignment = .fill,
         interactor: FiatBalanceViewInteractor,
         descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors

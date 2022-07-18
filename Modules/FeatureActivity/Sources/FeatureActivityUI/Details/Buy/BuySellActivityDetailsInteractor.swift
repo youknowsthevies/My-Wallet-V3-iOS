@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureCardPaymentDomain
 import MoneyKit
 import PlatformKit
-import RxSwift
 
 final class BuySellActivityDetailsInteractor {
 
@@ -19,15 +19,15 @@ final class BuySellActivityDetailsInteractor {
         self.ordersService = ordersService
     }
 
-    func fetchCardDetails(for paymentMethodId: String?) -> Single<CardData?> {
+    func fetchCardDetails(for paymentMethodId: String?) -> AnyPublisher<CardData?, Never> {
         cardListService
             .card(by: paymentMethodId ?? "")
-            .asSingle()
     }
 
-    func fetchPrice(for orderId: String) -> Single<MoneyValue?> {
+    func fetchPrice(for orderId: String) -> AnyPublisher<MoneyValue?, OrdersServiceError> {
         ordersService
             .fetchOrder(with: orderId)
             .map(\.price)
+            .eraseToAnyPublisher()
     }
 }

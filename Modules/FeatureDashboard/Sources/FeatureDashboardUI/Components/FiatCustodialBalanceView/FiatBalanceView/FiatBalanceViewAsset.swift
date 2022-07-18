@@ -3,42 +3,42 @@
 import ComposableArchitectureExtensions
 import MoneyKit
 import PlatformKit
-import UIKit
+import PlatformUIKit
 
-public enum FiatBalanceViewAsset {
+enum FiatBalanceViewAsset {
 
-    public enum State {
-        public typealias Interaction = LoadingState<Value.Interaction>
-        public typealias Presentation = LoadingState<Value.Presentation>
+    enum State {
+        typealias Interaction = LoadingState<Value.Interaction>
+        typealias Presentation = LoadingState<Value.Presentation>
     }
 
     // MARK: - Value Namespace
 
-    public enum Value {
+    enum Value {
 
         // MARK: - Interaction
 
-        public struct Interaction {
+        struct Interaction {
             /// The balance
-            public let base: MoneyValue
+            let base: MoneyValue
 
             /// The converted value if the
             /// balance currency type does not
             /// match the user's preferred currency
-            public let quote: MoneyValue
+            let quote: MoneyValue
         }
 
-        public struct Presentation {
+        struct Presentation {
 
-            public enum QuoteFiatContent {
+            enum QuoteFiatContent {
                 case visible(LabelContent)
                 case hidden
 
-                public var isHidden: Bool {
+                var isHidden: Bool {
                     quoteVisibility.isHidden
                 }
 
-                public var quoteVisibility: Visibility {
+                var quoteVisibility: Visibility {
                     switch self {
                     case .visible:
                         return .visible
@@ -54,7 +54,7 @@ public enum FiatBalanceViewAsset {
             let quoteBalanceLabelContent: QuoteFiatContent
 
             /// Descriptors that allows customized content and style
-            public struct Descriptors {
+            struct Descriptors {
                 let baseFiatFont: UIFont
                 let baseFiatTextColor: UIColor
                 let baseFiatAccessibility: Accessibility
@@ -63,7 +63,7 @@ public enum FiatBalanceViewAsset {
                 let quoteFiatTextColor: UIColor
                 let quoteFiatAccessibility: Accessibility
 
-                public init(
+                init(
                     baseFiatFont: UIFont,
                     baseFiatTextColor: UIColor,
                     baseFiatAccessibility: Accessibility,
@@ -82,7 +82,7 @@ public enum FiatBalanceViewAsset {
 
             // MARK: - Setup
 
-            public init(with value: Interaction, descriptors: Descriptors) {
+            init(with value: Interaction, descriptors: Descriptors) {
                 let showsQuoteValue = value.quote.currency != value.base.currency
                 let baseFont: UIFont
                 let baseColor: UIColor
@@ -118,9 +118,9 @@ public enum FiatBalanceViewAsset {
 }
 
 extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
-    public typealias Descriptors = FiatBalanceViewAsset.Value.Presentation.Descriptors
+    typealias Descriptors = FiatBalanceViewAsset.Value.Presentation.Descriptors
 
-    public static func `default`(
+    static func `default`(
         fiatAccessiblitySuffix: String,
         baseFiatAccessibilitySuffix: String? = nil
     ) -> Descriptors {
@@ -140,9 +140,9 @@ extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
 }
 
 extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
-    public typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
+    typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
 
-    public static func dashboard(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
+    static func dashboard(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,
@@ -153,7 +153,7 @@ extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
         )
     }
 
-    public static func paymentMethods(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
+    static func paymentMethods(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,

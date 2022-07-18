@@ -2,9 +2,7 @@
 
 import DIKit
 import PlatformKit
-import RxRelay
 import RxSwift
-import ToolKit
 
 public protocol ActivityServiceContaining {
     var exchangeProviding: ExchangeProviding { get }

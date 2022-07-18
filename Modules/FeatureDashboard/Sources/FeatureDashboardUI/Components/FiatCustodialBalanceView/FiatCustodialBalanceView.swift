@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxCocoa
 import RxSwift
-import UIKit
 
 final class FiatCustodialBalanceView: UIView {
 

@@ -190,14 +190,6 @@ extension DependencyContainer {
 
         factory { AnnouncementPresenter() as FeatureDashboardUI.AnnouncementPresenting }
 
-        factory { FiatBalanceCellProvider() as FiatBalanceCellProviding }
-
-        factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
-
-        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor())
-            as FiatBalanceCollectionViewPresenting
-        }
-
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
         // MARK: - AppCoordinator
@@ -487,10 +479,6 @@ extension DependencyContainer {
 
         factory { () -> FeatureKYCDomain.EmailVerificationAPI in
             EmailVerificationAdapter(settingsService: DIKit.resolve())
-        }
-
-        factory { () -> PlatformUIKit.TierUpgradeRouterAPI in
-            KYCAdapter()
         }
 
         // MARK: Onboarding Module

@@ -70,7 +70,6 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         case delete
     }
 
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen.LimitView
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     // MARK: - Public Properties

@@ -14,7 +14,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class PortfolioScreenPresenter {
+final class PortfolioScreenPresenter {
 
     // MARK: - Types
 
@@ -24,7 +24,7 @@ public final class PortfolioScreenPresenter {
     struct Model {
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
-        var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
+        var fiatBalanceCollectionViewPresenter: FiatBalanceCollectionViewPresenter?
         var cryptoCurrencies: [CryptoCurrency: LoadingState<Bool>]
 
         func cellArrangement(
@@ -180,7 +180,7 @@ public final class PortfolioScreenPresenter {
 
     // MARK: - Init
 
-    public init(
+    init(
         app: AppProtocol = resolve(),
         interactor: PortfolioScreenInteractor = PortfolioScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),

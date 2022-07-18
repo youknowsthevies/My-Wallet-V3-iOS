@@ -44,13 +44,28 @@ extension AccountGroup {
             .map { $0.unique.sorted(by: >) }
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
-        Single
-            .zip(accounts
-                .map(\.activity)
-                .map { $0.catchAndReturn([]) })
-            .map { $0.flatMap { $0 } }
-            .map { $0.unique.sorted(by: >) }
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
+        accounts
+            .chunks(ofCount: 100)
+            .map { accounts in
+                accounts
+                    .map { account in
+                        account.activity
+                            .replaceError(with: [ActivityItemEvent]())
+                            .eraseToAnyPublisher()
+                    }
+                    .zip()
+            }
+            .zip()
+            .map { (result: [[[ActivityItemEvent]]]) -> [ActivityItemEvent] in
+                result
+                    .flatMap { $0 }
+                    .flatMap { $0 }
+                    .unique
+                    .sorted(by: >)
+            }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     public var currencyType: CurrencyType {

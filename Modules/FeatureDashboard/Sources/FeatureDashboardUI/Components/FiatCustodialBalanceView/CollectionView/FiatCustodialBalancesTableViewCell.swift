@@ -1,26 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
 import UIKit
 
 /// A cell that contains a horizontal collection view with the fiat balances
-public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
+final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
-    public var presenter: CurrencyViewPresenter! {
+    var presenter: FiatBalanceCollectionViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard presenter != nil else {
                 return
-            }
-            guard let presenter = presenter as? FiatBalanceCollectionViewPresenter else {
-                print("You should be passing a FiatBalanceCollectionViewPresenter here")
-                abort()
             }
             collectionView.presenter = presenter
             presenter.presenters
@@ -54,7 +51,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         collectionView = FiatBalanceCollectionView()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
@@ -68,9 +65,9 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) { nil }
+    required init?(coder: NSCoder) { nil }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         presenter = nil
         super.prepareForReuse()
     }

@@ -2,6 +2,7 @@
 
 import MoneyKit
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 
