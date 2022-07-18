@@ -14,7 +14,8 @@ import UIKit
 
 final class KYCAccountUsageController: KYCBaseViewController {
 
-    private var isBlocking = true
+    private var isBlocking: Bool = true
+    private var cancellables = Set<AnyCancellable>()
 
     override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = KYCAccountUsageController()
@@ -34,6 +35,11 @@ final class KYCAccountUsageController: KYCBaseViewController {
     }
 
     private func embedAccountUsageView() {
+        let publisher = app.publisher(for: blockchain.ux.kyc.extra.questions.form.data)
+            .compactMap { data in data.value as? Result<FeatureFormDomain.Form, Nabu.Error> }
+            .get()
+            .prefix(1)
+            .eraseToAnyPublisher()
         let view = AccountUsageView(
             store: .init(
                 initialState: AccountUsage.State.idle,
@@ -41,22 +47,16 @@ final class KYCAccountUsageController: KYCBaseViewController {
                 environment: AccountUsage.Environment(
                     onComplete: continueToNextStep,
                     dismiss: dismissWithAnimation,
-                    loadForm: { [app] () -> AnyPublisher<Form, Nabu.Error> in
-                        app.publisher(for: blockchain.ux.kyc.extra.questions.form.data)
-                            .compactMap { data in data.value as? Result<FeatureFormDomain.Form, Nabu.Error> }
-                            .get()
-                            .prefix(1)
-                            .map { [weak self] in
-                                self?.isBlocking = $0.blocking
-                                return $0
-                            }
-                            .eraseToAnyPublisher()
-                    },
+                    loadForm: { publisher },
                     submitForm: accountUsageService.submitExtraKYCQuestions,
                     analyticsRecorder: analyticsRecorder
                 )
             )
         )
+        _ = publisher
+            .map(\.blocking)
+            .replaceError(with: false)
+            .assign(to: \.isBlocking, on: self)
         embed(view)
     }
 
@@ -68,8 +68,10 @@ final class KYCAccountUsageController: KYCBaseViewController {
         app.state.clear(blockchain.ux.kyc.extra.questions.form)
         dismiss(animated: true)
     }
-    
+
     override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
+        // default handler navifation tap handler
+        // define var as handler return default
         switch navControllerCTAType() {
         case .none, .help:
             break
