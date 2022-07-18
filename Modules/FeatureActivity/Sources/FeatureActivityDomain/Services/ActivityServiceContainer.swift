@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import PlatformKit
 import RxSwift
 
@@ -11,9 +10,9 @@ public protocol ActivityServiceContaining {
 }
 
 final class ActivityServiceContainer: ActivityServiceContaining {
+    let exchangeProviding: ExchangeProviding
     let fiatCurrency: FiatCurrencySettingsServiceAPI
     let selectionService: WalletPickerSelectionServiceAPI
-    let exchangeProviding: ExchangeProviding
 
     private let disposeBag = DisposeBag()
     private lazy var setup: Void = selectionService
@@ -24,11 +23,12 @@ final class ActivityServiceContainer: ActivityServiceContaining {
         .disposed(by: disposeBag)
 
     init(
-        fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve()
+        exchangeProviding: ExchangeProviding,
+        fiatCurrency: FiatCurrencySettingsServiceAPI,
+        selectionService: WalletPickerSelectionServiceAPI
     ) {
-        selectionService = WalletPickerSelectionService()
-        self.fiatCurrency = fiatCurrency
         self.exchangeProviding = exchangeProviding
+        self.fiatCurrency = fiatCurrency
+        self.selectionService = selectionService
     }
 }

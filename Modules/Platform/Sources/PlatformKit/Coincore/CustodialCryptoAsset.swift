@@ -142,6 +142,7 @@ final class CustodialCryptoAsset: CryptoAsset {
                     )
                 }
                 let account = CryptoDelegatedCustodyAccount(
+                    activityRepository: resolve(),
                     addressesRepository: resolve(),
                     addressFactory: addressFactory,
                     asset: delegatedCustodyAccount.coin,

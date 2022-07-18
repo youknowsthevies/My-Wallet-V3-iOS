@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import PlatformKit
 import RxRelay
 import RxSwift
 import RxToolKit
@@ -11,9 +11,9 @@ public protocol WalletPickerSelectionServiceAPI: AnyObject {
     func record(selection: BlockchainAccount)
 }
 
-public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
+final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
 
-    public var selectedData: Observable<BlockchainAccount> {
+    var selectedData: Observable<BlockchainAccount> {
         sharedStream
     }
 
@@ -22,7 +22,7 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
     private let selectedDataRelay: BehaviorRelay<BlockchainAccount?>
     private let coincore: CoincoreAPI
 
-    public init(coincore: CoincoreAPI = resolve()) {
+    init(coincore: CoincoreAPI) {
         self.coincore = coincore
         defaultValue = coincore.allAccounts.asObservable().share(replay: 1)
         selectedDataRelay = BehaviorRelay(value: nil)
@@ -37,7 +37,7 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
             .share(replay: 1)
     }
 
-    public func record(selection: BlockchainAccount) {
+    func record(selection: BlockchainAccount) {
         selectedDataRelay.accept(selection)
     }
 }

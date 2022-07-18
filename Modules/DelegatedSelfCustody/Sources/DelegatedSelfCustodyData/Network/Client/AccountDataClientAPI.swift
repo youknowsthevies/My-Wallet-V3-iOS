@@ -17,6 +17,13 @@ protocol AccountDataClientAPI {
         fiatCurrency: FiatCurrency,
         currencies: [CryptoCurrency]?
     ) -> AnyPublisher<BalanceResponse, NetworkError>
+
+    func transactionHistory(
+        guidHash: String,
+        sharedKeyHash: String,
+        currency: String,
+        identifier: String?
+    ) -> AnyPublisher<TransactionHistoryResponse, NetworkError>
 }
 
 extension Client: AccountDataClientAPI {
@@ -38,6 +45,12 @@ extension Client: AccountDataClientAPI {
 
         let auth: AuthDataPayload
         let currencies: [CurrencyEntry]
+    }
+
+    private struct TxHistoryRequestPayload: Encodable {
+        let auth: AuthDataPayload
+        let currency: String
+        let identifier: String?
     }
 
     func addresses(
@@ -76,6 +89,27 @@ extension Client: AccountDataClientAPI {
         let request = requestBuilder
             .post(
                 path: Endpoint.balance,
+                body: try? payload.encode()
+            )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    func transactionHistory(
+        guidHash: String,
+        sharedKeyHash: String,
+        currency: String,
+        identifier: String?
+    ) -> AnyPublisher<TransactionHistoryResponse, NetworkError> {
+        let payload = TxHistoryRequestPayload(
+            auth: AuthDataPayload(guidHash: guidHash, sharedKeyHash: sharedKeyHash),
+            currency: currency,
+            identifier: identifier
+        )
+        let request = requestBuilder
+            .post(
+                path: Endpoint.txHistory,
                 body: try? payload.encode()
             )!
 
