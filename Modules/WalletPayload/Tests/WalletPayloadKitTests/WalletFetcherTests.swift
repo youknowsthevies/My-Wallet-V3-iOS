@@ -44,7 +44,8 @@ class WalletFetcherTests: XCTestCase {
             metadata: metadataService,
             walletSync: walletSyncMock,
             notificationCenter: notificationCenterSpy,
-            logger: NoopNativeWalletLogging()
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
@@ -142,7 +143,8 @@ class WalletFetcherTests: XCTestCase {
             metadata: metadataService,
             walletSync: walletSyncMock,
             notificationCenter: notificationCenterSpy,
-            logger: NoopNativeWalletLogging()
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,

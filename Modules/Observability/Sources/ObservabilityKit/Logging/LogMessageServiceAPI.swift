@@ -27,3 +27,21 @@ public protocol LogMessageServiceAPI {
     ///   - properties: An optional `Dictionary<String, String>` for more context
     func logInfo(message: String, properties: [String: String]?)
 }
+
+extension LogMessageServiceAPI {
+    public func logError(error: Error) {
+        logError(error: error, properties: nil)
+    }
+
+    public func logError(message: String) {
+        logError(message: message, properties: nil)
+    }
+
+    public func logWarning(message: String) {
+        logWarning(message: message, properties: nil)
+    }
+
+    public func logInfo(message: String) {
+        logInfo(message: message, properties: nil)
+    }
+}

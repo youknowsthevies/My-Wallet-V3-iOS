@@ -3,6 +3,7 @@
 import DIKit
 import Foundation
 import MetadataKit
+import ObservabilityKit
 
 enum WalletRepoOperationsQueue {
     static let queueTag = "op.queue.tag"
@@ -78,6 +79,8 @@ extension DependencyContainer {
             let walletCreator: WalletDecoderAPI = DIKit.resolve()
             let decoder = walletCreator.createWallet
             let upgrader: WalletUpgraderAPI = DIKit.resolve()
+            let tracer: LogMessageServiceAPI = DIKit.resolve()
+            let traceMethod = tracer.logError(message:)
             return WalletLogic(
                 holder: DIKit.resolve(),
                 decoder: decoder,
@@ -85,7 +88,8 @@ extension DependencyContainer {
                 metadata: DIKit.resolve(),
                 walletSync: DIKit.resolve(),
                 notificationCenter: .default,
-                logger: DIKit.resolve()
+                logger: DIKit.resolve(),
+                payloadHealthChecker: walletPayloadHealthCheckProvider(tracer: traceMethod)
             )
         }
 
