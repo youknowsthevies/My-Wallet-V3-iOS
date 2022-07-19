@@ -5,7 +5,6 @@ import Localization
 import PlatformUIKit
 import UIKit
 
-
 private typealias L10n = LocalizationConstants.NewKYC.Steps.AccountUsage
 
 enum NavigationCTA {
@@ -30,7 +29,7 @@ extension NavigationCTA {
             return nil
         }
     }
-    
+
     var title: String {
         switch self {
         case .dismiss, .help, .none:
@@ -39,7 +38,7 @@ extension NavigationCTA {
             return L10n.skipButtonTitle
         }
     }
-    
+
     var visibility: PlatformUIKit.Visibility {
         switch self {
         case .dismiss, .help, .skip:
