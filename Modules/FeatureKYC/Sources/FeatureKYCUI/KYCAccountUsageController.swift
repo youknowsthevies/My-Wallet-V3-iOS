@@ -15,6 +15,7 @@ import UIKit
 final class KYCAccountUsageController: KYCBaseViewController {
 
     private var isBlocking: Bool = true
+    private var bag: Set<AnyCancellable> = []
 
     override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = KYCAccountUsageController()
@@ -52,10 +53,11 @@ final class KYCAccountUsageController: KYCBaseViewController {
                 )
             )
         )
-        _ = publisher
+        publisher
             .map(\.blocking)
             .replaceError(with: false)
             .assign(to: \.isBlocking, on: self)
+            .store(in: &bag)
         embed(view)
     }
 
