@@ -7,17 +7,33 @@ extension DependencyContainer {
 
     public static var featureActivityDomain = module {
 
-        factory { TransactionDetailService() as TransactionDetailServiceAPI }
+        factory { () -> TransactionDetailServiceAPI in
+            TransactionDetailService(
+                blockchainAPI: DIKit.resolve()
+            )
+        }
 
-        factory { ActivityServiceContainer() as ActivityServiceContaining }
+        factory { () -> ActivityServiceContaining in
+            ActivityServiceContainer(
+                exchangeProviding: DIKit.resolve(),
+                fiatCurrency: DIKit.resolve(),
+                selectionService: DIKit.resolve()
+            )
+        }
+
+        factory { () -> WalletPickerSelectionServiceAPI in
+            WalletPickerSelectionService(
+                coincore: DIKit.resolve()
+            )
+        }
 
         // MARK: Public
 
-        factory {
+        factory { () -> BuySellActivityItemEventServiceAPI in
             BuySellActivityItemEventService(
                 ordersService: DIKit.resolve(),
                 kycTiersService: DIKit.resolve()
-            ) as BuySellActivityItemEventServiceAPI
+            )
         }
     }
 }

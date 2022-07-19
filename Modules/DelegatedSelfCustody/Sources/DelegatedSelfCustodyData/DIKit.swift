@@ -98,5 +98,12 @@ extension DependencyContainer {
                 authenticationDataRepository: DIKit.resolve()
             )
         }
+
+        single { () -> DelegatedCustodyActivityRepositoryAPI in
+            ActivityRepository(
+                client: DIKit.resolve(),
+                authenticationDataRepository: DIKit.resolve()
+            )
+        }
     }
 }

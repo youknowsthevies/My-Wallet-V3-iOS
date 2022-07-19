@@ -43,7 +43,8 @@ class WalletLogicTests: XCTestCase {
             metadata: metadataService,
             walletSync: walletSyncMock,
             notificationCenter: .default,
-            logger: NoopNativeWalletLogging()
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
@@ -97,7 +98,8 @@ class WalletLogicTests: XCTestCase {
             metadata: metadataService,
             walletSync: walletSyncMock,
             notificationCenter: .default,
-            logger: NoopNativeWalletLogging()
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
@@ -165,7 +167,8 @@ class WalletLogicTests: XCTestCase {
             metadata: metadataService,
             walletSync: walletSyncMock,
             notificationCenter: .default,
-            logger: NoopNativeWalletLogging()
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
