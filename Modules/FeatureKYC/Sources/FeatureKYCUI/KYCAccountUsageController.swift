@@ -15,7 +15,6 @@ import UIKit
 final class KYCAccountUsageController: KYCBaseViewController {
 
     private var isBlocking: Bool = true
-    private var cancellables = Set<AnyCancellable>()
 
     override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = KYCAccountUsageController()
