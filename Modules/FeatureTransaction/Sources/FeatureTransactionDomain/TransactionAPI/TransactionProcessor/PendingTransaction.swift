@@ -289,3 +289,10 @@ extension PendingTransaction {
         )
     }
 }
+
+extension PendingTransaction {
+
+    public var missingPriceDescription: String {
+        "PendingTransaction(amount: \(amount), selectedFiatCurrency: \(selectedFiatCurrency))"
+    }
+}
