@@ -4,10 +4,6 @@
 <dict>
 	<key>WEBSOCKET_CONVERSION_URL</key>
 	<string>$(WEBSOCKET_CONVERSION_URL)</string>
-	<key>intercomAPIKey</key>
-	<string>$(INTERCOM_API_KEY)</string>
-	<key>intercomAppId</key>
-	<string>$(INTERCOM_APP_ID)</string>
 	<key>embraceAppId</key>
 	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
@@ -48,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>6</string>
 	<key>CHECKOUT_ENV</key>
 	<string>$(CHECKOUT_ENV)</string>
 	<key>COMMIT_HASH</key>
