@@ -321,6 +321,8 @@ extension TransactionConfirmations {
                 return (LocalizedString.Error.title, error.description ?? LocalizedString.Error.generic)
             case .insufficientInterestWithdrawalBalance:
                 return (LocalizedString.Error.title, LocalizedString.Error.insufficientInterestWithdrawalBalance)
+            case .accountIneligible(let reason):
+                return (LocalizedString.Error.title, reason.message)
             case .noSourcesAvailable,
                  .incorrectSourceCurrency,
                  .incorrectDestinationCurrency:
@@ -451,7 +453,7 @@ extension TransactionConfirmations {
 
     public struct BuyCryptoValue: TransactionConfirmation {
         public let id = UUID()
-        public let baseValue: CryptoValue
+        public let baseValue: MoneyValue
         public let type: TransactionConfirmationKind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {

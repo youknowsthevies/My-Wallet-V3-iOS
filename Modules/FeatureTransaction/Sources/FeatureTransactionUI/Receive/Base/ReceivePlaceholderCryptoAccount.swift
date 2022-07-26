@@ -31,7 +31,7 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just(.zero(currency: asset))
     }
 
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([])
     }
 
@@ -46,8 +46,8 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just(true)
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
     }
 
     var requireSecondPassword: Single<Bool> {

@@ -22,20 +22,9 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
     }
 
     func makeViewController() -> UIViewController {
-        var conversionRate: MoneyValue?
-        let exchangeRates = transactionState.exchangeRates
-        if transactionState.action == .buy {
-            // The `destination` is a `CryptoAccount`.
-            // e.g. `1 ETH = $[X.XX]` if trading currency is USD.
-            conversionRate = exchangeRates?.destinationToFiatTradingCurrencyRate
-        } else {
-            conversionRate = exchangeRates?.sourceToFiatTradingCurrencyRate
-        }
-        guard let account = transactionState.destination as? CryptoAccount,
-              let conversionRate = conversionRate
-        else {
+        guard let account = transactionState.destination as? CryptoAccount else {
             if transactionState.destination as? CryptoAccount == nil {
-                let error = "\(type(of: self)) - Invalid destination for transaction state '\(dump(transactionState))'"
+                let error = "\(type(of: self)) - Invalid destination"
                 eventsRecorder.record(error)
                 ProbabilisticRunner.run(for: .tenPercent) {
                     fatalError(error)
@@ -45,7 +34,6 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             return UIHostingController(
                 rootView: TargetAccountAuxiliaryView(
                     asset: .bitcoin,
-                    price: .zero(currency: .fiat(.USD)),
                     action: { [weak self] in
                         self?.handleTap()
                     }
@@ -57,7 +45,6 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
         return UIHostingController(
             rootView: TargetAccountAuxiliaryView(
                 asset: account.asset,
-                price: conversionRate,
                 action: { [weak self] in
                     self?.handleTap()
                 }

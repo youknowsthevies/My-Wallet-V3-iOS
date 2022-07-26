@@ -19,6 +19,8 @@ extension FiatCurrency {
             return .local(name: "icon-eur", bundle: .platformUIKit)
         case .USD:
             return .local(name: "icon-usd", bundle: .platformUIKit)
+        case .ARS, .BRL:
+            return .local(name: "icon-usd", bundle: .platformUIKit)
         default:
             fatalError("Currency \(code) does not have a logo image")
         }

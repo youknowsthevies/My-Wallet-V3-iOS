@@ -219,6 +219,9 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
+            .withLatestFrom(activeInput) { ($0, $1) }
+            .filter { _, active in active == .fiat }
+            .map(\.0)
             .bindAndCatch(to: cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
@@ -226,6 +229,9 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
+            .withLatestFrom(activeInput) { ($0, $1) }
+            .filter { _, active in active == .crypto }
+            .map(\.0)
             .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 

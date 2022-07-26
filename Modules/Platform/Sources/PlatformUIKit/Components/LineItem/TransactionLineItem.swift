@@ -222,6 +222,8 @@ extension PaymentAccountProperty.Field {
             return AccessibilityID.iban
         case .bankCode:
             return AccessibilityID.bankCode
+        case .field(name: let name, value: _, help: _, copy: _):
+            return name.snakeCase()
         }
     }
 }

@@ -11,8 +11,7 @@ public final class Language {
 
     public private(set) var root: Tag!
 
-    public let queue: DispatchQueue
-    private let key: DispatchSpecificKey<Void>
+    private let lock = NSRecursiveLock()
 
     var _nodes: [Tag.ID: Tag] = [:]
     var nodes: [Tag.ID: Tag] {
@@ -22,13 +21,6 @@ public final class Language {
 
     private init(graph: Lexicon.Graph) throws {
         self.graph = graph
-        queue = DispatchQueue(
-            label: "com.blockchain.namespace.language.queue.\(Language.id)",
-            qos: .userInitiated
-        )
-        let key = DispatchSpecificKey<Void>()
-        queue.setSpecific(key: key, value: ())
-        self.key = key
         root = Tag.add(parent: nil, node: graph.root, to: self)
         Self.unownedLanguageReferences.append(self)
     }
@@ -45,10 +37,10 @@ extension Language {
         return count
     }
 
-    private func sync<T>(execute work: () throws -> T) rethrows -> T {
-        DispatchQueue.getSpecific(key: key) == nil
-            ? try queue.sync(execute: work)
-            : try work()
+    func sync<T>(execute work: () throws -> T) rethrows -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return try work()
     }
 }
 

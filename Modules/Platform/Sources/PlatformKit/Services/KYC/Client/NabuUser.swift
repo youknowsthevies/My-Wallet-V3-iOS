@@ -38,12 +38,12 @@ public struct NabuUser: Decodable, Equatable {
     public let identifier: String
     public let personalDetails: PersonalDetails
     public let address: UserAddress?
-    @available(*, deprecated, message: "Never read this! This may be an old email address! Use Wallet API instead!")
     public let email: Email
     public let mobile: Mobile?
     public let status: KYC.AccountStatus
     public let state: UserState
     public let tiers: KYC.UserState?
+    public let currencies: Currencies
     let tags: Tags?
     public let needsDocumentResubmission: DocumentResubmission?
     public let userName: String?
@@ -73,6 +73,7 @@ public struct NabuUser: Decodable, Equatable {
         case kycCreationDate = "insertedAt"
         case kycUpdateDate = "updatedAt"
         case depositAddresses = "walletAddresses"
+        case currencies
     }
 
     // MARK: - Init
@@ -85,6 +86,7 @@ public struct NabuUser: Decodable, Equatable {
         mobile: Mobile?,
         status: KYC.AccountStatus,
         state: UserState,
+        currencies: Currencies,
         tags: Tags?,
         tiers: KYC.UserState?,
         needsDocumentResubmission: DocumentResubmission?,
@@ -102,6 +104,7 @@ public struct NabuUser: Decodable, Equatable {
         self.mobile = mobile
         self.status = status
         self.state = state
+        self.currencies = currencies
         self.tags = tags
         self.tiers = tiers
         self.needsDocumentResubmission = needsDocumentResubmission
@@ -123,6 +126,7 @@ public struct NabuUser: Decodable, Equatable {
         settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
         personalDetails = try PersonalDetails(from: decoder)
         email = try Email(from: decoder)
+        currencies = try values.decode(Currencies.self, forKey: .currencies)
         mobile = try? Mobile(from: decoder)
         status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? .none
         state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
@@ -259,4 +263,11 @@ public struct NabuUserSettings: Decodable, Equatable {
     public init(mercuryEmailVerified: Bool) {
         self.mercuryEmailVerified = mercuryEmailVerified
     }
+}
+
+public struct Currencies: Decodable, Equatable {
+    public let preferredFiatTradingCurrency: FiatCurrency
+    public let usableFiatCurrencies: [FiatCurrency]
+    public let defaultWalletCurrency: FiatCurrency
+    public let userFiatCurrencies: [FiatCurrency]
 }

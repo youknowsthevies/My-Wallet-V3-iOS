@@ -196,6 +196,23 @@ extension LocalizationConstants {
             )
         }
 
+        public enum MajorProductBlocked {
+            public static let title = NSLocalizedString(
+                "Trading Restricted",
+                comment: "EU_5_SANCTION card title."
+            )
+
+            public static let ctaButtonLearnMore = NSLocalizedString(
+                "Learn More",
+                comment: "EU_5_SANCTION card CTA button title."
+            )
+
+            public static let defaultMessage = NSLocalizedString(
+                "Default message for inelibility",
+                comment: "This operation cannot be performed at this time. Please try again later."
+            )
+        }
+
         public enum Exchange {
             public static let title = NSLocalizedString(
                 "Introducing the Exchange",
@@ -265,6 +282,21 @@ extension LocalizationConstants {
             public static let ctaButton = NSLocalizedString(
                 "Learn more",
                 comment: "WalletConnect announcement card CTA button title"
+            )
+        }
+
+        public enum ApplePay {
+            public static let title = NSLocalizedString(
+                "New: Apple Pay",
+                comment: "Apple Pay announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Enjoy frictionless crypto purchases with Apple Pay.",
+                comment: "Apple Pay announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Buy Crypto",
+                comment: "Apple Pay announcement card CTA button title"
             )
         }
 

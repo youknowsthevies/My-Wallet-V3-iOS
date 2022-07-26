@@ -31,6 +31,15 @@ public struct AccountCredentials: Equatable {
             exchangeLifetimeToken: entry.exchangeLifetimeToken
         )
     }
+
+    func toEntry() -> AccountCredentialsEntryPayload {
+        AccountCredentialsEntryPayload(
+            nabuUserId: nabuUserId,
+            nabuLifetimeToken: nabuLifetimeToken,
+            exchangeUserId: exchangeUserId,
+            exchangeLifetimeToken: exchangeLifetimeToken
+        )
+    }
 }
 
 public protocol AccountCredentialsFetcherAPI {
@@ -39,7 +48,7 @@ public protocol AccountCredentialsFetcherAPI {
 
     /// Stores the passed UserCredentials to metadata
     /// - Parameter credentials: A `UserCredentials` value
-    func store(credentials: AccountCredentials) -> AnyPublisher<EmptyValue, WalletAssetFetchError>
+    func store(credentials: AccountCredentials) -> AnyPublisher<EmptyValue, WalletAssetSaveError>
 }
 
 final class AccountCredentialsFetcher: AccountCredentialsFetcherAPI {
@@ -86,8 +95,13 @@ final class AccountCredentialsFetcher: AccountCredentialsFetcherAPI {
         )
     }
 
-    func store(credentials: AccountCredentials) -> AnyPublisher<EmptyValue, WalletAssetFetchError> {
-        unimplemented()
+    func store(credentials: AccountCredentials) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+        doSave(
+            credentials: credentials,
+            flagsService: featureFlagService,
+            metadataEntryService: metadataEntryService,
+            userCredentialsFetcher: userCredentialsFetcher
+        )
     }
 }
 
@@ -129,6 +143,36 @@ private func doFetchAccountCredentials(
                     }
                     return accountCredentials
                 }
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+}
+
+private func doSave(
+    credentials: AccountCredentials,
+    flagsService: FeatureFlagsServiceAPI,
+    metadataEntryService: WalletMetadataEntryServiceAPI,
+    userCredentialsFetcher: UserCredentialsFetcherAPI
+) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+    flagsService.isEnabled(.accountCredentialsMetadataMigration)
+        .flatMap { [metadataEntryService, userCredentialsFetcher] isEnabled
+            -> AnyPublisher<EmptyValue, WalletAssetSaveError> in
+            guard isEnabled else {
+                return userCredentialsFetcher.store(
+                    credentials: UserCredentials(
+                        userId: credentials.nabuUserId,
+                        lifetimeToken: credentials.nabuLifetimeToken
+                    )
+                )
+            }
+            // we're also saving to the old entry (10) as well as the new one
+            let userCredentials = UserCredentials(
+                userId: credentials.nabuUserId,
+                lifetimeToken: credentials.nabuLifetimeToken
+            )
+            return metadataEntryService.save(node: credentials.toEntry())
+                .zip(userCredentialsFetcher.store(credentials: userCredentials))
+                .map { _ in .noValue }
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()

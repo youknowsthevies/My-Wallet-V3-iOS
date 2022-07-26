@@ -51,7 +51,7 @@ extension AnalyticsEvents.New {
             case trading = "TRADING"
             case userKey = "USERKEY"
 
-            public init(_ account: CryptoAccount) {
+            public init(_ account: BlockchainAccount?) {
                 switch account {
                 case is CryptoInterestAccount:
                     self = .savings
@@ -82,6 +82,19 @@ extension AnalyticsEvents.New {
                     self = .exchange
                 default:
                     self = .external
+                }
+            }
+
+            public init(_ target: TransactionTarget?) {
+                switch target?.accountType {
+                case .trading:
+                    self = .trading
+                case .external:
+                    self = .external
+                case .exchange:
+                    self = .exchange
+                default:
+                    self = .userKey
                 }
             }
         }

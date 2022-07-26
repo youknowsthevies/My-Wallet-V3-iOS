@@ -11,7 +11,6 @@ enum TestAPIClientError: Error {
 }
 
 class APIClientMock: BitcoinChainKit.APIClientAPI {
-
     var underlyingUnspentOutputs: AnyPublisher<UnspentOutputsResponse, NetworkError> =
         .failure(NetworkError(request: nil, type: .authentication(TestAPIClientError.testError)))
 
@@ -31,5 +30,11 @@ class APIClientMock: BitcoinChainKit.APIClientAPI {
         for wallets: [XPub]
     ) -> AnyPublisher<UnspentOutputsResponse, NetworkError> {
         underlyingUnspentOutputs
+    }
+
+    func push(
+        transaction: EncodedBitcoinChainTransaction
+    ) -> AnyPublisher<Void, NetworkError> {
+        unimplemented()
     }
 }

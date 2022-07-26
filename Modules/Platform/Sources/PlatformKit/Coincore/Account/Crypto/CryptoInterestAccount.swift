@@ -24,13 +24,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
-    public var accountType: AccountType = .custodial
+    public var accountType: AccountType = .trading
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         receiveAddressRepository
             .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
-            .eraseToAnyPublisher()
-            .asSingle()
+            .eraseError()
             .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
                 cryptoReceiveAddressFactory
                     .makeExternalAssetAddress(
@@ -38,9 +37,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                         label: "\(asset.code) \(LocalizationConstants.rewardsAccount)",
                         onTxCompleted: onTxCompleted
                     )
-                    .single
+                    .eraseError()
+                    .publisher
+                    .eraseToAnyPublisher()
             }
             .map { $0 as ReceiveAddress }
+            .eraseToAnyPublisher()
     }
 
     public var requireSecondPassword: Single<Bool> {
@@ -87,18 +89,14 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .eraseError()
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
-        activityPublisher
-            .asSingle()
-    }
-
-    private var activityPublisher: AnyPublisher<[ActivityItemEvent], Never> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         interestActivityEventRepository
             .fetchInterestActivityItemEventsForCryptoCurrency(asset)
             .map { events in
                 events.map(ActivityItemEvent.interest)
             }
             .replaceError(with: [])
+            .eraseError()
             .eraseToAnyPublisher()
     }
 
@@ -152,9 +150,9 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         case .viewActivity:
-            return activityPublisher
+            return activity
                 .map { !$0.isEmpty }
-                .setFailureType(to: Error.self)
+                .eraseError()
                 .eraseToAnyPublisher()
         case .buy,
              .deposit,

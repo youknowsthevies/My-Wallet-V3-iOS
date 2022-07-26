@@ -1,11 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
+import Errors
 import MoneyKit
-import RxSwift
 
 public protocol CustodialAddressServiceAPI {
-    func receiveAddress(for cryptoCurrency: CryptoCurrency) -> Single<String>
+
+    func receiveAddress(
+        for cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<String, NabuNetworkError>
 }
 
 final class CustodialAddressService: CustodialAddressServiceAPI {
@@ -14,14 +17,16 @@ final class CustodialAddressService: CustodialAddressServiceAPI {
 
     // MARK: - Setup
 
-    init(client: CustodialPaymentAccountClientAPI = resolve()) {
+    init(client: CustodialPaymentAccountClientAPI) {
         self.client = client
     }
 
-    func receiveAddress(for cryptoCurrency: CryptoCurrency) -> Single<String> {
+    func receiveAddress(
+        for cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<String, NabuNetworkError> {
         client.custodialPaymentAccount(for: cryptoCurrency)
             .map(\.account)
             .map(\.address)
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 }

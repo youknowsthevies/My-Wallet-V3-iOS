@@ -82,6 +82,13 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
         let fetch_new = { () -> AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError> in
             metadataEntryService.fetchEntry(type: StellarEntryPayload.self)
                 .map(\.accounts)
+                .catch { error -> AnyPublisher<[StellarEntryPayload.Account], WalletAssetFetchError> in
+                    guard case .fetchFailed(.loadMetadataError(.notYetCreated)) = error else {
+                        return .failure(error)
+                    }
+                    // TODO: Refactor this once we remove JS, we shouldn't rely on emptiness
+                    return .just([])
+                }
                 .map { accounts in
                     accounts.enumerated().map { index, account in
                         StellarWalletAccount(
@@ -157,9 +164,20 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
 
     private func createAndSaveStellarAccount() -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> {
         let saveKeyPair = save
-        let save_old = loadKeyPair()
-            .flatMap { keyPair -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> in
-                saveKeyPair(keyPair)
+
+        return loadKeyPair()
+            .flatMap { [metadataEntryService] keyPair
+                -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> in
+                nativeWalletFlagEnabled()
+                    .flatMap { isEnabled -> AnyPublisher<StellarKeyPair, StellarAccountError> in
+                        guard isEnabled else {
+                            return saveKeyPair(keyPair)
+                        }
+                        return saveNatively(
+                            metadataEntryService: metadataEntryService,
+                            keyPair: keyPair
+                        )
+                    }
                     .mapError { _ in StellarWalletAccountRepositoryError.saveFailure }
                     .eraseToAnyPublisher()
             }
@@ -170,17 +188,6 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
                     label: CryptoCurrency.stellar.defaultWalletName,
                     archived: false
                 )
-            }
-
-        return nativeWalletFlagEnabled()
-            .flatMap { isEnabled -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> in
-                guard isEnabled else {
-                    return save_old
-                        .eraseToAnyPublisher()
-                }
-                #warning("saving on native wallet is not yet supported")
-                return .failure(StellarWalletAccountRepositoryError.saveFailure)
-                    .crashOnError()
             }
             .eraseToAnyPublisher()
     }
@@ -205,6 +212,26 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
         .subscribe(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
+}
+
+private func saveNatively(
+    metadataEntryService: WalletMetadataEntryServiceAPI,
+    keyPair: StellarKeyPair
+) -> AnyPublisher<StellarKeyPair, StellarAccountError> {
+    let account = StellarEntryPayload.Account(
+        archived: false,
+        label: CryptoCurrency.stellar.defaultWalletName,
+        publicKey: keyPair.accountID
+    )
+    let payload = StellarEntryPayload(
+        accounts: [account],
+        defaultAccountIndex: 0,
+        txNotes: [:]
+    )
+    return metadataEntryService.save(node: payload)
+        .mapError { _ in StellarAccountError.unableToSaveNewAccount }
+        .map { _ in keyPair }
+        .eraseToAnyPublisher()
 }
 
 private func derive(

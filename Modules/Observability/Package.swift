@@ -12,12 +12,14 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(name: "BlockchainNamespace", path: "../BlockchainNamespace"),
         .package(name: "Tool", path: "../Tool")
     ],
     targets: [
         .target(
             name: "ObservabilityKit",
             dependencies: [
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         )

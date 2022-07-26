@@ -30,6 +30,7 @@ public final class CoinViewAnalyticsObserver: Session.Observer {
 
     lazy var events = [
         asset,
+        assetDismiss,
         chart,
         buy,
         sell,
@@ -45,9 +46,21 @@ public final class CoinViewAnalyticsObserver: Session.Observer {
         watchlistRemove
     ]
 
-    lazy var asset = app.on(blockchain.ux.asset) { [analytics] event in
+    lazy var asset = app.on(blockchain.ux.asset) { [analytics, app] event in
+        let currency = try event.reference.context.decode(blockchain.ux.asset.id) as String
         try analytics.record(
-            event: .coinViewOpen(currency: event.reference.context.decode(blockchain.ux.asset.id) as String)
+            event: .coinViewOpen(
+                currency: currency,
+                origin: app.state.get(blockchain.ux.asset[currency].select.origin) as String
+            )
+        )
+    }
+
+    lazy var assetDismiss = app.on(blockchain.ux.asset.event.did.dismiss) { [analytics] event in
+        try analytics.record(
+            event: .coinViewClosed(
+                currency: event.reference.context.decode(blockchain.ux.asset.id) as String
+            )
         )
     }
 

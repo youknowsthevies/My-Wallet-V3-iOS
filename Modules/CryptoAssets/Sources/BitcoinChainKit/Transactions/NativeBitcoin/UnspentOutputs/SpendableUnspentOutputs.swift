@@ -2,12 +2,12 @@
 
 import BigInt
 
-struct SpendableUnspentOutputs: Equatable {
+public struct SpendableUnspentOutputs: Equatable {
 
-    let absoluteFee: BigUInt
-    let amount: BigUInt
-    let change: BigUInt
-    let spendableOutputs: [UnspentOutput]
+    public let absoluteFee: BigUInt
+    public let amount: BigUInt
+    public let change: BigUInt
+    public let spendableOutputs: [UnspentOutput]
 
     init(
         spendableOutputs: [UnspentOutput],

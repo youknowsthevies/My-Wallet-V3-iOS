@@ -105,7 +105,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertAnyEqual(state.get(blockchain.session.state.preference.value), true)
+            try XCTAssertEqual(state.get(blockchain.session.state.preference.value), true)
             try XCTAssertEqual(
                 object[userId, "blockchain.session.state.preference.value"].unwrap() as? Bool,
                 true
@@ -119,8 +119,7 @@ final class SessionStateTests: XCTestCase {
                 forKey: "blockchain.session.state"
             )
             XCTAssertNoThrow(try state.get(blockchain.session.state.preference.value))
-            try XCTAssertAnyEqual(object["ø"].unwrap(), ["blockchain.app.configuration.remote.is.stale": false])
-            try XCTAssertAnyEqual(object[userId].unwrap(), ["blockchain.session.state.preference.value": true])
+            XCTAssertEqual(object[userId] as? [String: Bool], ["blockchain.session.state.preference.value": true])
         }
 
         state.set(blockchain.user.id, to: userId)
@@ -131,7 +130,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
+            try XCTAssertEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
                 object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
@@ -144,7 +143,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertAnyEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
+            try XCTAssertEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
             try XCTAssertEqual(
                 object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
@@ -178,7 +177,7 @@ final class SessionStateTests: XCTestCase {
 
         XCTAssertNil(string)
 
-        state.set(blockchain.user.id, to: userId)
+        app.signIn(userId: userId)
 
         XCTAssertEqual(string, "signed_in")
     }

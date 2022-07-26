@@ -1,5 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainComponentLibrary
 import BlockchainNamespace
 import Combine
@@ -24,6 +25,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var fab: FrequentActionState
     @BindableState var referralState: ReferralState
     @BindableState var buyAndSell: BuyAndSell = .init()
+    @BindableState var unreadSupportMessageCount: Int = 0
 }
 
 extension RootViewState {
@@ -82,7 +84,9 @@ enum RootViewRoute: NavigationRoute {
                     ReferFriendView(store: .init(
                         initialState: .init(referralInfo: referral),
                         reducer: ReferFriendModule.reducer,
-                        environment: .init(mainQueue: .main)
+                        environment: .init(
+                            mainQueue: .main
+                        )
                     ))
                     .identity(blockchain.ux.referral)
                     .ignoresSafeArea()
@@ -133,18 +137,27 @@ let rootViewReducer = Reducer<
 
             environment.app.publisher(for: blockchain.ux.referral.giftbox.seen, as: Bool.self)
                 .replaceError(with: false)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$referralState.isHighlighted, $0 == false)) },
 
             environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$fab.data, $0)) },
 
             environment.app.publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
                 .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$tabs, $0)) }
+                .map { .binding(.set(\.$tabs, $0)) },
+
+            environment.app.publisher(for: blockchain.ux.customer.support.unread.count, as: Int.self)
+                .compactMap(\.value)
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$unreadSupportMessageCount, $0)) }
         )
     case .onDisappear:
         return .fireAndForget {
@@ -153,6 +166,7 @@ let rootViewReducer = Reducer<
     case .onReferralTap:
         return .merge(
             .fireAndForget {
+                environment.app.post(event: blockchain.ux.referral.giftbox)
                 environment.app.state.set(blockchain.ux.referral.giftbox.seen, to: true)
             },
             .enter(into: .referrals, context: .none)

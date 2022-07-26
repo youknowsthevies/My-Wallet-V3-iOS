@@ -66,7 +66,7 @@ extension App {
                         }
                     }
                     for (tag, value) in dsl.context where tag.is(blockchain.session.configuration.value) {
-                        app.remoteConfiguration.override(tag.key, with: value)
+                        app.remoteConfiguration.override(tag.key(), with: value)
                     }
                     if let event = dsl.event {
                         app.post(event: event, context: Tag.Context(dsl.context))

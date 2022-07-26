@@ -171,6 +171,7 @@ final class VerifyBackupScreenPresenter {
                 style: .circle,
                 text: LocalizationConstants.syncingWallet
             )
+            .asCompletable()
             .catch { _ in
                 // There was an error syncing wallet
                 // Ignore

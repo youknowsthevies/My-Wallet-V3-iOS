@@ -45,6 +45,23 @@ public struct Wrapper: Equatable {
     }
 }
 
+// MARK: - Update Method
+
+func updateWrapper(
+    nativeWallet: NativeWallet
+) -> (Wrapper) -> Wrapper {
+    { currentWrapper in
+        Wrapper(
+            pbkdf2Iterations: Int(currentWrapper.pbkdf2Iterations),
+            version: currentWrapper.version,
+            payloadChecksum: currentWrapper.payloadChecksum,
+            language: currentWrapper.language,
+            syncPubKeys: currentWrapper.syncPubKeys,
+            wallet: nativeWallet
+        )
+    }
+}
+
 // MARK: - Creation Methods
 
 func generateWrapper(

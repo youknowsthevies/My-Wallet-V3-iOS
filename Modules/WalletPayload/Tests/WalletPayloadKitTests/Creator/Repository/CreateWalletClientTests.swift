@@ -111,7 +111,9 @@ class CreateWalletClientTests: XCTestCase {
             metadataHDNode: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         return Wrapper(
             pbkdf2Iterations: 1,

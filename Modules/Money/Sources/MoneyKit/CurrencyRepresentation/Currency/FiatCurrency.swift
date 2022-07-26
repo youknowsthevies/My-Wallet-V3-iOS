@@ -25,6 +25,7 @@
  ```
  */
 import Foundation
+import Localization
 
 public enum FiatCurrency: String, Currency, Codable, CaseIterable, Equatable {
 
@@ -956,7 +957,20 @@ extension FiatCurrency {
     public static let maxDisplayPrecision: Int = allCases.map(\.displayPrecision).max() ?? 0
 
     public var name: String {
-        currentLocale.localizedString(forCurrencyCode: code) ?? ""
+        switch self {
+        case .USD:
+            return LocalizationConstants.Fiat.usd
+        case .GBP:
+            return LocalizationConstants.Fiat.gbp
+        case .EUR:
+            return LocalizationConstants.Fiat.eur
+        case .ARS:
+            return LocalizationConstants.Fiat.ars
+        case .BRL:
+            return LocalizationConstants.Fiat.brl
+        default:
+            return currentLocale.localizedString(forCurrencyCode: code) ?? ""
+        }
     }
 
     public var code: String { rawValue }
@@ -1044,7 +1058,7 @@ extension FiatCurrency {
     static let achCurrencies: [FiatCurrency] = [.USD]
 
     /// The list of fiat currencies supported for bank wire transfers.
-    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD]
+    static let bankWireSupported: [FiatCurrency] = MoneyKit.allEnabledFiatCurrencies
 
     /// Whether the current fiat currency is supported for ACH.
     public var isACHSupportedCurrency: Bool {
@@ -1058,6 +1072,7 @@ extension FiatCurrency {
 
     /// The list of fiat currencies currently supported.
     public static let supported: [FiatCurrency] = [
+        .ARS,
         .AUD,
         .BRL,
         .CAD,

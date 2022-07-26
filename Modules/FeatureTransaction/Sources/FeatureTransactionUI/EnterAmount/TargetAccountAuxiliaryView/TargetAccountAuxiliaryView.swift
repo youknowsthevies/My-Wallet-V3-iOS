@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import ComposableArchitecture
 import Localization
 import MoneyKit
@@ -10,7 +11,7 @@ import UIComponentsKit
 struct TargetAccountAuxiliaryViewState: Equatable {
     let image: ImageResource
     let title: String
-    let subtitle: String
+    let color: Color
     let enabled: Bool
 }
 
@@ -36,11 +37,6 @@ let targetAccountAuxiliaryViewReducer = Reducer<
 
 struct TargetAccountAuxiliaryView: View {
 
-    enum Constants {
-        static let accountImageSize: CGFloat = 34
-        static let disclosureIndicatorSize: CGFloat = 16
-    }
-
     let store: Store<TargetAccountAuxiliaryViewState, TargetAccountAuxiliaryViewAction>
 
     var body: some View {
@@ -52,26 +48,28 @@ struct TargetAccountAuxiliaryView: View {
                 label: {
                     HStack(
                         alignment: .center,
-                        spacing: LayoutConstants.VerticalSpacing.betweenContentGroups
+                        spacing: Spacing.padding2
                     ) {
-                        ImageResourceView(viewStore.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.accountImageSize)
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(viewStore.title)
-                                .textStyle(.heading)
-                                .multilineTextAlignment(.leading)
-                            Text(viewStore.subtitle)
-                                .textStyle(.subheading)
-                                .multilineTextAlignment(.leading)
-                        }
-                        if viewStore.enabled {
-                            Spacer()
-                            Image("icon-disclosure-down-small", bundle: .platformUIKit)
+                        HStack(spacing: -6) {
+                            ImageResourceView(viewStore.image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: Constants.disclosureIndicatorSize)
+                                .frame(width: 32.pt)
+
+                            Icon.plus.circle()
+                                .accentColor(viewStore.color)
+                                .frame(width: 24.pt)
+                        }
+
+                        Text(viewStore.title)
+                            .textStyle(.heading)
+                            .multilineTextAlignment(.leading)
+
+                        if viewStore.enabled {
+                            Spacer()
+                            Icon.chevronDown
+                                .accentColor(.semantic.dark)
+                                .frame(width: 24.pt)
                         }
                     }
                     .frame(
@@ -89,16 +87,13 @@ struct TargetAccountAuxiliaryView: View {
 
 extension TargetAccountAuxiliaryView {
 
-    init(asset: CryptoCurrency, price: MoneyValue, action: @escaping () -> Void) {
+    init(asset: CryptoCurrency, action: @escaping () -> Void) {
         self.init(
             store: .init(
                 initialState: TargetAccountAuxiliaryViewState(
                     image: asset.logoResource,
                     title: asset.name,
-                    subtitle: LocalizationConstants.Transaction.Buy.AmountPresenter.value(
-                        for: asset.displayCode,
-                        price: price.displayString
-                    ),
+                    color: asset.brandColor,
                     enabled: true
                 ),
                 reducer: targetAccountAuxiliaryViewReducer,
@@ -116,7 +111,6 @@ struct TargetAccountAuxiliaryView_Previews: PreviewProvider {
         VStack(alignment: .leading) {
             TargetAccountAuxiliaryView(
                 asset: .bitcoin,
-                price: .init(amount: 2307477, currency: .fiat(.GBP)),
                 action: {}
             )
             Spacer()

@@ -52,10 +52,12 @@ public enum SeedPhraseAction: Equatable {
     case importWallet(ImportWalletAction)
     case secondPasswordNotice(SecondPasswordNotice.Action)
     case restoreWallet(WalletRecovery)
-    case restored(Result<EmptyValue, WalletRecoveryError>)
+    case restored(Result<Either<EmptyValue, WalletFetchedContext>, WalletRecoveryError>)
     case imported(Result<EmptyValue, WalletRecoveryError>)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
     case accountRecovered(AccountResetContext)
+    case walletFetched(Result<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError>)
+    case informWalletFetched(WalletFetchedContext)
     case triggerAuthenticate // needed for legacy wallet flow
     case open(urlContent: URLContent)
     case none
@@ -402,8 +404,28 @@ let seedPhraseReducer = Reducer.combine(
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .cancellable(id: WalletRecoveryIds.WalletFetchAfterRecoveryId())
-                    .map { _ in .none }
+                    .map(SeedPhraseAction.walletFetched)
             )
+
+        case .walletFetched(.success(.left(.noValue))):
+            // this is for legacy JS flow, to be removed
+            return .none
+
+        case .walletFetched(.success(.right(let context))):
+            return Effect(value: .informWalletFetched(context))
+
+        case .walletFetched(.failure(let error)):
+            let title = LocalizationConstants.ErrorAlert.title
+            let message = error.errorDescription ?? LocalizationConstants.ErrorAlert.message
+            return Effect(
+                value: .alert(
+                    .show(title: title, message: message)
+                )
+            )
+
+        case .informWalletFetched:
+            // handled in WelcomeReducer
+            return .none
 
         case .lostFundsWarning:
             return .none
@@ -435,9 +457,16 @@ let seedPhraseReducer = Reducer.combine(
         case .restoreWallet:
             return .none
 
-        case .restored(.success):
+        case .restored(.success(.left(.noValue))):
             state.isLoading = false
             return .cancel(id: WalletRecoveryIds.RecoveryId())
+
+        case .restored(.success(.right(let context))):
+            state.isLoading = false
+            return .merge(
+                .cancel(id: WalletRecoveryIds.RecoveryId()),
+                Effect(value: .informWalletFetched(context))
+            )
 
         case .restored(.failure):
             state.isLoading = false

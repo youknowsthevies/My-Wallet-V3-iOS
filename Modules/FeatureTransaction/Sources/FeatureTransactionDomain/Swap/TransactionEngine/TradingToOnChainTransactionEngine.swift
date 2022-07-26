@@ -296,10 +296,10 @@ extension CryptoTradingAccount {
 extension PendingTransaction {
 
     fileprivate var memo: TransactionConfirmations.Memo? {
-        engineState[.xlmMemo] as? TransactionConfirmations.Memo
+        engineState.value[.xlmMemo] as? TransactionConfirmations.Memo
     }
 
     fileprivate mutating func setMemo(memo: TransactionConfirmations.Memo) {
-        engineState[.xlmMemo] = memo
+        engineState.mutate { $0[.xlmMemo] = memo }
     }
 }

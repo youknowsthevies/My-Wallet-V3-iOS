@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import AnalyticsKitMock
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 @testable import FeatureKYCDomain
@@ -30,6 +31,7 @@ final class RouterTests: XCTestCase {
         mockKYCTiersService = MockKYCTiersService()
         mockLegacyKYCRouter = MockLegacyKYCRouter()
         router = .init(
+            app: App.test,
             analyticsRecorder: MockAnalyticsRecorder(),
             loadingViewPresenter: MockLoadingViewPresenter(),
             legacyRouter: mockLegacyKYCRouter,
@@ -302,7 +304,7 @@ final class RouterTests: XCTestCase {
         // THEN: The KYC Flow should be presented (because a Tier 1 user could be promoted to Tier 3)
         let e = expectation(description: "Wait for KYC Flow to be presented")
         DispatchQueue.main.asyncAfter(deadline: .now(), execute: e.fulfill)
-        wait(for: [e], timeout: 1)
+        wait(for: [e], timeout: 2)
         XCTAssertEqual(mockLegacyKYCRouter.recordedInvocations.start.count, 1)
         let requestData = mockLegacyKYCRouter.recordedInvocations.start.first
         XCTAssertEqual(requestData?.tier, .tier2)

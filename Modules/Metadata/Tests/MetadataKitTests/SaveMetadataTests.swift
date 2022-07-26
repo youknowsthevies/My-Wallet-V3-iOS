@@ -57,7 +57,7 @@ final class SaveMetadataTests: XCTestCase {
             XCTAssertEqual(body.version, 1)
             XCTAssertEqual(
                 body.prevMagicHash,
-                "3abd6051e3dfdc68c54ed63c12eb1abab11eaa7caee30cf56e451b87fa8d75f1"
+                "ab5b359bfd4bb6142ea81ea936aa6f24f389123efc4f4b9c5a8e61090dcf0ac6"
             )
             XCTAssertEqual(body.typeId, Int(type.rawValue))
 

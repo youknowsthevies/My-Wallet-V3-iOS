@@ -81,7 +81,8 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
 
     private func loadSessions() -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> {
         nativeWalletFlag()
-            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> in
+            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled
+                -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> in
                 guard isEnabled else {
                     return walletConnectMetadata.v1Sessions
                 }

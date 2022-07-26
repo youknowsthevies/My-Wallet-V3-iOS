@@ -24,9 +24,9 @@ final class WalletActionCellPresenter {
         case .crypto(let crypto):
             templateColor = crypto.brandUIColor
             accentColor = crypto.accentColor
-        case .fiat:
-            templateColor = .fiat
-            accentColor = UIColor.fiat.withAlphaComponent(0.15)
+        case .fiat(let fiat):
+            templateColor = fiat.brandColor
+            accentColor = fiat.brandColor.withAlphaComponent(0.15)
         }
         badgeImageViewModel = .template(
             image: .local(name: action.imageName, bundle: .platformUIKit),

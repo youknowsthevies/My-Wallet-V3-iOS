@@ -3,11 +3,22 @@
 import Combine
 import DIKit
 import Errors
+import MoneyKit
 import ToolKit
 
 public enum NabuUserServiceError: Error, Equatable {
     case failedToFetchUser(NabuNetworkError)
     case failedToSetAddress(NabuNetworkError)
+}
+
+extension NabuUserServiceError {
+
+    public var nabu: Nabu.Error {
+        switch self {
+        case .failedToFetchUser(let error), .failedToSetAddress(let error):
+            return error
+        }
+    }
 }
 
 public protocol NabuUserServiceAPI: AnyObject {
@@ -20,6 +31,10 @@ public protocol NabuUserServiceAPI: AnyObject {
         country: String,
         state: String?
     ) -> AnyPublisher<Void, NabuUserServiceError>
+
+    func setTradingCurrency(
+        _ currency: FiatCurrency
+    ) -> AnyPublisher<Void, Nabu.Error>
 }
 
 final class NabuUserService: NabuUserServiceAPI {
@@ -90,5 +105,9 @@ final class NabuUserService: NabuUserServiceAPI {
             .setInitialResidentialInfo(country: country, state: state)
             .mapError(NabuUserServiceError.failedToSetAddress)
             .eraseToAnyPublisher()
+    }
+
+    func setTradingCurrency(_ currency: FiatCurrency) -> AnyPublisher<Void, Nabu.Error> {
+        client.setTradingCurrency(currency.code)
     }
 }

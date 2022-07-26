@@ -134,6 +134,7 @@ extension DependencyContainer {
             return NabuOfflineTokenRepository(
                 walletRepository: repository,
                 credentialsFetcher: DIKit.resolve(),
+                reactiveWallet: DIKit.resolve(),
                 nativeWalletEnabled: { nativeWalletFlagEnabled() }
             )
         }

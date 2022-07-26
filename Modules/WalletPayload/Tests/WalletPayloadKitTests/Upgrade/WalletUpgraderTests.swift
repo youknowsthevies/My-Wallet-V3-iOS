@@ -20,7 +20,9 @@ class WalletUpgraderTests: XCTestCase {
         metadataHDNode: "",
         options: .default,
         hdWallets: [],
-        addresses: []
+        addresses: [],
+        txNotes: nil,
+        addressBook: nil
     )
 
     var cancellables: Set<AnyCancellable>!

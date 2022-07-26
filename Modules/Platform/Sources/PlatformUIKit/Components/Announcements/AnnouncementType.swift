@@ -28,10 +28,14 @@ public enum AnnouncementType: String, Codable {
     case claimFreeCryptoDomain = "claim_free_crypto_domain"
     case walletConnect = "wallet_connect"
     case taxCenter = "tax_center_available"
+    case applePay = "apple_pay"
+    case majorProductBlocked = "major_product_blocked"
 
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
+        case .majorProductBlocked:
+            return .majorProductBlocked
         case .resubmitDocumentsAfterRecovery:
             return .resubmitDocumentsAfterRecovery
         case .sddUsersFirstBuy:
@@ -84,6 +88,8 @@ public enum AnnouncementType: String, Codable {
                 unimplemented("AnnouncementType.assetRename does not have a default key.")
             }
             return .assetRename(code: "")
+        case .applePay:
+            return .applePay
         }
     }
 }

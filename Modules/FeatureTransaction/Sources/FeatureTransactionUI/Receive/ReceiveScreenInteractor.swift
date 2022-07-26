@@ -28,7 +28,7 @@ final class ReceiveScreenInteractor {
     let receiveRouter: ReceiveRouterAPI
 
     var state: AnyPublisher<State?, Never> {
-        account.receiveAddressPublisher
+        account.receiveAddress
             .zip(account.firstReceiveAddress)
             .flatMap { [resolutionService, analyticsRecorder] receiveAddress, firstReceiveAddress -> AddressAndDomainsPublisher in
                 resolutionService.reverseResolve(address: firstReceiveAddress.address)

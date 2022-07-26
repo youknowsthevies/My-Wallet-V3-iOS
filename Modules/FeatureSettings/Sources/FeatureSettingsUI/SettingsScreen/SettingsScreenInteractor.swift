@@ -15,6 +15,7 @@ public final class SettingsScreenInteractor {
     let mobileVerificationBadgeInteractor: MobileVerificationBadgeInteractor
     let twoFactorVerificationBadgeInteractor: TwoFactorVerificationBadgeInteractor
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
+    let preferredTradingCurrencyBadgeInteractor: PreferredTradingCurrencyBadgeInteractor
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
     let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
@@ -85,10 +86,8 @@ public final class SettingsScreenInteractor {
         twoFactorVerificationBadgeInteractor = TwoFactorVerificationBadgeInteractor(
             service: settingsService
         )
-        preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor(
-            settingsService: settingsService,
-            fiatCurrencyService: fiatCurrencyService
-        )
+        preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor()
+        preferredTradingCurrencyBadgeInteractor = PreferredTradingCurrencyBadgeInteractor()
         cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
             service: settingsService
         )
@@ -101,7 +100,7 @@ public final class SettingsScreenInteractor {
     }
 
     func refresh() {
-        recoveryPhraseStatusProviding.fetchTriggerRelay.accept(())
+        recoveryPhraseStatusProviding.fetchTriggerSubject.send(())
         tiersProviding.fetchTriggerRelay.accept(())
         settingsService.fetch(force: true)
             .subscribe()

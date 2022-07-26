@@ -216,6 +216,8 @@ packages:
     path: Modules/FeatureCardPayment
   FeatureCardIssuing:
     path: Modules/FeatureCardIssuing
+  FeatureCustomerSupport:
+    path: Modules/FeatureCustomerSupport
   FeatureDashboard:
     path: Modules/FeatureDashboard
   FeatureCryptoDomain:
@@ -363,6 +365,8 @@ targets:
       - package: FeatureDashboard
       - package: FeatureCryptoDomain
       - package: FeatureCoin
+      - package: FeatureCustomerSupport
+        product: FeatureCustomerSupportUI
       - package: FeatureDebug
       - package: FeatureForm
       - package: FeatureInterest

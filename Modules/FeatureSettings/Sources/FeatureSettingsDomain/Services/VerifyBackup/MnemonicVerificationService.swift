@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxSwift
+import Combine
+import Foundation
 import ToolKit
 
 public protocol WalletRecoveryVerifing {
@@ -8,14 +9,14 @@ public protocol WalletRecoveryVerifing {
     func markRecoveryPhraseVerified(completion: (() -> Void)?, error: (() -> Void)?)
 }
 
+enum MnemonicVerificationServiceError: Error {
+    case mnemonicVerificationError
+}
+
 final class MnemonicVerificationService: MnemonicVerificationAPI {
 
-    enum ServiceError: Error {
-        case mnemonicVerificationError
-    }
-
     let walletRecoveryVerifier: WalletRecoveryVerifing
-    private let jsScheduler = MainScheduler.instance
+    private let jsScheduler = DispatchQueue.main
 
     init(walletRecoveryVerifier: WalletRecoveryVerifing) {
         self.walletRecoveryVerifier = walletRecoveryVerifier
@@ -23,30 +24,26 @@ final class MnemonicVerificationService: MnemonicVerificationAPI {
 
     // MARK: - MnemonicVerificationAPI
 
-    var isVerified: Single<Bool> {
-        Single
-            .just(walletRecoveryVerifier.isRecoveryPhraseVerified())
+    var isVerified: AnyPublisher<Bool, Never> {
+        Just(walletRecoveryVerifier.isRecoveryPhraseVerified())
             .subscribe(on: jsScheduler)
+            .eraseToAnyPublisher()
     }
 
-    func verifyMnemonicAndSync() -> Completable {
-        Completable
-            .create { [weak self] observer -> Disposable in
-                guard let self = self else {
-                    observer(.error(ToolKitError.nullReference(Self.self)))
-                    return Disposables.create()
-                }
-                self.walletRecoveryVerifier.markRecoveryPhraseVerified(
+    func verifyMnemonicAndSync() -> AnyPublisher<EmptyValue, MnemonicVerificationServiceError> {
+        Deferred { [walletRecoveryVerifier] in
+            Future<EmptyValue, MnemonicVerificationServiceError> { promise in
+                walletRecoveryVerifier.markRecoveryPhraseVerified(
                     completion: {
-                        observer(.completed)
+                        promise(.success(.noValue))
                     },
                     error: {
-                        // There was an error syncing wallet.
-                        observer(.error(ServiceError.mnemonicVerificationError))
+                        promise(.failure(.mnemonicVerificationError))
                     }
                 )
-                return Disposables.create()
             }
-            .subscribe(on: jsScheduler)
+        }
+        .subscribe(on: jsScheduler)
+        .eraseToAnyPublisher()
     }
 }

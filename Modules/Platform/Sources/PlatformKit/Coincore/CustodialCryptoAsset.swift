@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DelegatedSelfCustodyDomain
 import DIKit
 import MoneyKit
 import RxSwift
@@ -36,7 +37,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let addressFactory: ExternalAssetAddressFactory
     private let featureFetcher: FeatureFetching
-    private let nabuUserService: NabuUserServiceAPI
+    private let delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI
 
     // MARK: - Setup
 
@@ -46,14 +47,14 @@ final class CustodialCryptoAsset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        nabuUserService: NabuUserServiceAPI = resolve()
+        delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI = resolve()
     ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
         self.exchangeAccountProvider = exchangeAccountProvider
         self.errorRecorder = errorRecorder
         self.featureFetcher = featureFetcher
-        self.nabuUserService = nabuUserService
+        self.delegatedCustodyAccountRepository = delegatedCustodyAccountRepository
         addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
     }
 
@@ -132,19 +133,22 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
-        dynamicSelfCustodySupported
-            .map { [asset] isEnabled in
-                guard isEnabled else {
+        delegatedCustodyAccount
+            .map { [asset, addressFactory] delegatedCustodyAccount in
+                guard let delegatedCustodyAccount = delegatedCustodyAccount else {
                     return CryptoAccountNonCustodialGroup(
                         asset: asset,
                         accounts: []
                     )
                 }
                 let account = CryptoDelegatedCustodyAccount(
-                    asset: asset,
+                    activityRepository: resolve(),
+                    addressesRepository: resolve(),
+                    addressFactory: addressFactory,
+                    asset: delegatedCustodyAccount.coin,
                     balanceRepository: resolve(),
-                    featureFlagsService: resolve(),
-                    priceService: resolve()
+                    priceService: resolve(),
+                    publicKey: delegatedCustodyAccount.publicKey.hex
                 )
                 return CryptoAccountNonCustodialGroup(
                     asset: asset,
@@ -154,29 +158,13 @@ final class CustodialCryptoAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    private var dynamicSelfCustodySupported: AnyPublisher<Bool, Never> {
-        // Initially only possible for Stacks.
-        guard asset.code == "STX" else {
-            return .just(false)
-        }
-        return Publishers.Zip3(
-            featureFetcher.isEnabled(.stxForAllUsers),
-            featureFetcher.isEnabled(.stxForAirdropUsers),
-            stxAirdropRegistered
-        )
-        .map { stxForAllUsers, stxForAirdropUsers, stxAirdropRegistered in
-            // Enabled if 'All' feature flag is one
-            stxForAllUsers
-                // Or if 'Airdrop' feature flag is on and user is registered.
-                || (stxForAirdropUsers && stxAirdropRegistered)
-        }
-        .eraseToAnyPublisher()
-    }
-
-    private var stxAirdropRegistered: AnyPublisher<Bool, Never> {
-        nabuUserService.user
-            .map(\.isBlockstackAirdropRegistered)
-            .replaceError(with: false)
+    private var delegatedCustodyAccount: AnyPublisher<DelegatedCustodyAccount?, Never> {
+        delegatedCustodyAccountRepository
+            .delegatedCustodyAccounts
+            .map { [asset] accounts in
+                accounts.first(where: { $0.coin == asset })
+            }
+            .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
 }

@@ -98,7 +98,6 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
                 .compactMap { account in
                     account
                         .receiveAddress
-                        .asPublisher()
                         .map(\.address)
                         .map { receiveAddress in
                             receiveAddress == address ? account : nil

@@ -174,6 +174,24 @@ extension AddNewBankAccountPagePresenter {
             let processingTimeNoticeDescription: String
 
             switch account.currency {
+            case .ARS:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
+                termsTextViewModel = InteractableTextViewModel(
+                    inputs: [
+                        .text(string: FundsString.Notice.recipientNameARS)
+                    ],
+                    textStyle: .init(color: .descriptionText, font: font),
+                    linkStyle: .init(color: .linkableText, font: font)
+                )
+            case .BRL:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
+                termsTextViewModel = InteractableTextViewModel(
+                    inputs: [
+                        .text(string: FundsString.Notice.recipientNameBRL)
+                    ],
+                    textStyle: .init(color: .descriptionText, font: font),
+                    linkStyle: .init(color: .linkableText, font: font)
+                )
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
                 termsTextViewModel = InteractableTextViewModel(
@@ -267,6 +285,8 @@ extension Array where Element == PaymentAccountProperty.Field {
                  .paymentAccountField(.bankCode),
                  .paymentAccountField(.sortCode):
                 return true
+            case .paymentAccountField(.field(name: _, value: _, help: _, copy: let copy)):
+                return copy
             default:
                 return false
             }

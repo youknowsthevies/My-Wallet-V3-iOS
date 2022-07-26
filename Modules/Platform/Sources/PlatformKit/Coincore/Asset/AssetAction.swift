@@ -1,20 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
-public enum AssetAction: Equatable, CaseIterable {
+public enum AssetAction: String, Equatable, CaseIterable, Codable {
     case buy
     case deposit
-    case interestTransfer
-    case interestWithdraw
+    case interestTransfer = "interest_transfer"
+    case interestWithdraw = "interest_withdraw"
     case receive
     case sell
     case send
     case sign
     case swap
-    case viewActivity
+    case viewActivity = "view_activity"
     case withdraw
-    case linkToDebitCard
+    case linkToDebitCard = "link_to_debit_card"
 }
 
 extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {

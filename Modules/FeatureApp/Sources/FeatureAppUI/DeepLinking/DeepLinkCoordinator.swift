@@ -1,11 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainNamespace
 import Combine
+import DIKit
 import FeatureActivityUI
 import FeatureDashboardUI
+import FeatureReferralDomain
+import FeatureReferralUI
+import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -22,6 +28,8 @@ public final class DeepLinkCoordinator: Session.Observer {
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let transactionsRouter: TransactionsRouterAPI
+    private let analyticsRecording: AnalyticsEventRecorderAPI
+    private let walletConnectService: WalletConnectServiceAPI
 
     private var bag: Set<AnyCancellable> = []
 
@@ -36,6 +44,8 @@ public final class DeepLinkCoordinator: Session.Observer {
         payloadFactory: CryptoTargetPayloadFactoryAPI,
         topMostViewControllerProvider: TopMostViewControllerProviding,
         transactionsRouter: TransactionsRouterAPI,
+        analyticsRecording: AnalyticsEventRecorderAPI,
+        walletConnectService: WalletConnectServiceAPI,
         accountsRouter: @escaping () -> AccountsRouting
     ) {
         self.accountsRouter = accountsRouter
@@ -46,6 +56,8 @@ public final class DeepLinkCoordinator: Session.Observer {
         self.payloadFactory = payloadFactory
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.transactionsRouter = transactionsRouter
+        self.analyticsRecording = analyticsRecording
+        self.walletConnectService = walletConnectService
     }
 
     var observers: [AnyCancellable] {
@@ -55,7 +67,9 @@ public final class DeepLinkCoordinator: Session.Observer {
             asset,
             qr,
             send,
-            kyc
+            kyc,
+            referrals,
+            walletConnect
         ]
     }
 
@@ -92,6 +106,16 @@ public final class DeepLinkCoordinator: Session.Observer {
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.kyc(_:), on: self)
 
+    private lazy var referrals = app.on(blockchain.app.deep_link.referral)
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.handleReferral, on: self)
+
+    // Debouncing prevents the popup from being dismissed
+    private lazy var walletConnect = app.on(blockchain.app.deep_link.walletconnect)
+        .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .background))
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.handleWalletConnect, on: self)
+
     func kyc(_ event: Session.Event) {
         guard let tier = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: KYC.Tier.self),
               let topViewController = topMostViewControllerProvider.topMostViewController
@@ -110,6 +134,50 @@ public final class DeepLinkCoordinator: Session.Observer {
         topMostViewControllerProvider
             .topMostViewController?
             .present(qrCodeScannerView)
+    }
+
+    func handleWalletConnect(_ event: Session.Event) {
+        guard let uri = try? event.context.decode(
+            blockchain.app.deep_link.walletconnect.uri,
+            as: String.self
+        ) else {
+            return
+        }
+
+        walletConnectService.connect(uri)
+    }
+
+    func handleReferral(_ event: Session.Event) {
+        app.publisher(
+            for: blockchain.user.referral.campaign,
+            as: Referral.self
+        )
+        .receive(on: DispatchQueue.main)
+        .compactMap(\.value)
+        .sink(receiveValue: { referral in
+            self.presentReferralCampaign(referral)
+        })
+        .store(in: &bag)
+    }
+
+    private func presentReferralCampaign(_ referral: Referral) {
+        analyticsRecording.record(event: AnalyticsEvents
+            .New
+            .Deeplinking
+            .walletReferralProgramClicked())
+
+        let referralView = ReferFriendView(store: .init(
+            initialState: .init(referralInfo: referral),
+            reducer: ReferFriendModule.reducer,
+            environment: .init(
+                mainQueue: .main,
+                analyticsRecorder: DIKit.resolve()
+            )
+        ))
+
+        topMostViewControllerProvider
+            .topMostViewController?
+            .present(referralView)
     }
 
     func showAsset(_ event: Session.Event) {

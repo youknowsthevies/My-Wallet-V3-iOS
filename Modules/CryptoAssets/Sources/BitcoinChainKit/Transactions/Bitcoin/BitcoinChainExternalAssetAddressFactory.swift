@@ -44,7 +44,7 @@ final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: E
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.
-        guard walletCoreCoinType.validate(address: bip21URI.address) else {
+        guard Token.coin.walletCoreCoinType.validate(address: bip21URI.address) else {
             return .failure(.invalidAddress)
         }
         // Creates BitcoinChainReceiveAddress from 'BIP21URI'.
@@ -66,7 +66,7 @@ final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: E
         // Removes the prefix, if present.
         let address = address.removing(prefix: "\(Token.coin.uriScheme):")
         // Validates the address is valid.
-        guard walletCoreCoinType.validate(address: address) else {
+        guard Token.coin.walletCoreCoinType.validate(address: address) else {
             return .failure(.invalidAddress)
         }
         // Creates BitcoinChainReceiveAddress from 'address'.
@@ -77,15 +77,5 @@ final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: E
         )
         // Return success.
         return .success(receiveAddress)
-    }
-
-    /// WalletCore CoinType for the associated Token.
-    private var walletCoreCoinType: WalletCore.CoinType {
-        switch Token.coin {
-        case .bitcoin:
-            return .bitcoin
-        case .bitcoinCash:
-            return .bitcoinCash
-        }
     }
 }

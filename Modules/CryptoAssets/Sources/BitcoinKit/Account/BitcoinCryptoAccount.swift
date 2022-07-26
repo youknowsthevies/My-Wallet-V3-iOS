@@ -8,8 +8,11 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
+
+    let coinType: BitcoinChainCoin = .bitcoin
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
@@ -36,35 +39,71 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
             .eraseToAnyPublisher()
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        bridge.receiveAddress(forXPub: xPub.address)
-            .map { [label, onTxCompleted] address -> ReceiveAddress in
-                BitcoinChainReceiveAddress<BitcoinToken>(
-                    address: address,
-                    label: label,
-                    onTxCompleted: onTxCompleted
-                )
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        nativeWalletEnabled()
+            .flatMap { [bridge, receiveAddressProvider, xPub, label, onTxCompleted, hdAccountIndex] isEnabled
+                -> AnyPublisher<ReceiveAddress, Error> in
+                guard isEnabled else {
+                    return bridge.receiveAddress(forXPub: xPub.address)
+                        .map { address -> ReceiveAddress in
+                            BitcoinChainReceiveAddress<BitcoinToken>(
+                                address: address,
+                                label: label,
+                                onTxCompleted: onTxCompleted
+                            )
+                        }
+                        .asPublisher()
+                        .eraseToAnyPublisher()
+                }
+                return receiveAddressProvider.receiveAddressProvider(UInt32(hdAccountIndex))
+                    .map { receiveAddress -> ReceiveAddress in
+                        BitcoinChainReceiveAddress<BitcoinToken>(
+                            address: receiveAddress,
+                            label: label,
+                            onTxCompleted: onTxCompleted
+                        )
+                    }
+                    .eraseToAnyPublisher()
             }
-    }
-
-    var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        bridge.firstReceiveAddress(forXPub: xPub.address)
-            .map { [label, onTxCompleted] address -> ReceiveAddress in
-                BitcoinChainReceiveAddress<BitcoinToken>(
-                    address: address,
-                    label: label,
-                    onTxCompleted: onTxCompleted
-                )
-            }
-            .asPublisher()
             .eraseToAnyPublisher()
     }
 
-    var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity, swapActivity.asSingle())
+    var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        nativeWalletEnabled()
+            .flatMap { [bridge, receiveAddressProvider, xPub, label, onTxCompleted, hdAccountIndex] isEnabled
+                -> AnyPublisher<ReceiveAddress, Error> in
+                guard isEnabled else {
+                    return bridge.firstReceiveAddress(forXPub: xPub.address)
+                        .map { address -> ReceiveAddress in
+                            BitcoinChainReceiveAddress<BitcoinToken>(
+                                address: address,
+                                label: label,
+                                onTxCompleted: onTxCompleted
+                            )
+                        }
+                        .asPublisher()
+                        .eraseToAnyPublisher()
+                }
+                return receiveAddressProvider.firstReceiveAddressProvider(UInt32(hdAccountIndex))
+                    .map { receiveAddress -> ReceiveAddress in
+                        BitcoinChainReceiveAddress<BitcoinToken>(
+                            address: receiveAddress,
+                            label: label,
+                            onTxCompleted: onTxCompleted
+                        )
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
+        nonCustodialActivity.zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
@@ -87,14 +126,15 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
             .eraseToAnyPublisher()
     }
 
-    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+    private var nonCustodialActivity: AnyPublisher<[TransactionalActivityItemEvent], Never> {
         transactionsService
             .transactions(publicKeys: walletAccount.publicKeys.xpubs)
             .map { response in
                 response
                     .map(\.activityItemEvent)
             }
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {
@@ -105,13 +145,15 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
     }
 
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let xPub: XPub
+    let xPub: XPub // TODO: Change this to `XPubs`
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let priceService: PriceServiceAPI
     private let walletAccount: BitcoinWalletAccount
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
+    private let receiveAddressProvider: BitcoinChainReceiveAddressProviderAPI
 
     init(
         walletAccount: BitcoinWalletAccount,
@@ -121,7 +163,11 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         bridge: BitcoinWalletBridgeAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() },
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        receiveAddressProvider: BitcoinChainReceiveAddressProviderAPI = resolve(
+            tag: BitcoinChainKit.BitcoinChainCoin.bitcoin
+        )
     ) {
         xPub = walletAccount.publicKeys.default
         hdAccountIndex = walletAccount.index
@@ -134,6 +180,8 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
         self.bridge = bridge
         self.walletAccount = walletAccount
         self.featureFlagsService = featureFlagsService
+        self.nativeWalletEnabled = nativeWalletEnabled
+        self.receiveAddressProvider = receiveAddressProvider
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {

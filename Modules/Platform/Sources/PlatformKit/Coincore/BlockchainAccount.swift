@@ -25,7 +25,7 @@ public protocol BlockchainAccount: Account {
     /// Emits `Set` containing all actions this account can execute.
     var actions: AnyPublisher<AvailableActions, Error> { get }
 
-    var activity: Single<[ActivityItemEvent]> { get }
+    var activity: AnyPublisher<[ActivityItemEvent], Error> { get }
 
     /// The reason why the BlockchainAccount is ineligible for Interest.
     /// This will be `.eligible` if the account is eligible
@@ -37,9 +37,7 @@ public protocol BlockchainAccount: Account {
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error>
 
     /// The `ReceiveAddress` for the given account
-    var receiveAddress: Single<ReceiveAddress> { get }
-
-    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> { get }
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> { get }
 
     /// The first `ReceiveAddress` for the given first account (only for BTC and BCH)
     var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> { get }
@@ -88,14 +86,8 @@ public protocol BlockchainAccount: Account {
 
 extension BlockchainAccount {
 
-    /// The `ReceiveAddress` for the given account
-    public var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
-        receiveAddress.asPublisher()
-            .eraseToAnyPublisher()
-    }
-
     public var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        receiveAddressPublisher
+        receiveAddress
     }
 
     /// Account balance is positive.

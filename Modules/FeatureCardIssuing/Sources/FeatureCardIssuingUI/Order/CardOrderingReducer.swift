@@ -6,10 +6,12 @@ import Errors
 import FeatureCardIssuingDomain
 import Localization
 import MoneyKit
+import SwiftUI
 import ToolKit
 
 public enum CardOrderingError: Error, Equatable {
     case noAddress
+    case noSsn
     case noProduct
 }
 
@@ -18,31 +20,30 @@ public enum CardOrderingResult: Equatable {
     case cancelled
 }
 
-public enum CardOrderingAction: Equatable, BindableAction {
+enum CardOrderingAction: Equatable, BindableAction {
 
-    case setStep(CardOrderingState.Step)
+    case createCard
     case cardCreationResponse(Result<Card, NabuNetworkError>)
     case fetchProducts
     case productsResponse(Result<[Product], NabuNetworkError>)
-    case fetchAddress(Result<Card.Address, CardOrderingError>)
+    case fetchAddress
+    case addressResponse(Result<Card.Address, NabuNetworkError>)
     case close(CardOrderingResult)
     case displayEligibleCountryList
     case displayEligibleStateList
     case selectProduct(Int)
+    case residentialAddressModificationAction(ResidentialAddressModificationAction)
     case binding(BindingAction<CardOrderingState>)
 }
 
-public struct CardOrderingState: Equatable {
+struct CardOrderingState: Equatable {
 
-    public enum Step: String, Equatable {
-        case intro
-        case selection
-        case creating
-        case link
+    enum Field: Equatable {
+        case line1, line2, city, state, zip
     }
 
-    public enum OrderProcessingState: Equatable {
-        public static func == (
+    enum OrderProcessingState: Equatable {
+        static func == (
             lhs: CardOrderingState.OrderProcessingState,
             rhs: CardOrderingState.OrderProcessingState
         ) -> Bool {
@@ -63,131 +64,173 @@ public struct CardOrderingState: Equatable {
         case none
     }
 
-    var step: Step
-
+    @BindableState var isLegalViewVisible = false
     @BindableState var isOrderProcessingVisible = false
+    @BindableState var isSSNInputVisible = false
+    @BindableState var isAddressConfirmationVisible = false
+    @BindableState var isAddressModificationVisible = false
     @BindableState var isProductSelectionVisible = false
     @BindableState var isProductDetailsVisible = false
 
-    @BindableState var isLegalViewVisible = false
     @BindableState var termsAccepted = false
     @BindableState var selectedProductIndex: Int = 0
 
+    @BindableState var ssn: String = ""
+
+    var residentialAddressModificationState: ResidentialAddressModificationState?
+
+    var updatingAddress = false
     var products: [Product] = []
     var selectedProduct: Product?
+    var address: Card.Address?
     var error: NabuNetworkError?
 
     var orderProcessingState: OrderProcessingState = .none
 
-    public init(step: Step = .intro) {
-        self.step = step
+    init(
+        products: [Product] = [],
+        selectedProduct: Product? = nil,
+        address: Card.Address? = nil,
+        ssn: String = "",
+        error: NabuNetworkError? = nil,
+        orderProcessingState: CardOrderingState.OrderProcessingState = .none
+    ) {
+        self.products = products
+        self.selectedProduct = selectedProduct
+        self.address = address
+        self.ssn = ssn
+        self.error = error
+        self.orderProcessingState = orderProcessingState
     }
 }
 
-public struct CardOrderingEnvironment {
+struct CardOrderingEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardService: CardServiceAPI
     let productsService: ProductsServiceAPI
-    let address: AnyPublisher<Card.Address, CardOrderingError>
+    let residentialAddressService: ResidentialAddressServiceAPI
     let onComplete: (CardOrderingResult) -> Void
 
-    public init(
+    init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         cardService: CardServiceAPI,
         productsService: ProductsServiceAPI,
-        address: AnyPublisher<Card.Address, CardOrderingError>,
+        residentialAddressService: ResidentialAddressServiceAPI,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) {
         self.mainQueue = mainQueue
         self.cardService = cardService
         self.productsService = productsService
-        self.address = address
+        self.residentialAddressService = residentialAddressService
         self.onComplete = onComplete
     }
 }
 
-private enum Constants {
-    static let tempAuthorizedSsn = "111111110"
-}
-
-public let cardOrderingReducer = Reducer<
+// swiftlint:disable closure_body_length
+let cardOrderingReducer: Reducer<
     CardOrderingState,
     CardOrderingAction,
     CardOrderingEnvironment
-> { state, action, env in
-
-    switch action {
-    case .setStep(let step):
-        state.step = step
-        switch step {
-        case .intro:
-            state.isOrderProcessingVisible = false
-            state.isProductDetailsVisible = false
-            state.isProductSelectionVisible = false
-        case .selection:
-            state.isProductSelectionVisible = true
-            state.isOrderProcessingVisible = false
-            state.isProductDetailsVisible = false
-        case .creating:
+> = Reducer.combine(
+    residentialAddressModificationReducer.optional().pullback(
+        state: \.residentialAddressModificationState,
+        action: /CardOrderingAction.residentialAddressModificationAction,
+        environment: {
+            ResidentialAddressModificationEnvironment(
+                mainQueue: $0.mainQueue,
+                residentialAddressService: $0.residentialAddressService
+            )
+        }
+    ),
+    Reducer<
+        CardOrderingState,
+        CardOrderingAction,
+        CardOrderingEnvironment
+    > { state, action, env in
+        switch action {
+        case .createCard:
             state.orderProcessingState = .processing
             state.isOrderProcessingVisible = true
+            guard let product = state.selectedProduct else {
+                state.orderProcessingState = .error(CardOrderingError.noProduct)
+                return .none
+            }
+            guard let address = state.address else {
+                state.orderProcessingState = .error(CardOrderingError.noAddress)
+                return .none
+            }
+            guard !state.ssn.isEmpty else {
+                state.orderProcessingState = .error(CardOrderingError.noSsn)
+                return .none
+            }
+            return env.cardService
+                .orderCard(product: product, at: address, with: state.ssn)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.cardCreationResponse)
+        case .cardCreationResponse(.success(let card)):
+            state.orderProcessingState = .success
+            return .none
+        case .cardCreationResponse(.failure(let error)):
+            state.orderProcessingState = .error(error)
+            return .none
+        case .fetchAddress:
             return env
-                .address
-                .catchToEffect(CardOrderingAction.fetchAddress)
-        case .link:
-            ()
-        }
-        return .none
-    case .cardCreationResponse(.success(let card)):
-        state.orderProcessingState = .success
-        return .none
-    case .cardCreationResponse(.failure(let error)):
-        state.orderProcessingState = .error(error)
-        return .none
-    case .fetchAddress(.success(let address)):
-        guard let product = state.selectedProduct else {
-            state.orderProcessingState = .error(CardOrderingError.noProduct)
+                .residentialAddressService
+                .fetchResidentialAddress()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.addressResponse)
+        case .addressResponse(.success(let address)):
+            state.residentialAddressModificationState = .init(address: address, error: nil)
+            state.isAddressModificationVisible = false
+            state.updatingAddress = false
+            state.address = address
+            return .none
+        case .addressResponse(.failure(let error)):
+            state.residentialAddressModificationState = .init(address: nil, error: error)
+            state.error = error
+            return .none
+        case .fetchProducts:
+            return env
+                .productsService
+                .fetchProducts()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.productsResponse)
+        case .productsResponse(.success(let products)):
+            state.products = products
+            state.selectedProductIndex = 0
+            state.selectedProduct = products[safe: 0]
+            return .none
+        case .productsResponse(.failure(let error)):
+            state.error = error
+            return .none
+        case .close(let result):
+            return .fireAndForget {
+                env.onComplete(result)
+            }
+        case .displayEligibleStateList:
+            return .none
+        case .displayEligibleCountryList:
+            return .none
+        case .selectProduct(let index):
+            state.selectedProductIndex = index
+            state.selectedProduct = state.products[safe: index]
+            return .none
+        case .residentialAddressModificationAction(let modificationAction):
+            switch modificationAction {
+            case .updateAddressResponse(.success(let address)):
+                state.address = address
+                state.isAddressModificationVisible = false
+                return .none
+            default:
+                return .none
+            }
+        case .binding:
             return .none
         }
-        return env.cardService
-            .orderCard(product: product, at: address, with: Constants.tempAuthorizedSsn)
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.cardCreationResponse)
-    case .fetchAddress(.failure(let error)):
-        state.orderProcessingState = .error(error)
-        return .none
-    case .fetchProducts:
-        return env
-            .productsService
-            .fetchProducts()
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.productsResponse)
-    case .productsResponse(.success(let products)):
-        state.products = products
-        state.selectedProductIndex = 0
-        state.selectedProduct = products[safe: 0]
-        return .none
-    case .productsResponse(.failure(let error)):
-        state.error = error
-        return .none
-    case .close(let result):
-        return .fireAndForget {
-            env.onComplete(result)
-        }
-    case .displayEligibleStateList:
-        return .none
-    case .displayEligibleCountryList:
-        return .none
-    case .selectProduct(let index):
-        state.selectedProductIndex = index
-        state.selectedProduct = state.products[safe: index]
-        return .none
-    case .binding:
-        return .none
     }
-}
-.binding()
+    .binding()
+)
 
 #if DEBUG
 extension CardOrderingEnvironment {
@@ -196,13 +239,28 @@ extension CardOrderingEnvironment {
             mainQueue: .main,
             cardService: MockServices(),
             productsService: MockServices(),
-            address: .failure(.noAddress),
+            residentialAddressService: MockServices(),
             onComplete: { _ in }
         )
     }
 }
 
-struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, TopUpRouterAPI, SupportRouterAPI {
+struct MockServices: CardServiceAPI,
+    ProductsServiceAPI,
+    AccountProviderAPI,
+    TopUpRouterAPI,
+    SupportRouterAPI,
+    ResidentialAddressServiceAPI
+{
+
+    static let address = Card.Address(
+        line1: "614 Lorimer Street",
+        line2: nil,
+        city: "",
+        postCode: "11111",
+        state: "CA",
+        country: "US"
+    )
 
     let error = NabuError(id: "mock", code: .stateNotEligible, type: .unknown, description: "")
     let card = Card(
@@ -215,6 +273,7 @@ struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, Top
         orderStatus: nil,
         createdAt: "01/10"
     )
+
     let accountCurrencyPair = AccountCurrency(
         accountCurrency: "BTC"
     )
@@ -233,7 +292,7 @@ struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, Top
             line1: "48 rue de la Santé",
             line2: nil,
             city: "Paris",
-            postcode: "75001",
+            postCode: "75001",
             state: nil,
             country: "FR"
         )
@@ -309,5 +368,24 @@ struct MockServices: CardServiceAPI, ProductsServiceAPI, AccountProviderAPI, Top
     func openSwapFlow() {}
 
     func handleSupport() {}
+
+    func fetchResidentialAddress() -> AnyPublisher<Card.Address, NabuNetworkError> {
+        .just(Self.address)
+    }
+
+    func update(residentialAddress: Card.Address) -> AnyPublisher<Card.Address, NabuNetworkError> {
+        .just(Self.address)
+    }
+}
+
+extension MockServices: TransactionServiceAPI {
+
+    func fetchMore(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        .just([])
+    }
+
+    func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        .just([])
+    }
 }
 #endif

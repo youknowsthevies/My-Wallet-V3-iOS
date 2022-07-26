@@ -98,7 +98,9 @@ extension DependencyContainer {
 
         factory { CustodialPendingDepositService() as CustodialPendingDepositServiceAPI }
 
-        factory { CustodialAddressService() as CustodialAddressServiceAPI }
+        factory { () -> CustodialAddressServiceAPI in
+            CustodialAddressService(client: DIKit.resolve())
+        }
 
         factory { () -> MaintenanceServicing in
             let service: WalletOptionsAPI = DIKit.resolve()
@@ -148,10 +150,6 @@ extension DependencyContainer {
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }
-
-        // MARK: - KYC
-
-        factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
 
         // MARK: - ExchangeProvider
 
@@ -276,8 +274,6 @@ extension DependencyContainer {
         single { OrdersService() as OrdersServiceAPI }
 
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
-
-        factory { PendingOrderCompletionService() as PendingOrderCompletionServiceAPI }
 
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
 

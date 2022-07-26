@@ -19,6 +19,7 @@ final class CoinViewAnalyticsObserverTests: XCTestCase {
         app = App.test
         analytics = AnalyticsEventRecorder()
         sut = CoinViewAnalyticsObserver(app: app, analytics: analytics)
+        app.state.set(blockchain.ux.asset["BTC"].select.origin, to: "TEST_ORIGIN")
     }
 
     override func tearDown() {
@@ -27,7 +28,14 @@ final class CoinViewAnalyticsObserverTests: XCTestCase {
     }
 
     func test_open() {
-        app.post(event: blockchain.ux.asset["BTC"])
+        app.post(
+            event: blockchain.ux.asset["BTC"]
+        )
+        XCTAssertTrue(analytics.session.isNotEmpty)
+    }
+
+    func test_close() {
+        app.post(event: blockchain.ux.asset["BTC"].event.did.dismiss)
         XCTAssertTrue(analytics.session.isNotEmpty)
     }
 

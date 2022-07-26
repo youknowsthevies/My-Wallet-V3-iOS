@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import Localization
 import MetadataKit
 
 /// An entry model that contains information on constructing BitcoinCash wallet account
@@ -35,9 +36,27 @@ public struct BitcoinCashEntry: Equatable {
                     index: btcAccount.index,
                     publicKey: publicKey ?? extendedPublicKey,
                     label: accountData?.label,
-                    derivationType: btcAccount.defaultDerivation,
+                    derivationType: .legacy,
                     archived: accountData?.archived ?? false
                 )
             }
+    }
+
+    func toMetadataEntry() -> BitcoinCashEntryPayload {
+        BitcoinCashEntryPayload(
+            accounts: accounts.map { $0.toMetadataEntry() },
+            defaultAccountIndex: payload.defaultAccountIndex,
+            hasSeen: payload.hasSeen,
+            addresses: payload.addresses
+        )
+    }
+}
+
+extension BitcoinCashEntry.AccountEntry {
+    func toMetadataEntry() -> BitcoinCashEntryPayload.Account {
+        BitcoinCashEntryPayload.Account(
+            archived: archived,
+            label: label ?? LocalizationConstants.Account.myWallet
+        )
     }
 }

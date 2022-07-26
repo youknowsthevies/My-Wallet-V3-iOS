@@ -115,13 +115,13 @@ final class TagBlockchainSchemaTests: XCTestCase {
 
     func test_static_key_indices() throws {
         let id = blockchain.user["abcdef"].account
-        let key = id.key
+        let key = id.key()
         XCTAssertEqual(key.indices, [blockchain.user.id[]: "abcdef"])
     }
 
     func test_static_key_any_context() throws {
         let id = blockchain.ux.asset["BTC"].account["Trading"].buy[6000]
-        let key = id.key
+        let key = id.key()
         XCTAssertEqual(
             key.indices,
             [
@@ -129,7 +129,7 @@ final class TagBlockchainSchemaTests: XCTestCase {
                 blockchain.ux.asset.account.id[]: "Trading"
             ]
         )
-        XCTAssertContextEqual(
+        XCTAssertEqual(
             key.context,
             [
                 blockchain.ux.asset.id: "BTC",

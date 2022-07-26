@@ -42,7 +42,9 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
@@ -85,7 +87,7 @@ class WalletLogicTests: XCTestCase {
 
         let upgraderSpy = WalletUpgraderSpy(
             realUpgrader: WalletUpgrader(
-                workflows: [Version4Workflow()]
+                workflows: [Version4Workflow(logger: NoopNativeWalletLogging())]
             )
         )
 
@@ -95,7 +97,9 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgraderSpy,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
@@ -152,7 +156,7 @@ class WalletLogicTests: XCTestCase {
 
         let upgraderSpy = WalletUpgraderSpy(
             realUpgrader: WalletUpgrader(
-                workflows: [Version4Workflow()]
+                workflows: [Version4Workflow(logger: NoopNativeWalletLogging())]
             )
         )
 
@@ -162,7 +166,9 @@ class WalletLogicTests: XCTestCase {
             upgrader: upgraderSpy,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let walletPayload = WalletPayload(
@@ -177,7 +183,7 @@ class WalletLogicTests: XCTestCase {
 
         metadataService.initializeValue = .just(MetadataState.mock)
 
-        walletSyncMock.syncResult = .failure(.failureSyncingWallet)
+        walletSyncMock.syncResult = .failure(.unknown)
 
         let expectation = expectation(description: "wallet-fetching-expectation")
 

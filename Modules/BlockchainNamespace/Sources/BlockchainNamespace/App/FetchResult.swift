@@ -35,6 +35,7 @@ public struct Metadata {
 extension Metadata {
 
     public enum Source {
+        case app
         case undefined
         case state
         case remoteConfiguration
@@ -227,6 +228,24 @@ extension DecodedFetchResult {
 
     public func get() throws -> Value {
         try result.get()
+    }
+
+    public func map<T>(_ transform: (Value) -> (T)) -> FetchResult.Value<T> {
+        switch identity {
+        case .error(let error, let metadata):
+            return .error(error, metadata)
+        case .value(let value, let metadata):
+            return .value(transform(value), metadata)
+        }
+    }
+
+    public func flatMap<T>(_ transform: (Value, Metadata) -> (FetchResult.Value<T>)) -> FetchResult.Value<T> {
+        switch identity {
+        case .error(let error, let metadata):
+            return .error(error, metadata)
+        case .value(let value, let metadata):
+            return transform(value, metadata)
+        }
     }
 }
 

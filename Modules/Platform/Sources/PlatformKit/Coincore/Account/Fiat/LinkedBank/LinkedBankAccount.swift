@@ -25,7 +25,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .just(
             BankAccountReceiveAddress(
                 address: accountId,
@@ -47,7 +47,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([])
     }
 

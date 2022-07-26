@@ -2,7 +2,7 @@
 
 import Foundation
 
-enum CoinSelectionError: Error {
+public enum CoinSelectionError: Error {
     case noCoinsToSelect
     case noEffectiveCoins
     case noSelectedCoins

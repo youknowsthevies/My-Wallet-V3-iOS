@@ -11,6 +11,24 @@ enum JSONValue: Codable, Equatable {
     case int(Int)
     case double(Double)
     case bool(Bool)
+    case array([JSONValue])
+
+    init?(_ any: Any) {
+        switch any {
+        case let value as String:
+            self = .string(value)
+        case let value as Int:
+            self = .int(value)
+        case let value as Double:
+            self = .double(value)
+        case let value as Bool:
+            self = .bool(value)
+        case let value as [Any]:
+            self = .array(value.compactMap(JSONValue.init))
+        default:
+            return nil
+        }
+    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -22,6 +40,8 @@ enum JSONValue: Codable, Equatable {
             self = .double(double)
         } else if let string = try? container.decode(String.self) {
             self = .string(string)
+        } else if let array = try? container.decode([JSONValue].self) {
+            self = .array(array)
         } else {
             throw JSONValueDecodingError.unsupportedType
         }
@@ -37,6 +57,8 @@ enum JSONValue: Codable, Equatable {
         case .double(let value):
             try container.encode(value)
         case .bool(let value):
+            try container.encode(value)
+        case .array(let value):
             try container.encode(value)
         }
     }

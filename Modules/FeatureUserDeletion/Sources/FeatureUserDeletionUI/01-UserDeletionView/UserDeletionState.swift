@@ -5,11 +5,13 @@ import SwiftUI
 
 public struct UserDeletionState: Equatable, NavigationState {
     public var route: RouteIntent<UserDeletionRoute>?
-    public var confirmViewState: DeletionConfirmState? = DeletionConfirmState()
+    public var confirmViewState: DeletionConfirmState?
 
     public init(
+        confirmViewState: DeletionConfirmState? = DeletionConfirmState(),
         route: RouteIntent<UserDeletionRoute>? = nil
     ) {
+        self.confirmViewState = confirmViewState
         self.route = route
     }
 }

@@ -105,12 +105,13 @@ final class AppDeepLinkTests: XCTestCase {
             ]
         )
         XCTAssertEqual(count[blockchain.db.type.string], 1)
-        try XCTAssertAnyEqual(app.state.get(blockchain.db.type.string), "test")
+        try XCTAssertEqual(app.state.get(blockchain.db.type.string), "test")
     }
 
     func test_handle_deep_link_is_deferred_until_ready() throws {
 
         let event = expectation(description: #function)
+        event.assertForOverFulfill = false
 
         app.on(blockchain.db.type.string)
             .sink { _ in event.fulfill() }
@@ -131,7 +132,7 @@ final class AppDeepLinkTests: XCTestCase {
 
         wait(for: [event], timeout: 0.1)
 
-        try XCTAssertAnyEqual(app.state.get(blockchain.db.type.string), "test")
+        try XCTAssertEqual(app.state.get(blockchain.db.type.string), "test")
     }
 
     func test_deep_link_rules() throws {

@@ -3,14 +3,17 @@
 import Combine
 import DIKit
 import ERC20Kit
+import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureCryptoDomainDomain
+import FeatureProductsDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import RxToolKit
 import ToolKit
+import WalletPayloadKit
 
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user
@@ -21,10 +24,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
     var preliminaryData: Single<AnnouncementPreliminaryData> {
-        guard wallet.isInitialized() else {
-            return Single.error(AnnouncementError.uninitializedWallet)
-        }
-
         let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
             .fetch(for: .assetRenameAnnouncement, as: AssetRenameAnnouncementFeature.self)
             .eraseError()
@@ -60,7 +59,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .take(1)
             .asSingle()
         let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
-        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails.asSingle()
 
         let simpleBuy: Single<AnnouncementPreliminaryData.SimpleBuy> = Single
             .zip(
@@ -117,7 +116,16 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             }
             .asSingle()
 
-        return Single.zip(
+        let majorProductBlocked = productsService
+            .fetchProducts()
+            .map { products in
+                products
+                    .first(where: { $0.reasonNotEligible?.reason == .eu5Sanction })?
+                    .reasonNotEligible
+            }
+            .asSingle()
+
+        let data = Single.zip(
             nabuUser,
             tiers,
             countries,
@@ -128,7 +136,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 assetRename,
                 simpleBuy,
                 sddEligibility,
-                claimFreeDomainEligible
+                claimFreeDomainEligible,
+                majorProductBlocked
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
@@ -143,7 +152,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     assetRename,
                     simpleBuy,
                     isSDDEligible,
-                    claimFreeDomainEligible
+                    claimFreeDomainEligible,
+                    majorProductBlocked
                 )
             ) = payload
             return AnnouncementPreliminaryData(
@@ -151,6 +161,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 authenticatorType: authenticatorType,
                 claimFreeDomainEligible: claimFreeDomainEligible,
                 countries: countries,
+                majorProductBlocked: majorProductBlocked,
                 hasAnyWalletBalance: hasAnyWalletBalance,
                 isSDDEligible: isSDDEligible,
                 newAsset: newAsset,
@@ -159,7 +170,16 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 user: user
             )
         }
-        .observe(on: MainScheduler.instance)
+
+        return isWalletInitialized()
+            .asSingle()
+            .flatMap { isInitialized -> Single<AnnouncementPreliminaryData> in
+                guard isInitialized else {
+                    return .error(AnnouncementError.uninitializedWallet)
+                }
+                return data
+            }
+            .observe(on: MainScheduler.instance)
     }
 
     // MARK: - Private properties
@@ -176,7 +196,9 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let tiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
+    private let productsService: FeatureProductsDomain.ProductsServiceAPI
     private let wallet: WalletProtocol
+    private let walletStateProvider: WalletStateProvider
 
     // MARK: - Setup
 
@@ -193,6 +215,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         userService: NabuUserServiceAPI = resolve(),
+        walletStateProvider: WalletStateProvider = resolve(),
+        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve(),
         wallet: WalletProtocol = WalletManager.shared.wallet
     ) {
         self.beneficiariesService = beneficiariesService
@@ -207,6 +231,20 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.tiersService = tiersService
         self.userService = userService
+        self.productsService = productsService
         self.wallet = wallet
+        self.walletStateProvider = walletStateProvider
+    }
+
+    private func isWalletInitialized() -> AnyPublisher<Bool, Never> {
+        nativeWalletFlagEnabled()
+            .flatMap { [wallet, walletStateProvider] isEnabled -> AnyPublisher<Bool, Never> in
+                guard isEnabled else {
+                    return .just(wallet.isInitialized())
+                }
+                return walletStateProvider
+                    .isWalletInitializedPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

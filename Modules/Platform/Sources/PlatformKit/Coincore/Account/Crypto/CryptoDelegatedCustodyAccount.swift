@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DelegatedSelfCustodyDataKit
+import DelegatedSelfCustodyDomain
 import Foundation
 import MoneyKit
 import RxSwift
@@ -14,12 +14,44 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
 
     lazy var identifier: AnyHashable = "CryptoDelegatedCustodyAccount.\(asset.code)"
 
-    var activity: Single<[ActivityItemEvent]> {
-        .never()
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
+        activityRepository
+            .activity(for: asset)
+            .zip(receiveAddress)
+            .map { activities, receiveAddress in
+                activities
+                    .map { activity in
+                        activity.simpleActivityItemEvent(receiveAddress: receiveAddress.address)
+                    }
+                    .map(ActivityItemEvent.simpleTransactional)
+            }
+            .replaceError(with: [])
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .never()
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        addressesRepository
+            .addresses(for: asset)
+            .map { [publicKey] addresses in
+                addresses
+                    .first(where: { address in
+                        address.publicKey == publicKey && address.isDefault
+                    })
+            }
+            .onNil(ReceiveAddressError.notSupported)
+            .flatMap { [addressFactory] match in
+                addressFactory
+                    .makeExternalAssetAddress(
+                        address: match.address,
+                        label: match.address,
+                        onTxCompleted: { _ in .empty() }
+                    )
+                    .publisher
+                    .eraseError()
+            }
+            .map { $0 as ReceiveAddress }
+            .eraseToAnyPublisher()
     }
 
     var requireSecondPassword: Single<Bool> {
@@ -29,8 +61,8 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     var balance: AnyPublisher<MoneyValue, Error> {
         balanceRepository
             .balances
-            .map { [asset] in
-                $0.balance(index: 0, currency: asset) ?? MoneyValue.zero(currency: asset)
+            .map { [asset] balances in
+                balances.balance(index: 0, currency: asset) ?? MoneyValue.zero(currency: asset)
             }
             .eraseToAnyPublisher()
     }
@@ -49,48 +81,46 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
 
     let accountType: AccountType = .nonCustodial
 
+    private let activityRepository: DelegatedCustodyActivityRepositoryAPI
+    private let addressesRepository: DelegatedCustodyAddressesRepositoryAPI
+    private let addressFactory: ExternalAssetAddressFactory
     private let balanceRepository: DelegatedCustodyBalanceRepositoryAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
     private let priceService: PriceServiceAPI
+    private let publicKey: String
 
     init(
+        activityRepository: DelegatedCustodyActivityRepositoryAPI,
+        addressesRepository: DelegatedCustodyAddressesRepositoryAPI,
+        addressFactory: ExternalAssetAddressFactory,
         asset: CryptoCurrency,
         balanceRepository: DelegatedCustodyBalanceRepositoryAPI,
-        featureFlagsService: FeatureFlagsServiceAPI,
-        priceService: PriceServiceAPI
+        priceService: PriceServiceAPI,
+        publicKey: String
     ) {
+        self.activityRepository = activityRepository
+        self.addressesRepository = addressesRepository
+        self.addressFactory = addressFactory
         self.asset = asset
         self.balanceRepository = balanceRepository
-        self.featureFlagsService = featureFlagsService
         self.priceService = priceService
+        self.publicKey = publicKey
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .buy:
+        case .buy,
+             .deposit,
+             .interestTransfer,
+             .interestWithdraw,
+             .sell,
+             .send,
+             .sign,
+             .swap,
+             .withdraw,
+             .linkToDebitCard:
             return .just(false)
-        case .deposit:
-            return .just(false)
-        case .interestTransfer:
-            return .just(false)
-        case .interestWithdraw:
-            return .just(false)
-        case .receive:
+        case .receive, .viewActivity:
             return .just(true)
-        case .sell:
-            return .just(false)
-        case .send:
-            return .just(false)
-        case .sign:
-            return .just(false)
-        case .swap:
-            return .just(false)
-        case .viewActivity:
-            return .just(true)
-        case .withdraw:
-            return .just(false)
-        case .linkToDebitCard:
-            return .just(false)
         }
     }
 
@@ -106,4 +136,32 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     }
 
     func invalidateAccountBalance() {}
+}
+
+extension DelegatedCustodyActivity {
+    fileprivate func simpleActivityItemEvent(receiveAddress: String) -> SimpleTransactionalActivityItemEvent {
+        let eventStatus: SimpleTransactionalActivityItemEvent.EventStatus
+        switch status {
+        case .pending, .confirming:
+            eventStatus = .pending(confirmations: .init(current: 1, total: 2))
+        case .failed, .completed:
+            eventStatus = .complete
+        }
+
+        let isSend = receiveAddress.caseInsensitiveCompare(from) == .orderedSame
+        let eventType: SimpleTransactionalActivityItemEvent.EventType = isSend ? .send : .receive
+
+        return SimpleTransactionalActivityItemEvent(
+            amount: value,
+            creationDate: timestamp,
+            destinationAddress: to,
+            fee: fee,
+            identifier: transactionID,
+            memo: nil,
+            sourceAddress: from,
+            status: eventStatus,
+            transactionHash: transactionID,
+            type: eventType
+        )
+    }
 }

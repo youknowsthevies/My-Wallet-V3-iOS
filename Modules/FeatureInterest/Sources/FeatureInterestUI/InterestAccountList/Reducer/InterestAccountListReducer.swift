@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureInterestDomain
@@ -210,6 +211,7 @@ let interestAccountListReducer = Reducer.combine(
     },
     interestReducerCore
 )
+.analytics()
 
 let interestReducerCore = Reducer<
     InterestAccountListState,
@@ -245,5 +247,66 @@ let interestReducerCore = Reducer<
             }
     default:
         return .none
+    }
+}
+
+// MARK: - Analytics Extension
+
+extension Reducer where
+    State == InterestAccountListState,
+    Action == InterestAccountListAction,
+    Environment == InterestAccountSelectionEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                InterestAccountListState,
+                InterestAccountListAction,
+                InterestAccountSelectionEnvironment
+            > { state, action, environment in
+                switch action {
+                case .didReceiveInterestAccountResponse(.success):
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(
+                            event: .interestViewed
+                        )
+                    }
+                case .interestAccountButtonTapped(_, .viewInterestButtonTapped(let details)):
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(
+                            event: .walletRewardsDetailClicked(currency: details.currency.code)
+                        )
+                    }
+                case .interestAccountDetails(.interestAccountActionsFetched):
+                    return .fireAndForget { [state] in
+                        let currencyCode = state.interestAccountDetailsState?.interestAccountOverview.currency.code
+                        environment.analyticsRecorder.record(
+                            event: .walletRewardsDetailViewed(currency: currencyCode ?? "")
+                        )
+                    }
+                case .interestAccountButtonTapped(_, .earnInterestButtonTapped(let details)):
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(
+                            event: .interestDepositClicked(currency: details.currency.code)
+                        )
+                    }
+                case .interestAccountDetails(.interestWithdrawTapped(let currency)):
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(
+                            event: .interestWithdrawalClicked(currency: currency.code)
+                        )
+                    }
+                case .interestAccountDetails(.interestTransferTapped(let currency)):
+                    return .fireAndForget {
+                        environment.analyticsRecorder.record(
+                            event: .walletRewardsDetailDepositClicked(currency: currency.code)
+                        )
+                    }
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }

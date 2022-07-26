@@ -9,7 +9,7 @@ import ToolKit
 
 struct CardIssuingIntroView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order
 
     private let store: Store<CardOrderingState, CardOrderingAction>
 
@@ -23,29 +23,36 @@ struct CardIssuingIntroView: View {
                 Image("graphic-cards", bundle: .cardIssuing)
                     .resizable()
                     .scaledToFit()
-                Text(localizedStrings.Intro.title)
+                Text(L10n.Intro.title)
                     .typography(.title2)
                     .multilineTextAlignment(.center)
-                Text(localizedStrings.Intro.caption)
+                Text(L10n.Intro.caption)
                     .typography(.paragraph1)
                     .foregroundColor(.WalletSemantic.body)
                     .multilineTextAlignment(.center)
-                PrimaryButton(title: localizedStrings.Intro.Button.Title.order) {
-                    viewStore.send(.setStep(.selection))
-                }
+                PrimaryButton(
+                    title: L10n.Intro.Button.Title.order,
+                    isLoading: viewStore.state.products.isEmpty,
+                    action: {
+                        viewStore.send(
+                            .binding(.set(\.$isAddressConfirmationVisible, true))
+                        )
+                    }
+                )
+                .disabled(viewStore.state.products.isEmpty)
+                PrimaryNavigationLink(
+                    destination: ResidentialAddressConfirmationView(store: store),
+                    isActive: viewStore.binding(\.$isAddressConfirmationVisible),
+                    label: EmptyView.init
+                )
                 .padding(.top, Spacing.padding2)
                 Spacer()
             }
+            .onAppear {
+                viewStore.send(.fetchProducts)
+            }
             .padding(Spacing.padding3)
             .primaryNavigation(title: LocalizationConstants.CardIssuing.Navigation.title)
-            .onAppear {
-                viewStore.send(.setStep(.intro))
-            }
-            PrimaryNavigationLink(
-                destination: ProductSelectionView(store: store),
-                isActive: viewStore.binding(\.$isProductSelectionVisible),
-                label: EmptyView.init
-            )
         }
     }
 }

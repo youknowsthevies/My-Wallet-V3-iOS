@@ -79,7 +79,7 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
         public init(
             accounts: [Account],
             defaultAccountIndex: Int,
-            erc20: [String: ERC20],
+            erc20: [String: ERC20]?,
             hasSeen: Bool,
             lastTxTimestamp: Int?,
             transactionNotes: [String: String]
@@ -99,9 +99,17 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
 
     public static let type: EntryType = .ethereum
 
-    public let ethereum: Ethereum
+    public let ethereum: Ethereum?
 
     public init(ethereum: Ethereum) {
+        self.ethereum = ethereum
+    }
+}
+
+// MARK: - Internal, should only be used in testing -
+
+extension EthereumEntryPayload {
+    init(ethereum: Ethereum?) {
         self.ethereum = ethereum
     }
 }

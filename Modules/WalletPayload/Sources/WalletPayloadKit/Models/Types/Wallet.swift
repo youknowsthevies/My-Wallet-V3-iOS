@@ -15,11 +15,21 @@ public struct NativeWallet: Equatable {
     public let options: Options
     public let hdWallets: [HDWallet]
     public let addresses: [Address]
+    public let txNotes: [String: String]?
+
+    // The following is still present in json but not used on iOS
+    public let addressBook: [AddressBookEntry]?
 
     /// Returns the default HDWallet from the list
     /// - NOTE: We never add multiple HDWallet(s)
     var defaultHDWallet: HDWallet? {
         hdWallets.first
+    }
+
+    /// Returns `true` if the mnemonic has been previously marked as verified
+    /// otherwise `false
+    var isMnemonicVerified: Bool {
+        defaultHDWallet?.mnemonicVerified ?? false
     }
 
     var isHDWallet: Bool {
@@ -40,7 +50,9 @@ public struct NativeWallet: Equatable {
         metadataHDNode: String?,
         options: Options,
         hdWallets: [HDWallet],
-        addresses: [Address]
+        addresses: [Address],
+        txNotes: [String: String]?,
+        addressBook: [AddressBookEntry]?
     ) {
         self.guid = guid
         self.sharedKey = sharedKey
@@ -50,6 +62,8 @@ public struct NativeWallet: Equatable {
         self.options = options
         self.hdWallets = hdWallets
         self.addresses = addresses
+        self.txNotes = txNotes
+        self.addressBook = addressBook
     }
 }
 
@@ -69,7 +83,9 @@ func generateWallet(context: WalletCreationContext) -> Result<NativeWallet, Wall
                 metadataHDNode: nil,
                 options: Options.default,
                 hdWallets: [hdWallet],
-                addresses: []
+                addresses: [],
+                txNotes: [:],
+                addressBook: []
             )
         }
 }

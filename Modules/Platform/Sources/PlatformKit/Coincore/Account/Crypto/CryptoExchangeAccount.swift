@@ -42,7 +42,7 @@ public protocol ExchangeAccount: CryptoAccount {
 
 public final class CryptoExchangeAccount: ExchangeAccount {
 
-    public var accountType: AccountType = .custodial
+    public var accountType: AccountType = .exchange
 
     public var requireSecondPassword: Single<Bool> {
         .just(false)
@@ -56,15 +56,17 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(currency: asset))
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         cryptoReceiveAddressFactory
             .makeExternalAssetAddress(
                 address: address,
                 label: label,
                 onTxCompleted: onTxCompleted
             )
-            .single
             .map { $0 as ReceiveAddress }
+            .eraseError()
+            .publisher
+            .eraseToAnyPublisher()
     }
 
     public var pendingBalance: AnyPublisher<MoneyValue, Error> {
@@ -76,7 +78,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(true)
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([])
     }
 

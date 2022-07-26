@@ -2,9 +2,11 @@
 
 import Combine
 import DIKit
+import Localization
 import MetadataKit
 import PlatformKit
 import ToolKit
+import WalletCore
 import WalletPayloadKit
 
 public enum WalletAccountRepositoryError: Error {
@@ -37,15 +39,18 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
         EthereumWalletAccount,
         WalletAccountRepositoryError
     >
+    private let walletCoreHDWalletProvider: WalletCoreHDWalletProvider
 
     // MARK: - Init
 
     init(
         accountBridge: EthereumWalletAccountBridgeAPI = resolve(),
         walletMetadataEntryService: WalletMetadataEntryServiceAPI = resolve(),
+        walletCoreHDWalletProvider: @escaping WalletCoreHDWalletProvider = resolve(),
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() }
     ) {
         self.accountBridge = accountBridge
+        self.walletCoreHDWalletProvider = walletCoreHDWalletProvider
 
         let cache: AnyCache<Key, EthereumWalletAccount> = InMemoryCache(
             configuration: .onLoginLogout(),
@@ -69,27 +74,26 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
                 .eraseToAnyPublisher()
         }
 
-        let fetch_new = { [walletMetadataEntryService] () -> AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> in
-            walletMetadataEntryService.fetchEntry(type: EthereumEntryPayload.self)
-                .flatMap { entry -> AnyPublisher<EthereumWalletAccount, WalletAssetFetchError> in
-                    guard let firstAccount = entry.ethereum.accounts.first else {
-                        return .failure(.notInitialized)
-                    }
-                    return .just(
-                        EthereumWalletAccount(
-                            index: entry.ethereum.defaultAccountIndex,
-                            publicKey: firstAccount.address,
-                            label: firstAccount.label,
-                            archived: firstAccount.archived
-                        )
-                    )
-                }
-                .catch { error in
-                    fatalError(error.localizedDescription)
-                }
-                .mapError(WalletAccountRepositoryError.failedToFetchAccount)
-                .eraseToAnyPublisher()
+        let fetch_new = fetchOrCreateEthereumNatively(
+            metadataService: walletMetadataEntryService,
+            hdWalletProvider: walletCoreHDWalletProvider,
+            label: LocalizationConstants.Account.myWallet
+        )
+        .flatMap { entry -> AnyPublisher<EthereumWalletAccount, WalletAssetFetchError> in
+            guard let firstAccount = entry.ethereum?.accounts.first else {
+                return .failure(.notInitialized)
+            }
+            return .just(
+                EthereumWalletAccount(
+                    index: entry.ethereum?.defaultAccountIndex ?? 0,
+                    publicKey: firstAccount.address,
+                    label: firstAccount.label,
+                    archived: firstAccount.archived
+                )
+            )
         }
+        .mapError(WalletAccountRepositoryError.failedToFetchAccount)
+        .eraseToAnyPublisher()
 
         cachedValue = CachedValueNew(
             cache: cache,
@@ -99,7 +103,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
                         guard isEnabled else {
                             return fetch_old()
                         }
-                        return fetch_new()
+                        return fetch_new
                     }
                     .eraseToAnyPublisher()
             }

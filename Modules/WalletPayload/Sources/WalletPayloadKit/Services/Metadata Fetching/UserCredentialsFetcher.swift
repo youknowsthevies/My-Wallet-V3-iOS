@@ -20,6 +20,13 @@ public struct UserCredentials: Equatable {
             lifetimeToken: entry.lifetimeToken
         )
     }
+
+    func toEntry() -> UserCredentialsEntryPayload {
+        UserCredentialsEntryPayload(
+            userId: userId,
+            lifetimeToken: lifetimeToken
+        )
+    }
 }
 
 public protocol UserCredentialsFetcherAPI {
@@ -28,7 +35,7 @@ public protocol UserCredentialsFetcherAPI {
 
     /// Stores the passed UserCredentials to metadata
     /// - Parameter credentials: A `UserCredentials` value
-    func store(credentials: UserCredentials) -> AnyPublisher<EmptyValue, WalletAssetFetchError>
+    func store(credentials: UserCredentials) -> AnyPublisher<EmptyValue, WalletAssetSaveError>
 }
 
 final class UserCredentialsFetcher: UserCredentialsFetcherAPI {
@@ -63,8 +70,8 @@ final class UserCredentialsFetcher: UserCredentialsFetcherAPI {
         )
     }
 
-    func store(credentials: UserCredentials) -> AnyPublisher<EmptyValue, WalletAssetFetchError> {
-        unimplemented()
+    func store(credentials: UserCredentials) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+        metadataEntryService.save(node: credentials.toEntry())
     }
 }
 

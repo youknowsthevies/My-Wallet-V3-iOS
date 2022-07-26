@@ -14,7 +14,7 @@ extension CryptoCurrency: HasPathComponent {
     }
 }
 
-public protocol TransactionFee {
+public protocol TransactionFee: Hashable {
     static var cryptoType: HasPathComponent { get }
     static var `default`: Self { get }
 

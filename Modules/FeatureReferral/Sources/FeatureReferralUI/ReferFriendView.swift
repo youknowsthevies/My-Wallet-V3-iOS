@@ -7,6 +7,8 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
+typealias LocalizedStrings = LocalizationConstants.Referrals.ReferralScreen
+
 public struct ReferFriendView: View {
     let store: Store<ReferFriendState, ReferFriendAction>
     @Environment(\.presentationMode) var presentationMode
@@ -34,6 +36,7 @@ public struct ReferFriendView: View {
             }
             shareButton
         }
+        .ignoresSafeArea(.all, edges: .bottom)
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationBarStyle()
         .trailingNavigationButton(.close) {
@@ -46,7 +49,11 @@ public struct ReferFriendView: View {
             isPresented: viewStore
                 .binding(\.$isShareModalPresented),
             content: {
-                ActivityViewController(itemsToShare: [viewStore.referralInfo.code])
+                let itemtoShare = ActivityItemSource(
+                    title: LocalizedStrings.shareTitle,
+                    text: LocalizedStrings.shareMessage(viewStore.referralInfo.code)
+                )
+                ActivityViewController(itemsToShare: [itemtoShare])
             }
         )
     }
@@ -84,23 +91,26 @@ extension ReferFriendView {
 
     private var referalCodeSection: some View {
         VStack(spacing: 6, content: {
-            Text(LocalizationConstants.Referrals.ReferralScreen.referalCodeLabel)
+            Text(LocalizedStrings.referalCodeLabel)
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
 
-            VStack(alignment: .center, spacing: 10, content: {
+            VStack(alignment: .center, spacing: Spacing.padding2, content: {
                 Text(viewStore.referralInfo.code)
                     .typography(.title2)
                     .fontWeight(.medium)
                     .kerning(15)
-                Button(viewStore.state.codeIsCopied ?
-                    LocalizationConstants.Referrals.ReferralScreen.copiedLabel :
-                    LocalizationConstants.Referrals.ReferralScreen.copyLabel) {
-                        viewStore.send(.onCopyTapped)
-                    }
-                    .foregroundColor(Color.WalletSemantic.primary)
+                    .padding(.top, Spacing.padding3)
+                let label = viewStore.state.codeIsCopied
+                    ? LocalizedStrings.copiedLabel
+                    : LocalizedStrings.copyLabel
+                Button(label) {
+                    viewStore.send(.onCopyTapped)
+                }
+                .typography(.paragraph2)
+                .padding(.bottom, Spacing.padding3)
+                .foregroundColor(Color.WalletSemantic.primary)
             })
-            .frame(height: 120)
             .frame(maxWidth: .infinity)
             .background(Color("color_code_background", bundle: .module))
         })
@@ -110,7 +120,7 @@ extension ReferFriendView {
 
     private var stepsSection: some View {
         VStack(spacing: Spacing.padding4) {
-            Text(LocalizationConstants.Referrals.ReferralScreen.stepsTitleLabel)
+            Text(LocalizedStrings.stepsTitleLabel)
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
             VStack(alignment: .leading, spacing: Spacing.padding2, content: {
@@ -119,7 +129,7 @@ extension ReferFriendView {
                         HStack {
                             numberView(with: index + 1)
                             Text(steps[index].text)
-                                .typography(.caption1)
+                                .typography(.paragraph1)
                                 .foregroundColor(Color.textTitle)
                         }
                     }
@@ -130,12 +140,12 @@ extension ReferFriendView {
     }
 
     private var shareButton: some View {
-        PrimaryButton(title: LocalizationConstants.Referrals.ReferralScreen.shareButton) {
+        PrimaryButton(title: LocalizedStrings.shareButton) {
             viewStore.send(.onShareTapped)
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Spacing.padding3)
-        .padding(.bottom, Spacing.padding5)
+        .padding(.bottom, Spacing.padding4)
     }
 
     @ViewBuilder func numberView(with number: Int) -> some View {
@@ -145,19 +155,6 @@ extension ReferFriendView {
             .padding(12)
             .background(Color.WalletSemantic.blueBG)
             .clipShape(Circle())
-    }
-}
-
-struct ReferFriendView_Previews: PreviewProvider {
-    static var previews: some View {
-        ReferFriendView(store: .init(
-            initialState: .init(
-                codeIsCopied: false,
-                referralInfo: MockGenerator.referral
-            ),
-            reducer: ReferFriendModule.reducer,
-            environment: ReferFriendEnvironment(mainQueue: .main)
-        ))
     }
 }
 
@@ -180,4 +177,36 @@ struct ActivityViewController: UIViewControllerRepresentable {
         _ uiViewController: UIActivityViewController,
         context: UIViewControllerRepresentableContext<ActivityViewController>
     ) {}
+}
+
+class ActivityItemSource: NSObject, UIActivityItemSource {
+    var title: String
+    var text: String
+
+    init(title: String, text: String) {
+        self.title = title
+        self.text = text
+        super.init()
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        text
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        itemForActivityType activityType: UIActivity.ActivityType?
+    ) -> Any? {
+        text
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        subjectForActivityType activityType: UIActivity.ActivityType?
+    ) -> String {
+        if activityType == .mail {
+            return title
+        }
+        return ""
+    }
 }

@@ -1,6 +1,7 @@
 import Foundation
 import Localization
 import OrderedCollections
+import ToolKit
 
 // swiftlint:disable type_name
 public enum UX {
@@ -16,6 +17,7 @@ public enum UX {
         public var icon: UX.Icon?
         public var metadata: Metadata
         public var actions: [Action]
+        public var categories: [String] = []
 
         public init(
             source: Swift.Error? = nil,
@@ -90,6 +92,7 @@ extension UX.Error {
             message = ux.message
             icon = ux.icon
             actions = ux.actions ?? []
+            categories = ux.categories ?? []
         } else {
             title = L10n.networkError.title
             message = nabu.description ?? L10n.oops.message
@@ -101,9 +104,6 @@ extension UX.Error {
         if let request = nabu.request {
             if let id = request.allHTTPHeaderFields?["X-Request-ID"] {
                 metadata[L10n.request] = id
-            }
-            if let id = request.allHTTPHeaderFields?["X-Session-ID"] {
-                metadata[L10n.session] = id
             }
         }
 
@@ -117,6 +117,7 @@ extension UX.Error {
         icon = ux.icon
         actions = ux.actions ?? .default
         metadata = [:]
+        categories = ux.categories ?? []
     }
 }
 
@@ -124,18 +125,26 @@ extension UX.Error {
 
     public init(error: Swift.Error?) {
         switch error {
+        case let ux as UX.Error:
+            self = ux
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:
-            self.init(
-                source: error,
-                title: L10n.oops.title,
-                message: L10n.oops.message,
-                icon: nil,
-                metadata: [:],
-                actions: .default
-            )
-            expected = false
+            if let ux = extract(UX.Error.self, from: error as Any) {
+                self = ux
+            } else if let ux = extract(Nabu.Error.UX.self, from: error as Any) {
+                self = Self(nabu: ux)
+            } else {
+                self.init(
+                    source: error,
+                    title: L10n.oops.title,
+                    message: L10n.oops.message,
+                    icon: nil,
+                    metadata: [:],
+                    actions: .default
+                )
+                expected = false
+            }
         }
     }
 }

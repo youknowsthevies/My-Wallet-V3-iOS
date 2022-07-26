@@ -34,7 +34,13 @@ extension SellTransactionEngine {
     // MARK: - TransactionEngine
 
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
-        .just(amount)
+        sourceExchangeRatePair.map { exchangeRate -> MoneyValue in
+            if amount.isFiat {
+                return amount.convert(using: exchangeRate.inverseQuote.quote)
+            } else {
+                return amount
+            }
+        }
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -52,16 +58,6 @@ extension SellTransactionEngine {
         transactionExchangeRatePair
             .take(1)
             .asSingle()
-    }
-
-    func amountInSourceCurrency(for pendingTransaction: PendingTransaction) -> Single<MoneyValue> {
-        sourceExchangeRatePair.map { exchangeRate -> MoneyValue in
-            if pendingTransaction.amount.isFiat {
-                return pendingTransaction.amount.convert(using: exchangeRate.inverseQuote.quote)
-            } else {
-                return pendingTransaction.amount
-            }
-        }
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
@@ -104,34 +100,32 @@ extension SellTransactionEngine {
         var pendingTransaction = oldValue
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         return pendingTransaction.update(confirmations: [])
     }
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
-        Single.zip(
-            quotesEngine.quotePublisher.asSingle(),
-            amountInSourceCurrency(for: pendingTransaction)
-        )
-        .flatMap { [weak self] quote, convertedAmount -> Single<SellOrder> in
-            guard let self = self else { return .never() }
-            return self.orderCreationRepository.createOrder(
-                direction: self.orderDirection,
-                quoteIdentifier: quote.identifier,
-                volume: convertedAmount,
-                ccy: self.target.currencyType.code
-            )
+        quotesEngine.quotePublisher
             .asSingle()
-        }
-        .do(onSuccess: { [weak self] _ in
-            self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
-        })
+            .flatMap { [weak self] quote -> Single<SellOrder> in
+                guard let self = self else { return .never() }
+                return self.orderCreationRepository.createOrder(
+                    direction: self.orderDirection,
+                    quoteIdentifier: quote.identifier,
+                    volume: pendingTransaction.amount,
+                    ccy: self.target.currencyType.code
+                )
+                .asSingle()
+            }
+            .do(onSuccess: { [weak self] _ in
+                self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
+            })
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
         var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
-        pendingTransaction.engineState[.quoteSubscription] = nil
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         quotesEngine.stop()
     }
 
@@ -154,7 +148,7 @@ extension SellTransactionEngine {
             return .just(oldValue)
         }
         var pendingTransaction = oldValue
-        pendingTransaction.engineState[.quoteSubscription] = startQuotesFetching()
+        pendingTransaction.engineState.mutate { $0[.quoteSubscription] = startQuotesFetching() }
         return .just(pendingTransaction)
     }
 
@@ -213,7 +207,7 @@ extension SellTransactionEngine {
                 }
                 return exchangeRate
             }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 
@@ -225,7 +219,7 @@ extension SellTransactionEngine {
             .compactMap { ratePair in
                 ratePair.inverseQuote.quote
             }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 
@@ -236,7 +230,7 @@ extension SellTransactionEngine {
         sourceExchangeRatePair.asPublisher()
             .map(\.quote)
             .compactMap { $0 }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 
@@ -288,6 +282,6 @@ extension TransactionLimits {
 extension PendingTransaction {
 
     fileprivate var quoteSubscription: Disposable? {
-        engineState[.quoteSubscription] as? Disposable
+        engineState.value[.quoteSubscription] as? Disposable
     }
 }

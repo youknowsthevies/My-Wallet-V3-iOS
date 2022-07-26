@@ -18,11 +18,14 @@ public struct UnspentOutputResponse: Codable {
         public let path: String
     }
 
-    public let tx_hash: String
-    public let script: String
-    public let value: Decimal
     public let confirmations: UInt
-    public let xpub: XPub
-    public let tx_index: Int
     public let replayable: Bool?
+    public let script: String
+    public let tx_hash: String
+    public let tx_hash_big_endian: String
+    public let tx_index: Int
+    public let tx_output_n: Int
+    public let value: Int
+    public let value_hex: String
+    public let xpub: XPub
 }

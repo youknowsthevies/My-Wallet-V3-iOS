@@ -33,7 +33,9 @@ class WalletHolderTests: XCTestCase {
             metadataHDNode: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 5000,
@@ -69,7 +71,9 @@ class WalletHolderTests: XCTestCase {
             metadataHDNode: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 5000,

@@ -3,6 +3,7 @@
 import DIKit
 import Foundation
 import MetadataKit
+import ObservabilityKit
 
 enum WalletRepoOperationsQueue {
     static let queueTag = "op.queue.tag"
@@ -22,7 +23,8 @@ extension DependencyContainer {
         factory { () -> ForgetWalletAPI in
             ForgetWallet(
                 walletRepo: DIKit.resolve(),
-                walletState: DIKit.resolve()
+                walletState: DIKit.resolve(),
+                walletPersistence: DIKit.resolve()
             )
         }
 
@@ -35,6 +37,9 @@ extension DependencyContainer {
                 payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
+                syncPubKeysAddressesProvider: DIKit.resolve(),
+                tracer: DIKit.resolve(),
+                logger: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
             )
@@ -47,7 +52,10 @@ extension DependencyContainer {
                 walletRepo: DIKit.resolve(),
                 payloadCrypto: DIKit.resolve(),
                 walletLogic: DIKit.resolve(),
-                operationsQueue: queue
+                walletPayloadRepository: DIKit.resolve(),
+                operationsQueue: queue,
+                tracer: DIKit.resolve(),
+                logger: DIKit.resolve()
             )
         }
 
@@ -56,9 +64,12 @@ extension DependencyContainer {
             let queue = DispatchQueue(label: "wallet.upgrading.op.queue", qos: .userInitiated, target: targetQueue)
             let version3Flow = Version3Workflow(
                 entropyService: DIKit.resolve(),
+                logger: DIKit.resolve(),
                 operationQueue: queue
             )
-            let version4Flow = Version4Workflow()
+            let version4Flow = Version4Workflow(
+                logger: DIKit.resolve()
+            )
             return WalletUpgrader(
                 workflows: [version3Flow, version4Flow]
             )
@@ -68,13 +79,17 @@ extension DependencyContainer {
             let walletCreator: WalletDecoderAPI = DIKit.resolve()
             let decoder = walletCreator.createWallet
             let upgrader: WalletUpgraderAPI = DIKit.resolve()
+            let tracer: LogMessageServiceAPI = DIKit.resolve()
+            let traceMethod = tracer.logError(message:)
             return WalletLogic(
                 holder: DIKit.resolve(),
                 decoder: decoder,
                 upgrader: upgrader,
                 metadata: DIKit.resolve(),
                 walletSync: DIKit.resolve(),
-                notificationCenter: .default
+                notificationCenter: .default,
+                logger: DIKit.resolve(),
+                payloadHealthChecker: walletPayloadHealthCheckProvider(tracer: traceMethod)
             )
         }
 
@@ -90,7 +105,8 @@ extension DependencyContainer {
                 payloadCrypto: payloadCrypto,
                 walletRepo: repo,
                 walletPayloadRepository: payloadRepository,
-                operationsQueue: queue
+                operationsQueue: queue,
+                tracer: DIKit.resolve()
             )
         }
 
@@ -104,6 +120,7 @@ extension DependencyContainer {
                 createWalletRepository: DIKit.resolve(),
                 usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
+                tracer: DIKit.resolve(),
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),
                 generateWrapper: generateWrapper(wallet:language:version:),
@@ -122,6 +139,7 @@ extension DependencyContainer {
             return WalletMetadataEntryService(
                 walletHolder: holder,
                 metadataService: metadata,
+                logger: DIKit.resolve(),
                 queue: queue
             )
         }
@@ -179,9 +197,46 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCoreHDWalletProvider in
+            let walletHolder: WalletHolderAPI = DIKit.resolve()
+            return provideWalletCoreHDWallet(
+                walletHolder: walletHolder
+            )
+        }
+
         factory { () -> ChangePasswordServiceAPI in
             ChangePasswordService(
                 walletSync: DIKit.resolve(),
+                walletHolder: DIKit.resolve(),
+                logger: DIKit.resolve()
+            )
+        }
+
+        factory { () -> VerifyMnemonicBackupServiceAPI in
+            VerifyMnemonicBackupService(
+                walletHolder: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                logger: DIKit.resolve()
+            )
+        }
+
+        single { () -> MnemonicAccessAPI in
+            MnemonicAccessProvider(
+                legacyProvider: DIKit.resolve(),
+                nativeProvider: DIKit.resolve(),
+                nativeWalletFeatureFlag: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> MnemonicVerificationStatusProvider in
+            provideMnemonicVerificationStatus(
+                walletHolder: DIKit.resolve()
+            )
+        }
+
+        factory { () -> NativeMnemonicAccessAPI in
+            MnemonicAccessService(
                 walletHolder: DIKit.resolve()
             )
         }

@@ -27,7 +27,7 @@ enum TransactionAction: MviAction {
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
     case showAddAccountFlow
     case showCardLinkingFlow
-    case cardLinkingFlowCompleted
+    case cardLinkingFlowCompleted(CardData)
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
@@ -574,7 +574,8 @@ extension TransactionValidationState {
             return .transactionInFlight
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
-        case .noSourcesAvailable,
+        case .accountIneligible,
+             .noSourcesAvailable,
              .incorrectSourceCurrency,
              .incorrectDestinationCurrency,
              .insufficientInterestWithdrawalBalance:

@@ -13,10 +13,10 @@ final class FiatCustodialAccount: FiatAccount {
     let isDefault: Bool = true
     let label: String
     let fiatCurrency: FiatCurrency
-    let accountType: AccountType = .custodial
+    let accountType: AccountType = .trading
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
     }
 
     var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
@@ -26,13 +26,15 @@ final class FiatCustodialAccount: FiatAccount {
             .eraseError()
     }
 
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         activityFetcher
             .activity(fiatCurrency: fiatCurrency)
             .map { items in
                 items.map(ActivityItemEvent.fiat)
             }
-            .asSingle()
+            .replaceError(with: [])
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var canWithdrawFunds: Single<Bool> {

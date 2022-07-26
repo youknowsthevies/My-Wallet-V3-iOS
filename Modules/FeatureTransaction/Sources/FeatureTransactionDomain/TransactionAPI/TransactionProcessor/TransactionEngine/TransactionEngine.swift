@@ -574,7 +574,7 @@ extension TransactionEngine {
             return
         }
 
-        guard try amount <= maxLimit else {
+        guard try amount <= maxLimit, !maxLimit.isZero else {
             if sourceAccount is LinkedBankAccount {
                 throw TransactionValidationFailure(
                     state: .overMaximumSourceLimit(

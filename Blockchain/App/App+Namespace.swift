@@ -5,11 +5,15 @@ import ErrorsUI
 import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
+import FeatureCustomerSupportUI
 import FeatureReferralDomain
 import FeatureReferralUI
-import Firebase
+import FirebaseCore
+import FirebaseInstallations
 import FirebaseProtocol
+import FirebaseRemoteConfig
 import FraudIntelligence
+import ObservabilityKit
 import ToolKit
 import UIKit
 
@@ -17,18 +21,19 @@ let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
         default: [
-            blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
-            blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
-            blockchain.app.configuration.request.console.logging: false,
-            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.SSL.pinning.is.enabled: true,
-            blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
-            blockchain.app.configuration.native.bitcoin.transaction.is.enabled: false,
             blockchain.app.configuration.apple.pay.is.enabled: false,
             blockchain.app.configuration.card.issuing.is.enabled: false,
+            blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
+            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
+            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.redesign.checkout.is.enabled: false,
-            blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha
+            blockchain.app.configuration.request.console.logging: false,
+            blockchain.app.configuration.SSL.pinning.is.enabled: true,
+            blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
+            blockchain.app.configuration.stx.all.users.is.enabled: false,
+            blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
+            blockchain.app.configuration.unified.sign_in.is.enabled: false
         ]
     )
 )
@@ -40,6 +45,7 @@ extension AppProtocol {
         deepLink: DeepLinkCoordinator = resolve(),
         referralService: ReferralServiceAPI = resolve(),
         attributionService: AttributionServiceAPI = resolve(),
+        performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
 
@@ -47,6 +53,9 @@ extension AppProtocol {
             state.set(blockchain.app.deep_link.dsl.is.enabled, to: BuildFlag.isInternal)
         }
 
+        observers.insert(AppHapticObserver(app: self))
+        observers.insert(KYCExtraQuestionsObserver(app: self))
+        observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
         observers.insert(ReferralAppObserver(
@@ -61,6 +70,25 @@ extension AppProtocol {
         #endif
         observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
+        observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
+
+        let intercom = (
+            apiKey: Bundle.main.plist.intercomAPIKey[] as String?,
+            appId: Bundle.main.plist.intercomAppId[] as String?
+        )
+
+        if let apiKey = intercom.apiKey, let appId = intercom.appId {
+            observers.insert(
+                CustomerSupportObserver<Intercom>(
+                    app: self,
+                    apiKey: apiKey,
+                    appId: appId,
+                    open: UIApplication.shared.open,
+                    unreadNotificationName: NSNotification.Name.IntercomUnreadConversationCountDidChange
+                )
+            )
+        }
+
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)
             state.transaction { state in
@@ -92,6 +120,13 @@ extension Options: MobileIntelligenceOptions_p {}
 extension Response: MobileIntelligenceResponse_p {}
 extension UpdateOptions: MobileIntelligenceUpdateOptions_p {}
 
+#endif
+
+#if canImport(Intercom)
+import class Intercom.ICMUserAttributes
+import class Intercom.Intercom
+extension Intercom: Intercom_p {}
+extension ICMUserAttributes: IntercomUserAttributes_p {}
 #endif
 
 extension Tag.Event {

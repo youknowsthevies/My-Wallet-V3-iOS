@@ -9,7 +9,8 @@ extension AnalyticsEvents.New {
 
         var type: AnalyticsEventType { .nabu }
 
-        case coinViewOpen(currency: String)
+        case coinViewOpen(currency: String, origin: String)
+        case coinViewClosed(currency: String)
 
         case chartEngaged(currency: String, timeInterval: String, origin: Origin = .coinView)
         case chartDisengaged(currency: String, timeInterval: String, origin: Origin = .coinView)

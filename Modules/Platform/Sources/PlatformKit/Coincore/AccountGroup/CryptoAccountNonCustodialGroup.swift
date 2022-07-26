@@ -7,6 +7,7 @@ import RxSwift
 
 /// An `AccountGroup` containing only Non Custodial accounts.
 public class CryptoAccountNonCustodialGroup: AccountGroup {
+
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
     private let asset: CryptoCurrency
@@ -43,8 +44,8 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
             .eraseToAnyPublisher()
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(AccountGroupError.noReceiveAddress)
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(AccountGroupError.noReceiveAddress)
     }
 
     public var isFunded: AnyPublisher<Bool, Error> {

@@ -28,20 +28,22 @@ extension Session.State {
         internal var subjects: [Tag.Reference: Subject] = [:]
         private var dirty: (data: [Tag.Reference: Any], level: UInt) = ([:], 0)
 
-        private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
-        private var key: DispatchSpecificKey<Data.Type>
+        private let lock = NSRecursiveLock()
 
         var preferences: Preferences
 
         private let shared = "ø"
         private var user: String? {
-            store[blockchain.user.id.key] as? String
+            store[blockchain.user.id.key()] as? String
         }
 
         init(preferences: Preferences) {
-            key = .init(on: queue)
             self.preferences = preferences
         }
+    }
+
+    private func key(_ event: Tag.Event) -> Tag.Reference {
+        event.key().in(app)
     }
 }
 
@@ -67,12 +69,16 @@ extension Session.State {
         }
     }
 
+    public func doesNotContain(_ event: Tag.Event) -> Bool {
+        !data.store.keys.contains(key(event))
+    }
+
     public func contains(_ event: Tag.Event) -> Bool {
-        data.store.keys.contains(event.key)
+        data.store.keys.contains(key(event))
     }
 
     public func clear(_ event: Tag.Event) {
-        let key = event.key
+        let key = key(event)
         if key.tag.is(blockchain.user.id) {
             transaction { state in
                 let user = key
@@ -86,17 +92,21 @@ extension Session.State {
         data.clear(key)
     }
 
-    public func set(_ event: Tag.Event, to value: Any) {
-        data.set(event.key, to: value)
+    public func set(_ event: Tag.Event, to value: Any?) {
+        data.set(key(event), to: value as Any)
+    }
+
+    public func set(_ reference: Tag.Reference, to value: Any?) {
+        data.set(reference, to: value as Any)
     }
 
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
-        let key = event.key
+        let key = key(event)
         data.set(key, to: Data.Computed(key: key, yield: value))
     }
 
     public func get(_ event: Tag.Event) throws -> Any {
-        try data.get(event.key)
+        try data.get(key(event))
     }
 
     public func get<T: Decodable>(
@@ -107,8 +117,18 @@ extension Session.State {
         try decoder.decode(T.self, from: get(event) as Any)
     }
 
+    @_disfavoredOverload
+    public func get<T>(
+        _ event: Tag.Event,
+        as type: T.Type = T.self
+    ) throws -> T {
+        try (get(event) as? T).or(
+            throw: FetchResult.Error.decoding(.init(message: "Error casting \(event) to \(T.self)", at: []))
+        )
+    }
+
     public func result(for event: Tag.Event) -> FetchResult {
-        let key = event.key
+        let key = key(event)
         do {
             return try .value(get(key), key.metadata(.state))
         } catch let error as FetchResult.Error {
@@ -119,7 +139,7 @@ extension Session.State {
     }
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
-        let key = event.key
+        let key = key(event)
         return Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
@@ -288,19 +308,12 @@ extension Session.State.Data {
 
     @discardableResult
     func sync<T>(execute work: () throws -> T) rethrows -> T {
-        DispatchQueue.getSpecific(key: key) == nil
-            ? try queue.sync(execute: work)
-            : try work()
+        lock.lock()
+        defer { lock.unlock() }
+        return try work()
     }
 }
 
 extension Session.State {
     public typealias Subject = PassthroughSubject<FetchResult, Never>
-}
-
-extension DispatchSpecificKey {
-    convenience init<K>(_: K.Type = K.self, on queue: DispatchQueue) where T == K.Type {
-        self.init()
-        queue.setSpecific(key: self, value: K.self)
-    }
 }

@@ -4,12 +4,12 @@ import BigInt
 import PlatformKit
 import ToolKit
 
-protocol CoinSelector {
+public protocol CoinSelector {
     func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError>
     func select(
         all coins: [UnspentOutput],
         feePerByte: BigUInt,
-        singleOutputType: UnspentOutput.Script
+        singleOutputType: BitcoinScriptType
     ) -> Result<SpendableUnspentOutputs, CoinSelectionError>
 }
 
@@ -45,8 +45,7 @@ struct CoinSelection: CoinSelector {
         // Iteratively, the value of all currently selected coins.
         var accumulatedValue: BigUInt = .zero
         let outputQuantity = TransactionSizeCalculatorQuantities(
-            p2pkh: inputs.target.scriptType == .P2PKH ? 1 : 0,
-            p2wpkh: inputs.target.scriptType == .P2WPKH ? 1 : 0
+            bitcoinScriptTypes: [inputs.target.scriptType]
         )
         // The base fee is the transactionBytes of just adding the outputs.
         let baseFee: Decimal = calculator.transactionBytes(
@@ -114,13 +113,14 @@ struct CoinSelection: CoinSelector {
     func select(
         all coins: [UnspentOutput],
         feePerByte: BigUInt,
-        singleOutputType: UnspentOutput.Script
+        singleOutputType: BitcoinScriptType
     ) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
         let effectiveCoins = coins.effective(fee: feePerByte)
+        let outputQuantities = TransactionSizeCalculatorQuantities(bitcoinScriptTypes: [singleOutputType])
         let effectiveBalance = calculator.effectiveBalance(
-            fee: feePerByte,
+            for: feePerByte,
             inputs: effectiveCoins,
-            singleOutputType: singleOutputType
+            outputs: outputQuantities
         )
         let balance = effectiveCoins.sum()
 

@@ -42,22 +42,19 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
-        .just(ethereumReceiveAddress)
-    }
-
     /// The `ReceiveAddress` for the given account
-    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .just(ethereumReceiveAddress)
     }
 
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         nonCustodialActivity
             .zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {

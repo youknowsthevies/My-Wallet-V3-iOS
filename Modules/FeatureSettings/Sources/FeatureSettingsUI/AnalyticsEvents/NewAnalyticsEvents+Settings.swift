@@ -9,8 +9,10 @@ extension AnalyticsEvents.New {
         case addMobileNumberClicked(origin: Origin)
         case changeMobileNumberClicked
         case notificationClicked
+        case walletReferralProgramClicked(origin: String)
         case notificationPreferencesUpdated(emailEnabled: Bool?, smsEnabled: Bool?)
         case settingsCurrencyClicked(currency: String)
+        case settingsTradingCurrencyClicked(currency: String)
         case settingsHyperlinkClicked(destination: Destination)
 
         enum Destination: String, StringRawRepresentable {
@@ -23,6 +25,13 @@ extension AnalyticsEvents.New {
 
         enum Origin: String, StringRawRepresentable {
             case settings = "SETTINGS"
+        }
+
+        enum ReferralOrigin: String, StringRawRepresentable {
+            case profile
+            case portfolio
+            case popupsheet
+            case deeplink
         }
     }
 }

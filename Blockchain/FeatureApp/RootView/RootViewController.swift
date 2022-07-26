@@ -30,7 +30,9 @@ final class RootViewController: UIHostingController<RootView> {
 
         send = ViewStore(global).send
 
-        let environment = RootViewEnvironment(app: app)
+        let environment = RootViewEnvironment(
+            app: app
+        )
         let store = Store(
             initialState: RootViewState(
                 fab: .init(
@@ -49,6 +51,7 @@ final class RootViewController: UIHostingController<RootView> {
 
         super.init(rootView: RootView(store: store))
 
+        subscribe(to: viewStore)
         subscribe(to: ViewStore(global))
 
         if !defaults.hasInteractedWithFrequentActionButton {
@@ -77,7 +80,6 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
     @LazyInject var backupRouter: FeatureDashboardUI.BackupRouterAPI
     @LazyInject var coincore: CoincoreAPI
-    @LazyInject var customerSupportChatRouter: CustomerSupportChatRouterAPI
     @LazyInject var eligibilityService: EligibilityServiceAPI
     @LazyInject var featureFlagService: FeatureFlagsServiceAPI
     @LazyInject var fiatCurrencyService: FiatCurrencyServiceAPI
@@ -113,6 +115,13 @@ extension RootViewController {
 }
 
 extension RootViewController {
+
+    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
+        viewStore.publisher.tab.sink { [weak self] _ in
+            self?.presentedViewController?.dismiss(animated: true)
+        }
+        .store(in: &bag)
+    }
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {
 

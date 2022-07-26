@@ -6,7 +6,7 @@ import ToolKit
 import WalletPayloadKit
 
 /// Responsible for holding a decoded wallet in memory
-final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
+final class WalletHolder: WalletHolderAPI {
 
     var walletStatePublisher: AnyPublisher<WalletState?, Never> {
         walletState.publisher

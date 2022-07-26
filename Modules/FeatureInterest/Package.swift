@@ -37,7 +37,8 @@ let package = Package(
         .package(path: "../UIComponents"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Platform"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../Analytics")
     ],
     targets: [
         .target(
@@ -70,7 +71,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "AnalyticsKit", package: "Analytics")
             ]
         ),
         .testTarget(

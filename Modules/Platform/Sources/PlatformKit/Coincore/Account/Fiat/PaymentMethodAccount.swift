@@ -24,12 +24,12 @@ public final class PaymentMethodAccount: FiatAccount {
         self.paymentMethodType = paymentMethodType
         self.paymentMethod = paymentMethod
         self.priceService = priceService
-        accountType = paymentMethod.isCustodial ? .custodial : .nonCustodial
+        accountType = paymentMethod.isCustodial ? .trading : .nonCustodial
     }
 
     public let isDefault: Bool = false
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([]) // no activity to report
     }
 
@@ -72,8 +72,8 @@ public final class PaymentMethodAccount: FiatAccount {
         balance
     }
 
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
     }
 
     public func balancePair(

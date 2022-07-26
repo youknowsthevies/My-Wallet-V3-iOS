@@ -19,7 +19,7 @@ public enum BlockchainNamespaceObservation: Equatable {
 extension BlockchainNamespaceObservation {
 
     public static func on(_ event: Tag, context: Tag.Context = [:]) -> Self {
-        on(event.key, context: context)
+        on(event.key(), context: context)
     }
 
     public static func on(_ event: Tag.Reference, context: Tag.Context = [:]) -> Self {
@@ -47,7 +47,7 @@ extension Reducer where Action: BlockchainNamespaceObservationAction, Environmen
     public func on<C: Collection>(_ events: C) -> Reducer where C.Element == Tag.Event {
         Reducer { _, action, environment in
             if let observation = (/Action.observation).extract(from: action) {
-                let keys = events.map { $0.key([:]) }
+                let keys = events.map { $0.key() }
                 switch observation {
                 case .start:
                     let observers = keys.map { event in

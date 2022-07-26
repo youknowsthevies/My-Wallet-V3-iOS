@@ -5,19 +5,19 @@ import BitcoinChainKit
 import MoneyKit
 import PlatformKit
 
-public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
+public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
 
     public static let requiredConfirmations: Int = 3
 
     // MARK: - Output
 
-    public struct Output: Decodable {
+    public struct Output: Decodable, Equatable {
         let spent: Bool
         let change: Bool
         let amount: CryptoValue
         let address: String
 
-        struct Xpub: Codable {
+        struct Xpub: Codable, Equatable {
             let value: String
 
             enum CodingKeys: String, CodingKey {
@@ -45,7 +45,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - Input
 
-    public struct Input: Decodable {
+    public struct Input: Decodable, Equatable {
         let previousOutput: Output
 
         enum CodingKeys: String, CodingKey {
@@ -97,7 +97,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - Decodable
 
-    public required init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
         let value = BigInt(amount)
@@ -134,7 +134,9 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - BitcoinChainHistoricalTransaction
 
-    public func apply(latestBlockHeight: Int) {
-        confirmations = (latestBlockHeight - (blockHeight ?? latestBlockHeight)) + 1
+    public func applying(latestBlockHeight: Int) -> Self {
+        var transaction = self
+        transaction.confirmations = (latestBlockHeight - (transaction.blockHeight ?? latestBlockHeight)) + 1
+        return transaction
     }
 }

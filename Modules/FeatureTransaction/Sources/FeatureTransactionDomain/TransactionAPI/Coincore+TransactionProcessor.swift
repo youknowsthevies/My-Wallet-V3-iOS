@@ -281,6 +281,7 @@ extension CoincoreAPI {
             }
             return target
                 .receiveAddress
+                .asSingle()
                 .flatMap { receiveAddress in
                     account
                         .requireSecondPassword
@@ -314,7 +315,7 @@ extension CoincoreAPI {
         case is ReceiveAddress:
             receiveAddressTarget = .just(target as! ReceiveAddress)
         case is CryptoAccount:
-            receiveAddressTarget = (target as! CryptoAccount).receiveAddress
+            receiveAddressTarget = (target as! CryptoAccount).receiveAddress.asSingle()
         default:
             impossible()
         }

@@ -45,12 +45,12 @@ let package = Package(
         .package(
             name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
-            from: "10.3.1"
+            from: "10.11.2"
         ),
         .package(
             name: "NukeUI",
             url: "https://github.com/kean/NukeUI.git",
-            from: "0.6.5"
+            from: "0.8.3"
         ),
         .package(
             name: "BigInt",
@@ -81,6 +81,7 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureKYC"),
+        .package(path: "../FeatureProducts"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
@@ -99,6 +100,7 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "FeatureProductsDomain", package: "FeatureProducts"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
             ]
@@ -163,7 +165,8 @@ let package = Package(
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "PlatformKitMock", package: "Platform")
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "FeatureProductsDomain", package: "FeatureProducts")
             ]
         ),
         .testTarget(

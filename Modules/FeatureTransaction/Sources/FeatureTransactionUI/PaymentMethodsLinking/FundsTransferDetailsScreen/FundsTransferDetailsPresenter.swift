@@ -85,6 +85,7 @@ public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI
                             currencyCode: self.interactor.fiatCurrency.code
                         )
                     )
+                    self.error()
                 case .value(let account):
                     self.setup(account: account)
                 case .calculating, .invalid(.empty):
@@ -92,6 +93,15 @@ public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI
                 }
             }
             .disposed(by: disposeBag)
+    }
+
+    private func error() {
+        titleViewRelay.accept(.text(value: LocalizedString.error))
+        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
+        continueButtonViewModel.tapRelay
+            .bindAndCatch(to: backRelay)
+            .disposed(by: disposeBag)
+        buttons.append(continueButtonViewModel)
     }
 
     private func setup(account: PaymentAccountDescribing) {
@@ -186,6 +196,12 @@ extension FundsTransferDetailScreenPresenter {
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
                 termsTextViewModel = nil
+            case .ARS:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
+                termsTextViewModel = nil
+            case .BRL:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
+                termsTextViewModel = nil
             default:
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil
@@ -240,6 +256,8 @@ extension Array where Element == PaymentAccountProperty.Field {
                  .paymentAccountField(.bankCode),
                  .paymentAccountField(.sortCode):
                 return true
+            case .paymentAccountField(.field(_, _, _, copy: let copy)):
+                return copy
             default:
                 return false
             }

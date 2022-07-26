@@ -38,5 +38,23 @@ extension DependencyContainer {
                 )
             ) as RewardsRepositoryAPI
         }
+
+        single {
+            ResidentialAddressRepository(
+                client: ResidentialAddressClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
+                )
+            ) as ResidentialAddressRepositoryAPI
+        }
+
+        single {
+            TransactionRepository(
+                client: TransactionClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
+                )
+            ) as TransactionRepositoryAPI
+        }
     }
 }

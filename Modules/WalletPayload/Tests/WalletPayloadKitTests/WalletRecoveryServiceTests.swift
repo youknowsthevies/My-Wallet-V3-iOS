@@ -7,6 +7,7 @@
 @testable import WalletPayloadKitMock
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -44,7 +45,9 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSync,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
@@ -55,7 +58,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")
@@ -70,7 +74,7 @@ class WalletRecoveryServiceTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation], timeout: 10)
 
         XCTAssertFalse(walletDecoderCalled)
     }
@@ -106,7 +110,9 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let response = WalletPayloadClient.Response(
@@ -126,12 +132,19 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")
         // swiftlint:disable:next line_length
         let validMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+        let expectedContext = WalletFetchedContext(
+            guid: "dfa6d0af-7b04-425d-b35c-ded8efaa0016",
+            sharedKey: "b4a3dcbc-3e85-4cbf-8d0f-e31f9663e888",
+            passwordPartHash: "561e1"
+        )
 
         walletRecoveryService
             .recover(from: validMnemonic)
@@ -143,12 +156,12 @@ class WalletRecoveryServiceTests: XCTestCase {
                     XCTFail("should not fail: \(failureError)")
                 }
             } receiveValue: { value in
-                XCTAssertEqual(value, .noValue)
+                XCTAssertEqual(value, expectedContext)
                 expectation.fulfill()
             }
             .store(in: &cancellables)
 
-        waitForExpectations(timeout: 2)
+        waitForExpectations(timeout: 10)
 
         XCTAssertTrue(walletDecoderCalled)
         XCTAssertEqual(walletRepo.credentials.guid, "dfa6d0af-7b04-425d-b35c-ded8efaa0016")

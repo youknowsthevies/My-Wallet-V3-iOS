@@ -36,21 +36,18 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .just(erc20ReceiveAddress)
     }
 
-    var receiveAddressPublisher: AnyPublisher<ReceiveAddress, Error> {
-        .just(erc20ReceiveAddress)
-    }
-
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         nonCustodialActivity
             .zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     /// The nonce (transaction count) of this account.

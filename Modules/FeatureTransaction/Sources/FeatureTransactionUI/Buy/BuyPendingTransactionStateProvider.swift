@@ -72,7 +72,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             guard let buyCryptoValue = confirmation as? TransactionConfirmations.BuyCryptoValue else {
                 return nil
             }
-            return MoneyValue(cryptoValue: buyCryptoValue.baseValue)
+            return buyCryptoValue.baseValue
         }.first
         let title = String(
             format: LocalizationIds.InProgress.title,

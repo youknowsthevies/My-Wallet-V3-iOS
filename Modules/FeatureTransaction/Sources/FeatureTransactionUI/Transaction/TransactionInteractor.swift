@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
@@ -28,6 +29,8 @@ final class TransactionInteractor {
         }
     }
 
+    internal let app: AppProtocol
+
     private let coincore: CoincoreAPI
     private let availablePairsService: AvailableTradingPairsServiceAPI
     private let swapEligibilityService: EligibilityServiceAPI
@@ -44,6 +47,7 @@ final class TransactionInteractor {
     private let invalidate = PublishSubject<Void>()
 
     init(
+        app: AppProtocol = resolve(),
         coincore: CoincoreAPI = resolve(),
         availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
         swapEligibilityService: EligibilityServiceAPI = resolve(),
@@ -54,6 +58,7 @@ final class TransactionInteractor {
         orderFetchingRepository: OrderFetchingRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
+        self.app = app
         self.coincore = coincore
         self.errorRecorder = errorRecorder
         self.availablePairsService = availablePairsService
@@ -295,10 +300,9 @@ final class TransactionInteractor {
             .eraseToAnyPublisher()
     }
 
-    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails, Swift.Error> {
+    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails, OrdersServiceError> {
         ordersService
             .fetchOrder(with: orderId)
-            .asPublisher()
             .startPolling(
                 timeoutInterval: .seconds(30),
                 until: { $0.isFinal }

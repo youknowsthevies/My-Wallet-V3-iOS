@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -78,7 +79,7 @@ extension OnChainTransactionEngine {
     public func getFeeState(
         pendingTransaction: PendingTransaction,
         feeOptions: FeeOptions? = nil
-    ) -> Single<FeeState> {
+    ) -> AnyPublisher<FeeState, Error> {
         do {
             return .just(
                 try getFeeState(
@@ -87,7 +88,7 @@ extension OnChainTransactionEngine {
                 )
             )
         } catch {
-            return .error(error)
+            return .failure(error)
         }
     }
 

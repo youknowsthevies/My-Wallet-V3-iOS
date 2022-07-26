@@ -21,18 +21,11 @@ typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 struct BackgroundTaskId: Hashable {}
 
 public struct AppDelegateContext: Equatable {
-    let intercomApiKey: String
-    let intercomAppId: String
-
     let embraceAppId: String
 
     public init(
-        intercomApiKey: String,
-        intercomAppId: String,
         embraceAppId: String
     ) {
-        self.intercomApiKey = intercomApiKey
-        self.intercomAppId = intercomAppId
         self.embraceAppId = embraceAppId
     }
 }
@@ -80,7 +73,6 @@ struct AppDelegateEnvironment {
     var certificatePinner: CertificatePinnerAPI
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
-    var customerSupportChatService: CustomerSupportChatServiceAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
@@ -138,12 +130,6 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
-            initializeCustomerChatSupport(
-                using: environment.customerSupportChatService,
-                apiKey: context.intercomApiKey,
-                appId: context.intercomAppId
-            ),
-
             initializeObservability(
                 using: environment.observabilityService,
                 appId: context.embraceAppId
@@ -179,13 +165,18 @@ let appDelegateReducer = Reducer<
         )
     case .didEnterBackground(let application):
         return environment.backgroundAppHandler
-            .appEnteredBackground(application)
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
-            .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
-            .map { _ in .handleDelayedEnterBackground }
+                .appEnteredBackground(application)
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
+                .map { _ in .handleDelayedEnterBackground }
     case .handleDelayedEnterBackground:
-        return .cancel(id: BackgroundTaskId())
+        return .merge(
+            .fireAndForget {
+                environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: false)
+            },
+            .cancel(id: BackgroundTaskId())
+        )
     case .didBecomeActive:
         return .merge(
             removeBlurFilter(
@@ -238,16 +229,6 @@ private func applyBlurFilter(
     }
     return Effect.fireAndForget {
         handler.applyEffect(on: view)
-    }
-}
-
-private func initializeCustomerChatSupport(
-    using service: CustomerSupportChatServiceAPI,
-    apiKey: String,
-    appId: String
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        service.initializeWithAcccountKey(apiKey, appId: appId)
     }
 }
 

@@ -57,6 +57,7 @@ extension DependencyContainer {
             WalletFetcherService.live(
                 walletManager: DIKit.resolve(),
                 accountRecoveryService: DIKit.resolve(),
+                walletFetcher: DIKit.resolve(),
                 nativeWalletEnabled: { nativeWalletFlagEnabled() }
             )
         }
