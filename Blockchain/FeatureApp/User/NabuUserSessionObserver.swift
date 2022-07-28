@@ -69,7 +69,7 @@ final class NabuUserSessionObserver: Session.Observer {
 
     func resetTokenObserver() {
         token = offlineTokenRepository.offlineTokenPublisher
-            .compactMap(\.success.userId)
+            .compactMap(\.success?.userId)
             .removeDuplicates()
             .sink { [app] userId in
                 app.signIn(userId: userId)
