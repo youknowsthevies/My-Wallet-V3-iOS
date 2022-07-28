@@ -16,7 +16,7 @@ final class MockNabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
     /// The lifetime token object (userId, token) for the nabu account. It will be used for generating session token for accessing various nabu related services
     var offlineTokenPublisher: AnyPublisher<Result<NabuOfflineToken, MissingCredentialsError>, Never> {
-        Just(expectedToken).eraseToAnyPublisher()
+        Just(expectedOfflineToken).eraseToAnyPublisher()
     }
 
     /// Sets the nabu lifetime token in the wallet repository
