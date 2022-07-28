@@ -241,7 +241,11 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
         featureFlagService.isEnabled(.accountCredentialsMetadataMigration)
-            .handleEvents(receiveSubscription: { [offlineTokenSubject] _ in offlineTokenSubject.send(.success(offlineToken))})
+            .handleEvents(
+                receiveSubscription: { [offlineTokenSubject] _ in
+                    offlineTokenSubject.send(.success(offlineToken))
+                }
+            )
             .flatMap { [weak self] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
                 guard let self = self else {
                     return .failure(.offlineToken)
