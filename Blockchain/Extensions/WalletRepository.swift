@@ -142,7 +142,6 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .eraseToAnyPublisher()
     }
 
-
     lazy var offlineTokenPublisher: AnyPublisher<
         Result<NabuOfflineToken, MissingCredentialsError>, Never
     > = offlineTokenSubject.eraseToAnyPublisher()
