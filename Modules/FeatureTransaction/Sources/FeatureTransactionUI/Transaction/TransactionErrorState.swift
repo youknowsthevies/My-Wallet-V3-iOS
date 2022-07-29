@@ -77,19 +77,30 @@ extension TransactionErrorState {
         }
 
         if let error = extract(OpenBanking.Error.self, from: self) {
-            let ob = BankState.UI.errors[error, default: .defaultError]
-            return UX.Error(
-                source: error,
-                title: ob.info.title,
-                message: ob.info.subtitle,
-                icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
-                actions: .default
-            )
+            if let ob = BankState.UI.errors[error] {
+                return UX.Error(
+                    source: error,
+                    id: error.code,
+                    title: ob.info.title,
+                    message: ob.info.subtitle,
+                    icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
+                    metadata: error.code.map { ["code": $0] }.or([:])
+                )
+            } else {
+                return UX.Error(
+                    source: error,
+                    id: error.code,
+                    title: nil,
+                    message: nil,
+                    metadata: error.code.map { ["code": $0] }.or([:])
+                )
+            }
         }
 
         let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
         return UX.Error(
             source: self,
+            id: error?.id,
             title: recoveryWarningTitle(for: action),
             message: recoveryWarningMessage(for: action),
             metadata: error?.metadata ?? [:]
@@ -98,20 +109,10 @@ extension TransactionErrorState {
 
     func analytics(for action: AssetAction) -> ClientEvent? {
         guard self != .none else { return nil }
-        let error = ux(action: action)
-        let nabu = error.source as? Nabu.Error
-        let network = error.source as? NetworkError
-        return ClientEvent.clientError(
-            error: error.expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
-            networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
-            networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
-            networkErrorDescription: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
-            networkErrorId: nabu?.id,
-            networkErrorType: nabu?.type.rawValue,
-            source: nabu.isNotNil ? "NABU" : "CLIENT",
-            title: error.title,
-            action: action.description.snakeCase().uppercased(),
-            category: error.categories
-        )
+        return ux(action: action)
+            .analytics(
+                label: label,
+                action: action.description.snakeCase().uppercased()
+            )
     }
 }

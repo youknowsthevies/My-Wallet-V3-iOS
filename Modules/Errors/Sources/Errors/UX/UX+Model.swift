@@ -1,12 +1,13 @@
 import AnyCoding
 import Foundation
+import ToolKit
 
 extension UX {
 
     public struct Action: Equatable, Hashable, Codable {
 
         public let title: String
-        public let url: URL?
+        @Optional.Codable public var url: URL?
 
         public init(title: String, url: URL? = nil) {
             self.title = title
@@ -26,7 +27,7 @@ extension UX {
 
         public var url: URL
         public var accessibility: Accessibility?
-        public var status: Status?
+        @Optional.Codable public var status: Status?
 
         public init(url: URL, accessibility: UX.Accessibility? = nil, status: Status? = nil) {
             self.url = url

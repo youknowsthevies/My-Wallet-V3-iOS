@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BlockchainNamespace
 import DIKit
 import Errors
@@ -158,16 +159,20 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
 
     typealias L10n = LocalizationConstants.PendingCardStatusScreen.LoadingScreen
 
+    private let analytics: AnalyticsEventRecorderAPI
     private let app: AppProtocol
     private let presenter: PendingStatePresenterAPI & RibBridgePresenter
+
     private let disposeBag = DisposeBag()
 
     public required init(
         presenter: PendingStatePresenterAPI & RibBridgePresenter,
+        analytics: AnalyticsEventRecorderAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
         self.presenter = presenter
         self.app = app
+        self.analytics = analytics
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -224,7 +229,10 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
 
     // MARK: - View Update
 
+    fileprivate var subscription: BlockchainEventSubscription?
+
     fileprivate func update(with error: UX.Error) {
+
         navigationControllerAPI?.pushViewController(
             UIHostingController(
                 rootView: ErrorView(
@@ -237,6 +245,16 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
             ),
             animated: true
         )
+
+        subscription = app.on(
+            blockchain.ux.transaction.action.add.card,
+            blockchain.ux.transaction.action.go.back.to.enter.amount
+        ) { [weak self] _ in
+            self?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+        }
+        .start()
+
+        analytics.record(event: error.analytics(label: "LINK", action: "LINK"))
     }
 }
 
